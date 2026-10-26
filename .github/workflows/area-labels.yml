@@ -25,7 +25,7 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
       - if: steps.prs.outputs.numbers != ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           sparse-checkout: .github
       - if: steps.prs.outputs.numbers != ''
