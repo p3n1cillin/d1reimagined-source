@@ -77,39 +77,46 @@ def filter_step(client, before, moved):
     return kept
 
 
-def retrack(client, tracked, scan_radius=25):
+def plausible(t):
+    """A world position, not a stray float: the Cosmodrome's coordinates are hundreds of units out."""
+    return t is not None and all(math.isfinite(x) and abs(x) < 1e5 for x in t) and math.hypot(t[0], t[1]) > 50
+
+
+def retrack(client, tracked, near=None, scan_radius=25):
     """Drop stale copies after a death or respawn: keep the addresses that follow a short move.
 
     A respawn leaves some tracked copies frozen at the old spot, and the median then flips between
-    the frozen and live groups. Push forward (or back, if forward is blocked) and keep the copies
-    that moved 0.5..15 units; if none did, re-scan around the most common position. Returns the
-    new list.
+    the frozen and live groups. Move forward, back and sideways in turn (a Guardian against a wall
+    can still back off or sidestep) and keep the copies that moved 0.5..15 units. Only if none moved
+    in any direction, re-scan around `near` (the last good position); never around stray values.
+    Returns the new list, or the old one when nothing better is found.
     """
-    for keys in (['Hold:W:700'], ['Hold:S:700'], ['NumPad2', 'Hold:W:700']):
+    for keys in (['Hold:W:700'], ['Hold:S:700'], ['Hold:A:700'], ['Hold:D:700'], ['NumPad2', 'Hold:W:700']):
         before = {a: client.triple(a) for a in tracked}
         pad(*keys)
         moved = []
         for a, v in before.items():
             n = client.triple(a)
-            if v and n and all(math.isfinite(x) for x in n) and 0.5 <= math.dist(v[:2], n[:2]) <= 15:
+            if plausible(v) and plausible(n) and 0.5 <= math.dist(v[:2], n[:2]) <= 15:
                 moved.append(a)
         if len(moved) >= 10:
             return moved
-    # Nothing tracked follows the player any more: scan again around each group of copies.
-    pts = [t for t in (client.triple(a) for a in tracked) if t and all(math.isfinite(x) for x in t)]
-    for centre in sorted({(round(p[0]), round(p[1]), round(p[2])) for p in pts}, key=lambda c: -sum(
-            1 for p in pts if math.dist(p[:2], c[:2]) < 2))[:3]:
-        addrs = client.scan(centre, scan_radius)
+    if not plausible(near):
+        return tracked
+    addrs = client.scan(near, scan_radius)
+    if not addrs or len(addrs) > 100000:
+        return tracked
+    for keys in ('Hold:W:1200', 'Hold:S:1200'):
         before = keep(client, addrs, True)
-        pad('Hold:W:1200')
-        found = filter_step(client, before, True)
+        pad(keys)
+        found = [a for a in filter_step(client, before, True) if plausible(client.triple(a))]
         if len(found) >= 10:
             return found
     return tracked
 
 
 def position(client, tracked, near=None):
-    pts = [t for t in (client.triple(a) for a in tracked) if t and all(math.isfinite(x) for x in t)]
+    pts = [t for t in (client.triple(a) for a in tracked) if plausible(t)]
     if near:
         pts = [t for t in pts if math.dist(t[:2], near[:2]) < 25] or pts
     if not pts:
@@ -188,7 +195,7 @@ def main():
         return
     tracked = json.load(open(a.tracked))
     if a.retrack:
-        tracked = retrack(c, tracked)
+        tracked = retrack(c, tracked, position(c, tracked))
         json.dump(tracked, open(a.tracked, 'w'))
         print(len(tracked), 'tracked; position', position(c, tracked))
         return

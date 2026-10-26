@@ -79,9 +79,11 @@ def main():
             still = 0
         else:
             still += 1
-        if d > 30 or still >= 6:
+        if d > 30 or still >= 10:
             # A respawn, or tracking frozen on copies left behind by one: keep only live copies.
-            tracked = walk.retrack(c, tracked)
+            # Re-scan (if it comes to that) around the last good position, never around strays.
+            good = here if walk.plausible(here) and d <= 30 else p0
+            tracked = walk.retrack(c, tracked, good)
             here = walk.position(c, tracked) or here
             print(f'retracked ({"jump" if d > 30 else "no movement"}): {len(tracked)} copies at {here}', flush=True)
             still = 0
