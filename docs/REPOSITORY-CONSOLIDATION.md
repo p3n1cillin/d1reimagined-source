@@ -7,9 +7,9 @@ The owner requested one public repository containing the former public source an
 | Original repository/ref | Original commit | Destination |
 | --- | --- | --- |
 | d1reimagined-source/main | 37d49305ae70fafacae60dc57b1be7a9ded8b96b | main history; archive/d1reimagined-source-main-2026-10-20 tag |
-| d1reimagined/master | 512c659de0db2ff2673c6b1dee87cad975b83301 | merged main history; archive/d1reimagined-master-2026-10-20 tag |
-| d1reimagined/preserve/main-pc-2026-09-29 | 8c9995e5efda953f97a87e6674eed0fa2fe8e23a | archive/legacy-main-pc branch |
-| d1reimagined-data/main | 512c9e436c2c80cd2d88e5bc2be2dd02f00c4ca4 | merged main history; data/ tree; archive/d1reimagined-data-main-2026-10-20 tag |
+| d1reimagined/master | d2a172a7a47d085a26d0e9bf4cfa1b5e4fa359a9 | merged main history; archive/d1reimagined-master-2026-10-20 tag |
+| d1reimagined/preserve/main-pc-2026-09-29 | 7293ffc98044624c057de9b27e187316c12f226e | archive/legacy-main-pc branch |
+| d1reimagined-data/main | cd388df8e62dbbea410621f6c2a43ca135db5bd6 | merged main history; data/ tree; archive/d1reimagined-data-main-2026-10-20 tag |
 
 The two historical pull-request head commits are ancestors of their respective default branches and remain reachable. Existing public files win overlapping source conflicts, preserving the current PS4 implementation and publication adaptations. Original variants remain available in the imported history. New research notes and tools are included. The retired process-wide punch-sweep script is archived under `notes/Invoke-Final124PunchSweep.retired.ps1`; current owned-run helpers remain the entry points.
 

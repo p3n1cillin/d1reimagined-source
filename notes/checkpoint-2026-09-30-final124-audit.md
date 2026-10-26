@@ -1,7 +1,7 @@
 # 01.24 continuation and diagnostic audit — 2026-09-30
 
 The active target is BLES01857 **01.24**, not the historical 01.00 mission
-milestone. Source baseline: `73c4f47` on `master`, matching `origin/master` after
+milestone. Source baseline: `505e9c5` on `master`, matching `origin/master` after
 fetch. The older imported checkout has additional uncommitted readers and notes;
 it is preserved. Runtime: `F:\d1\lukespc-import\d1xenia\local`; data checkout:
 `F:\d1\d1xenia-data`. The source checkout remains `F:\d1\d1xenia`.
@@ -202,7 +202,7 @@ interrupts the launcher, not the observation loop.
 
 **FINAL124_NEXT.** Died at 57 s: `dns_sinkhole.py` raised `ConnectionResetError [WinError
 10054]` from `recvfrom` (Windows reports ICMP port-unreachable for an earlier reply that way),
-and the wrapper aborted because an owned process had exited. Fixed in `e8df00c`: the DNS, STUN
+and the wrapper aborted because an owned process had exited. Fixed in `1dc3f28`: the DNS, STUN
 and session-listener receive loops ignore it.
 
 **FINAL124_NEXT2** (final manifest `manifest-final-smoke.bin`, d1p3, 300 s, Cross for 150 s,
@@ -251,7 +251,7 @@ stride 0x1a8; 314 records in the final manifest), u16 id -> index map at `0x19c2
 **+0x10 = the package's build time** (equal to the .pkg header's build time; 0xecc6c prefers the
 newest), **+0xb4 = entry count** (not a block size), +0xec named-tag count, +0x140 the
 `packages/<name>.pkg` path, +0x178 tag-table offset, +0x17c resident header block.
-`rpcs3_final124_bootflow.py --package HEXID` now dumps it (`--request` adds 0172), as of `9fce601`.
+`rpcs3_final124_bootflow.py --package HEXID` now dumps it (`--request` adds 0172), as of `acc4d94`.
 
 **Package 0172 offline.** `_2` (01.20) is an overlay. Of its 118 blocks, 68 are stored in patch 0
 (the disc `_0`), 49 in patch 1 (01.13 `_1`) and 1 in itself. Entry 0, the root tag `0x80ae4000`
@@ -406,7 +406,7 @@ non-stale update files; marker-0 shared manifests included). Then re-check subst
 
 ### 2026-10-01 (cont.): FIRST 01.24 BAP CONNECTION, with every patch chain registered
 
-`build_manifest_probe.py --chains` (`887fd9e`): the final manifest plus every package's
+`build_manifest_probe.py --chains` (`b240eba`): the final manifest plus every package's
 block-table patch chain plus the shared manifests, **837 entries** (`manifest-final-chains.bin`).
 The client accepts them all (registry count 840; the "800 maximum" does not apply).
 

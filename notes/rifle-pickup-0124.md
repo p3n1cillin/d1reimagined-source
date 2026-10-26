@@ -1,6 +1,6 @@
 # 01.24 Breach rifle: correct object, pickup still open
 
-Updated 2026-10-08, continuation after JOIN205–207 on source `694b183`.
+Updated 2026-10-08, continuation after JOIN205–207 on source `37430bd`.
 
 The rifle cue previously created `o_chest_primary_weapon`, whose authored
 placement is about 137 horizontal units away from the rifle waypoint. The first
@@ -24,7 +24,7 @@ does not establish an inventory grant or a visible pickup prompt.
 JOIN208 used the earlier chest selection. An obstructed initial route and a
 later position discontinuity prevented a useful rifle test. Its cleanup passed.
 
-JOIN209 used `694b183` plus the rifle correction, the committed Titan starter
+JOIN209 used `37430bd` plus the rifle correction, the committed Titan starter
 kit and existing C5 emulator. No guest writes, teleport, renderer rebuild or
 manual mission-state changes were used. The route crossed naturally into the
 Breach. At 19:04:22 UK (18:04:22 UTC), the platform trigger scheduled the automatic

@@ -1,6 +1,6 @@
 # 01.24 mission continuation — 2026-10-02
 
-Target: BLES01857 01.24, Destiny 2.3.1. Continued from Claude's `64bd695`,
+Target: BLES01857 01.24, Destiny 2.3.1. Continued from Claude's `d723faf`,
 including the JOIN76/77 recorded routes and JOIN79 squad experiment. The two supplied
 specifications are summarized in [the acceptance checks](guardian-rises-acceptance.md).
 Their proposed event/API names and public tuning values are not original wire evidence.

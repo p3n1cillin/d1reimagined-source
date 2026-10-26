@@ -1,6 +1,6 @@
 # 01.24 mission continuation — 3 October 2026
 
-Continued from Claude's JOIN88 / `f6d8051`. Target remains BLES01857 01.24,
+Continued from Claude's JOIN88 / `0aca012`. Target remains BLES01857 01.24,
 activity 229, checksum `0x8fe07299`. The supplied specifications are behavioral
 acceptance references; extracted final-build identities and live protocol evidence
 take precedence. See [the acceptance checks](guardian-rises-acceptance.md).

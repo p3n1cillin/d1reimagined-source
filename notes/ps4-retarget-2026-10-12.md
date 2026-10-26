@@ -1279,7 +1279,7 @@ media use.
 - An 8-byte read/write watch on the heavy and helmet slots ran for 200 s, from just before the launch until well after the spawn: **0 hits**.
   - The spawn path does not consult this copy of the equipment.
   - The armour that renders must come from another copy, such as the character transcript or the profile's render data.
-- Together with 8118aeb (the equipped list is never read), this rules out "the data is served but ignored by the spawn".
+- Together with 0772832 (the equipped list is never read), this rules out "the data is served but ignored by the spawn".
   - What is missing is the step that asks for the player's gear on spawn.
   - Next candidates: the activity script's loadout grant at round start (a sim-queue element), and whether Elimination waits for a round state that phase 3 never reaches.
 

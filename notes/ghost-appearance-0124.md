@@ -30,7 +30,7 @@ unit `0x80a6a008`. JOIN194–200's "oversized floating geometry" is a vehicle-li
 craft flying the Ghost's authored path. Codex's cosmetic 15/1 was cosmetic index 1,
 `portal_hunter_cloth_battleworn` (a Hunter cloth dye).
 
-JOIN201 (committed server `7c2cc9c`, private gear file: Titan starter kit plus
+JOIN201 (committed server `b9654a9`, private gear file: Titan starter kit plus
 `{"item": 862, "id": 267, "appearance": 0, "dyes": [[15, 2493]]}`) shows the
 shell over the overturned truck, through the cars, in the car window turning to
 camera, then flying to the Wall, where its shell opens. At native time 0:05:54 the

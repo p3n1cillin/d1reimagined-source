@@ -251,7 +251,7 @@ The reference explicitly reports that loopback-only networking was rejected by
 the game; mirrored localhost connectivity alone does not establish a usable
 guest transport. Resolve that condition in the port before claiming sign-in.
 
-The October 10 PS3 checkpoint remains committed and pushed at `3d1d669`;
+The October 10 PS3 checkpoint remains committed and pushed at `be50bd7`;
 no PS3 protocol/gameplay change was made during this transition. This day's
 preparation created no new gameplay footage or NAS media package.
 
@@ -330,7 +330,7 @@ or copied to the NAS. No new video or native PS4 game run was produced.
 The 11 October consolidated text-only handoff reached the NAS at
 **18:00:06.868279 UTC (19:00 UK)**; all three payloads and the manifest were
 independently verified. No prior footage was resent and no media decode was
-claimed for text. That ready package remains immutable at checkpoint `12467f3`.
+claimed for text. That ready package remains immutable at checkpoint `791f8e1`.
 
 Engineering resumed with a concrete canonical-launcher defect: the original
 script scheduled virtual title taps even with `OPERATOR_PAD=1`, contrary to its

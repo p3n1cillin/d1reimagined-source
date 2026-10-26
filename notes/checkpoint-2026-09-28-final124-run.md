@@ -8,8 +8,8 @@ ELF, type and service schemas; no new game binaries are pushed here.
 
 ## Setup
 
-- Main repo baseline: `8fb0ce1` after fast-forwarding `master` from origin.
-- Data repo baseline: `0d6693f` on `main`; corrected 01.24 schema has 5,041
+- Main repo baseline: `1c46ac8` after fast-forwarding `master` from origin.
+- Data repo baseline: `0e0b527` on `main`; corrected 01.24 schema has 5,041
   types, package-derived service map has 94 services.
 - PS3 title: BLES01857, exact 01.24 EBOOT and 1,034 required update package
   files (10,305,603,584 bytes) installed in isolated RPCS3 copy

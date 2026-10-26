@@ -10,12 +10,12 @@ decoded for the daily evidence handoff. JOIN252's segment starts at
 **21:18:25 UTC on 9 October**: the Khvostov acquisition notification and rifle
 appear without the unwanted urgent dialog. The old mission banner still appears
 later in that same segment. The launch-default notice fix is committed as
-`48c3992`; the native test used `bb55871` plus the recorded uncommitted change.
+`198111b`; the native test used `04e53db` plus the recorded uncommitted change.
 
 JOIN253's segment starts at **00:53:41 UTC on 10 October**: Enter the Wall changes
 to Find a Weapon without NEW MISSION at that handover. Its tested source was
-`48c3992` plus the mission's initial objective-state change, committed afterward
-as `1d5b7e2`. This does not establish the post-grant banner result in that run.
+`198111b` plus the mission's initial objective-state change, committed afterward
+as `867ba15`. This does not establish the post-grant banner result in that run.
 See [the preceding native investigation](checkpoint-2026-10-09-mission.md#join253-no-new-mission-banner).
 
 The original activity connection aborts at **00:55:02.078 UTC**. A new connection
@@ -25,7 +25,7 @@ separate from planned shutdown at 01:00:30. The earlier checkpoint describes an
 approximately 16-second client stall, but the cause remains unresolved. Do not
 attribute the reconnect to the banner state without a causal comparison.
 
-Fresh validation on clean source `1d5b7e2`: **225 server tests pass in 14.406 s**
+Fresh validation on clean source `867ba15`: **225 server tests pass in 14.406 s**
 and **176 script tests pass in 9.369 s**. Media decoding and destination payload
 hash checks also pass. No final-schema preflight, combat-kill acceptance,
 persistence/reload or combined graphics test was rerun for this handoff.

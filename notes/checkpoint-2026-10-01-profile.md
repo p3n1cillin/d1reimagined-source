@@ -1,6 +1,6 @@
 # 01.24 profile setup continuation — 2026-10-01
 
-Source baseline: `4fdd051`, matching `origin/master`. Claude's latest work has
+Source baseline: `dc966f4`, matching `origin/master`. Claude's latest work has
 resolved the package-registration and qz object-hash blockers: the final
 837-entry manifest registers every required patch chain, the 01.24 BAP start
 response echoes its 128-byte request, and build-specific qz hashes let the family

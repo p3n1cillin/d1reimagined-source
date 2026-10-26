@@ -488,7 +488,7 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
 - **Repo sync.** Git was not installed on this PC and `p3n1cillin/d1xenia` is private, so the
   checkout had sat at `0cb84ba` (TEST263-270) with 12 files modified or untracked after it. Git
   2.55.0 was installed with winget and the remote was authenticated through Git Credential
-  Manager. `origin/master` had advanced to `ec5040f` (~90 commits, +10,238 lines) and already
+  Manager. `origin/master` had advanced to `80d4427` (~90 commits, +10,238 lines) and already
   contains the whole 01.24 effort. Fetched, then compared every one of the 12 local files
   against the remote blob by SHA-256: `d1coverage_diff.py`, `Test-ScreenReady.ps1` and
   `Get-RpcsHotThreads.ps1` were byte-identical (already committed from the other PC) and

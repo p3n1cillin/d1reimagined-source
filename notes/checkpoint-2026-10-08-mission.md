@@ -320,7 +320,7 @@ the disabled names already existed; they were renamed before JOIN188 and its own
 cleanup is clean.
 
 JOIN188 uses the same C5 executable, Titan/highway fixture and the committed mission
-(source `2f6bc35`). An inspected Urgent Message is dismissed with one owned Cross before
+(source `3c7f75a`). An inspected Urgent Message is dismissed with one owned Cross before
 the cinematic starts. Native screenshots every ~10 s show, **without the dialog**, the
 Cosmodrome vista, car graveyard, the Ghost's scan view, the Fallen on the ridge, the
 Wall, the first-person fade-in and the highway (09:51:42–09:54:50 UTC). Start/end
@@ -370,7 +370,7 @@ lighting vs. renderer); verify the automatic bubble-3 reset produces the same Gh
 
 ## JOIN189: automatic bubble-3 reset verified; Breach volumes located
 
-Same executable/fixture, source `01c9bd3`. The dialog is dismissed by one owned Cross
+Same executable/fixture, source `f2418cc`. The dialog is dismissed by one owned Cross
 after inspection; the incident-driven revival reaches current112 at 10:18:59 UTC.
 The guarded route stops after 75 s on one **torn non-atomic sample** (`stable: false`,
 stage 36, engine 0, native target being written as the client starts its 24 preload).
@@ -424,7 +424,7 @@ players in that volume. Kind-0x3a volumes are not replicated. **The torch is not
 by this sequence**; its source remains open (another client system, or a light the
 renderer drops — black frames cannot distinguish these).
 
-JOIN190 (source `2e02e29` plus the new object names; same executable/fixture): the
+JOIN190 (source `640d02e` plus the new object names; same executable/fixture): the
 route completes without the torn-sample stop and the client crosses naturally at
 10:51:05 UTC. `{"seq_d_o2_10": {"0":"$now","4":1}, "seq_d_o2_30": {...}}` by control at
 10:51:07 shows the HUD **GHOST speaker indicator** for about 12 s and an ~18 dB audio
@@ -500,7 +500,7 @@ handle; see the correction below. JOIN193 cleanup is clean.
 
 ## JOIN194–199: separate Ghost unit, cosmetic and cache; visual failure remains
 
-Continuation from source `4f18e36`, unchanged C5 native binary and mission rules.
+Continuation from source `a880ff7`, unchanged C5 native binary and mission rules.
 Read-only static/native checks isolate equipped Ghost `+0xa=42` as the authored
 unit appearance. It resolves resource `0x80a6a008`; category-4 acquisition returns
 valid cache handle `0x3ef34000` in both revival bindings. Cast `+0x200`/actor
@@ -568,7 +568,7 @@ remains a failure, and no media is edited or published.
 
 ## JOIN201: art-record appearance shows the Ghost; resurrection light exits the renderer
 
-Committed source `7c2cc9c`; private gear file: Titan starter kit plus Generalist
+Committed source `b9654a9`; private gear file: Titan starter kit plus Generalist
 `appearance 0`, `dyes [[15, 2493]]`. Both values come from the item's art record
 (table `0x80a5f241` by item index, verified against the Titan armour arrangements
 188–192): world appearance at `+0xc + [+0xc] + 0x38` (the `0x46ed4c` read) and its
@@ -586,7 +586,7 @@ preserved). The starter default now carries appearance 0 and dye 15/2493; 197 se
 tests pass. Next: the renderer exit on the resurrection light.
 ## JOIN202: starter default reproduces the Ghost; the torch follows the camera
 
-Source `00b891d` with the **committed starter default** (no gear file or overlay), plus a
+Source `654ffa3` with the **committed starter default** (no gear file or overlay), plus a
 read-only watcher holding the emulator handle for its exit code. Sampled frames show the
 whole revival with the authored Ghost: over the truck, through the car window, to the
 Wall, the shell opening into the blue resurrection sphere (reference 05:57–06:03), and the
@@ -610,7 +610,7 @@ Next: the platform beat (`pf_104a_pwr` and its trigger `0x1d/37`) with the Ghost
 present, the first-person brightness and normals flash, and the Nav null component.
 ## JOIN203: investigate and power triggers report; the power cinematic still ends at once
 
-Source `24c881f`, committed starter default, exit-code watcher. The revival again shows the
+Source `4b9e0a5`, committed starter default, exit-code watcher. The revival again shows the
 Ghost and the resurrection sphere with no emulator exit (2 of 3 runs). After the natural
 crossing, a guarded walk climbs to the upper level and steps into the investigate volume
 (59; it lies at y > −780.7 for x 385–395, which JOIN202 never entered). `trig_investigate`
@@ -658,7 +658,7 @@ now plays `o2_20` 2 s after current 24, matching reference 07:37, instead of `o2
 
 ## JOIN204: Breach order test by control; companion Ghost renders black
 
-Source `d26acbb` plus mission aliases only (o2_40/50/80/90, `o_breach_control`,
+Source `6fde624` plus mission aliases only (o2_40/50/80/90, `o_breach_control`,
 `o_breach_doors_lights`, `o_breach_gating_lights`, `o_chest_primary_weapon`; all share
 prop states `0x808007d9`/`0x80800387`). After the natural crossing and a guarded walk to
 the upper platform, live control arms `pt_nux_ghost_light_up_start`, then plays o2_40 and
@@ -720,7 +720,7 @@ dialog; a later retry stops on a position discontinuity. No rifle success is cla
 An interrupted route's watch lease is restored before final cleanup; all nine owned
 identities and title/global/watch hashes are independently verified closed/restored.
 
-JOIN209 uses source `694b183` plus the rifle correction, the committed Generalist
+JOIN209 uses source `37430bd` plus the rifle correction, the committed Generalist
 Shell default and the existing C5 renderer. It crosses naturally into the Breach.
 An initial direct approach from below hits geometry; the southern stair route reaches
 the upper platform and reports the light-up trigger at 19:04:22 UK. The chain sends
@@ -753,7 +753,7 @@ privately for the next report.
 
 ## JOIN210–211: prop activation opens the barrier; Fight Through the Wall starts
 
-JOIN210 (manual, source `3501113`) identifies the prop command channel: State A `+0x10`
+JOIN210 (manual, source `18046f9`) identifies the prop command channel: State A `+0x10`
 carries a typed value `0x8080279a` with three (i32, i32, float) channels. With the same
 value sent to the Breach control, door-light and gating-light props, a guarded walk stays
 north of the grey barrier with channel 0 (414.1, −790.7) or channels 0–1 (414.8, −790.7),
@@ -774,7 +774,7 @@ at 19:36:22 UTC; cleanup is clean. Next: the authentic unarmed start and rifle g
 lighting, then the first Fallen encounter of Fight Through the Wall.
 ## JOIN212–215: the rifle chest renders but offers no pickup
 
-All four runs use source `67b68a1` (automatic Breach chain with prop activation) and stop on
+All four runs use source `bd53a22` (automatic Breach chain with prop activation) and stop on
 their 900-second bound with clean cleanup (exit 0xffffffff from the owned stop at 20:01:32,
 20:22:46, 20:41:15 and 20:59:40 UTC).
 
@@ -804,7 +804,7 @@ walks up and takes it without any prompt; then the Khvostov 7G-02 notification, 
 HUD and a grimoire card appear. Our chest has no rifle on its front.
 
 The Khvostov's art record (item 3598, table `0x80a5f241`) gives world appearance 19,
-arrangement 2364 and default dyes (5, 6036) and (6, 6037). JOIN216 (source `67b68a1`, private
+arrangement 2364 and default dyes (5, 6036) and (6, 6037). JOIN216 (source `bd53a22`, private
 gear file adding it in slot 6, Primary Weapons) shows **the Khvostov in first person with its
 holographic sight** on the highway in daylight and in the Breach, a crosshair, and an ammo HUD
 with a rifle icon. The magazine reads **12** from the start (the reference shows 25). R2 (key R)

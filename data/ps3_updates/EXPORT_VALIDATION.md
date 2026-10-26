@@ -9,7 +9,7 @@ original export scope, not current whole-project status. See the
 [source handoff](https://github.com/p3n1cillin/d1reimagined/blob/master/notes/HANDOFF-2026-10-06.md).
 
 Regenerated on 2026-09-28 from the decrypted BLES01857 EBOOTs with
-`p3n1cillin/d1xenia` commit `fe894860d5fe76c4fdfe195ee58ab62f421f5943`
+`p3n1cillin/d1xenia` commit `c0ccd88257c40ef26f04d771dd3cbc1587208f02`
 (`scripts/d1_types.py` and `scripts/d1_builddiff.py`). The earlier exports used
 the 01.00 type-definition layout for later executables, found only 352/351
 types in 01.13/01.24, and falsely reported thousands of removed types.
@@ -49,7 +49,7 @@ and 21 script tests passed. The tests use synthetic fixtures and do not prove
 complete runtime type coverage.
 
 Mission-state preflight on 2026-09-28 with `d1xenia` commit
-`3b9c18ca4f347444b3958ad82461216a9efda808`:
+`34f34a6aa0f1c4b0b7d52a4c78c2c122b14edce1`:
 `scripts/d1_mission_preflight.py`
 encoded and decoded all 80 scripted state changes in `a_guardian_rises.json`
 and `tower_npcs.json` against both the saved 01.00 activity schema and this
@@ -62,7 +62,7 @@ selected schema and rejects dropped fields before a run. Client behavior on
 01.24 remains untested.
 
 Core build preflight on 2026-09-28 with `d1xenia` commit
-`cc25790a0d2ac51eb1580a8633084b3523e58b1a`:
+`93badd539b1b74b3a2d1142cae4fdad4b8e66b75`:
 `scripts/d1_build_preflight.py` passed against the saved 01.00 schemas and
 the corrected 01.13 and 01.24 type exports. It checks join response, activity
 world/map, simulation player, game mode, world-state zone and peer masks,

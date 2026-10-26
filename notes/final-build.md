@@ -2798,7 +2798,7 @@ across the whole run. If it is 0 from the first call, the writer is never invoke
 and the search moves upstream to whatever constructs the object.
 ## Gate-chain correction (2026-09-30)
 
-The state-zero diagnosis in commit `73c4f47` is withdrawn. The saved 01.24 ELF
+The state-zero diagnosis in commit `505e9c5` is withdrawn. The saved 01.24 ELF
 has `crorc cr0eq, cr1eq, cr0eq` (word `4c461342`) at `0x362a0c`. The operation
 is BA OR NOT BB, as defined by [IBM's instruction reference](https://www.ibm.com/docs/en/aix/7.2.0?topic=set-crorc-condition-register-complement-instruction).
 For the preceding comparisons, this is `(state == 1) OR (state != 0)`,
