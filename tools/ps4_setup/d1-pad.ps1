@@ -44,6 +44,8 @@ foreach ($k in $Keys) {
     Start-Sleep -Milliseconds $hold
     [D1Pad.W]::keybd_event($vk, $scan, 2, [UIntPtr]::Zero)
     "pressed $k ($hold ms)"
+    # Time of the last pad input, for the idle guard (d1-idle-guard.sh) that prevents the 15-minute kick.
+    try { Set-Content -LiteralPath (Join-Path $PSScriptRoot 'd1-pad-last.txt') -Value ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) } catch {}
     Start-Sleep -Milliseconds $GapMilliseconds
 }
 if ($Shot) { & (Join-Path $PSScriptRoot 'd1-shot.ps1') -Out $Shot }
