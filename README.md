@@ -1,23 +1,36 @@
 # D1 Reimagined
 
+[![Source checks](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/source-checks.yml/badge.svg)](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/source-checks.yml)
+[![Good first issues](https://img.shields.io/github/issues/p3n1cillin/d1reimagined-source/good%20first%20issue?label=good%20first%20issues)](https://github.com/p3n1cillin/d1reimagined-source/labels/good%20first%20issue)
+[![Discord](https://img.shields.io/discord/1558817182551646220?label=Discord)](https://d1reimagined.com/discord)
+
 Experimental, independent Destiny 1 preservation research and original local service implementation. **The complete game is not playable.** This consolidated repository includes local service stand-ins, protocol experiments, mission rules, diagnostic tools, scoped emulator patches and regression tests.
 
 Project website: https://d1reimagined.com
 Community Discord: https://d1reimagined.com/discord (questions, ideas and contributor discussion)
 
+## Get involved
+
+- **Pick up a task:** [good first issues](https://github.com/p3n1cillin/d1reimagined-source/labels/good%20first%20issue) and [help wanted](https://github.com/p3n1cillin/d1reimagined-source/labels/help%20wanted). Many need no game files at all, including research, documentation, tests and CI.
+- **Follow progress:** [Dev Blogs](https://d1reimagined.com/devblogs), and #dev-updates on the [Discord](https://d1reimagined.com/discord).
+- **Ask first:** the Discord help and ideas forums are the place for questions and early ideas. Issues are for confirmed problems and planned work.
+- **Emulator:** the project's shadPS4 build is [d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4) (branch `d1`).
+
 ## Scope
 
-The active target is **PlayStation 4 CUSA00219 version 01.29** with shadPS4.
+The active target is **PlayStation 4 CUSA00219 version 01.33** (internal build 56578, the final PS4 patch) with [the project's shadPS4 build](https://github.com/p3n1cillin/d1reimagined-shadps4).
+Earlier work pinned 01.29; its addresses are kept as a reference for locating the same code in 01.33.
 The [PS4 source tree](ps4/README.md) now includes the Rust services, protocol
 libraries, diagnostic tools, canonical harness and generators from the supplied
 preservation project, with the latest preparation and content-reader fixes.
 The retained PlayStation 3 implementation targets version 01.24 with RPCS3.
-See [current results and contribution priorities](docs/STATUS.md). The exact
-PS4 executable remains missing, and there is no accepted native PS4 boot here.
-Native stability, rendering, combat, progression, complete activities and
-multiplayer remain incomplete.
+See [current results and contribution priorities](docs/STATUS.md). The first
+mission currently runs from the Cosmodrome highway into The Breach, up to the
+starter rifle and the first Fallen attack. The rest of the mission, native
+stability, combat, progression, complete activities and multiplayer remain
+incomplete.
 
-This is a research repository, not a ready-to-play installer. The `data/` directory contains the historical PS3 research snapshot, including extracted executables, selected package assets, schemas and logs. It is not a complete game installation. Firmware, account databases, private keys and current runtime captures are not included. Use only inputs you are authorised to use. No public service, console, account or third-party system is a testing target.
+This is a research repository, not a ready-to-play installer. The `data/` directory contains material derived from the historical PS3 research snapshot: schemas, logs, update diffs and a checksum manifest. Game packages, executables, firmware, third-party runtimes, account databases, private keys and current runtime captures are not included; supply your own authorised copies and check them against `data/SHA256SUMS.txt`. Use only inputs you are authorised to use. No public service, console, account or third-party system is a testing target.
 
 ## Layout
 
@@ -33,7 +46,7 @@ This is a research repository, not a ready-to-play installer. The `data/` direct
 | `ps4/` | Active Rust preservation services, tools, research docs and canonical harness |
 | `docs/` | Current contributor checkpoint and publication provenance |
 | `notes/` | Imported PS3/PS4 research journals and historical evidence |
-| `data/` | Imported PS3 executables, package parts, schemas, logs and checksum manifest |
+| `data/` | Derived PS3 schemas, logs, update diffs and checksum manifest (no game files) |
 
 ## Development
 
@@ -55,7 +68,13 @@ Set `D1_LOCAL`, `D1_RPCS3` and `D1_USRDIR` to your own runtime locations. Launch
 
 ## Contributing
 
-See CONTRIBUTING.md for small, reproducible changes and SECURITY.md for private security reports. Never attach game files, raw private traces, certificates, credentials or personal information to issues or pull requests. Published code does not grant website member access; that remains individually owner-approved.
+See CONTRIBUTING.md for small, reproducible changes, CODE_OF_CONDUCT.md for community rules and SECURITY.md for private security reports. Never attach game files, raw private traces, certificates, credentials or personal information to issues or pull requests.
+
+All changes reach `main` through pull requests:
+
+- **Required checks:** Python and Rust tests on Linux and Windows, plus a guard that rejects game files, binaries and keys.
+- **Merging:** maintainer PRs merge automatically once the checks pass. Contributor PRs are reviewed first.
+- **Labels:** PRs are labelled automatically by area, and get `needs rebase` when they conflict with `main`.
 
 ## Licence and third-party rights
 
