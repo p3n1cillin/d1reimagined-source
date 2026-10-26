@@ -1,7 +1,11 @@
-# Labels open PRs by the areas they touch (see .github/labeler.yml). Runs hourly so PRs from forks are labelled too.
+# Labels PRs by the areas they touch (see .github/labeler.yml).
+# PRs are labelled when opened or updated, so ones that auto-merge within minutes still get labels for the release notes.
+# The hourly pass catches anything missed. pull_request_target runs from main and never executes PR code.
 name: Area labels
 
 on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
   schedule:
     - cron: '30 * * * *'
   workflow_dispatch:
@@ -16,6 +20,7 @@ jobs:
       pull-requests: write
     steps:
       - id: prs
+        if: github.event_name != 'pull_request_target'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -24,11 +29,11 @@ jobs:
             gh pr list -R "$GITHUB_REPOSITORY" --base "${{ github.event.repository.default_branch }}" -L 200 --json number --jq '.[].number'
             echo EOF
           } >> "$GITHUB_OUTPUT"
-      - if: steps.prs.outputs.numbers != ''
+      - if: github.event_name == 'pull_request_target' || steps.prs.outputs.numbers != ''
         uses: actions/checkout@v7
         with:
           sparse-checkout: .github
-      - if: steps.prs.outputs.numbers != ''
+      - if: github.event_name == 'pull_request_target' || steps.prs.outputs.numbers != ''
         uses: actions/labeler@v5
         with:
           pr-number: ${{ steps.prs.outputs.numbers }}

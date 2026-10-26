@@ -3,6 +3,8 @@
 Describe the observed failure and resulting behavior. Identify PS3 or PS4 and
 the exact build/commit.
 
+Closes #
+
 ## Validation
 
 List controls/tests run and actual results, including skips and failures.

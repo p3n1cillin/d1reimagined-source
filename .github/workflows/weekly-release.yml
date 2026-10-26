@@ -1,0 +1,44 @@
+# Publishes a "Weekly progress" release every Sunday, with notes generated from the PRs merged since the previous one.
+# Weeks with nothing merged are skipped. Releases also reach the Discord feed and anyone watching the repository's releases.
+name: Weekly release
+
+on:
+  schedule:
+    - cron: '30 17 * * 0'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: weekly-release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - run: |
+          last=$(gh release list --limit 1 --exclude-drafts --exclude-pre-releases --json tagName --jq '.[0].tagName // empty')
+          if [ -n "$last" ]; then
+            since=$(gh release view "$last" --json createdAt --jq .createdAt)
+          else
+            since=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          fi
+          merged=$(gh pr list --state merged --search "merged:>$since -author:app/dependabot" --json number --jq length)
+          if [ "$merged" -eq 0 ]; then
+            echo "Nothing merged since $since; no release this week."
+            exit 0
+          fi
+          tag="weekly-$(date -u +%Y-%m-%d)"
+          if gh release view "$tag" > /dev/null 2>&1; then
+            echo "$tag already exists."
+            exit 0
+          fi
+          gh release create "$tag" --target "${{ github.event.repository.default_branch }}" \
+            --title "Weekly progress — $(date -u '+%-d %B %Y')" \
+            --generate-notes ${last:+--notes-start-tag "$last"}

@@ -1,0 +1,22 @@
+# Groups generated release notes by the area labels from .github/labeler.yml.
+changelog:
+  exclude:
+    labels: [dependencies]
+    authors: [dependabot]
+  categories:
+    - title: Server and protocol
+      labels: [server]
+    - title: Tracing and capture
+      labels: [trace]
+    - title: Missions and research
+      labels: [missions, research]
+    - title: Tools
+      labels: [tools]
+    - title: Retained PS3 research
+      labels: [ps3]
+    - title: Documentation
+      labels: [docs]
+    - title: CI and repository
+      labels: [ci]
+    - title: Other changes
+      labels: ['*']
