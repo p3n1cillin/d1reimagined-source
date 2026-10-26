@@ -53,6 +53,10 @@ def main():
     ap.add_argument('--reach', type=float, default=4.0)
     ap.add_argument('--max-seconds', type=float, default=1800)
     ap.add_argument('--rate', type=float, default=0.0022, help='camera turn, rad per ms of J/L')
+    ap.add_argument('--stop-on-death', action='store_true',
+                    help='end after a death (the caller replays the known route back to the frontier)')
+    ap.add_argument('--lethal', help='JSON file of [cell x, cell y, direction] moves that killed the Guardian; '
+                    'read at start, extended on each death')
     a = ap.parse_args()
     goal = [float(v) for v in a.goal.split(',')]
     c = walk.Client()
@@ -60,6 +64,11 @@ def main():
     here = walk.position(c, tracked)
     print('start', here, 'goal', goal)
     visits, blocked, jumped = {}, {}, set()
+    lethal = set()
+    if a.lethal and os.path.exists(a.lethal):
+        lethal = {((x, y), kk) for x, y, kk in json.load(open(a.lethal))}
+    for key in lethal:
+        blocked[key] = 99
     trail = [list(here)]
     facing = None
     t_end = time.time() + a.max_seconds
@@ -147,7 +156,15 @@ def main():
             blocked[(cell, k)] = blocked.get((cell, k), 0) + 1
             continue
         if math.dist(p0[:2], here[:2]) > 30:
-            print(f'jumped {math.dist(p0[:2], here[:2]):.0f} units (respawn?): trail restarts at {here}')
+            # The move killed the Guardian (a fall into a kill volume): never try it again.
+            blocked[(cell, k)] = 99
+            lethal.add((cell, k))
+            if a.lethal:
+                json.dump(sorted([list(c) + [kk] for c, kk in lethal]), open(a.lethal, 'w'))
+            print(f'jumped {math.dist(p0[:2], here[:2]):.0f} units (respawn?): cell {cell} direction {k} marked lethal; '
+                  f'trail restarts at {here}')
+            if a.stop_on_death:
+                break
             trail = [list(here)]
             continue
         trail.append(list(here))
