@@ -13,7 +13,9 @@ param(
     # inventory or the roster) who owes the starter Khvostov as pending loot.
     [string]$Profile = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578\profile-tutorial-t.bin',
     # -Geared: the old fixture (geared inventory and roster, hand cannon in hand, no rifle grant).
-    [switch]$Geared
+    [switch]$Geared,
+    # Session length passed to d1-lab-served.ps1 (its default is 90 minutes).
+    [int]$Minutes = 90
 )
 # A Guardian Rises (the tutorial) end to end, unattended: boot, title (X), skip the opening Mars
 # cinematic in character:prologue (X, then O - left playing it can trip the BLOCK_DETECT watchdog),
@@ -41,7 +43,7 @@ if (-not $Geared) {
 }
 if ($Extra) { $x += ",$Extra" }
 Start-Process pwsh -WindowStyle Minimized -ArgumentList @('-NoProfile', '-File', 'F:\d1\tools\d1-lab-served.ps1', '-Name', $Name,
-    '-Profile', $Profile,
+    '-Profile', $Profile, '-Minutes', "$Minutes",
     '-UnlockFlags', '98,308,419,440,834,2668,3391,5021,5998,6029,433,2539,2549,3558,3587,3520,3527,3531,3533,3534,3535,3536,3544,3568,3594,3595,305,2669,2670,3389',
     '-Extra', $x)
 function WaitFor($pattern, $seconds) {

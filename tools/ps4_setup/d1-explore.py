@@ -66,14 +66,25 @@ def main():
     best = math.dist(here[:2], goal[:2])
     steps = 0
 
+    still = 0
+
     def push(ms):
-        nonlocal here, facing
+        nonlocal here, facing, tracked, still
         p0 = here
         walk.pad(f'Hold:W:{ms}')
         here = walk.position(c, tracked, p0) or p0
         d = math.dist(p0[:2], here[:2])
         if d > 0.6:
             facing = math.atan2(here[1] - p0[1], here[0] - p0[0])
+            still = 0
+        else:
+            still += 1
+        if d > 30 or still >= 6:
+            # A respawn, or tracking frozen on copies left behind by one: keep only live copies.
+            tracked = walk.retrack(c, tracked)
+            here = walk.position(c, tracked) or here
+            print(f'retracked ({"jump" if d > 30 else "no movement"}): {len(tracked)} copies at {here}', flush=True)
+            still = 0
         return d, p0
 
     while time.time() < t_end:

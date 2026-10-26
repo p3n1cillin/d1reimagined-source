@@ -77,6 +77,37 @@ def filter_step(client, before, moved):
     return kept
 
 
+def retrack(client, tracked, scan_radius=25):
+    """Drop stale copies after a death or respawn: keep the addresses that follow a short move.
+
+    A respawn leaves some tracked copies frozen at the old spot, and the median then flips between
+    the frozen and live groups. Push forward (or back, if forward is blocked) and keep the copies
+    that moved 0.5..15 units; if none did, re-scan around the most common position. Returns the
+    new list.
+    """
+    for keys in (['Hold:W:700'], ['Hold:S:700'], ['NumPad2', 'Hold:W:700']):
+        before = {a: client.triple(a) for a in tracked}
+        pad(*keys)
+        moved = []
+        for a, v in before.items():
+            n = client.triple(a)
+            if v and n and all(math.isfinite(x) for x in n) and 0.5 <= math.dist(v[:2], n[:2]) <= 15:
+                moved.append(a)
+        if len(moved) >= 10:
+            return moved
+    # Nothing tracked follows the player any more: scan again around each group of copies.
+    pts = [t for t in (client.triple(a) for a in tracked) if t and all(math.isfinite(x) for x in t)]
+    for centre in sorted({(round(p[0]), round(p[1]), round(p[2])) for p in pts}, key=lambda c: -sum(
+            1 for p in pts if math.dist(p[:2], c[:2]) < 2))[:3]:
+        addrs = client.scan(centre, scan_radius)
+        before = keep(client, addrs, True)
+        pad('Hold:W:1200')
+        found = filter_step(client, before, True)
+        if len(found) >= 10:
+            return found
+    return tracked
+
+
 def position(client, tracked, near=None):
     pts = [t for t in (client.triple(a) for a in tracked) if t and all(math.isfinite(x) for x in t)]
     if near:
@@ -117,6 +148,7 @@ def main():
     ap.add_argument('--avoid', action='append', default=[],
                     help='x0,y0,x1,y1: a hazard box to keep out of (the pit by the Wall stairs: 331,-837,338,-819)')
     ap.add_argument('--keepalive', type=float, help='only keep the Guardian active for this many seconds')
+    ap.add_argument('--retrack', action='store_true', help='only drop stale copies from --tracked (after a death) and rewrite it')
     a = ap.parse_args()
     if a.keepalive:
         end = time.time() + a.keepalive
@@ -155,6 +187,11 @@ def main():
         json.dump(addrs, open(a.out, 'w'))
         return
     tracked = json.load(open(a.tracked))
+    if a.retrack:
+        tracked = retrack(c, tracked)
+        json.dump(tracked, open(a.tracked, 'w'))
+        print(len(tracked), 'tracked; position', position(c, tracked))
+        return
     route = json.load(open(a.route))
     here = position(c, tracked)
     print('start', here)
