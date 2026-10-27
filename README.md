@@ -25,8 +25,10 @@ libraries, diagnostic tools, canonical harness and generators from the supplied
 preservation project, with the latest preparation and content-reader fixes.
 The retained PlayStation 3 implementation targets version 01.24 with RPCS3.
 See [current results and contribution priorities](docs/STATUS.md). The first
-mission currently runs from the Cosmodrome highway into The Breach, up to the
-starter rifle and the first Fallen attack. The rest of the mission, native
+mission's recorded route now runs unattended from the Cosmodrome highway through
+The Breach into the Divide. The starter rifle fires, and the Divide's
+“Fight Through the Fallen” title and waypoint have native acceptance. The rest
+of the mission, native
 stability, combat, progression, complete activities and multiplayer remain
 incomplete.
 

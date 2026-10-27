@@ -280,6 +280,25 @@ enum AhCmd {
 /// `d1-oracle sensor …` - see [`d1_oracle::sensor`] for the frame grammar and the executed proof.
 #[derive(Subcommand)]
 enum SensorCmd {
+    /// Synthetic controls for the 56578 objective-list handover (no game input needed).
+    ObjectiveControls,
+    /// Build a 56578 visible objective handover in a sensor list; does not publish it.
+    Objective {
+        #[arg(long)]
+        input: PathBuf,
+        #[arg(long)]
+        out: PathBuf,
+        #[arg(long, value_parser = parse_int)]
+        group: u64,
+        #[arg(long)]
+        active: u16,
+        #[arg(long, required = true)]
+        clear: Vec<u16>,
+        #[arg(long)]
+        marker: u16,
+        #[arg(long)]
+        machine: u8,
+    },
     /// Every control, including the negatives and the byte-exact reproduction of the audited
     /// payloads through the client's own codec. **Exit 2 on failure.**
     Controls,
@@ -605,6 +624,29 @@ fn run_sensor(_cli: &Cli, cmd: &SensorCmd) -> anyhow::Result<ExitCode> {
     use d1_oracle::sensor::{self, SensorPhaseUpdate};
 
     match cmd {
+        SensorCmd::ObjectiveControls => {
+            if let Err(error) = d1_oracle::sensor_objective::controls() {
+                eprintln!("FAIL objective controls: {error:#}");
+                return Ok(ExitCode::from(2));
+            }
+            println!("PASS synthetic objective handover and negative controls; no native/codec claim");
+            Ok(ExitCode::SUCCESS)
+        }
+        SensorCmd::Objective { input, out, group, active, clear, marker, machine } => {
+            anyhow::ensure!(
+                d1_build::selected().id == "later-56578",
+                "objective layout is audited only for later-56578; set D1_BUILD and D1_BUILDS explicitly"
+            );
+            d1_oracle::sensor_objective::controls()?;
+            let text = std::fs::read_to_string(input)?;
+            let text = d1_oracle::sensor_objective::handover(
+                &text, u32::try_from(*group)?, *active, clear, *marker, *machine,
+            )?;
+            anyhow::ensure!(input != out, "use a separate output list");
+            std::fs::write(out, text)?;
+            println!("wrote {}: visible objective {}, cleared {:?}; publish separately and verify native readback", out.display(), active, clear);
+            Ok(ExitCode::SUCCESS)
+        }
         SensorCmd::Controls => {
             let cs = sensor::run();
             let mut ok = true;

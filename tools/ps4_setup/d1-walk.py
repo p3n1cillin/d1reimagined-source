@@ -202,13 +202,15 @@ def main():
             centre = list(here)
         json.dump(addrs, open(a.out, 'w'))
         return
-    tracked = json.load(open(a.tracked))
+    with open(a.tracked) as tracked_file:
+        tracked = json.load(tracked_file)
     if a.retrack:
         tracked = retrack(c, tracked, position(c, tracked))
         json.dump(tracked, open(a.tracked, 'w'))
         print(len(tracked), 'tracked; position', position(c, tracked))
         return
-    route = json.load(open(a.route))
+    with open(a.route) as route_file:
+        route = json.load(route_file)
     here = position(c, tracked)
     print('start', here)
     rate, sign = (a.turn_rate or 3.5) / 1000, float(a.turn_sign or 1)  # rad/ms and camera direction
@@ -274,7 +276,11 @@ def main():
             since_best += 1
         # Off the route by more than 3 units: steer back to the previous waypoint first (drifting
         # sideways off the Wall-stair ramp dropped the Guardian into the pit, run agr-breach19).
-        if i > 0 and retreats < 2 and cross_track(i, here) > 3.0:
+        # A tolerant arrival can leave us >3 units from the next segment.
+        # Retreating to that already-reached point immediately advances again,
+        # resets retreats and repeats forever without sending another pad input.
+        if (i > 0 and retreats < 2 and cross_track(i, here) > 3.0
+                and math.dist(here[:2], route[i - 1][:2]) >= a.tolerance):
             i, retreats = i - 1, retreats + 1
             best, since_best, heading = None, 0, None
             print(f'off the route: back to wp {i}')
