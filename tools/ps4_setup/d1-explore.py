@@ -12,13 +12,33 @@ and the keep-alive press come from d1-walk.py. No memory writes.
 """
 import argparse, importlib.util, json, math, os, time
 
-spec = importlib.util.spec_from_file_location(
-    'd1walk', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'd1-walk.py'))
-walk = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(walk)
+def load_walk():
+    """Load the Windows driver only for a live run, not policy tests or --help."""
+    spec = importlib.util.spec_from_file_location(
+        'd1walk', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'd1-walk.py'))
+    walk = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(walk)
+    return walk
 
 CELL = 2.0
 DIRS = 16
+
+
+def available_directions(cell, blocked, lethal):
+    """Fatal moves are permanent exclusions, independent of transient wall evidence."""
+    return [k for k in range(DIRS)
+            if (cell, k) not in lethal and blocked.get((cell, k), 0) < 2]
+
+
+def reset_transient_blocks(cell, blocked, lethal):
+    """Retry a dead end without forgetting fatal moves or changing other cells."""
+    for k in range(DIRS):
+        key = (cell, k)
+        if key in lethal:
+            blocked[key] = 99
+        else:
+            blocked.pop(key, None)
+    return available_directions(cell, blocked, lethal)
 
 
 def cell_of(p):
@@ -58,6 +78,7 @@ def main():
     ap.add_argument('--lethal', help='JSON file of [cell x, cell y, direction] moves that killed the Guardian; '
                     'read at start, extended on each death')
     a = ap.parse_args()
+    walk = load_walk()
     goal = [float(v) for v in a.goal.split(',')]
     c = walk.Client()
     tracked = json.load(open(a.tracked))
@@ -99,10 +120,14 @@ def main():
         return d, p0
 
     while time.time() < t_end:
-        walk.active(force=False)
         dist = math.dist(here[:2], goal[:2])
         if dist < a.reach:
             break
+        cell = cell_of(here)
+        if not available_directions(cell, {}, lethal):
+            print(f'no non-lethal direction from {cell}; stopping without another move', flush=True)
+            break
+        walk.active(force=False)
         if facing is None:
             # Unknown camera heading: a forward push gives it; if blocked, a back-step does.
             d, p0 = push(600)
@@ -120,21 +145,18 @@ def main():
         visits[cell] = visits.get(cell, 0) + 1
         gdir = math.atan2(goal[1] - here[1], goal[0] - here[0])
         cands = []
-        for k in range(DIRS):
+        for k in available_directions(cell, blocked, lethal):
             ang = k * 2 * math.pi / DIRS
             b = blocked.get((cell, k), 0)
-            if b >= 2:
-                continue
             nxt = cell_of((here[0] + CELL * math.cos(ang), here[1] + CELL * math.sin(ang)))
             score = abs(walk.wrap(ang - gdir)) + 0.8 * visits.get(nxt, 0) + 0.6 * b
             cands.append((score, k, ang))
         if not cands:
-            # Every direction from this cell is blocked: forget them and jump back out.
-            for k in range(DIRS):
-                blocked.pop((cell, k), None)
-            walk.pad('NumPad2', 'Hold:S:800')
-            here = walk.position(c, tracked, here) or here
-            facing = None
+            # Retry wall evidence only. A blind jump/back-step can itself repeat a fatal
+            # direction and bypass the lethal set, so let the normal planner choose.
+            if not reset_transient_blocks(cell, blocked, lethal):
+                print(f'no non-lethal direction from {cell}; stopping', flush=True)
+                break
             continue
         _, k, ang = min(cands)
         err = walk.wrap(ang - facing)
