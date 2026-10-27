@@ -6,6 +6,7 @@ See README.md for preparation and the limits of this diagnostic route.
 """
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 import subprocess
@@ -70,13 +71,40 @@ class Replay:
         return lines
 
     def walk(self, name, route, seconds, tolerance=1.3, extra=(), strict=True):
-        lines = self.command(name, [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-            '--tracked', str(self.tracked), '--route', str(route), '--max-seconds', str(seconds),
-            '--tolerance', str(tolerance), '--turn-sign', '1', '--turn-rate', '2.26', *extra], seconds + 45)
+        lines = self.walk_once(name, route, seconds, tolerance, extra)
         done = bool(lines and lines[-1].startswith('done '))
+        if strict and not done:
+            # Run 18 stalled at the Wall's stair corner (waypoint 45 of enter_the_wall)
+            # and ran out of time; the rest of the leg was walkable. Resume once from
+            # the waypoint nearest the stop, then give up.
+            resumed = self.resume_route(name, route, lines)
+            if resumed:
+                lines = self.walk_once(f'{name}-resume', resumed, seconds, tolerance, extra)
+                done = bool(lines and lines[-1].startswith('done '))
         if strict and not done:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
+
+    def walk_once(self, name, route, seconds, tolerance, extra):
+        return self.command(name, [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+            '--tracked', str(self.tracked), '--route', str(route), '--max-seconds', str(seconds),
+            '--tolerance', str(tolerance), '--turn-sign', '1', '--turn-rate', '2.26', *extra], seconds + 45)
+
+    def resume_route(self, name, route, lines):
+        """The route from the waypoint nearest the walker's final `stopped (x, y, z)`, or None."""
+        last = lines[-1] if lines else ''
+        if not last.startswith('stopped ('):
+            return None
+        try:
+            stop = [float(v) for v in last[len('stopped ('):last.index(')')].split(',')]
+        except ValueError:
+            return None
+        points = json.loads(Path(route).read_text())
+        nearest = min(range(len(points)), key=lambda i: math.dist(points[i][:2], stop[:2]))
+        index = 0
+        while (self.run / f'replay-{name}-resume-{index}.json').exists():
+            index += 1
+        return self.write_route(f'{name}-resume-{index}', points[nearest:])
 
     def pad(self, *keys):
         self.command('pad', ['powershell', '-NoProfile', '-File', str(self.pad_path),
@@ -92,6 +120,19 @@ class Replay:
             if wait_for(self.host_log, RIFLE_EVENT, 20):
                 return
         raise RuntimeError('Rifle trigger 35 not observed after two approaches; no subsequent input sent')
+
+    def scan_spawn(self):
+        # The teleport-completed log precedes stable player tracking. Preserve the
+        # original replay's settling interval, then allow one fresh scan attempt.
+        time.sleep(20)
+        for attempt in range(2):
+            self.command(f'scan-{attempt}', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                '--scan', '383,-962,12.5', '--radius', '25', '--out', str(self.tracked)], 120)
+            if len(json.loads(self.tracked.read_text())) >= 10:
+                return
+            if attempt == 0:
+                time.sleep(20)
+        raise RuntimeError('Insufficient fresh position tracking; no route input sent')
 
     def publish_garage(self):
         control = self.run.parent / 'ah-control.txt'
@@ -131,10 +172,7 @@ class Replay:
             # The launcher owns input during boot. Do not race its cinematic skips.
             if not wait_for(self.run/'boot.log', 'in gameplay (112)', boot_timeout):
                 raise RuntimeError('Boot did not reach gameplay; no route input sent')
-            self.command('scan', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                '--scan', '383,-962,12.5', '--radius', '25', '--out', str(self.tracked)], 120)
-            if len(json.loads(self.tracked.read_text())) < 10:
-                raise RuntimeError('Insufficient fresh position tracking')
+            self.scan_spawn()
             self.walk('enter-wall', self.routes/'enter_the_wall.json', 650, 2.5)
             self.walk('breach', self.routes/'breach.json', 640, extra=('--avoid', '330,-837,340,-812'))
             self.walk('platform', self.routes/'breach_platform.json', 200)

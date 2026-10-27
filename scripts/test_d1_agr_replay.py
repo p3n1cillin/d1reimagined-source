@@ -78,6 +78,62 @@ class ReplayGates(unittest.TestCase):
                 player.play(900, False)
         command.assert_not_called()
 
+    def test_unstable_first_spawn_scan_can_recover_without_starting_route(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player = replay.Replay(root, root/'host', root/'garage', root/'pad')
+            def scan(name, *_):
+                player.tracked.write_text('[]' if name.endswith('-0') else str(list(range(10))))
+            with patch.object(player, 'command', side_effect=scan) as command, \
+                 patch.object(replay.time, 'sleep') as sleep:
+                player.scan_spawn()
+            self.assertEqual(command.call_count, 2)
+            self.assertEqual(sleep.call_args_list, [unittest.mock.call(20), unittest.mock.call(20)])
+
+    def test_two_empty_spawn_scans_refuse_route_input(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player = replay.Replay(root, root/'host', root/'garage', root/'pad')
+            player.tracked.write_text('[]')
+            with patch.object(player, 'command') as command, patch.object(replay.time, 'sleep'):
+                with self.assertRaisesRegex(RuntimeError, 'no route input sent'):
+                    player.scan_spawn()
+            self.assertEqual(command.call_count, 2)
+
+    ROUTE = [[0, 0, 0], [10, 0, 0], [20, 0, 0], [30, 0, 0]]
+
+    def route_player(self, root, outcomes):
+        (root/'route.json').write_text(str(self.ROUTE))
+        player = replay.Replay(root, root/'host', root/'garage', root/'pad')
+        return player, patch.object(player, 'command', side_effect=[[o] for o in outcomes])
+
+    def test_stalled_leg_resumes_once_from_nearest_waypoint(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player, command = self.route_player(root, ['stopped (19.0, 1.0, 0.0)', 'done (30, 0, 0)'])
+            with command as walked:
+                self.assertTrue(player.walk('leg', root/'route.json', 60))
+            resumed = walked.call_args_list[1].args
+            self.assertEqual(resumed[0], 'leg-resume')
+            route = resumed[1][resumed[1].index('--route') + 1]
+            self.assertEqual(replay.json.loads(Path(route).read_text()), self.ROUTE[2:])
+
+    def test_second_stall_still_stops_input(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player, command = self.route_player(root, ['stopped (19, 1, 0)', 'stopped (21, 0, 0)'])
+            with command as walked, self.assertRaisesRegex(RuntimeError, 'no subsequent input sent'):
+                player.walk('leg', root/'route.json', 60)
+            self.assertEqual(walked.call_count, 2)
+
+    def test_unparsed_walker_output_does_not_resume(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player, command = self.route_player(root, ['Traceback (most recent call last):'])
+            with command as walked, self.assertRaisesRegex(RuntimeError, 'no subsequent input sent'):
+                player.walk('leg', root/'route.json', 60)
+            self.assertEqual(walked.call_count, 1)
+
 
 class SchedulePromotion(unittest.TestCase):
     def test_preserves_prior_timing_and_incident_payload(self):
