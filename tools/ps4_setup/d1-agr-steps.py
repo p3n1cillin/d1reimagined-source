@@ -17,6 +17,7 @@ Cinematic state `0x8080254D` (212 bytes on 56578, handler 0x403140):
   d1-agr-steps.py --r113 LIST --r112 LIST --objectives LIST --out-dir DIR
 """
 import argparse, os, struct
+from pathlib import Path
 
 ABSENT = (0x811C9DC5, 0xFF, 0xFFFF)
 C1, C2 = ('0x992bb471', '0x6', '1'), ('0x992bb471', '0x6', '2')
@@ -60,13 +61,57 @@ def patched(lines, states):
     return '\n'.join(out) + '\n'
 
 
+def promote(steps, divide, output):
+    """Promote an already verified full schedule, keeping its earlier steps intact.
+
+    The input list is opaque here: build its objective images with d1-oracle.
+    This does not turn an untested list into native acceptance.
+    """
+    text = steps.read_text()
+    lines = text.splitlines(keepends=True)
+    rows = [(i, line.split()) for i, line in enumerate(lines)
+            if line.strip() and not line.lstrip().startswith('#')]
+    crossings = [(i, row) for i, row in rows if len(row) >= 2 and row[1].startswith('%96|')]
+    if len(crossings) != 1 or crossings[0] != rows[-1]:
+        raise ValueError('Expected one final slice-96 step in the verified full schedule')
+    index, row = crossings[0]
+    if len(row) != 4 or row[0] != '164' or row[2].lower() != STORY_GROUP:
+        raise ValueError('Unexpected final Divide step; no files written')
+    if Path(row[3]).resolve() != divide.resolve():
+        raise ValueError('Final step must already refer to the verified Divide list')
+    target = output / 'agr-divide-objective17.txt'
+    # Replace only the path, preserving trigger/timing and every prior step.
+    lines[index] = lines[index].replace(row[3], target.resolve().as_posix(), 1)
+    files = {target: divide.read_text(), output/'agr-steps-divide.txt': ''.join(lines)}
+    for path, value in files.items():
+        if path.exists() and path.read_text() != value:
+            raise ValueError(f'Refusing to replace different existing content: {path}')
+    output.mkdir(parents=True, exist_ok=True)
+    for path, value in files.items():
+        if not path.exists():
+            with path.open('x') as stream:
+                stream.write(value)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--r113', required=True)
-    ap.add_argument('--r112', required=True)
-    ap.add_argument('--objectives', required=True)
+    ap.add_argument('--r113')
+    ap.add_argument('--r112')
+    ap.add_argument('--objectives')
+    ap.add_argument('--promote-steps', type=Path,
+                    help='Verified full schedule ending at the natural slice-96 crossing')
+    ap.add_argument('--divide-list', type=Path,
+                    help='The objective-17 list already referenced by that verified final step')
     ap.add_argument('--out-dir', required=True)
     a = ap.parse_args()
+    if a.promote_steps or a.divide_list:
+        if not (a.promote_steps and a.divide_list) or any((a.r113, a.r112, a.objectives)):
+            ap.error('Promotion requires --promote-steps and --divide-list only')
+        promote(a.promote_steps, a.divide_list, Path(a.out_dir))
+        print('Promoted verified schedule to agr-steps-divide.txt; no live control published')
+        return
+    if not all((a.r113, a.r112, a.objectives)):
+        ap.error('Opening generation requires --r113, --r112 and --objectives')
     r113 = open(a.r113).read().splitlines()
     r112 = open(a.r112).read().splitlines()
     ident = identity(r113)

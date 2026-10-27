@@ -8,7 +8,8 @@ param(
     [int]$WatchSeconds = 220,
     # Raw d1-watchwrite arguments (e.g. --read ADDR) instead of -WatchExec.
     [string[]]$WatchArgs = @(),
-    [string]$Steps = 'F:\d1\d1preservation-main\cfw-staging\agr-steps-breach13.txt',
+    # Promote a verified full schedule with d1-agr-steps.py --promote-steps first.
+    [string]$Steps = 'F:\d1\d1preservation-main\cfw-staging\agr-steps-divide.txt',
     # The served profile. profile-tutorial-t.bin is the unarmed tutorial Guardian (no weapons in the
     # inventory or the roster) who owes the starter Khvostov as pending loot.
     [string]$Profile = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578\profile-tutorial-t.bin',
@@ -24,6 +25,7 @@ param(
 $ErrorActionPreference = 'Continue'
 $existing = @(Get-Process shadPS4, d1-activity-host, d1-responder, shadnet-server -ErrorAction SilentlyContinue)
 if ($existing.Count) { throw "Refusing to replace an active lab run (process ids: $($existing.Id -join ', ')). End that run first." }
+if (-not (Test-Path -LiteralPath $Steps -PathType Leaf)) { throw "Missing private mission schedule: $Steps" }
 $runStartedAt = Get-Date
 Start-Sleep 3
 $B = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578'

@@ -13,10 +13,14 @@ next route only after checking the current position and scene.
 | `enter_the_wall.json` | 67 | Highway spawn to the Wall's interior, ending near `(354, -796, 14)`. |
 | `breach.json` | 77 | Highway through the Wall to the bottom of the Breach platform stairs, near `(386, -802, 16)`. This overlaps the first route. |
 | `breach_platform.json` | 15 | Stairs and platform approach, ending near `(401, -780, 19)`. Wait for the mission's Ghost, lights and barrier sequence before the rifle. |
+| `breach_rifle.json` | 5 | Final rifle approach. Use tolerance 1.0 and require the reported pickup trigger 35; proximity alone is insufficient. |
 | `breach_corridor.json` | 20 | Rifle position to the end of the east corridor, near `(469, -814, 18)`. |
 | `fight_through_the_wall.json` | 54 | Rifle, east corridor, exit-sign room and girder hall to the container-hall frontier, near `(544, -828, 17)`. Includes the corridor route. |
 | `wall_container_to_chest.json` | 22 | New supervised trail: north around the containers, beneath the steel braces and along the grating to the shotgun-chest placement near `(535, -737, 17)`. The chest itself is absent in the quiet fixture. Automatic replay pending. |
 | `wall_tripmine_corridor.json` | 13 | New supervised trail: down the stairs, west through the low mine corridor and to the next junction near `(473, -722, 15)`. Automatic replay and mine-damage acceptance pending. |
+| `wall_junction_west.json` | 44 | Junction to garage approach; the replay uses the suffix from point 4. |
+| `wall_garage_door.json` | 5 | Through the garage after Breach prop 3 is activated. Kill-conditioned opening remains unimplemented. |
+| `wall_fan_tunnel_to_divide.json` | 30 | Garage exit through the fan tunnel to the natural slice-96 crossing. |
 
 The two new trails were recorded once by supervised pad input on 27 October.
 The JSON describes positions only: it does not press crouch or express encounter
@@ -24,6 +28,11 @@ conditions. Enter crouch before attempting the tripmine corridor, inspect the
 beams and stop before unknown geometry. The native test crouched through it and
 stood again near `(490, -722)`; it did not establish mine destruction or damage.
 Do not treat these trails as an automatic mission script.
+
+The later run-17 chain reached the Divide using these trails. The canonical
+`d1-agr-replay.py` combines the existing Wall and chest trails and splits the mine
+trail around its stance changes. Its consolidated orchestration still needs a
+fresh native replay; mine damage and the authored encounter remain unverified.
 
 These are recorded traversal aids, not collision maps. Camera calibration and
 obstacle recovery can drift: stop a looping or diverging replay and inspect the

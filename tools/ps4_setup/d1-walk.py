@@ -18,7 +18,7 @@ import argparse, ctypes, ctypes.wintypes as wt, json, math, os, statistics, stru
 src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'd1-winguest.py')).read()
 wg = {'__name__': 'lib'}
 exec(compile(src, 'd1-winguest.py', 'exec'), wg)
-PAD = r'F:\d1\tools\d1-pad.ps1'
+PAD = os.environ.get('D1_PAD', r'F:\d1\tools\d1-pad.ps1')
 
 
 def pad(*keys, gap=150):
