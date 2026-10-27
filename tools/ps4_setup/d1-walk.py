@@ -146,6 +146,37 @@ def wrap(a):
     return (a + math.pi) % (2 * math.pi) - math.pi
 
 
+# The Guardian's forward vector is a unit (x, y) pair at these offsets from several of its position
+# copies. Measured in run 2026-10-27-divide19: a 90-degree right-stick command rotated it -110
+# degrees, and after a forward walk it matched the direction moved within 2 degrees.
+FACING_OFFSETS = (0x38, 0xC0, 0x200)
+
+
+def facing_from(vectors):
+    """Forward heading (radians, atan2(y, x)) agreed by most unit vectors, or None."""
+    angles = [math.atan2(y, x) for x, y in vectors
+              if math.isfinite(x) and math.isfinite(y) and abs(math.hypot(x, y) - 1) < 0.02]
+    if len(angles) < 3:
+        return None
+    # Centre on the angle with the most neighbours: one stale copy would drag a plain mean away.
+    centre = max(angles, key=lambda v: sum(abs(wrap(u - v)) < 0.2 for u in angles))
+    close = [v for v in angles if abs(wrap(v - centre)) < 0.2]
+    if len(close) < max(3, len(angles) // 2 + 1):
+        return None
+    return math.atan2(sum(map(math.sin, close)), sum(map(math.cos, close)))
+
+
+def facing(client, tracked):
+    vectors = []
+    for addr in tracked:
+        for off in FACING_OFFSETS:
+            try:
+                vectors.append(struct.unpack('<2f', client.p.read(addr + off, 8)))
+            except OSError:
+                pass
+    return facing_from(vectors)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--scan')
@@ -161,6 +192,8 @@ def main():
                     help='hold a measured camera turn rate in radians/second; skip movement calibration')
     ap.add_argument('--avoid', action='append', default=[],
                     help='x0,y0,x1,y1: a hazard box to keep out of (the pit by the Wall stairs: 331,-837,338,-819)')
+    ap.add_argument('--memory-facing', action='store_true',
+                    help='steer by the forward vector read from guest memory instead of inferring it from movement')
     ap.add_argument('--keepalive', type=float, help='only keep the Guardian active for this many seconds')
     ap.add_argument('--retrack', action='store_true', help='only drop stale copies from --tracked (after a death) and rewrite it')
     a = ap.parse_args()
@@ -299,6 +332,10 @@ def main():
             print(f'skip to wp {i}')
             continue
         want = math.atan2(target[1] - here[1], target[0] - here[0])
+        if a.memory_facing:
+            measured = facing(c, tracked)
+            if measured is not None:
+                heading, calibrated = measured, True
         if heading is not None:
             err = wrap(want - heading)
             if abs(err) > 0.3:
@@ -307,6 +344,10 @@ def main():
                 h0 = heading
                 pad(f'Hold:{key}:{ms}')
                 turn_err = err
+                if a.memory_facing and facing(c, tracked) is not None:
+                    # Closed loop: re-read the facing on the next pass instead of walking on a guess.
+                    heading = None
+                    continue
                 if not calibrated:
                     # measure the turn: one short forward pulse gives the new heading
                     p0 = position(c, tracked, here)
