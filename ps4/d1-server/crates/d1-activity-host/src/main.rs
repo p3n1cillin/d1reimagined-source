@@ -647,29 +647,17 @@ fn main() -> anyhow::Result<()> {
                             };
                             let group = parse_u32(f[2].to_string())
                                 .ok_or_else(|| anyhow::anyhow!("D1_AH_WORLD_TABLE: bad sensor group {:?}", f[2]))?;
-                            let clients: Vec<d1_oracle::sensor::SensorClientRef> = std::fs::read_to_string(f[3])
-                                .map_err(|e| anyhow::anyhow!("D1_AH_WORLD_TABLE {}: {e}", f[3]))?
-                                .lines()
-                                .filter_map(d1_oracle::sensor::SensorClientRef::parse_line)
-                                .filter(|c| !(c.name_hash == group && c.name_i8 == name_i8 && c.name_sub == name_sub))
-                                .collect();
+                            let list = std::fs::read_to_string(f[3])
+                                .map_err(|e| anyhow::anyhow!("D1_AH_WORLD_TABLE {}: {e}", f[3]))?;
                             let build = |team: i32| {
-                                let mut p = params.clone();
-                                p.name_hash = group;
-                                p.clients = clients.clone();
-                                for c in p.clients.iter_mut() {
-                                    if let Some((0x8080_22A5, img)) = c.a_value.as_mut() {
-                                        if img.len() >= 0x3C {
-                                            img[0x38..0x3C].copy_from_slice(&team.to_le_bytes());
-                                        }
-                                    }
-                                }
-                                d1_activity_host::codec::SchemaCodec::build_sensor(&p)
+                                let p = d1_activity_host::sensor_list::params_for_list(&params, group, team, &list)
+                                    .map_err(|e| anyhow::anyhow!("D1_AH_WORLD_TABLE {}: {e:#}", f[3]))?;
+                                Ok::<_, anyhow::Error>(d1_activity_host::codec::SchemaCodec::build_sensor(&p)?)
                             };
                             let (team0, team_minus1) = (build(0)?, build(-1)?);
                             tracing::info!(
                                 "⭐ world table: index {index} -> {} ({} sensor clients, group {group:#010x})",
-                                known.name, clients.len()
+                                known.name, d1_activity_host::sensor_list::params_for_list(&params, group, 0, &list)?.clients.len()
                             );
                             world_table.insert(index, d1_activity_host::state::ServedWorld {
                                 name: known.name.to_string(),
@@ -719,30 +707,18 @@ fn main() -> anyhow::Result<()> {
                                     .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad region {r:?}"))?),
                                 None => None,
                             };
-                            let clients: Vec<d1_oracle::sensor::SensorClientRef> = std::fs::read_to_string(f[3])
-                                .map_err(|e| anyhow::anyhow!("D1_AH_MISSION_STEPS {}: {e}", f[3]))?
-                                .lines()
-                                .filter_map(d1_oracle::sensor::SensorClientRef::parse_line)
-                                .filter(|c| !(c.name_hash == group && c.name_i8 == name_i8 && c.name_sub == name_sub))
-                                .collect();
+                            let list = std::fs::read_to_string(f[3])
+                                .map_err(|e| anyhow::anyhow!("D1_AH_MISSION_STEPS {}: {e}", f[3]))?;
                             let build = |team: i32| {
-                                let mut p = params.clone();
-                                p.name_hash = group;
-                                p.clients = clients.clone();
-                                for c in p.clients.iter_mut() {
-                                    if let Some((0x8080_22A5, img)) = c.a_value.as_mut() {
-                                        if img.len() >= 0x3C {
-                                            img[0x38..0x3C].copy_from_slice(&team.to_le_bytes());
-                                        }
-                                    }
-                                }
-                                d1_activity_host::codec::SchemaCodec::build_sensor(&p)
+                                let p = d1_activity_host::sensor_list::params_for_list(&params, group, team, &list)
+                                    .map_err(|e| anyhow::anyhow!("D1_AH_MISSION_STEPS {}: {e:#}", f[3]))?;
+                                Ok::<_, anyhow::Error>(d1_activity_host::codec::SchemaCodec::build_sensor(&p)?)
                             };
                             let (team0, team_minus1) = (build(0)?, build(-1)?);
                             tracing::info!(
                                 "⭐ mission step: index {index} {when:?} -> {} ({} sensor clients){}",
                                 f[3],
-                                clients.len(),
+                                d1_activity_host::sensor_list::params_for_list(&params, group, 0, &list)?.clients.len(),
                                 region.map(|r| format!(", region {r}")).unwrap_or_default()
                             );
                             mission_steps.entry(index).or_default().push(d1_activity_host::state::MissionStep {
@@ -761,32 +737,8 @@ fn main() -> anyhow::Result<()> {
                         control_builder = Some(d1_activity_host::state::ControlBuilder(std::sync::Arc::new(
                             move |group: u32, path: &str, team: i32| -> Result<Vec<u8>, String> {
                                 let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
-                                let clients: Vec<d1_oracle::sensor::SensorClientRef> = text
-                                    .lines()
-                                    .filter_map(d1_oracle::sensor::SensorClientRef::parse_line)
-                                    .filter(|c| !(c.name_hash == group && c.name_i8 == name_i8 && c.name_sub == name_sub))
-                                    .collect();
-                                let mut p = params.clone();
-                                p.name_hash = group;
-                                p.clients = clients;
-                                // `@authority MACHINE[,SEQ[,APPLIED]]` in the list replaces
-                                // D1_AH_SENSOR_AUTHORITY for this frame: the local machine changes
-                                // with the slice set (3 in the Breach, 12 in the Divide).
-                                if let Some(v) = text.lines().find_map(|l| l.trim().strip_prefix("@authority ")) {
-                                    let mut it = v.split(',').map(|s| s.trim().parse::<u32>().ok());
-                                    let machine = it.next().flatten().ok_or("@authority needs a machine")?;
-                                    let seq = it.next().flatten().unwrap_or(1);
-                                    let applied = it.next().flatten().unwrap_or(1) != 0;
-                                    tracing::info!("⭐ control: all 65 authority blocks to machine {machine}, seq {seq}, applied {applied}");
-                                    p.authority = Some(d1_oracle::sensor::SensorAuthority::all_to_with(machine as u8, seq as u16, applied));
-                                }
-                                for c in p.clients.iter_mut() {
-                                    if let Some((0x8080_22A5, img)) = c.a_value.as_mut() {
-                                        if img.len() >= 0x3C {
-                                            img[0x38..0x3C].copy_from_slice(&team.to_le_bytes());
-                                        }
-                                    }
-                                }
+                                let p = d1_activity_host::sensor_list::params_for_list(&params, group, team, &text)
+                                    .map_err(|e| format!("{path}: {e:#}"))?;
                                 d1_activity_host::codec::SchemaCodec::build_sensor(&p).map_err(|e| e.to_string())
                             },
                         )));
