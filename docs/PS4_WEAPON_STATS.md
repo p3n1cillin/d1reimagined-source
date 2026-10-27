@@ -22,6 +22,13 @@ reserve was **101**, so that one-stat trial did not fix the expected reserve.
 The baseline HUD was 12/114. Raw traces, screenshots and generated fixtures remain
 private. A codec round trip alone establishes shape, not native gameplay.
 
+A second fresh natural pickup used the command's full base-stat list. The native
+builder received Magazine 44, Impact 80 and Inventory 15, and the HUD showed
+**25/134**. The debugger detached cleanly after four hardware hits. This proves
+the full table reaches the builder, but the reserve still differs from the
+reference's 285; its allocation needs a separate trace. Actual damage and kills
+have not been measured by these stat-table tests.
+
 ## Generate a peer candidate from owned content
 
 Build `d1-oracle` from `ps4/d1-server`, select the owned 56578 build, and generate
