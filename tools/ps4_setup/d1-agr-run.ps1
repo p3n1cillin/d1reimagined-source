@@ -17,12 +17,14 @@ param(
     # Session length passed to d1-lab-served.ps1 (its default is 90 minutes).
     [int]$Minutes = 90
 )
-# A Guardian Rises (the tutorial) end to end, unattended: boot, title (X), skip the opening Mars
+# A Guardian Rises tutorial lab boot: title (X), skip the opening Mars
 # cinematic in character:prologue (X, then O - left playing it can trip the BLOCK_DETECT watchdog),
 # then skip the revival and wake-up cutscenes (the host ends them on incident 1726) and wait for the
 # teleport to 112. Keep the emulator window focused: input only reaches the focused window.
 $ErrorActionPreference = 'Continue'
-Get-Process shadPS4, d1-activity-host, d1-responder, shadnet-server -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+$existing = @(Get-Process shadPS4, d1-activity-host, d1-responder, shadnet-server -ErrorAction SilentlyContinue)
+if ($existing.Count) { throw "Refusing to replace an active lab run (process ids: $($existing.Id -join ', ')). End that run first." }
+$runStartedAt = Get-Date
 Start-Sleep 3
 $B = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578'
 $D = "F:\d1\d1preservation-main\cfw-staging\$Name"
@@ -42,14 +44,16 @@ if (-not $Geared) {
     $x += ",D1_LOOT_GRANT_ROSTER=$GD\rosters-f0-tutorial-khv"
 }
 if ($Extra) { $x += ",$Extra" }
-Start-Process pwsh -WindowStyle Minimized -ArgumentList @('-NoProfile', '-File', 'F:\d1\tools\d1-lab-served.ps1', '-Name', $Name,
+Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', 'F:\d1\tools\d1-lab-served.ps1', '-Name', $Name,
     '-Profile', $Profile, '-Minutes', "$Minutes",
     '-UnlockFlags', '98,308,419,440,834,2668,3391,5021,5998,6029,433,2539,2549,3558,3587,3520,3527,3531,3533,3534,3535,3536,3544,3568,3594,3595,305,2669,2670,3389',
     '-Extra', $x)
 function WaitFor($pattern, $seconds) {
     $t = 0
     while ($t -lt $seconds) {
-        if ((Test-Path $L) -and (Select-String -Path $L -Pattern $pattern -Quiet)) { return $true }
+        $client = @(Get-Process shadPS4 -ErrorAction SilentlyContinue | Where-Object { $_.StartTime -ge $runStartedAt })
+        if ($client.Count -eq 1 -and (Test-Path $L) -and (Get-Item -LiteralPath $L).LastWriteTime -ge $runStartedAt -and
+            (Select-String -Path $L -Pattern $pattern -Quiet)) { return $true }
         Start-Sleep 3; $t += 3
     }
     "TIMEOUT waiting for $pattern"; return $false
