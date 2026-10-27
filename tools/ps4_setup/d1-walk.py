@@ -5,10 +5,12 @@ copies). `--scan` finds them: candidates near a known point, kept when they move
 and stay still when it does; the position is the median of the tracked set. No memory writes.
 
 Steering: heading from the last movement, camera turns with the right stick (J/L), walking with
-the left stick (W). Turn rate and sign are calibrated on the first turn.
+the left stick (W). Turn rate and sign are calibrated on the first turn. If the direction has
+already been measured, --turn-sign 1 (or -1) prevents a collision slide reversing that direction.
 
   d1-walk.py --scan 383,-962,12 --out tracked.json      (needs the player able to move)
   d1-walk.py --tracked tracked.json --route missions/routes/enter_the_wall.json [--until-incident ...]
+  d1-walk.py --tracked tracked.json --route missions/routes/wall_garage_door.json --turn-sign 1
 """
 import argparse, ctypes, ctypes.wintypes as wt, json, math, os, statistics, struct, subprocess, sys, time
 
@@ -152,6 +154,8 @@ def main():
     ap.add_argument("--tolerance", type=float, default=2.5)
     ap.add_argument("--radius", type=float, default=25)
     ap.add_argument('--max-seconds', type=float, default=600)
+    ap.add_argument('--turn-sign', type=int, choices=(-1, 1),
+                    help='hold a measured camera turn direction; do not infer it from collision slides')
     ap.add_argument('--avoid', action='append', default=[],
                     help='x0,y0,x1,y1: a hazard box to keep out of (the pit by the Wall stairs: 331,-837,338,-819)')
     ap.add_argument('--keepalive', type=float, help='only keep the Guardian active for this many seconds')
@@ -202,7 +206,7 @@ def main():
     route = json.load(open(a.route))
     here = position(c, tracked)
     print('start', here)
-    rate, sign = 0.0035, 1.0     # rad per ms of right-stick hold, and its direction (calibrated below)
+    rate, sign = 0.0035, float(a.turn_sign or 1)  # rad/ms and camera direction
     heading, calibrated = None, False
     t_end = time.time() + a.max_seconds
     i = min(range(len(route)), key=lambda k: math.dist(route[k][:2], here[:2]))
@@ -303,10 +307,13 @@ def main():
                         # A pulse that slid along an obstacle measures nonsense (agr-breach8: 10 rad/s);
                         # keep the default unless the rate is plausible (3.3 rad/s measured).
                         if abs(turned) > 0.05 and 0.0015 <= abs(turned) / ms <= 0.006:
-                            sign = (1.0 if turned * (-1 if key == 'L' else 1) > 0 else -1.0)
-                            rate = abs(turned) / ms
-                            calibrated = True
-                            print(f'calibrated: {rate * 1000:.2f} rad/s per key, sign {sign:+.0f}')
+                            measured_sign = (1.0 if turned * (-1 if key == 'L' else 1) > 0 else -1.0)
+                            if a.turn_sign is None or measured_sign == a.turn_sign:
+                                sign, rate = measured_sign, abs(turned) / ms
+                                calibrated = True
+                                print(f'calibrated: {rate * 1000:.2f} rad/s per key, sign {sign:+.0f}')
+                            else:
+                                print('calibration slide opposed the fixed turn sign; keeping direction')
                         heading, here = h1, p1
                     continue
                 heading = None
@@ -321,7 +328,7 @@ def main():
             # spiralled off the cliff south of the spawn): flip it.
             if turn_err is not None and step > 1.5:   # only clean, unobstructed moves count
                 worse = worse + 1 if abs(wrap(want - heading)) > abs(turn_err) + 0.3 else 0
-                if worse >= 2:
+                if worse >= 2 and a.turn_sign is None:
                     sign, worse = -sign, 0
                     print('turn sign flipped')
             turn_err = None
