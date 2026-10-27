@@ -7,10 +7,11 @@ and stay still when it does; the position is the median of the tracked set. No m
 Steering: heading from the last movement, camera turns with the right stick (J/L), walking with
 the left stick (W). Turn rate and sign are calibrated on the first turn. If the direction has
 already been measured, --turn-sign 1 (or -1) prevents a collision slide reversing that direction.
+--turn-rate sets a measured rate in radians per second instead of recalibrating it near obstacles.
 
   d1-walk.py --scan 383,-962,12 --out tracked.json      (needs the player able to move)
   d1-walk.py --tracked tracked.json --route missions/routes/enter_the_wall.json [--until-incident ...]
-  d1-walk.py --tracked tracked.json --route missions/routes/wall_garage_door.json --turn-sign 1
+  d1-walk.py --tracked tracked.json --route missions/routes/wall_garage_door.json --turn-sign 1 --turn-rate 2.26
 """
 import argparse, ctypes, ctypes.wintypes as wt, json, math, os, statistics, struct, subprocess, sys, time
 
@@ -156,11 +157,15 @@ def main():
     ap.add_argument('--max-seconds', type=float, default=600)
     ap.add_argument('--turn-sign', type=int, choices=(-1, 1),
                     help='hold a measured camera turn direction; do not infer it from collision slides')
+    ap.add_argument('--turn-rate', type=float,
+                    help='hold a measured camera turn rate in radians/second; skip movement calibration')
     ap.add_argument('--avoid', action='append', default=[],
                     help='x0,y0,x1,y1: a hazard box to keep out of (the pit by the Wall stairs: 331,-837,338,-819)')
     ap.add_argument('--keepalive', type=float, help='only keep the Guardian active for this many seconds')
     ap.add_argument('--retrack', action='store_true', help='only drop stale copies from --tracked (after a death) and rewrite it')
     a = ap.parse_args()
+    if a.turn_rate is not None and (not math.isfinite(a.turn_rate) or a.turn_rate <= 0):
+        ap.error('--turn-rate must be a finite positive number in radians/second')
     if a.keepalive:
         end = time.time() + a.keepalive
         while time.time() < end:
@@ -206,8 +211,8 @@ def main():
     route = json.load(open(a.route))
     here = position(c, tracked)
     print('start', here)
-    rate, sign = 0.0035, float(a.turn_sign or 1)  # rad/ms and camera direction
-    heading, calibrated = None, False
+    rate, sign = (a.turn_rate or 3.5) / 1000, float(a.turn_sign or 1)  # rad/ms and camera direction
+    heading, calibrated = None, a.turn_rate is not None
     t_end = time.time() + a.max_seconds
     i = min(range(len(route)), key=lambda k: math.dist(route[k][:2], here[:2]))
     stuck = 0

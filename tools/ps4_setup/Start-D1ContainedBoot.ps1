@@ -45,7 +45,8 @@ $ErrorActionPreference = 'Stop'
 # (-i): patches are address-specific. Evidence stays in private staging.
 
 function Linux([string]$p) { '/mnt/' + $p.Substring(0, 1).ToLowerInvariant() + ($p.Substring(2) -replace '\\', '/') }
-$registry = Get-Content -LiteralPath (Join-Path $Repo 'capture-rig\builds.json') -Raw | ConvertFrom-Json
+$registryPath = (Get-Item -LiteralPath (Join-Path $Repo 'capture-rig\builds.json')).FullName
+$registry = Get-Content -LiteralPath $registryPath -Raw | ConvertFrom-Json
 if ($registry.schema -ne 1) { throw 'Unsupported build registry schema' }
 if (-not $Build) { $Build = if ($env:D1_BUILD) { $env:D1_BUILD } else { $registry.default } }
 $entry = $registry.builds.$Build
@@ -141,6 +142,9 @@ if ($LabIp) {
     if ($busy.Count) { throw "Refusing: server ports already in use: $(@($busy | ForEach-Object { "$($_.LocalAddress):$($_.LocalPort)" }) -join ' ')" }
     # The canonical responder knobs (same as wsl-servers-loopback.sh), transport pointed at the lab.
     $serverEnv = [ordered]@{
+        # Binaries may have been built in another checkout. Do not let their compiled-in
+        # registry path or default build choose a different executable from this launch.
+        D1_BUILDS = $registryPath; D1_BUILD = $Build
         D1_ACCOUNT_SOID = '0xD100000000000001'; D1_CHARACTER_SOID = '0xD100000000000101'; D1_503_SOID = '1'
         # The profile fixture is a serialised 01.29 profile object; other builds get the sparse
         # encoder's minimal profile (SOID + orbit destination) with their own instance checksum.
