@@ -760,8 +760,8 @@ fn main() -> anyhow::Result<()> {
                         let params = params.clone();
                         control_builder = Some(d1_activity_host::state::ControlBuilder(std::sync::Arc::new(
                             move |group: u32, path: &str, team: i32| -> Result<Vec<u8>, String> {
-                                let clients: Vec<d1_oracle::sensor::SensorClientRef> = std::fs::read_to_string(path)
-                                    .map_err(|e| e.to_string())?
+                                let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
+                                let clients: Vec<d1_oracle::sensor::SensorClientRef> = text
                                     .lines()
                                     .filter_map(d1_oracle::sensor::SensorClientRef::parse_line)
                                     .filter(|c| !(c.name_hash == group && c.name_i8 == name_i8 && c.name_sub == name_sub))
@@ -769,6 +769,17 @@ fn main() -> anyhow::Result<()> {
                                 let mut p = params.clone();
                                 p.name_hash = group;
                                 p.clients = clients;
+                                // `@authority MACHINE[,SEQ[,APPLIED]]` in the list replaces
+                                // D1_AH_SENSOR_AUTHORITY for this frame: the local machine changes
+                                // with the slice set (3 in the Breach, 12 in the Divide).
+                                if let Some(v) = text.lines().find_map(|l| l.trim().strip_prefix("@authority ")) {
+                                    let mut it = v.split(',').map(|s| s.trim().parse::<u32>().ok());
+                                    let machine = it.next().flatten().ok_or("@authority needs a machine")?;
+                                    let seq = it.next().flatten().unwrap_or(1);
+                                    let applied = it.next().flatten().unwrap_or(1) != 0;
+                                    tracing::info!("⭐ control: all 65 authority blocks to machine {machine}, seq {seq}, applied {applied}");
+                                    p.authority = Some(d1_oracle::sensor::SensorAuthority::all_to_with(machine as u8, seq as u16, applied));
+                                }
                                 for c in p.clients.iter_mut() {
                                     if let Some((0x8080_22A5, img)) = c.a_value.as_mut() {
                                         if img.len() >= 0x3C {
