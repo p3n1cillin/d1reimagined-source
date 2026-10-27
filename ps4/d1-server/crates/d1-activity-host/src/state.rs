@@ -558,8 +558,9 @@ impl ActivityInstance {
         // ⭐ udt 21: the client's slice-set record (struct `0x80800D9F` at `+0xB8`: current
         // `{10-bit index, hash, ..}` at `+0xB8`, TARGET at `+0x158`). When the client walks into
         // another bubble it targets that slice set and waits for "valid host-tabulated data": the
-        // region record must name the target with the token of this new transition (each client
-        // transition advances it by one; measured 1 initial, 2 teleport, 3 walking into The Breach).
+        // region record must name the target with the CLIENT'S token (+0x1F8).
+        // Retries can advance it without changing the target: route6 reached 96/token 5
+        // while the host's inferred next token was 4. The listener seeds these deltas.
         if let ClientMessage::ClientAuthoritativeDataUpdate { struct_image } = msg {
             self.track_current_slice(struct_image);
             self.follow_slice_target(struct_image);
@@ -1480,26 +1481,26 @@ impl ActivityInstance {
     /// Move the region record to the slice set the client targets (see [`Self::on_client_message`]).
     /// Returns true when it moved.
     fn follow_slice_target(&mut self, image: &[u8]) -> bool {
-        const CURRENT: usize = 0xB8;
-        const TARGET: usize = 0xB8 + 0xA0;
+        const TARGET: usize = 0x158;
+        // 0x80800C56[1] @0xB8 -> 0x80800D9F[2] @0x140, an 8-bit field.
+        // Native 56578: this matches sstm+0x1D0, including a same-region retry.
+        const TOKEN: usize = 0x1F8;
         let index = |o: usize| image.get(o..o + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()) & 0x3FF);
-        let (Some(current), Some(target)) = (index(CURRENT), index(TARGET)) else {
+        let (Some(target), Some(&client_token)) = (index(TARGET), image.get(TOKEN)) else {
             return false;
         };
-        // udt 21 is a replicated DELTA: absent fields decode as 0. A target is real only when its
-        // record is present, i.e. it names a bubble (hash at +4 not 0 / FNV basis) - run
-        // agr-breach read a stray "target 0" and spent the token the client wanted for 24.
+        // Do not act on an uninitialised baseline or a cleared target. Token zero is
+        // reserved; the client skips it on wrap. Preserve the explicit no-PAH bisect.
         let target_hash = image.get(TARGET + 4..TARGET + 8).map(|b| u32::from_le_bytes(b.try_into().unwrap()));
-        if matches!(target_hash, None | Some(0) | Some(0x811C_9DC5)) || target == 0x3FF || target == current {
+        if matches!(target_hash, None | Some(0) | Some(0x811C_9DC5)) || target == 0x3FF || client_token == 0 {
             return false;
         }
         match self.pah_region {
-            Some((region, peer, token)) if region != target => {
-                let next = if token == u8::MAX { 1 } else { token + 1 };
-                self.pah_region = Some((target, peer, next));
+            Some((region, peer, token)) if (region, token) != (target, client_token) => {
+                self.pah_region = Some((target, peer, client_token));
                 self.membership_dirty = true;
                 tracing::info!(
-                    "⭐ client targets slice set {target} (current {current}): region record {region} -> {target}, token {token} -> {next}"
+                    "⭐ client targets slice set {target}: region record {region} -> {target}, client token {token} -> {client_token}"
                 );
                 true
             }
@@ -1758,11 +1759,20 @@ mod tests {
         i.on_client_message(&stray, now);
         assert_eq!(i.pah_region(), Some((112, 0, 2)), "a target without its bubble hash is a delta artefact");
         img[0x15C..0x160].copy_from_slice(&0x4415_15C2u32.to_le_bytes());
+        let zero = ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img.clone() };
+        i.on_client_message(&zero, now);
+        assert_eq!(i.pah_region(), Some((112, 0, 2)), "token 0 is reserved: no transition yet");
+        img[0x1F8] = 3;
         let msg = ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img.clone() };
         i.on_client_message(&msg, now);
-        assert_eq!(i.pah_region(), Some((24, 0, 3)), "target 24 with the next token");
+        assert_eq!(i.pah_region(), Some((24, 0, 3)), "target 24 with the client's token");
         i.on_client_message(&msg, now);
-        assert_eq!(i.pah_region(), Some((24, 0, 3)), "the same target does not advance the token again");
+        assert_eq!(i.pah_region(), Some((24, 0, 3)), "the same target and token change nothing");
+        // A retried transition to the same target advances the client's token (route6: 96/5 while
+        // the host had inferred 4); the record must follow it.
+        img[0x1F8] = 4;
+        i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img.clone() }, now);
+        assert_eq!(i.pah_region(), Some((24, 0, 4)), "a same-target retry follows the client's token");
     }
 
     /// ⭐ A changed membership carries the next update number, or the client never re-reads the
@@ -1782,6 +1792,7 @@ mod tests {
         img[0xB8..0xBC].copy_from_slice(&112u32.to_le_bytes());
         img[0x158..0x15C].copy_from_slice(&24u32.to_le_bytes());
         img[0x15C..0x160].copy_from_slice(&0x4415_15C2u32.to_le_bytes());
+        img[0x1F8] = 3;
         i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img }, now);
         let AhMessage::ReplicateMembership(m) = i.membership_due(now).expect("re-published").message else {
             panic!("expected a membership")

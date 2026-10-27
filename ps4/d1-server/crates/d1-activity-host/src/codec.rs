@@ -115,13 +115,20 @@ pub trait AhWireCodec: Send + Sync {
 
     /// Deserialise from the wire into the client's struct image.
     fn decode(&self, user_defined_type: u32, wire: &[u8]) -> Result<Vec<u8>, AhError>;
+
+    /// Apply a replicated update to this connection's previous image. Snapshot-only
+    /// diagnostic codecs may keep their normal decode behaviour; SchemaCodec uses
+    /// the client's replicated decoder and its presence bits.
+    fn decode_seeded(&self, user_defined_type: u32, wire: &[u8], _seed: &[u8]) -> Result<Vec<u8>, AhError> {
+        self.decode(user_defined_type, wire)
+    }
 }
 
 // ── the oracle worker ────────────────────────────────────────────────────────────────────────────
 
 enum Job {
     Encode { udt: u32, image: Vec<u8>, reply: Sender<Result<Vec<u8>, String>> },
-    Decode { udt: u32, wire: Vec<u8>, reply: Sender<Result<Vec<u8>, String>> },
+    Decode { udt: u32, wire: Vec<u8>, seed: Vec<u8>, reply: Sender<Result<Vec<u8>, String>> },
     StructSize { udt: u32, reply: Sender<Result<Vec<u8>, String>> },
     /// ⭐⭐ Build the bespoke udt-5 `sensor_auth_update` frame. Runs on the oracle thread because
     /// [`d1_oracle::sensor`] uses `ObjectOracle` (Unicorn, `!Send`).
@@ -160,9 +167,9 @@ impl OracleWorker {
                                 .map_err(|e| e.to_string());
                             let _ = reply.send(r);
                         }
-                        Job::Decode { udt, wire, reply } => {
+                        Job::Decode { udt, wire, seed, reply } => {
                             let r = codec
-                                .decode(udt, &wire)
+                                .decode_seeded(udt, &wire, &seed)
                                 .map(|d| d.object)
                                 .map_err(|e| e.to_string());
                             let _ = reply.send(r);
@@ -327,6 +334,10 @@ impl AhWireCodec for SchemaCodec {
     }
 
     fn decode(&self, user_defined_type: u32, wire: &[u8]) -> Result<Vec<u8>, AhError> {
+        self.decode_seeded(user_defined_type, wire, &[])
+    }
+
+    fn decode_seeded(&self, user_defined_type: u32, wire: &[u8], seed: &[u8]) -> Result<Vec<u8>, AhError> {
         crate::protocol::check_receivable(user_defined_type)?;
         // ⭐⭐ THE RAW ARM. This is **not** the falsified `RawStructCodec` guess wearing a new hat.
         // `activity_client_send_message` has two arms and the client picks between them at the call
@@ -339,8 +350,9 @@ impl AhWireCodec for SchemaCodec {
             return Ok(wire.to_vec());
         }
         let wire = wire.to_vec();
+        let seed = seed.to_vec();
         oracle()
-            .call(|reply| Job::Decode { udt: user_defined_type, wire, reply })
+            .call(|reply| Job::Decode { udt: user_defined_type, wire, seed, reply })
             .map_err(|d| SchemaCodec::classify(user_defined_type, d))
     }
 }

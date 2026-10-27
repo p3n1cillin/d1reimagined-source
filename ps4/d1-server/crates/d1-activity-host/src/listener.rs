@@ -195,6 +195,10 @@ pub struct AhConnection {
     /// Which `user_defined_type`s have already had their payload logged. See [`Self::capture_once`].
     captured: std::collections::BTreeSet<u32>,
     client_update_capture: Option<ClientUpdateCapture>,
+    /// udt 21 is a replicated image, not independent zero-based telemetry. Its
+    /// target region and transition token can arrive in different deltas. Keep
+    /// the baseline on the connection, never in the process-wide codec worker.
+    client_authoritative_image: Vec<u8>,
     /// ⭐ How many [`AhEvent::CodecFault`]s this connection has produced. Once this is non-zero the
     /// host is no longer saying anything the client can act on, and the run should be read as
     /// **truncated**, not as a protocol result.
@@ -224,6 +228,7 @@ impl AhConnection {
             )),
             captured: std::collections::BTreeSet::new(),
             client_update_capture: None,
+            client_authoritative_image: Vec::new(),
             codec_faults: 0,
         }
     }
@@ -444,7 +449,12 @@ impl AhConnection {
             });
             return events;
         }
-        let image = match self.codec.decode(udt, payload) {
+        let decoded = if udt == crate::protocol::UDT_CLIENT_AUTHORITATIVE_DATA_UPDATE {
+            self.codec.decode_seeded(udt, payload, &self.client_authoritative_image)
+        } else {
+            self.codec.decode(udt, payload)
+        };
+        let image = match decoded {
             Ok(i) => i,
             Err(e) => {
                 events.push(AhEvent::NamedGate { what: "AH wire codec", detail: e.to_string() });
@@ -458,6 +468,9 @@ impl AhConnection {
                 return events;
             }
         };
+        if udt == crate::protocol::UDT_CLIENT_AUTHORITATIVE_DATA_UPDATE {
+            self.client_authoritative_image = image;
+        }
         for push in self.instance.on_client_message(&msg, now) {
             events.push(AhEvent::WantsToPush {
                 user_defined_type: push.message.user_defined_type(),
