@@ -65,10 +65,12 @@
 //! place and with a different sentinel. [`CharacterSpec::sentinel_stat_keys`] fills the unused
 //! entries with `0xFF`.
 //!
-//! ⚠ The three sibling 16-entry tables at `C+0x8F0`, `C+0x970`, `C+0x9F0` are `[U]` - no reader has
-//! been identified for them, so this module leaves them **zero by default** (which is what every
-//! fixture that has ever reached orbit carries) and offers
-//! [`CharacterSpec::sentinel_all_stat_tables`] to bisect that axis rather than guessing it.
+//! On build 56578 the three sibling tables at `C+0x8F0`, `C+0x970`, `C+0x9F0` supply primary,
+//! special and heavy weapon investment stats. The peer carries them at `+0x8B8/+0x938/+0x9B8`.
+//! A native pickup trace on 27 Oct followed primary Magazine through `0x910C60` and `0x28A2F0`;
+//! setting its content-derived value changed the HUD magazine from 12 to 25. See
+//! [`crate::weapon_stats`]. This builder keeps its historical defaults for existing callers;
+//! `character weapon-stats` fills a selected peer table from its equipped owned definition.
 //!
 //! # ⚠ `d1-eboot descriptors` prints the ELEMENT SIZE in the offset column of an array field
 //!
@@ -171,7 +173,7 @@ pub const EXTRA_ARRANGEMENT_SLOTS: usize = 8;
 pub const OFF_STATS: usize = 0x0870;
 pub const STAT_SLOTS: usize = 16;
 pub const STAT_STRIDE: usize = 8;
-/// The three sibling stat tables. Same schema, no identified reader - `[U]`.
+/// Primary, special and heavy weapon investment tables (56578). See [`crate::weapon_stats`].
 pub const OFF_STATS_SIBLINGS: [usize; 3] = [0x08F0, 0x0970, 0x09F0];
 
 /// `0xFFFF` is "absent" for a **content index** (`0xA11642: cmp di,0xffff; je`). `0x0000` is a valid
@@ -252,9 +254,9 @@ pub struct CharacterSpec {
     /// Fill unused entries of the `C+0x870` table with [`EMPTY_STAT_KEY`]. ⭐ Leaving them zero
     /// makes `0x266740` overwrite Light with 0 - see the module docs. Default **true**.
     pub sentinel_stat_keys: bool,
-    /// Also sentinel-fill the three `[U]` sibling tables at [`OFF_STATS_SIBLINGS`]. Default
-    /// **false**: no reader has been identified, and every fixture that has reached orbit has them
-    /// zero. This is a bisect switch, not a recommendation.
+    /// Also sentinel-fill the three weapon tables at [`OFF_STATS_SIBLINGS`]. Default **false**
+    /// preserves existing fixtures. This alone supplies no weapon stats; use `character
+    /// weapon-stats` on the peer output to populate them from the equipped definition.
     pub sentinel_all_stat_tables: bool,
     /// Mark unused equipment slots' content index [`EMPTY_CONTENT_INDEX`] instead of leaving them
     /// zero (which claims 20 copies of content index 0). Default **true**.
@@ -1657,7 +1659,7 @@ mod tests {
         for i in 1..STAT_SLOTS {
             assert_eq!(o[OFF_STATS + i * STAT_STRIDE], EMPTY_STAT_KEY, "stat slot {i}");
         }
-        // The three [U] sibling tables stay untouched by default.
+        // Historical compatibility: weapon tables stay untouched until explicitly populated.
         for base in OFF_STATS_SIBLINGS {
             assert!(o[base..base + STAT_SLOTS * STAT_STRIDE].iter().all(|b| *b == 0));
         }

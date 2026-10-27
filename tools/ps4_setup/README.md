@@ -70,3 +70,8 @@ The underlying route chain reached the Divide in run 17. The consolidated script
 and its new failure gates have portable tests; a fresh end-to-end native replay
 is still required. Reaching the Divide does not establish its crossing, combat,
 correct ammunition, health, clock or staged flyover.
+
+The Rust `d1-oracle character weapon-stats` command can now populate a peer's
+weapon investment table from its equipped owned definition. See
+[56578 weapon stats](../../docs/PS4_WEAPON_STATS.md) for the native magazine result,
+controlled candidate workflow and remaining limits.

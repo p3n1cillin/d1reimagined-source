@@ -215,15 +215,27 @@ pub fn weapon_object(d: &[u8]) -> Result<Option<u16>> {
 /// `None` = the def carries NO list; `Some(vec![])` = it carries an EMPTY one. The constructor
 /// writes nothing either way, and the two shapes together are what pin the walk.
 pub fn stat_list(d: &[u8]) -> Result<Option<Vec<(u16, u32)>>> {
-    let rel = i64_at(d, 0x68)?;
+    Ok(stat_pairs(d, 0x68, false)?.map(|pairs| {
+        pairs.into_iter().map(|(key, value)| (key as u16, value)).collect()
+    }))
+}
+
+/// Base investment stats at `def+0x50`, distinct from the optional instance defaults at +0x68.
+/// Both records use the same self-relative list, but base keys occupy the full u32.
+pub fn base_stat_list(d: &[u8]) -> Result<Option<Vec<(u32, u32)>>> {
+    stat_pairs(d, 0x50, true)
+}
+
+fn stat_pairs(d: &[u8], field: usize, wide_key: bool) -> Result<Option<Vec<(u32, u32)>>> {
+    let rel = i64_at(d, field)?;
     if rel == 0 {
         return Ok(None);
     }
-    let rec = self_rel(0x68, rel)
-        .ok_or_else(|| OracleError::Shape(format!("def+0x68 self-relative {rel:#x} overflows")))?;
+    let rec = self_rel(field, rel)
+        .ok_or_else(|| OracleError::Shape(format!("def+{field:#x} self-relative {rel:#x} overflows")))?;
     if !(rec >= 0 && rec < d.len() as i64 - 0x10) {
         return Err(OracleError::Shape(format!(
-            "def+0x68 self-relative {rel:#x} escapes the {}-byte entry",
+            "def+{field:#x} self-relative {rel:#x} escapes the {}-byte entry",
             d.len()
         )));
     }
@@ -247,7 +259,8 @@ pub fn stat_list(d: &[u8]) -> Result<Option<Vec<(u16, u32)>>> {
                 "stat entry {i} at +{at:#x} escapes the entry"
             )));
         }
-        out.push((u16_at(d, at as usize)?, u32_at(d, at as usize + 4)?));
+        let key = if wide_key { u32_at(d, at as usize)? } else { u16_at(d, at as usize)? as u32 };
+        out.push((key, u32_at(d, at as usize + 4)?));
     }
     Ok(Some(out))
 }
@@ -742,6 +755,32 @@ pub fn known_generators() -> &'static [&'static str; 4] {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn base_stats_and_instance_defaults_are_distinct_self_relative_lists() {
+        let mut d = vec![0; 0x180];
+        // Synthetic base-list record at A0, entry at E0; instance defaults absent.
+        d[0x50..0x58].copy_from_slice(&0x50i64.to_le_bytes());
+        d[0xA0..0xA8].copy_from_slice(&1i64.to_le_bytes());
+        d[0xA8..0xB0].copy_from_slice(&0x28i64.to_le_bytes());
+        d[0xE0..0xE4].copy_from_slice(&20u32.to_le_bytes());
+        d[0xE4..0xE8].copy_from_slice(&44u32.to_le_bytes());
+        assert_eq!(base_stat_list(&d).unwrap(), Some(vec![(20, 44)]));
+        assert_eq!(stat_list(&d).unwrap(), None);
+        // +68 independently points to a present, empty list.
+        d[0x68..0x70].copy_from_slice(&0x58i64.to_le_bytes());
+        assert_eq!(stat_list(&d).unwrap(), Some(vec![]));
+        assert_eq!(base_stat_list(&d).unwrap(), Some(vec![(20, 44)]));
+        // Preserve full base key width; the peer writer must reject this, not truncate it to 20.
+        d[0xE0..0xE4].copy_from_slice(&0x10014u32.to_le_bytes());
+        assert_eq!(base_stat_list(&d).unwrap(), Some(vec![(0x10014, 44)]));
+        d[0xA0..0xA8].copy_from_slice(&65i64.to_le_bytes());
+        assert!(base_stat_list(&d).is_err());
+        d[0xA0..0xA8].copy_from_slice(&1i64.to_le_bytes());
+        d[0xA8..0xB0].copy_from_slice(&i64::MAX.to_le_bytes());
+        assert!(base_stat_list(&d).is_err());
+        assert!(base_stat_list(&d[..0x54]).is_err());
+    }
 
     /// ⚠ Skips when the owned-media dump is absent. It CAN fail: change [`GJALLARHORN_ARRANGEMENT`]
     /// and `gjallarhorn-arrangement` goes red immediately.

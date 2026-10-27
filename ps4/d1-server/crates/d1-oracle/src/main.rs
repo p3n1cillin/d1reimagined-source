@@ -416,6 +416,19 @@ enum ProfileCmd {
 /// `d1-oracle character …` - see [`d1_oracle::character`] for why each default is what it is.
 #[derive(Subcommand)]
 enum CharacterCmd {
+    /// Fill one peer weapon-stat table from its equipped item's owned base definition (56578).
+    /// Preserves every decoded byte outside that table; output must be a new file.
+    WeaponStats {
+        #[arg(long)]
+        input: PathBuf,
+        #[arg(long)]
+        out: PathBuf,
+        #[arg(long, value_parser = ["primary", "special", "heavy"])]
+        slot: String,
+        /// Controlled one-stat trial; the value still comes from the owned definition.
+        #[arg(long)]
+        only_stat: Option<u32>,
+    },
     /// The offset table, re-derived from the eboot's descriptor tree. Nothing is transcribed.
     Layout,
     /// Every card control. **Exit 2 on failure** - including the two NEGATIVE ones.
@@ -466,7 +479,7 @@ enum CharacterCmd {
         /// bisecting. Do not combine with another change in one run.
         #[arg(long)]
         no_content_indices: bool,
-        /// Also sentinel-fill (`0xFF`) the three `[U]` sibling stat tables at +0x8F0/+0x970/+0x9F0.
+        /// Also sentinel-fill (`0xFF`) the three weapon stat tables at +0x8F0/+0x970/+0x9F0.
         #[arg(long)]
         sentinel_all_stat_tables: bool,
         /// Leave unused stat keys ZERO - i.e. claim 16 copies of stat index 0, which is what every
@@ -1334,6 +1347,49 @@ fn run_character(cli: &Cli, cmd: &CharacterCmd) -> anyhow::Result<ExitCode> {
     use d1_oracle::character::{self, CharacterSpec};
 
     match cmd {
+        CharacterCmd::WeaponStats { input, out, slot, only_stat } => {
+            use d1_oracle::{art_arrangement, weapon_stats};
+            use std::io::Write;
+            let image = Image::open_default()?;
+            anyhow::ensure!(image.sha256() == weapon_stats::MEASURED_EBOOT_SHA256,
+                            "weapon-stat source offsets have only been measured on build 56578");
+            let slot_index = match slot.as_str() {
+                "primary" => 0, "special" => 1, "heavy" => 2,
+                _ => anyhow::bail!("unknown weapon slot"),
+            };
+            let mut oracle = ObjectOracle::new(character::PEER_TAG)?;
+            let peer = oracle.decode(&std::fs::read(input)?)?;
+            // Prove the original object is representable before changing it.
+            oracle.round_trip(&peer.object, 0x4000)?;
+            let ci = weapon_stats::equipped_index(&peer.object, slot_index)?;
+            let table = d1_oracle::IndexTable::load_default()?;
+            let mut content = d1_oracle::oodle::Content::open_default()?;
+            let definition = art_arrangement::resolve(&mut content, ci, &table)?;
+            anyhow::ensure!(definition.equip_slot == Some(character::WEAPON_ORDINALS[slot_index] as u8),
+                            "equipped definition does not belong to the selected weapon slot");
+            let (_, _, _, bytes) = content.entry_bytes_for_tag(definition.world_tag)?;
+            let mut stats = art_arrangement::base_stat_list(&bytes)?
+                .ok_or_else(|| anyhow::anyhow!("equipped item has no def+0x50 base-stat list"))?;
+            if let Some(key) = only_stat {
+                stats.retain(|(k, _)| k == key);
+                anyhow::ensure!(stats.len() == 1, "requested stat is absent or duplicated in definition");
+            }
+            let patched = weapon_stats::patch_peer(&peer.object, slot_index, &stats)?;
+            let (encoded, decoded) = oracle.round_trip(&patched, 0x4000)?;
+            anyhow::ensure!(decoded.object == patched, "patched peer did not round-trip identical");
+            // No implicit in-place replacement of the known baseline.
+            let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(out)?;
+            file.write_all(&encoded.payload)?;
+            file.sync_all()?;
+            println!("{}", serde_json::json!({
+                "slot": slot, "content_index": ci, "item_hash": definition.item_hash,
+                "world_tag": definition.world_tag, "source": "definition+0x50",
+                "peer_table": weapon_stats::PEER_TABLES[slot_index], "stats": stats,
+                "bytes": encoded.payload.len(), "round_trip": "IDENTICAL",
+                "native_semantics": "requires a fresh pickup and HUD check"
+            }));
+            Ok(ExitCode::SUCCESS)
+        }
         CharacterCmd::Layout => {
             let image = Image::open_default()?;
             let idx = descriptors::index(&image)?;

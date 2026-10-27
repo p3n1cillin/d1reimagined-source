@@ -79,6 +79,7 @@ pub mod sensor_objective;
 pub mod registry;
 pub mod roster;
 pub mod schema;
+pub mod weapon_stats;
 
 pub use activity_host::{AhCodec, AhSchema};
 pub use character::{BuiltCharacter, CharacterSpec, EquipSlot};
