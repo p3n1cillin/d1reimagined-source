@@ -73,6 +73,9 @@ def main():
     ap.add_argument('--reach', type=float, default=4.0)
     ap.add_argument('--max-seconds', type=float, default=1800)
     ap.add_argument('--rate', type=float, default=0.0022, help='camera turn, rad per ms of J/L')
+    ap.add_argument('--crouch', action='store_true',
+                    help='explore crouched (Circle toggled at the start, no jumps: a jump stands up again), '
+                         'for low passages such as the mine corridor in the Wall')
     ap.add_argument('--stop-on-death', action='store_true',
                     help='end after a death (the caller replays the known route back to the frontier)')
     ap.add_argument('--lethal', help='JSON file of [cell x, cell y, direction] moves that killed the Guardian; '
@@ -119,6 +122,8 @@ def main():
             still = 0
         return d, p0
 
+    if a.crouch:
+        walk.pad('NumPad6')     # Circle toggles crouch
     while time.time() < t_end:
         dist = math.dist(here[:2], goal[:2])
         if dist < a.reach:
@@ -138,7 +143,7 @@ def main():
                     facing = math.atan2(here[1] - q[1], here[0] - q[0])
                     here = q
                 else:
-                    walk.pad('NumPad2', 'Hold:D:600')
+                    walk.pad(*(['Hold:D:600'] if a.crouch else ['NumPad2', 'Hold:D:600']))
                     here = walk.position(c, tracked, here) or here
             continue
         cell = cell_of(here)
@@ -168,7 +173,7 @@ def main():
         if d <= 0.6:
             if (cell, k) not in jumped:
                 jumped.add((cell, k))
-                walk.pad('NumPad2', 'Hold:W:600')
+                walk.pad(*(['Hold:W:900'] if a.crouch else ['NumPad2', 'Hold:W:600']))
                 q = walk.position(c, tracked, here) or here
                 if math.dist(q[:2], here[:2]) > 0.6:
                     facing = math.atan2(q[1] - here[1], q[0] - here[0])
