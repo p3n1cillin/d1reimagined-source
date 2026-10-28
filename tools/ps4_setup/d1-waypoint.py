@@ -22,7 +22,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SHOT = os.environ.get('D1_SHOT', r'F:\d1\tools\d1-shot.ps1')
 PAD = os.environ.get('D1_PAD', r'F:\d1\tools\d1-pad.ps1')
 RATE = 2.26 * 1.14 * 110 / 90 / 1000     # rad per ms of right stick (a 90-degree command turned 110)
-RX, RY, HALF_W, HALF_H = 968, 571, 960, 540     # reticle and half extents of the 1936x1119 window capture
+RX, RY, HALF_W, HALF_H = 968, 571, 960, 540     # frame centre and half extents of the 1936x1119 window capture
+AIM_Y = 652     # the reticle (hip and ADS) sits 81 px below the frame centre; aiming at RY fired over heads
 HFOV, VFOV = math.radians(78), math.radians(48)
 
 
@@ -204,13 +205,13 @@ def main():
             continue
         enemies = plates(img) if a.fight else []
         if enemies:
-            cx, cy, w = min(enemies, key=lambda p: math.hypot(p[0] - RX, p[1] - RY))
+            cx, cy, w = min(enemies, key=lambda p: math.hypot(p[0] - RX, p[1] - AIM_Y))
             ax, ay = aim_point(cx, cy, w)
             keys = []
             if abs(ax - RX) > 20:
                 keys.append(f'Hold:{"L" if ax > RX else "J"}:{max(15, int(abs((ax - RX) / HALF_W * HFOV / 2) / RATE))}')
-            if abs(ay - RY) > 20:
-                keys.append(f'Hold:{"K" if ay > RY else "I"}:{max(15, int(abs((ay - RY) / HALF_H * VFOV / 2) / RATE))}')
+            if abs(ay - AIM_Y) > 20:
+                keys.append(f'Hold:{"K" if ay > AIM_Y else "I"}:{max(15, int(abs((ay - AIM_Y) / HALF_H * VFOV / 2) / RATE))}')
             if keys:
                 pad(','.join(keys))
             ads_burst()
