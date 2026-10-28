@@ -82,6 +82,41 @@ and its new failure gates have portable tests; a fresh end-to-end native replay
 is still required. Reaching the Divide does not establish its crossing, combat,
 correct ammunition, health, clock or staged flyover.
 
+## Optional 56578 current-unit tracking
+
+After the rifle movement control, `d1-agr-replay.py` now switches its remaining
+walks to this mode automatically if the fresh retrack retains fewer than 30
+copies. This covers the observed 11-copy chest stall. At 30 or more it keeps the
+heuristic tracker. Native mode validates position and facing before route input;
+failure stops the replay without retrying the sparse heuristic set. This fallback
+has portable controls; a fresh lab replay is still required for acceptance.
+
+`d1-walk.py --native-unit` reads the local player's current unit through the
+guarded native player/object tables. It verifies the object's self handle and
+agreement of three transform copies, and resolves the link again on each sample.
+It raises an error on unavailable/inconsistent data or a changed unit handle.
+Inspect the scene and start a new route after a death/respawn; there is no stale
+position fallback. This does not detect every death before the unit link changes.
+
+```text
+python -u -I tools/ps4_setup/d1-walk.py --native-unit --memory-facing --route <private-route.json> --turn-sign 1 --turn-rate 2.26 --max-seconds 120
+```
+
+No scanned `--tracked` file is required. `--scan` and `--retrack` are refused in
+this mode. With `--memory-facing`, heading comes from two agreeing native unit
+forward vectors, rather than vectors adjacent to heuristic position copies.
+The existing pad driver still sends all movement; the new reader does not attach
+a debugger, call guest functions or write guest memory. The existing mode remains
+the default.
+
+The 28 October native controls verified that a forward/backward pulse moved all
+three transform copies together, and right/left look input changed both forward
+vectors together. Six synthetic tests cover object identity, pointer arithmetic,
+unit-link races, invalid geometry, invalid transforms and heading disagreement.
+These controls establish the reader, not a complete mission replay or route
+geometry. Rendering/camera copies and unit transforms may differ; validate the
+chosen route and tolerances before promoting this mode to an unattended replay.
+
 The Rust `d1-oracle character weapon-stats` command can now populate a peer's
 weapon investment table from its equipped owned definition. See
 [56578 weapon stats](../../docs/PS4_WEAPON_STATS.md) for the native magazine result,
