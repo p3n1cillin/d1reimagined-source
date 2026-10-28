@@ -4523,6 +4523,42 @@ async fn main() -> Result<()> {
                                                                 }
                                                             }
 
+                                                            // ⭐ AN ON-DEMAND PROFILE. `D1_PROFILE_PUSH_FILE=<path>`: when that
+                                                            // file appears, the next echo pushes its bytes (a client-encoded
+                                                            // profile payload) as a family-4 delta, then renames it `.sent`.
+                                                            // The activity completion is a profile change: the client
+                                                            // announces it when profile +0x2c38 (the completed flag of field
+                                                            // [6], struct 0x808017b9 at +0x2c20) goes from 0 to 1.
+                                                            if conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
+                                                                && inner_type == Some(d1_bap::TYPE_ECHO_REQUEST)
+                                                                && family4_version.is_some()
+                                                            {
+                                                                if let Some(path) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(std::path::PathBuf::from) {
+                                                                    if let Ok(payload) = std::fs::read(&path) {
+                                                                        let _ = std::fs::rename(&path, path.with_extension("sent"));
+                                                                        let version = family4_version.unwrap_or(0).wrapping_add(1);
+                                                                        let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
+                                                                        let prof_soid = env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201);
+                                                                        let b = d1_bap::loot::profile_delta(acct, version, prof_soid, &payload);
+                                                                        match conv.push_with_sequence(d1_bap::TYPE_QUEUEZ_OBJECT, server_seq, &b) {
+                                                                            Ok(push) => {
+                                                                                let sn = nonces.peek(d1_bap::Direction::ServerToClient);
+                                                                                if let Ok(f) = d1_bap::seal_channel_frame(key, sn, &push) {
+                                                                                    nonces.advance(d1_bap::Direction::ServerToClient);
+                                                                                    if sock.write_all(&f).await.is_ok() {
+                                                                                        warn!("      ⭐⭐ PROFILE PUSH: {} ({}B) as family-4 delta version {version}, seq {server_seq}",
+                                                                                              path.display(), payload.len());
+                                                                                        family4_version = Some(version);
+                                                                                        server_seq += 1;
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            Err(e) => warn!("      [conv] ⛔ profile push REFUSED by the push accept-set: {e}"),
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+
                                                             if want_push
                                                                 && conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
                                                                 && !pushed_character

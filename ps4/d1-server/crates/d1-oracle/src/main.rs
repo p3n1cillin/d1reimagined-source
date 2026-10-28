@@ -72,6 +72,18 @@ enum Cmd {
         /// Hex bytes for the decoded C object (encode direction).
         #[arg(long)]
         obj: Option<String>,
+        /// Payload file to decode, for payloads too long for a command line (a profile is ~20 KB).
+        #[arg(long)]
+        decode_file: Option<PathBuf>,
+        /// Decoded C object file (encode direction), as written by `--out-obj`.
+        #[arg(long)]
+        obj_file: Option<PathBuf>,
+        /// With `--decode`/`--decode-file`: also write the decoded C object here.
+        #[arg(long)]
+        out_obj: Option<PathBuf>,
+        /// Encode direction: also write the payload here.
+        #[arg(long)]
+        out: Option<PathBuf>,
         /// A type a kind-0x22 typed value in the object names (repeatable), e.g. 0x8080279a.
         #[arg(long, value_parser = parse_int)]
         value_type: Vec<u64>,
@@ -2474,13 +2486,21 @@ fn run(cli: &Cli) -> anyhow::Result<ExitCode> {
             Ok(if ok { ExitCode::SUCCESS } else { ExitCode::from(2) })
         }
 
-        Cmd::Object { tag, decode, obj, value_type, roster_key, soid, capacity } => {
+        Cmd::Object { tag, decode, obj, decode_file, obj_file, out_obj, out, value_type, roster_key, soid, capacity } => {
             let tag = *tag as u32;
             let types: Vec<u32> = value_type.iter().map(|&t| t as u32).collect();
             let mut o = ObjectOracle::with_types(tag, &types)?;
             println!("tag {tag:#010x}  struct {} (={:#x}) bytes", o.struct_size(), o.struct_size());
-            if let Some(h) = decode {
-                let d = o.decode(&hex(h)?)?;
+            let payload = match (decode, decode_file) {
+                (Some(h), _) => Some(hex(h)?),
+                (None, Some(p)) => Some(std::fs::read(p)?),
+                (None, None) => None,
+            };
+            if let Some(payload) = payload {
+                let d = o.decode(&payload)?;
+                if let Some(p) = out_obj {
+                    std::fs::write(p, &d.object)?;
+                }
                 if cli.json {
                     println!("{}", serde_json::json!({
                         "tag": tag, "bits": d.bits, "struct_size": d.object.len(),
@@ -2497,8 +2517,12 @@ fn run(cli: &Cli) -> anyhow::Result<ExitCode> {
                 return Ok(ExitCode::SUCCESS);
             }
             let mut body = vec![0u8; o.struct_size()];
-            if let Some(h) = obj {
-                let raw = hex(h)?;
+            let raw = match (obj, obj_file) {
+                (Some(h), _) => Some(hex(h)?),
+                (None, Some(p)) => Some(std::fs::read(p)?),
+                (None, None) => None,
+            };
+            if let Some(raw) = raw {
                 let n = raw.len().min(body.len());
                 body[..n].copy_from_slice(&raw[..n]);
             }
@@ -2511,7 +2535,12 @@ fn run(cli: &Cli) -> anyhow::Result<ExitCode> {
                 }
             }
             let (enc, dec) = o.round_trip(&body, *capacity)?;
-            println!("payload {} bytes / {} bits\n  {}", enc.payload.len(), enc.bits, hexs(&enc.payload));
+            if let Some(p) = out {
+                std::fs::write(p, &enc.payload)?;
+                println!("payload {} bytes / {} bits -> {}", enc.payload.len(), enc.bits, p.display());
+            } else {
+                println!("payload {} bytes / {} bits\n  {}", enc.payload.len(), enc.bits, hexs(&enc.payload));
+            }
             println!("round trip: {} bits consumed, object IDENTICAL", dec.bits);
             Ok(ExitCode::SUCCESS)
         }

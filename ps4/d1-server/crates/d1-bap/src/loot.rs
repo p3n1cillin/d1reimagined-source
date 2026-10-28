@@ -115,9 +115,40 @@ pub fn item_grant_delta(
     b
 }
 
+/// A family-4 DELTA carrying only the character's profile (`0x80801743`, client-encoded payload).
+/// Used to push a profile change on demand, such as an activity completion. `version` as for
+/// [`item_grant_delta`].
+pub fn profile_delta(account_soid: u64, version: u32, profile_soid: u64, payload: &[u8]) -> Vec<u8> {
+    let mut b = crate::queuez_family_header_versioned(
+        crate::QUEUEZ_FAMILY_ACCOUNT,
+        account_soid,
+        1,
+        version,
+        crate::QUEUEZ_FLAG_DELTA,
+    );
+    b.extend_from_slice(&crate::profile_instance_type().to_be_bytes());
+    b.extend_from_slice(&profile_soid.to_be_bytes());
+    b.extend_from_slice(&(payload.len() as u32).to_be_bytes());
+    b.extend_from_slice(payload);
+    b
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The profile delta walks as one profile object at the given version, flagged DELTA.
+    #[test]
+    fn the_profile_delta_is_one_profile_object() {
+        let d = profile_delta(1, 4, 0x201, &[0xCD; 40]);
+        assert_eq!(crate::queuez_span_version(&d), Some(4));
+        assert_eq!(crate::queuez_span_flags(&d), Some(crate::QUEUEZ_FLAG_DELTA));
+        let objs = crate::queuez_span_objects(&d).unwrap();
+        assert_eq!(objs.len(), 1);
+        assert_eq!(objs[0].instance_type, crate::profile_instance_type());
+        assert_eq!(objs[0].key, 0x201);
+        assert_eq!(objs[0].payload.1 - objs[0].payload.0, 40);
+    }
 
     /// The grant delta walks as one 4/3 object at the given version, flagged DELTA.
     #[test]
