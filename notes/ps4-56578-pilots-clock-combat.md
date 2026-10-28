@@ -160,11 +160,11 @@ pending clients served, trigger 40 reported and objective 23 presented. It also
 reports a first Dock kill in squad 9 at 12:06:11. These are Claude's observations,
 not additional native tests by this investigation.
 
-The private drafts stop before automatic mission completion. `!GROUP|N`
-currently has a timeout fallback and tracks only squads previously seen alive.
-Neither establishes that the expected encounter cohort has been admitted and
-cleared. Keep the outro disabled until that cohort and its zero receipts are
-known. A long timeout remains a fallback.
+The private drafts stop before automatic mission completion. The hardened gate requires an
+explicit cohort (`!GROUP:I,I,...|N`), fresh positive-to-zero observations for every listed squad,
+and a caught-up connection-local decoder in the current world/generation. N now logs a hold;
+it cannot complete the ending. See `ps4-sensor-sense.md` for reset/error recovery behavior.
+The cast, phase and cinematic still need separate native validation before enabling an outro.
 
 ## Combat power and the super: conclusions and limits
 

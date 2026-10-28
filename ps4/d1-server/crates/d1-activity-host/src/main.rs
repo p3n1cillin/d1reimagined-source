@@ -699,7 +699,7 @@ fn main() -> anyhow::Result<()> {
                             }
                             let index: u16 = f[0].parse()?;
                             let when = d1_activity_host::state::StepWhen::parse(f[1])
-                                .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad step time {:?} (want N, +N, @T|N, %S|N, ^G/K/I|N or !G|N)", f[1]))?;
+                                .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad step time {:?} (want N, +N, @T|N, %S|N, ^G/K/I|N or !G:I,I,...|N; kill deadlines HOLD)", f[1]))?;
                             let group = parse_u32(f[2].to_string())
                                 .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad sensor group {:?}", f[2]))?;
                             let region = match rest.first() {

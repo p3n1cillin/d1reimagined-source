@@ -148,17 +148,30 @@ the Skiff departure remain gated on the missing evidence.
   was walking, not fighting, so 1435 looks like a Fallen dying without the player (cause not yet
   identified).
 
-`d1-activity-host` now tracks these counts (opt-in) and offers a `!GROUP|N` mission step. It fires
-once every kind-1 squad of GROUP that was reported alive reports 0, or after N seconds. A squad
-never reported alive does not hold the step, and a zero-seeded image whose count was never sent is
-not counted as a kill. The decoder needs a B tag for every kind the world sends. For the Divide:
+`d1-activity-host` tracks these counts (opt-in) and requires an explicit cohort for a kill gate:
+`!0x062dd95d:5,6,7,8,9,10,11,12|600`. Every listed kind-1 squad must have been
+observed above zero and then **exactly zero**, in the same current epoch. The deadline logs a
+**HOLD**, once; it never completes the step. The old `!GROUP|N` syntax is rejected rather than
+silently accepting an incomplete cohort. A zero seed, negative count, missing member or an
+unrelated group/kind cannot clear the gate.
+
+Each connection owns its decoder and bounded input/output queues. A join, activity change or
+subsequent current-slice change discards its old evidence and queues; a udt-6 generation change
+also discards prior admission. Queued results carry the epoch and stale results are ignored.
+The gate holds while any submitted delta remains undecoded. A refused/lost/oversized delta or
+a dead worker holds this epoch permanently: restart the connection or enter the next world/slice
+and obtain fresh positive observations before retrying. This deliberately prevents trusting a
+baseline after a gap. In particular a repeat zero without a fresh positive after a reset is
+insufficient. No listener timer cadence or world-clock behavior changes.
+
+The decoder needs a B tag for every kind the world sends. For the Divide:
 
 ```text
 D1_AH_SENSE_SCHEMAS=1:0x80800357,2:0x808005D9,3:0x80800830,4:0x80800387,0xC:0x80802C30,0x18:0x8080048A,0x1C:0x808005C3,0x27:0x80802B18
 ```
 
 One Breach packet in sense36 (packet 24) was refused inside the client's codec
-(`READ_UNMAPPED calling 0x2C9AE0`). A refused packet commits nothing; later packets decoded.
+(`READ_UNMAPPED calling 0x2C9AE0`). That historical decoder continued after a refusal. The hardened gate now holds the affected epoch instead of trusting later overlays across the gap.
 
 ### What made the kill possible, and what still kills the Guardian
 

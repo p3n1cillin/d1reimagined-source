@@ -150,7 +150,7 @@ pub struct MissionStep {
 }
 
 /// When a [`MissionStep`] fires. Steps fire in order, one after another.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum StepWhen {
     /// `N`: N seconds after the first sensor frame.
     At(Duration),
@@ -170,10 +170,10 @@ pub enum StepWhen {
     /// [`trigger_report`]), or N seconds after the previous step. Each report is used once, so a
     /// trigger that fires before its step is due (two armed at once) still counts.
     OnTrigger { group: u32, kind: u8, index: u16, timeout: Duration },
-    /// `!G|N`: when every kind-1 squad of sensor group G that the client has reported alive
-    /// (udt 6 squad B `+0x0C` > 0, see [`crate::sense`]) reports 0 live members, or N seconds after
-    /// the previous step. A kill-gated objective ("Clear Out the Fallen"); needs `D1_AH_SENSE_SCHEMAS`.
-    OnSquadsCleared { group: u32, timeout: Duration },
+    /// `!G:I,I,...|N`: every explicitly named kind-1 squad must be observed alive then exactly
+    /// zero in the current connection/world/generation. N is a diagnostic deadline, NEVER a
+    /// success fallback. Missing/invalid observations and decoder backlog hold the step.
+    OnSquadsCleared { group: u32, cohort: Vec<i16>, timeout: Duration },
 }
 
 /// A udt-18 struct image carrying one incident (see [`ActivityInstance::incident_due`]).
@@ -208,7 +208,7 @@ pub fn trigger_report(image: &[u8]) -> Option<(u32, u8, u16)> {
 impl StepWhen {
     /// Parse `N`, `+N`, `@T|N` or `%S|N` (seconds may be fractional).
     pub fn parse(s: &str) -> Option<Self> {
-        let secs = |t: &str| t.parse::<f32>().ok().filter(|v| *v >= 0.0).map(Duration::from_secs_f32);
+        let secs = |t: &str| t.parse::<f32>().ok().and_then(|v| Duration::try_from_secs_f32(v).ok());
         if let Some(rest) = s.strip_prefix('^') {
             let (name, n) = rest.split_once('|')?;
             let mut f = name.split('/');
@@ -220,10 +220,17 @@ impl StepWhen {
             return Some(Self::OnTrigger { group, kind: kind.try_into().ok()?, index: index.try_into().ok()?, timeout: secs(n)? });
         }
         if let Some(rest) = s.strip_prefix('!') {
-            let (group, n) = rest.split_once('|')?;
+            let (name, n) = rest.split_once('|')?;
+            let (group, members) = name.split_once(':')?;
             let group = group.trim();
             let group = group.strip_prefix("0x").map_or_else(|| group.parse().ok(), |h| u32::from_str_radix(h, 16).ok())?;
-            return Some(Self::OnSquadsCleared { group, timeout: secs(n)? });
+            if matches!(group, 0 | 0x811C_9DC5) { return None; }
+            let mut cohort = members.split(',').map(|s| s.trim().parse::<i16>().ok())
+                .collect::<Option<Vec<_>>>()?;
+            if cohort.is_empty() || cohort.iter().any(|n| *n < 0) { return None; }
+            cohort.sort_unstable();
+            if cohort.windows(2).any(|p| p[0] == p[1]) { return None; }
+            return Some(Self::OnSquadsCleared { group, cohort, timeout: secs(n)? });
         }
         if let Some(rest) = s.strip_prefix('%') {
             let (slice, n) = rest.split_once('|')?;
@@ -372,8 +379,9 @@ pub struct ActivityInstance {
     current_slice: Option<u32>,
     /// Player-trigger reports (incident 3403) by name, and whether a step has used each.
     trigger_reports: Vec<((u32, u8, u16), bool)>,
-    /// Squad live-member counts from udt 6 (see [`crate::sense`]): name -> (count, ever above 0).
-    squad_live: std::collections::HashMap<(u32, u8, i16), (i32, bool)>,
+    /// Connection/world-local observations. Decoder errors and backlog hold kill gates.
+    squad_live: crate::sense::SquadObservations,
+    squad_hold_logged: Option<usize>,
     /// Host incidents waiting to be sent (see [`MissionStep::incident`]).
     pending_incidents: Vec<(u32, Vec<u8>)>,
     /// ⭐ `D1_AH_CONTROL_FILE`: lines `incident TYPE BODYHEX` queue host incidents on demand
@@ -516,7 +524,8 @@ impl ActivityInstance {
             incidents: Vec::new(),
             current_slice: None,
             trigger_reports: Vec::new(),
-            squad_live: std::collections::HashMap::new(),
+            squad_live: crate::sense::SquadObservations::default(),
+            squad_hold_logged: None,
             pending_incidents: Vec::new(),
             control_file: None,
             control_builder: None,
@@ -938,6 +947,7 @@ impl ActivityInstance {
         match msg {
             // ── rung: wait 4 join_result ───────────────────────────────────────────────────────
             ClientMessage::JoinRequest { struct_image } => {
+                self.squad_live.reset();
                 if let Some((hash, index)) = self.followed_activity_index() {
                     if index != self.activity_index {
                         tracing::info!(
@@ -1228,7 +1238,9 @@ impl ActivityInstance {
 
     /// Override the activity name. Takes effect on the next `global_activity_state` publication.
     pub fn set_activity_name(&mut self, name: impl Into<String>) {
-        self.activity_name = name.into();
+        let name = name.into();
+        if self.activity_name != name { self.squad_live.reset(); }
+        self.activity_name = name;
     }
 
     /// The activity index this instance publishes at `global_activity_state+0x680`.
@@ -1240,6 +1252,7 @@ impl ActivityInstance {
     ///
     /// This is the number rung 33 evaluates. `D1_AH_ACTIVITY_INDEX` sets it.
     pub fn set_activity_index(&mut self, index: u16) {
+        if self.activity_index != index { self.squad_live.reset(); }
         self.activity_index = index;
     }
 
@@ -1399,28 +1412,14 @@ impl ActivityInstance {
         }
     }
 
-    /// Record squad live-member counts the client reported (udt 6, see [`crate::sense`]).
-    pub fn on_squad_counts(&mut self, counts: &[crate::sense::SquadCount]) {
-        for c in counts {
-            let e = self.squad_live.entry((c.group, c.kind, c.index)).or_insert((0, false));
-            if e.0 != c.live {
-                tracing::info!("⭐ squad {:#010x}/{:#x}/{} live members {} -> {}", c.group, c.kind, c.index, e.0, c.live);
-            }
-            *e = (c.live, e.1 || c.live > 0);
-        }
+    /// Epoch changes invalidate both counts and queued native decoder results.
+    pub fn squad_epoch(&self) -> u64 { self.squad_live.epoch() }
+
+    pub fn on_sense_update(&mut self, update: crate::sense::SenseUpdate) {
+        self.squad_live.apply(update);
     }
 
-    /// True when group G has at least one kind-1 squad that was reported alive, and every such
-    /// squad now reports 0 live members.
-    pub fn squads_cleared(&self, group: u32) -> bool {
-        let seen: Vec<i32> = self
-            .squad_live
-            .iter()
-            .filter(|((g, k, _), (_, alive))| *g == group && *k == 1 && *alive)
-            .map(|(_, (n, _))| *n)
-            .collect();
-        !seen.is_empty() && seen.iter().all(|n| *n <= 0)
-    }
+    pub fn set_sense_ready(&mut self, ready: bool) { self.squad_live.set_ready(ready); }
 
     /// Arm the timed mission steps (see [`MissionStep`]).
     pub fn set_mission_steps(&mut self, steps: std::collections::HashMap<u16, Vec<MissionStep>>) {
@@ -1452,12 +1451,15 @@ impl ActivityInstance {
                 }
                 reported || now.saturating_duration_since(prev) >= timeout
             }
-            StepWhen::OnSquadsCleared { group, timeout } => {
-                let cleared = self.squads_cleared(group);
+            StepWhen::OnSquadsCleared { group, ref cohort, timeout } => {
+                let cleared = self.squad_live.cleared(group, cohort);
                 if cleared {
-                    tracing::info!("⭐ mission step {i}: every squad of {group:#010x} the client reported alive is down");
+                    tracing::info!("⭐ mission step {i}: cohort {group:#010x}:{cohort:?} is exactly zero in epoch {}", self.squad_epoch());
+                } else if now.saturating_duration_since(prev) >= timeout && self.squad_hold_logged != Some(i) {
+                    tracing::warn!("mission step {i}: cohort {group:#010x}:{cohort:?} deadline reached; HOLD (missing/alive/invalid/stale/pending sense evidence)");
+                    self.squad_hold_logged = Some(i);
                 }
-                cleared || now.saturating_duration_since(prev) >= timeout
+                cleared
             }
             StepWhen::OnSlice { slice, timeout } => {
                 let here = self.current_slice == Some(slice);
@@ -1540,6 +1542,7 @@ impl ActivityInstance {
             return;
         }
         tracing::info!("⭐ client is now in slice set {index} (hash {hash:#010x}, was {:?})", self.current_slice);
+        if self.current_slice.is_some() { self.squad_live.reset(); }
         self.current_slice = Some(index);
     }
 
@@ -1932,7 +1935,7 @@ mod tests {
         let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None };
         let on891 = StepWhen::parse("@891|70").unwrap();
         let mut steps = std::collections::HashMap::new();
-        steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1), step(on891, 2), step(on891, 3)]);
+        steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1), step(on891.clone(), 2), step(on891, 3)]);
         i.set_mission_steps(steps);
         assert!(i.advance_mission(now));
         let incident = |t: u32| {
@@ -1951,27 +1954,63 @@ mod tests {
         assert_eq!(i.sensor_payload.as_deref(), Some(&[3u8][..]));
     }
 
-    /// ⭐ `!G|N` fires once every squad of G reported alive is down - not on a squad never seen
-    /// alive, and not while one is still up (run sense35: Divide squad 17 went 1 -> 0 on a kill).
     #[test]
-    fn a_squads_cleared_step_waits_for_every_squad_seen_alive() {
-        use crate::sense::SquadCount;
-        assert_eq!(StepWhen::parse("!0x9243dffb|600"),
-            Some(StepWhen::OnSquadsCleared { group: 0x9243_DFFB, timeout: Duration::from_secs(600) }));
+    fn cohort_parser_requires_explicit_unique_nonnegative_members_and_finite_deadline() {
+        assert_eq!(StepWhen::parse("!0x062dd95d:6,5|600"), Some(StepWhen::OnSquadsCleared {
+            group: 0x062D_D95D, cohort: vec![5,6], timeout: Duration::from_secs(600),
+        }));
+        for bad in ["!0x062dd95d|600", "!0x062dd95d:|600", "!1:5,5|2", "!1:-1|2",
+                    "!1:32768|2", "!1:5,|2", "!1:5|NaN", "!1:5|inf", "!1:5|-1", "!0:5|2"] {
+            assert!(StepWhen::parse(bad).is_none(), "{bad}");
+        }
+    }
+
+    #[test]
+    fn kill_gate_holds_past_deadline_until_the_full_current_cohort_is_zero() {
+        use crate::sense::{SquadCount, SenseUpdate};
         let (mut i, now) = instance();
         let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None };
         let mut steps = std::collections::HashMap::new();
-        steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1), step(StepWhen::parse("!0x9243dffb|600").unwrap(), 2)]);
+        steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1),
+            step(StepWhen::parse("!0x062dd95d:5,6|10").unwrap(), 2)]);
         i.set_mission_steps(steps);
         assert!(i.advance_mission(now));
-        let squad = |index, live| SquadCount { group: 0x9243_DFFB, kind: 1, index, live };
-        assert!(!i.advance_mission(now + Duration::from_secs(1)), "nothing reported alive yet");
-        i.on_squad_counts(&[squad(17, 1), squad(18, 1), SquadCount { group: 0x1234, kind: 1, index: 4, live: 3 }]);
-        i.on_squad_counts(&[squad(17, 0)]);
-        assert!(!i.advance_mission(now + Duration::from_secs(2)), "squad 18 is still up");
-        i.on_squad_counts(&[squad(20, 0), squad(18, 0)]);
-        assert!(i.advance_mission(now + Duration::from_secs(3)), "17 and 18 are down; 20 was never seen alive");
+        let squad = |index, live| SquadCount { group: 0x062D_D95D, kind: 1, index, live };
+        let report = |i: &mut ActivityInstance, counts: Vec<_>| {
+            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts });
+            i.set_sense_ready(true);
+        };
+        report(&mut i, vec![squad(5,1)]);
+        report(&mut i, vec![squad(5,0)]);
+        assert!(!i.advance_mission(now + Duration::from_secs(600)), "missing member cannot time out to success");
+        report(&mut i, vec![squad(6,1)]);
+        report(&mut i, vec![squad(6,-1)]);
+        assert!(!i.advance_mission(now + Duration::from_secs(601)), "negative is not zero");
+        report(&mut i, vec![squad(6,1), squad(6,0)]);
+        i.set_sense_ready(false);
+        assert!(!i.advance_mission(now + Duration::from_secs(602)), "queued delta may supersede zero");
+        i.set_sense_ready(true);
+        assert!(i.advance_mission(now + Duration::from_secs(603)));
         assert_eq!(i.sensor_payload.as_deref(), Some(&[2u8][..]));
+    }
+
+    #[test]
+    fn rejoin_activity_and_slice_changes_invalidate_kill_evidence() {
+        let (mut i, now) = instance();
+        let epoch = i.squad_epoch();
+        i.on_client_message(&join_request([0;4]), now);
+        assert_ne!(epoch, i.squad_epoch());
+        let epoch = i.squad_epoch();
+        i.set_activity_index(i.activity_index() + 1);
+        assert_ne!(epoch, i.squad_epoch());
+        let mut image = vec![0; 0xC0];
+        image[0xB8..0xBC].copy_from_slice(&104u32.to_le_bytes());
+        image[0xBC..0xC0].copy_from_slice(&123u32.to_le_bytes());
+        i.track_current_slice(&image);
+        let epoch = i.squad_epoch();
+        image[0xB8..0xBC].copy_from_slice(&105u32.to_le_bytes());
+        i.track_current_slice(&image);
+        assert_ne!(epoch, i.squad_epoch());
     }
 
     /// ⭐ A teleport step asks (state 1), finishes (state 3) and drops the group slice-set request,

@@ -28,6 +28,12 @@ The [28 October pilot, clock and combat research](../notes/ps4-56578-pilots-cloc
 distinguishes codec controls from live acceptance and corrects the Dock objective
 titles. Neither portable tests nor a quiet route replay establishes a completed mission.
 
+The [squad-sense gate](../notes/ps4-sensor-sense.md) now requires an explicit
+expected cohort and current positive-to-zero receipts for every member. Its
+deadline holds instead of completing the encounter. Connection, world and
+generation resets invalidate old evidence; decoder errors and backlog hold the
+gate. This is tested host behavior, pending native ending acceptance.
+
 The recovery scan covers logical metadata/padding outside listed payloads. It
 does not cover physical disk free sectors, every embedded asset or retail-update
 decryption. Converter completion, a static codec or a synthetic server response

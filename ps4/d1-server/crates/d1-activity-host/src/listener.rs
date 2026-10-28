@@ -204,6 +204,8 @@ pub struct AhConnection {
     /// target region and transition token can arrive in different deltas. Keep
     /// the baseline on the connection, never in the process-wide codec worker.
     client_authoritative_image: Vec<u8>,
+    /// Native sense baselines and queues belong to this connection/world epoch only.
+    sense: Option<crate::sense::SenseWorker>,
     /// ⭐ How many [`AhEvent::CodecFault`]s this connection has produced. Once this is non-zero the
     /// host is no longer saying anything the client can act on, and the run should be read as
     /// **truncated**, not as a protocol result.
@@ -218,6 +220,7 @@ pub const BAP_TYPE_CLIENT_TO_AH_NOTIFICATION: u16 = 8;
 
 impl AhConnection {
     pub fn new(instance: ActivityInstance, codec: Arc<dyn AhWireCodec>) -> Self {
+        let sense = crate::sense::SenseWorker::from_env(instance.squad_epoch());
         Self {
             conv: BapConversation::with_default_deadline(),
             channel: None,
@@ -234,6 +237,7 @@ impl AhConnection {
             captured: std::collections::BTreeSet::new(),
             client_update_capture: None,
             client_authoritative_image: Vec::new(),
+            sense,
             codec_faults: 0,
         }
     }
@@ -447,12 +451,10 @@ impl AhConnection {
         events.extend(self.capture_once(udt, payload, now));
         // ⭐ Squad live counts (opt-in, D1_AH_SENSE_SCHEMAS): udt 6 is decoded off this thread and
         // the counts land on a later frame. See `crate::sense`.
+        self.drain_sense();
         if udt == 6 {
-            crate::sense::submit(payload);
-        }
-        let counts = crate::sense::drain();
-        if !counts.is_empty() {
-            self.instance.on_squad_counts(&counts);
+            if let Some(sense) = self.sense.as_mut() { sense.submit(payload); }
+            self.instance.set_sense_ready(false);
         }
         if let Some(why) = crate::codec::undecodable_reason(udt) {
             events.push(AhEvent::NotDecoded {
@@ -491,7 +493,21 @@ impl AhConnection {
             });
             events.extend(self.try_push(push));
         }
+        self.drain_sense();
         events
+    }
+
+    fn drain_sense(&mut self) {
+        let epoch = self.instance.squad_epoch();
+        if self.sense.as_ref().is_some_and(|s| s.epoch() != epoch) {
+            self.sense = crate::sense::SenseWorker::from_env(epoch);
+        }
+        if let Some(sense) = self.sense.as_mut() {
+            for update in sense.drain() { self.instance.on_sense_update(update); }
+            self.instance.set_sense_ready(sense.ready());
+        } else {
+            self.instance.set_sense_ready(false);
+        }
     }
 
     /// ⭐⭐ **The one place inner frames become wire frames.** Envelope and seal, in that order.
@@ -564,6 +580,7 @@ impl AhConnection {
     /// too. That second half is what was missing.
     pub fn on_tick(&mut self, now: Instant) -> (Vec<Vec<u8>>, Vec<AhEvent>) {
         let mut events = Vec::new();
+        self.drain_sense();
         // ⛔ Before the secure hello there is nothing to seal *with*, and an unsealed frame is
         // worse than silence - it is the connection reset that killed run
         // `20260809-075545-RUNG33-UNLOCK-98`. A host that has not finished a handshake owes no
