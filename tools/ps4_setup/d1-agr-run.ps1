@@ -18,7 +18,7 @@ param(
     # Session length passed to d1-lab-served.ps1 (its default is 90 minutes).
     [int]$Minutes = 90,
     # A cold shader/content load can take longer than the old 200-second world wait.
-    [ValidateRange(1, 3600)][int]$WorldTimeoutSeconds = 900
+    [ValidateRange(1, 3600)][int]$WorldTimeoutSeconds = 900,
     # The host encodes every mission-step list before it listens; a long schedule (25 steps with
     # dropship pilot images) took about 6 minutes in run sense41, past the old fixed 300 s.
     [ValidateRange(1, 3600)][int]$HostTimeoutSeconds = 900
