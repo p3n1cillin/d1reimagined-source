@@ -44,6 +44,19 @@ fn member_snap_and_move_round_trip_through_56578() {
     body[0x118..0x11c].copy_from_slice(&2u32.to_le_bytes());
     let (other, _) = o.round_trip(&body, 0x10000).expect("changed marker");
     assert_ne!(other.payload, encoded.payload);
+    // Exercise the same sensor-frame builder the host's `clients` control uses.
+    // This catches missing variant setup beyond a standalone object round trip.
+    let line = format!("0x12345678 2 7 1 1 0x80800868 {}",
+        body.iter().map(|b| format!("{b:02x}")).collect::<String>());
+    let client = d1_oracle::sensor::SensorClientRef::parse_line(&line).unwrap();
+    let params = d1_oracle::sensor::SensorPhaseUpdate {
+        gen: 0, name_hash: 0x12345678, name_i8: 16, name_sub: 3,
+        phase: 3, tail: None, clients: vec![client], authority: None,
+    };
+    let with_program = params.encode().expect("host sensor frame with program");
+    let without = d1_oracle::sensor::SensorPhaseUpdate { clients: vec![], ..params }
+        .encode().expect("host sensor frame without program");
+    assert!(with_program.len() > without.len() + 80);
 }
 
 #[test]

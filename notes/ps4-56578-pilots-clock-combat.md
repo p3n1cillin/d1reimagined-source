@@ -124,7 +124,7 @@ still required; no new world-globals message was sent in this investigation.
 
 **Subsequent implementation (Claude, PR #61):** the host now offers
 `D1_AH_WORLD_PERIOD_MS`, disabled by default. With `33.333`, Claude reports five
-world-globals pushes in sense38, a native period of33.333 and an advancing
+world-globals pushes in sense38, a native period of 33.333 and an advancing
 activity time. Single-report trigger arming remains to be checked on a fresh run.
 This supersedes the missing-delivery status above; no additional send was made
 by this investigation.
@@ -194,3 +194,11 @@ The actual active action/ability during the sustained arc pose has not been
 identified. A correct item/grid identity does not prove the selected node or
 loaded ability; the visual resemblance to another class is not proof either.
 No host acknowledgement requirement or emulator cause is established yet.
+
+The earlier staged subclass instance, decoded from the private tutorial inventory,
+has grid field `+0x58 = 0xffff`, not 132; node-selection bytes are zero. This is
+separate from the **definition's** grid identity. Native getter `0x283d60`
+returns null for a grid index of `0xffff`. It is a concrete configuration lead,
+but does not establish that this inventory instance is the runtime ability source:
+the equipped peer's selected grid and active action still need tracing. Do not
+replace node selections with guessed “unlock everything” bytes.
