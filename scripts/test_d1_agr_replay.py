@@ -1,5 +1,6 @@
 """Portable failure controls for the pad replay; no game input or guest access."""
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -111,6 +112,39 @@ class ReplayGates(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, 'no route input sent'):
                     player.scan_spawn()
             self.assertEqual(command.call_count, 2)
+
+    def test_sparse_retrack_selects_native_unit_and_facing_for_remaining_walks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player = replay.Replay(root, root/'host', root/'garage', root/'pad')
+            for count in (0, 11, 29, 30, 80):
+                player.tracked.write_text(json.dumps(list(range(1, count + 1))))
+                player.select_retracked_position()
+                with patch.object(player, 'command', return_value=['done (1,2,3)']) as command:
+                    player.walk_once('chest', root/'route', 840, 1.3, ())
+                args = command.call_args.args[1]
+                self.assertEqual('--native-unit' in args, count < 30)
+                self.assertEqual('--memory-facing' in args, count < 30)
+                self.assertEqual('--tracked' in args, count >= 30)
+
+    def test_native_failure_stops_replay_without_heuristic_retry(self):
+        player = replay.Replay(Path('run'), Path('host'), Path('garage'), Path('pad'))
+        player.native_unit = True
+        with patch.object(player, 'command', side_effect=RuntimeError('Current Guardian unit unavailable')) as command:
+            with self.assertRaisesRegex(RuntimeError, 'unit unavailable'):
+                player.walk('chest', Path('route'), 840)
+        self.assertEqual(command.call_count, 1)
+
+    def test_invalid_retracking_result_refuses_movement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player = replay.Replay(root, root/'host', root/'garage', root/'pad')
+            for text in ('{}', '[true]', '[0]', '[-1]', '["123"]'):
+                player.tracked.write_text(text)
+                with patch.object(player, 'command') as command:
+                    with self.assertRaisesRegex(RuntimeError, 'Malformed retracking'):
+                        player.select_retracked_position()
+                command.assert_not_called()
 
     ROUTE = [[0, 0, 0], [10, 0, 0], [20, 0, 0], [30, 0, 0]]
 

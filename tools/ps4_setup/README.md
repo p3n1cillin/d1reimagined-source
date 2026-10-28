@@ -84,6 +84,13 @@ correct ammunition, health, clock or staged flyover.
 
 ## Optional 56578 current-unit tracking
 
+After the rifle movement control, `d1-agr-replay.py` now switches its remaining
+walks to this mode automatically if the fresh retrack retains fewer than 30
+copies. This covers the observed 11-copy chest stall. At 30 or more it keeps the
+heuristic tracker. Native mode validates position and facing before route input;
+failure stops the replay without retrying the sparse heuristic set. This fallback
+has portable controls; a fresh lab replay is still required for acceptance.
+
 `d1-walk.py --native-unit` reads the local player's current unit through the
 guarded native player/object tables. It verifies the object's self handle and
 agreement of three transform copies, and resolves the link again on each sample.
