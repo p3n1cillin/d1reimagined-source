@@ -85,6 +85,17 @@ class Replay:
             if resumed:
                 lines = self.walk_once(f'{name}-resume', resumed, seconds, tolerance, extra)
                 done = bool(lines and lines[-1].startswith('done '))
+            # Run sense45 stalled twice at the same spot against the Wall's fan (x about 387);
+            # a sidestep and a jump got past it. Nudge, alternating sides, and resume again.
+            for side in ('D', 'A', 'D'):
+                if done:
+                    break
+                resumed = self.resume_route(name, route, lines)
+                if not resumed:
+                    break
+                self.pad(f'Hold:{side}:600', 'NumPad2')
+                lines = self.walk_once(f'{name}-nudge', resumed, seconds, tolerance, extra)
+                done = bool(lines and lines[-1].startswith('done '))
         if strict and not done:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
