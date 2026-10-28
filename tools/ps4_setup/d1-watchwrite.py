@@ -28,7 +28,10 @@ k32.ContinueDebugEvent.argtypes = [wt.DWORD, wt.DWORD, wt.DWORD]
 k32.GetThreadContext.argtypes = [wt.HANDLE, ctypes.c_void_p]
 k32.SetThreadContext.argtypes = [wt.HANDLE, ctypes.c_void_p]
 k32.SuspendThread.argtypes = [wt.HANDLE]
+k32.SuspendThread.restype = wt.DWORD
 k32.ResumeThread.argtypes = [wt.HANDLE]
+k32.ResumeThread.restype = wt.DWORD
+k32.GetExitCodeThread.argtypes = [wt.HANDLE, ctypes.POINTER(wt.DWORD)]
 k32.CloseHandle.argtypes = [wt.HANDLE]
 k32.OpenThread.restype = wt.HANDLE
 k32.OpenThread.argtypes = [wt.DWORD, wt.BOOL, wt.DWORD]
@@ -87,6 +90,37 @@ def arm(h, addrs, on=True):
     c.set64(OFF_DR7, dr7_for(len(addrs)) if on else 0)
     c.set64(OFF_DR6, 0)
     return bool(c.put(h))
+
+
+def disarm_threads(threads, addrs):
+    """Stop the whole known thread set before clearing it, then release it together.
+
+    Resuming one thread while another still has DR7 armed can queue a fresh trap
+    during cleanup. Thread-creation events must also be disarmed in the drain below.
+    """
+    suspended = []
+    cleared = 0
+    try:
+        for tid, handle in list(threads.items()):
+            if isinstance(tid, str):
+                continue
+            if k32.SuspendThread(handle) == 0xFFFFFFFF:
+                exit_code = wt.DWORD()
+                if not k32.GetExitCodeThread(handle, ctypes.byref(exit_code)) or exit_code.value == 259:
+                    raise RuntimeError(f'Cannot suspend live thread {tid} for debug-register cleanup')
+                continue
+            suspended.append((tid, handle))
+        for tid, handle in suspended:
+            if not arm(handle, addrs, on=False):
+                raise RuntimeError(f'Failed to clear debug registers on thread {tid}')
+            check = Ctx()
+            if not check.get(handle) or check.u64(OFF_DR7) != 0:
+                raise RuntimeError(f'DR7 clear was not verified on thread {tid}')
+            cleared += 1
+    finally:
+        for _, handle in reversed(suspended):
+            k32.ResumeThread(handle)
+    return cleared
 
 
 def main():
@@ -216,10 +250,7 @@ def main():
                     cont = DBG_EXCEPTION_NOT_HANDLED
             k32.ContinueDebugEvent(epid, tid, cont)
     finally:
-        for tid, h in list(threads.items()):
-            if isinstance(tid, str):        # '_attach_bp', '_avs' bookkeeping keys
-                continue
-            k32.SuspendThread(h); arm(h, addrs, on=False); k32.ResumeThread(h)
+        cleared = disarm_threads(threads, addrs)
         # Drain before detaching: a hit already raised on another thread is still queued, and once
         # detached it reaches the emulator as an unhandled 0x80000004 and kills it (13 Oct, run
         # bundle7d, at the watched store 0x409CAD). Swallow single-steps until the queue is quiet.
@@ -241,12 +272,22 @@ def main():
                     cont = DBG_EXCEPTION_NOT_HANDLED
             elif code == CREATE_THREAD:
                 hthr, = struct.unpack_from('<Q', ev.raw, 16); threads[tid] = hthr
+                # This event can have been queued before the first disarm pass. A thread
+                # inherited with DR7 set might not call the watched function until minutes
+                # after detach (sense32, 28 Oct). Merely remembering its handle is unsafe.
+                if not arm(hthr, addrs, on=False):
+                    raise RuntimeError(f'Failed to disarm teardown-created thread {tid}')
+                quiet_until = time.time() + 3.0
+            elif code == EXIT_THREAD:
+                threads.pop(tid, None)
             elif code in (CREATE_PROCESS, LOAD_DLL):
                 hfile, = struct.unpack_from('<Q', ev.raw, 16)
                 if hfile: k32.CloseHandle(hfile)
             k32.ContinueDebugEvent(epid, tid, cont)
-        k32.DebugActiveProcessStop(pid)
-        log(event='detached', hits=hits)
+        cleared = disarm_threads(threads, addrs)
+        if not k32.DebugActiveProcessStop(pid):
+            raise RuntimeError(f'DebugActiveProcessStop failed ({ctypes.get_last_error()})')
+        log(event='detached', hits=hits, cleared_threads=cleared, dr7_verified_zero=True)
     return 0
 
 

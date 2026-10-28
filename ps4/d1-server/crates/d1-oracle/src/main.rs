@@ -280,6 +280,20 @@ enum AhCmd {
 /// `d1-oracle sensor …` - see [`d1_oracle::sensor`] for the frame grammar and the executed proof.
 #[derive(Subcommand)]
 enum SensorCmd {
+    /// Decode an ordered, private udt-6 capture with native-observed kind:B-tag mappings.
+    DecodeSense {
+        #[arg(long)]
+        input: PathBuf,
+        /// New JSONL file; existing files are refused.
+        #[arg(long)]
+        out: PathBuf,
+        /// Repeat KIND:TAG, e.g. 1:0x80800357, from sensor-clients --all --types.
+        #[arg(long, required = true)]
+        schema: Vec<String>,
+        /// Input is timestamp<TAB>udt6<TAB>hex with optional other event lines.
+        #[arg(long)]
+        tsv: bool,
+    },
     /// Synthetic controls for the 56578 objective-list handover (no game input needed).
     ObjectiveControls,
     /// Build a 56578 visible objective handover in a sensor list; does not publish it.
@@ -637,6 +651,79 @@ fn run_sensor(_cli: &Cli, cmd: &SensorCmd) -> anyhow::Result<ExitCode> {
     use d1_oracle::sensor::{self, SensorPhaseUpdate};
 
     match cmd {
+        SensorCmd::DecodeSense {
+            input,
+            out,
+            schema,
+            tsv,
+        } => {
+            use std::io::{BufRead, Write};
+            let mut schemas = std::collections::HashMap::new();
+            for mapping in schema {
+                let (kind, tag) = mapping
+                    .split_once(':')
+                    .ok_or_else(|| anyhow::anyhow!("expected KIND:TAG"))?;
+                let kind = u8::try_from(parse_int(kind).map_err(anyhow::Error::msg)?)?;
+                let tag = u32::try_from(parse_int(tag).map_err(anyhow::Error::msg)?)?;
+                if let Some(previous) = schemas.insert(kind, tag) {
+                    anyhow::ensure!(previous == tag, "conflicting B tags for kind {kind:#x}");
+                }
+            }
+            let mut decoder = d1_oracle::sensor_sense::SenseDecoder::new(schemas)?;
+            let source = std::io::BufReader::new(std::fs::File::open(input)?);
+            let mut output = std::io::BufWriter::new(
+                std::fs::OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(out)?,
+            );
+            let mut count = 0;
+            for (index, line) in source.lines().enumerate() {
+                let line = line?;
+                let (stamp, payload) = if *tsv {
+                    let Some((stamp, payload)) = line.split_once("\tudt6\t") else {
+                        continue;
+                    };
+                    (Some(stamp), payload)
+                } else {
+                    if line.trim().is_empty() {
+                        continue;
+                    }
+                    (None, line.trim())
+                };
+                let decoded = (|| -> anyhow::Result<_> {
+                    anyhow::ensure!(payload.is_ascii(), "udt 6 hex input must be ASCII");
+                    let payload = hex(payload.trim())?;
+                    Ok(decoder.decode(&payload)?)
+                })();
+                match decoded {
+                    Ok(frame) => {
+                        writeln!(
+                            output,
+                            "{}",
+                            serde_json::json!({"line": index + 1, "stamp": stamp, "frame": frame})
+                        )?;
+                        count += 1;
+                    }
+                    Err(error) => {
+                        writeln!(
+                            output,
+                            "{}",
+                            serde_json::json!({"line": index + 1, "error": error.to_string()})
+                        )?;
+                        output.flush()?;
+                        anyhow::bail!(
+                            "udt 6 line {} failed; partial output is observational only: {error}",
+                            index + 1
+                        );
+                    }
+                }
+            }
+            output.flush()?;
+            anyhow::ensure!(count != 0, "input contained no udt 6 records");
+            println!("Decoded {count} packets into {}; observations do not establish a complete baseline or kills", out.display());
+            Ok(ExitCode::SUCCESS)
+        }
         SensorCmd::ObjectiveControls => {
             if let Err(error) = d1_oracle::sensor_objective::controls() {
                 eprintln!("FAIL objective controls: {error:#}");

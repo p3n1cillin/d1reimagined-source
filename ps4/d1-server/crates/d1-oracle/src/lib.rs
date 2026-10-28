@@ -76,6 +76,7 @@ pub mod oodle;
 pub mod profile;
 pub mod sensor;
 pub mod sensor_objective;
+pub mod sensor_sense;
 pub mod registry;
 pub mod roster;
 pub mod schema;
