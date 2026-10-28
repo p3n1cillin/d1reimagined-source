@@ -31,6 +31,11 @@ Start-Sleep 3
 $B = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578'
 $D = "F:\d1\d1preservation-main\cfw-staging\$Name"
 New-Item -ItemType Directory -Force $D | Out-Null
+# Milestones also go to RUN\launcher.log: d1-agr-replay.py waits there for "in gameplay (112)" even
+# when nobody redirected this script's output (run divide22 waited forever for a boot.log).
+$LaunchLog = "$D\launcher.log"
+Set-Content -LiteralPath $LaunchLog -Value "launch $(Get-Date -Format o) $Name"
+function Say($m) { $m; Add-Content -LiteralPath $LaunchLog -Value $m }
 $L = 'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt'
 $pad = 'F:\d1\tools\d1-pad.ps1'
 # The Breach props (lights, barrier, rifle) are created by the client only while it holds their
@@ -63,7 +68,7 @@ function WaitFor($pattern, $seconds) {
             (Select-String -Path $L -Pattern $pattern -Quiet)) { return $true }
         Start-Sleep 3; $t += 3
     }
-    "TIMEOUT waiting for $pattern"; return $false
+    Say "TIMEOUT waiting for $pattern"; return $false
 }
 function Skip { & $pad -Keys NumPad2 | Out-Null; Start-Sleep 1; & $pad -Keys NumPad6 | Out-Null }
 Start-Sleep 20
@@ -74,7 +79,7 @@ if (WaitFor "Entering state 'character:prologue'" 300) {
     # client leaves the prologue (run agr-breach12 sat in it for ten minutes).
     for ($k = 0; $k -lt 4; $k++) {
         Start-Sleep 8; Skip
-        if (WaitFor "Leaving state 'character:prologue'" 20) { 'prologue skipped'; break }
+        if (WaitFor "Leaving state 'character:prologue'" 20) { Say 'prologue skipped'; break }
     }
 }
 $w = $null
@@ -83,10 +88,10 @@ if ($WatchExec) {
     foreach ($p in $Peek) { $a += @('--peek', $p) }
     $w = Start-Process python -ArgumentList $a -PassThru -WindowStyle Hidden
 }
-if (WaitFor "Entering state 'activity:in_world'" 200) { Start-Sleep 8; Skip; Start-Sleep 10; Skip; 'cutscenes skipped' }
-if (WaitFor "transitioning:teleportation' due to completed" 150) { 'in gameplay (112)' }
+if (WaitFor "Entering state 'activity:in_world'" 200) { Start-Sleep 8; Skip; Start-Sleep 10; Skip; Say 'cutscenes skipped' }
+if (WaitFor "transitioning:teleportation' due to completed" 150) { Say 'in gameplay (112)' }
 Start-Sleep 10
 & 'F:\d1\tools\d1-shot.ps1' -Out "$D\gameplay.png" | Out-Null
 if ($w) { Wait-Process -Id $w.Id -Timeout ($WatchSeconds + 30) -ErrorAction SilentlyContinue }
 python -I F:\d1\tools\d1-winguest.py masks 2>&1 | Select-Object -Last 1
-"run dir: $D"
+Say "run dir: $D"

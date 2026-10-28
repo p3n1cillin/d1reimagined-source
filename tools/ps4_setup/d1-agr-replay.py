@@ -1,6 +1,7 @@
 """Bounded pad-only replay from the 56578 tutorial spawn to the Divide.
 
-Run alongside d1-agr-run.ps1, redirecting that launcher's output to RUN/boot.log.
+Run alongside d1-agr-run.ps1. The launcher records its milestones in RUN/launcher.log; a redirected
+RUN/boot.log is read too.
 Native fixtures and logs stay in RUN; this script neither boots nor patches the client.
 See README.md for preparation and the limits of this diagnostic route.
 """
@@ -35,9 +36,11 @@ def contains(path, needle, offset=0):
 
 
 def wait_for(path, needle, seconds, *, offset=0, clock=time.monotonic, sleep=time.sleep):
+    """True once `needle` appears in `path` (or in any of a tuple of paths), False at the deadline."""
+    paths = path if isinstance(path, (list, tuple)) else (path,)
     deadline = clock() + seconds
     while True:
-        if contains(path, needle, offset):
+        if any(contains(one, needle, offset) for one in paths):
             return True
         if clock() >= deadline:
             return False
@@ -170,7 +173,7 @@ class Replay:
     def play(self, boot_timeout, resume):
         if not resume:
             # The launcher owns input during boot. Do not race its cinematic skips.
-            if not wait_for(self.run/'boot.log', 'in gameplay (112)', boot_timeout):
+            if not wait_for((self.run/'launcher.log', self.run/'boot.log'), 'in gameplay (112)', boot_timeout):
                 raise RuntimeError('Boot did not reach gameplay; no route input sent')
             self.scan_spawn()
             self.walk('enter-wall', self.routes/'enter_the_wall.json', 650, 2.5)

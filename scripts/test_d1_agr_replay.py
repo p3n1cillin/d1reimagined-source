@@ -34,6 +34,18 @@ class ReplayGates(unittest.TestCase):
             self.assertFalse(replay.wait_for(Path('boot'), 'gameplay', 3,
                 clock=lambda: now[0], sleep=lambda seconds: now.__setitem__(0, now[0] + seconds)))
 
+    def test_boot_milestone_is_found_in_either_launcher_log_or_redirected_boot_log(self):
+        with tempfile.TemporaryDirectory() as directory:
+            run = Path(directory)
+            logs = (run/'launcher.log', run/'boot.log')
+            (run/'launcher.log').write_text('launch\ncutscenes skipped\nin gameplay (112)\n')
+            self.assertTrue(replay.wait_for(logs, 'in gameplay (112)', 0, sleep=lambda _: None))
+            (run/'launcher.log').unlink()
+            (run/'boot.log').write_text('in gameplay (112)\n')
+            self.assertTrue(replay.wait_for(logs, 'in gameplay (112)', 0, sleep=lambda _: None))
+            (run/'boot.log').write_text('cutscenes skipped\n')
+            self.assertFalse(replay.wait_for(logs, 'in gameplay (112)', 0, sleep=lambda _: None))
+
     def test_waiting_for_rifle_trigger_is_not_the_trigger(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory)/'host.log'
