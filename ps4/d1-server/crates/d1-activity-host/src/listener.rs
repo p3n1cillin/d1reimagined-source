@@ -104,7 +104,8 @@ pub enum AhEvent {
 /// not bury the run log.
 pub const PAYLOAD_CAPTURE_LIMIT: usize = 2048;
 
-/// Extra changed client-update payloads per connection, beyond the normal first capture.
+/// Extra changed client-update payloads per connection (udt 21, 47 and the udt 6 sense update),
+/// beyond the normal first capture.
 /// At 2 KiB per payload this bounds additional raw payload log text to about 1 MiB.
 pub const CLIENT_UPDATE_CAPTURE_LIMIT: usize = 256;
 
@@ -113,8 +114,8 @@ struct ClientUpdateCapture {
     remaining: usize,
     after: Duration,
     started: Option<Instant>,
-    previous: [Option<Vec<u8>>; 2],
-    window_seen: [bool; 2],
+    previous: [Option<Vec<u8>>; 3],
+    window_seen: [bool; 3],
 }
 
 impl ClientUpdateCapture {
@@ -122,6 +123,9 @@ impl ClientUpdateCapture {
         let slot = match udt {
             21 => 0,
             47 => 1,
+            // The client's raw sensor_sense_update: squad and object state it reports back. Only
+            // the first one was ever logged, which is not enough to decode it.
+            6 => 2,
             _ => return false,
         };
         if self.remaining == 0 {
@@ -233,16 +237,16 @@ impl AhConnection {
         }
     }
 
-    /// Capture up to `count` additional changed udt-21/47 payloads, capped at 256.
-    /// The delay starts at the first received 21/47 payload, not process startup.
+    /// Capture up to `count` additional changed udt-6/21/47 payloads, capped at 256.
+    /// The delay starts at the first received 6/21/47 payload, not process startup.
     /// Existing first-payload and every-incident captures remain unchanged.
     pub fn with_client_update_capture(mut self, count: usize, after: Duration) -> Self {
         self.client_update_capture = (count != 0).then(|| ClientUpdateCapture {
             remaining: count.min(CLIENT_UPDATE_CAPTURE_LIMIT),
             after,
             started: None,
-            previous: [None, None],
-            window_seen: [false, false],
+            previous: [None, None, None],
+            window_seen: [false, false, false],
         });
         self
     }
@@ -591,7 +595,7 @@ impl AhConnection {
     }
 
     /// The **first** payload seen for each `user_defined_type` on this connection, as hex.
-    /// Opt-in diagnostics also record bounded 21/47 baselines/changes in a selected window.
+    /// Opt-in diagnostics also record bounded 6/21/47 baselines/changes in a selected window.
     ///
     /// Once per udt, not once per message: the keepalive alone arrived ten times in the run that
     /// motivated this, and ten copies of one byte is not ten vectors. The first is the one worth
@@ -855,6 +859,20 @@ mod tests {
         assert_eq!(c.capture_once(37, &[1], now).len(), 1);
         assert!(c.capture_once(37, &[2], now).is_empty());
         assert_eq!(c.client_update_capture.as_ref().unwrap().remaining, 1);
+        assert!(c.pending_pushes.is_empty());
+    }
+
+    #[test]
+    fn client_update_capture_includes_the_sense_update() {
+        let now = Instant::now();
+        let mut c = conn(Arc::new(RawStructCodec))
+            .with_client_update_capture(2, Duration::ZERO);
+        // udt 6 (sensor_sense_update): the first, then only changed payloads, from the shared budget.
+        assert_eq!(c.capture_once(6, &[0x80, 1], now).len(), 1);
+        assert!(c.capture_once(6, &[0x80, 1], now).is_empty());
+        assert_eq!(c.capture_once(6, &[0x80, 2], now).len(), 1);
+        assert_eq!(c.capture_once(6, &[0x80, 3], now).len(), 1);
+        assert!(c.capture_once(6, &[0x80, 4], now).is_empty(), "the budget of 2 is spent");
         assert!(c.pending_pushes.is_empty());
     }
 
