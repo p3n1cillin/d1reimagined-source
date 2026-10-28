@@ -29,6 +29,17 @@ movement driver. The boot launcher owns cinematic input; the replay waits for
 Every run needs its own directory, current contained-host log and fresh tracking.
 The idle guard must remain active; stick movement is required for inactivity.
 
+Before leaving the title screen, the launcher waits for port 4110 to be listening
+under the contained activity-host executable started by this run. A stale listener
+or an unrelated process cannot satisfy that check. This avoids starting the client
+activity while the cold host is still constructing its codecs.
+
+The launcher waits up to `-WorldTimeoutSeconds 900` for the native `activity:in_world`
+milestone before sending revival skips. It exits with code 2 on that timeout or
+on missing completed teleportation. A timeout does not stop the contained lab;
+inspect its owned processes and native log before recovering. Raise the replay's
+`--boot-timeout` too if the combined boot and world loading need more time.
+
 First promote a **previously native-verified** full schedule and its final Divide
 list in private staging. The list must already be the final `%96|900` step:
 

@@ -16,7 +16,9 @@ param(
     # -Geared: the old fixture (geared inventory and roster, hand cannon in hand, no rifle grant).
     [switch]$Geared,
     # Session length passed to d1-lab-served.ps1 (its default is 90 minutes).
-    [int]$Minutes = 90
+    [int]$Minutes = 90,
+    # A cold shader/content load can take longer than the old 200-second world wait.
+    [ValidateRange(1, 3600)][int]$WorldTimeoutSeconds = 900
 )
 # A Guardian Rises tutorial lab boot: title (X), skip the opening Mars
 # cinematic in character:prologue (X, then O - left playing it can trip the BLOCK_DETECT watchdog),
@@ -70,9 +72,31 @@ function WaitFor($pattern, $seconds) {
     }
     Say "TIMEOUT waiting for $pattern"; return $false
 }
-function Skip { & $pad -Keys NumPad2 | Out-Null; Start-Sleep 1; & $pad -Keys NumPad6 | Out-Null }
+function Skip {
+    & $pad -Keys 'Hold:A:80,Hold:D:80' | Out-Null
+    & $pad -Keys NumPad2 | Out-Null; Start-Sleep 1; & $pad -Keys NumPad6 | Out-Null
+}
+function WaitForHost($seconds) {
+    $deadline = (Get-Date).AddSeconds($seconds)
+    while ((Get-Date) -lt $deadline) {
+        foreach ($listener in @(Get-NetTCPConnection -LocalPort 4110 -State Listen -ErrorAction SilentlyContinue)) {
+            $server = Get-Process -Id $listener.OwningProcess -ErrorAction SilentlyContinue
+            if ($server -and $server.StartTime -ge $runStartedAt -and
+                $server.Path -eq 'F:\d1\d1preservation-main\d1-server\target\release\d1-activity-host.exe') {
+                Say "activity host ready (pid $($server.Id), port 4110)"
+                return $true
+            }
+        }
+        Start-Sleep 3
+    }
+    Say 'TIMEOUT waiting for this run''s activity host on port 4110'
+    return $false
+}
 Start-Sleep 20
 if (-not (WaitFor "Entering state 'bootflow:start'" 300)) { exit 2 }
+# A cold host can finish its codec setup after the client reaches the title screen.
+# Starting the activity first produces Currant and leaves an error dialog waiting for input.
+if (-not (WaitForHost 300)) { exit 2 }
 Start-Sleep 6; & $pad -Keys NumPad2 | Out-Null
 if (WaitFor "Entering state 'character:prologue'" 300) {
     # A skip can be lost (focus, or pressed before the cinematic accepts input): retry until the
@@ -88,8 +112,10 @@ if ($WatchExec) {
     foreach ($p in $Peek) { $a += @('--peek', $p) }
     $w = Start-Process python -ArgumentList $a -PassThru -WindowStyle Hidden
 }
-if (WaitFor "Entering state 'activity:in_world'" 200) { Start-Sleep 8; Skip; Start-Sleep 10; Skip; Say 'cutscenes skipped' }
-if (WaitFor "transitioning:teleportation' due to completed" 150) { Say 'in gameplay (112)' }
+if (-not (WaitFor "Entering state 'activity:in_world'" $WorldTimeoutSeconds)) { exit 2 }
+Start-Sleep 8; Skip; Start-Sleep 10; Skip; Say 'cutscenes skipped'
+if (-not (WaitFor "transitioning:teleportation' due to completed" 150)) { exit 2 }
+Say 'in gameplay (112)'
 Start-Sleep 10
 & 'F:\d1\tools\d1-shot.ps1' -Out "$D\gameplay.png" | Out-Null
 if ($w) { Wait-Process -Id $w.Id -Timeout ($WatchSeconds + 30) -ErrorAction SilentlyContinue }
