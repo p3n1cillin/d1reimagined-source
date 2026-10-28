@@ -3,6 +3,8 @@
 Position: the client keeps many float triples that track the player (rendering and simulation
 copies). `--scan` finds them: candidates near a known point, kept when they move with the player
 and stay still when it does; the position is the median of the tracked set. No memory writes.
+Optional --native-unit instead follows the identity-checked current player unit;
+--memory-facing then reads that unit's two forward vectors. No scan is needed.
 
 Steering: heading from the last movement, camera turns with the right stick (J/L), walking with
 the left stick (W). Turn rate and sign are calibrated on the first turn. If the direction has
@@ -16,6 +18,12 @@ already been measured, --turn-sign 1 (or -1) prevents a collision slide reversin
       (after a death: a retrack keeping < --min-copies copies is stale; scan the Divide's observed respawns)
 """
 import argparse, ctypes, ctypes.wintypes as wt, json, math, os, statistics, struct, subprocess, sys, time
+import importlib.util
+
+_unit_spec = importlib.util.spec_from_file_location('d1_unit_tracking', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'd1_unit_tracking.py'))
+_unit_tracking = importlib.util.module_from_spec(_unit_spec)
+sys.modules[_unit_spec.name] = _unit_tracking
+_unit_spec.loader.exec_module(_unit_tracking)
 
 src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'd1-winguest.py')).read()
 wg = {'__name__': 'lib'}
@@ -31,6 +39,8 @@ def pad(*keys, gap=150):
 class Client:
     def __init__(self):
         self.p, self.base = wg['open_client']()
+        self.native_unit = False
+        self.unit_handle = None
 
     def triple(self, a):
         try:
@@ -120,7 +130,19 @@ def retrack(client, tracked, near=None, scan_radius=25):
     return tracked
 
 
+def native_sample(client):
+    sample = _unit_tracking.read_unit_position(client.p, client.base)
+    if sample is None:
+        raise RuntimeError('Current Guardian unit is unavailable or inconsistent; no stale position fallback')
+    if client.unit_handle is not None and sample.handle != client.unit_handle:
+        raise RuntimeError('Guardian unit changed (death/respawn); route stopped, inspect before resuming')
+    client.unit_handle = sample.handle
+    return sample
+
+
 def position(client, tracked, near=None):
+    if getattr(client, 'native_unit', False):
+        return native_sample(client).position
     pts = [t for t in (client.triple(a) for a in tracked) if plausible(t)]
     if near:
         pts = [t for t in pts if math.dist(t[:2], near[:2]) < 25] or pts
@@ -169,6 +191,12 @@ def facing_from(vectors):
 
 
 def facing(client, tracked):
+    if getattr(client, 'native_unit', False):
+        sample = native_sample(client)
+        heading = _unit_tracking.read_unit_facing(client.p, sample.address)
+        if heading is None:
+            raise RuntimeError('Current Guardian forward vectors are unavailable or inconsistent')
+        return heading
     vectors = []
     for addr in tracked:
         for off in FACING_OFFSETS:
@@ -234,6 +262,8 @@ def main():
     ap.add_argument('--scan')
     ap.add_argument('--out')
     ap.add_argument('--tracked')
+    ap.add_argument('--native-unit', action='store_true',
+                    help='56578: read the current player unit instead of scanned copies; stop on unit loss/change')
     ap.add_argument('--route')
     ap.add_argument("--tolerance", type=float, default=2.5)
     ap.add_argument("--radius", type=float, default=25)
@@ -253,6 +283,8 @@ def main():
     ap.add_argument('--min-copies', type=int, default=30,
                     help='with --respawns: a retrack keeping fewer copies than this is treated as stale')
     a = ap.parse_args()
+    if a.native_unit and (a.scan or a.retrack):
+        ap.error('--native-unit cannot be combined with scanning or retracking')
     if a.turn_rate is not None and (not math.isfinite(a.turn_rate) or a.turn_rate <= 0):
         ap.error('--turn-rate must be a finite positive number in radians/second')
     if a.keepalive:
@@ -262,12 +294,15 @@ def main():
             time.sleep(min(KEEPALIVE_S, max(0.0, end - time.time())))
         return
     c = Client()
+    c.native_unit = a.native_unit
     if a.scan:
         addrs = scan_track(c, [float(v) for v in a.scan.split(',')], a.radius)
         json.dump(addrs, open(a.out, 'w'))
         return
-    with open(a.tracked) as tracked_file:
-        tracked = json.load(tracked_file)
+    tracked = []
+    if not a.native_unit:
+        with open(a.tracked) as tracked_file:
+            tracked = json.load(tracked_file)
     if a.retrack:
         respawns = [[float(v) for v in p.split(',')] for p in a.respawns.split(';') if p.strip()]
         tracked = retrack_or_rescan(c, tracked, respawns, a.radius, a.min_copies)
