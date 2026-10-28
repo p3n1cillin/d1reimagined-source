@@ -183,13 +183,26 @@ class ReplayGates(unittest.TestCase):
             route = resumed[1][resumed[1].index('--route') + 1]
             self.assertEqual(replay.json.loads(Path(route).read_text()), self.ROUTE[2:])
 
-    def test_second_stall_still_stops_input(self):
+    def test_repeated_stall_nudges_then_stops_input(self):
+        # After a failed resume: up to three sidestep-and-jump nudges, each followed by a resume.
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            player, command = self.route_player(root, ['stopped (19, 1, 0)', 'stopped (21, 0, 0)'])
+            stalls = ['stopped (19, 1, 0)', 'stopped (21, 0, 0)'] + ['pad', 'stopped (21, 0, 0)'] * 3
+            player, command = self.route_player(root, stalls)
             with command as walked, self.assertRaisesRegex(RuntimeError, 'no subsequent input sent'):
                 player.walk('leg', root/'route.json', 60)
-            self.assertEqual(walked.call_count, 2)
+            self.assertEqual(walked.call_count, 8)
+            self.assertEqual([c.args[0] for c in walked.call_args_list][2::2], ['pad'] * 3)
+
+    def test_nudge_gets_past_a_second_stall(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player, command = self.route_player(
+                root, ['stopped (19, 1, 0)', 'stopped (21, 0, 0)', 'pad', 'done (30, 0, 0)'])
+            with command as walked:
+                self.assertTrue(player.walk('leg', root/'route.json', 60))
+            self.assertIn('Hold:D:600,NumPad2', walked.call_args_list[2].args[1])
+            self.assertEqual(walked.call_args_list[3].args[0], 'leg-nudge')
 
     def test_unparsed_walker_output_does_not_resume(self):
         with tempfile.TemporaryDirectory() as directory:
