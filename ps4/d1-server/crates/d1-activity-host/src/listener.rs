@@ -106,8 +106,9 @@ pub const PAYLOAD_CAPTURE_LIMIT: usize = 2048;
 
 /// Extra changed client-update payloads per connection (udt 21, 47 and the udt 6 sense update),
 /// beyond the normal first capture.
-/// At 2 KiB per payload this bounds additional raw payload log text to about 1 MiB.
-pub const CLIENT_UPDATE_CAPTURE_LIMIT: usize = 256;
+/// At 2 KiB per payload this bounds additional raw payload log text to about 8 MiB. Run sense35
+/// spent 256 before its first enemy kill, so the kill's sense update went unrecorded.
+pub const CLIENT_UPDATE_CAPTURE_LIMIT: usize = 2048;
 
 /// Opt-in diagnostics only. No protocol state, authority or outgoing message is changed.
 struct ClientUpdateCapture {
@@ -237,7 +238,7 @@ impl AhConnection {
         }
     }
 
-    /// Capture up to `count` additional changed udt-6/21/47 payloads, capped at 256.
+    /// Capture up to `count` additional changed udt-6/21/47 payloads, capped at [`CLIENT_UPDATE_CAPTURE_LIMIT`].
     /// The delay starts at the first received 6/21/47 payload, not process startup.
     /// Existing first-payload and every-incident captures remain unchanged.
     pub fn with_client_update_capture(mut self, count: usize, after: Duration) -> Self {
@@ -444,6 +445,15 @@ impl AhConnection {
         let mut events = Vec::new();
         // ⭐ Deliberate non-decode, stated as such. See `AhEvent::NotDecoded`.
         events.extend(self.capture_once(udt, payload, now));
+        // ⭐ Squad live counts (opt-in, D1_AH_SENSE_SCHEMAS): udt 6 is decoded off this thread and
+        // the counts land on a later frame. See `crate::sense`.
+        if udt == 6 {
+            crate::sense::submit(payload);
+        }
+        let counts = crate::sense::drain();
+        if !counts.is_empty() {
+            self.instance.on_squad_counts(&counts);
+        }
         if let Some(why) = crate::codec::undecodable_reason(udt) {
             events.push(AhEvent::NotDecoded {
                 user_defined_type: udt,

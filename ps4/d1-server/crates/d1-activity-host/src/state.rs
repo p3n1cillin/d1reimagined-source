@@ -170,6 +170,10 @@ pub enum StepWhen {
     /// [`trigger_report`]), or N seconds after the previous step. Each report is used once, so a
     /// trigger that fires before its step is due (two armed at once) still counts.
     OnTrigger { group: u32, kind: u8, index: u16, timeout: Duration },
+    /// `!G|N`: when every kind-1 squad of sensor group G that the client has reported alive
+    /// (udt 6 squad B `+0x0C` > 0, see [`crate::sense`]) reports 0 live members, or N seconds after
+    /// the previous step. A kill-gated objective ("Clear Out the Fallen"); needs `D1_AH_SENSE_SCHEMAS`.
+    OnSquadsCleared { group: u32, timeout: Duration },
 }
 
 /// A udt-18 struct image carrying one incident (see [`ActivityInstance::incident_due`]).
@@ -214,6 +218,12 @@ impl StepWhen {
             };
             let (group, kind, index) = (num(f.next()?)?, num(f.next()?)?, num(f.next()?)?);
             return Some(Self::OnTrigger { group, kind: kind.try_into().ok()?, index: index.try_into().ok()?, timeout: secs(n)? });
+        }
+        if let Some(rest) = s.strip_prefix('!') {
+            let (group, n) = rest.split_once('|')?;
+            let group = group.trim();
+            let group = group.strip_prefix("0x").map_or_else(|| group.parse().ok(), |h| u32::from_str_radix(h, 16).ok())?;
+            return Some(Self::OnSquadsCleared { group, timeout: secs(n)? });
         }
         if let Some(rest) = s.strip_prefix('%') {
             let (slice, n) = rest.split_once('|')?;
@@ -360,6 +370,8 @@ pub struct ActivityInstance {
     current_slice: Option<u32>,
     /// Player-trigger reports (incident 3403) by name, and whether a step has used each.
     trigger_reports: Vec<((u32, u8, u16), bool)>,
+    /// Squad live-member counts from udt 6 (see [`crate::sense`]): name -> (count, ever above 0).
+    squad_live: std::collections::HashMap<(u32, u8, i16), (i32, bool)>,
     /// Host incidents waiting to be sent (see [`MissionStep::incident`]).
     pending_incidents: Vec<(u32, Vec<u8>)>,
     /// ⭐ `D1_AH_CONTROL_FILE`: lines `incident TYPE BODYHEX` queue host incidents on demand
@@ -501,6 +513,7 @@ impl ActivityInstance {
             incidents: Vec::new(),
             current_slice: None,
             trigger_reports: Vec::new(),
+            squad_live: std::collections::HashMap::new(),
             pending_incidents: Vec::new(),
             control_file: None,
             control_builder: None,
@@ -1381,6 +1394,29 @@ impl ActivityInstance {
         }
     }
 
+    /// Record squad live-member counts the client reported (udt 6, see [`crate::sense`]).
+    pub fn on_squad_counts(&mut self, counts: &[crate::sense::SquadCount]) {
+        for c in counts {
+            let e = self.squad_live.entry((c.group, c.kind, c.index)).or_insert((0, false));
+            if e.0 != c.live {
+                tracing::info!("⭐ squad {:#010x}/{:#x}/{} live members {} -> {}", c.group, c.kind, c.index, e.0, c.live);
+            }
+            *e = (c.live, e.1 || c.live > 0);
+        }
+    }
+
+    /// True when group G has at least one kind-1 squad that was reported alive, and every such
+    /// squad now reports 0 live members.
+    pub fn squads_cleared(&self, group: u32) -> bool {
+        let seen: Vec<i32> = self
+            .squad_live
+            .iter()
+            .filter(|((g, k, _), (_, alive))| *g == group && *k == 1 && *alive)
+            .map(|(_, (n, _))| *n)
+            .collect();
+        !seen.is_empty() && seen.iter().all(|n| *n <= 0)
+    }
+
     /// Arm the timed mission steps (see [`MissionStep`]).
     pub fn set_mission_steps(&mut self, steps: std::collections::HashMap<u16, Vec<MissionStep>>) {
         self.mission_steps = steps;
@@ -1410,6 +1446,13 @@ impl ActivityInstance {
                     tracing::info!("⭐ mission step {i}: player trigger {group:#010x}/{kind:#x}/{index}");
                 }
                 reported || now.saturating_duration_since(prev) >= timeout
+            }
+            StepWhen::OnSquadsCleared { group, timeout } => {
+                let cleared = self.squads_cleared(group);
+                if cleared {
+                    tracing::info!("⭐ mission step {i}: every squad of {group:#010x} the client reported alive is down");
+                }
+                cleared || now.saturating_duration_since(prev) >= timeout
             }
             StepWhen::OnSlice { slice, timeout } => {
                 let here = self.current_slice == Some(slice);
@@ -1872,6 +1915,29 @@ mod tests {
         assert!(!i.advance_mission(now + Duration::from_secs(30)));
         assert!(i.advance_mission(now + Duration::from_secs(91)), "no report: the timeout fires step 2");
         assert_eq!(i.sensor_payload.as_deref(), Some(&[3u8][..]));
+    }
+
+    /// ⭐ `!G|N` fires once every squad of G reported alive is down - not on a squad never seen
+    /// alive, and not while one is still up (run sense35: Divide squad 17 went 1 -> 0 on a kill).
+    #[test]
+    fn a_squads_cleared_step_waits_for_every_squad_seen_alive() {
+        use crate::sense::SquadCount;
+        assert_eq!(StepWhen::parse("!0x9243dffb|600"),
+            Some(StepWhen::OnSquadsCleared { group: 0x9243_DFFB, timeout: Duration::from_secs(600) }));
+        let (mut i, now) = instance();
+        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None };
+        let mut steps = std::collections::HashMap::new();
+        steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1), step(StepWhen::parse("!0x9243dffb|600").unwrap(), 2)]);
+        i.set_mission_steps(steps);
+        assert!(i.advance_mission(now));
+        let squad = |index, live| SquadCount { group: 0x9243_DFFB, kind: 1, index, live };
+        assert!(!i.advance_mission(now + Duration::from_secs(1)), "nothing reported alive yet");
+        i.on_squad_counts(&[squad(17, 1), squad(18, 1), SquadCount { group: 0x1234, kind: 1, index: 4, live: 3 }]);
+        i.on_squad_counts(&[squad(17, 0)]);
+        assert!(!i.advance_mission(now + Duration::from_secs(2)), "squad 18 is still up");
+        i.on_squad_counts(&[squad(20, 0), squad(18, 0)]);
+        assert!(i.advance_mission(now + Duration::from_secs(3)), "17 and 18 are down; 20 was never seen alive");
+        assert_eq!(i.sensor_payload.as_deref(), Some(&[2u8][..]));
     }
 
     /// ⭐ A teleport step asks (state 1), finishes (state 3) and drops the group slice-set request,
