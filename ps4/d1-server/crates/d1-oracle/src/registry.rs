@@ -109,12 +109,32 @@ pub fn build(
     for &t in &tags {
         let (slot, index) = tag_slot(t);
         let anchor = idx.get(t).expect("in closure ⇒ in index").anchor;
-        let o = object_start(image, anchor, 0x300).ok_or_else(|| {
-            OracleError::Eboot(format!(
-                "tag {t:#010x}: registry-object start not uniquely recoverable from anchor \
+        // Some small atom payloads contain a second, accidental relative-link
+        // match inside the real descriptor. Use an independently measured
+        // startup cell only when it names this tag and satisfies the same
+        // anchor relation. Unknown/ambiguous descriptors still fail closed.
+        let measured = crate::codec::codec_for(&image.sha256()).and_then(|c| {
+            let candidates: BTreeSet<u64> =
+                c.type_cells
+                    .iter()
+                    .filter(|&&(_, _, tag, _)| tag == t)
+                    .map(|&(_, _, _, object)| object)
+                    .filter(|&object| {
+                        image.u64(object + 0x48).ok().is_some_and(|v| {
+                            object.wrapping_add(0x48).wrapping_add(v) == anchor + 8
+                        })
+                    })
+                    .collect();
+            (candidates.len() == 1).then(|| *candidates.first().unwrap())
+        });
+        let o = object_start(image, anchor, 0x300)
+            .or(measured)
+            .ok_or_else(|| {
+                OracleError::Eboot(format!(
+                    "tag {t:#010x}: registry-object start not uniquely recoverable from anchor \
                  {anchor:#x}"
-            ))
-        })?;
+                ))
+            })?;
         slots.entry(slot).or_default().insert(index, o);
     }
 

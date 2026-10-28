@@ -60,7 +60,12 @@ impl SchemaHarness {
     /// kind-`0x22` typed value names by its handle (e.g. the Breach command `0x8080279A`). The
     /// schema never reaches them statically, so without this the handle resolves to NULL and the
     /// codec reads garbage (a `memset` of length `-0xA4`).
-    pub fn new_with_types(tag: u32, msgid: u16, request_tag: u32, value_types: &[u32]) -> Result<Self> {
+    pub fn new_with_types(
+        tag: u32,
+        msgid: u16,
+        request_tag: u32,
+        value_types: &[u32],
+    ) -> Result<Self> {
         let image = Image::open_default().map_err(|e| OracleError::Eboot(e.to_string()))?;
         let index = descriptors::index(&image).map_err(|e| OracleError::Eboot(e.to_string()))?;
         let d = index.get(tag).ok_or(OracleError::UnknownTag(tag))?;
@@ -96,6 +101,14 @@ impl SchemaHarness {
             h.write_u64(slot, cell)?;
             h.write_u32(cell, t)?;
             h.write_u64(cell + 8, desc)?;
+        }
+        for &(table, guard, slots) in c.type_cell_caches {
+            for (i, &slot) in slots.iter().enumerate() {
+                let cell = h.read_u64(slot)?;
+                let tag = h.read_u32(cell)?;
+                h.write_u32(table + i as u64 * 4, tag)?;
+            }
+            h.write(guard, &[1])?;
         }
         registry::build(&mut h, &image, &index, tag, c.registry_global, &extra)?;
 

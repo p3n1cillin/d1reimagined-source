@@ -27,10 +27,12 @@ The retained PlayStation 3 implementation targets version 01.24 with RPCS3.
 See [current results and contribution priorities](docs/STATUS.md). The first
 mission's recorded route now runs unattended from the Cosmodrome highway through
 The Breach into the Divide. The starter rifle fires, and the Divide's
-“Fight Through the Fallen” title and waypoint have native acceptance. The rest
-of the mission, native
-stability, combat, progression, complete activities and multiplayer remain
-incomplete.
+“Fight Through the Fallen” title and waypoint have native acceptance. Subsequent
+contained runs have decoded Fallen kills and reached Dock 13 with “Find the Ship”.
+The [28 October research note](notes/ps4-56578-pilots-clock-combat.md) records
+the pilot-program candidate, missing activity-clock configuration and remaining
+combat questions. Mission completion, progression, native stability and
+multiplayer remain unproven.
 
 This is a research repository, not a ready-to-play installer. The `data/` directory contains material derived from the historical PS3 research snapshot: schemas, logs, update diffs and a checksum manifest. Game packages, executables, firmware, third-party runtimes, account databases, private keys and current runtime captures are not included; supply your own authorised copies and check them against `data/SHA256SUMS.txt`. Use only inputs you are authorised to use. No public service, console, account or third-party system is a testing target.
 
