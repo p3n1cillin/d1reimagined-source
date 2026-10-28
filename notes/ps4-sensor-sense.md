@@ -129,3 +129,45 @@ In the final combat trial, the bot fired at radar threats without acquiring a
 nameplate, then the Guardian died. The observed first four squad words remained
 unchanged across that trial. **No enemy kill is established.** Objective 23 and
 the Skiff departure remain gated on the missing evidence.
+
+## The member-death control (28 October, after 08:00 UK)
+
+**`+0x0C` is the squad's live-member count.** Two controls:
+
+- **Run sense35, a player kill (08:12:49).** A Vandal at the garage doorway, point-blank, was killed
+  by rifle fire. The client reported incidents 734, 1825, 2389, 3056, 2462, 2512, 3246 and 3856 (a
+  different set from the player death, 734/1825/2079/2767). In the same second, a read-only native
+  B-image snapshot showed squad 17 (`0x9243DFFB/1/17`, distance field `+0x10` about 2.2) go from
+  `[2,0,0,1]` to `[2,0,0,0]`. Its `+0x10` went to 2040.0, the value every squad shows when there is
+  no player. The other eleven squads stayed at 1. A 95-byte udt 6 update followed 60 ms later; its
+  bytes were lost because the 256-payload capture budget was already spent.
+- **Run sense36, decoded by the host itself (09:14:50).** With `D1_AH_SENSE_SCHEMAS` set, the
+  activity host decoded every Divide squad's count 0 → 1 on arrival (09:00:27). At 09:14:50.009 the
+  client reported incidents 734 and 1435. The next udt 6 update (20 bytes, 46 ms later) carried
+  squad 20's count, and the host logged `squad 0x9243dffb/0x1/20 live members 1 -> 0`. The player
+  was walking, not fighting, so 1435 looks like a Fallen dying without the player (cause not yet
+  identified).
+
+`d1-activity-host` now tracks these counts (opt-in) and offers a `!GROUP|N` mission step. It fires
+once every kind-1 squad of GROUP that was reported alive reports 0, or after N seconds. A squad
+never reported alive does not hold the step, and a zero-seeded image whose count was never sent is
+not counted as a kill. The decoder needs a B tag for every kind the world sends. For the Divide:
+
+```text
+D1_AH_SENSE_SCHEMAS=1:0x80800357,2:0x808005D9,3:0x80800830,4:0x80800387,0xC:0x80802C30,0x18:0x8080048A,0x1C:0x808005C3,0x27:0x80802B18
+```
+
+One Breach packet in sense36 (packet 24) was refused inside the client's codec
+(`READ_UNMAPPED calling 0x2C9AE0`). A refused packet commits nothing; later packets decoded.
+
+### What made the kill possible, and what still kills the Guardian
+
+- **Aim.** The hip and ADS reticle sit at y 652 in the 1936x1119 window capture, 81 px below the
+  frame centre. Earlier fight helpers aimed at the centre and fired over heads.
+- **The gate sniper.** In sense36 the Guardian died roughly every 70 s on the route from the drop2
+  respawn to the gate. The death screen names the killer: a House of Devils Vandal with a Wire
+  Rifle, standing by the truck in the gate doorway. It fires before its nameplate is on screen.
+- **A super/melee hang.** Pressing R1 point-blank, or L1+R1, puts the served Titan Striker into a
+  third-person pose with arc on both fists that never completes. In sense36 the pose held from
+  09:11:04 until the Guardian was killed at 09:11:37. A Striker should leap and slam (Fist of Havoc).
+  The cause is open.
