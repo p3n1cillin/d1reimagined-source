@@ -84,6 +84,7 @@ pub mod messages;
 pub mod protocol;
 pub mod push;
 pub mod registry;
+pub mod sense;
 pub mod sensor_list;
 pub mod state;
 pub mod worlds;

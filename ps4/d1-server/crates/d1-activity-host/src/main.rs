@@ -699,7 +699,7 @@ fn main() -> anyhow::Result<()> {
                             }
                             let index: u16 = f[0].parse()?;
                             let when = d1_activity_host::state::StepWhen::parse(f[1])
-                                .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad step time {:?} (want N, +N, @T|N, %S|N or ^G/K/I|N)", f[1]))?;
+                                .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad step time {:?} (want N, +N, @T|N, %S|N, ^G/K/I|N or !G:I,I,...|N; kill deadlines HOLD)", f[1]))?;
                             let group = parse_u32(f[2].to_string())
                                 .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad sensor group {:?}", f[2]))?;
                             let region = match rest.first() {
@@ -857,6 +857,12 @@ fn main() -> anyhow::Result<()> {
                             };
                             tracing::info!("⭐ D1_AH_TIME_BASE_MS={v} - serving world clock base {ms} ms at blob +0x520");
                             i.set_time_base_ms(ms);
+                        }
+                        // ⭐ D1_AH_WORLD_PERIOD_MS=<ms>: send udt 2 world_globals_state with this
+                        // tick period (33.333 = the engine's 30 ticks/s).
+                        if let Some(ms) = std::env::var("D1_AH_WORLD_PERIOD_MS").ok().and_then(|v| v.trim().parse::<f32>().ok()) {
+                            tracing::info!("⭐ D1_AH_WORLD_PERIOD_MS={ms} - serving udt 2 world_globals_state");
+                            i.set_world_period_ms(ms);
                         }
                         if let Some(s) = sensor_repeat_s {
                             i.set_sensor_repeat(std::time::Duration::from_secs(s));

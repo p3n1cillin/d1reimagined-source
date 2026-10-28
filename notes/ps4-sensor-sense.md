@@ -98,3 +98,89 @@ without proving baseline and revision handling at the protocol level.
   23, live-member interpretation and the drop2 Skiff departure remain open.
 - There is no runtime change to `d1-activity-host`. This tool should help establish
   the missing evidence before progression is implemented.
+
+## Later native checks (28 October, before 08:00 UK)
+
+The same decoder accepted another 63, 89 and 232 captured packets from three
+fresh runs: **814 packets in total**, each run decoded as its own ordered stream.
+These totals describe codec/envelope validation, not complete capture baselines.
+
+A native type-cell lookup for the squad B tag leads to slot `0x1974D90` and
+builder `0x105230`. Its 160-byte B image starts at squad record `+0x1AC`.
+Static tracing, with the relevant executable blocks independently matched to
+native memory, gives these narrower field descriptions:
+
+| B-image offset | Source |
+| --- | --- |
+| `+0x0C` | `0x105330`: iterate members through `0x17B380`, summing predicate `0x138190` |
+| `+0x10` | Float copied from squad record `+0x270` |
+| `+0x19` | State selected from record `+0x25C` flags: bit 2 → 3, else bit 3 → 2, else bit 1 → 1, else 0 |
+| `+0x1A` | Record `+0x25C` bit 0 |
+
+Predicate `0x138190` resolves the member's `+0x28/+0x30` state reference and
+compares its `+0x274` word with the associated object-table entry's `+0x14C`.
+It has permissive missing-reference paths. This is not the separately traced
+`0x103F70` live-member loop (`entity+0x50 == -1`). Calling `+0x0C` a health or
+enemy-kill count still requires a real member-death control. Execution of these
+builder/predicate functions was not trapped in the later runs; the later checks
+establish image identity and static data flow.
+
+In the final combat trial, the bot fired at radar threats without acquiring a
+nameplate, then the Guardian died. The observed first four squad words remained
+unchanged across that trial. **No enemy kill is established.** Objective 23 and
+the Skiff departure remain gated on the missing evidence.
+
+## The member-death control (28 October, after 08:00 UK)
+
+**`+0x0C` is the squad's live-member count.** Two controls:
+
+- **Run sense35, a player kill (08:12:49).** A Vandal at the garage doorway, point-blank, was killed
+  by rifle fire. The client reported incidents 734, 1825, 2389, 3056, 2462, 2512, 3246 and 3856 (a
+  different set from the player death, 734/1825/2079/2767). In the same second, a read-only native
+  B-image snapshot showed squad 17 (`0x9243DFFB/1/17`, distance field `+0x10` about 2.2) go from
+  `[2,0,0,1]` to `[2,0,0,0]`. Its `+0x10` went to 2040.0, the value every squad shows when there is
+  no player. The other eleven squads stayed at 1. A 95-byte udt 6 update followed 60 ms later; its
+  bytes were lost because the 256-payload capture budget was already spent.
+- **Run sense36, decoded by the host itself (09:14:50).** With `D1_AH_SENSE_SCHEMAS` set, the
+  activity host decoded every Divide squad's count 0 → 1 on arrival (09:00:27). At 09:14:50.009 the
+  client reported incidents 734 and 1435. The next udt 6 update (20 bytes, 46 ms later) carried
+  squad 20's count, and the host logged `squad 0x9243dffb/0x1/20 live members 1 -> 0`. The player
+  was walking, not fighting, so 1435 looks like a Fallen dying without the player (cause not yet
+  identified).
+
+`d1-activity-host` tracks these counts (opt-in) and requires an explicit cohort for a kill gate:
+`!0x062dd95d:5,6,7,8,9,10,11,12|600`. Every listed kind-1 squad must have been
+observed above zero and then **exactly zero**, in the same current epoch. The deadline logs a
+**HOLD**, once; it never completes the step. The old `!GROUP|N` syntax is rejected rather than
+silently accepting an incomplete cohort. A zero seed, negative count, missing member or an
+unrelated group/kind cannot clear the gate.
+
+Each connection owns its decoder and bounded input/output queues. A join, activity change or
+subsequent current-slice change discards its old evidence and queues; a udt-6 generation change
+also discards prior admission. Queued results carry the epoch and stale results are ignored.
+The gate holds while any submitted delta remains undecoded. A refused/lost/oversized delta or
+a dead worker holds this epoch permanently: restart the connection or enter the next world/slice
+and obtain fresh positive observations before retrying. This deliberately prevents trusting a
+baseline after a gap. In particular a repeat zero without a fresh positive after a reset is
+insufficient. No listener timer cadence or world-clock behavior changes.
+
+The decoder needs a B tag for every kind the world sends. For the Divide:
+
+```text
+D1_AH_SENSE_SCHEMAS=1:0x80800357,2:0x808005D9,3:0x80800830,4:0x80800387,0xC:0x80802C30,0x18:0x8080048A,0x1C:0x808005C3,0x27:0x80802B18
+```
+
+One Breach packet in sense36 (packet 24) was refused inside the client's codec
+(`READ_UNMAPPED calling 0x2C9AE0`). That historical decoder continued after a refusal. The hardened gate now holds the affected epoch instead of trusting later overlays across the gap.
+
+### What made the kill possible, and what still kills the Guardian
+
+- **Aim.** The hip and ADS reticle sit at y 652 in the 1936x1119 window capture, 81 px below the
+  frame centre. Earlier fight helpers aimed at the centre and fired over heads.
+- **The gate sniper.** In sense36 the Guardian died roughly every 70 s on the route from the drop2
+  respawn to the gate. The death screen names the killer: a House of Devils Vandal with a Wire
+  Rifle, standing by the truck in the gate doorway. It fires before its nameplate is on screen.
+- **A super/melee hang.** Pressing R1 point-blank, or L1+R1, puts the served Titan Striker into a
+  third-person pose with arc on both fists that never completes. In sense36 the pose held from
+  09:11:04 until the Guardian was killed at 09:11:37. A Striker should leap and slam (Fist of Havoc).
+  The cause is open.

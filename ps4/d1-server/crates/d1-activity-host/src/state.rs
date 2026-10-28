@@ -150,7 +150,7 @@ pub struct MissionStep {
 }
 
 /// When a [`MissionStep`] fires. Steps fire in order, one after another.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum StepWhen {
     /// `N`: N seconds after the first sensor frame.
     At(Duration),
@@ -170,6 +170,10 @@ pub enum StepWhen {
     /// [`trigger_report`]), or N seconds after the previous step. Each report is used once, so a
     /// trigger that fires before its step is due (two armed at once) still counts.
     OnTrigger { group: u32, kind: u8, index: u16, timeout: Duration },
+    /// `!G:I,I,...|N`: every explicitly named kind-1 squad must be observed alive then exactly
+    /// zero in the current connection/world/generation. N is a diagnostic deadline, NEVER a
+    /// success fallback. Missing/invalid observations and decoder backlog hold the step.
+    OnSquadsCleared { group: u32, cohort: Vec<i16>, timeout: Duration },
 }
 
 /// A udt-18 struct image carrying one incident (see [`ActivityInstance::incident_due`]).
@@ -204,7 +208,7 @@ pub fn trigger_report(image: &[u8]) -> Option<(u32, u8, u16)> {
 impl StepWhen {
     /// Parse `N`, `+N`, `@T|N` or `%S|N` (seconds may be fractional).
     pub fn parse(s: &str) -> Option<Self> {
-        let secs = |t: &str| t.parse::<f32>().ok().filter(|v| *v >= 0.0).map(Duration::from_secs_f32);
+        let secs = |t: &str| t.parse::<f32>().ok().and_then(|v| Duration::try_from_secs_f32(v).ok());
         if let Some(rest) = s.strip_prefix('^') {
             let (name, n) = rest.split_once('|')?;
             let mut f = name.split('/');
@@ -214,6 +218,19 @@ impl StepWhen {
             };
             let (group, kind, index) = (num(f.next()?)?, num(f.next()?)?, num(f.next()?)?);
             return Some(Self::OnTrigger { group, kind: kind.try_into().ok()?, index: index.try_into().ok()?, timeout: secs(n)? });
+        }
+        if let Some(rest) = s.strip_prefix('!') {
+            let (name, n) = rest.split_once('|')?;
+            let (group, members) = name.split_once(':')?;
+            let group = group.trim();
+            let group = group.strip_prefix("0x").map_or_else(|| group.parse().ok(), |h| u32::from_str_radix(h, 16).ok())?;
+            if matches!(group, 0 | 0x811C_9DC5) { return None; }
+            let mut cohort = members.split(',').map(|s| s.trim().parse::<i16>().ok())
+                .collect::<Option<Vec<_>>>()?;
+            if cohort.is_empty() || cohort.iter().any(|n| *n < 0) { return None; }
+            cohort.sort_unstable();
+            if cohort.windows(2).any(|p| p[0] == p[1]) { return None; }
+            return Some(Self::OnSquadsCleared { group, cohort, timeout: secs(n)? });
         }
         if let Some(rest) = s.strip_prefix('%') {
             let (slice, n) = rest.split_once('|')?;
@@ -349,6 +366,8 @@ pub struct ActivityInstance {
     start_region: Option<(u32, u32)>,
     /// ⭐ The served world clock base in ms (`GlobalActivityState::TIME_BASE_MS`).
     time_base_ms: Option<u64>,
+    /// The world tick period in ms for udt 2 `world_globals_state` (`D1_AH_WORLD_PERIOD_MS`).
+    world_period_ms: Option<f32>,
     /// ⭐ Timed mission steps per activity index, the clock start, and the step in force.
     mission_steps: std::collections::HashMap<u16, Vec<MissionStep>>,
     mission_t0: Option<Instant>,
@@ -360,6 +379,9 @@ pub struct ActivityInstance {
     current_slice: Option<u32>,
     /// Player-trigger reports (incident 3403) by name, and whether a step has used each.
     trigger_reports: Vec<((u32, u8, u16), bool)>,
+    /// Connection/world-local observations. Decoder errors and backlog hold kill gates.
+    squad_live: crate::sense::SquadObservations,
+    squad_hold_logged: Option<usize>,
     /// Host incidents waiting to be sent (see [`MissionStep::incident`]).
     pending_incidents: Vec<(u32, Vec<u8>)>,
     /// ⭐ `D1_AH_CONTROL_FILE`: lines `incident TYPE BODYHEX` queue host incidents on demand
@@ -494,6 +516,7 @@ impl ActivityInstance {
             world_table: std::collections::HashMap::new(),
             start_region: None,
             time_base_ms: None,
+            world_period_ms: None,
             mission_steps: std::collections::HashMap::new(),
             mission_t0: None,
             mission_step: None,
@@ -501,6 +524,8 @@ impl ActivityInstance {
             incidents: Vec::new(),
             current_slice: None,
             trigger_reports: Vec::new(),
+            squad_live: crate::sense::SquadObservations::default(),
+            squad_hold_logged: None,
             pending_incidents: Vec::new(),
             control_file: None,
             control_builder: None,
@@ -922,6 +947,7 @@ impl ActivityInstance {
         match msg {
             // ── rung: wait 4 join_result ───────────────────────────────────────────────────────
             ClientMessage::JoinRequest { struct_image } => {
+                self.squad_live.reset();
                 if let Some((hash, index)) = self.followed_activity_index() {
                     if index != self.activity_index {
                         tracing::info!(
@@ -1028,6 +1054,7 @@ impl ActivityInstance {
                     // the rung-31 activity NAME, and the rung-33 world transition. `FUN_01057B80`
                     // sets `ac+0x130 |= 0x40` only on a successful decode of it.
                     out.push(self.publish_activity_state());
+                    out.extend(self.publish_world_globals());
 
                     // udt 11 - ⭐ the last gate, and an ECHO: the member is the client, and the
                     // client's identity is the 40 bytes it just sent us at `join_request+0x10`.
@@ -1103,6 +1130,7 @@ impl ActivityInstance {
                     AhPush::new(recipient, AhMessage::EntitySlotsAllocated(EntitySlotMask::empty())),
                     self.publish_activity_state(),
                 ];
+                out.extend(self.publish_world_globals());
                 // The membership stays an ECHO. With no stored request there is nothing to echo
                 // and the push is lost rather than fabricated - the same rule as the join.
                 //
@@ -1210,7 +1238,9 @@ impl ActivityInstance {
 
     /// Override the activity name. Takes effect on the next `global_activity_state` publication.
     pub fn set_activity_name(&mut self, name: impl Into<String>) {
-        self.activity_name = name.into();
+        let name = name.into();
+        if self.activity_name != name { self.squad_live.reset(); }
+        self.activity_name = name;
     }
 
     /// The activity index this instance publishes at `global_activity_state+0x680`.
@@ -1222,6 +1252,7 @@ impl ActivityInstance {
     ///
     /// This is the number rung 33 evaluates. `D1_AH_ACTIVITY_INDEX` sets it.
     pub fn set_activity_index(&mut self, index: u16) {
+        if self.activity_index != index { self.squad_live.reset(); }
         self.activity_index = index;
     }
 
@@ -1381,6 +1412,15 @@ impl ActivityInstance {
         }
     }
 
+    /// Epoch changes invalidate both counts and queued native decoder results.
+    pub fn squad_epoch(&self) -> u64 { self.squad_live.epoch() }
+
+    pub fn on_sense_update(&mut self, update: crate::sense::SenseUpdate) {
+        self.squad_live.apply(update);
+    }
+
+    pub fn set_sense_ready(&mut self, ready: bool) { self.squad_live.set_ready(ready); }
+
     /// Arm the timed mission steps (see [`MissionStep`]).
     pub fn set_mission_steps(&mut self, steps: std::collections::HashMap<u16, Vec<MissionStep>>) {
         self.mission_steps = steps;
@@ -1410,6 +1450,16 @@ impl ActivityInstance {
                     tracing::info!("⭐ mission step {i}: player trigger {group:#010x}/{kind:#x}/{index}");
                 }
                 reported || now.saturating_duration_since(prev) >= timeout
+            }
+            StepWhen::OnSquadsCleared { group, ref cohort, timeout } => {
+                let cleared = self.squad_live.cleared(group, cohort);
+                if cleared {
+                    tracing::info!("⭐ mission step {i}: cohort {group:#010x}:{cohort:?} is exactly zero in epoch {}", self.squad_epoch());
+                } else if now.saturating_duration_since(prev) >= timeout && self.squad_hold_logged != Some(i) {
+                    tracing::warn!("mission step {i}: cohort {group:#010x}:{cohort:?} deadline reached; HOLD (missing/alive/invalid/stale/pending sense evidence)");
+                    self.squad_hold_logged = Some(i);
+                }
+                cleared
             }
             StepWhen::OnSlice { slice, timeout } => {
                 let here = self.current_slice == Some(slice);
@@ -1465,6 +1515,23 @@ impl ActivityInstance {
         self.time_base_ms = Some(ms);
     }
 
+    /// Send udt 2 `world_globals_state` with this tick period on join and on every state refresh.
+    pub fn set_world_period_ms(&mut self, ms: f32) {
+        self.world_period_ms = Some(ms);
+    }
+
+    /// ⭐ udt 2 `world_globals_state` (`0x80800DC1`, 8 bytes: u32 enabled, f32 tick period in ms).
+    /// The client copies it to world `+0x14` (`0x2A2CA0`). Without it the world tick period stays
+    /// 0, so the activity clock never advances: an armed player trigger's last-report tick never
+    /// passes its arming tick and it reports continuously (run sense37 read the period as 0 and
+    /// trigger 40's last-report tick as `INT_MIN`; the engine itself runs at 30 ticks/s).
+    fn publish_world_globals(&self) -> Option<AhPush> {
+        let ms = self.world_period_ms?;
+        let mut image = 1u32.to_le_bytes().to_vec();
+        image.extend_from_slice(&ms.to_le_bytes());
+        Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 2, bytes: image }))
+    }
+
     /// Record the client's current slice set from udt 21 (`+0xB8` = {10-bit index, name hash}).
     /// The update is a delta: the record is present only when its hash is (not 0 / FNV basis).
     fn track_current_slice(&mut self, image: &[u8]) {
@@ -1475,6 +1542,7 @@ impl ActivityInstance {
             return;
         }
         tracing::info!("⭐ client is now in slice set {index} (hash {hash:#010x}, was {:?})", self.current_slice);
+        if self.current_slice.is_some() { self.squad_live.reset(); }
         self.current_slice = Some(index);
     }
 
@@ -1628,6 +1696,18 @@ mod tests {
         let AhMessage::JoinResult(j) = &out[0].message else { panic!() };
         assert!(j.keepalive_interval_ms > 0);
         assert_eq!(j.keepalive_interval_ms, JoinResult::DEFAULT_KEEPALIVE_MS);
+    }
+
+    /// ⭐ With a world period set, the join also sends udt 2 `world_globals_state`: enabled, then
+    /// the f32 period (33.333 ms = 30 ticks/s, the image Codex measured: `0100000055550542`).
+    #[test]
+    fn the_join_sends_world_globals_when_a_period_is_set() {
+        let (mut i, now) = instance();
+        i.set_world_period_ms(100.0 / 3.0);
+        let out = i.on_client_message(&join_request([0; 4]), now);
+        assert_eq!(out.len(), 5, "join_result, entity grant, activity state, world globals, membership");
+        let AhMessage::Opaque { user_defined_type: 2, bytes } = &out[3].message else { panic!("{:?}", out[3].message) };
+        assert_eq!(bytes, &[1, 0, 0, 0, 0x55, 0x55, 0x05, 0x42]);
     }
 
     #[test]
@@ -1855,7 +1935,7 @@ mod tests {
         let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None };
         let on891 = StepWhen::parse("@891|70").unwrap();
         let mut steps = std::collections::HashMap::new();
-        steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1), step(on891, 2), step(on891, 3)]);
+        steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1), step(on891.clone(), 2), step(on891, 3)]);
         i.set_mission_steps(steps);
         assert!(i.advance_mission(now));
         let incident = |t: u32| {
@@ -1872,6 +1952,65 @@ mod tests {
         assert!(!i.advance_mission(now + Duration::from_secs(30)));
         assert!(i.advance_mission(now + Duration::from_secs(91)), "no report: the timeout fires step 2");
         assert_eq!(i.sensor_payload.as_deref(), Some(&[3u8][..]));
+    }
+
+    #[test]
+    fn cohort_parser_requires_explicit_unique_nonnegative_members_and_finite_deadline() {
+        assert_eq!(StepWhen::parse("!0x062dd95d:6,5|600"), Some(StepWhen::OnSquadsCleared {
+            group: 0x062D_D95D, cohort: vec![5,6], timeout: Duration::from_secs(600),
+        }));
+        for bad in ["!0x062dd95d|600", "!0x062dd95d:|600", "!1:5,5|2", "!1:-1|2",
+                    "!1:32768|2", "!1:5,|2", "!1:5|NaN", "!1:5|inf", "!1:5|-1", "!0:5|2"] {
+            assert!(StepWhen::parse(bad).is_none(), "{bad}");
+        }
+    }
+
+    #[test]
+    fn kill_gate_holds_past_deadline_until_the_full_current_cohort_is_zero() {
+        use crate::sense::{SquadCount, SenseUpdate};
+        let (mut i, now) = instance();
+        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None };
+        let mut steps = std::collections::HashMap::new();
+        steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1),
+            step(StepWhen::parse("!0x062dd95d:5,6|10").unwrap(), 2)]);
+        i.set_mission_steps(steps);
+        assert!(i.advance_mission(now));
+        let squad = |index, live| SquadCount { group: 0x062D_D95D, kind: 1, index, live };
+        let report = |i: &mut ActivityInstance, counts: Vec<_>| {
+            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts });
+            i.set_sense_ready(true);
+        };
+        report(&mut i, vec![squad(5,1)]);
+        report(&mut i, vec![squad(5,0)]);
+        assert!(!i.advance_mission(now + Duration::from_secs(600)), "missing member cannot time out to success");
+        report(&mut i, vec![squad(6,1)]);
+        report(&mut i, vec![squad(6,-1)]);
+        assert!(!i.advance_mission(now + Duration::from_secs(601)), "negative is not zero");
+        report(&mut i, vec![squad(6,1), squad(6,0)]);
+        i.set_sense_ready(false);
+        assert!(!i.advance_mission(now + Duration::from_secs(602)), "queued delta may supersede zero");
+        i.set_sense_ready(true);
+        assert!(i.advance_mission(now + Duration::from_secs(603)));
+        assert_eq!(i.sensor_payload.as_deref(), Some(&[2u8][..]));
+    }
+
+    #[test]
+    fn rejoin_activity_and_slice_changes_invalidate_kill_evidence() {
+        let (mut i, now) = instance();
+        let epoch = i.squad_epoch();
+        i.on_client_message(&join_request([0;4]), now);
+        assert_ne!(epoch, i.squad_epoch());
+        let epoch = i.squad_epoch();
+        i.set_activity_index(i.activity_index() + 1);
+        assert_ne!(epoch, i.squad_epoch());
+        let mut image = vec![0; 0xC0];
+        image[0xB8..0xBC].copy_from_slice(&104u32.to_le_bytes());
+        image[0xBC..0xC0].copy_from_slice(&123u32.to_le_bytes());
+        i.track_current_slice(&image);
+        let epoch = i.squad_epoch();
+        image[0xB8..0xBC].copy_from_slice(&105u32.to_le_bytes());
+        i.track_current_slice(&image);
+        assert_ne!(epoch, i.squad_epoch());
     }
 
     /// ⭐ A teleport step asks (state 1), finishes (state 3) and drops the group slice-set request,

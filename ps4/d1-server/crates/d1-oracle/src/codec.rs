@@ -93,6 +93,9 @@ pub struct CodecAddrs {
     /// object}`. Read live on 56578. Without them every box field (e.g. the client bundle's player
     /// identity, kind `0x23`) encodes as tag 0 and faults. Empty until measured on a build.
     pub type_cells: &'static [(u64, u64, u32, u64)],
+    /// Native lazy lookup tables: (table, initialized byte, source type-cell slots).
+    /// Seed the initializer's result; never call unmapped C++ guard imports.
+    pub type_cell_caches: &'static [(u64, u64, &'static [u64])],
 }
 
 pub const CODEC_0129: CodecAddrs = CodecAddrs {
@@ -123,6 +126,7 @@ pub const CODEC_0129: CodecAddrs = CodecAddrs {
     dynamic_flags_fault_rip: Some(crate::activity_host::DYNAMIC_FLAGS_FAULT_RIP),
     dynamic_flags_grow_fn: crate::activity_host::DYNAMIC_FLAGS_GROW_FN,
     type_cells: &[],
+    type_cell_caches: &[],
 };
 
 /// Build 56578 (01.33). Measured as described in the module docs.
@@ -157,10 +161,43 @@ pub const CODEC_56578: CodecAddrs = CodecAddrs {
         (0x199_6050, 0x28D_BAD0, 0x8080_0046, 0x13D_2258),
         (0x197_4C00, 0x28B_F2D0, 0x8080_40F7, 0x133_BF70),
         (0x197_4BE0, 0x28B_F190, 0x8080_424E, 0x13D_9870),
+        // Native atom payload variants: 1C0630 / 1C0740 read these cells after
+        // decoding the primary and secondary selector. Measured read-only on
+        // 56578; without them a nonempty member program resolves tag zero.
+        (0x197_4BE8, 0x28B_F1D0, 0x8080_07B3, 0x13A_23F8),
+        (0x197_4BF0, 0x28B_F1F0, 0x8080_0453, 0x134_7258),
+        (0x197_4BF8, 0x28B_F210, 0x8080_046B, 0x12E_E140),
+        (0x197_4C08, 0x28B_F310, 0x8080_051E, 0x135_9EF0),
+        (0x197_4C10, 0x28B_F350, 0x8080_0335, 0x132_AB40),
+        (0x197_4C18, 0x28B_F370, 0x8080_0547, 0x134_3CB8),
+        (0x197_4C20, 0x28B_F390, 0x8080_047D, 0x130_8800),
+        (0x197_4C28, 0x28B_F3B0, 0x8080_0716, 0x132_C7B0),
+        (0x197_4C30, 0x28B_F410, 0x8080_040B, 0x131_6270),
+        (0x197_4C38, 0x28B_F430, 0x8080_0842, 0x13D_A448),
+        (0x197_4C40, 0x28B_F450, 0x8080_079F, 0x136_25D0),
+        (0x197_4C48, 0x28B_F470, 0x8080_0661, 0x137_1B78),
+        (0x197_4C50, 0x28B_F490, 0x8080_08D3, 0x133_FB38),
         // Kind 0x23 (`0x102A450`): type from `0x197E160` when the selector `0x25CC10` holds
         // (`[[0x26527E0]+0xC] != -1`, true live), else from `0x191A240`.
         (0x197_E160, 0x28C_37F0, 0x8080_1932, 0x131_8320),
         (0x191_A240, 0x269_8FA0, 0x8080_04AC, 0x131_78F0),
+    ],
+    // 1C0630 / 1C0740 copy the tags from these exact cells, then release
+    // their function-local static guards. This is their complete table order.
+    type_cell_caches: &[
+        (
+            0x25D_92C0,
+            0x25D_92E8,
+            &[
+                0x197_4C18, 0x197_4C20, 0x197_4C28, 0x197_4C30, 0x197_4C38, 0x197_4C10, 0x197_4C40,
+                0x197_4C08, 0x197_4C48, 0x197_4C50,
+            ],
+        ),
+        (
+            0x25D_92F0,
+            0x25D_9300,
+            &[0x197_4BE8, 0x197_4BF0, 0x197_4BF8],
+        ),
     ],
 };
 
