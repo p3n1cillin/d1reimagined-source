@@ -102,5 +102,36 @@ class MemoryFacing(unittest.TestCase):
         self.assertFalse(any(k.startswith(('Hold:J:', 'Hold:L:')) for c in calls for k in c))
 
 
+class RetrackFallback(unittest.TestCase):
+    """retrack_or_rescan: a thin retrack falls back to scans around known respawns."""
+
+    def setUp(self):
+        scope = extract('retrack_or_rescan')
+        scope['position'] = lambda c, tracked: (0.0, 0.0, 0.0)
+        self.fn = scope['retrack_or_rescan']
+
+    def test_a_good_retrack_is_kept_without_scanning(self):
+        scans = []
+        got = self.fn(None, [1], [[319, -664, 7]], 25, 30, retrack_fn=lambda *_: list(range(200)),
+                      scan_fn=lambda c, centre, radius: scans.append(centre) or [])
+        self.assertEqual(len(got), 200)
+        self.assertEqual(scans, [])
+
+    def test_a_thin_retrack_scans_respawns_in_order_until_one_is_good(self):
+        scans = []
+        def scan(c, centre, radius):
+            scans.append(centre)
+            return list(range(362)) if centre[0] == 319 else list(range(5))
+        got = self.fn(None, [1], [[189, -606, 5], [319, -664, 7], [277, -625, 6]], 25, 30,
+                      retrack_fn=lambda *_: list(range(12)), scan_fn=scan)
+        self.assertEqual(len(got), 362)
+        self.assertEqual([c[0] for c in scans], [189, 319])
+
+    def test_nothing_better_keeps_the_retrack(self):
+        got = self.fn(None, [1], [[189, -606, 5]], 25, 30, retrack_fn=lambda *_: [7, 8, 9],
+                      scan_fn=lambda *_: [])
+        self.assertEqual(got, [7, 8, 9])
+
+
 if __name__ == '__main__':
     unittest.main()

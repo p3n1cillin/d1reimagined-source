@@ -12,6 +12,8 @@ already been measured, --turn-sign 1 (or -1) prevents a collision slide reversin
   d1-walk.py --scan 383,-962,12 --out tracked.json      (needs the player able to move)
   d1-walk.py --tracked tracked.json --route missions/routes/enter_the_wall.json [--until-incident ...]
   d1-walk.py --tracked tracked.json --route missions/routes/wall_garage_door.json --turn-sign 1 --turn-rate 2.26
+  d1-walk.py --tracked tracked.json --retrack --respawns "319,-664,7;277,-625,6;189,-606,5;225,-603,4;197,-575,5"
+      (after a death: a retrack keeping < --min-copies copies is stale; scan the Divide's observed respawns)
 """
 import argparse, ctypes, ctypes.wintypes as wt, json, math, os, statistics, struct, subprocess, sys, time
 
@@ -177,6 +179,56 @@ def facing(client, tracked):
     return facing_from(vectors)
 
 
+def scan_track(c, centre, radius):
+    """Find the Guardian's position copies near `centre` by moving it and keeping what follows."""
+    centre = list(centre)
+    # A rough centre finds few copies; a second pass centred on the first fix finds the rest
+    # (run agr-breach4: 1 tracked, then 253 around that fix).
+    for attempt in range(3):
+        addrs = c.scan(centre, radius)
+        print(len(addrs), 'candidates')
+        # Forward, still, back, still: backing up returns the player near the start (side-steps
+        # walked it into the ditch by the cars, run agr-breach8). The last attempt side-steps
+        # instead, which still moves the player when backing up is blocked.
+        back = 'Hold:A:1500' if attempt == 2 else 'Hold:S:1500'
+        for moved, keys in ((True, ['Hold:W:1500']), (False, []), (True, [back]), (False, [])):
+            before = keep(c, addrs, moved)
+            if keys:
+                pad(*keys)
+            else:
+                time.sleep(2)
+            addrs = filter_step(c, before, moved)
+            print(('moved' if moved else 'still'), len(addrs))
+        # Keep only triples near the scan area: transient buffers can pass the movement tests.
+        addrs = [x for x in addrs if (t := c.triple(x)) and all(math.isfinite(v) for v in t)
+                 and math.dist(t[:2], centre[:2]) < radius + 40]
+        here = position(c, addrs)
+        print(len(addrs), 'tracked; position', here)
+        if len(addrs) >= 100 or not here:
+            break
+        centre = list(here)
+    return addrs
+
+
+def retrack_or_rescan(c, tracked, respawns, radius, min_copies, retrack_fn=None, scan_fn=None):
+    """Retrack after a death; if that keeps fewer than `min_copies`, scan around each known respawn.
+
+    A thin retrack is usually copies that move but are not the Guardian (run weapon26: 10-20 copies
+    at (266, -620) while the Guardian had respawned at (319, -664)), so the walker steers on a stale
+    position. A good fix has hundreds of copies.
+    """
+    retrack_fn = retrack_fn or retrack
+    scan_fn = scan_fn or scan_track
+    kept = retrack_fn(c, tracked, position(c, tracked))
+    if len(kept) >= min_copies:
+        return kept
+    for centre in respawns:
+        found = scan_fn(c, centre, radius)
+        if len(found) >= min_copies:
+            return found
+    return kept
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--scan')
@@ -196,6 +248,10 @@ def main():
                     help='steer by the forward vector read from guest memory instead of inferring it from movement')
     ap.add_argument('--keepalive', type=float, help='only keep the Guardian active for this many seconds')
     ap.add_argument('--retrack', action='store_true', help='only drop stale copies from --tracked (after a death) and rewrite it')
+    ap.add_argument('--respawns', default='',
+                    help='with --retrack: "x,y,z;x,y,z" respawn points to scan when the retrack keeps too few copies')
+    ap.add_argument('--min-copies', type=int, default=30,
+                    help='with --respawns: a retrack keeping fewer copies than this is treated as stale')
     a = ap.parse_args()
     if a.turn_rate is not None and (not math.isfinite(a.turn_rate) or a.turn_rate <= 0):
         ap.error('--turn-rate must be a finite positive number in radians/second')
@@ -207,38 +263,14 @@ def main():
         return
     c = Client()
     if a.scan:
-        centre = [float(v) for v in a.scan.split(',')]
-        # A rough centre finds few copies; a second pass centred on the first fix finds the rest
-        # (run agr-breach4: 1 tracked, then 253 around that fix).
-        for attempt in range(3):
-            addrs = c.scan(centre, a.radius)
-            print(len(addrs), 'candidates')
-            # Forward, still, back, still: backing up returns the player near the start (side-steps
-            # walked it into the ditch by the cars, run agr-breach8). The last attempt side-steps
-            # instead, which still moves the player when backing up is blocked.
-            back = 'Hold:A:1500' if attempt == 2 else 'Hold:S:1500'
-            for moved, keys in ((True, ['Hold:W:1500']), (False, []), (True, [back]), (False, [])):
-                before = keep(c, addrs, moved)
-                if keys:
-                    pad(*keys)
-                else:
-                    time.sleep(2)
-                addrs = filter_step(c, before, moved)
-                print(('moved' if moved else 'still'), len(addrs))
-            # Keep only triples near the scan area: transient buffers can pass the movement tests.
-            addrs = [x for x in addrs if (t := c.triple(x)) and all(math.isfinite(v) for v in t)
-                     and math.dist(t[:2], centre[:2]) < a.radius + 40]
-            here = position(c, addrs)
-            print(len(addrs), 'tracked; position', here)
-            if len(addrs) >= 100 or not here:
-                break
-            centre = list(here)
+        addrs = scan_track(c, [float(v) for v in a.scan.split(',')], a.radius)
         json.dump(addrs, open(a.out, 'w'))
         return
     with open(a.tracked) as tracked_file:
         tracked = json.load(tracked_file)
     if a.retrack:
-        tracked = retrack(c, tracked, position(c, tracked))
+        respawns = [[float(v) for v in p.split(',')] for p in a.respawns.split(';') if p.strip()]
+        tracked = retrack_or_rescan(c, tracked, respawns, a.radius, a.min_copies)
         json.dump(tracked, open(a.tracked, 'w'))
         print(len(tracked), 'tracked; position', position(c, tracked))
         return
