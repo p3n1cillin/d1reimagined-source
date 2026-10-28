@@ -202,3 +202,21 @@ returns null for a grid index of `0xffff`. It is a concrete configuration lead,
 but does not establish that this inventory instance is the runtime ability source:
 the equipped peer's selected grid and active action still need tracing. Do not
 replace node selections with guessed “unlock everything” bytes.
+
+
+## Cinematic cast slot correction (28 October, static trace)
+
+The 56578 cinematic handler `0x403140` copies the 212-byte authority image to
+component `+0x1AC` (`0x40316A`). Its starter reads the cast count at component
+`+0x248` (`0x4037E7`) and identities at `+0x24C + 8*i` (`0x40380F`). Those are
+image `+0x9C` and **`+0xA0`**, respectively. The opening list helper previously
+wrote the identity at `+0xA8`, leaving the first slot zero despite count 1.
+It now fills slot zero. The input remains the player's kind-0x23 identity from
+the bundle, not a local machine id. Existing cinematic-play observations do not
+by themselves prove that the custom Guardian's cast binding was correct.
+
+Private outro candidates use this corrected slot and round-trip unchanged
+through the native 56578 object codec. Slice 105 and cinematic `992bb471/6/29`
+are content-identified; their live transition, cast, Ghost and ship presentation
+remain for the lab owner to validate. No ending or reward is enabled by this
+helper correction.

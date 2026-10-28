@@ -1,5 +1,6 @@
 """Portable failure controls for the pad replay; no game input or guest access."""
 import importlib.util
+import struct
 from pathlib import Path
 import tempfile
 import unittest
@@ -17,6 +18,24 @@ def load(name):
 
 replay = load('d1-agr-replay')
 steps = load('d1-agr-steps')
+
+
+class CinematicCast(unittest.TestCase):
+    def test_one_player_is_in_the_first_slot_the_native_starter_reads(self):
+        identity = bytes.fromhex('0102030405060708')
+        image = bytes.fromhex(steps.cine(1, True, identity))
+        self.assertEqual(len(image), 212)
+        self.assertEqual(struct.unpack_from('<I', image, 0x248 - 0x1AC)[0], 1)
+        start = 0x24C - 0x1AC
+        self.assertEqual(image[start:start + 8], identity)
+        self.assertEqual(image[start + 8:start + 16], b'\0' * 8)
+        self.assertEqual(struct.unpack_from('<IBxH', image, 12), steps.ABSENT)
+
+    def test_stopped_cinematic_has_no_player_cast(self):
+        image = bytes.fromhex(steps.cine(2, False, b'12345678'))
+        self.assertEqual(image[8], 0)
+        self.assertEqual(struct.unpack_from('<I', image, 0x9C)[0], 0)
+        self.assertEqual(image[0xA0:0xD0], b'\0' * 48)
 
 
 class ReplayGates(unittest.TestCase):
