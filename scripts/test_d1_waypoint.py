@@ -60,5 +60,44 @@ class Markers(unittest.TestCase):
         self.assertEqual(wp.markers(diamond(frame(), 900, 600, grey=(200, 60, 40))), [])
 
 
+def nameplate(img, x0, y0, width, name_width=60, bar=(190, 54, 42)):
+    """Draw an enemy nameplate: white name text above a 12 px solid red bar starting at x0, y0."""
+    img[y0 - 22:y0 - 8, x0:x0 + name_width:3] = 255     # name glyph strokes
+    img[y0:y0 + 12, x0:x0 + width] = bar
+    return img
+
+
+class Plates(unittest.TestCase):
+    def test_finds_a_full_bar(self):
+        found = wp.plates(nameplate(frame(), 900, 400, 190))
+        self.assertEqual([(cx, w) for cx, _, w in found], [(994, 190)])
+
+    def test_finds_a_nearly_empty_bar(self):
+        self.assertEqual(len(wp.plates(nameplate(frame(), 900, 400, 20))), 1)
+
+    def test_finds_one_beside_the_radar_but_outside_its_disc(self):
+        self.assertEqual(len(wp.plates(nameplate(frame(), 330, 300, 150))), 1)
+
+    def test_ignores_a_bar_without_a_name(self):
+        img = frame()
+        img[400:412, 900:1090] = (190, 54, 42)
+        self.assertEqual(wp.plates(img), [])
+
+    def test_ignores_a_bar_of_another_red(self):
+        self.assertEqual(wp.plates(nameplate(frame(), 900, 400, 190, bar=(250, 20, 20))), [])
+
+    def test_ignores_the_players_health_bar_band(self):
+        self.assertEqual(wp.plates(nameplate(frame(), 900, 180, 190)), [])
+
+
+class AimPoint(unittest.TestCase):
+    def test_full_bar_aims_under_its_left_part(self):
+        self.assertEqual(wp.aim_point(1000, 400, 200), (960, 520))
+
+    def test_a_damaged_bar_keeps_the_plate_left_end(self):
+        # A 20 px remnant whose left end is at 900: the body stays under 900 + 0.3 * 150.
+        self.assertEqual(wp.aim_point(910, 400, 20), (945, 490))
+
+
 if __name__ == '__main__':
     unittest.main()

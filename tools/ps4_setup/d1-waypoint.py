@@ -8,8 +8,11 @@ edge with an arrow. Each look: touchpad twice, capture the game window, find the
   - not shown: turn 45 degrees
   - no movement for four looks (respawn prompt, or wedged): square, then drop stale position copies
 
-  d1-waypoint.py --tracked tracked.json --seconds 180 [--shots DIR]
-  d1-waypoint.py --find frame.png        (print the diamonds found in a capture)
+With --fight, an enemy nameplate (a solid red health bar with the name in white above it) takes priority:
+aim below the plate's left part (the body is under the level badge) and fire an aim-down-sights burst.
+
+  d1-waypoint.py --tracked tracked.json --seconds 180 [--shots DIR] [--fight]
+  d1-waypoint.py --find frame.png        (print the diamonds and nameplates found in a capture)
 """
 import argparse, ctypes, importlib.util, json, math, os, subprocess, sys, time
 
@@ -19,7 +22,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SHOT = os.environ.get('D1_SHOT', r'F:\d1\tools\d1-shot.ps1')
 PAD = os.environ.get('D1_PAD', r'F:\d1\tools\d1-pad.ps1')
 RATE = 2.26 * 1.14 * 110 / 90 / 1000     # rad per ms of right stick (a 90-degree command turned 110)
-RX, HALF_W, HFOV = 968, 960, math.radians(78)   # reticle and half width of the 1936x1119 window capture
+RX, RY, HALF_W, HALF_H = 968, 571, 960, 540     # reticle and half extents of the 1936x1119 window capture
+HFOV, VFOV = math.radians(78), math.radians(48)
 
 
 def _blobs(mask, limit=600):
@@ -73,6 +77,64 @@ def markers(img):
     return out
 
 
+def plates(img):
+    """[(cx, cy, width)] of enemy nameplate health bars in an RGB capture, outside the fixed HUD.
+
+    A bar is a solid rectangle of one red (190, 54, 42), 3-16 px tall, with white name text just above it.
+    A damaged bar is shorter than its plate; one down to 8 px wide still counts.
+    """
+    a = img.astype(int)
+    H, W, _ = a.shape
+    r, g, b = a[:, :, 0], a[:, :, 1], a[:, :, 2]
+    red = (r > 150) & (g < 90) & (b < 90) & (r > 2.2 * g)
+    red[150:205, W // 2 - 420:W // 2 + 420] = False   # the player's own health bar
+    yy, xx = np.ogrid[:340, :340]
+    red[:340, :340] &= (yy - 189) ** 2 + (xx - 185) ** 2 > 115 ** 2   # the radar disc only
+    red[H - 330:, :480] = False                       # weapon and ammo
+    red[H - 260:, W - 480:] = False                   # overlay corner
+    rows = np.nonzero(red.sum(axis=1) >= 8)[0]
+    if not len(rows):
+        return []
+    bands, start = [], rows[0]
+    for p, q in zip(rows, rows[1:]):
+        if q != p + 1:
+            bands.append((start, p)); start = q
+    bands.append((start, rows[-1]))
+    out = []
+    for y0, y1 in bands:
+        if not 3 <= y1 - y0 + 1 <= 16 or y0 < 30:
+            continue
+        cols = np.nonzero(red[y0:y1 + 1].any(axis=0))[0]
+        runs, s = [], cols[0]
+        for p, q in zip(cols, cols[1:]):
+            if q > p + 3:
+                runs.append((s, p)); s = q
+        runs.append((s, cols[-1]))
+        for x0, x1 in runs:
+            if not 8 <= x1 - x0 + 1 <= 300:
+                continue
+            box = a[y0:y1 + 1, x0:x1 + 1]
+            solid = ((abs(box[:, :, 0] - 190) < 30) & (abs(box[:, :, 1] - 54) < 25) & (abs(box[:, :, 2] - 42) < 25)).mean()
+            if solid < 0.75:
+                continue                 # damage-direction arrows are triangles, not solid bars
+            if (a[y0 - 30:y0 - 3, x0:min(x0 + 120, W)].min(axis=2) > 200).sum() < 25:
+                continue                 # no name above it
+            out.append((int(x0 + x1) // 2, int(y0 + y1) // 2, int(x1 - x0 + 1)))
+    return out
+
+
+def aim_point(cx, cy, w):
+    """Where the body is for a plate (centre cx, cy, width w): under its left part, scaled by its full width."""
+    full = max(w, 150)                   # the plate's left end stays put as the bar shrinks
+    return cx - w // 2 + int(0.3 * full), cy + int(0.6 * full)
+
+
+def ads_burst(ms=600):
+    """Aim down sights (L2 = E), fire (R2 = O) for ms, release."""
+    pad('NumPad4')
+    key(0x45, True); time.sleep(0.3); key(0x4F, True); time.sleep(ms / 1000); key(0x4F, False); key(0x45, False)
+
+
 def pad(keys):
     subprocess.run(['powershell', '-NoProfile', '-File', PAD, '-Keys', keys], capture_output=True)
 
@@ -108,7 +170,8 @@ def load_walk():
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--find', help='print the waypoint diamonds in this capture and exit')
+    ap.add_argument('--find', help='print the waypoint diamonds and nameplates in this capture and exit')
+    ap.add_argument('--fight', action='store_true', help='engage enemy nameplates before following the waypoint')
     ap.add_argument('--tracked', help="d1-walk's tracked position copies, to report and to detect a stall")
     ap.add_argument('--seconds', type=float, default=180)
     ap.add_argument('--run-ms', type=int, default=1500)
@@ -116,7 +179,8 @@ def main():
     a = ap.parse_args()
     if a.find:
         from PIL import Image
-        print(markers(np.asarray(Image.open(a.find).convert('RGB'))))
+        img = np.asarray(Image.open(a.find).convert('RGB'))
+        print('waypoints', markers(img), 'nameplates', plates(img))
         return
     walk = load_walk() if a.tracked else None
     client = walk.Client() if walk else None
@@ -137,6 +201,21 @@ def main():
             time.sleep(2)
             tracked, still = walk.retrack(client, tracked), 0
             print(f'{step}: no movement for four looks; square, retrack', flush=True)
+            continue
+        enemies = plates(img) if a.fight else []
+        if enemies:
+            cx, cy, w = min(enemies, key=lambda p: math.hypot(p[0] - RX, p[1] - RY))
+            ax, ay = aim_point(cx, cy, w)
+            keys = []
+            if abs(ax - RX) > 20:
+                keys.append(f'Hold:{"L" if ax > RX else "J"}:{max(15, int(abs((ax - RX) / HALF_W * HFOV / 2) / RATE))}')
+            if abs(ay - RY) > 20:
+                keys.append(f'Hold:{"K" if ay > RY else "I"}:{max(15, int(abs((ay - RY) / HALF_H * VFOV / 2) / RATE))}')
+            if keys:
+                pad(','.join(keys))
+            ads_burst()
+            still = 0
+            print(f'{step}: nameplate ({cx}, {cy}) width {w}; aim {",".join(keys) or "on"}; burst{where}', flush=True)
             continue
         if not found:
             pad('Hold:L:%d' % int(math.radians(45) / RATE))
