@@ -730,13 +730,15 @@ async fn drive(
     let mut buf: Vec<u8> = Vec::new();
     let mut chunk = [0u8; 8192];
     tracing::info!("AH connection from {peer}");
+    let mut last_tick = Instant::now();
     loop {
         let n = match tokio::time::timeout(poll, sock.read(&mut chunk)).await {
             Ok(r) => r?,
             // ⭐⭐ Nothing arrived. The client's liveness test is OUR transmit idle time, so this
             // is precisely the case that killed run 20260809-054417-RUNG33-BYPASS.
             Err(_elapsed) => {
-                let (replies, events) = conn.on_tick(Instant::now());
+                last_tick = Instant::now();
+                let (replies, events) = conn.on_tick(last_tick);
                 for e in events {
                     // ⭐⭐ The heartbeat path used to print EVERY event at INFO, including the
                     // codec fault that killed run 20260809-120451-MOONBASE-FRESH. Route it the
@@ -765,6 +767,20 @@ async fn drive(
             let (replies, events) = conn.on_frame(&frame, Instant::now());
             for e in events {
                 log_event(&peer, &e, "");
+            }
+            for r in replies {
+                sock.write_all(&r).await?;
+            }
+        }
+        // ⭐ The tick also runs when it is overdue under steady client traffic. Mission steps, the
+        // sensor repeat and the control file all hang off it, and an armed player trigger can
+        // report a dozen times a second (sense36: 3,000 incident-3403 reports in five minutes,
+        // and no read ever timed out, so the control file that would disarm it was never read).
+        if last_tick.elapsed() >= poll {
+            last_tick = Instant::now();
+            let (replies, events) = conn.on_tick(last_tick);
+            for e in events {
+                log_event(&peer, &e, "heartbeat ");
             }
             for r in replies {
                 sock.write_all(&r).await?;
