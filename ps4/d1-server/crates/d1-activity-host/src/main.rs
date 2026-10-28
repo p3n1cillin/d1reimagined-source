@@ -858,6 +858,12 @@ fn main() -> anyhow::Result<()> {
                             tracing::info!("⭐ D1_AH_TIME_BASE_MS={v} - serving world clock base {ms} ms at blob +0x520");
                             i.set_time_base_ms(ms);
                         }
+                        // ⭐ D1_AH_WORLD_PERIOD_MS=<ms>: send udt 2 world_globals_state with this
+                        // tick period (33.333 = the engine's 30 ticks/s).
+                        if let Some(ms) = std::env::var("D1_AH_WORLD_PERIOD_MS").ok().and_then(|v| v.trim().parse::<f32>().ok()) {
+                            tracing::info!("⭐ D1_AH_WORLD_PERIOD_MS={ms} - serving udt 2 world_globals_state");
+                            i.set_world_period_ms(ms);
+                        }
                         if let Some(s) = sensor_repeat_s {
                             i.set_sensor_repeat(std::time::Duration::from_secs(s));
                         }
