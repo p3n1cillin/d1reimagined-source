@@ -1469,11 +1469,12 @@ pub fn controls() -> Result<Vec<Control>> {
         format!("wire {} bytes vs struct {} bytes", wire.len(), d.object.len()),
     ));
 
-    let unpinned = tag_for_udt(2);
+    // Udt 2 (world_globals_state) is pinned on 56578; udt 42 still has no row.
+    let unpinned = tag_for_udt(42);
     c.push(check(
         "NEGATIVE: an udt with no call-site row REFUSES rather than improvising a tag",
         unpinned.is_err() && tag_for_udt(4).is_ok(),
-        "udt 2 has no CALL_SITES row; udt 4 does - positive control on the same call",
+        "udt 42 has no CALL_SITES row; udt 4 does - positive control on the same call",
     ));
 
     let short = codec.encode(3, &vec![0u8; 0x80]);

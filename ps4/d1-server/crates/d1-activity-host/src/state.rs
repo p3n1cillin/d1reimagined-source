@@ -359,6 +359,8 @@ pub struct ActivityInstance {
     start_region: Option<(u32, u32)>,
     /// ⭐ The served world clock base in ms (`GlobalActivityState::TIME_BASE_MS`).
     time_base_ms: Option<u64>,
+    /// The world tick period in ms for udt 2 `world_globals_state` (`D1_AH_WORLD_PERIOD_MS`).
+    world_period_ms: Option<f32>,
     /// ⭐ Timed mission steps per activity index, the clock start, and the step in force.
     mission_steps: std::collections::HashMap<u16, Vec<MissionStep>>,
     mission_t0: Option<Instant>,
@@ -506,6 +508,7 @@ impl ActivityInstance {
             world_table: std::collections::HashMap::new(),
             start_region: None,
             time_base_ms: None,
+            world_period_ms: None,
             mission_steps: std::collections::HashMap::new(),
             mission_t0: None,
             mission_step: None,
@@ -1041,6 +1044,7 @@ impl ActivityInstance {
                     // the rung-31 activity NAME, and the rung-33 world transition. `FUN_01057B80`
                     // sets `ac+0x130 |= 0x40` only on a successful decode of it.
                     out.push(self.publish_activity_state());
+                    out.extend(self.publish_world_globals());
 
                     // udt 11 - ⭐ the last gate, and an ECHO: the member is the client, and the
                     // client's identity is the 40 bytes it just sent us at `join_request+0x10`.
@@ -1116,6 +1120,7 @@ impl ActivityInstance {
                     AhPush::new(recipient, AhMessage::EntitySlotsAllocated(EntitySlotMask::empty())),
                     self.publish_activity_state(),
                 ];
+                out.extend(self.publish_world_globals());
                 // The membership stays an ECHO. With no stored request there is nothing to echo
                 // and the push is lost rather than fabricated - the same rule as the join.
                 //
@@ -1508,6 +1513,23 @@ impl ActivityInstance {
         self.time_base_ms = Some(ms);
     }
 
+    /// Send udt 2 `world_globals_state` with this tick period on join and on every state refresh.
+    pub fn set_world_period_ms(&mut self, ms: f32) {
+        self.world_period_ms = Some(ms);
+    }
+
+    /// ⭐ udt 2 `world_globals_state` (`0x80800DC1`, 8 bytes: u32 enabled, f32 tick period in ms).
+    /// The client copies it to world `+0x14` (`0x2A2CA0`). Without it the world tick period stays
+    /// 0, so the activity clock never advances: an armed player trigger's last-report tick never
+    /// passes its arming tick and it reports continuously (run sense37 read the period as 0 and
+    /// trigger 40's last-report tick as `INT_MIN`; the engine itself runs at 30 ticks/s).
+    fn publish_world_globals(&self) -> Option<AhPush> {
+        let ms = self.world_period_ms?;
+        let mut image = 1u32.to_le_bytes().to_vec();
+        image.extend_from_slice(&ms.to_le_bytes());
+        Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 2, bytes: image }))
+    }
+
     /// Record the client's current slice set from udt 21 (`+0xB8` = {10-bit index, name hash}).
     /// The update is a delta: the record is present only when its hash is (not 0 / FNV basis).
     fn track_current_slice(&mut self, image: &[u8]) {
@@ -1671,6 +1693,18 @@ mod tests {
         let AhMessage::JoinResult(j) = &out[0].message else { panic!() };
         assert!(j.keepalive_interval_ms > 0);
         assert_eq!(j.keepalive_interval_ms, JoinResult::DEFAULT_KEEPALIVE_MS);
+    }
+
+    /// ⭐ With a world period set, the join also sends udt 2 `world_globals_state`: enabled, then
+    /// the f32 period (33.333 ms = 30 ticks/s, the image Codex measured: `0100000055550542`).
+    #[test]
+    fn the_join_sends_world_globals_when_a_period_is_set() {
+        let (mut i, now) = instance();
+        i.set_world_period_ms(100.0 / 3.0);
+        let out = i.on_client_message(&join_request([0; 4]), now);
+        assert_eq!(out.len(), 5, "join_result, entity grant, activity state, world globals, membership");
+        let AhMessage::Opaque { user_defined_type: 2, bytes } = &out[3].message else { panic!("{:?}", out[3].message) };
+        assert_eq!(bytes, &[1, 0, 0, 0, 0x55, 0x55, 0x05, 0x42]);
     }
 
     #[test]
