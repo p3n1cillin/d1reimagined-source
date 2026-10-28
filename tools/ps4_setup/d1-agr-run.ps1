@@ -19,6 +19,9 @@ param(
     [int]$Minutes = 90,
     # A cold shader/content load can take longer than the old 200-second world wait.
     [ValidateRange(1, 3600)][int]$WorldTimeoutSeconds = 900
+    # The host encodes every mission-step list before it listens; a long schedule (25 steps with
+    # dropship pilot images) took about 6 minutes in run sense41, past the old fixed 300 s.
+    [ValidateRange(1, 3600)][int]$HostTimeoutSeconds = 900
 )
 # A Guardian Rises tutorial lab boot: title (X), skip the opening Mars
 # cinematic in character:prologue (X, then O - left playing it can trip the BLOCK_DETECT watchdog),
@@ -96,7 +99,7 @@ Start-Sleep 20
 if (-not (WaitFor "Entering state 'bootflow:start'" 300)) { exit 2 }
 # A cold host can finish its codec setup after the client reaches the title screen.
 # Starting the activity first produces Currant and leaves an error dialog waiting for input.
-if (-not (WaitForHost 300)) { exit 2 }
+if (-not (WaitForHost $HostTimeoutSeconds)) { exit 2 }
 Start-Sleep 6; & $pad -Keys NumPad2 | Out-Null
 if (WaitFor "Entering state 'character:prologue'" 300) {
     # A skip can be lost (focus, or pressed before the cinematic accepts input): retry until the
