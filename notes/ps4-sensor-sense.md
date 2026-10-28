@@ -98,3 +98,34 @@ without proving baseline and revision handling at the protocol level.
   23, live-member interpretation and the drop2 Skiff departure remain open.
 - There is no runtime change to `d1-activity-host`. This tool should help establish
   the missing evidence before progression is implemented.
+
+## Later native checks (28 October, before 08:00 UK)
+
+The same decoder accepted another 63, 89 and 232 captured packets from three
+fresh runs: **814 packets in total**, each run decoded as its own ordered stream.
+These totals describe codec/envelope validation, not complete capture baselines.
+
+A native type-cell lookup for the squad B tag leads to slot `0x1974D90` and
+builder `0x105230`. Its 160-byte B image starts at squad record `+0x1AC`.
+Static tracing, with the relevant executable blocks independently matched to
+native memory, gives these narrower field descriptions:
+
+| B-image offset | Source |
+| --- | --- |
+| `+0x0C` | `0x105330`: iterate members through `0x17B380`, summing predicate `0x138190` |
+| `+0x10` | Float copied from squad record `+0x270` |
+| `+0x19` | State selected from record `+0x25C` flags: bit 2 → 3, else bit 3 → 2, else bit 1 → 1, else 0 |
+| `+0x1A` | Record `+0x25C` bit 0 |
+
+Predicate `0x138190` resolves the member's `+0x28/+0x30` state reference and
+compares its `+0x274` word with the associated object-table entry's `+0x14C`.
+It has permissive missing-reference paths. This is not the separately traced
+`0x103F70` live-member loop (`entity+0x50 == -1`). Calling `+0x0C` a health or
+enemy-kill count still requires a real member-death control. Execution of these
+builder/predicate functions was not trapped in the later runs; the later checks
+establish image identity and static data flow.
+
+In the final combat trial, the bot fired at radar threats without acquiring a
+nameplate, then the Guardian died. The observed first four squad words remained
+unchanged across that trial. **No enemy kill is established.** Objective 23 and
+the Skiff departure remain gated on the missing evidence.
