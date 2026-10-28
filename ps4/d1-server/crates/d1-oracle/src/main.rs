@@ -416,6 +416,20 @@ enum ProfileCmd {
 /// `d1-oracle character …` - see [`d1_oracle::character`] for why each default is what it is.
 #[derive(Subcommand)]
 enum CharacterCmd {
+    /// Derive one packed base stat through the 56578 client's own item-level curves.
+    /// Talented/progressing instances are refused; output must be new. This is an explicit trial.
+    DerivedStat {
+        #[arg(long)]
+        input: PathBuf,
+        #[arg(long)]
+        out: PathBuf,
+        #[arg(long)]
+        inventory: PathBuf,
+        #[arg(long, value_parser = ["character", "primary", "special", "heavy"])]
+        table: String,
+        #[arg(long)]
+        stat: u8,
+    },
     /// Fill one peer weapon-stat table from its equipped item's owned base definition (56578).
     /// Preserves every decoded byte outside that table; output must be a new file.
     WeaponStats {
@@ -1347,6 +1361,36 @@ fn run_character(cli: &Cli, cmd: &CharacterCmd) -> anyhow::Result<ExitCode> {
     use d1_oracle::character::{self, CharacterSpec};
 
     match cmd {
+        CharacterCmd::DerivedStat { input, out, inventory, table, stat } => {
+            use d1_oracle::{native_item_stat, weapon_stats};
+            use std::io::Write;
+            let base = match table.as_str() {
+                "character" => native_item_stat::PEER_CHARACTER_TABLE,
+                "primary" => weapon_stats::PEER_TABLES[0],
+                "special" => weapon_stats::PEER_TABLES[1],
+                "heavy" => weapon_stats::PEER_TABLES[2],
+                _ => anyhow::bail!("unknown table"),
+            };
+            let mut codec = ObjectOracle::new(character::PEER_TAG)?;
+            let peer = codec.decode(&std::fs::read(input)?)?;
+            codec.round_trip(&peer.object, 0x4000)?;
+            let indices = d1_oracle::IndexTable::load_default()?;
+            let mut content = d1_oracle::oodle::Content::open_default()?;
+            let result = native_item_stat::derive_peer_stat(
+                &peer.object, inventory, base, *stat, &mut content, &indices)?;
+            let (encoded, decoded) = codec.round_trip(&result.peer, 0x4000)?;
+            anyhow::ensure!(decoded.object == result.peer, "derived peer did not round-trip identical");
+            let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(out)?;
+            file.write_all(&encoded.payload)?;
+            file.sync_all()?;
+            println!("{}", serde_json::json!({
+                "table": table, "stat": stat, "value": result.total,
+                "contributions_slot_index_soid_value": result.contributions,
+                "round_trip": "IDENTICAL", "source": "owned 56578 base-stat code under Unicorn with scoped scalar arithmetic",
+                "limitations": "no talent/progression contributions; native gameplay still requires testing"
+            }));
+            Ok(ExitCode::SUCCESS)
+        }
         CharacterCmd::WeaponStats { input, out, slot, only_stat } => {
             use d1_oracle::{art_arrangement, weapon_stats};
             use std::io::Write;

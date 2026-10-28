@@ -65,6 +65,7 @@ class Ctx:
 
 EXEC = set()   # indices of DR slots that are execute breakpoints (RW=00, LEN=00)
 READ = set()   # indices of DR slots that break on read or write (RW=11), 8 bytes
+BYTE_READ = set()  # subset of READ: one-byte selector, without neighbouring-field noise
 
 
 def dr7_for(n):
@@ -72,7 +73,8 @@ def dr7_for(n):
     for i in range(n):
         v |= 1 << (2 * i)                  # L_i
         if i in READ:
-            v |= (0b11 | (0b10 << 2)) << (16 + 4 * i)   # RW=read/write, LEN=8 bytes
+            length = 0 if i in BYTE_READ else 0b10
+            v |= (0b11 | (length << 2)) << (16 + 4 * i)
         elif i not in EXEC:
             v |= (0b01 | (0b11 << 2)) << (16 + 4 * i)   # RW=write, LEN=4 bytes
     return v
@@ -98,6 +100,7 @@ def main():
     ap.add_argument('--out', default=os.path.join(HERE, 'd1-watchwrite.jsonl'))
     ap.add_argument('--max-hits', type=int, default=200)
     ap.add_argument('--read', action='append', default=[], help='absolute 8-aligned address: break on read or write (8 bytes)')
+    ap.add_argument('--read-byte', action='append', default=[], help='absolute address: break on read or write of this one byte only')
     ap.add_argument('--exec', action='append', default=[], help='eboot-relative address: execute breakpoint; logs rax/rbp/rdi and 16 bytes at [rbp-0x150]')
     ap.add_argument('--peek', action='append', default=[], help='on an exec hit, log the u32 at this register expression, e.g. "rcx+rdx*4+0xc" (repeatable)')
     ap.add_argument('--log-av', action='store_true', help='log access violations outside the guest image (still passed on)')
@@ -114,17 +117,22 @@ def main():
         addrs += [entry + int(f, 16) for f in a.field]
     for x in a.read:
         READ.add(len(addrs)); addrs.append(int(x, 16))
+    for x in a.read_byte:
+        BYTE_READ.add(len(addrs)); READ.add(len(addrs)); addrs.append(int(x, 16))
     for x in a.exec:
         EXEC.add(len(addrs)); addrs.append(base + int(x, 16))
-    if not 1 <= len(addrs) <= 4 or any(x & 3 for i, x in enumerate(addrs) if i not in EXEC):
-        sys.exit(f'need 1..4 dword-aligned addresses, got {[hex(x) for x in addrs]}')
+    if not 1 <= len(addrs) <= 4 or any(
+            x & (7 if i in READ else 3) for i, x in enumerate(addrs)
+            if i not in EXEC and i not in BYTE_READ):
+        sys.exit(f'need 1..4 addresses aligned to their watch widths, got {[hex(x) for x in addrs]}')
     pid = int(__import__('subprocess').run(['tasklist', '/FI', 'IMAGENAME eq shadPS4.exe', '/FO', 'CSV', '/NH'],
               capture_output=True, text=True).stdout.split('","')[1])
     out = open(a.out, 'a')
     def log(**kw):
         kw['t'] = time.time(); out.write(json.dumps(kw) + '\n'); out.flush()
         print(json.dumps(kw), flush=True)
-    log(event='start', pid=pid, base=hex(base), addrs=[hex(x) for x in addrs])
+    log(event='start', pid=pid, base=hex(base), addrs=[hex(x) for x in addrs],
+        byte_read_slots=sorted(BYTE_READ))
     if not k32.DebugActiveProcess(pid):
         sys.exit(f'DebugActiveProcess failed ({ctypes.get_last_error()})')
     k32.DebugSetProcessKillOnExit(False)
@@ -188,7 +196,8 @@ def main():
                             ctypes.c_uint32.from_address(c.addr + OFF_EFLAGS).value |= 0x10000   # RF
                         else:
                             log(event='write', tid=tid, rip=hex(rip), rip_img=hex(rip - base) if base <= rip < base + 0x18D8000 else None,
-                                which=which, values=[hex(p.u(x, 'I')) for x in addrs], stack_img=img)
+                                which=which, values=[hex(p.u(x, 'B' if i in BYTE_READ else 'I'))
+                                                     for i, x in enumerate(addrs)], stack_img=img)
                         hits += 1
                         c.set64(OFF_DR6, 0); c.put(h)
                     else:

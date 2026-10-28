@@ -71,6 +71,8 @@ pub mod harness;
 pub mod inventory;
 pub mod item_index;
 pub mod message;
+pub mod native_item_stat;
+mod scalar_float;
 pub mod object;
 pub mod oodle;
 pub mod profile;

@@ -1,5 +1,8 @@
 # Build 56578 weapon investment stats
 
+Level-derived primary stats and general character-table trials are described in
+[character and item stat calculations](PS4_CHARACTER_STATS.md).
+
 The peer character supplies separate packed stat tables for the primary, special
 and heavy weapons. The former fixtures leave them zero, so a correctly equipped
 weapon can draw and fire while using minimum stat-group values.
@@ -23,10 +26,12 @@ The baseline HUD was 12/114. Raw traces, screenshots and generated fixtures rema
 private. A codec round trip alone establishes shape, not native gameplay.
 
 A second fresh natural pickup used the command's full base-stat list. The native
-builder received Magazine 44, Impact 80 and Inventory 15, and the HUD showed
+builder received Magazine 44, Impact 80, Optics 15 and Inventory Size 32, and the HUD showed
 **25/134**. The debugger detached cleanly after four hardware hits. This proves
 the full table reaches the builder, but the reserve still differs from the
-reference's 285; its allocation needs a separate trace. Actual damage and kills
+reference's immediate-pickup reserve of 292; its allocation needs a separate trace.
+The earlier 285 comparison was footage after shooting, not the pickup itself.
+Stat index 28 is Optics; Inventory Size is index 21. Actual damage and kills
 have not been measured by these stat-table tests.
 
 ## Generate a peer candidate from owned content

@@ -188,7 +188,9 @@ def main():
     t_end, step, still, last = time.time() + a.seconds, 0, 0, None
     while time.time() < t_end:
         step += 1
-        pad('Space,Space')               # touchpad twice: nav mode on and off leaves the waypoint shown
+        # Both button and stick activity are required by the client's idle check, including
+        # repeated combat looks whose target is already centred and needs no camera turn.
+        pad('Space,Space,Hold:A:80,Hold:D:80')
         time.sleep(0.4)
         img = grab(os.path.join(a.shots or HERE, f'waypoint-{step:03d}.png' if a.shots else 'waypoint.png'))
         found = markers(img)
