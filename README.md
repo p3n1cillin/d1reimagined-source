@@ -1,13 +1,19 @@
 # D1 Reimagined
 
+**The original Destiny (2014), restored and running again.** An independent, open-source preservation project bringing Destiny 1 back on PS4 (through shadPS4) and PS3 against its own servers, one mission step at a time, with every step shown in public Dev Blogs and videos.
+
+[![A Guardian Rises progress](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Fmission.json)](https://d1reimagined.com/progress?ref=github)
+[![Latest Dev Blog](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Flatest.json)](https://d1reimagined.com/latest?ref=github)
+[![YouTube](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Fyoutube.json)](https://www.youtube.com/@d1reimagined?sub_confirmation=1)
+[![Discord](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Fdiscord.json)](https://d1reimagined.com/discord?ref=github)
 [![Source checks](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/source-checks.yml/badge.svg)](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/source-checks.yml)
 [![Good first issues](https://img.shields.io/github/issues/p3n1cillin/d1reimagined-source/good%20first%20issue?label=good%20first%20issues)](https://github.com/p3n1cillin/d1reimagined-source/labels/good%20first%20issue)
-[![Discord](https://img.shields.io/discord/1558817182551646220?label=Discord)](https://d1reimagined.com/discord)
+
+[![The latest Dev Blog](https://d1reimagined.com/latest/thumbnail)](https://d1reimagined.com/latest?ref=github)
+
+**Watch** the [Dev Blog videos and Shorts](https://www.youtube.com/@d1reimagined) · **Read** the [latest Dev Blog](https://d1reimagined.com/latest?ref=github) · **Follow** the [first mission, step by step](https://d1reimagined.com/progress?ref=github) · **Talk** on the [Discord](https://d1reimagined.com/discord?ref=github)
 
 Experimental, independent Destiny 1 preservation research and original local service implementation. **The complete game is not playable.** This consolidated repository includes local service stand-ins, protocol experiments, mission rules, diagnostic tools, scoped emulator patches and regression tests.
-
-Project website: https://d1reimagined.com
-Community Discord: https://d1reimagined.com/discord (questions, ideas and contributor discussion)
 
 ## Get involved
 
