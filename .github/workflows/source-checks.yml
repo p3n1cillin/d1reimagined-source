@@ -46,6 +46,8 @@ jobs:
             ps4/d1-server/target
           key: rust-workspace-${{ hashFiles('ps4/d1-server/Cargo.lock') }}
           restore-keys: rust-workspace-
+      - name: protoc for shadnet-proto
+        run: sudo apt-get update -q && sudo apt-get install -y -q protobuf-compiler
       - name: Workspace tests without game inputs
         working-directory: ps4/d1-server
         run: cargo test --locked --workspace --exclude d1-oracle --exclude d1-activity-host --exclude d1-pkg
