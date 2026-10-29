@@ -50,4 +50,4 @@ jobs:
         run: sudo apt-get update -q && sudo apt-get install -y -q protobuf-compiler
       - name: Workspace tests without game inputs
         working-directory: ps4/d1-server
-        run: cargo test --locked --workspace --exclude d1-oracle --exclude d1-activity-host --exclude d1-pkg
+        run: cargo test --locked --no-fail-fast --workspace --exclude d1-oracle --exclude d1-activity-host --exclude d1-pkg
