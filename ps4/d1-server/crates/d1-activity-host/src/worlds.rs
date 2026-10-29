@@ -177,6 +177,21 @@ pub const CITY_TOWER_DEFAULT1: KnownWorld = KnownWorld {
     chosen: &[0, 1, 2, 3, 4],
 };
 
+/// `act_cosmo_m0_5_hangar` - an authored hangar world of the opening (scenario `0x80CB802B`),
+/// read offline from owned 56578 content: FNV-1 name `0x1200A031`, PRIVATE `0x31429B32`, PUBLIC
+/// `0xE354F1EA` (the Highway's PUBLIC too), 22 bubbles with one sub-bubble each.
+///
+/// ⚠ A candidate for activity 165 (the STORY_CINEMATIC between A Guardian Rises and the Tower),
+/// not a recovered binding: the client's 165 record names no world. Its sensor list must be the
+/// client's own pending list, read once the world is resident.
+pub const ACT_COSMO_M0_5_HANGAR: KnownWorld = KnownWorld {
+    name: "act_cosmo_m0_5_hangar",
+    scenario_tag: 0x80CB_802B,
+    checksum: 0x3142_9B32,
+    bubble_count: 22,
+    chosen: &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+};
+
 /// Every world whose scenario record has been captured or read from owned content.
 pub const KNOWN_WORLDS: &[KnownWorld] = &[
     PVP_MOONBASE,
@@ -185,6 +200,7 @@ pub const KNOWN_WORLDS: &[KnownWorld] = &[
     ACT_COSMO_M0_HIGHWAY,
     ACT_COSMO_M1_DOME_A,
     CITY_TOWER_DEFAULT1,
+    ACT_COSMO_M0_5_HANGAR,
 ];
 
 /// The world an Activity Host publishes when nothing overrides it.
@@ -315,5 +331,12 @@ mod tests {
         let t = lookup("city_tower_default1").expect("tower row");
         assert_eq!((t.scenario_tag, t.checksum, t.bubble_count), (0x80C7_A005, 0x2434_0499, 5));
         assert!(lookup("city_tower").is_none(), "the destination folder is not a world name");
+    }
+
+    #[test]
+    fn the_hangar_is_known_by_its_world_name() {
+        let h = lookup("act_cosmo_m0_5_hangar").expect("hangar row");
+        assert_eq!((h.scenario_tag, h.checksum, h.bubble_count), (0x80CB_802B, 0x3142_9B32, 22));
+        assert_ne!(h.checksum, ACT_COSMO_M0_HIGHWAY.checksum, "PRIVATE differs from the Highway");
     }
 }
