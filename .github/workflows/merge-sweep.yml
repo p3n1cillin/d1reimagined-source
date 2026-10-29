@@ -1,0 +1,86 @@
+# Moves contributors' pull requests through review to merge, from the maintainer's verdict:
+# - approved on the current head commit  -> squash auto-merge; GitHub merges once main's required checks pass
+# - approved, then new commits pushed    -> back to "needs review"
+# - changes requested on the current head -> "changes requested"
+# Never auto-merges a PR that touches .github/ (workflows, automation) or carries "do not merge":
+# those are merged by hand. The maintainer's own and Dependabot's PRs are handled by auto-merge.yml.
+# Runs from main on a schedule; it reads PR metadata only and never checks out pull request code.
+name: Merge sweep
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: merge-sweep
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const maintainer = context.repo.owner;
+            const STATES = {
+              'needs review': ['fbca04', 'Waiting for a maintainer review'],
+              'approved': ['0e8a16', 'Approved by a maintainer; merges when the checks pass'],
+              'changes requested': ['d93f0b', 'A maintainer asked for changes'],
+              'maintainer merge': ['5319e7', 'Touches repository automation, so a maintainer merges it by hand'],
+            };
+            const existing = new Set((await github.paginate(github.rest.issues.listLabelsForRepo, { owner, repo, per_page: 100 })).map((l) => l.name));
+            for (const [name, [color, description]] of Object.entries(STATES)) {
+              if (!existing.has(name)) await github.rest.issues.createLabel({ owner, repo, name, color, description }).catch((e) => { if (e.status !== 422) throw e; });
+            }
+            async function setState(pr, state, extra = []) {
+              const have = new Set(pr.labels.map((l) => l.name));
+              for (const name of Object.keys(STATES)) {
+                if (name !== state && !extra.includes(name) && have.has(name)) {
+                  await github.rest.issues.removeLabel({ owner, repo, issue_number: pr.number, name }).catch((e) => { if (e.status !== 404) throw e; });
+                }
+              }
+              const add = [state, ...extra].filter((n) => n && !have.has(n));
+              if (add.length) await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: add });
+            }
+
+            const prs = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open', base: 'main', per_page: 100 });
+            for (const pr of prs) {
+              const author = pr.user.login;
+              if (pr.draft || author === maintainer || author.endsWith('[bot]')) continue;
+              const labels = new Set(pr.labels.map((l) => l.name));
+              if (labels.has('open PR limit')) continue;
+              const reviews = await github.paginate(github.rest.pulls.listReviews, { owner, repo, pull_number: pr.number, per_page: 100 });
+              const verdicts = reviews.filter((r) => r.user && r.user.login === maintainer && ['APPROVED', 'CHANGES_REQUESTED'].includes(r.state));
+              const last = verdicts[verdicts.length - 1];
+              if (!last) { await setState(pr, 'needs review'); continue; }
+              if (last.state === 'CHANGES_REQUESTED') {
+                await setState(pr, last.commit_id === pr.head.sha ? 'changes requested' : 'needs review');
+                continue;
+              }
+              if (last.commit_id !== pr.head.sha) { await setState(pr, 'needs review'); continue; }
+              const files = await github.paginate(github.rest.pulls.listFiles, { owner, repo, pull_number: pr.number, per_page: 100 });
+              if (labels.has('do not merge')) { await setState(pr, 'approved'); continue; }
+              if (files.some((f) => f.filename.startsWith('.github/'))) { await setState(pr, 'approved', ['maintainer merge']); continue; }
+              await setState(pr, 'approved');
+              if (pr.auto_merge) continue;
+              const { repository } = await github.graphql(
+                'query($owner:String!,$repo:String!,$n:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$n){id}}}',
+                { owner, repo, n: pr.number });
+              try {
+                await github.graphql(
+                  'mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH}){clientMutationId}}',
+                  { id: repository.pullRequest.id });
+                core.info(`#${pr.number}: auto-merge enabled`);
+              } catch (error) {
+                core.warning(`#${pr.number}: could not enable auto-merge: ${error.message}`);
+              }
+            }

@@ -1,0 +1,38 @@
+# Labels pull requests by the number of changed lines (size/XS … size/XL). Metadata only.
+name: PR size
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions: {}
+
+concurrency:
+  group: pr-size-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  size:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number });
+            const lines = pr.additions + pr.deletions;
+            const size = lines <= 10 ? 'XS' : lines <= 100 ? 'S' : lines <= 500 ? 'M' : lines <= 1000 ? 'L' : 'XL';
+            const want = `size/${size}`;
+            for (const label of pr.labels.map((l) => l.name)) {
+              if (label.startsWith('size/') && label !== want) {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: pull_number, name: label }).catch((e) => { if (e.status !== 404) throw e; });
+              }
+            }
+            if (!pr.labels.some((l) => l.name === want)) {
+              await github.rest.issues.addLabels({ owner, repo, issue_number: pull_number, labels: [want] });
+            }

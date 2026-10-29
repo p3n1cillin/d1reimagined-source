@@ -1,0 +1,38 @@
+# Title format, leaked secrets and broken relative links. Runs the base branch's script against the PR's
+# commits: pull_request_target never checks out or executes pull request code.
+name: Conventions
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conventions-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  conventions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fetch the pull request's objects without checking them out
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: git fetch --no-tags origin "+refs/pull/$NUMBER/head:refs/pr/head"
+      - name: Check with the trusted base script
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          TITLE: ${{ github.event.pull_request.title }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          OWNER: ${{ github.repository_owner }}
+        run: python3 -I .github/scripts/check_pr.py --base "$BASE_SHA" --head "$HEAD_SHA" --title "$TITLE" --author "$AUTHOR" --owner "$OWNER"

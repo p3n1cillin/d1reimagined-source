@@ -15,3 +15,24 @@ PS4 contributions retain GPL-2.0-or-later and their attribution notices. Origina
 retained PS3 files use the existing root license unless their notices say otherwise.
 
 Do not submit game files, extracted assets, firmware, credentials, keys, account records, personal paths or raw private traces. Share only original code and material you have permission to redistribute. Preserve licence notices in upstream-derived changes. Report security issues privately rather than including exploit targets or sensitive records in a public issue.
+
+## How pull requests are handled
+
+Pull requests move from opening to merge automatically, so you can follow yours from its labels:
+
+1. **Checks.** Every pull request runs the source checks (Python, the Rust workspace's tests that need
+   no game inputs, the package tools on Linux and Windows), the contribution guard (no game files,
+   keys or large binaries) and the conventions check (a title like `area: summary`, no secrets, no
+   broken relative links). A first-time contributor's checks start once a maintainer approves the run.
+2. **Review.** Your pull request is labelled `needs review` and a maintainer reviews it. You'll get
+   either an approval or `changes requested` with comments. Pushing new commits after an approval
+   puts it back to `needs review`.
+3. **Merge.** Once approved, it's labelled `approved` and squash-merged automatically when the checks
+   pass. Pull requests that change `.github/` (workflows and automation) are labelled
+   `maintainer merge` and merged by hand.
+
+Along the way it is labelled by size (`size/XS` to `size/XL`) and by area, flagged `needs rebase` if
+it conflicts with `main`, and gets a comment if another open pull request touches the same lines.
+Until one of your pull requests is merged you can have one open at a time; after that, up to 20.
+Pull requests with no activity for 30 days are marked `stale` and closed 14 days later; reopen them
+whenever you pick the work up again.

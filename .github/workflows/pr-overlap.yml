@@ -1,0 +1,52 @@
+# Comments on open pull requests that conflict with each other or add the same new files, and removes the
+# comment once they no longer do. Runs from main; pull request code is only read as git objects.
+name: PR overlap
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '15 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: pr-overlap
+
+jobs:
+  overlap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          out=$RUNNER_TEMP/overlap
+          python3 -I .github/scripts/pr_overlap.py --base "${{ github.event.repository.default_branch }}" --out "$out" --repo "$GH_REPO"
+          marker='<!-- pr-overlap -->'
+          for file in "$out"/*.md; do
+            [ -e "$file" ] || continue
+            pr=$(basename "$file" .md)
+            comment=$(gh api "repos/$GH_REPO/issues/$pr/comments" --paginate \
+              --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | [.id, .body] | @json" | head -n1)
+            id=$(jq -r '.[0] // empty' <<< "${comment:-null}")
+            if [ -s "$file" ]; then
+              [ "$(jq -r '.[1]' <<< "${comment:-null}")" = "$(cat "$file")" ] && continue
+              if [ -n "$id" ]; then
+                gh api -X PATCH "repos/$GH_REPO/issues/comments/$id" -F body=@"$file" > /dev/null
+              else
+                gh pr comment "$pr" --body-file "$file"
+              fi
+            elif [ -n "$id" ]; then
+              gh api -X DELETE "repos/$GH_REPO/issues/comments/$id"
+            fi
+          done

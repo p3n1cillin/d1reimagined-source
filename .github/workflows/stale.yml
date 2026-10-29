@@ -1,0 +1,32 @@
+# Nudges pull requests with no activity for 30 days and closes them 14 days later. Approved PRs, the
+# maintainer's held work and dependency updates are exempt. Issues are left alone.
+name: Stale
+
+on:
+  schedule:
+    - cron: '20 4 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
+          days-before-pr-stale: 30
+          days-before-pr-close: 14
+          stale-pr-label: stale
+          exempt-pr-labels: 'approved,do not merge,maintainer merge,dependencies'
+          stale-pr-message: >-
+            This pull request has had no activity for 30 days. If you're still working on it, push a commit or
+            leave a comment and it stays open; otherwise it closes in 14 days. You can always reopen it later.
+          close-pr-message: >-
+            Closed after 44 days without activity. Thanks for the work so far: reopen it whenever you pick it up again.
