@@ -22,6 +22,19 @@ pub fn params_for_list(
     let mut params = base.clone();
     params.name_hash = group;
     params.clients.clear();
+    // The lifetime record's sub differs between worlds (3 in the Highway and First Light, 2 in
+    // the Tower). A list naming exactly one lifetime row for `group` names the record; with
+    // none, or several, the launch sub stands. A frame whose lifetime name is absent from the
+    // world is not applied (sense56: 1 of 100 Tower clients delivered under sub 3).
+    let lifetime_subs: Vec<i16> = text
+        .lines()
+        .filter_map(|l| SensorClientRef::parse_line(l.split('#').next().unwrap_or("").trim()))
+        .filter(|c| c.name_hash == group && c.name_i8 == base.name_i8)
+        .map(|c| c.name_sub)
+        .collect();
+    if let [sub] = lifetime_subs.as_slice() {
+        params.name_sub = *sub;
+    }
     let mut authority_seen = false;
     let mut phase_seen = false;
     for (index, line) in text.lines().enumerate() {
@@ -51,8 +64,8 @@ pub fn params_for_list(
             params.phase = phase;
         } else if let Some(mut client) = SensorClientRef::parse_line(line) {
             if client.name_hash == group
-                && client.name_i8 == base.name_i8
-                && client.name_sub == base.name_sub
+                && client.name_i8 == params.name_i8
+                && client.name_sub == params.name_sub
             {
                 continue;
             }
@@ -135,6 +148,25 @@ mod tests {
         assert_eq!(p.authority, base.authority);
         assert_eq!(p.clients.len(), 1);
         assert_eq!(p.clients[0].name_sub, 4);
+    }
+
+    #[test]
+    fn a_single_lifetime_row_sets_the_record_sub() {
+        // The Tower's lifetime record is sub 2; the launch default is 3.
+        let p = params_for_list(&base(), 99, 0, "99 16 2 1 0 # lifetime\n99 12 4 1 1\n").unwrap();
+        assert_eq!((p.name_hash, p.name_i8, p.name_sub), (99, 16, 2));
+        assert_eq!(p.clients.len(), 1);
+        assert_eq!(p.clients[0].name_i8, 12);
+        // Another group's kind-16 row is an ordinary client and does not move the record.
+        let p = params_for_list(&base(), 99, 0, "7 16 2 1 0\n").unwrap();
+        assert_eq!((p.name_sub, p.clients.len()), (3, 1));
+        // Without a lifetime row the launch sub stands.
+        assert_eq!(
+            params_for_list(&base(), 99, 0, "99 1 4 1 0")
+                .unwrap()
+                .name_sub,
+            3
+        );
     }
 
     #[test]
