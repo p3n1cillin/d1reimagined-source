@@ -1,6 +1,6 @@
 # D1 Reimagined
 
-**The original Destiny (2014), restored and running again.** An independent, open-source preservation project bringing Destiny 1 back on PS4 (through shadPS4) and PS3 against its own servers, one mission step at a time, with every step shown in public Dev Blogs and videos.
+**The original Destiny (2014), running on PC, where it was never released.** An independent, open-source preservation project running Destiny 1's final PS4 version on PC through the shadPS4 emulator, against its own rebuilt services, one mission step at a time, with every step shown in public Dev Blogs and videos.
 
 [![A Guardian Rises progress](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Fmission.json)](https://d1reimagined.com/progress?ref=github)
 [![Latest Dev Blog](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Flatest.json)](https://d1reimagined.com/latest?ref=github)
