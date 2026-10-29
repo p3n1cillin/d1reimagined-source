@@ -41,10 +41,16 @@
 //! ⚠⚠ `--hz 50` **misses the ~100 ms window** and reads like "the world never loaded" - a false
 //! negative that costs an hour. `[C]`, measured both ways.
 //!
-//! ⛔ **These are not derivable offline.** `dumps/` carries the packages, but the scenario record is
-//! built at load time; nothing in this tree computes `+0x0C` from a world name. A new row costs one
-//! live capture. That is why [`lookup`] returns `None` rather than guessing - an invented checksum
-//! is indistinguishable on the wire from a stale one.
+//! ⚠ **Offline derivation (corrected 29 Oct 2026).** This note used to say the rows could not be
+//! derived offline. They can: each world's owned `<world>:scenario_client` package record carries
+//! the PRIVATE checksum at `+0x0C`, PUBLIC at `+0x10` and the bubble count at `+0x48`, and its
+//! package symbol binds the world name (`+0x08` is FNV-1 of that name; `+0x30` is the
+//! *destination* folder, e.g. `cosmo`, which is why a name/`+0x30` equality check rejects valid
+//! records). Read from the 56578 packages, `orbit`, `act_cosmo_m0_highway` and
+//! `act_cosmo_m1_dome_a` reproduce the live-captured rows below exactly, including orbit's five
+//! zero-sub-bubble bubbles (Codex). A live capture is still the acceptance test for a new row;
+//! [`lookup`] still returns `None` for a world nobody has read, rather than guessing - an invented
+//! checksum is indistinguishable on the wire from a stale one.
 
 /// One world's scenario-record facts, as rung 33 reads them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -154,9 +160,32 @@ pub const ACT_COSMO_M1_DOME_A: KnownWorld = KnownWorld {
     chosen: &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
 };
 
-/// Every world whose scenario record has been captured.
-pub const KNOWN_WORLDS: &[KnownWorld] =
-    &[PVP_MOONBASE, ORBIT, PVP_CITY_DEFENSE, ACT_COSMO_M0_HIGHWAY, ACT_COSMO_M1_DOME_A];
+/// `city_tower_default1` - the ordinary **Tower** (not an event variant: queen, harvest, srl, fol,
+/// crimson and chalice have their own scenarios and checksums). Read offline from the owned 56578
+/// scenario-client record `0x80C7A005` (`ps4_city_tower_activities_act_023d_5.pkg`): `+0x08` =
+/// FNV-1("city_tower_default1") `0x545AEC79`, PRIVATE `0x24340499`, PUBLIC `0xD067231D`, 5 bubbles
+/// with one sub-bubble each, so all five may be chosen. Needed after A Guardian Rises, whose
+/// completion chains (via activity 165) toward the Tower (activity index 0).
+///
+/// ⚠ Not yet live-captured: the first spawn region (0 is an inference) and its sensor-client list
+/// are separate test gates.
+pub const CITY_TOWER_DEFAULT1: KnownWorld = KnownWorld {
+    name: "city_tower_default1",
+    scenario_tag: 0x80C7_A005,
+    checksum: 0x2434_0499,
+    bubble_count: 5,
+    chosen: &[0, 1, 2, 3, 4],
+};
+
+/// Every world whose scenario record has been captured or read from owned content.
+pub const KNOWN_WORLDS: &[KnownWorld] = &[
+    PVP_MOONBASE,
+    ORBIT,
+    PVP_CITY_DEFENSE,
+    ACT_COSMO_M0_HIGHWAY,
+    ACT_COSMO_M1_DOME_A,
+    CITY_TOWER_DEFAULT1,
+];
 
 /// The world an Activity Host publishes when nothing overrides it.
 ///
@@ -264,5 +293,27 @@ pub fn resolve(
         name,
         world,
         disagreements,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_known_world_chooses_distinct_bubbles_in_range() {
+        for w in KNOWN_WORLDS {
+            assert!(w.chosen.iter().all(|&b| (b as u32) < w.bubble_count), "{}", w.name);
+            let mut seen = w.chosen.to_vec();
+            seen.dedup();
+            assert_eq!(seen.len(), w.chosen.len(), "{}", w.name);
+        }
+    }
+
+    #[test]
+    fn the_tower_is_known_by_its_world_name() {
+        let t = lookup("city_tower_default1").expect("tower row");
+        assert_eq!((t.scenario_tag, t.checksum, t.bubble_count), (0x80C7_A005, 0x2434_0499, 5));
+        assert!(lookup("city_tower").is_none(), "the destination folder is not a world name");
     }
 }
