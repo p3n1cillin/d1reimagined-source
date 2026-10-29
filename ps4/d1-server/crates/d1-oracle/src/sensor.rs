@@ -83,7 +83,11 @@ pub const TAG_AUTHORITY: u32 = 0x8080_0CF7;
 /// three `(i32, i32, f32)` channels, in a prop state's command block (`0x808007D9` / `0x80800387`
 /// `+0x20` count, `+0x30` type, `+0x40` value). Channels 0-2 at `(1, 1, 1.0)` on The Breach's
 /// control and light props open the barrier to the starter rifle (01.24 JOIN210).
-pub const TYPED_VALUE_TYPES: &[u32] = &[0x8080_279A];
+/// `0x80801732`: the family-4/type-3 inventory element, carried as a post-game reward display
+/// entry in the kind-15 scoreboard's player row (`0x808008D0`). Without it the client's codec
+/// faults on the unresolved type (a negative `memset`); with it a one-reward scoreboard image
+/// round-trips byte-identical (2,388 bits).
+pub const TYPED_VALUE_TYPES: &[u32] = &[0x8080_279A, 0x8080_1732];
 /// Entries in the authority table: 65 blocks of 12 bytes after a `u32`.
 pub const AUTHORITY_BLOCKS: usize = 65;
 
