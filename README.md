@@ -18,7 +18,7 @@ Experimental, independent Destiny 1 preservation research and original local ser
 ## Get involved
 
 - **Pick up a task:** [good first issues](https://github.com/p3n1cillin/d1reimagined-source/labels/good%20first%20issue) and [help wanted](https://github.com/p3n1cillin/d1reimagined-source/labels/help%20wanted). Many need no game files at all, including research, documentation, tests and CI.
-- **Follow progress:** [Dev Blogs](https://d1reimagined.com/devblogs), and #dev-updates on the [Discord](https://d1reimagined.com/discord).
+- **Follow progress:** [Dev Blogs](https://d1reimagined.com/devblogs), and #dev-updates on the [Discord](https://d1reimagined.com/discord). To hear about each milestone here, choose **Watch → Custom → Releases**: every milestone gets a [release](https://github.com/p3n1cillin/d1reimagined-source/releases) with its Dev Blog and video.
 - **Ask first:** the Discord help and ideas forums are the place for questions and early ideas. Issues are for confirmed problems and planned work.
 - **Emulator:** the project's shadPS4 build is [d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4) (branch `d1`).
 
