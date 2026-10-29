@@ -2272,6 +2272,9 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_PROGRESSION_ROOT", "<unset>", "family 2 root payload"),
     ("D1_PROGRESSION_KEY_BASE", "0xD100000000000401", "fallback progression key"),
     ("D1_ORACLE", "d1-server/target/release/d1-oracle", "native encoder used to stage loadouts"),
+    ("D1_LOOT_GRANT", "<unset>", "NONCE=SOID:FILE[|PROFILE][;…] - the item a claimed world drop delivers"),
+    ("D1_LOOT_GRANT_ROSTER", "<unset>", "roster fixtures served after a loot grant"),
+    ("D1_PROFILE_PUSH_FILE", "<unset>", "on-demand family-4 profile delta: write this file (plus optional .item/.soid) to push it"),
 ];
 
 /// Print [`KNOBS`] with each knob's effective value.
