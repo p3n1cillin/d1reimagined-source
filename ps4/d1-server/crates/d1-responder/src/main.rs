@@ -1769,7 +1769,11 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                             Some(raw) => {
                                                                                 warn!("      ⭐ profile from D1_PROFILE_FILE ({} B, oracle-encoded full object)", raw.len());
                                                                                 // `D1_ACCOUNT_FILE`: the account verbatim as well, e.g. with
-                                                                                // currencies in its inventory (field [6]). Only the
+                                                                                // currencies in its inventory (field [6]). ⚠ Encode only the
+                                                                                // fields you mean to send: a full re-encode of a decoded
+                                                                                // account sends every field present-and-zero, and the client
+                                                                                // then takes zeros over its defaults (measured: HUD opacity 0,
+                                                                                // "HUD DISABLED"). Only the
                                                                                 // post-creation shape: before creation the account must
                                                                                 // withhold the profile SOID (see above), which a fixed
                                                                                 // file cannot follow.
