@@ -276,6 +276,23 @@ mod tests {
         assert_eq!(s.account[&308], (869, 500));
     }
 
+    /// With the owned inputs: apply the Outfitter's sale 23 through the real codec and write the
+    /// pushes. `D1_TEST_PROFILE_OBJ`, `D1_TEST_ITEM_TEMPLATE`, `D1_ORACLE` (+ `D1_BUILDS`/`D1_BUILD`),
+    /// `D1_ACCOUNT_PUSH_FILE`, `D1_PROFILE_PUSH_FILE`. Run with `--ignored`.
+    #[test]
+    #[ignore]
+    fn a_purchase_through_the_real_codec() {
+        let mut s = st(25_000);
+        s.profile = std::fs::read(std::env::var("D1_TEST_PROFILE_OBJ").unwrap()).unwrap();
+        s.template = std::fs::read(std::env::var("D1_TEST_ITEM_TEMPLATE").unwrap()).unwrap();
+        s.oracle = std::env::var("D1_ORACLE").unwrap();
+        let (what, sidecar) = apply(&mut s, 6, 23).unwrap();
+        assert_eq!(s.account[&308], (869, 24_430), "{what}");
+        assert_eq!(&s.profile[PROFILE_SLOTS + 32 * 210..PROFILE_SLOTS + 32 * 210 + 2], &840u16.to_le_bytes());
+        assert!(sidecar.is_some());
+        publish(&s, sidecar).unwrap();
+    }
+
     #[test]
     fn an_unknown_sale_is_refused() {
         let mut s = st(25_000);
