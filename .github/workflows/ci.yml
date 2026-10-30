@@ -1,0 +1,109 @@
+# The checks main requires (ruleset "main: PRs with green CI"): the job names below are the required
+# contexts, so rename them only together with the ruleset. Fork PRs run with a read-only token and no
+# secrets. CI has no game files: tests that need them skip here and run on contributors' machines.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -r requirements.txt
+      - run: python -m unittest discover -s server -p 'test_*.py'
+      - run: python -m unittest discover -s scripts -p 'test_*.py'
+
+  rust-package-tools:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: ps4/d1-server
+    steps:
+      - uses: actions/checkout@v7
+      - name: Package and platform tests
+        run: cargo test --locked -p d1-pkg --bin d1-byte-scan --bin d1-platform --bin d1-pkg-header-audit
+      - name: Scanner and platform controls
+        run: |
+          cargo run --locked -p d1-pkg --bin d1-byte-scan -- controls
+          cargo run --locked -p d1-pkg --bin d1-platform -- controls
+      - name: Synthetic tracer and gate tests
+        run: cargo test --locked --manifest-path ../d1-trace/Cargo.toml --no-default-features
+
+  # Left out: d1-oracle and d1-activity-host (they need the executable and bindgen to build), d1-pkg
+  # (covered above) and d1-live's live-process tests (a fixture process and ptrace debug registers).
+  rust-workspace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: ps4/d1-server
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ps4/d1-server/target
+          key: rust-workspace-${{ hashFiles('ps4/d1-server/Cargo.lock') }}
+          restore-keys: rust-workspace-
+      - name: protoc for shadnet-proto
+        run: sudo apt-get update -q && sudo apt-get install -y -q protobuf-compiler
+      - name: Workspace tests
+        run: >-
+          cargo test --locked --no-fail-fast --workspace
+          --exclude d1-oracle --exclude d1-activity-host --exclude d1-pkg --exclude d1-live
+      - name: d1-live library tests
+        run: cargo test --locked -p d1-live --lib
+
+  # No game files, firmware, keys or large binaries. After reviewing an exception, a maintainer labels
+  # the PR "inputs-reviewed" and re-runs this job.
+  inputs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'inputs-reviewed')
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          filter: blob:none
+      - if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'inputs-reviewed')
+        name: Reject game files, keys and large binaries
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          status=0
+          while IFS= read -r file; do
+            name="${file,,}"; name="${name%.part[0-9]*}"
+            case "$name" in
+              *.pkg|*.elf|*.self|*.sprx|*.prx|*.sfo|*.edat|*.sdat|*.rap|*.rif|*.pup|*.iso|*.exe|*.dll|*.key|*.pem|*.p12|*.pfx)
+                echo "::error file=$file::This file type can't be contributed: game files, firmware, binaries and keys stay out of the repository."
+                status=1;;
+            esac
+            size=$(git cat-file -s "HEAD:$file" 2>/dev/null || echo 0)
+            if [ "$size" -gt 5242880 ]; then
+              echo "::error file=$file::Files over 5 MB need a maintainer's review (label: inputs-reviewed)."
+              status=1
+            fi
+          done < <(git diff --name-only --diff-filter=A "$BASE"...HEAD)
+          exit $status

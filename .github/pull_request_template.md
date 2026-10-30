@@ -1,16 +1,14 @@
+<!-- Title: `area: summary`, e.g. `d1-bap: cover loot claim round trips`. See CONTRIBUTING.md. -->
+
 ## Problem and change
 
-Describe the observed failure and resulting behavior. Identify PS3 or PS4 and
-the exact build/commit.
+What was wrong or missing, and what this changes. PS3 or PS4, with the build or commit.
 
 Closes #
 
 ## Validation
 
-List controls/tests run and actual results, including skips and failures.
-Distinguish synthetic/static checks from observed native behavior.
+The commands you ran and their results, skips and failures included. Say which results are synthetic or static
+and which you saw in the game.
 
-## Inputs and attribution
-
-Keep game files, derived native fixtures, credentials and raw private evidence
-out of the PR. Preserve existing licenses and attribution.
+- [ ] No game files, keys, credentials, personal paths or raw private traces; licence notices kept.

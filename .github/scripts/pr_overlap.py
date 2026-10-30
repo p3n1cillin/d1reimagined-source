@@ -1,6 +1,6 @@
 """Report open pull requests that conflict with each other or add the same new files.
 
-Ported from AnyPS5 without its export detection. .github/workflows/pr-overlap.yml posts the comments.
+Ported from AnyPS5 without its export detection. .github/workflows/sweep.yml posts the comments.
 """
 import argparse
 import json

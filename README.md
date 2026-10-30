@@ -7,7 +7,7 @@
 [![From the lab](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Flab.json)](https://d1reimagined.com/progress?ref=github)
 [![YouTube](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Fyoutube.json)](https://www.youtube.com/@d1reimagined?sub_confirmation=1)
 [![Discord](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Fdiscord.json)](https://d1reimagined.com/discord?ref=github)
-[![Source checks](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/source-checks.yml/badge.svg)](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/source-checks.yml)
+[![CI](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/ci.yml/badge.svg)](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/ci.yml)
 [![Good first issues](https://img.shields.io/github/issues/p3n1cillin/d1reimagined-source/good%20first%20issue?label=good%20first%20issues)](https://github.com/p3n1cillin/d1reimagined-source/labels/good%20first%20issue)
 
 [![The latest Dev Blog](https://d1reimagined.com/latest/thumbnail)](https://d1reimagined.com/latest?ref=github)
