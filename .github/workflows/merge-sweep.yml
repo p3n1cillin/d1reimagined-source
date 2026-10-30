@@ -2,6 +2,9 @@
 # - approved on the current head commit  -> squash auto-merge; GitHub merges once main's required checks pass
 # - approved, then new commits pushed    -> back to "needs review"
 # - changes requested on the current head -> "changes requested"
+# It also tracks check health from main's ruleset: "awaiting CI approval" (a first-timer's runs are held),
+# "update branch" (behind main and missing a newer required check: one comment asking to rebase) and
+# "checks failing" (one comment per head commit linking the failed checks).
 # Never auto-merges a PR that touches .github/ (workflows, automation) or carries "do not merge":
 # those are merged by hand. The maintainer's own and Dependabot's PRs are handled by auto-merge.yml.
 # Runs from main on a schedule; it reads PR metadata only and never checks out pull request code.
@@ -22,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      actions: read
+      checks: read
       contents: write
       issues: write
       pull-requests: write
@@ -52,12 +57,68 @@ jobs:
               if (add.length) await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: add });
             }
 
+            // Check health: which of main's required checks ran on the head, which failed, whether the
+            // runs wait for approval (first-time contributors), and whether the branch predates a check.
+            const HEALTH = {
+              'awaiting CI approval': ['c5def5', "A maintainer still has to approve this first-time contributor's CI runs"],
+              'update branch': ['fbca04', "Behind main and missing some of main's required checks: merge or rebase main"],
+              'checks failing': ['d93f0b', 'A required check failed'],
+            };
+            for (const [name, [color, description]] of Object.entries(HEALTH)) {
+              if (!existing.has(name)) await github.rest.issues.createLabel({ owner, repo, name, color, description }).catch((e) => { if (e.status !== 422) throw e; });
+            }
+            const rules = (await github.request('GET /repos/{owner}/{repo}/rules/branches/{branch}', { owner, repo, branch: 'main' })).data;
+            const required = rules.filter((r) => r.type === 'required_status_checks')
+              .flatMap((r) => r.parameters.required_status_checks.map((c) => c.context));
+            async function toggle(pr, name, on) {
+              const has = pr.labels.some((l) => l.name === name);
+              if (on && !has) await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: [name] });
+              if (!on && has) await github.rest.issues.removeLabel({ owner, repo, issue_number: pr.number, name }).catch((e) => { if (e.status !== 404) throw e; });
+            }
+            async function commentOnce(pr, marker, body) {
+              const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number: pr.number, per_page: 100 });
+              if (!comments.some((c) => c.user.login === 'github-actions[bot]' && c.body.includes(marker))) {
+                await github.rest.issues.createComment({ owner, repo, issue_number: pr.number, body: `${marker}\n${body}` });
+              }
+            }
+            async function health(pr) {
+              const runs = await github.paginate(github.rest.checks.listForRef, { owner, repo, ref: pr.head.sha, per_page: 100 });
+              const latest = new Map();
+              for (const run of runs) {
+                const prev = latest.get(run.name);
+                if (!prev || new Date(run.started_at) > new Date(prev.started_at)) latest.set(run.name, run);
+              }
+              const held = (await github.rest.actions.listWorkflowRunsForRepo({ owner, repo, head_sha: pr.head.sha, status: 'action_required', per_page: 20 })).data.total_count > 0;
+              await toggle(pr, 'awaiting CI approval', held);
+              const missing = required.filter((c) => !latest.has(c));
+              const failing = required.filter((c) => latest.has(c) && latest.get(c).status === 'completed'
+                && !['success', 'skipped', 'neutral'].includes(latest.get(c).conclusion));
+              let behind = false;
+              if (missing.length && !held) {
+                const cmp = await github.rest.repos.compareCommitsWithBasehead({ owner, repo, basehead: `main...${pr.head.label}` }).catch(() => null);
+                behind = !!cmp && cmp.data.behind_by > 0;
+              }
+              await toggle(pr, 'update branch', behind);
+              if (behind) {
+                await commentOnce(pr, `<!-- sweep:update-branch:${pr.head.sha} -->`,
+                  `Thanks @${pr.user.login}! \`main\` now requires checks that haven't run on this branch yet (${missing.map((c) => '`' + c + '`').join(', ')}). ` +
+                  'Please rebase onto the current `main` (or merge `main` into your branch) and push, so they run on your change.');
+              }
+              await toggle(pr, 'checks failing', failing.length > 0);
+              if (failing.length) {
+                await commentOnce(pr, `<!-- sweep:checks-failing:${pr.head.sha} -->`,
+                  `Some required checks failed on ${pr.head.sha.slice(0, 7)}: ${failing.map((c) => `[\`${c}\`](${latest.get(c).html_url})`).join(', ')}. ` +
+                  'Open the check for the log; push a fix and the checks run again.');
+              }
+            }
+
             const prs = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open', base: 'main', per_page: 100 });
             for (const pr of prs) {
               const author = pr.user.login;
               if (pr.draft || author === maintainer || author.endsWith('[bot]')) continue;
               const labels = new Set(pr.labels.map((l) => l.name));
               if (labels.has('open PR limit')) continue;
+              try { await health(pr); } catch (error) { core.warning(`#${pr.number}: health check: ${error.message}`); }
               const reviews = await github.paginate(github.rest.pulls.listReviews, { owner, repo, pull_number: pr.number, per_page: 100 });
               const verdicts = reviews.filter((r) => r.user && r.user.login === maintainer && ['APPROVED', 'CHANGES_REQUESTED'].includes(r.state));
               const last = verdicts[verdicts.length - 1];

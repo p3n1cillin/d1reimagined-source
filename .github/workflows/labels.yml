@@ -27,6 +27,10 @@ jobs:
           label 'changes requested' d93f0b 'A maintainer asked for changes'
           label 'maintainer merge'  5319e7 'Touches repository automation, so a maintainer merges it by hand'
           label 'do not merge'      b60205 'Hold: never auto-merged'
+          # Check health (merge-sweep.yml)
+          label 'awaiting CI approval' c5def5 "A maintainer still has to approve this first-time contributor's CI runs"
+          label 'update branch'        fbca04 "Behind main and missing some of main's required checks: merge or rebase main"
+          label 'checks failing'       d93f0b 'A required check failed'
           # Housekeeping
           label 'needs rebase'      b60205 'Conflicts with main, rebase needed'
           label 'open PR limit'     d93f0b 'Closed over the open PR limit: 1 without merged PRs, 20 with at least 1, none from 20'
