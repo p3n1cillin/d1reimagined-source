@@ -4582,6 +4582,7 @@ async fn main() -> Result<()> {
                                                                 if let Some(path) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(std::path::PathBuf::from) {
                                                                     if let Ok(payload) = std::fs::read(&path) {
                                                                         let _ = std::fs::rename(&path, path.with_extension("sent"));
+                                                                        vendor::note_profile_pushed(payload.clone());
                                                                         let version = family4_version.unwrap_or(0).wrapping_add(1);
                                                                         let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
                                                                         let prof_soid = env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201);

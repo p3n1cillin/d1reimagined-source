@@ -251,6 +251,40 @@ fn publish(st: &State, sidecar: Option<(u64, Vec<u8>)>) -> anyhow::Result<()> {
     Ok(())
 }
 
+/// Keep the purchase state's profile equal to the profile the client last received: decode each
+/// pushed profile payload (`D1_PROFILE_PUSH_FILE`, e.g. the post-mission completion) with the client's
+/// codec and adopt it, so `D1_VENDOR_PROFILE_OBJ` only has to match the profile served at boot.
+pub fn note_profile_pushed(payload: Vec<u8>) {
+    if state().lock().map(|s| s.is_none()).unwrap_or(true) {
+        return;
+    }
+    std::thread::spawn(move || {
+        let Ok(mut guard) = state().lock() else { return };
+        let Some(st) = guard.as_mut() else { return };
+        let decoded = (|| -> anyhow::Result<Vec<u8>> {
+            let dir = std::env::temp_dir().join("d1-vendor");
+            std::fs::create_dir_all(&dir)?;
+            let src = dir.join("pushed-profile.bin");
+            let obj = dir.join("pushed-profile.obj");
+            std::fs::write(&src, &payload)?;
+            let _ = std::fs::remove_file(&obj);
+            std::process::Command::new(&st.oracle)
+                .args(["object", "--tag", "0x80801743", "--decode-file"]).arg(&src)
+                .arg("--out-obj").arg(&obj).output()?;
+            let o = std::fs::read(&obj)?;
+            anyhow::ensure!(o.len() == st.profile.len(), "decoded {} bytes, expected {}", o.len(), st.profile.len());
+            Ok(o)
+        })();
+        match decoded {
+            Ok(o) => {
+                st.profile = o;
+                tracing::warn!("      vendor purchases: profile state follows the pushed profile");
+            }
+            Err(e) => tracing::warn!("      ⛔ vendor purchases: could not adopt the pushed profile: {e}"),
+        }
+    });
+}
+
 /// Handle a 901 request body off the conversation's task: the oracle calls take seconds.
 pub fn on_buy(req: Vec<u8>) {
     if state().lock().map(|s| s.is_none()).unwrap_or(true) {
