@@ -3,8 +3,8 @@
 The active target is BLES01857 **01.24**, not the historical 01.00 mission
 milestone. Source baseline: `505e9c5` on `master`, matching `origin/master` after
 fetch. The older imported checkout has additional uncommitted readers and notes;
-it is preserved. Runtime: `F:\d1\lukespc-import\d1xenia\local`; data checkout:
-`F:\d1\d1xenia-data`. The source checkout remains `F:\d1\d1xenia`.
+it is preserved. Runtime: `<D1_ROOT>\main-pc-import\d1xenia\local`; data checkout:
+`<D1_ROOT>\d1xenia-data`. The source checkout remains `<D1_ROOT>\d1xenia`.
 
 ## What survived independent review
 
@@ -186,7 +186,7 @@ Windows C++ build environment before trace-hit counts can be trusted again.
 All raw logs, requests, guest memory, screenshots, and generated manifests remain
 under the ignored runtime. Only code, tests, and research summaries are committed.
 
-## 2026-10-01: MATILDASPC, d1p3 build (Claude session)
+## 2026-10-01: second PC, d1p3 build (Claude session)
 
 **Toolchain.** The second PC now builds RPCS3 (see the README's "Moving to another PC"). The
 d1p3 binary built here (`6d0217aa...`) and the main PC's staged one (`6a79e3e7...`) both

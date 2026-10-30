@@ -162,8 +162,8 @@ to be checked. Movement waits for engine state **0**, not just stage 36.
 Use the imported runtime explicitly on this PC:
 
 ```powershell
-$runtime = 'F:\d1\lukespc-import\d1xenia\local'
-$data = 'F:\d1\d1xenia-data'
+$runtime = '<D1_ROOT>\main-pc-import\d1xenia\local'
+$data = '<D1_ROOT>\d1xenia-data'
 scripts\Invoke-Final124Run.ps1 -Name FINAL124_NEXT -Local $runtime -DataRepo $data `
   -BootSeconds 360 -PressSeconds 150 -ContinueAfterBap -KeepRpcs3
 python scripts\rpcs3_final124_bootflow.py --world `
@@ -220,13 +220,13 @@ Choose a fresh run name. Any outer launcher stdout/stderr/identity files must
 use a different prefix until the public launcher has reserved the run name.
 
 ```powershell
-$runtime = 'F:\d1\lukespc-import\d1xenia\local'
+$runtime = '<D1_ROOT>\main-pc-import\d1xenia\local'
 $run = 'FINAL124_NEXT' # choose a previously unused name
 $control = "$runtime/SIGNON_LOCAL/$run-control.jsonl"
 New-Item -ItemType File -Path $control -ErrorAction Stop | Out-Null
 $proxyOptions = '--ah-bubble-states;-1,0=0,3=0,14=0;--ah-zone;113:0x811c9dc5;--ah-world-state;113:1;--ah-roster;0;--ah-bubble-reset;14:1;--ah-sim-player;0x4786c0e0:5:0x0a3d4a2c8fbea6ba:1;--ah-game-mode;0x4786c0e0:3:3;--ah-baselines;@' + "$runtime/SIGNON_LOCAL/baselines_highway_0124_all.txt" + ';--ah-heartbeat;1;--ah-sim-clock;30;--ah-group-switch;--ah-mission;' + (Resolve-Path missions/a_guardian_rises.json).Path + ';--ah-control;' + $control
 & scripts/Invoke-Final124Join.ps1 -Name $run -Local $runtime `
-  -DataRepo 'F:\d1\d1xenia-data' `
+  -DataRepo '<D1_ROOT>\d1xenia-data' `
   -BapExtra '--peer-family;--character-gear;starter:01.24:titan' `
   -ProxyExtra $proxyOptions -AfterMatchSeconds 1200 -SkipOpeningCinematic
 ```
@@ -289,7 +289,7 @@ The short automatic walking check is state-gated and owns no new emulator:
 python scripts/dump_mission_catalog.py `
   "$runtime/01_WORKING/ps3_destiny/PS3_GAME/USRDIR/packages" `
   "$runtime/RESEARCH/ps3_updates/final/packages" `
-  --oodle 'F:/d1/lukespc-import/d1xenia/oo2core_3_win64_x86-64/oo2core_3_win64.dll' `
+  --oodle '<D1_ROOT>/main-pc-import/d1xenia/oo2core_3_win64_x86-64/oo2core_3_win64.dll' `
   --all-named-tags --investment-items `
   --out "$runtime/RESEARCH/ps3_updates/mission-catalog-0124"
 python scripts/rpcs3_final124_activities.py `

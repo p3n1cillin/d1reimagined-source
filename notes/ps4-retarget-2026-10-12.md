@@ -251,15 +251,15 @@ that fix; see the questions in the report.
 
 **Patched shadPS4 (user-approved downloads, 13 October).** The shadPS4 source
 at tag `v.0.19.0` (`c7e065d1`, the commit embedded in the binary in use) was
-cloned with 45 submodules to `F:\d1	ools\shadPS4-src`. The official LLVM
+cloned with 45 submodules to `<D1_ROOT>\tools\shadPS4-src`. The official LLVM
 23.1.3 Windows archive was downloaded; its SHA-256 `9ee6a219…` matches the
 release's GitHub build attestation. It is unpacked to
-`F:\d1	ools\llvm-23.1.3`. `Build-D1ShadPS4.cmd` builds Release with
+`<D1_ROOT>\tools\llvm-23.1.3`. `Build-D1ShadPS4.cmd` builds Release with
 `clang-cl`, Discord RPC and the updater off, and `HAVE_ENDIAN_H=OFF` (LLVM 23's
 `endian.h` lacks the Windows byte-order helpers, which broke the vendored
 LibreSSL). Result: 2,449 steps, `shadPS4.exe` `1297c91c…`. It was swapped in at
 the firewall-blocked path. The stock binary (`91eb69a5…`) is kept as
-`F:\d1	ools\shadPS4\stock-0.19.0-shadPS4.exe.bak`, which is deliberately not
+`<D1_ROOT>\tools\shadPS4\stock-0.19.0-shadPS4.exe.bak`, which is deliberately not
 launchable because the block is path-based; `SWAP-RECEIPT.txt` records both
 hashes and how to restore.
 
@@ -488,9 +488,9 @@ pin 01.29 offsets.
 
 Public commit `dba749c` (local, not pushed); patch `d1-56578-codec-ah-profile.patch`.
 
-*Environment note:* `d1-env.ps1` sets `LIBCLANG_PATH=F:\d1\tools\LLVM\bin`, which no longer holds
+*Environment note:* `d1-env.ps1` sets `LIBCLANG_PATH=<D1_ROOT>\tools\LLVM\bin`, which no longer holds
 `libclang.dll`, so unicorn's bindgen fails. Building d1-oracle needs
-`LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`.
+`LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin`.
 
 *Still open:* the dynamic-flags fault RIP for 56578 (unobserved; the refusal text names the grow
 `0x2C7630` only), field [10]'s internal change (no 01.29 sub-layout on record), and the 56578
@@ -516,7 +516,7 @@ an iovec is `{base, len}`, and called `WSASendMsg`, which Windows does not suppo
 multi-buffer stream send returned 0 bytes forever. Under the fix, stream sendmsg/recvmsg
 gather/scatter through one `send`/`recv`, and the client's `0x0015` purchased-offers request
 arrived and the conversation continued. That fix is in `shadps4-0.19.0-local-ip.patch`, in the
-binary with sha `e96f7308…` (receipt in `F:\d1\tools\shadPS4\SWAP-RECEIPT.txt`).
+binary with sha `e96f7308…` (receipt in `<D1_ROOT>\tools\shadPS4\SWAP-RECEIPT.txt`).
 
 *Voice.* shadPS4 stubs libSceVoice. In `cleanup` the client faulted three times in its voice-port
 layer:
@@ -1240,7 +1240,7 @@ A PowerShell trap cost one run: `$wizardTaps` and the `$WizardTaps` parameter ar
 
 ## Handoff items
 
-- 12 October package `matildaspc-20261012T201422-…`: NAS re-check at
+- 12 October package `second-pc-20261012T201422-…`: NAS re-check at
   21:03:55 UTC passes (all three payloads match `hashes.json`, no unlisted
   files). Receipt: `PRIVATE_ENGINEERING/2026-10-12-daily-handoff-receipt.json`
   beside the dated handoff notes. No existing `PRIVATE_ENGINEERING` folder was

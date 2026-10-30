@@ -104,7 +104,7 @@ packages. The first live 01.24 runs and their remaining loading problem are reco
   corrected `types_01.24.json` as `--schema` to the BAP stand-in and as
   `--activity-schema` to the activity host (via `-ExtraBap` and `-ExtraAh`).
 
-**01.24 STUN is the remaining blocker (RUN A01, 2026-09-30, MATILDASPC).** After
+**01.24 STUN is the remaining blocker (RUN A01, 2026-09-30, second PC).** After
 installing the 1,034 update packages into `RPCS3_FINAL124_SMOKE001`, the first full
 01.24 run on this PC reaches `bootflow:bap_signin` (state 19 of 38 - the transferred
 SMOKE019-023 captures show the same, so content and package handling are solved) and
@@ -351,7 +351,7 @@ sys_net_bnet_sendto(s=26, buf=*0x323ae010, len=47, flags=0x0, addr=*0x0, addrlen
 The send goes to **port 53** - it *is* the DNS query, 47 bytes of DNS wire format, which
 is why no destination is recorded and why it never reaches the STUN stub. There are
 exactly **20** such connects in a run, one per STUN hostname, and the sinkhole answered
-all 20. (The only other outbound UDP is 3 connects to `192.168.0.1:1900` - SSDP/UPnP,
+all 20. (The only other outbound UDP is 3 connects to `<router>:1900` - SSDP/UPnP,
 unrelated and unanswered.) So this is neither a missing third probe shape nor a missing
 listener: the two shapes the stub sees are the complete set of STUN probes, and every
 name resolves.
@@ -869,7 +869,7 @@ bnet_recvfrom(s=52, buf=*0xd018b46c, len=32, flags=0x0, ...)
   does not act on them.
 
 Also worth recording: the client never *connects* to port 3074 - the only outbound
-connections in the whole run are 20 to `127.0.0.1:53` (DNS) and 3 to `192.168.0.1:1900`
+connections in the whole run are 20 to `127.0.0.1:53` (DNS) and 3 to `<router>:1900`
 (SSDP/UPnP). Sockets 52/53 are only ever `bind`-ed, and the probes go out via `sendto`
 with the destination pre-set. So the STUN exchange is connectionless by design, which is
 consistent with the client's own STUN client.
@@ -1505,7 +1505,7 @@ sign-on reached, the timeline is unambiguous from the log timestamps alone:
     13:48:55  30 probes / 29 replies / 13 sign-on / BAP: still just its listening banner
     13:50:06  the STUN log is still being written
 
-The connect targets over the whole run are `127.0.0.1:53` (23), `192.168.0.1:1900` (9),
+The connect targets over the whole run are `127.0.0.1:53` (23), `<router>:1900` (9),
 `127.0.1.5:443` (1) and `127.0.0.1:80` (1) - **and never `127.1.1.127:12850`.** The client
 never even attempts BAP.
 

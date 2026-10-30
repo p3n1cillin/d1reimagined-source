@@ -8,8 +8,8 @@ push pass investment sign-in. `FINAL124_HASH1` reached stage 21 `profile_setup`
 and the "SET SCREEN BOUNDS" screen. Its stack was already closed when this
 continuation started. The earlier September 30 stage-19 waits are historical.
 
-Runtime remains `F:\d1\lukespc-import\d1xenia\local`; source is
-`F:\d1\d1xenia`, data is `F:\d1\d1xenia-data`. 01.24 uses its own private
+Runtime remains `<D1_ROOT>\main-pc-import\d1xenia\local`; source is
+`<D1_ROOT>\d1xenia`, data is `<D1_ROOT>\d1xenia-data`. 01.24 uses its own private
 `SIGNON_LOCAL/characters-0124.json` store. The 01.00 store is preserved.
 
 ## Observation after BAP
@@ -1310,7 +1310,7 @@ registered (record {`0x992bb471`, `0x002b0032`, `0x5d` = its 93 objects}).
 ## JOIN67: fixed emulator, automatic walking toward the Wall
 
 - RPCS3 rebuilt on this PC (Build Tools 2026 already at `F:\VS\BuildTools`; incremental build
-  `F:\d1\lukespc-import\dev\build-d1.cmd`, about 6 minutes) with `patches/rpcs3-fp-cal-ignore.patch`
+  `<D1_ROOT>\main-pc-import\dev\build-d1.cmd`, about 6 minutes) with `patches/rpcs3-fp-cal-ignore.patch`
   and deployed to `RPCS3_FINAL124_SMOKE001` (old binary `rpcs3.before-fpcal.exe`). The walk went
   through the area that had crashed JOIN65 (z -26 east of the spawn) without a freeze.
 - Terrain (112, start): spawn ~(383, -962, 12) on the junkyard plateau (z ~5-12); to the east

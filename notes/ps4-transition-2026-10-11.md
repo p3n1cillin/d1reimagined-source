@@ -55,7 +55,7 @@ reference. Do not apply reference codec addresses to this build.
 
 An existing LGPL-3.0 reader, [maxton/LibOrbisPkg](https://github.com/maxton/LibOrbisPkg),
 was compiled separately from unmodified source commit
-`643477263b2644e0803e0f58b8726ea4e3f3b7d4`, under `F:\d1\tools\liborbispkg\0.2.245`.
+`643477263b2644e0803e0f58b8726ea4e3f3b7d4`, under `<D1_ROOT>\tools\liborbispkg\0.2.245`.
 No external reader source was copied into either project. Its existing cryptographic
 methods and PFS reader were used; no second package-format reader was written.
 
@@ -322,7 +322,7 @@ failed Windows fixture logs, successful build/test/control receipts, patch repla
 and integration controls; and `cfw-staging/launch-preparation` for the canonical
 plan, server checks and child cleanup. Fresh readiness is
 `readiness-after-platform-preparation.json`. All source helpers are installed
-under `F:\d1\tools`. No production input, TLS key, binary, dump or fixture is tracked
+under `<D1_ROOT>\tools`. No production input, TLS key, binary, dump or fixture is tracked
 or copied to the NAS. No new video or native PS4 game run was produced.
 
 ## After daily delivery: input ownership

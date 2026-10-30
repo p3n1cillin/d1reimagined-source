@@ -13,12 +13,12 @@ param(
     [string]$Variants = 'typeversion,mirror,map',
     [int]$BootSeconds = 480,
     [int]$PressSeconds = 150,     # stop pressing once sign-on has clearly happened
-    [string]$Local = 'F:\d1\lukespc-import\d1xenia\local',
-    [string]$DataRepo = 'F:\d1\d1xenia-data'
+    [string]$Local = '<D1_ROOT>\main-pc-import\d1xenia\local',
+    [string]$DataRepo = '<D1_ROOT>\d1xenia-data'
 )
 
 $ErrorActionPreference = 'Continue'
-$repo = 'F:\d1\d1xenia'
+$repo = '<D1_ROOT>\d1xenia'
 $rpcs3dir = "$Local\RPCS3_FINAL124_SMOKE001"
 $usrdir = "$Local\01_WORKING\ps3_destiny\PS3_GAME\USRDIR"
 $logs = "$Local\SIGNON_LOCAL\logs"

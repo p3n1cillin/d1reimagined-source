@@ -386,8 +386,8 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
   frames stop 40-180 s later. The 6 boots that morning (older build, game files on D:) never
   froze. `Invoke-JoinCycle.ps1` now aborts when the BAP log is silent for 60 s (the client
   echoes every 5 s) and `Invoke-BubbleSweep.ps1` retries up to 3 times. Bubbles 7-12 and 14-21
-  went to the second PC (MATILDASPC: Ryzen 7 5700X, 32 GB, RTX 2060 SUPER; project copy in
-  F:\d1\d1xenia), TEST300 onwards.
+  went to the second PC (Ryzen 7 5700X, 32 GB, RTX 2060 SUPER; project copy in
+  <D1_ROOT>\d1xenia), TEST300 onwards.
 - 300-340 (second PC): void - 300-319 Windows PowerShell 5.1 (no [Convert]::ToHexString; now
   pwsh 7), 320 froze the desktop while RPCS3 rebuilt the copied 445k-pipeline cache for the RTX
   2060 (cache set aside, 4 shader threads), 330 lost the character-select input on the slower
@@ -496,7 +496,7 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
   The local copies were therefore superseded, not lost: stashed as
   `pre-pull local state TEST271-367 (superseded by origin/master)` and merged
   `--ff-only` with no conflict. A copy of all 12 files plus `uncommitted.patch` was kept
-  outside the repo at `F:\d1\d1xenia-backup-prepull`. `local\` (786,479 files) untouched.
+  outside the repo at `<D1_ROOT>\d1xenia-backup-prepull`. `local\` (786,479 files) untouched.
 - **Correction to an earlier reading of this log.** The 01.00-era assumption that the disc's
   `PS3_UPDATE\PS3UPDAT.PUP` is the source of 01.24 is wrong: its header is `SCEUF` / `4.60`,
   i.e. PS3 **system firmware**, not a Destiny title update. The disc genuinely carries only
@@ -513,10 +513,10 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
   at `0x18dca64` reads 1 and is referenced from `0xc65d14` — both matching `BUILDS["01.24"]` in
   `server/game_ca_patch.py`. `patch_yaml(..., sites=build_sites("01.24"))` emits the 01.24 hash
   and `0x012d3740`.
-- **Data repo.** `p3n1cillin/d1xenia-data` cloned to `F:\d1\d1xenia-data`; it carries
+- **Data repo.** `p3n1cillin/d1xenia-data` cloned to `<D1_ROOT>\d1xenia-data`; it carries
   `types_01.24.json` (5,041 types), `services_01.24.json` (94 services),
   `handles_01.00_01.24.json` and `package_inventory_01.24.json` (1,034 files).
-- **Preflight.** `scripts/d1_final_preflight.py --data-root F:\d1\d1xenia-data` passes all seven
+- **Preflight.** `scripts/d1_final_preflight.py --data-root <D1_ROOT>\d1xenia-data` passes all seven
   read-only checks (EBOOT identity/hash/patch sites, 94 services, 1,034-package inventory,
   activity join/state payloads, encodable services, both mission scripts). Server tests: 60
   passed (29 before the pull).
