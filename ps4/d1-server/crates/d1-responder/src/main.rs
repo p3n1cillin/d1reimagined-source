@@ -3643,6 +3643,19 @@ async fn main() -> Result<()> {
                                                                               b.len(),
                                                                               b.iter().map(|x| format!("{x:02x}")).collect::<String>());
                                                                         Some(b)
+                                                                    } else if id == 901 || id == 903 {
+                                                                        // 901 vendor_buy_item / 903 vendor_sell_item. Responses
+                                                                        // 0x80801888 and 0x8080183A both lead with the 0x80801796
+                                                                        // result composite (901 adds a 0-bit leaf that emits
+                                                                        // nothing); the client's encoder gives the zero object the
+                                                                        // same five bytes as 701's. That only accepts the request:
+                                                                        // the price and the item must still arrive as family-4
+                                                                        // changes. Request 0x80801777 (901) = {u8 @0, i16 @2, u64 @8}.
+                                                                        let req = plain.get(8..).unwrap_or(&[]);
+                                                                        warn!("      ⭐ VENDOR {} ({}B request): {}",
+                                                                              if id == 901 { "BUY (901)" } else { "SELL (903)" }, req.len(),
+                                                                              req.iter().map(|x| format!("{x:02x}")).collect::<String>());
+                                                                        Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 104 {
                                                                         // FIRST SEEN at `setup:orbit`, 2026-08-07. Response
                                                                         // 0x808018F8's field [0] is the SAME 0x80801796
