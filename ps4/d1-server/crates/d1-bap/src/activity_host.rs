@@ -1050,6 +1050,113 @@ mod tests {
         );
     }
 
+    #[test]
+    fn client_notifications_round_trip_at_payload_boundaries() {
+        let sizes = [
+            0usize,
+            1,
+            127,
+            128,
+            255,
+            256,
+            1024,
+            AH_NOTIFICATION_MAX_PAYLOAD,
+        ];
+        for inner_type in [1u8, 2] {
+            for (case, size) in sizes.into_iter().enumerate() {
+                let payload: Vec<u8> = (0..size)
+                    .map(|i| ((i.wrapping_mul(37) + case) & 0xFF) as u8)
+                    .collect();
+                let user_defined_type = if case % 2 == 0 { 0 } else { u32::MAX };
+                let aux = (inner_type == 1).then_some(if case % 2 == 0 { 0 } else { u32::MAX });
+                let notification = ClientToActivityHostNotification {
+                    inner_type,
+                    user_defined_type,
+                    aux,
+                    payload: payload.clone(),
+                };
+                let wire = notification.encode();
+                let header = if inner_type == 1 { 13 } else { 9 };
+                assert_eq!(wire.len(), header + size);
+                assert_eq!(&wire[1..5], &user_defined_type.to_be_bytes());
+                assert_eq!(&wire[5..9], &(size as u32).to_be_bytes());
+                if let Some(value) = aux {
+                    assert_eq!(&wire[9..13], &value.to_be_bytes());
+                }
+                assert_eq!(&wire[header..], payload.as_slice());
+                assert_eq!(
+                    ClientToActivityHostNotification::decode(&wire),
+                    Ok(notification)
+                );
+
+                let mut with_extra = wire.clone();
+                with_extra.push(0xA5);
+                assert_eq!(
+                    ClientToActivityHostNotification::decode(&with_extra),
+                    Err(AhDecodeError::BadSize {
+                        got: wire.len() + 1,
+                        want: wire.len()
+                    })
+                );
+                if size != 0 {
+                    assert_eq!(
+                        ClientToActivityHostNotification::decode(&wire[..wire.len() - 1]),
+                        Err(AhDecodeError::BadSize {
+                            got: wire.len() - 1,
+                            want: wire.len()
+                        })
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn client_notification_rejects_bad_lengths_and_aux_shape() {
+        let one = ClientToActivityHostNotification {
+            inner_type: 1,
+            user_defined_type: 10,
+            aux: None,
+            payload: Vec::new(),
+        };
+        assert_eq!(
+            ClientToActivityHostNotification::decode(&one.encode()),
+            Err(AhDecodeError::BadSize { got: 9, want: 13 })
+        );
+        let two = ClientToActivityHostNotification {
+            inner_type: 2,
+            aux: Some(1),
+            ..one
+        };
+        assert_eq!(
+            ClientToActivityHostNotification::decode(&two.encode()),
+            Err(AhDecodeError::BadSize { got: 13, want: 9 })
+        );
+
+        let mut wire = ClientToActivityHostNotification {
+            inner_type: 2,
+            user_defined_type: u32::MAX,
+            aux: None,
+            payload: Vec::new(),
+        }
+        .encode();
+        for invalid in [0, 3, 255] {
+            wire[0] = invalid;
+            assert_eq!(
+                ClientToActivityHostNotification::decode(&wire),
+                Err(AhDecodeError::BadInnerType(invalid))
+            );
+        }
+        wire[0] = 2;
+        for length in [AH_NOTIFICATION_MAX_PAYLOAD as u32 + 1, u32::MAX] {
+            wire[5..9].copy_from_slice(&length.to_be_bytes());
+            assert_eq!(
+                ClientToActivityHostNotification::decode(&wire),
+                Err(AhDecodeError::PayloadOutOfRange(length as i32))
+            );
+        }
+    }
+
     // ── 100 / 102 ─────────────────────────────────────────────────────────────────────────────
 
     #[test]
@@ -1065,6 +1172,77 @@ mod tests {
         assert_eq!(&bytes[1..9], &0xD100_0000_0000_0101u64.to_be_bytes());
         assert_eq!(&bytes[9..13], &10u32.to_be_bytes(), "udt at +0x09, where 0x55E480 reads it");
         assert_eq!(ActivityHostToClientNotification::decode(&bytes), Ok(n));
+    }
+
+    #[test]
+    fn host_notifications_round_trip_at_payload_and_header_limits() {
+        let sizes = [0usize, 1, 127, 128, 1024, AH_NOTIFICATION_MAX_PAYLOAD];
+        for (index, size) in sizes.into_iter().enumerate() {
+            let payload: Vec<u8> = (0..size)
+                .map(|i| ((i.wrapping_mul(53) + index) & 0xFF) as u8)
+                .collect();
+            for (recipient_id, user_defined_type) in
+                [(0, 0), (u64::MAX, u32::MAX), (0xD100_0000_0000_0101, 10)]
+            {
+                let notification = ActivityHostToClientNotification {
+                    recipient_id,
+                    user_defined_type,
+                    payload: payload.clone(),
+                };
+                let wire = notification.encode();
+                assert_eq!(wire.len(), 0x11 + size);
+                assert_eq!(wire[0], AH_CLIENT_NOTIFICATION_INNER_TYPE);
+                assert_eq!(&wire[1..9], &recipient_id.to_be_bytes());
+                assert_eq!(&wire[9..13], &user_defined_type.to_be_bytes());
+                assert_eq!(&wire[13..17], &(size as u32).to_be_bytes());
+                assert_eq!(&wire[17..], payload.as_slice());
+                assert_eq!(
+                    ActivityHostToClientNotification::decode(&wire),
+                    Ok(notification)
+                );
+
+                let mut with_extra = wire.clone();
+                with_extra.push(0x5A);
+                assert_eq!(
+                    ActivityHostToClientNotification::decode(&with_extra),
+                    Err(AhDecodeError::BadSize {
+                        got: wire.len() + 1,
+                        want: wire.len()
+                    })
+                );
+                if size != 0 {
+                    assert_eq!(
+                        ActivityHostToClientNotification::decode(&wire[..wire.len() - 1]),
+                        Err(AhDecodeError::BadSize {
+                            got: wire.len() - 1,
+                            want: wire.len()
+                        })
+                    );
+                }
+            }
+        }
+
+        let mut wire = ActivityHostToClientNotification {
+            recipient_id: 0,
+            user_defined_type: 0,
+            payload: Vec::new(),
+        }
+        .encode();
+        for inner in [0, 2, 255] {
+            wire[0] = inner;
+            assert_eq!(
+                ActivityHostToClientNotification::decode(&wire),
+                Err(AhDecodeError::BadInnerType(inner))
+            );
+        }
+        wire[0] = AH_CLIENT_NOTIFICATION_INNER_TYPE;
+        for length in [AH_NOTIFICATION_MAX_PAYLOAD as u32 + 1, u32::MAX] {
+            wire[13..17].copy_from_slice(&length.to_be_bytes());
+            assert_eq!(
+                ActivityHostToClientNotification::decode(&wire),
+                Err(AhDecodeError::PayloadOutOfRange(length as i32))
+            );
+        }
     }
 
     /// The body encoder existing must never be read as permission to send it. The refusal lives in
