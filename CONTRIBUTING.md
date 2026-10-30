@@ -36,6 +36,11 @@ Pull requests move from opening to merge automatically, so you can follow yours 
    pass. Pull requests that change `.github/` (workflows and automation) are labelled
    `maintainer merge` and merged by hand.
 
+While it waits, the checks are tracked with labels too: `awaiting CI approval` until a maintainer
+starts a first-timer's runs, `checks failing` (with a comment linking the failed checks) until a push
+fixes them, and `update branch` when `main` has gained a required check your branch predates, which
+you clear by rebasing onto `main` or merging it into your branch.
+
 Along the way it is labelled by size (`size/XS` to `size/XL`) and by area, flagged `needs rebase` if
 it conflicts with `main`, and gets a comment if another open pull request touches the same lines.
 Until one of your pull requests is merged you can have one open at a time; after that, up to 20.
