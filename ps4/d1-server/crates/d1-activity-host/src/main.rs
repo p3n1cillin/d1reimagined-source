@@ -805,6 +805,22 @@ fn main() -> anyhow::Result<()> {
                             // First index wins: a hash listed twice keeps its lowest index.
                             map.entry(hash).or_insert(i.trim().parse::<u16>()?);
                         }
+                        // D1_AH_ACTIVITY_REMAP=from:to[,from:to]: publish index `to` when the client
+                        // launched `from` (a diagnostic). The published index is the client's game mode,
+                        // and with it the UI it loads: 165 → the Tower as a story stand-in runs under PvE
+                        // UI, while index 0 is the Tower's own activity.
+                        if let Ok(spec) = std::env::var("D1_AH_ACTIVITY_REMAP") {
+                            for pair in spec.split(',').filter(|p| !p.trim().is_empty()) {
+                                let (from, to) = pair.split_once(':').ok_or_else(|| {
+                                    anyhow::anyhow!("D1_AH_ACTIVITY_REMAP: '{pair}' is not from:to")
+                                })?;
+                                let (from, to) = (from.trim().parse::<u16>()?, to.trim().parse::<u16>()?);
+                                for index in map.values_mut().filter(|v| **v == from) {
+                                    *index = to;
+                                }
+                                tracing::warn!("⭐ activity follow: launched index {from} is published as {to} (D1_AH_ACTIVITY_REMAP)");
+                            }
+                        }
                         tracing::info!(
                             "⭐ activity follow armed: {} hashes from {table}, launched activity read from {file} on each join",
                             map.len()
