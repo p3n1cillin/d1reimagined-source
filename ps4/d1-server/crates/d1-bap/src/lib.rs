@@ -2686,6 +2686,38 @@ pub fn account_rsat_with_serial(
     pack_msb_first(bits)
 }
 
+/// [`account_rsat`] plus field **[6]**, the account inventory (`0x80800FE6` at object `+0x4C0`:
+/// `{u32 serial; 326 x 32-byte entries @+8}`), given as that sub-object's own bitstream - encode it
+/// with the client's codec (`d1-oracle object --tag 0x80800fe6 --obj-file`) and pass its first
+/// `bit_count` bits. Every other field stays ABSENT, so the client keeps its defaults for them: a
+/// full re-encode of the whole object would send them present-and-zero (measured: HUD opacity 0).
+///
+/// The account's currencies live in field [6]: Glimmer is content 869 in slot 308 (bucket `0x1F`),
+/// counted by the vendor price check `0x26D6E0` at `account + 0x4C8 + 32 * slot + 0x10`.
+pub fn account_rsat_with_inventory(
+    account_soid: u64,
+    characters: &[u64],
+    profile_soid: u64,
+    inventory: &[u8],
+    bit_count: usize,
+) -> Vec<u8> {
+    assert!(bit_count <= inventory.len() * 8, "{bit_count} bits from {} bytes", inventory.len());
+    let mut bits = character_list_bits(account_soid, characters);
+    bits.push(false); // field 2 absent
+    bits.push(true); // field 3 present
+    for i in (0..64).rev() {
+        bits.push((profile_soid >> i) & 1 == 1);
+    }
+    bits.push(false); // field 4
+    bits.push(false); // field 5
+    bits.push(true); // field 6 present
+    bits.extend((0..bit_count).map(|i| (inventory[i / 8] >> (7 - i % 8)) & 1 == 1));
+    for _ in 0..(ACCOUNT_FIELD_COUNT - 7) {
+        bits.push(false);
+    }
+    pack_msb_first(bits)
+}
+
 /// ⭐⭐ The family-4 account RSAT **with field 3 ABSENT** - the one shape that leaves the
 /// `character:signin` slot-B gate unsatisfied, which is what lets the client open its CREATOR.
 ///
@@ -3841,6 +3873,22 @@ mod unlocks_object_tests {
     /// two-object baseline byte-for-byte identical. The route that reached orbit ran WITHOUT this
     /// object, and family 4/type 4 is also involved in the character-prologue path - so the default
     /// must stay exactly what it was, provably, not by inspection.
+    /// The inventory variant is the hand-built account with field [6] switched on: with no inventory
+    /// bits, the bitstream is `account_rsat`'s with one presence bit set after fields [4] and [5].
+    #[test]
+    fn account_with_inventory_only_adds_field_6() {
+        let bits = |b: &[u8]| (0..b.len() * 8).map(|i| (b[i / 8] >> (7 - i % 8)) & 1).collect::<Vec<u8>>();
+        let plain = bits(&account_rsat(1, &[2], 3));
+        let with = bits(&account_rsat_with_inventory(1, &[2], 3, &[], 0));
+        // fields [0] 1+64, [1] 1+4+64, [2] 1, [3] 1+64 -> [4] and [5] then [6]'s presence bit
+        let at = (1 + 64) + (1 + 4 + 64) + 1 + (1 + 64) + 2;
+        assert_eq!(&with[..at], &plain[..at]);
+        assert_eq!(with[at], 1, "field [6] present");
+        assert!(with[at + 1..].iter().all(|&b| b == 0), "every later field absent");
+        let inv = account_rsat_with_inventory(1, &[2], 3, &[0b1010_0000], 3);
+        assert_eq!(&bits(&inv)[at..at + 4], &[1, 1, 0, 1]);
+    }
+
     /// A verbatim account that is the hand-built one must give the same family as not passing one,
     /// and a different account must change only the account object's bytes and length.
     #[test]
