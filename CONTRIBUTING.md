@@ -26,7 +26,9 @@ Report security issues privately.
 
 CI runs on every push: the Python and Rust tests, the package tools on Linux and Windows, an inputs check
 (no game files, keys or large binaries) and a conventions check (title, no secrets, no broken relative
-links). A maintainer then reviews it. Once approved and green, it squash-merges automatically. Labels
+links). A bot comment summarises your pull request for review (template, linked issues, tests, what to
+look at closely), and lint findings on the lines you add show inline under *Files changed*. A maintainer
+then reviews it. Once approved and green, it squash-merges automatically. Labels
 show where it stands:
 
 | Label | Meaning | What to do |

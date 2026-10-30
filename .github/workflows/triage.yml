@@ -4,7 +4,8 @@
 # - conventions (required): `area: summary` title, no secrets, no broken relative links;
 # - triage: welcome a first issue or PR; the open-PR limit (1 until an author has a PR merged, then 20,
 #   none from 20); "needs review"; size labels; auto-merge for the maintainer's and Dependabot's PRs;
-# - areas: labels from .github/labeler.yml (they group the weekly release notes).
+# - areas: labels from .github/labeler.yml (they group the weekly release notes);
+# - report: the automatic pre-review report on contributors' PRs (.github/scripts/pr_report.py).
 name: Triage
 
 on:
@@ -128,3 +129,42 @@ jobs:
         with:
           sparse-checkout: .github
       - uses: actions/labeler@v5
+
+  # The automatic pre-review report on contributors' PRs (.github/scripts/pr_report.py): template, linked
+  # issues, scope, tests, and what review should look at hardest. One comment, updated in place.
+  report:
+    needs: triage
+    if: >-
+      ${{ !cancelled() && github.event_name == 'pull_request_target'
+      && github.event.pull_request.user.login != github.repository_owner
+      && !endsWith(github.event.pull_request.user.login, '[bot]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          persist-credentials: false
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          git fetch --no-tags origin "+refs/pull/$PR/head:refs/pr/head"
+          printf '%s' "$BODY" > "$RUNNER_TEMP/body.md"
+          python3 -I .github/scripts/pr_report.py --base HEAD --head "$HEAD_SHA" --body-file "$RUNNER_TEMP/body.md" > "$RUNNER_TEMP/report.md"
+          marker='<!-- pr-report -->'
+          id=$(gh api "repos/$GH_REPO/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | .id" | head -n1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$GH_REPO/issues/comments/$id" -F body=@"$RUNNER_TEMP/report.md" > /dev/null
+          else
+            gh pr comment "$PR" --body-file "$RUNNER_TEMP/report.md"
+          fi
