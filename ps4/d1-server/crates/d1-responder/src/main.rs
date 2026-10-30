@@ -2291,6 +2291,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_LOOT_GRANT", "<unset>", "NONCE=SOID:FILE[|PROFILE][;…] - the item a claimed world drop delivers"),
     ("D1_LOOT_GRANT_ROSTER", "<unset>", "roster fixtures served after a loot grant"),
     ("D1_PROFILE_PUSH_FILE", "<unset>", "on-demand family-4 profile delta: write this file (plus optional .item/.soid) to push it"),
+    ("D1_ACCOUNT_PUSH_FILE", "<unset>", "on-demand family-4 account delta: write this file (a client-encoded account) to push it"),
 ];
 
 /// Print [`KNOBS`] with each knob's effective value.
@@ -4601,6 +4602,31 @@ async fn main() -> Result<()> {
                                                                                 }
                                                                             }
                                                                             Err(e) => warn!("      [conv] ⛔ profile push REFUSED by the push accept-set: {e}"),
+                                                                        }
+                                                                    }
+                                                                }
+                                                                // `D1_ACCOUNT_PUSH_FILE=<path>`: the same for the ACCOUNT object
+                                                                // (a client-encoded 0x80801803 payload), e.g. changed currencies.
+                                                                if let Some(path) = std::env::var_os("D1_ACCOUNT_PUSH_FILE").map(std::path::PathBuf::from) {
+                                                                    if let Ok(payload) = std::fs::read(&path) {
+                                                                        let _ = std::fs::rename(&path, path.with_extension("sent"));
+                                                                        let version = family4_version.unwrap_or(0).wrapping_add(1);
+                                                                        let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
+                                                                        let b = d1_bap::loot::account_delta(acct, version, &payload);
+                                                                        match conv.push_with_sequence(d1_bap::TYPE_QUEUEZ_OBJECT, server_seq, &b) {
+                                                                            Ok(push) => {
+                                                                                let sn = nonces.peek(d1_bap::Direction::ServerToClient);
+                                                                                if let Ok(f) = d1_bap::seal_channel_frame(key, sn, &push) {
+                                                                                    nonces.advance(d1_bap::Direction::ServerToClient);
+                                                                                    if sock.write_all(&f).await.is_ok() {
+                                                                                        warn!("      ⭐⭐ ACCOUNT PUSH: {} ({}B) as family-4 delta version {version}, seq {server_seq}",
+                                                                                              path.display(), payload.len());
+                                                                                        family4_version = Some(version);
+                                                                                        server_seq += 1;
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            Err(e) => warn!("      [conv] ⛔ account push REFUSED by the push accept-set: {e}"),
                                                                         }
                                                                     }
                                                                 }
