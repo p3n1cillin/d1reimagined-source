@@ -126,16 +126,19 @@ jobs:
               if (files.some((f) => f.filename.startsWith('.github/'))) { await setState(pr, 'approved', ['maintainer merge']); continue; }
               await setState(pr, 'approved');
               if (pr.auto_merge) continue;
-              const { repository } = await github.graphql(
-                'query($owner:String!,$repo:String!,$n:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$n){id}}}',
-                { owner, repo, n: pr.number });
+              // GitHub only accepts auto-merge while a PR is still waiting on checks; one that is already green
+              // ("clean") is merged directly.
+              const { data: fresh } = await github.rest.pulls.get({ owner, repo, pull_number: pr.number });
               try {
-                await github.graphql(
-                  'mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH}){clientMutationId}}',
-                  { id: repository.pullRequest.id });
-                core.info(`#${pr.number}: auto-merge enabled`);
+                if (fresh.mergeable_state === 'clean') {
+                  await github.rest.pulls.merge({ owner, repo, pull_number: pr.number, sha: pr.head.sha, merge_method: 'squash', commit_title: `${pr.title} (#${pr.number})` });
+                  core.info(`#${pr.number}: merged`);
+                } else {
+                  await github.graphql('mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH}){clientMutationId}}', { id: pr.node_id });
+                  core.info(`#${pr.number}: auto-merge enabled`);
+                }
               } catch (error) {
-                core.warning(`#${pr.number}: could not enable auto-merge: ${error.message}`);
+                core.warning(`#${pr.number}: could not merge or enable auto-merge: ${error.message}`);
               }
             }
 
