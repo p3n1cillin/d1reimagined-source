@@ -1603,6 +1603,15 @@ pub const INVESTMENT_205_UNLOCKS_BODY: &[u8] = &[
 /// `1681748763` = 2538. Both are documented values. 56578 places that hash at 2539, which is the
 /// 2020 manifest's `value`. Five flags kept their ordinal and five moved, by +1 to +11. Every
 /// moved flag kept the same kind and subindex.
+///
+/// ⛔ **On 56578, 308 and 3391 lock the Tower.** Activity index 0 (`0x8AE8DA69`, the Tower's own
+/// activity) requires `NOT f[308] AND NOT f[3391] AND (f[419] OR f[440]) AND (f[2668] OR f[440])`.
+/// The evaluator is `0x28E590`, a stack machine where op 1 pushes `flag[row] == 2`, op 2 is NOT and
+/// op 3 is OR; its flag array is indexed by master-table row. Serving this set made the client leave
+/// the Tower with `activity_failed_to_load_missing_permissions`. Without 308 and 3391 it stays and
+/// loads the social menus (run sense66; `notes/ps4-56578-tower-social-vendors-2026-10-30.md`). The
+/// launchers no longer serve those two; this constant stays as the faithful 01.29 → 56578
+/// translation.
 pub const UNLOCK_FLAGS_56578: [u16; 10] = [98, 308, 419, 440, 834, 2668, 3391, 5021, 5998, 6029];
 
 /// [`INVESTMENT_503_UNLOCKS_RAW`] for build 56578 (flags [`UNLOCK_FLAGS_56578`]).

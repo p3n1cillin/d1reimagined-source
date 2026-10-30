@@ -7,8 +7,9 @@ param(
     [string]$SensorClients = (& "$PSScriptRoot\D1Paths.ps1" Staging 'sensor-clients-pvp_moonbase-bundle7-team0.txt'),
     # The served profile (completion flags live here).
     [string]$Profile = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'capture-rig\builds\later-56578\profile-geared-385-director-c.bin'),
-    # Unlock-flag indices on the 503/205 pair list (<= 50).
-    [string]$UnlockFlags = '98,308,419,440,834,2668,3391,5021,5998,6029,433,2539,2549,3558,3587',
+    # Unlock-flag indices on the 503/205 pair list (<= 50). Never 308 or 3391: the Tower's own activity
+    # (index 0) requires both CLEAR (notes/ps4-56578-tower-social-vendors-2026-10-30.md).
+    [string]$UnlockFlags = '98,419,440,834,2668,5021,5998,6029,433,2539,2549,3558,3587',
     # The client patch (the -wizard variant lets the first-run display wizard run).
     [string]$ClientPatch = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'patches\CUSA00219-56578-lab-orbit.xml'),
     # Extra NAME=VALUE server variables appended after the served set.
