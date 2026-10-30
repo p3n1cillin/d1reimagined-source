@@ -31,9 +31,12 @@ jobs:
         run: cargo run --locked -p d1-pkg --bin d1-platform -- controls
       - name: Synthetic tracer and gate tests
         run: cargo test --locked --manifest-path ps4/d1-trace/Cargo.toml --no-default-features
-  # Every server crate's tests that need no game inputs. d1-oracle and d1-activity-host need the game
-  # executable (and bindgen); d1-live reads it and attaches to processes with ptrace, which the runner
-  # doesn't allow; d1's c_crash_pinned_real symbolizes against it. d1-pkg's input-free tests run above.
+  # The server workspace's tests. Tests that need private inputs (the game executable, the guest symbol
+  # file) skip themselves when the input is absent, as here, and run on contributors' machines; see
+  # CONTRIBUTING.md. Left out on CI: d1-oracle and d1-activity-host (they need the executable to build
+  # their controls, and bindgen), d1-pkg (its input-free tests run above), and d1-live's live-process
+  # tests (readside spawns a fixture this run doesn't build; watchpoint needs CPU debug registers
+  # through ptrace, which the runner's VM doesn't give).
   rust-workspace:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -54,4 +57,6 @@ jobs:
         run: >-
           cargo test --locked --no-fail-fast --workspace
           --exclude d1-oracle --exclude d1-activity-host --exclude d1-pkg --exclude d1-live
-          -- --skip c_crash_pinned_real
+      - name: d1-live library tests (its live-process tests need a debugger-capable host)
+        working-directory: ps4/d1-server
+        run: cargo test --locked -p d1-live --lib

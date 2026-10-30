@@ -24,6 +24,11 @@ Pull requests move from opening to merge automatically, so you can follow yours 
    no game inputs, the package tools on Linux and Windows), the contribution guard (no game files,
    keys or large binaries) and the conventions check (a title like `area: summary`, no secrets, no
    broken relative links). A first-time contributor's checks start once a maintainer approves the run.
+   CI has no game files, so tests that need them (the game executable, the guest symbol file) skip
+   there. Run them on your machine before opening the pull request, from `ps4/d1-server` with your
+   inputs set (see [ps4/README.md](ps4/README.md)), for example
+   `D1_EBOOT=<eboot.elf> D1_REPO=<repo root> cargo test --workspace`, and report the result under
+   Validation.
 2. **Review.** Your pull request is labelled `needs review` and a maintainer reviews it. You'll get
    either an approval or `changes requested` with comments. Pushing new commits after an approval
    puts it back to `needs review`.
