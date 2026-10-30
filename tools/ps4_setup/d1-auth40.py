@@ -5,8 +5,10 @@ With it, 0x907930 (omaha world-controller shim [4], at state transitions) starts
 as host (0x90A9A0, 0x907A40) when engine globals +0x700 == 0.
     auth40.py [seconds] [--read-only]
 """
-import struct, sys, time
-src = open(r'F:\d1\tools\d1-winguest.py', encoding='utf-8').read().split('def main():')[0]
+import os, struct, sys, time
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
+src = open(d1paths.tools() / 'd1-winguest.py', encoding='utf-8').read().split('def main():')[0]
 g = {}
 exec(compile(src, 'wg', 'exec'), g)
 p, base = g['open_client']()

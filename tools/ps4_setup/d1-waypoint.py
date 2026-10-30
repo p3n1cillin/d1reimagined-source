@@ -19,8 +19,10 @@ import argparse, ctypes, importlib.util, json, math, os, subprocess, sys, time
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SHOT = os.environ.get('D1_SHOT', r'F:\d1\tools\d1-shot.ps1')
-PAD = os.environ.get('D1_PAD', r'F:\d1\tools\d1-pad.ps1')
+sys.path.insert(0, HERE)
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
+SHOT = os.environ.get('D1_SHOT')   # else D1_TOOLS/d1-shot.ps1
+PAD = os.environ.get('D1_PAD')     # else D1_TOOLS/d1-pad.ps1
 RATE = 2.26 * 1.14 * 110 / 90 / 1000     # rad per ms of right stick (a 90-degree command turned 110)
 RX, RY, HALF_W, HALF_H = 968, 571, 960, 540     # frame centre and half extents of the 1936x1119 window capture
 AIM_Y = 652     # the reticle (hip and ADS) sits 81 px below the frame centre; aiming at RY fired over heads
@@ -137,12 +139,12 @@ def ads_burst(ms=600):
 
 
 def pad(keys):
-    subprocess.run(['powershell', '-NoProfile', '-File', PAD, '-Keys', keys], capture_output=True)
+    subprocess.run(['powershell', '-NoProfile', '-File', PAD or str(d1paths.tools() / 'd1-pad.ps1'), '-Keys', keys], capture_output=True)
 
 
 def grab(path):
     from PIL import Image
-    subprocess.run(['powershell', '-NoProfile', '-File', SHOT, '-Out', path], capture_output=True)
+    subprocess.run(['powershell', '-NoProfile', '-File', SHOT or str(d1paths.tools() / 'd1-shot.ps1'), '-Out', path], capture_output=True)
     return np.asarray(Image.open(path).convert('RGB'))
 
 

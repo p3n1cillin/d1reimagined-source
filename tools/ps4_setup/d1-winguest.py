@@ -20,10 +20,21 @@ Addresses (build 56578, ELF sha 672f0341...; re-derived 2026-10-13, see notes/ps
   0x19474B0 c_world_controller_state_setup_orbit_handler vtable (RTTI); handler +0x38 = debounce
             stamp (0x7AC9FA writes it, 0x7ACA13 compares with -1), same offset as 01.29
 """
-import ctypes, ctypes.wintypes as wt, re, struct, subprocess, sys
+import ctypes, ctypes.wintypes as wt, os, re, struct, subprocess, sys
 
 ELF_SHA = '672f03411c0503dfbcda804cbb9fb27cdd9a8d73a8bcb71bf0c4f688073b0833'
-LOG = r'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt'
+
+
+def shad_log():
+    """The emulator log, below D1_SHADPS4 (see d1paths.py). Other scripts exec this source without
+    __file__; d1paths.py then comes from beside the script that did."""
+    here = os.path.dirname(os.path.abspath(globals().get('__file__') or sys.argv[0]))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import d1paths
+    return str(d1paths.shadps4() / 'user' / 'log' / 'shad_log.txt')
+
+
 MANAGER_PTR = 0x26CA4E0
 SESSION_STRIDE, INNER_STRIDE, STATE_OFF, PARAMS_OFF, VALID_MASK = 0x131C8, 0x98E0, 0x8C58, 0x6B38, 0x7F0
 ACTIVITY_PARAM, ACTIVITY_ID, GOAL_VALUE, HAS_VALUE = 0x9B8, 0xEA, 0xE4, 0xE0
@@ -88,7 +99,7 @@ def open_client():
     pids = [int(l.split('","')[1]) for l in out.splitlines() if l.startswith('"shadPS4')]
     if len(pids) != 1:
         sys.exit(f'expected one shadPS4 process, found {pids}')
-    log = open(LOG, 'rb').read(2_000_000).decode('utf-8', 'replace')
+    log = open(shad_log(), 'rb').read(2_000_000).decode('utf-8', 'replace')
     m = re.findall(r'Loading module eboot\.bin to (0x[0-9a-f]+)', log)
     if len(m) != 1:
         sys.exit(f'expected one eboot load line in the emulator log, found {m}')

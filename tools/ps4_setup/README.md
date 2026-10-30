@@ -13,8 +13,9 @@ ship in their matching crates in `ps4/`.
 
 Original Windows/WSL preparation helpers and scoped patches for the preservation
 runtime. External tool installations, console inputs and game data are not
-vendored here. Select your own installation using each helper's path parameters;
-do not assume an example drive path exists.
+vendored here. Select your own installation with `D1_ROOT` (or the per-user
+`paths.json`) and each helper's path parameters; `python d1paths.py` shows what
+the defaults resolve to. See "Local paths" in [ps4/README.md](../../ps4/README.md).
 
 The helpers support exact-input checks, content-only validation, planning and bounded server-only checks. Those results do not prove executable availability, native game boot, console isolation, Windows guest transport or gameplay. Never substitute a different executable to satisfy an identity gate, weaken containment, or label an incomplete readiness check as passed.
 

@@ -28,10 +28,15 @@ _unit_spec.loader.exec_module(_unit_tracking)
 src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'd1-winguest.py')).read()
 wg = {'__name__': 'lib'}
 exec(compile(src, 'd1-winguest.py', 'exec'), wg)
-PAD = os.environ.get('D1_PAD', r'F:\d1\tools\d1-pad.ps1')
+PAD = os.environ.get('D1_PAD')   # else D1_TOOLS/d1-pad.ps1 (d1paths.py), resolved on first use
 
 
 def pad(*keys, gap=150):
+    global PAD
+    if PAD is None:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import d1paths
+        PAD = str(d1paths.tools() / 'd1-pad.ps1')
     subprocess.run(['powershell', '-NoProfile', '-File', PAD, '-Keys', ','.join(keys), '-GapMilliseconds', str(gap)],
                    capture_output=True)
 

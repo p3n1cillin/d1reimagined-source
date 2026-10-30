@@ -11,7 +11,7 @@ then a side-step. When no diamond is found, Nav Mode is re-opened, then the came
 degrees. The player's positions (d1-walk.py tracking) are written as a d1-walk.py route. Pad
 input only; guest memory is read, never written.
 """
-import argparse, importlib.util, json, math, os, subprocess, time
+import argparse, importlib.util, json, math, os, subprocess, sys, time
 import numpy as np
 from PIL import Image
 
@@ -20,13 +20,14 @@ spec = importlib.util.spec_from_file_location('d1walk', os.path.join(HERE, 'd1-w
 walk = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(walk)
 
-SHOT = r'F:\d1\tools\d1-shot.ps1'
+sys.path.insert(0, HERE)
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
 RATE = 2.26 / 1000 * 1.14   # rad per ms of right-stick hold, as measured with d1-step.py
 HFOV = math.radians(78)     # horizontal field of view of the game camera (approximate)
 
 
 def grab(path):
-    subprocess.run(['powershell', '-NoProfile', '-File', SHOT, '-Out', path], capture_output=True)
+    subprocess.run(['powershell', '-NoProfile', '-File', str(d1paths.tools() / 'd1-shot.ps1'), '-Out', path], capture_output=True)
     return np.asarray(Image.open(path).convert('L'), dtype=np.float32)
 
 

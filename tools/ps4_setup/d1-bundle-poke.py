@@ -2,9 +2,11 @@
 """SYNTHETIC test of gate leg A on build 56578: give one type-12 client bundle (the first) our
 player's identity (entry+0x18 -> bundle+0x258) and set the gate/task-9 bytes (bundle+0x220/+0x221),
 then report player-array entry+0x50, the spawn word and the biped handle. Dry run without --confirm."""
-import sys, struct, time
+import os, sys, struct, time
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
 sys.argv += []
-src = open(r'F:\d1\tools\d1-winguest.py', encoding='utf-8').read().split('def main():')[0]
+src = open(d1paths.tools() / 'd1-winguest.py', encoding='utf-8').read().split('def main():')[0]
 g = {}; exec(src, g)
 p, b = g['open_client']()
 T = b + 0x1AD5000

@@ -1,5 +1,5 @@
 param(
-    [string]$Workspace = 'F:\d1\d1preservation-main\d1-server',
+    [string]$Workspace = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'd1-server'),
     [string]$Patch = (Join-Path $PSScriptRoot 'd1-pkg-local-owner.patch')
 )
 $ErrorActionPreference = 'Stop'

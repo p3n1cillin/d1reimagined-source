@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$PartsDirectory = 'F:\d1\PS4 Destiny',
-    [string]$OutputDirectory = 'F:\d1\d1preservation-main\cfw-staging\2026-10-11'
+    [string]$PartsDirectory = (& "$PSScriptRoot\D1Paths.ps1" Root 'PS4 Destiny'),
+    [string]$OutputDirectory = (& "$PSScriptRoot\D1Paths.ps1" Staging '2026-10-11')
 )
 $ErrorActionPreference = 'Stop'
 $stem = 'UP0002-CUSA00219_00-DESTINYTHEGAME01-A0129-V0100'

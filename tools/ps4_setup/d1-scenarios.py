@@ -18,8 +18,18 @@ stored minus `shift`. Entries come from `d1-oracle oodle entry` (the client's ow
 """
 import argparse, os, re, struct, subprocess, sys, tempfile
 
-ORACLE = r'F:\d1\d1preservation-main\d1-server\target\release\d1-oracle.exe'
-PKGDIR = r'F:\d1\d1preservation-main\dumps\later-56578-CUSA00219\CUSA00219\packages'
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
+
+
+def oracle(tool='d1-oracle'):
+    return str(d1paths.workspace() / 'd1-server' / 'target' / 'release' / f'{tool}.exe')
+
+
+def pkgdir():
+    return str(d1paths.workspace() / 'dumps' / 'later-56578-CUSA00219' / 'CUSA00219' / 'packages')
+
+
 STRING_INDEX_CLASS = 0x8080035A
 ARRAY = 0x80800184
 os.environ.setdefault('D1_BUILD', 'later-56578')
@@ -33,17 +43,17 @@ def entry(tag):
         return _mem[tag]
     p = os.path.join(CACHE, f'{tag:#010x}.bin')
     if not os.path.exists(p):
-        subprocess.run([ORACLE, 'oodle', 'entry', '--tag', hex(tag), '-o', p, '--hex', '0'], capture_output=True)
+        subprocess.run([oracle(), 'oodle', 'entry', '--tag', hex(tag), '-o', p, '--hex', '0'], capture_output=True)
     _mem[tag] = open(p, 'rb').read() if os.path.exists(p) else b''
     return _mem[tag]
 
 
 def symbols(pkg):
     # The symbol count and offset are what `d1-pkg info` prints; take them from it.
-    info =subprocess.run([ORACLE.replace('d1-oracle', 'd1-pkg'), 'info', pkg], capture_output=True, text=True).stdout
+    info =subprocess.run([oracle('d1-pkg'), 'info', pkg], capture_output=True, text=True).stdout
     m = re.search(r'symbols\s+(\d+)\s+@\s+(\d+)', info)
     n, off = int(m.group(1)), int(m.group(2))
-    with open(os.path.join(PKGDIR, pkg + '.pkg'), 'rb') as f:
+    with open(os.path.join(pkgdir(), pkg + '.pkg'), 'rb') as f:
         f.seek(off)
         raw = f.read(n * 0x44)
     for i in range(n):
@@ -113,7 +123,7 @@ def main():
     a = ap.parse_args()
     sys.stdout.reconfigure(encoding='utf-8')
     libs = {int(l.split()[3], 16) for l in subprocess.run(
-        [ORACLE.replace('d1-oracle', 'd1-pkg'), 'entries', a.pkg], capture_output=True, text=True).stdout.splitlines()
+        [oracle('d1-pkg'), 'entries', a.pkg], capture_output=True, text=True).stdout.splitlines()
         if len(l.split()) > 5 and l.split()[5] == f'{STRING_INDEX_CLASS:08x}'}
     for tag, cls, name in symbols(a.pkg):
         if ':' in name or cls != 0x808008BA:

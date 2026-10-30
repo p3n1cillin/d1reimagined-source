@@ -1,6 +1,6 @@
 param(
-    [string]$Source = 'F:\d1\tools\liborbispkg\0.2.245\LibOrbisPkg-643477263b2644e0803e0f58b8726ea4e3f3b7d4',
-    [string]$Output = 'F:\d1\tools\liborbispkg\0.2.245\LibOrbisPkg.ReadFully.dll'
+    [string]$Source = (& "$PSScriptRoot\D1Paths.ps1" LibOrbisPkg 'LibOrbisPkg-643477263b2644e0803e0f58b8726ea4e3f3b7d4'),
+    [string]$Output = (& "$PSScriptRoot\D1Paths.ps1" LibOrbisPkg 'LibOrbisPkg.ReadFully.dll')
 )
 $ErrorActionPreference = 'Stop'
 # Builds a separately retained LGPL-3.0 reader with one modern-.NET compatibility

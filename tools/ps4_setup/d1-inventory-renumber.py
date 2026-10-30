@@ -10,7 +10,14 @@ re-encoded with the client's own codec (`d1-oracle object --tag 0x80801732`); on
 """
 import os, re, struct, subprocess, sys
 
-ORACLE = r'F:\d1\d1preservation-main\d1-server\target\release\d1-oracle.exe'
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
+
+
+def oracle():
+    return str(d1paths.workspace() / 'd1-server' / 'target' / 'release' / 'd1-oracle.exe')
+
+
 BASE = 0xD100000000000301
 TAG = '0x80801732'
 
@@ -22,12 +29,12 @@ def main():
     keep = [f for f in files if f.split('-', 1)[1][:-4] not in skip]
     for i, f in enumerate(keep):
         raw = open(os.path.join(src, f), 'rb').read().hex()
-        dec = subprocess.run([ORACLE, 'object', '--tag', TAG, '--decode', raw], capture_output=True, text=True).stdout
+        dec = subprocess.run([oracle(), 'object', '--tag', TAG, '--decode', raw], capture_output=True, text=True).stdout
         obj = bytearray(184)
         for m in re.finditer(r'\+0x([0-9a-f]{4})\s+0x([0-9a-f]{16})', dec):
             struct.pack_into('<Q', obj, int(m.group(1), 16), int(m.group(2), 16))
         struct.pack_into('<Q', obj, 0, BASE + i)
-        enc = subprocess.run([ORACLE, 'object', '--tag', TAG, '--obj', obj.hex()], capture_output=True, text=True).stdout
+        enc = subprocess.run([oracle(), 'object', '--tag', TAG, '--obj', obj.hex()], capture_output=True, text=True).stdout
         payload = max(re.findall(r'[0-9a-f]{100,}', enc), key=len)
         name = f'{i:02d}-' + f.split('-', 1)[1]
         open(os.path.join(out, name), 'wb').write(bytes.fromhex(payload))

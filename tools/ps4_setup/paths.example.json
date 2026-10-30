@@ -1,0 +1,4 @@
+{
+  "_comment": "Copy to %APPDATA%/d1reimagined/paths.json (Windows) or ~/.config/d1reimagined/paths.json and set root. Optional keys, each defaulting from root: tools, shadps4, liborbispkg, workspace, staging, pkg_dir (see ps4/README.md, Local paths). Environment variables (D1_ROOT, D1_TOOLS, ...) win over this file.",
+  "root": "D:/d1"
+}

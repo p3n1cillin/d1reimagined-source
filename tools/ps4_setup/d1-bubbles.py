@@ -1,5 +1,7 @@
-import struct
-src=open(r'F:\d1\tools\d1-winguest.py').read(); wg={'__name__':'lib'}; exec(compile(src,'w','exec'),wg)
+import os, struct, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
+src=open(d1paths.tools() / 'd1-winguest.py').read(); wg={'__name__':'lib'}; exec(compile(src,'w','exec'),wg)
 p,base=wg['open_client']()
 mgr=p.u(base+0x26CA088,'Q'); tag=p.u(mgr+0x278,'I')
 print('mgr',hex(mgr),'scenario tag',hex(tag))

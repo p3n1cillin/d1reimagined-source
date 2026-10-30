@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 param(
-    [string]$Package = 'F:\d1\01.29\d1shad\Destiny_The_Taken_King_Legendary_Edition_PS4.pkg',
-    [string]$Library = 'F:\d1\tools\liborbispkg\0.2.245\LibOrbisPkg.ReadFully.dll',
-    [string]$Scanner = 'F:\d1\d1preservation-main\d1-server\target\release\d1-byte-scan.exe',
-    [string]$Output = 'F:\d1\d1preservation-main\cfw-staging\2026-10-12\repack-slack-review'
+    [string]$Package = (& "$PSScriptRoot\D1Paths.ps1" PkgDir 'Destiny_The_Taken_King_Legendary_Edition_PS4.pkg'),
+    [string]$Library = (& "$PSScriptRoot\D1Paths.ps1" LibOrbisPkg 'LibOrbisPkg.ReadFully.dll'),
+    [string]$Scanner = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'd1-server\target\release\d1-byte-scan.exe'),
+    [string]$Output = (& "$PSScriptRoot\D1Paths.ps1" Staging '2026-10-12\repack-slack-review')
 )
 $ErrorActionPreference = 'Stop'
 # Platform adapter only. Existing LibOrbisPkg supplies PFS extents and decrypted

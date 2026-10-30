@@ -1,6 +1,6 @@
 """See the game without a display: dump one frame and save the HDR scene image as a PNG (56578).
 
-    d1-scene.py OUT.png [--dump-dir F:/d1/tools/shadPS4/dump-live] [--wait 4]
+    d1-scene.py OUT.png [--dump-dir D1_TOOLS/shadPS4/dump-live] [--wait 4]
 
 Needs the emulator started with D1_DUMP_DIR=<dump dir> (the D1 shadPS4 build). Creating
 <dump dir>.flag dumps every texture the shaders sample for about 0.2 s; the full-resolution
@@ -13,16 +13,21 @@ import argparse, os, sys, time
 import numpy as np
 from PIL import Image
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
+
 TONEMAP = '_27d596fb07cd3321_'
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('out')
-    ap.add_argument('--dump-dir', default=r'F:\d1\tools\shadPS4\dump-live')
+    ap.add_argument('--dump-dir', help='frame dump folder (default: D1_TOOLS/shadPS4/dump-live)')
     ap.add_argument('--wait', type=float, default=4.0)
     ap.add_argument('--width', type=int, default=1280)
     a = ap.parse_args()
+    if not a.dump_dir:
+        a.dump_dir = str(d1paths.tools() / 'shadPS4' / 'dump-live')
     d = a.dump_dir
     os.makedirs(d, exist_ok=True)
     for f in os.listdir(d):

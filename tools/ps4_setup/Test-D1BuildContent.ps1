@@ -1,7 +1,7 @@
 param(
     [string]$Build = 'later-56578',
-    [string]$Repo = 'F:\d1\d1preservation-main',
-    [string]$Binary = 'F:\d1\d1preservation-main\d1-server\target\release\d1-pkg.exe',
+    [string]$Repo = (& "$PSScriptRoot\D1Paths.ps1" Workspace),
+    [string]$Binary = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'd1-server\target\release\d1-pkg.exe'),
     [Parameter(Mandatory)][string]$Output
 )
 $ErrorActionPreference = 'Stop'

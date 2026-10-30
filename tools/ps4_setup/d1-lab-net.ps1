@@ -8,17 +8,18 @@
 # Run elevated via d1-lab-net.cmd (apply) or d1-lab-net-remove.cmd (remove).
 param([ValidateSet('apply','remove')][string]$Mode = 'apply')
 $ErrorActionPreference = 'Stop'
+. "$PSScriptRoot\D1Paths.ps1"
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host 'Right-click the .cmd and choose Run as administrator.' -ForegroundColor Red; Read-Host 'Enter to close'; exit 1
 }
 $labIp   = '10.77.0.2'
 $alias   = 'D1 Lab'
-$exe     = 'F:\d1\tools\shadPS4\0.19.0\shadPS4.exe'
+$exe     = Get-D1Path ShadPS4 'shadPS4.exe'
 $rule    = 'D1 shadPS4 - block outbound'
 $hosts   = "$env:SystemRoot\System32\drivers\etc\hosts"
-$begin   = '# >>> D1 local redirects (F:\d1\tools\contain-d1.ps1)'
+$begin   = "# >>> D1 local redirects ($(Get-D1Path Tools 'contain-d1.ps1'))"
 $end     = '# <<< D1 local redirects'
-$names   = Get-Content -LiteralPath 'F:\d1\tools\shadPS4\d1-hosts.txt' | Where-Object { $_ -match '^\s*127\.0\.0\.1\s' } | ForEach-Object { ($_ -split '\s+')[1] }
+$names   = Get-Content -LiteralPath (Get-D1Path Tools 'shadPS4\d1-hosts.txt') | Where-Object { $_ -match '^\s*127\.0\.0\.1\s' } | ForEach-Object { ($_ -split '\s+')[1] }
 
 function Write-Hosts([string]$target) {
     $lines = @(Get-Content -LiteralPath $hosts)

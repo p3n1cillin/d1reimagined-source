@@ -15,6 +15,8 @@ import sys
 import time
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
 ROUTES = HERE.parents[1] / 'missions' / 'routes'
 RIFLE_EVENT = 'player trigger 0x992bb471/0x1d/35 reported'
 
@@ -242,11 +244,13 @@ def main():
     ap.add_argument('--host-log', type=Path, required=True)
     ap.add_argument('--garage-clients', type=Path, required=True,
                     help='Private list activating only Breach prop 3')
-    ap.add_argument('--pad', type=Path, default=Path(r'F:\d1\tools\d1-pad.ps1'))
+    ap.add_argument('--pad', type=Path, help='pad driver (default: D1_TOOLS/d1-pad.ps1)')
     ap.add_argument('--boot-timeout', type=int, default=900)
     ap.add_argument('--resume-after-rifle', action='store_true',
                     help='Explicit supervised resume; refresh tracking and verify stance first')
     a = ap.parse_args()
+    if a.pad is None:
+        a.pad = d1paths.tools() / 'd1-pad.ps1'
     if a.boot_timeout <= 0:
         ap.error('--boot-timeout must be positive')
     if not a.run_dir.is_dir() or not a.garage_clients.is_file() or not a.pad.is_file():

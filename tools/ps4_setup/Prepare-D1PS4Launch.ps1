@@ -3,9 +3,9 @@
 param(
     [ValidateSet('Plan','ServerCheck')][string]$Mode = 'Plan',
     [string]$Name = ('prepare-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss')),
-    [string]$Repo = 'F:\d1\d1preservation-main',
+    [string]$Repo = (& "$PSScriptRoot\D1Paths.ps1" Workspace),
     [string]$Distribution = 'Ubuntu-24.04',
-    [string]$EmulatorDirectory = 'F:\d1\tools\shadPS4\0.19.0'
+    [string]$EmulatorDirectory = (& "$PSScriptRoot\D1Paths.ps1" ShadPS4)
 )
 # Only orchestrates the canonical Bash launcher. No game, emulator or input is started.
 $ErrorActionPreference = 'Stop'

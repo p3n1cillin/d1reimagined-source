@@ -1,10 +1,11 @@
 param([Parameter(Mandatory)][string]$Out, [Parameter(Mandatory)][string]$Addrs)
 $ErrorActionPreference = 'Stop'
+. "$PSScriptRoot\D1Paths.ps1"
 # Title -> orbit with ad-hoc entry/branch counters installed BEFORE orbit loads (D1_COUNT_ANY),
 # so build-once code at orbit entry is counted. Reads at orbit, leaves the hooks for a later read.
 New-Item -ItemType Directory -Force $Out | Out-Null
 $log = Join-Path $Out 'driver.log'
-$shad = 'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt'
+$shad = Get-D1Path ShadPS4 'user\log\shad_log.txt'
 function Say([string]$m) { $l = "$([DateTime]::UtcNow.ToString('o')) $m"; Add-Content -LiteralPath $log $l; $l }
 # Only a log written since this driver started counts: the previous run's log stays on disk until
 # the new emulator truncates it, and its stale lines once made the driver press keys at no window.

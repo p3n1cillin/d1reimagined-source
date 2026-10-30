@@ -1,8 +1,9 @@
 param([int]$ActivityId = 407, [int]$SettleSeconds = 25, [string]$After = '')
 $ErrorActionPreference = 'Stop'
+. "$PSScriptRoot\D1Paths.ps1"
 # From setup:orbit in a running -OperatorInput session: the three SYNTHETIC steps again (launch
 # poke, task-7 suppress, rung-34 done-mask force), then wait for activity:in_world and run $After.
-$L = 'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt'
+$L = Get-D1Path ShadPS4 'user\log\shad_log.txt'
 $g = Join-Path $PSScriptRoot 'd1-winguest.py'
 function Count([string]$p) { @(Select-String -LiteralPath $L -Pattern $p).Count }
 function WaitMore([string]$p, [int]$before, [int]$seconds) {

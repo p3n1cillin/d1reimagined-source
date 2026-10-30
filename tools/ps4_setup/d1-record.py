@@ -12,6 +12,9 @@ stereo. Recording ends after --seconds, or earlier when --stop-file appears.
 """
 import argparse, glob, json, os, re, shutil, subprocess, sys, time
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
+
 FFMPEG = os.environ.get('D1_FFMPEG') or shutil.which('ffmpeg') or os.path.expandvars(
     r'%LOCALAPPDATA%\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe'
     r'\ffmpeg-9.0.2-full_build\bin\ffmpeg.exe')
@@ -31,9 +34,12 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--seconds', type=float, default=60)
     ap.add_argument('--stop-file')
-    ap.add_argument('--tap', default=os.environ.get('D1_AUDIO_TAP', r'F:\d1\tools\shadPS4\audio-tap'))
+    ap.add_argument('--tap', default=os.environ.get('D1_AUDIO_TAP'),
+                    help='audio tap folder (default: D1_AUDIO_TAP, else D1_TOOLS/shadPS4/audio-tap)')
     ap.add_argument('--fps', default='60')
     a = ap.parse_args()
+    if not a.tap:
+        a.tap = str(d1paths.tools() / 'shadPS4' / 'audio-tap')
     os.makedirs(a.tap, exist_ok=True)
     for f in glob.glob(os.path.join(a.tap, 'port*.f32')):
         os.remove(f)

@@ -10,13 +10,14 @@ param(
     [int]$ObserveSeconds = 240
 )
 $ErrorActionPreference = 'Stop'
+. "$PSScriptRoot\D1Paths.ps1"
 # Drives a contained -OperatorInput session of build 56578 from the title screen to
 # activity:in_world, the route recorded in notes/ps4-retarget-2026-10-12.md. Three steps are
 # SYNTHETIC and are logged as such: the launch poke, the task-7 suppress byte and the rung-34
 # done-mask force (d1-winguest.py). Everything else is the client and our servers.
 New-Item -ItemType Directory -Force $Out | Out-Null
 $log = Join-Path $Out 'driver.log'
-$shad = 'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt'
+$shad = Get-D1Path ShadPS4 'user\log\shad_log.txt'
 $guest = Join-Path $PSScriptRoot 'd1-winguest.py'
 function Say([string]$m) { $l = "$([DateTime]::UtcNow.ToString('o')) $m"; Add-Content -LiteralPath $log $l; $l }
 # Only a log written since this driver started counts: the previous run's log stays on disk until

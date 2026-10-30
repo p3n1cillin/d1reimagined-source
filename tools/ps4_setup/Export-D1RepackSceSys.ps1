@@ -1,7 +1,7 @@
 param(
-    [string]$Package = 'F:\d1\01.29\d1shad\Destiny_The_Taken_King_Legendary_Edition_PS4.pkg',
-    [string]$Library = 'F:\d1\tools\liborbispkg\0.2.245\LibOrbisPkg.ReadFully.dll',
-    [string]$Output = 'F:\d1\d1preservation-main\dumps\later-56578-CUSA00219'
+    [string]$Package = (& "$PSScriptRoot\D1Paths.ps1" PkgDir 'Destiny_The_Taken_King_Legendary_Edition_PS4.pkg'),
+    [string]$Library = (& "$PSScriptRoot\D1Paths.ps1" LibOrbisPkg 'LibOrbisPkg.ReadFully.dll'),
+    [string]$Output = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'dumps\later-56578-CUSA00219')
 )
 $ErrorActionPreference = 'Stop'
 # The unencrypted package-level system entries (param.sfo, icons, changeinfo, ...) live in the PKG

@@ -1,9 +1,9 @@
 [CmdletBinding()]
 param(
-    [string]$Repo = 'F:\d1\d1preservation-main',
-    [string]$EmulatorDirectory = 'F:\d1\tools\shadPS4\0.19.0',
-    [string]$HostsList = 'F:\d1\tools\shadPS4\d1-hosts.txt',
-    [string]$Report = 'F:\d1\d1preservation-main\cfw-staging\2026-10-11\readiness.json'
+    [string]$Repo = (& "$PSScriptRoot\D1Paths.ps1" Workspace),
+    [string]$EmulatorDirectory = (& "$PSScriptRoot\D1Paths.ps1" ShadPS4),
+    [string]$HostsList = (& "$PSScriptRoot\D1Paths.ps1" Tools 'shadPS4\d1-hosts.txt'),
+    [string]$Report = (& "$PSScriptRoot\D1Paths.ps1" Staging '2026-10-11\readiness.json')
 )
 # Read-only preflight, apart from its report. This does not launch a game or alter containment.
 $ErrorActionPreference = 'Stop'

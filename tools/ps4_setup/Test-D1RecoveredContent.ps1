@@ -1,7 +1,7 @@
 param(
-    [string]$Recovery = 'F:\d1\d1preservation-main\cfw-staging\2026-10-11\recovered-01.29-content-v2',
-    [string]$Binary = 'F:\d1\d1preservation-main\d1-server\target\release\d1-pkg.exe',
-    [string]$Output = 'F:\d1\d1preservation-main\cfw-staging\2026-10-11\rollback-content-validation'
+    [string]$Recovery = (& "$PSScriptRoot\D1Paths.ps1" Staging '2026-10-11\recovered-01.29-content-v2'),
+    [string]$Binary = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'd1-server\target\release\d1-pkg.exe'),
+    [string]$Output = (& "$PSScriptRoot\D1Paths.ps1" Staging '2026-10-11\rollback-content-validation')
 )
 $ErrorActionPreference = 'Stop'
 # Orchestrates existing d1-pkg controls/verification. No format or hash-table

@@ -4,13 +4,13 @@ param(
     # The world the Activity Host publishes (global_activity_state+0x688).
     [string]$World = 'pvp_moonbase',
     # The world's sensor-client list (d1-winguest.py sensor-clients --all --bundle).
-    [string]$SensorClients = 'F:\d1\d1preservation-main\cfw-staging\sensor-clients-pvp_moonbase-bundle7-team0.txt',
+    [string]$SensorClients = (& "$PSScriptRoot\D1Paths.ps1" Staging 'sensor-clients-pvp_moonbase-bundle7-team0.txt'),
     # The served profile (completion flags live here).
-    [string]$Profile = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578\profile-geared-385-director-c.bin',
+    [string]$Profile = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'capture-rig\builds\later-56578\profile-geared-385-director-c.bin'),
     # Unlock-flag indices on the 503/205 pair list (<= 50).
     [string]$UnlockFlags = '98,308,419,440,834,2668,3391,5021,5998,6029,433,2539,2549,3558,3587',
     # The client patch (the -wizard variant lets the first-run display wizard run).
-    [string]$ClientPatch = 'F:\d1\d1preservation-main\patches\CUSA00219-56578-lab-orbit.xml',
+    [string]$ClientPatch = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'patches\CUSA00219-56578-lab-orbit.xml'),
     # Extra NAME=VALUE server variables appended after the served set.
     [string[]]$Extra = @()
 )
@@ -19,11 +19,12 @@ param(
 # Called through `powershell -File`, an array arrives as one comma-joined string.
 # Split only at commas that start a new NAME=, so values may contain commas (e.g. bubble lists).
 if ($Extra.Count -eq 1 -and $Extra[0] -match ',') { $Extra = $Extra[0] -split ',(?=[A-Z0-9_]+=)' }
-$B = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578'
-$S = 'F:\d1\d1preservation-main\cfw-staging'
+. "$PSScriptRoot\D1Paths.ps1"
+$B = Get-D1Path Workspace 'capture-rig\builds\later-56578'
+$S = Get-D1Path Staging
 # The pad drivers search the emulator log; old-session lines ("Entering state 'setup:orbit'") must
 # not survive into this boot, or a driver presses keys while the client is still signing in.
-Remove-Item 'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt' -ErrorAction SilentlyContinue
+Remove-Item (Get-D1Path ShadPS4 'user\log\shad_log.txt') -ErrorAction SilentlyContinue
 $follow = "$S\$Name-launched-activity.txt"
 Remove-Item $follow -ErrorAction SilentlyContinue
 $envs = @(
@@ -38,7 +39,7 @@ $envs = @(
     "D1_INVENTORY=$B\inventory", 'D1_FAMILY42=1', 'D1_UNLOCKS=key',
     'D1_AH_TEAM0_ACTIVITIES=410,416', "D1_AH_WORLD_TABLE=$B\world-table.txt"
 ) + $Extra
-& F:\d1\tools\Start-D1ContainedBoot.ps1 -Name $Name -LabIp 10.77.0.2 -Minutes $Minutes -OperatorInput -ActivityHost `
+& (Get-D1Path Tools 'Start-D1ContainedBoot.ps1') -Name $Name -LabIp 10.77.0.2 -Minutes $Minutes -OperatorInput -ActivityHost `
     -Activity $World -ClientPatch $ClientPatch `
     -ExtraServerEnv $envs *> "$S\$Name.console"
 "done exit=$LASTEXITCODE"

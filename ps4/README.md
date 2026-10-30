@@ -82,9 +82,35 @@ Follow [BOOTSTRAP.md](BOOTSTRAP.md) for the input/generator order, then inspect
 the canonical `capture-rig/run-boot.sh` plan and effective settings. That guide
 records upstream checks from 11 August; it is not a promise of a boot here.
 Use `tools/ps4_setup` from the repository root with explicit paths to this `ps4/`
-tree and your private tool/dump locations. Defaults describe the development
-installation and must be adapted. The already-applied source fixes mean their
+tree and your private tool/dump locations. Their defaults come from the local
+path contract below. The already-applied source fixes mean their
 hash-guarded patch installers are unnecessary in this public checkout.
+
+### Local paths
+
+The `tools/ps4_setup` scripts find private files through one contract
+(`d1paths.py` for Python, `D1Paths.ps1` for PowerShell; nothing is hardcoded).
+Set `D1_ROOT` to the folder that holds `tools/`, `d1preservation-main/` and
+`01.29/`, or put `{"root": "D:/d1"}` in the per-user config file
+`%APPDATA%\d1reimagined\paths.json` (Windows) or
+`${XDG_CONFIG_HOME:-~/.config}/d1reimagined/paths.json`; see
+[paths.example.json](../tools/ps4_setup/paths.example.json). An environment
+variable wins over the file, and each location can be moved on its own:
+
+| Variable (config key) | Default |
+| --- | --- |
+| `D1_TOOLS` (`tools`) | `<root>/tools` |
+| `D1_SHADPS4` (`shadps4`) | `<tools>/shadPS4/0.19.0` |
+| `D1_LIBORBISPKG` (`liborbispkg`) | `<tools>/liborbispkg/0.2.245` |
+| `D1_WORKSPACE` (`workspace`) | `<root>/d1preservation-main` |
+| `D1_STAGING` (`staging`) | `<workspace>/cfw-staging` |
+| `D1_PKG_DIR` (`pkg_dir`) | `<root>/01.29/d1shad` |
+
+`python tools/ps4_setup/d1paths.py` (or `pwsh tools/ps4_setup/D1Paths.ps1`)
+prints each location and whether it came from the environment, the config file
+or a default. Scripts call the lab helpers (`d1-pad.ps1`, `d1-winguest.py`, ...)
+from `D1_TOOLS`, so copy `d1paths.py` and `D1Paths.ps1` there with them.
+`Build-D1ShadPS4.cmd` reads only `D1_TOOLS` or `D1_ROOT` from the environment.
 
 A Linux network namespace contains Linux children only. Windows guest isolation
 and transport remain unaccepted. Never send a game client to public services

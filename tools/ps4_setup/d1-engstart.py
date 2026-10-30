@@ -3,8 +3,10 @@
 0x90797B `je 0x90799a` (skip when 0xBB89F0 says we are not the authority) -> two NOPs.
     engstart.py apply | revert | show
 """
-import sys
-src = open(r'F:\d1\tools\d1-winguest.py', encoding='utf-8').read().split('def main():')[0]
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
+src = open(d1paths.tools() / 'd1-winguest.py', encoding='utf-8').read().split('def main():')[0]
 g = {}
 exec(compile(src, 'wg', 'exec'), g)
 p, base = g['open_client']()

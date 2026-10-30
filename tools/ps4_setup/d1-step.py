@@ -9,9 +9,11 @@ For finding routes the explorer cannot: look at the screenshot, decide, take the
 player's position to the trail (a JSON list usable as a d1-walk.py route once loops are cut with
 d1-explore.py's simplify) and prints it. Pad input only; guest memory is read, never written.
 """
-import argparse, importlib.util, json, math, os, subprocess
+import argparse, importlib.util, json, math, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import d1paths  # sibling: local paths from D1_ROOT or paths.json
 
 
 def load(name, file):
@@ -61,7 +63,7 @@ def main():
     print(f'at ({p1[0]:.1f}, {p1[1]:.1f}, {p1[2]:.1f}) moved {moved:.1f}'
           + (f' heading {heading:.0f} deg' if heading is not None else '') + f' trail {len(trail)}')
     if a.shot:
-        subprocess.run(['powershell', '-NoProfile', '-File', r'F:\d1\tools\d1-shot.ps1', '-Out', a.shot],
+        subprocess.run(['powershell', '-NoProfile', '-File', str(d1paths.tools() / 'd1-shot.ps1'), '-Out', a.shot],
                        capture_output=True)
 
 

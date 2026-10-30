@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 param(
-    [string]$Workspace = 'F:\d1\d1preservation-main',
+    [string]$Workspace = (& "$PSScriptRoot\D1Paths.ps1" Workspace),
     [string]$Patch = (Join-Path $PSScriptRoot 'canonical-preparation.patch')
 )
 $ErrorActionPreference = 'Stop'
