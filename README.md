@@ -33,14 +33,13 @@ libraries, diagnostic tools, canonical harness and generators from the supplied
 preservation project, with the latest preparation and content-reader fixes.
 The retained PlayStation 3 implementation targets version 01.24 with RPCS3.
 See [current results and contribution priorities](docs/STATUS.md). The first
-mission's recorded route now runs unattended from the Cosmodrome highway through
-The Breach into the Divide. The starter rifle fires, and the Divide's
-“Fight Through the Fallen” title and waypoint have native acceptance. Subsequent
-contained runs have decoded Fallen kills and reached Dock 13 with “Find the Ship”.
-The [28 October research note](notes/ps4-56578-pilots-clock-combat.md) records
-the pilot-program candidate, missing activity-clock configuration and remaining
-combat questions. Mission completion, progression, native stability and
-multiplayer remain unproven.
+mission, A Guardian Rises, now runs from the Cosmodrome through the Divide and
+Dock 13 to its outro and post-game screens, with the project's services driving
+its steps. △ CONTINUE launches the next story
+activity and arrives in a populated Tower North, with its civilians, Patches and
+Xûr ([29 October notes](notes/ps4-56578-continue-tower-2026-10-29.md)). Vendors
+don't open yet, and the next mission's own world is a stand-in. Native stability,
+progression beyond the first mission and multiplayer remain unproven.
 
 This is a research repository, not a ready-to-play installer. The `data/` directory contains material derived from the historical PS3 research snapshot: schemas, logs, update diffs and a checksum manifest. Game packages, executables, firmware, third-party runtimes, account databases, private keys and current runtime captures are not included; supply your own authorised copies and check them against `data/SHA256SUMS.txt`. Use only inputs you are authorised to use. No public service, console, account or third-party system is a testing target.
 
@@ -62,31 +61,30 @@ This is a research repository, not a ready-to-play installer. The `data/` direct
 
 ## Development
 
-Use Python 3.14, PowerShell 7 where applicable, and the declared packages:
+You need Python 3.14 and a Rust toolchain; PowerShell 7 for the Windows helpers. The checks CI runs, none
+of which need game files:
 
-```powershell
-python -m venv .venv
-.venv/Scripts/python.exe -m pip install -r requirements.txt
-.venv/Scripts/python.exe -m unittest discover -s server -p 'test_*.py'
-.venv/Scripts/python.exe -m unittest discover -s scripts -p 'test_*.py'
-.venv/Scripts/python.exe -m unittest discover -s tools/content_capture -p 'test_*.py'
+```sh
+python -m venv .venv && . .venv/bin/activate      # Windows: .venv\Scripts\activate
+python -m pip install -r requirements.txt
+for d in server scripts tests tools/content_capture; do python -m unittest discover -s $d -p 'test_*.py'; done
+cd ps4/d1-server && cargo test --workspace --exclude d1-oracle --exclude d1-activity-host
 ```
 
-Some checks require additional privately supplied source or runtime inputs. Missing inputs, skips and blocked native acceptance must remain explicit. The publication audit checks source integrity and syntax; it does not certify that the game is playable or that every runtime integration can be reproduced from this checkout alone.
-
-The retired global-process punch-sweep launcher is retained only as `notes/Invoke-Final124PunchSweep.retired.ps1` for historical reference. Use the current owned-run wrapper; never stop unrelated emulator or service processes. Historical research journals and selected evidence are retained in `notes/` and `data/`; current machine state stays in ignored local directories.
-
-Set `D1_LOCAL`, `D1_RPCS3` and `D1_USRDIR` to your own runtime locations. Launch helpers use this checkout's `data/` by default; set `D1_DATA_REPO` only to select a different data directory. The default ignored `local/` directory is for private inputs and generated state. Individual PS4 helpers expose path parameters; use their help and explicitly select your own installation rather than assuming example locations exist. Do not run native launch or input tools without inspecting their scope and effective containment. A Linux namespace does not contain a Windows process.
+With your own inputs, `D1_EBOOT=<eboot.elf> D1_REPO=<repo root> cargo test --workspace` also runs the
+tests that need the game executable; they skip without it. Set `D1_LOCAL`, `D1_RPCS3` and `D1_USRDIR` to
+your own runtime locations for the PS3 helpers; the ignored `local/` directory is for private inputs and
+generated state. Inspect native launch and input tools before running them, and never stop unrelated
+emulator or service processes. Missing inputs, skips and blocked native acceptance must stay explicit:
+passing checks do not mean the game is playable.
 
 ## Contributing
 
-See CONTRIBUTING.md for small, reproducible changes, CODE_OF_CONDUCT.md for community rules and SECURITY.md for private security reports. Never attach game files, raw private traces, certificates, credentials or personal information to issues or pull requests.
-
-All changes reach `main` through pull requests:
-
-- **Required checks:** Python and Rust tests on Linux and Windows, plus a guard that rejects game files, binaries and keys.
-- **Merging:** maintainer PRs merge automatically once the checks pass. Contributor PRs are reviewed first.
-- **Labels:** PRs are labelled automatically by area, and get `needs rebase` when they conflict with `main`.
+Read [CONTRIBUTING.md](CONTRIBUTING.md). In short: a focused pull request titled `area: summary`, with what
+you ran and what you saw. CI checks it, a maintainer reviews it, and once approved and green it merges
+automatically. Labels show where it stands. Never attach game files, raw private traces, keys, credentials
+or personal information. Community rules are in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and security
+reports go privately via [SECURITY.md](SECURITY.md).
 
 ## Licence and third-party rights
 

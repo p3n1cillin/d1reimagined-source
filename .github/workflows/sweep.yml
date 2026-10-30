@@ -216,7 +216,11 @@ jobs:
           label 'stale'                ededed 'No activity for 30 days'
           label 'inputs-reviewed'      c5def5 'A maintainer accepted a large or unusual file (CI inputs check)'
           label 'dependencies'         0366d6 'Dependency updates'
+          # Issues (templates and the README's links)
           label 'good first issue'     7057ff 'A small, well-scoped place to start'
+          label 'help wanted'          008672 'Open for anyone to pick up'
+          label 'bug'                  d73a4a 'Something fails to build, run or pass its checks'
+          label 'investigation'        c5def5 'Research, a protocol investigation or an experiment'
           # Size (triage): changed lines
           label 'size/XS' 3cbf00 'Up to 10 changed lines'
           label 'size/S'  5d9801 'Up to 100 changed lines'
