@@ -1,5 +1,7 @@
 """Portable failure controls for the pad replay; no game input or guest access."""
 import importlib.util
+import json
+import struct
 from pathlib import Path
 import tempfile
 import unittest
@@ -17,6 +19,24 @@ def load(name):
 
 replay = load('d1-agr-replay')
 steps = load('d1-agr-steps')
+
+
+class CinematicCast(unittest.TestCase):
+    def test_one_player_is_in_the_first_slot_the_native_starter_reads(self):
+        identity = bytes.fromhex('0102030405060708')
+        image = bytes.fromhex(steps.cine(1, True, identity))
+        self.assertEqual(len(image), 212)
+        self.assertEqual(struct.unpack_from('<I', image, 0x248 - 0x1AC)[0], 1)
+        start = 0x24C - 0x1AC
+        self.assertEqual(image[start:start + 8], identity)
+        self.assertEqual(image[start + 8:start + 16], b'\0' * 8)
+        self.assertEqual(struct.unpack_from('<IBxH', image, 12), steps.ABSENT)
+
+    def test_stopped_cinematic_has_no_player_cast(self):
+        image = bytes.fromhex(steps.cine(2, False, b'12345678'))
+        self.assertEqual(image[8], 0)
+        self.assertEqual(struct.unpack_from('<I', image, 0x9C)[0], 0)
+        self.assertEqual(image[0xA0:0xD0], b'\0' * 48)
 
 
 class ReplayGates(unittest.TestCase):
@@ -112,6 +132,39 @@ class ReplayGates(unittest.TestCase):
                     player.scan_spawn()
             self.assertEqual(command.call_count, 2)
 
+    def test_sparse_retrack_selects_native_unit_and_facing_for_remaining_walks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player = replay.Replay(root, root/'host', root/'garage', root/'pad')
+            for count in (0, 11, 29, 30, 80):
+                player.tracked.write_text(json.dumps(list(range(1, count + 1))))
+                player.select_retracked_position()
+                with patch.object(player, 'command', return_value=['done (1,2,3)']) as command:
+                    player.walk_once('chest', root/'route', 840, 1.3, ())
+                args = command.call_args.args[1]
+                self.assertEqual('--native-unit' in args, count < 30)
+                self.assertEqual('--memory-facing' in args, count < 30)
+                self.assertEqual('--tracked' in args, count >= 30)
+
+    def test_native_failure_stops_replay_without_heuristic_retry(self):
+        player = replay.Replay(Path('run'), Path('host'), Path('garage'), Path('pad'))
+        player.native_unit = True
+        with patch.object(player, 'command', side_effect=RuntimeError('Current Guardian unit unavailable')) as command:
+            with self.assertRaisesRegex(RuntimeError, 'unit unavailable'):
+                player.walk('chest', Path('route'), 840)
+        self.assertEqual(command.call_count, 1)
+
+    def test_invalid_retracking_result_refuses_movement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player = replay.Replay(root, root/'host', root/'garage', root/'pad')
+            for text in ('{}', '[true]', '[0]', '[-1]', '["123"]'):
+                player.tracked.write_text(text)
+                with patch.object(player, 'command') as command:
+                    with self.assertRaisesRegex(RuntimeError, 'Malformed retracking'):
+                        player.select_retracked_position()
+                command.assert_not_called()
+
     ROUTE = [[0, 0, 0], [10, 0, 0], [20, 0, 0], [30, 0, 0]]
 
     def route_player(self, root, outcomes):
@@ -130,13 +183,26 @@ class ReplayGates(unittest.TestCase):
             route = resumed[1][resumed[1].index('--route') + 1]
             self.assertEqual(replay.json.loads(Path(route).read_text()), self.ROUTE[2:])
 
-    def test_second_stall_still_stops_input(self):
+    def test_repeated_stall_nudges_then_stops_input(self):
+        # After a failed resume: up to three sidestep-and-jump nudges, each followed by a resume.
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            player, command = self.route_player(root, ['stopped (19, 1, 0)', 'stopped (21, 0, 0)'])
+            stalls = ['stopped (19, 1, 0)', 'stopped (21, 0, 0)'] + ['pad', 'stopped (21, 0, 0)'] * 3
+            player, command = self.route_player(root, stalls)
             with command as walked, self.assertRaisesRegex(RuntimeError, 'no subsequent input sent'):
                 player.walk('leg', root/'route.json', 60)
-            self.assertEqual(walked.call_count, 2)
+            self.assertEqual(walked.call_count, 8)
+            self.assertEqual([c.args[0] for c in walked.call_args_list][2::2], ['pad'] * 3)
+
+    def test_nudge_gets_past_a_second_stall(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            player, command = self.route_player(
+                root, ['stopped (19, 1, 0)', 'stopped (21, 0, 0)', 'pad', 'done (30, 0, 0)'])
+            with command as walked:
+                self.assertTrue(player.walk('leg', root/'route.json', 60))
+            self.assertIn('Hold:D:600,NumPad2', walked.call_args_list[2].args[1])
+            self.assertEqual(walked.call_args_list[3].args[0], 'leg-nudge')
 
     def test_unparsed_walker_output_does_not_resume(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -104,17 +104,19 @@ pub enum AhEvent {
 /// not bury the run log.
 pub const PAYLOAD_CAPTURE_LIMIT: usize = 2048;
 
-/// Extra changed client-update payloads per connection, beyond the normal first capture.
-/// At 2 KiB per payload this bounds additional raw payload log text to about 1 MiB.
-pub const CLIENT_UPDATE_CAPTURE_LIMIT: usize = 256;
+/// Extra changed client-update payloads per connection (udt 21, 47 and the udt 6 sense update),
+/// beyond the normal first capture.
+/// At 2 KiB per payload this bounds additional raw payload log text to about 8 MiB. Run sense35
+/// spent 256 before its first enemy kill, so the kill's sense update went unrecorded.
+pub const CLIENT_UPDATE_CAPTURE_LIMIT: usize = 2048;
 
 /// Opt-in diagnostics only. No protocol state, authority or outgoing message is changed.
 struct ClientUpdateCapture {
     remaining: usize,
     after: Duration,
     started: Option<Instant>,
-    previous: [Option<Vec<u8>>; 2],
-    window_seen: [bool; 2],
+    previous: [Option<Vec<u8>>; 3],
+    window_seen: [bool; 3],
 }
 
 impl ClientUpdateCapture {
@@ -122,6 +124,9 @@ impl ClientUpdateCapture {
         let slot = match udt {
             21 => 0,
             47 => 1,
+            // The client's raw sensor_sense_update: squad and object state it reports back. Only
+            // the first one was ever logged, which is not enough to decode it.
+            6 => 2,
             _ => return false,
         };
         if self.remaining == 0 {
@@ -199,6 +204,8 @@ pub struct AhConnection {
     /// target region and transition token can arrive in different deltas. Keep
     /// the baseline on the connection, never in the process-wide codec worker.
     client_authoritative_image: Vec<u8>,
+    /// Native sense baselines and queues belong to this connection/world epoch only.
+    sense: Option<crate::sense::SenseWorker>,
     /// ⭐ How many [`AhEvent::CodecFault`]s this connection has produced. Once this is non-zero the
     /// host is no longer saying anything the client can act on, and the run should be read as
     /// **truncated**, not as a protocol result.
@@ -213,6 +220,7 @@ pub const BAP_TYPE_CLIENT_TO_AH_NOTIFICATION: u16 = 8;
 
 impl AhConnection {
     pub fn new(instance: ActivityInstance, codec: Arc<dyn AhWireCodec>) -> Self {
+        let sense = crate::sense::SenseWorker::from_env(instance.squad_epoch());
         Self {
             conv: BapConversation::with_default_deadline(),
             channel: None,
@@ -229,20 +237,21 @@ impl AhConnection {
             captured: std::collections::BTreeSet::new(),
             client_update_capture: None,
             client_authoritative_image: Vec::new(),
+            sense,
             codec_faults: 0,
         }
     }
 
-    /// Capture up to `count` additional changed udt-21/47 payloads, capped at 256.
-    /// The delay starts at the first received 21/47 payload, not process startup.
+    /// Capture up to `count` additional changed udt-6/21/47 payloads, capped at [`CLIENT_UPDATE_CAPTURE_LIMIT`].
+    /// The delay starts at the first received 6/21/47 payload, not process startup.
     /// Existing first-payload and every-incident captures remain unchanged.
     pub fn with_client_update_capture(mut self, count: usize, after: Duration) -> Self {
         self.client_update_capture = (count != 0).then(|| ClientUpdateCapture {
             remaining: count.min(CLIENT_UPDATE_CAPTURE_LIMIT),
             after,
             started: None,
-            previous: [None, None],
-            window_seen: [false, false],
+            previous: [None, None, None],
+            window_seen: [false, false, false],
         });
         self
     }
@@ -440,6 +449,13 @@ impl AhConnection {
         let mut events = Vec::new();
         // ⭐ Deliberate non-decode, stated as such. See `AhEvent::NotDecoded`.
         events.extend(self.capture_once(udt, payload, now));
+        // ⭐ Squad live counts (opt-in, D1_AH_SENSE_SCHEMAS): udt 6 is decoded off this thread and
+        // the counts land on a later frame. See `crate::sense`.
+        self.drain_sense();
+        if udt == 6 {
+            if let Some(sense) = self.sense.as_mut() { sense.submit(payload); }
+            self.instance.set_sense_ready(false);
+        }
         if let Some(why) = crate::codec::undecodable_reason(udt) {
             events.push(AhEvent::NotDecoded {
                 user_defined_type: udt,
@@ -477,7 +493,21 @@ impl AhConnection {
             });
             events.extend(self.try_push(push));
         }
+        self.drain_sense();
         events
+    }
+
+    fn drain_sense(&mut self) {
+        let epoch = self.instance.squad_epoch();
+        if self.sense.as_ref().is_some_and(|s| s.epoch() != epoch) {
+            self.sense = crate::sense::SenseWorker::from_env(epoch);
+        }
+        if let Some(sense) = self.sense.as_mut() {
+            for update in sense.drain() { self.instance.on_sense_update(update); }
+            self.instance.set_sense_ready(sense.ready());
+        } else {
+            self.instance.set_sense_ready(false);
+        }
     }
 
     /// ⭐⭐ **The one place inner frames become wire frames.** Envelope and seal, in that order.
@@ -550,6 +580,7 @@ impl AhConnection {
     /// too. That second half is what was missing.
     pub fn on_tick(&mut self, now: Instant) -> (Vec<Vec<u8>>, Vec<AhEvent>) {
         let mut events = Vec::new();
+        self.drain_sense();
         // ⛔ Before the secure hello there is nothing to seal *with*, and an unsealed frame is
         // worse than silence - it is the connection reset that killed run
         // `20260809-075545-RUNG33-UNLOCK-98`. A host that has not finished a handshake owes no
@@ -591,7 +622,7 @@ impl AhConnection {
     }
 
     /// The **first** payload seen for each `user_defined_type` on this connection, as hex.
-    /// Opt-in diagnostics also record bounded 21/47 baselines/changes in a selected window.
+    /// Opt-in diagnostics also record bounded 6/21/47 baselines/changes in a selected window.
     ///
     /// Once per udt, not once per message: the keepalive alone arrived ten times in the run that
     /// motivated this, and ten copies of one byte is not ten vectors. The first is the one worth
@@ -716,13 +747,15 @@ async fn drive(
     let mut buf: Vec<u8> = Vec::new();
     let mut chunk = [0u8; 8192];
     tracing::info!("AH connection from {peer}");
+    let mut last_tick = Instant::now();
     loop {
         let n = match tokio::time::timeout(poll, sock.read(&mut chunk)).await {
             Ok(r) => r?,
             // ⭐⭐ Nothing arrived. The client's liveness test is OUR transmit idle time, so this
             // is precisely the case that killed run 20260809-054417-RUNG33-BYPASS.
             Err(_elapsed) => {
-                let (replies, events) = conn.on_tick(Instant::now());
+                last_tick = Instant::now();
+                let (replies, events) = conn.on_tick(last_tick);
                 for e in events {
                     // ⭐⭐ The heartbeat path used to print EVERY event at INFO, including the
                     // codec fault that killed run 20260809-120451-MOONBASE-FRESH. Route it the
@@ -751,6 +784,20 @@ async fn drive(
             let (replies, events) = conn.on_frame(&frame, Instant::now());
             for e in events {
                 log_event(&peer, &e, "");
+            }
+            for r in replies {
+                sock.write_all(&r).await?;
+            }
+        }
+        // ⭐ The tick also runs when it is overdue under steady client traffic. Mission steps, the
+        // sensor repeat and the control file all hang off it, and an armed player trigger can
+        // report a dozen times a second (sense36: 3,000 incident-3403 reports in five minutes,
+        // and no read ever timed out, so the control file that would disarm it was never read).
+        if last_tick.elapsed() >= poll {
+            last_tick = Instant::now();
+            let (replies, events) = conn.on_tick(last_tick);
+            for e in events {
+                log_event(&peer, &e, "heartbeat ");
             }
             for r in replies {
                 sock.write_all(&r).await?;
@@ -855,6 +902,20 @@ mod tests {
         assert_eq!(c.capture_once(37, &[1], now).len(), 1);
         assert!(c.capture_once(37, &[2], now).is_empty());
         assert_eq!(c.client_update_capture.as_ref().unwrap().remaining, 1);
+        assert!(c.pending_pushes.is_empty());
+    }
+
+    #[test]
+    fn client_update_capture_includes_the_sense_update() {
+        let now = Instant::now();
+        let mut c = conn(Arc::new(RawStructCodec))
+            .with_client_update_capture(2, Duration::ZERO);
+        // udt 6 (sensor_sense_update): the first, then only changed payloads, from the shared budget.
+        assert_eq!(c.capture_once(6, &[0x80, 1], now).len(), 1);
+        assert!(c.capture_once(6, &[0x80, 1], now).is_empty());
+        assert_eq!(c.capture_once(6, &[0x80, 2], now).len(), 1);
+        assert_eq!(c.capture_once(6, &[0x80, 3], now).len(), 1);
+        assert!(c.capture_once(6, &[0x80, 4], now).is_empty(), "the budget of 2 is spent");
         assert!(c.pending_pushes.is_empty());
     }
 

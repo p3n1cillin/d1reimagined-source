@@ -1,0 +1,127 @@
+# Per-event handling of pull requests and issues. pull_request_target runs this file from main with a
+# write token, so nothing here checks out or executes pull request code; conventions reads the PR's
+# commits as git objects only.
+# - conventions (required): `area: summary` title, no secrets, no broken relative links;
+# - triage: welcome a first issue or PR; the open-PR limit (1 until an author has a PR merged, then 20,
+#   none from 20); "needs review"; size labels; auto-merge for the maintainer's and Dependabot's PRs;
+# - areas: labels from .github/labeler.yml (they group the weekly release notes).
+name: Triage
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, edited, ready_for_review]
+  issues:
+    types: [opened]
+
+permissions: {}
+
+concurrency:
+  group: triage-${{ github.event.pull_request.number || github.event.issue.number }}-${{ github.event.action }}
+  cancel-in-progress: true
+
+jobs:
+  conventions:
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      # Current main, not the PR's recorded base, so a PR opened before a check landed still gets it.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          persist-credentials: false
+      - env:
+          NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          TITLE: ${{ github.event.pull_request.title }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          git fetch --no-tags origin "+refs/pull/$NUMBER/head:refs/pr/head"
+          python3 -I .github/scripts/check_pr.py --base HEAD --head "$HEAD_SHA" --title "$TITLE" --author "$AUTHOR" --owner "$OWNER"
+
+  triage:
+    if: github.event.action != 'edited' && !endsWith(github.actor, '[bot]') || github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const action = context.payload.action;
+            const item = context.payload.pull_request || context.payload.issue;
+            const isPR = !!context.payload.pull_request;
+            const author = item.user.login;
+            const maintainer = author === owner;
+            const site = `https://github.com/${owner}/${repo}/blob/main`;
+
+            if (action === 'opened' && !maintainer && !author.endsWith('[bot]')) {
+              const found = await github.rest.search.issuesAndPullRequests({ q: `repo:${owner}/${repo} author:${author}`, per_page: 2 });
+              if (found.data.total_count <= 1) {
+                await github.rest.issues.createComment({ owner, repo, issue_number: item.number, body: [
+                  `Thanks for your first ${isPR ? 'pull request' : 'issue'}, @${author}, and welcome to D1 Reimagined.`, '',
+                  `A maintainer will take a look. The [contributing guide](${site}/CONTRIBUTING.md) explains how ${isPR ? 'pull requests move from review to merge' : 'issues and pull requests are handled'}, and the [contributor checkpoint](${site}/docs/STATUS.md) is where to start.`,
+                  'Questions and early ideas are welcome on the [community Discord](https://d1reimagined.com/discord) (help and ideas forums).', '',
+                  'Please keep game files, keys, firmware and account data out of issues and pull requests.',
+                ].join('\n') });
+              }
+            }
+            if (!isPR) return;
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: item.number });
+            if (pr.state !== 'open' || pr.base.ref !== 'main') return;
+
+            const lines = pr.additions + pr.deletions;
+            const size = `size/${lines <= 10 ? 'XS' : lines <= 100 ? 'S' : lines <= 500 ? 'M' : lines <= 1000 ? 'L' : 'XL'}`;
+            for (const l of pr.labels.map((l) => l.name).filter((n) => n.startsWith('size/') && n !== size)) {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number: pr.number, name: l }).catch((e) => { if (e.status !== 404) throw e; });
+            }
+            const add = pr.labels.some((l) => l.name === size) ? [] : [size];
+
+            if (maintainer || author === 'dependabot[bot]') {
+              if (add.length) await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: add });
+              if (!pr.draft && !pr.auto_merge) {
+                await github.graphql('mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH}){clientMutationId}}', { id: pr.node_id })
+                  .catch((e) => core.warning(`auto-merge: ${e.message}`));
+              }
+              return;
+            }
+
+            if (['opened', 'reopened', 'ready_for_review'].includes(action)) {
+              const merged = (await github.rest.search.issuesAndPullRequests({ q: `repo:${owner}/${repo} is:pr is:merged base:main author:${author}`, per_page: 1 })).data.total_count;
+              if (merged < 20) {
+                const limit = merged >= 1 ? 20 : 1;
+                const open = new Set((await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open', base: 'main', per_page: 100 }))
+                  .filter((p) => p.user.login === author).map((p) => p.number)).add(pr.number);
+                if (open.size > limit) {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: ['open PR limit', ...add] });
+                  await github.rest.issues.createComment({ owner, repo, issue_number: pr.number, body:
+                    `Thanks for your contribution! Until an author has a pull request merged they can have 1 open at a time, then 20, and from 20 merged there is no limit. ` +
+                    'This one was closed automatically because that limit was reached. It is not a judgement of the change: reopen it once one of your open pull requests is merged or closed.' });
+                  await github.rest.pulls.update({ owner, repo, pull_number: pr.number, state: 'closed' });
+                  return;
+                }
+              }
+              if (!pr.draft && !pr.labels.some((l) => ['approved', 'changes requested'].includes(l.name))) add.push('needs review');
+            }
+            if (add.length) await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: add });
+
+  areas:
+    if: github.event_name == 'pull_request_target' && github.event.action != 'edited'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github
+      - uses: actions/labeler@v5

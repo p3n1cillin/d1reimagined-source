@@ -2272,6 +2272,9 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_PROGRESSION_ROOT", "<unset>", "family 2 root payload"),
     ("D1_PROGRESSION_KEY_BASE", "0xD100000000000401", "fallback progression key"),
     ("D1_ORACLE", "d1-server/target/release/d1-oracle", "native encoder used to stage loadouts"),
+    ("D1_LOOT_GRANT", "<unset>", "NONCE=SOID:FILE[|PROFILE][;…] - the item a claimed world drop delivers"),
+    ("D1_LOOT_GRANT_ROSTER", "<unset>", "roster fixtures served after a loot grant"),
+    ("D1_PROFILE_PUSH_FILE", "<unset>", "on-demand family-4 profile delta: write this file (plus optional .item/.soid) to push it"),
 ];
 
 /// Print [`KNOBS`] with each knob's effective value.
@@ -4518,6 +4521,57 @@ async fn main() -> Result<()> {
                                                                                 }
                                                                                 Err(e) => warn!("      [conv] ⛔ family {family} grant delta REFUSED by the push accept-set: {e}"),
                                                                             }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            // ⭐ AN ON-DEMAND PROFILE. `D1_PROFILE_PUSH_FILE=<path>`: when that
+                                                            // file appears, the next echo pushes its bytes (a client-encoded
+                                                            // profile payload) as a family-4 delta, then renames it `.sent`.
+                                                            // The activity completion is a profile change: the client
+                                                            // announces it when profile +0x2c38 (the completed flag of field
+                                                            // [6], struct 0x808017b9 at +0x2c20) goes from 0 to 1.
+                                                            if conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
+                                                                && inner_type == Some(d1_bap::TYPE_ECHO_REQUEST)
+                                                                && family4_version.is_some()
+                                                            {
+                                                                if let Some(path) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(std::path::PathBuf::from) {
+                                                                    if let Ok(payload) = std::fs::read(&path) {
+                                                                        let _ = std::fs::rename(&path, path.with_extension("sent"));
+                                                                        let version = family4_version.unwrap_or(0).wrapping_add(1);
+                                                                        let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
+                                                                        let prof_soid = env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201);
+                                                                        // Optional item in the same delta: `<file>.item` (a client-encoded
+                                                                        // family-4/3 inventory element) and `<file>.soid` (its instance
+                                                                        // SOID, hex), e.g. a mission reward the new profile owns or equips.
+                                                                        let item = (|| {
+                                                                            let element = std::fs::read(path.with_extension("item")).ok()?;
+                                                                            let text = std::fs::read_to_string(path.with_extension("soid")).ok()?;
+                                                                            let soid = u64::from_str_radix(text.trim().trim_start_matches("0x"), 16).ok()?;
+                                                                            let _ = std::fs::rename(path.with_extension("item"), path.with_extension("item.sent"));
+                                                                            Some((soid, element))
+                                                                        })();
+                                                                        let b = match &item {
+                                                                            Some((soid, element)) => d1_bap::loot::item_grant_delta(
+                                                                                acct, version, *soid, element, Some((prof_soid, &payload))),
+                                                                            None => d1_bap::loot::profile_delta(acct, version, prof_soid, &payload),
+                                                                        };
+                                                                        match conv.push_with_sequence(d1_bap::TYPE_QUEUEZ_OBJECT, server_seq, &b) {
+                                                                            Ok(push) => {
+                                                                                let sn = nonces.peek(d1_bap::Direction::ServerToClient);
+                                                                                if let Ok(f) = d1_bap::seal_channel_frame(key, sn, &push) {
+                                                                                    nonces.advance(d1_bap::Direction::ServerToClient);
+                                                                                    if sock.write_all(&f).await.is_ok() {
+                                                                                        warn!("      ⭐⭐ PROFILE PUSH: {} ({}B{}) as family-4 delta version {version}, seq {server_seq}",
+                                                                                              path.display(), payload.len(),
+                                                                                              item.as_ref().map(|(s, e)| format!(" + item {s:#018x} {}B", e.len())).unwrap_or_default());
+                                                                                        family4_version = Some(version);
+                                                                                        server_seq += 1;
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            Err(e) => warn!("      [conv] ⛔ profile push REFUSED by the push accept-set: {e}"),
                                                                         }
                                                                     }
                                                                 }

@@ -83,7 +83,11 @@ pub const TAG_AUTHORITY: u32 = 0x8080_0CF7;
 /// three `(i32, i32, f32)` channels, in a prop state's command block (`0x808007D9` / `0x80800387`
 /// `+0x20` count, `+0x30` type, `+0x40` value). Channels 0-2 at `(1, 1, 1.0)` on The Breach's
 /// control and light props open the barrier to the starter rifle (01.24 JOIN210).
-pub const TYPED_VALUE_TYPES: &[u32] = &[0x8080_279A];
+/// `0x80801732`: the family-4/type-3 inventory element, carried as a post-game reward display
+/// entry in the kind-15 scoreboard's player row (`0x808008D0`). Without it the client's codec
+/// faults on the unresolved type (a negative `memset`); with it a one-reward scoreboard image
+/// round-trips byte-identical (2,388 bits).
+pub const TYPED_VALUE_TYPES: &[u32] = &[0x8080_279A, 0x8080_1732];
 /// Entries in the authority table: 65 blocks of 12 bytes after a `u32`.
 pub const AUTHORITY_BLOCKS: usize = 65;
 
@@ -360,9 +364,11 @@ impl SensorPhaseUpdate {
             }
         }
         w.put(0, 1); // terminator (has_entry = 0)
-        if !self.clients.is_empty() {
+        if !self.clients.is_empty() || self.authority.is_some() {
             // Zero-pad to a byte: the walker stops at the terminator and never reads past it. The
-            // audited single-entry frame is exactly 472 bits and stays unpadded (and checked).
+            // audited single-entry frame is exactly 472 bits and stays unpadded (and checked). A
+            // list with only `@authority`/`@phase` and no rows still carries the authority table,
+            // whose width is not a byte multiple (run sense49: 5,966 bits, refused unpadded).
             w.pad_to_byte();
         }
         w.finish().map_err(|n| {
@@ -629,6 +635,15 @@ pub fn run() -> Vec<Control> {
             format!("raw(-1)={} raw(3)={} raw(6)={}", m1[16] & 0x0F, p3[16] & 0x0F, p6[16] & 0x0F),
         ),
         _ => push("phase enum is 4-bit bias-1", false, "encode failed".into()),
+    }
+
+    // 8. An authority table with no client rows (a list of only `@authority` and `@phase`) still
+    //    encodes: the frame pads to a byte instead of being refused (run sense49, 5,966 bits).
+    let mut bare = audit(7, None);
+    bare.authority = Some(SensorAuthority::all_to(13, 2));
+    match bare.encode() {
+        Ok(b) => push("authority-only phase-7 frame pads to whole bytes", true, format!("{} bytes", b.len())),
+        Err(e) => push("authority-only phase-7 frame pads to whole bytes", false, format!("{e}")),
     }
 
     c

@@ -8,6 +8,7 @@ import math
 from pathlib import Path
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -27,7 +28,7 @@ class RouteProgress(unittest.TestCase):
             def sleep(self, _):
                 pass
 
-        scope = dict(argparse=argparse, json=json, math=math, time=Clock(), Client=object,
+        scope = dict(argparse=argparse, json=json, math=math, time=Clock(), Client=SimpleNamespace,
                      active=lambda **_: None, position=lambda *args: (3.5, 0, 0),
                      wrap=lambda x: (x + math.pi) % (2 * math.pi) - math.pi,
                      pad=lambda *keys: calls.append(keys))
@@ -41,6 +42,21 @@ class RouteProgress(unittest.TestCase):
             with patch.object(sys, 'argv', args), contextlib.redirect_stdout(io.StringIO()):
                 scope['main']()
         self.assertTrue(calls, 'the old arrival/retreat loop emits no movement at this position')
+
+    def test_native_position_loss_does_not_use_the_last_heuristic_position(self):
+        scope = extract('native_sample', 'position')
+        scope['_unit_tracking'] = SimpleNamespace(read_unit_position=lambda *_: None)
+        client = SimpleNamespace(p=None, base=0, unit_handle=None, native_unit=True)
+        with self.assertRaisesRegex(RuntimeError, 'unavailable or inconsistent'):
+            scope['position'](client, [123], (300, -600, 12))
+
+    def test_native_unit_change_refuses_to_resume_the_old_route(self):
+        scope = extract('native_sample', 'position')
+        scope['_unit_tracking'] = SimpleNamespace(read_unit_position=lambda *_:
+            SimpleNamespace(handle=2, address=456, position=(300, -600, 12)))
+        client = SimpleNamespace(p=None, base=0, unit_handle=1, native_unit=True)
+        with self.assertRaisesRegex(RuntimeError, 'unit changed'):
+            scope['position'](client, [])
 
 
 SOURCE = Path(__file__).resolve().parents[1] / 'tools/ps4_setup/d1-walk.py'
@@ -84,7 +100,7 @@ class MemoryFacing(unittest.TestCase):
             def sleep(self, _):
                 pass
 
-        scope = dict(argparse=argparse, json=json, math=math, time=Clock(), Client=object,
+        scope = dict(argparse=argparse, json=json, math=math, time=Clock(), Client=SimpleNamespace,
                      active=lambda **_: None, position=lambda *args: (0, 0, 0),
                      wrap=lambda x: (x + math.pi) % (2 * math.pi) - math.pi,
                      facing=lambda *_: math.pi / 2, pad=lambda *keys: calls.append(keys))

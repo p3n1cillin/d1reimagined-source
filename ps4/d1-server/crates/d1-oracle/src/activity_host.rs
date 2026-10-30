@@ -227,6 +227,9 @@ pub const RAW_SEND: &[(u32, u64, &str)] = &[
 pub const CALL_SITES_56578: &[(u32, u64, Option<usize>)] = &[
     (0, 0x0191_A3A0, Some(0x600)),
     (1, 0x0191_A410, None),
+    // world_globals_state: dispatch entry2 -> 1018D00, 8-byte body.
+    // Queue 2409E0 -> BB2660 -> 2A1F40 -> 2A2CA0 copies it to world+14.
+    (2, 0x0191_A418, Some(0x008)),
     (4, 0x0191_A388, Some(0x1A8)),
     (11, 0x0191_A308, Some(0x5038)),
     (3, 0x0191_A380, Some(0x100)),
@@ -1466,11 +1469,12 @@ pub fn controls() -> Result<Vec<Control>> {
         format!("wire {} bytes vs struct {} bytes", wire.len(), d.object.len()),
     ));
 
-    let unpinned = tag_for_udt(2);
+    // Udt 2 (world_globals_state) is pinned on 56578; udt 42 still has no row.
+    let unpinned = tag_for_udt(42);
     c.push(check(
         "NEGATIVE: an udt with no call-site row REFUSES rather than improvising a tag",
         unpinned.is_err() && tag_for_udt(4).is_ok(),
-        "udt 2 has no CALL_SITES row; udt 4 does - positive control on the same call",
+        "udt 42 has no CALL_SITES row; udt 4 does - positive control on the same call",
     ));
 
     let short = codec.encode(3, &vec![0u8; 0x80]);
@@ -1687,20 +1691,21 @@ pub fn controls() -> Result<Vec<Control>> {
     // message said "UNPINNED - read its FUN_00299310 call site and add the row", which is advice
     // that cannot be followed, because the call site IS read and it says 0xFFFFFFFF.
     let raw15 = tag_for_udt(15);
-    let unpinned2 = tag_for_udt(2);
+    // Udt2 is measured on56578; retain an actually unpinned negative on both builds.
+    let unpinned42 = tag_for_udt(42);
     let raw_msg = raw15.as_ref().err().map(|e| e.to_string()).unwrap_or_default();
-    let unpinned_msg = unpinned2.as_ref().err().map(|e| e.to_string()).unwrap_or_default();
+    let unpinned_msg = unpinned42.as_ref().err().map(|e| e.to_string()).unwrap_or_default();
     c.push(check(
         "⭐⭐ udt 15's keepalive has NO SCHEMA TAG BY CONSTRUCTION, and says so differently from \
          a merely unpinned id",
         raw15.is_err()
             && raw_msg.contains("sent RAW")
             && raw_msg.contains("THERE IS NO SCHEMA TAG TO PIN")
-            && unpinned2.is_err()
+            && unpinned42.is_err()
             && unpinned_msg.contains("UNPINNED")
             && !unpinned_msg.contains("sent RAW"),
         format!(
-            "FUN_00298C40 passes descriptor 0xFFFFFFFF and sets the raw flag; udt 2 is the \
+            "FUN_00298C40 passes descriptor 0xFFFFFFFF and sets the raw flag; udt 42 is the \
              discriminating negative - {} raw-send rows",
             addrs().ah_raw_send.len()
         ),
@@ -1840,10 +1845,11 @@ mod tests {
         let handler = |i: u64| *reloc.get(&(t + i * 16 + 8)).unwrap();
         assert_eq!(handler(0), 0x101_8800, "udt 0 -> decode with *0x191A3A0");
         assert_eq!(handler(1), 0x101_8990, "udt 1 -> decode with *0x191A410");
+        assert_eq!(handler(2), 0x101_8D00, "udt 2 -> decode with *0x191A418");
         assert_eq!(handler(3), 0x101_8E30, "udt 4 -> decode with *0x191A388");
         assert_eq!(handler(4), 0x29_D950, "udt 11 replicate_membership");
         assert_eq!(handler(7), 0x29_D7E0, "udt 7 sensor_message");
-        for (udt, g) in [(0u32, 0x191_A3A0u64), (1, 0x191_A410), (4, 0x191_A388), (11, 0x191_A308)] {
+        for (udt, g) in [(0u32, 0x191_A3A0u64), (1, 0x191_A410), (2, 0x191_A418), (4, 0x191_A388), (11, 0x191_A308)] {
             assert!(CALL_SITES_56578.iter().any(|(u, x, _)| *u == udt && *x == g), "udt {udt}");
         }
     }

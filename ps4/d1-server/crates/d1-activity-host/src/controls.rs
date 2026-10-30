@@ -402,11 +402,12 @@ pub fn run() -> Vec<Control> {
          the schema record, reached by a chain that never sees either, agrees",
     ));
 
-    // NEGATIVE, kept: closing udt 11 must not have opened the 21 other unpinned ids.
+    // NEGATIVE, kept: closing udt 11 (and udt 2, `world_globals_state`, 8 bytes, pinned on 56578
+    // at call site 0x191A418) must not have opened the 20 other unpinned ids.
     c.push(check(
-        "NEGATIVE: the 21 remaining unpinned udts still REFUSE rather than improvise a tag",
+        "NEGATIVE: the 20 remaining unpinned udts still REFUSE rather than improvise a tag",
         SchemaCodec::struct_size(42).is_err()
-            && SchemaCodec::struct_size(2).is_err()
+            && SchemaCodec::struct_size(2) == Ok(8)
             && SchemaCodec::struct_size(protocol::UDT_REPLICATE_MEMBERSHIP).is_ok(),
         "one closed gate is one closed gate; a codec that started answering for everything would \
          be the fabrication this crate exists to refuse",

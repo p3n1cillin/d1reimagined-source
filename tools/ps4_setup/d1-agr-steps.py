@@ -11,8 +11,10 @@ the client waits in each region (113 and 112), plus a list holding the objective
 Cinematic state `0x8080254D` (212 bytes on 56578, handler 0x403140):
   +0x04 play counter (a change starts/stops), +0x08 playing, +0x0C optional object ref
   ({0x811C9DC5, 0xFF, 0xFFFF} = absent; all-zero is "present" and the failed resolve crashes at
-  0x126CE5), +0x14 team filter (-1 = off), +0x9C cast count, +0xA8 cast[0] = the local player's
+  0x126CE5), +0x14 team filter (-1 = off), +0x9C cast count, +0xA0 cast[0] = the local player's
   identity (kind 0x23, the spawn bundle's +0x40 bytes), not a machine id.
+  Native 0x40316A copies to component+0x1AC; 0x4037E7 reads count+0x248 and
+  0x40380F reads identities+0x24C. +0xA8 is cast[1], not cast[0].
 
   d1-agr-steps.py --r113 LIST --r112 LIST --objectives LIST --out-dir DIR
 """
@@ -41,7 +43,7 @@ def cine(counter, playing, ident):
     img[0x14] = 0xFF
     if playing:
         struct.pack_into('<I', img, 0x9C, 1)
-        img[0xA8:0xB0] = ident
+        img[0xA0:0xA8] = ident
     return img.hex()
 
 

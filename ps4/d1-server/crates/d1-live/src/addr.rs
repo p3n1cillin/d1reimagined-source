@@ -299,6 +299,18 @@ pub fn value(text: &str, ctx: &Ctx, load: &dyn Fn(u64, Width) -> Result<u64>) ->
 mod tests {
     use super::*;
 
+    /// The project address book is a derived input that isn't in the repository
+    /// (`ps4/capture-rig/guest-symbols.json`, or `$D1_GUEST_SYMBOLS`). These tests skip without it, as
+    /// on CI; a file that is there but doesn't load still fails them.
+    fn symbols() -> Option<Symbols> {
+        let path = crate::symbols::default_path();
+        if !path.exists() {
+            eprintln!("skipped: needs the guest symbol file {} (or set D1_GUEST_SYMBOLS)", path.display());
+            return None;
+        }
+        Some(Symbols::open_default().unwrap())
+    }
+
     fn ctx(syms: &Symbols) -> Ctx<'_> {
         let mut c = Ctx::new(0x8_0000_0000, syms);
         // A fake memory: `[0x802815860] = 0x204eda280`, everything else 0.
@@ -311,7 +323,7 @@ mod tests {
 
     #[test]
     fn bare_number_in_an_ADDRESS_position_is_an_eboot_vaddr() {
-        let s = Symbols::open_default().unwrap();
+        let Some(s) = symbols() else { return };
         let c = ctx(&s);
         assert_eq!(addr("0xB471E0", &c).unwrap(), 0x8_00B4_71E0);
         assert_eq!(addr("v:0xB471E0", &c).unwrap(), 0x8_00B4_71E0);
@@ -321,7 +333,7 @@ mod tests {
     /// The footgun that bit on first live use: `--arg 0` must be the integer zero, never `base+0`.
     #[test]
     fn bare_number_in_a_VALUE_position_is_a_literal() {
-        let s = Symbols::open_default().unwrap();
+        let Some(s) = symbols() else { return };
         let c = ctx(&s);
         let load = |_a: u64, _w: Width| -> Result<u64> { Ok(0) };
         assert_eq!(value("0", &c, &load).unwrap(), 0);
@@ -332,7 +344,7 @@ mod tests {
 
     #[test]
     fn deref_then_offset_does_not_add_base_twice() {
-        let s = Symbols::open_default().unwrap();
+        let Some(s) = symbols() else { return };
         let c = ctx(&s);
         // `[v:0x2815860]` is a heap pointer; `+0xf8` must be a plain offset on it.
         assert_eq!(addr("[v:0x2815860]+0xf8", &c).unwrap(), 0x2_04ed_a280 + 0xf8);
@@ -340,7 +352,7 @@ mod tests {
 
     #[test]
     fn symbols_resolve_through_the_project_address_book() {
-        let s = Symbols::open_default().unwrap();
+        let Some(s) = symbols() else { return };
         let c = ctx(&s);
         assert_eq!(addr("object_registry_ptr", &c).unwrap(), 0x8_026A_2040);
         assert!(addr("no_such_symbol", &c).is_err());
@@ -351,7 +363,7 @@ mod tests {
     /// the base is zero and every "heap pointer" reading in the tree is unfalsifiable.
     #[test]
     fn abs_and_vaddr_are_not_interchangeable() {
-        let s = Symbols::open_default().unwrap();
+        let Some(s) = symbols() else { return };
         let c = ctx(&s);
         let n = "0x204eda280"; // a heap pointer, of the shape `d1guest --abs` exists for
         assert_ne!(addr(n, &c).unwrap(), addr(&format!("a:{n}"), &c).unwrap());

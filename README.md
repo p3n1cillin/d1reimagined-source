@@ -1,18 +1,26 @@
 # D1 Reimagined
 
-[![Source checks](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/source-checks.yml/badge.svg)](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/source-checks.yml)
+**The original Destiny (2014), running on PC, where it was never released.** An independent, open-source preservation project running Destiny 1's final PS4 version on PC through the shadPS4 emulator, against its own rebuilt services, one mission step at a time, with every step shown in public Dev Blogs and videos.
+
+[![A Guardian Rises progress](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Fmission.json)](https://d1reimagined.com/progress?ref=github)
+[![Latest Dev Blog](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Flatest.json)](https://d1reimagined.com/latest?ref=github)
+[![From the lab](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Flab.json)](https://d1reimagined.com/progress?ref=github)
+[![YouTube](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Fyoutube.json)](https://www.youtube.com/@d1reimagined?sub_confirmation=1)
+[![Discord](https://img.shields.io/endpoint?url=https%3A%2F%2Fd1reimagined.com%2Fbadge%2Fdiscord.json)](https://d1reimagined.com/discord?ref=github)
+[![CI](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/ci.yml/badge.svg)](https://github.com/p3n1cillin/d1reimagined-source/actions/workflows/ci.yml)
 [![Good first issues](https://img.shields.io/github/issues/p3n1cillin/d1reimagined-source/good%20first%20issue?label=good%20first%20issues)](https://github.com/p3n1cillin/d1reimagined-source/labels/good%20first%20issue)
-[![Discord](https://img.shields.io/discord/1558817182551646220?label=Discord)](https://d1reimagined.com/discord)
+
+[![The latest Dev Blog](https://d1reimagined.com/latest/thumbnail)](https://d1reimagined.com/latest?ref=github)
+
+**Watch** the [Dev Blog videos and Shorts](https://www.youtube.com/@d1reimagined) · **Read** the [latest Dev Blog](https://d1reimagined.com/latest?ref=github) · **Follow** the [first mission, step by step](https://d1reimagined.com/progress?ref=github) · **Talk** on the [Discord](https://d1reimagined.com/discord?ref=github)
 
 Experimental, independent Destiny 1 preservation research and original local service implementation. **The complete game is not playable.** This consolidated repository includes local service stand-ins, protocol experiments, mission rules, diagnostic tools, scoped emulator patches and regression tests.
 
-Project website: https://d1reimagined.com
-Community Discord: https://d1reimagined.com/discord (questions, ideas and contributor discussion)
-
 ## Get involved
 
+- **Star the repository:** it costs nothing, and stars are how other Destiny players find the project on GitHub.
 - **Pick up a task:** [good first issues](https://github.com/p3n1cillin/d1reimagined-source/labels/good%20first%20issue) and [help wanted](https://github.com/p3n1cillin/d1reimagined-source/labels/help%20wanted). Many need no game files at all, including research, documentation, tests and CI.
-- **Follow progress:** [Dev Blogs](https://d1reimagined.com/devblogs), and #dev-updates on the [Discord](https://d1reimagined.com/discord).
+- **Follow progress:** [Dev Blogs](https://d1reimagined.com/devblogs), and #dev-updates on the [Discord](https://d1reimagined.com/discord). To hear about each milestone here, choose **Watch → Custom → Releases**: every milestone gets a [release](https://github.com/p3n1cillin/d1reimagined-source/releases) with its Dev Blog and video.
 - **Ask first:** the Discord help and ideas forums are the place for questions and early ideas. Issues are for confirmed problems and planned work.
 - **Emulator:** the project's shadPS4 build is [d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4) (branch `d1`).
 
@@ -27,10 +35,12 @@ The retained PlayStation 3 implementation targets version 01.24 with RPCS3.
 See [current results and contribution priorities](docs/STATUS.md). The first
 mission's recorded route now runs unattended from the Cosmodrome highway through
 The Breach into the Divide. The starter rifle fires, and the Divide's
-“Fight Through the Fallen” title and waypoint have native acceptance. The rest
-of the mission, native
-stability, combat, progression, complete activities and multiplayer remain
-incomplete.
+“Fight Through the Fallen” title and waypoint have native acceptance. Subsequent
+contained runs have decoded Fallen kills and reached Dock 13 with “Find the Ship”.
+The [28 October research note](notes/ps4-56578-pilots-clock-combat.md) records
+the pilot-program candidate, missing activity-clock configuration and remaining
+combat questions. Mission completion, progression, native stability and
+multiplayer remain unproven.
 
 This is a research repository, not a ready-to-play installer. The `data/` directory contains material derived from the historical PS3 research snapshot: schemas, logs, update diffs and a checksum manifest. Game packages, executables, firmware, third-party runtimes, account databases, private keys and current runtime captures are not included; supply your own authorised copies and check them against `data/SHA256SUMS.txt`. Use only inputs you are authorised to use. No public service, console, account or third-party system is a testing target.
 

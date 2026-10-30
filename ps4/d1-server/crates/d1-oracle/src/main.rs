@@ -72,6 +72,18 @@ enum Cmd {
         /// Hex bytes for the decoded C object (encode direction).
         #[arg(long)]
         obj: Option<String>,
+        /// Payload file to decode, for payloads too long for a command line (a profile is ~20 KB).
+        #[arg(long)]
+        decode_file: Option<PathBuf>,
+        /// Decoded C object file (encode direction), as written by `--out-obj`.
+        #[arg(long)]
+        obj_file: Option<PathBuf>,
+        /// With `--decode`/`--decode-file`: also write the decoded C object here.
+        #[arg(long)]
+        out_obj: Option<PathBuf>,
+        /// Encode direction: also write the payload here.
+        #[arg(long)]
+        out: Option<PathBuf>,
         /// A type a kind-0x22 typed value in the object names (repeatable), e.g. 0x8080279a.
         #[arg(long, value_parser = parse_int)]
         value_type: Vec<u64>,
@@ -280,6 +292,20 @@ enum AhCmd {
 /// `d1-oracle sensor …` - see [`d1_oracle::sensor`] for the frame grammar and the executed proof.
 #[derive(Subcommand)]
 enum SensorCmd {
+    /// Decode an ordered, private udt-6 capture with native-observed kind:B-tag mappings.
+    DecodeSense {
+        #[arg(long)]
+        input: PathBuf,
+        /// New JSONL file; existing files are refused.
+        #[arg(long)]
+        out: PathBuf,
+        /// Repeat KIND:TAG, e.g. 1:0x80800357, from sensor-clients --all --types.
+        #[arg(long, required = true)]
+        schema: Vec<String>,
+        /// Input is timestamp<TAB>udt6<TAB>hex with optional other event lines.
+        #[arg(long)]
+        tsv: bool,
+    },
     /// Synthetic controls for the 56578 objective-list handover (no game input needed).
     ObjectiveControls,
     /// Build a 56578 visible objective handover in a sensor list; does not publish it.
@@ -651,6 +677,79 @@ fn run_sensor(_cli: &Cli, cmd: &SensorCmd) -> anyhow::Result<ExitCode> {
     use d1_oracle::sensor::{self, SensorPhaseUpdate};
 
     match cmd {
+        SensorCmd::DecodeSense {
+            input,
+            out,
+            schema,
+            tsv,
+        } => {
+            use std::io::{BufRead, Write};
+            let mut schemas = std::collections::HashMap::new();
+            for mapping in schema {
+                let (kind, tag) = mapping
+                    .split_once(':')
+                    .ok_or_else(|| anyhow::anyhow!("expected KIND:TAG"))?;
+                let kind = u8::try_from(parse_int(kind).map_err(anyhow::Error::msg)?)?;
+                let tag = u32::try_from(parse_int(tag).map_err(anyhow::Error::msg)?)?;
+                if let Some(previous) = schemas.insert(kind, tag) {
+                    anyhow::ensure!(previous == tag, "conflicting B tags for kind {kind:#x}");
+                }
+            }
+            let mut decoder = d1_oracle::sensor_sense::SenseDecoder::new(schemas)?;
+            let source = std::io::BufReader::new(std::fs::File::open(input)?);
+            let mut output = std::io::BufWriter::new(
+                std::fs::OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(out)?,
+            );
+            let mut count = 0;
+            for (index, line) in source.lines().enumerate() {
+                let line = line?;
+                let (stamp, payload) = if *tsv {
+                    let Some((stamp, payload)) = line.split_once("\tudt6\t") else {
+                        continue;
+                    };
+                    (Some(stamp), payload)
+                } else {
+                    if line.trim().is_empty() {
+                        continue;
+                    }
+                    (None, line.trim())
+                };
+                let decoded = (|| -> anyhow::Result<_> {
+                    anyhow::ensure!(payload.is_ascii(), "udt 6 hex input must be ASCII");
+                    let payload = hex(payload.trim())?;
+                    Ok(decoder.decode(&payload)?)
+                })();
+                match decoded {
+                    Ok(frame) => {
+                        writeln!(
+                            output,
+                            "{}",
+                            serde_json::json!({"line": index + 1, "stamp": stamp, "frame": frame})
+                        )?;
+                        count += 1;
+                    }
+                    Err(error) => {
+                        writeln!(
+                            output,
+                            "{}",
+                            serde_json::json!({"line": index + 1, "error": error.to_string()})
+                        )?;
+                        output.flush()?;
+                        anyhow::bail!(
+                            "udt 6 line {} failed; partial output is observational only: {error}",
+                            index + 1
+                        );
+                    }
+                }
+            }
+            output.flush()?;
+            anyhow::ensure!(count != 0, "input contained no udt 6 records");
+            println!("Decoded {count} packets into {}; observations do not establish a complete baseline or kills", out.display());
+            Ok(ExitCode::SUCCESS)
+        }
         SensorCmd::ObjectiveControls => {
             if let Err(error) = d1_oracle::sensor_objective::controls() {
                 eprintln!("FAIL objective controls: {error:#}");
@@ -2431,13 +2530,21 @@ fn run(cli: &Cli) -> anyhow::Result<ExitCode> {
             Ok(if ok { ExitCode::SUCCESS } else { ExitCode::from(2) })
         }
 
-        Cmd::Object { tag, decode, obj, value_type, roster_key, soid, capacity } => {
+        Cmd::Object { tag, decode, obj, decode_file, obj_file, out_obj, out, value_type, roster_key, soid, capacity } => {
             let tag = *tag as u32;
             let types: Vec<u32> = value_type.iter().map(|&t| t as u32).collect();
             let mut o = ObjectOracle::with_types(tag, &types)?;
             println!("tag {tag:#010x}  struct {} (={:#x}) bytes", o.struct_size(), o.struct_size());
-            if let Some(h) = decode {
-                let d = o.decode(&hex(h)?)?;
+            let payload = match (decode, decode_file) {
+                (Some(h), _) => Some(hex(h)?),
+                (None, Some(p)) => Some(std::fs::read(p)?),
+                (None, None) => None,
+            };
+            if let Some(payload) = payload {
+                let d = o.decode(&payload)?;
+                if let Some(p) = out_obj {
+                    std::fs::write(p, &d.object)?;
+                }
                 if cli.json {
                     println!("{}", serde_json::json!({
                         "tag": tag, "bits": d.bits, "struct_size": d.object.len(),
@@ -2454,8 +2561,12 @@ fn run(cli: &Cli) -> anyhow::Result<ExitCode> {
                 return Ok(ExitCode::SUCCESS);
             }
             let mut body = vec![0u8; o.struct_size()];
-            if let Some(h) = obj {
-                let raw = hex(h)?;
+            let raw = match (obj, obj_file) {
+                (Some(h), _) => Some(hex(h)?),
+                (None, Some(p)) => Some(std::fs::read(p)?),
+                (None, None) => None,
+            };
+            if let Some(raw) = raw {
                 let n = raw.len().min(body.len());
                 body[..n].copy_from_slice(&raw[..n]);
             }
@@ -2468,7 +2579,12 @@ fn run(cli: &Cli) -> anyhow::Result<ExitCode> {
                 }
             }
             let (enc, dec) = o.round_trip(&body, *capacity)?;
-            println!("payload {} bytes / {} bits\n  {}", enc.payload.len(), enc.bits, hexs(&enc.payload));
+            if let Some(p) = out {
+                std::fs::write(p, &enc.payload)?;
+                println!("payload {} bytes / {} bits -> {}", enc.payload.len(), enc.bits, p.display());
+            } else {
+                println!("payload {} bytes / {} bits\n  {}", enc.payload.len(), enc.bits, hexs(&enc.payload));
+            }
             println!("round trip: {} bits consumed, object IDENTICAL", dec.bits);
             Ok(ExitCode::SUCCESS)
         }

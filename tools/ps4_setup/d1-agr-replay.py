@@ -52,6 +52,7 @@ class Replay:
         self.run, self.host_log, self.garage_clients = run, host_log, garage_clients
         self.pad_path, self.routes = pad, routes
         self.tracked = run / 'tracked.json'
+        self.native_unit = False
 
     def command(self, name, args, seconds):
         # Preserve earlier attempts and evidence, including explicit resumes.
@@ -84,14 +85,41 @@ class Replay:
             if resumed:
                 lines = self.walk_once(f'{name}-resume', resumed, seconds, tolerance, extra)
                 done = bool(lines and lines[-1].startswith('done '))
+            # Run sense45 stalled twice at the same spot against the Wall's fan (x about 387);
+            # a sidestep and a jump got past it. Nudge, alternating sides, and resume again.
+            for side in ('D', 'A', 'D'):
+                if done:
+                    break
+                resumed = self.resume_route(name, route, lines)
+                if not resumed:
+                    break
+                self.pad(f'Hold:{side}:600', 'NumPad2')
+                lines = self.walk_once(f'{name}-nudge', resumed, seconds, tolerance, extra)
+                done = bool(lines and lines[-1].startswith('done '))
         if strict and not done:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
 
     def walk_once(self, name, route, seconds, tolerance, extra):
+        tracking = (['--native-unit', '--memory-facing'] if self.native_unit else
+                    ['--tracked', str(self.tracked)])
         return self.command(name, [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-            '--tracked', str(self.tracked), '--route', str(route), '--max-seconds', str(seconds),
+            *tracking, '--route', str(route), '--max-seconds', str(seconds),
             '--tolerance', str(tolerance), '--turn-sign', '1', '--turn-rate', '2.26', *extra], seconds + 45)
+
+    def select_retracked_position(self):
+        """A sparse heuristic retrack must not drive the fourteen-minute chest leg.
+
+        The native walker validates the current unit and heading before any route
+        input, and stops on unavailable data or unit change. Never recover from
+        that failure by falling back to the sparse/stale heuristic copies.
+        """
+        copies = json.loads(self.tracked.read_text())
+        if not isinstance(copies, list) or any(type(a) is not int or a <= 0 for a in copies):
+            raise RuntimeError('Malformed retracking result; no route input sent')
+        self.native_unit = len(copies) < 30
+        if self.native_unit:
+            print(f'Retrack kept {len(copies)} copies (<30): remaining walks require native unit/facing validation.', flush=True)
 
     def resume_route(self, name, route, lines):
         """The route from the waypoint nearest the walker's final `stopped (x, y, z)`, or None."""
@@ -187,6 +215,7 @@ class Replay:
             '--keys', 'Hold:S:1200,Hold:W:1300'], 20)
         self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
                               '--tracked', str(self.tracked), '--retrack'], 60)
+        self.select_retracked_position()
         # The proven session chain is the existing Wall route followed by the
         # chest trail, omitting its first point at the shared junction.
         wall = json.loads((self.routes/'fight_through_the_wall.json').read_text())

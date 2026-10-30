@@ -643,8 +643,14 @@ mod tests {
     fn c_crash_extent_notes() {
         controls::c_crash_extent_notes().unwrap();
     }
+    /// Needs the real eboot, found through the repository layout (`capture-rig/` and `runs/`, or
+    /// `$D1_REPO`). Skipped without that layout, as on CI; with it, a missing or short eboot still fails.
     #[test]
     fn c_crash_pinned_real() {
+        if find_repo_root().is_none() {
+            eprintln!("skipped: c_crash_pinned_real needs the game executable (repository layout or D1_REPO)");
+            return;
+        }
         controls::c_crash_pinned_real().unwrap();
     }
     #[test]
