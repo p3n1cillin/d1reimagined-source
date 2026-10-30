@@ -132,6 +132,10 @@ enum Cmd {
     /// The data behind d1-ghost's destination selector (`design/d1-ghost.md` §4.1).
     #[command(subcommand)]
     ActivityModes(ActivityModesCmd),
+    /// ⭐ THE VENDOR SALE TABLE - generate `capture-rig/builds/<build>/vendor-sales.tsv`: each
+    /// vendor's sale N, the item it sells and its costs. Investment 901 names only {vendor, sale}.
+    #[command(subcommand)]
+    VendorSales(VendorSalesCmd),
     /// The MESSAGE codec (0x261BE0 / 0x261FB0) - investment message bodies.
     Message {
         #[arg(long, value_parser = parse_int)]
@@ -199,6 +203,19 @@ enum ItemIndexCmd {
     Diff {
         #[arg(long, default_value = d1_oracle::item_index::DEFAULT_PATH)]
         against: PathBuf,
+    },
+}
+
+/// `d1-oracle vendor-sales …` - see [`d1_oracle::vendor_sales`].
+#[derive(Subcommand)]
+enum VendorSalesCmd {
+    /// Read every vendor's sales out of the packages and write the TSV.
+    Write {
+        #[arg(long, short, default_value = d1_oracle::vendor_sales::DEFAULT_PATH)]
+        out: PathBuf,
+        /// Render and report without touching the file.
+        #[arg(long)]
+        dry_run: bool,
     },
 }
 
@@ -1979,6 +1996,27 @@ fn run_oodle(cli: &Cli, cmd: &OodleCmd) -> anyhow::Result<ExitCode> {
     }
 }
 
+fn run_vendor_sales(cmd: &VendorSalesCmd) -> anyhow::Result<ExitCode> {
+    use d1_oracle::vendor_sales as vs;
+    match cmd {
+        VendorSalesCmd::Write { out, dry_run } => {
+            let out = &resolve_repo_path(out);
+            let mut c = d1_oracle::oodle::Content::open_default()?;
+            let vendors = vs::read(&mut c)?;
+            let sales: usize = vendors.iter().map(|(_, s)| s.len()).sum();
+            let text = vs::render_tsv(&vendors, "d1-oracle vendor-sales write");
+            println!("{} vendors, {sales} sales", vendors.len());
+            if *dry_run {
+                println!("--dry-run: {} bytes NOT written to {}", text.len(), out.display());
+                return Ok(ExitCode::SUCCESS);
+            }
+            std::fs::write(out, &text)?;
+            println!("wrote {}", out.display());
+            Ok(ExitCode::SUCCESS)
+        }
+    }
+}
+
 fn run_activity_modes(_cli: &Cli, cmd: &ActivityModesCmd) -> anyhow::Result<ExitCode> {
     use d1_oracle::activity_modes as am;
     match cmd {
@@ -2603,6 +2641,7 @@ fn run(cli: &Cli) -> anyhow::Result<ExitCode> {
         Cmd::ItemIndex(i) => run_item_index(cli, i),
         Cmd::ArtArrangement(a) => run_art(cli, a),
         Cmd::ActivityModes(a) => run_activity_modes(cli, a),
+        Cmd::VendorSales(v) => run_vendor_sales(v),
 
         Cmd::Message { tag, msgid, request_tag, obj, span } => {
             let tag = *tag as u32;
