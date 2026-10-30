@@ -34,7 +34,7 @@ show where it stands:
 | `changes requested` | Review comments to address | Push fixes; it returns to `needs review` |
 | `approved` | Merges once the checks pass | Nothing; new commits need a fresh review |
 | `checks failing` | A required check failed (a comment links it) | Push a fix |
-| `update branch` / `needs rebase` | Behind `main`, or conflicts with it | Rebase onto `main`, or merge `main` in, and push |
+| `update branch` / `needs rebase` | Behind `main`, or conflicts with it | Press **Update branch** on the PR, or rebase onto `main` and push; conflicts need resolving locally |
 | `awaiting CI approval` | A first-timer's CI waits for a maintainer to start it | Nothing |
 | `maintainer merge` | Touches `.github/`, so it's merged by hand | Nothing |
 

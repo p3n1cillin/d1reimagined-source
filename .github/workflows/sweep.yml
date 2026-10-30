@@ -95,7 +95,7 @@ jobs:
               if (behind) {
                 await commentOnce(pr, `<!-- sweep:update-branch:${pr.head.sha} -->`,
                   `Thanks @${pr.user.login}! \`main\` now requires checks that haven't run on this branch yet (${missing.map((c) => '`' + c + '`').join(', ')}). ` +
-                  'Please rebase onto the current `main` (or merge `main` into your branch) and push, so they run on your change.');
+                  'Please press **Update branch** below (or rebase onto the current `main` and push), so they run on your change.');
               }
               await toggle(pr, 'checks failing', failing.length > 0);
               if (failing.length) {
