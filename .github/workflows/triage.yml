@@ -113,8 +113,11 @@ jobs:
             }
             if (add.length) await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: add });
 
+  # After triage: the labeler reads a PR's labels when it starts and writes the whole set back, so run
+  # side by side it erased the labels triage had just added (#103 lost "needs review" and its size).
   areas:
-    if: github.event_name == 'pull_request_target' && github.event.action != 'edited'
+    needs: triage
+    if: ${{ !cancelled() && github.event_name == 'pull_request_target' && github.event.action != 'edited' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
