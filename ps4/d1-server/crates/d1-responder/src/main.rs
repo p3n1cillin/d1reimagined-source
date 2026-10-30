@@ -1768,8 +1768,23 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                         {
                                                                             Some(raw) => {
                                                                                 warn!("      ⭐ profile from D1_PROFILE_FILE ({} B, oracle-encoded full object)", raw.len());
-                                                                                d1_bap::queuez_family4_baseline_body_raw_profile_with_unlocks(
-                                                                                    acct, chars, prof, &raw, unlocks.as_deref(), &extras)
+                                                                                // `D1_ACCOUNT_FILE`: the account verbatim as well, e.g. with
+                                                                                // currencies in its inventory (field [6]). Only the
+                                                                                // post-creation shape: before creation the account must
+                                                                                // withhold the profile SOID (see above), which a fixed
+                                                                                // file cannot follow.
+                                                                                let account = std::env::var("D1_ACCOUNT_FILE").ok()
+                                                                                    .filter(|_| prof != 0)
+                                                                                    .and_then(|p| std::fs::read(&p).ok());
+                                                                                match account {
+                                                                                    Some(a) => {
+                                                                                        warn!("      ⭐ account from D1_ACCOUNT_FILE ({} B, oracle-encoded full object)", a.len());
+                                                                                        d1_bap::queuez_family4_baseline_body_raw_account_and_profile(
+                                                                                            acct, prof, &a, &raw, unlocks.as_deref(), &extras)
+                                                                                    }
+                                                                                    None => d1_bap::queuez_family4_baseline_body_raw_profile_with_unlocks(
+                                                                                        acct, chars, prof, &raw, unlocks.as_deref(), &extras),
+                                                                                }
                                                                             }
                                                                             None => d1_bap::queuez_family4_baseline_body_with_unlocks(
                                                                                 acct, chars, prof, dest, unlocks.as_deref(), &extras),
@@ -2251,6 +2266,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_PROFILE_FILE", "<unset>", "oracle-encoded profile object"),
     ("D1_CHARACTER_FILE", "<unset>", "oracle-encoded character object"),
     ("D1_ACCOUNT_RSAT", "<unset>", "account payload override - profile NOT sent"),
+    ("D1_ACCOUNT_FILE", "<unset>", "oracle-encoded account object, served with D1_PROFILE_FILE (e.g. currencies in field [6])"),
     ("D1_ORBIT_DESTINATION", "2468353467", "last_orbited_destination; 0 = unset"),
     ("D1_PUSH_CHARACTER", "1", "push the character family at the trigger"),
     ("D1_PUSH_AT", "relay", "push trigger: relay | investment | echo"),
