@@ -156,17 +156,17 @@ jobs:
           FILES: ${{ steps.files.outputs.py }}
         run: |
           python3 -m pip install -q ruff
-          read -ra files <<< "$FILES"
+          read -ra changed <<< "$FILES"
           # Syntax errors, undefined names, unused imports and variables, redefinitions.
-          ruff check --no-cache --output-format=concise --select E9,F63,F7,F82,F401,F811,F841 "${files[@]}" |
+          ruff check --no-cache --output-format=concise --select E9,F63,F7,F82,F401,F811,F841 "${changed[@]}" |
             python3 .github/scripts/new_findings.py --base "$BASE" --tool ruff || true
       - name: Rust formatting (rustfmt)
         if: steps.files.outputs.rs != ''
         env:
           FILES: ${{ steps.files.outputs.rs }}
         run: |
-          read -ra files <<< "$FILES"
-          rustfmt --check --edition 2021 "${files[@]}" 2>&1 | python3 .github/scripts/new_findings.py --base "$BASE" --tool rustfmt || true
+          read -ra changed <<< "$FILES"
+          rustfmt --check --edition 2021 "${changed[@]}" 2>&1 | python3 .github/scripts/new_findings.py --base "$BASE" --tool rustfmt || true
       - uses: actions/cache@v4
         if: steps.files.outputs.rs != ''
         with:
