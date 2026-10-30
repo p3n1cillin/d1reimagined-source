@@ -2004,7 +2004,9 @@ fn run_vendor_sales(cmd: &VendorSalesCmd) -> anyhow::Result<ExitCode> {
             let mut c = d1_oracle::oodle::Content::open_default()?;
             let vendors = vs::read(&mut c)?;
             let sales: usize = vendors.iter().map(|(_, s)| s.len()).sum();
-            let text = vs::render_tsv(&vendors, "d1-oracle vendor-sales write");
+            let index = d1_oracle::item_index::IndexTable::load_default()?;
+            let storage = vs::read_storage(&mut c, &index, &vendors)?;
+            let text = vs::render_tsv(&vendors, &storage, "d1-oracle vendor-sales write");
             println!("{} vendors, {sales} sales", vendors.len());
             if *dry_run {
                 println!("--dry-run: {} bytes NOT written to {}", text.len(), out.display());
