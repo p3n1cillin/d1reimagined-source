@@ -133,9 +133,40 @@ pub fn profile_delta(account_soid: u64, version: u32, profile_soid: u64, payload
     b
 }
 
+/// A family-4 DELTA carrying only the account object (family 4 / type 0, client-encoded payload),
+/// keyed by the account SOID. Used to push an account change on demand, such as currencies.
+/// `version` as for [`item_grant_delta`].
+pub fn account_delta(account_soid: u64, version: u32, payload: &[u8]) -> Vec<u8> {
+    let mut b = crate::queuez_family_header_versioned(
+        crate::QUEUEZ_FAMILY_ACCOUNT,
+        account_soid,
+        1,
+        version,
+        crate::QUEUEZ_FLAG_DELTA,
+    );
+    b.extend_from_slice(&crate::account_instance_type().to_be_bytes());
+    b.extend_from_slice(&account_soid.to_be_bytes());
+    b.extend_from_slice(&(payload.len() as u32).to_be_bytes());
+    b.extend_from_slice(payload);
+    b
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The account delta walks as one account object, keyed by the account SOID.
+    #[test]
+    fn the_account_delta_is_one_account_object() {
+        let d = account_delta(0x1, 6, &[0xAB; 24]);
+        assert_eq!(crate::queuez_span_version(&d), Some(6));
+        assert_eq!(crate::queuez_span_flags(&d), Some(crate::QUEUEZ_FLAG_DELTA));
+        let objs = crate::queuez_span_objects(&d).unwrap();
+        assert_eq!(objs.len(), 1);
+        assert_eq!(objs[0].instance_type, crate::account_instance_type());
+        assert_eq!(objs[0].key, 0x1);
+        assert_eq!(objs[0].payload.1 - objs[0].payload.0, 24);
+    }
 
     /// The profile delta walks as one profile object at the given version, flagged DELTA.
     #[test]

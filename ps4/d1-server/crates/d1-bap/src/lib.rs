@@ -3081,6 +3081,22 @@ pub fn queuez_family4_baseline_body_raw_profile_with_unlocks(
     queuez_family4_from_parts(account_soid, profile_soid, &acct, profile_payload, unlocks, extras)
 }
 
+/// As [`queuez_family4_baseline_body_raw_profile_with_unlocks`], with the **account** payload
+/// verbatim too, e.g. an account whose field `[6]` (`+0x4C0`, the account inventory `0x80800FE6`)
+/// holds currencies. Encode it with the client's own codec (`d1-oracle object --tag 0x80801803
+/// --obj-file`); its SOID, character list and profile SOID must match the other arguments, which
+/// this function does not re-derive or check.
+pub fn queuez_family4_baseline_body_raw_account_and_profile(
+    account_soid: u64,
+    profile_soid: u64,
+    account_payload: &[u8],
+    profile_payload: &[u8],
+    unlocks: Option<&[u8]>,
+    extras: &[(u32, u64, Vec<u8>)],
+) -> Vec<u8> {
+    queuez_family4_from_parts(account_soid, profile_soid, account_payload, profile_payload, unlocks, extras)
+}
+
 fn queuez_family4_from_parts(
     account_soid: u64,
     profile_soid: u64,
@@ -3825,6 +3841,24 @@ mod unlocks_object_tests {
     /// two-object baseline byte-for-byte identical. The route that reached orbit ran WITHOUT this
     /// object, and family 4/type 4 is also involved in the character-prologue path - so the default
     /// must stay exactly what it was, provably, not by inspection.
+    /// A verbatim account that is the hand-built one must give the same family as not passing one,
+    /// and a different account must change only the account object's bytes and length.
+    #[test]
+    fn raw_account_replaces_only_the_account_object() {
+        let prof = vec![0xAA; 32];
+        let acct = account_rsat(1, &[2], 3);
+        assert_eq!(
+            queuez_family4_baseline_body_raw_account_and_profile(1, 3, &acct, &prof, None, &[]),
+            queuez_family4_baseline_body_raw_profile_with_unlocks(1, &[2], 3, &prof, None, &[]),
+        );
+        let other = vec![0x55; 40];
+        let b = queuez_family4_baseline_body_raw_account_and_profile(1, 3, &other, &prof, None, &[]);
+        let a = HDR_LEN + 12; // instance type + key, then the u32 length
+        assert_eq!(u32::from_be_bytes(b[a..a + 4].try_into().unwrap()), 40);
+        assert_eq!(&b[a + 4..a + 44], &other[..]);
+        assert!(b.ends_with(&prof));
+    }
+
     #[test]
     fn none_is_byte_identical_to_the_two_object_baseline() {
         let prof = vec![0xAA; 32];

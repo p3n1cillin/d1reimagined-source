@@ -1768,8 +1768,27 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                         {
                                                                             Some(raw) => {
                                                                                 warn!("      ⭐ profile from D1_PROFILE_FILE ({} B, oracle-encoded full object)", raw.len());
-                                                                                d1_bap::queuez_family4_baseline_body_raw_profile_with_unlocks(
-                                                                                    acct, chars, prof, &raw, unlocks.as_deref(), &extras)
+                                                                                // `D1_ACCOUNT_FILE`: the account verbatim as well, e.g. with
+                                                                                // currencies in its inventory (field [6]). ⚠ Encode only the
+                                                                                // fields you mean to send: a full re-encode of a decoded
+                                                                                // account sends every field present-and-zero, and the client
+                                                                                // then takes zeros over its defaults (measured: HUD opacity 0,
+                                                                                // "HUD DISABLED"). Only the
+                                                                                // post-creation shape: before creation the account must
+                                                                                // withhold the profile SOID (see above), which a fixed
+                                                                                // file cannot follow.
+                                                                                let account = std::env::var("D1_ACCOUNT_FILE").ok()
+                                                                                    .filter(|_| prof != 0)
+                                                                                    .and_then(|p| std::fs::read(&p).ok());
+                                                                                match account {
+                                                                                    Some(a) => {
+                                                                                        warn!("      ⭐ account from D1_ACCOUNT_FILE ({} B, oracle-encoded full object)", a.len());
+                                                                                        d1_bap::queuez_family4_baseline_body_raw_account_and_profile(
+                                                                                            acct, prof, &a, &raw, unlocks.as_deref(), &extras)
+                                                                                    }
+                                                                                    None => d1_bap::queuez_family4_baseline_body_raw_profile_with_unlocks(
+                                                                                        acct, chars, prof, &raw, unlocks.as_deref(), &extras),
+                                                                                }
                                                                             }
                                                                             None => d1_bap::queuez_family4_baseline_body_with_unlocks(
                                                                                 acct, chars, prof, dest, unlocks.as_deref(), &extras),
@@ -2251,6 +2270,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_PROFILE_FILE", "<unset>", "oracle-encoded profile object"),
     ("D1_CHARACTER_FILE", "<unset>", "oracle-encoded character object"),
     ("D1_ACCOUNT_RSAT", "<unset>", "account payload override - profile NOT sent"),
+    ("D1_ACCOUNT_FILE", "<unset>", "oracle-encoded account object, served with D1_PROFILE_FILE (e.g. currencies in field [6])"),
     ("D1_ORBIT_DESTINATION", "2468353467", "last_orbited_destination; 0 = unset"),
     ("D1_PUSH_CHARACTER", "1", "push the character family at the trigger"),
     ("D1_PUSH_AT", "relay", "push trigger: relay | investment | echo"),
@@ -2275,6 +2295,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_LOOT_GRANT", "<unset>", "NONCE=SOID:FILE[|PROFILE][;…] - the item a claimed world drop delivers"),
     ("D1_LOOT_GRANT_ROSTER", "<unset>", "roster fixtures served after a loot grant"),
     ("D1_PROFILE_PUSH_FILE", "<unset>", "on-demand family-4 profile delta: write this file (plus optional .item/.soid) to push it"),
+    ("D1_ACCOUNT_PUSH_FILE", "<unset>", "on-demand family-4 account delta: write this file (a client-encoded account) to push it"),
 ];
 
 /// Print [`KNOBS`] with each knob's effective value.
@@ -3627,6 +3648,19 @@ async fn main() -> Result<()> {
                                                                               b.len(),
                                                                               b.iter().map(|x| format!("{x:02x}")).collect::<String>());
                                                                         Some(b)
+                                                                    } else if id == 901 || id == 903 {
+                                                                        // 901 vendor_buy_item / 903 vendor_sell_item. Responses
+                                                                        // 0x80801888 and 0x8080183A both lead with the 0x80801796
+                                                                        // result composite (901 adds a 0-bit leaf that emits
+                                                                        // nothing); the client's encoder gives the zero object the
+                                                                        // same five bytes as 701's. That only accepts the request:
+                                                                        // the price and the item must still arrive as family-4
+                                                                        // changes. Request 0x80801777 (901) = {u8 @0, i16 @2, u64 @8}.
+                                                                        let req = plain.get(8..).unwrap_or(&[]);
+                                                                        warn!("      ⭐ VENDOR {} ({}B request): {}",
+                                                                              if id == 901 { "BUY (901)" } else { "SELL (903)" }, req.len(),
+                                                                              req.iter().map(|x| format!("{x:02x}")).collect::<String>());
+                                                                        Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 104 {
                                                                         // FIRST SEEN at `setup:orbit`, 2026-08-07. Response
                                                                         // 0x808018F8's field [0] is the SAME 0x80801796
@@ -4572,6 +4606,31 @@ async fn main() -> Result<()> {
                                                                                 }
                                                                             }
                                                                             Err(e) => warn!("      [conv] ⛔ profile push REFUSED by the push accept-set: {e}"),
+                                                                        }
+                                                                    }
+                                                                }
+                                                                // `D1_ACCOUNT_PUSH_FILE=<path>`: the same for the ACCOUNT object
+                                                                // (a client-encoded 0x80801803 payload), e.g. changed currencies.
+                                                                if let Some(path) = std::env::var_os("D1_ACCOUNT_PUSH_FILE").map(std::path::PathBuf::from) {
+                                                                    if let Ok(payload) = std::fs::read(&path) {
+                                                                        let _ = std::fs::rename(&path, path.with_extension("sent"));
+                                                                        let version = family4_version.unwrap_or(0).wrapping_add(1);
+                                                                        let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
+                                                                        let b = d1_bap::loot::account_delta(acct, version, &payload);
+                                                                        match conv.push_with_sequence(d1_bap::TYPE_QUEUEZ_OBJECT, server_seq, &b) {
+                                                                            Ok(push) => {
+                                                                                let sn = nonces.peek(d1_bap::Direction::ServerToClient);
+                                                                                if let Ok(f) = d1_bap::seal_channel_frame(key, sn, &push) {
+                                                                                    nonces.advance(d1_bap::Direction::ServerToClient);
+                                                                                    if sock.write_all(&f).await.is_ok() {
+                                                                                        warn!("      ⭐⭐ ACCOUNT PUSH: {} ({}B) as family-4 delta version {version}, seq {server_seq}",
+                                                                                              path.display(), payload.len());
+                                                                                        family4_version = Some(version);
+                                                                                        server_seq += 1;
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            Err(e) => warn!("      [conv] ⛔ account push REFUSED by the push accept-set: {e}"),
                                                                         }
                                                                     }
                                                                 }
