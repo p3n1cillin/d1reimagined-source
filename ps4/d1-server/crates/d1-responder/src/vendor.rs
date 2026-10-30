@@ -74,6 +74,12 @@ pub fn parse_sales(text: &str) -> HashMap<(u8, u16), Sale> {
     out
 }
 
+/// A profile slot's `(content index, stack quantity at +0x10)`.
+fn profile_entry(profile: &[u8], slot: u16) -> (u16, u32) {
+    let e = PROFILE_SLOTS + 32 * slot as usize;
+    (u16::from_le_bytes([profile[e], profile[e + 1]]), u32::from_le_bytes(profile[e + 0x10..e + 0x14].try_into().unwrap()))
+}
+
 fn bucket(ordinal: u8) -> Option<(u16, u16, u8)> {
     BUCKETS.iter().find(|b| b.0 == ordinal).map(|b| (b.1, b.2, b.3))
 }
@@ -148,40 +154,61 @@ fn decode_request(oracle: &str, req: &[u8]) -> anyhow::Result<(u8, u16)> {
 fn apply(st: &mut State, vendor: u8, sale_index: u16) -> anyhow::Result<(String, Option<(u64, Vec<u8>)>)> {
     let sale = st.sales.get(&(vendor, sale_index)).cloned()
         .ok_or_else(|| anyhow::anyhow!("vendor {vendor} has no sale {sale_index} in D1_VENDOR_SALES"))?;
-    // Costs: from the slot of the cost item's own bucket, where the client's price check looks.
+    // Costs: from the slots of the cost item's own bucket, where the client's price check
+    // (0x26D6E0) sums them: the stack quantity at +0x10 of every slot holding that content index.
     let mut account = st.account.clone();
+    let mut profile = st.profile.clone();
     for (ci, q, b) in &sale.costs {
         let (first, n, scope) = bucket(*b).ok_or_else(|| anyhow::anyhow!("unknown bucket {b:#x}"))?;
-        anyhow::ensure!(scope == 1, "cost {ci} is in profile bucket {b:#x}; only account costs are handled");
-        let slot = (first..first + n).find(|s| account.get(s).map(|e| e.0) == Some(*ci))
-            .ok_or_else(|| anyhow::anyhow!("no {ci} in bucket {b:#x}"))?;
-        let have = account[&slot].1;
-        anyhow::ensure!(have >= *q, "{ci}: {have} < price {q}");
-        account.insert(slot, (*ci, have - q));
+        let slots: Vec<u16> = (first..first + n).filter(|s| if scope == 1 {
+            account.get(s).map(|e| e.0) == Some(*ci)
+        } else {
+            profile_entry(&profile, *s).0 == *ci
+        }).collect();
+        let quantity = |s: u16, a: &BTreeMap<u16, (u16, u32)>, p: &[u8]| if scope == 1 { a[&s].1 } else { profile_entry(p, s).1 };
+        let have: u64 = slots.iter().map(|s| quantity(*s, &account, &profile) as u64).sum();
+        anyhow::ensure!(have >= *q as u64, "{ci} (bucket {b:#x}): {have} < price {q}");
+        let mut owed = *q;
+        for s in slots {
+            if owed == 0 {
+                break;
+            }
+            let take = owed.min(quantity(s, &account, &profile));
+            owed -= take;
+            if scope == 1 {
+                let e = account.get_mut(&s).unwrap();
+                e.1 -= take;
+            } else {
+                let left = profile_entry(&profile, s).1 - take;
+                let e = PROFILE_SLOTS + 32 * s as usize;
+                if left == 0 {
+                    profile[e..e + 2].copy_from_slice(&[0xFF, 0xFF]);
+                    profile[e + 8..e + 16].fill(0);
+                }
+                profile[e + 0x10..e + 0x14].copy_from_slice(&left.to_le_bytes());
+            }
+        }
     }
     // The item: a free slot of its own bucket.
     let (first, n, scope) = bucket(sale.bucket).ok_or_else(|| anyhow::anyhow!("unknown bucket {:#x}", sale.bucket))?;
     let mut sidecar = None;
+    let mut next_soid = st.next_soid;
     if scope == 0 {
-        let slot = (first..first + n).find(|s| {
-            let e = PROFILE_SLOTS + 32 * *s as usize;
-            st.profile.get(e..e + 2) == Some(&[0xFF, 0xFF])
-        }).ok_or_else(|| anyhow::anyhow!("bucket {:#x} is full", sale.bucket))?;
+        let slot = (first..first + n).find(|s| profile_entry(&profile, *s).0 == 0xFFFF)
+            .ok_or_else(|| anyhow::anyhow!("bucket {:#x} is full", sale.bucket))?;
         let e = PROFILE_SLOTS + 32 * slot as usize;
         let mut soid = 0u64;
         if sale.instanced {
-            soid = st.next_soid;
+            soid = next_soid;
+            next_soid += 1;
             let mut item = st.template.clone();
             item[0..8].copy_from_slice(&soid.to_le_bytes());
             item[0x24..0x26].copy_from_slice(&sale.item.to_le_bytes());
             sidecar = Some((soid, encode(&st.oracle, "0x80801732", &item, "item")?.0));
         }
-        st.profile[e..e + 2].copy_from_slice(&sale.item.to_le_bytes());
-        st.profile[e + 8..e + 16].copy_from_slice(&soid.to_le_bytes());
-        st.profile[e + 0x10..e + 0x14].copy_from_slice(&1u32.to_le_bytes());
-        if sale.instanced {
-            st.next_soid += 1;
-        }
+        profile[e..e + 2].copy_from_slice(&sale.item.to_le_bytes());
+        profile[e + 8..e + 16].copy_from_slice(&soid.to_le_bytes());
+        profile[e + 0x10..e + 0x14].copy_from_slice(&1u32.to_le_bytes());
     } else {
         let slot = (first..first + n).find(|s| !account.contains_key(s) || account[s].0 == sale.item)
             .ok_or_else(|| anyhow::anyhow!("account bucket {:#x} is full", sale.bucket))?;
@@ -189,6 +216,8 @@ fn apply(st: &mut State, vendor: u8, sale_index: u16) -> anyhow::Result<(String,
         account.insert(slot, (sale.item, have + 1));
     }
     st.account = account;
+    st.profile = profile;
+    st.next_soid = next_soid;
     Ok((format!("vendor {vendor} sale {sale_index}: item {} -> bucket {:#x}; costs {:?}", sale.item, sale.bucket, sale.costs), sidecar))
 }
 
@@ -291,6 +320,30 @@ mod tests {
         assert_eq!(&s.profile[PROFILE_SLOTS + 32 * 210..PROFILE_SLOTS + 32 * 210 + 2], &840u16.to_le_bytes());
         assert!(sidecar.is_some());
         publish(&s, sidecar).unwrap();
+    }
+
+    /// A price paid in a character-held material comes out of the profile's slots of its bucket,
+    /// across stacks, and an emptied stack is freed. (No instance, so no codec call.)
+    #[test]
+    fn a_profile_held_cost_is_taken_from_its_stacks() {
+        let mut s = st(0);
+        s.sales.insert((5, 0), Sale { item: 900, bucket: 0x05, instanced: false, costs: vec![(872, 30, 0x05)] });
+        let put = |p: &mut Vec<u8>, slot: usize, ci: u16, q: u32| {
+            let e = PROFILE_SLOTS + 32 * slot;
+            p[e..e + 2].copy_from_slice(&ci.to_le_bytes());
+            p[e + 0x10..e + 0x14].copy_from_slice(&q.to_le_bytes());
+        };
+        put(&mut s.profile, 0, 872, 20);
+        put(&mut s.profile, 1, 872, 15);
+        apply(&mut s, 5, 0).unwrap();
+        // The first stack is used up and freed, so the item takes that first free Materials slot.
+        assert_eq!(profile_entry(&s.profile, 0), (900, 1));
+        assert_eq!(profile_entry(&s.profile, 1), (872, 5));
+        let mut poor = st(0);
+        poor.sales = s.sales.clone();
+        put(&mut poor.profile, 0, 872, 29);
+        assert!(apply(&mut poor, 5, 0).is_err());
+        assert_eq!(profile_entry(&poor.profile, 0), (872, 29), "a refused purchase changes nothing");
     }
 
     #[test]
