@@ -60,6 +60,35 @@
 //! `unicorn-engine` (GPL-2.0, bundling QEMU GPL-2.0 and `glib_compat` LGPL-2.1) - the strongest
 //! copyleft in the tree is confined to one crate boundary on purpose. See `Cargo.toml`.
 
+// Unit tests that depend on privately supplied game files return early only when
+// those files are absent. If a file exists but is malformed or has the wrong
+// build identity, the normal assertions still execute and fail.
+#[cfg(test)]
+pub(crate) mod test_inputs {
+    use std::path::Path;
+
+    pub(crate) fn reference_eboot() -> bool {
+        if Path::new(d1_eboot::image::PINNED_EBOOT).is_file() {
+            true
+        } else {
+            eprintln!(
+                "SKIP: owned 01.29 reference eboot is absent; supply the pinned reference image"
+            );
+            false
+        }
+    }
+
+    pub(crate) fn selected_eboot() -> bool {
+        let path = d1_eboot::image::default_eboot();
+        if Path::new(&path).is_file() {
+            true
+        } else {
+            eprintln!("SKIP: selected game executable is absent; set D1_EBOOT to an owned image");
+            false
+        }
+    }
+}
+
 pub mod activity_host;
 pub mod activity_modes;
 pub mod art_arrangement;

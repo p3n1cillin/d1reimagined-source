@@ -1785,6 +1785,9 @@ mod tests {
 
     #[test]
     fn every_control_passes() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
         let failed: Vec<&str> =
             controls().unwrap().into_iter().filter(|c| !c.pass).map(|c| c.name).collect();
         assert!(failed.is_empty(), "failed controls: {failed:?}");
@@ -1792,6 +1795,9 @@ mod tests {
 
     #[test]
     fn there_are_enough_controls_to_be_worth_running() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
         assert!(controls().unwrap().len() >= 12, "a controls suite this thin is decoration");
     }
 
@@ -1799,6 +1805,9 @@ mod tests {
     /// derivation shows up as a test failure rather than a different answer.
     #[test]
     fn the_two_join_tags_are_pinned() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
         assert_eq!(tag_for_udt(3).unwrap(), 0x8080_0E98);
         assert_eq!(tag_for_udt(4).unwrap(), 0x8080_0A58);
         assert_eq!(tag_for_udt(0).unwrap(), 0x8080_0D64);
@@ -1812,6 +1821,9 @@ mod tests {
     /// ids, so this needs no index-to-udt mapping at all - which is the mistake it guards against.
     #[test]
     fn the_rx_dispatch_table_is_not_dense_over_the_sorted_id_list() {
+        if !crate::test_inputs::reference_eboot() {
+            return;
+        }
         let image = Image::open_reference().unwrap();
         let row = |i: u64| (image.u32(0x18F_84A0 + i * 16).unwrap(), image.u64(0x18F_84A0 + i * 16 + 8).unwrap());
         // The fnptr words are relocation slots and read 0 statically; only the types are inline.

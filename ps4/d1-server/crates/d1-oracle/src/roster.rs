@@ -1322,6 +1322,9 @@ mod tests {
 
     #[test]
     fn layout_is_derived_from_the_eboot_not_transcribed() {
+        if !crate::test_inputs::reference_eboot() {
+            return;
+        }
         let image = Image::open_reference().expect("pinned eboot");
         let idx = descriptors::index(&image).expect("descriptor index");
         assert_eq!(derive_layout(&image, &idx).expect("walk"), declared_layout());
@@ -1331,6 +1334,9 @@ mod tests {
     /// third answer is believed.
     #[test]
     fn instance_checksums_reproduce_the_shipped_constants() {
+        if !crate::test_inputs::reference_eboot() {
+            return;
+        }
         let image = Image::open_reference().expect("pinned eboot");
         let idx = descriptors::index(&image).expect("descriptor index");
         assert_eq!(instance_type(&image, &idx, CONTACT_TAG).unwrap(), CONTACT_INSTANCE_TYPE);
@@ -1356,6 +1362,9 @@ mod tests {
     /// Family 0/0 is family 2/0's twin - the claim a future family-0 build would rest on.
     #[test]
     fn family_0_type_0_has_the_same_tree_as_family_2_type_0() {
+        if !crate::test_inputs::reference_eboot() {
+            return;
+        }
         let image = Image::open_reference().expect("pinned eboot");
         let idx = descriptors::index(&image).expect("descriptor index");
         assert_eq!(desc(&idx, PEER_CONTACT_TAG).unwrap().struct_size as usize, PEER_CONTACT_SIZE);
@@ -1403,6 +1412,9 @@ mod tests {
     /// The whole control set, so `cargo test` and `d1-oracle roster controls` cannot drift.
     #[test]
     fn controls_pass() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
         let cs = controls().expect("controls ran");
         let failed: Vec<_> =
             cs.iter().filter(|c| !c.pass).map(|c| format!("{}: {}", c.name, c.detail)).collect();

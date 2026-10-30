@@ -453,6 +453,9 @@ mod typed_value_tests {
     /// registry.
     #[test]
     fn a_prop_command_round_trips() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
         let mut img = vec![0u8; 240];
         img[0..4].copy_from_slice(&1u32.to_le_bytes());
         img[8] = 1;
@@ -672,6 +675,9 @@ mod tests {
     /// cheap - but it is the only thing that proves the assembled frame is byte-exact.
     #[test]
     fn every_sensor_control_passes() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
         let failed: Vec<&str> =
             super::run().into_iter().filter(|c| !c.passed).map(|c| c.name).collect();
         assert!(failed.is_empty(), "failed sensor controls: {failed:?}");
@@ -681,6 +687,9 @@ mod tests {
     /// phase entry unchanged as its prefix: only the terminator bit moves.
     #[test]
     fn extra_clients_extend_the_audited_frame() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
         let one = super::audit(3, None).encode().expect("audited frame");
         let lines = "0xC2DACAF7 0x8 0 1 1
 # comment
@@ -702,6 +711,9 @@ mod tests {
     /// entry by exactly the value's bits (presence then object) over the value-less form.
     #[test]
     fn a_valued_client_carries_its_object() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
         let mut img = vec![0u8; 0x78];
         img[0..4].copy_from_slice(&[0xFF; 4]);
         img[8] = 1;

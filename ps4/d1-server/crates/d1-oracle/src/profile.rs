@@ -1245,6 +1245,9 @@ mod tests {
 
     #[test]
     fn layout_is_derived_from_the_eboot_not_transcribed() {
+        if !crate::test_inputs::reference_eboot() {
+            return;
+        }
         let image = Image::open_reference().expect("pinned eboot");
         let idx = descriptors::index(&image).expect("descriptor index");
         assert_eq!(derive_layout(&image, &idx).expect("walk"), declared_layout_for(OFFS_0129));
@@ -1292,6 +1295,9 @@ mod tests {
     /// The whole control set, so `cargo test` and `d1-oracle profile controls` cannot drift.
     #[test]
     fn controls_pass() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
         let baseline = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("../../../capture-rig/profiles/profile-old-russia.bin");
         let cs = controls(baseline.exists().then_some(baseline.as_path())).expect("controls ran");
