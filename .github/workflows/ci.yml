@@ -112,3 +112,13 @@ jobs:
             fi
           done < <(git diff --name-only --diff-filter=A "$BASE"...HEAD)
           exit $status
+
+  # Lints the workflows themselves (expressions, permissions, shell). Not a required check.
+  workflows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker://rhysd/actionlint:1.7.7
+        with:
+          args: -color

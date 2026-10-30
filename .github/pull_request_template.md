@@ -1,14 +1,19 @@
-<!-- Title: `area: summary`, e.g. `d1-bap: cover loot claim round trips`. See CONTRIBUTING.md. -->
+<!-- Title: `area: summary`, e.g. `d1-bap: cover loot claim round trips`. Rules: CONTRIBUTING.md (agents: AGENTS.md). -->
 
-## Problem and change
-
-What was wrong or missing, and what this changes. PS3 or PS4, with the build or commit.
+### What
+<!-- What was wrong or missing, and what this changes. PS3 or PS4, with the build. -->
 
 Closes #
 
-## Validation
+### Tested
+<!-- The commands you ran and their results, skips and failures included. -->
 
-The commands you ran and their results, skips and failures included. Say which results are synthetic or static
-and which you saw in the game.
+### Seen in the game
+<!-- What a native run showed, with the build (e.g. 56578) and emulator commit. "None: offline only" is a valid answer. -->
 
-- [ ] No game files, keys, credentials, personal paths or raw private traces; licence notices kept.
+### Checklist
+- [ ] Based on current `main`; one topic per pull request
+- [ ] No game files, keys, credentials, personal paths or raw private traces
+- [ ] Tests that need game inputs skip without them
+- [ ] No values hardcoded from a single trace, run or video
+- [ ] AI-assisted: <!-- yes / no -->

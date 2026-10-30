@@ -12,9 +12,10 @@ build failures, protocol investigations and proposed experiments.
 3. Run the tests on your machine, including the ones that need your game inputs, from `ps4/d1-server`:
    `D1_EBOOT=<eboot.elf> D1_REPO=<repo root> cargo test --workspace`. CI has no game files, so those
    tests skip there.
-4. Fill in the template: the problem, the change, what you ran and what you saw (skips and failures
-   included). Run an analysis tool's controls before citing its output, and don't claim in-game behaviour
-   from unit tests or static exports alone.
+4. Run the conventions check, `python3 .github/scripts/check_pr.py --title "area: summary"`, then fill in
+   the template: the change, what you ran (skips and failures included), and what you saw in the game, if
+   anything. Run an analysis tool's controls before citing its output, and don't claim in-game behaviour
+   from unit tests or static exports alone. Working with an AI agent? Point it at [AGENTS.md](AGENTS.md).
 
 Never include game files, extracted assets, firmware, credentials, keys, account records, personal paths
 or raw private traces. Share only your own work, or material you may redistribute, and keep licence and
@@ -39,8 +40,8 @@ show where it stands:
 | `maintainer merge` | Touches `.github/`, so it's merged by hand | Nothing |
 
 You also get size and area labels, and a comment if another open PR touches the same lines. Until you've had
-a pull request merged you can have one open at a time; after that, up to 20. PRs with no activity for 30 days
-are marked `stale` and close 14 days later. Reopen yours whenever you pick it up again.
+a pull request merged you can have one open at a time; after that, up to 20. A PR with no activity for 30 days
+gets a `stale` reminder; nothing is closed automatically.
 
 ## Licence
 
