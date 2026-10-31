@@ -1,0 +1,95 @@
+0x002c9d20  55                             push     rbp
+0x002c9d21  4889e5                         mov      rbp, rsp
+0x002c9d24  4157                           push     r15
+0x002c9d26  4156                           push     r14
+0x002c9d28  4155                           push     r13
+0x002c9d2a  4154                           push     r12
+0x002c9d2c  53                             push     rbx
+0x002c9d2d  50                             push     rax
+0x002c9d2e  4589ce                         mov      r14d, r9d
+0x002c9d31  4c89c3                         mov      rbx, r8
+0x002c9d34  4989cf                         mov      r15, rcx
+0x002c9d37  4189d5                         mov      r13d, edx
+0x002c9d3a  4989f4                         mov      r12, rsi
+0x002c9d3d  8b4b08                         mov      ecx, [rbx+8]
+0x002c9d40  89ca                           mov      edx, ecx
+0x002c9d42  c1e212                         shl      edx, 0x12
+0x002c9d45  c1fa12                         sar      edx, 0x12
+0x002c9d48  89d0                           mov      eax, edx
+0x002c9d4a  83e0fe                         and      eax, 0xfffffffe
+0x002c9d4d  83f8fe                         cmp      eax, 0xfffffffe
+0x002c9d50  7519                           jne      short 0x2c9d6b   ; -> 0x2c9d6b
+0x002c9d52  c1e104                         shl      ecx, 4
+0x002c9d55  c1f912                         sar      ecx, 0x12
+0x002c9d58  83c11f                         add      ecx, 0x1f
+0x002c9d5b  c1f905                         sar      ecx, 5
+0x002c9d5e  30c0                           xor      al, al
+0x002c9d60  85c9                           test     ecx, ecx
+0x002c9d62  7e11                           jle      short 0x2c9d75   ; -> 0x2c9d75
+0x002c9d64  488b03                         mov      rax, [rbx]
+0x002c9d67  8a00                           mov      al, [rax]
+0x002c9d69  eb08                           jmp      short 0x2c9d73   ; -> 0x2c9d73
+0x002c9d6b  30c0                           xor      al, al
+0x002c9d6d  85d2                           test     edx, edx
+0x002c9d6f  7504                           jne      short 0x2c9d75   ; -> 0x2c9d75
+0x002c9d71  8a03                           mov      al, [rbx]
+0x002c9d73  2401                           and      al, 1
+0x002c9d75  418b4f30                       mov      ecx, [r15+0x30]
+0x002c9d79  83f93f                         cmp      ecx, 0x3f
+0x002c9d7c  771d                           ja       short 0x2c9d9b   ; -> 0x2c9d9b
+0x002c9d7e  ffc1                           inc      ecx
+0x002c9d80  41894f30                       mov      [r15+0x30], ecx
+0x002c9d84  41ff4724                       inc      dword ptr [r15+0x24]
+0x002c9d88  0fb6c0                         movzx    eax, al
+0x002c9d8b  498b4f28                       mov      rcx, [r15+0x28]
+0x002c9d8f  4801c9                         add      rcx, rcx
+0x002c9d92  4809c1                         or       rcx, rax
+0x002c9d95  49894f28                       mov      [r15+0x28], rcx
+0x002c9d99  eb10                           jmp      short 0x2c9dab   ; -> 0x2c9dab
+0x002c9d9b  0fb6f0                         movzx    esi, al
+0x002c9d9e  4c89ff                         mov      rdi, r15
+0x002c9da1  ba01000000                     mov      edx, 1
+0x002c9da6  e8f595daff                     call     0x733a0   ; -> 0x733a0
+0x002c9dab  8b4308                         mov      eax, [rbx+8]
+0x002c9dae  89c1                           mov      ecx, eax
+0x002c9db0  c1e112                         shl      ecx, 0x12
+0x002c9db3  c1f912                         sar      ecx, 0x12
+0x002c9db6  89ca                           mov      edx, ecx
+0x002c9db8  83e2fe                         and      edx, 0xfffffffe
+0x002c9dbb  83fafe                         cmp      edx, 0xfffffffe
+0x002c9dbe  7515                           jne      short 0x2c9dd5   ; -> 0x2c9dd5
+0x002c9dc0  c1e004                         shl      eax, 4
+0x002c9dc3  c1f812                         sar      eax, 0x12
+0x002c9dc6  83c01f                         add      eax, 0x1f
+0x002c9dc9  c1f805                         sar      eax, 5
+0x002c9dcc  85c0                           test     eax, eax
+0x002c9dce  7e27                           jle      short 0x2c9df7   ; -> 0x2c9df7
+0x002c9dd0  488b03                         mov      rax, [rbx]
+0x002c9dd3  eb07                           jmp      short 0x2c9ddc   ; -> 0x2c9ddc
+0x002c9dd5  85c9                           test     ecx, ecx
+0x002c9dd7  751e                           jne      short 0x2c9df7   ; -> 0x2c9df7
+0x002c9dd9  4889d8                         mov      rax, rbx
+0x002c9ddc  f60001                         test     byte ptr [rax], 1
+0x002c9ddf  7416                           je       short 0x2c9df7   ; -> 0x2c9df7
+0x002c9de1  4489ef                         mov      edi, r13d
+0x002c9de4  4889de                         mov      rsi, rbx
+0x002c9de7  31d2                           xor      edx, edx
+0x002c9de9  4c89e1                         mov      rcx, r12
+0x002c9dec  4d89f8                         mov      r8, r15
+0x002c9def  4589f1                         mov      r9d, r14d
+0x002c9df2  e8a9e1ffff                     call     0x2c7fa0   ; -> 0x2c7fa0
+0x002c9df7  b001                           mov      al, 1
+0x002c9df9  4883c408                       add      rsp, 8
+0x002c9dfd  5b                             pop      rbx
+0x002c9dfe  415c                           pop      r12
+0x002c9e00  415d                           pop      r13
+0x002c9e02  415e                           pop      r14
+0x002c9e04  415f                           pop      r15
+0x002c9e06  5d                             pop      rbp
+0x002c9e07  c3                             ret      
+0x002c9e08  0f1f840000000000               nop      [rax+rax]
+0x002c9e10  0000                           add      [rax], al
+0x002c9e12  0000                           add      [rax], al
+0x002c9e14  b001                           mov      al, 1
+0x002c9e16  4883c408                       add      rsp, 8
+0x002c9e1a  5b                             pop      rbx

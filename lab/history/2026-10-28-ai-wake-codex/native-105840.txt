@@ -1,0 +1,34 @@
+0x00105840 push      rbp
+0x00105841 mov       rbp, rsp
+0x00105844 push      rbx
+0x00105845 push      rax
+0x00105846 mov       rbx, rdi
+0x00105849 mov       rdi, rsi
+0x0010584c call      0x107ed0
+0x00105851 lea       rcx, [rip + 0x191e048] ; [0x1a238a0]
+0x00105858 mov       rcx, qword ptr [rcx]
+0x0010585b mov       rcx, qword ptr [rcx]
+0x0010585e mov       esi, eax
+0x00105860 sar       esi, 0xd
+0x00105863 mov       edx, esi
+0x00105865 shr       edx, 0x12
+0x00105868 or        edx, 0x3ff
+0x0010586e and       edx, esi
+0x00105870 shl       rdx, 6
+0x00105874 mov       rdi, qword ptr [rcx + rdx + 0x10]
+0x00105879 movsxd    rsi, dword ptr [rcx + rdx + 0x34]
+0x0010587e and       eax, 0x1fff
+0x00105883 imul      eax, dword ptr [rcx + rdx + 0x30]
+0x00105888 and       rsi, qword ptr [rdi + rax + 8]
+0x0010588d add       rdi, rax
+0x00105890 sub       rdi, rsi
+0x00105893 mov       esi, 0x7c
+0x00105898 call      0x2cfcd0
+0x0010589d mov       eax, dword ptr [rax + 0x4c]
+0x001058a0 mov       dword ptr [rbx], eax
+0x001058a2 mov       rax, rbx
+0x001058a5 add       rsp, 8
+0x001058a9 pop       rbx
+0x001058aa pop       rbp
+0x001058ab ret       
+0x001058ac nop       dword ptr [rax]

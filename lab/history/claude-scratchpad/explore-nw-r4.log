@@ -1,0 +1,26 @@
+shadPS4 pid 24228  eboot base 0x51f0000  control vtable[0]=0x5944410 PASS
+start (531.7332153320312, -818.7587280273438, 17.293354034423828) goal [347.43, -646.29]
+at (520.5, -804.8, 17.3) dist 234.7 best 234.7 cells 5 blocked 0
+at (520.5, -804.9, 17.1) dist 234.7 best 234.7 cells 8 blocked 5
+at (530.6, -813.9, 17.3) dist 248.3 best 234.7 cells 11 blocked 5
+at (524.6, -811.3, 17.4) dist 242.1 best 234.7 cells 14 blocked 5
+at (524.6, -813.3, 17.1) dist 243.5 best 234.7 cells 15 blocked 5
+at (521.1, -810.4, 17.3) dist 238.9 best 234.7 cells 17 blocked 7
+retracked (no movement): 58 copies at (522.504150390625, -809.7807006835938, 16.94088363647461)
+at (522.5, -810.0, 17.0) dist 239.7 best 234.7 cells 17 blocked 12
+at (520.5, -803.7, 17.4) dist 233.9 best 234.7 cells 17 blocked 12
+at (520.5, -806.5, 17.1) dist 235.8 best 234.7 cells 17 blocked 12
+at (520.9, -806.3, 16.9) dist 236.0 best 234.7 cells 18 blocked 12
+at (524.4, -800.3, 17.3) dist 234.6 best 234.7 cells 21 blocked 17
+at (521.3, -796.9, 17.2) dist 230.0 best 229.2 cells 26 blocked 20
+at (523.0, -791.6, -4.4) dist 228.0 best 225.8 cells 31 blocked 20
+%USERPROFILE%\AppData\Local\Temp\claude\F--d1-d1xenia\eb49bdd6-2562-42a0-a73d-ed14111dbab8\scratchpad\tools\d1-walk.py:55: RuntimeWarning: invalid value encountered in subtract
+  m = ((abs(a[:-2] - centre[0]) < radius) & (abs(a[1:-1] - centre[1]) < radius)
+%USERPROFILE%\AppData\Local\Temp\claude\F--d1-d1xenia\eb49bdd6-2562-42a0-a73d-ed14111dbab8\scratchpad\tools\d1-walk.py:56: RuntimeWarning: invalid value encountered in subtract
+  & (abs(a[2:] - centre[2]) < radius))
+retracked (no movement): 1029 copies at (0.995384693145752, -0.0860004872083664, 0.35662946105003357)
+retracked (no movement): 102 copies at (3.226489714107891e-42, 0.0, 1.4363309259329375e-42)
+retracked (no movement): 30 copies at (9.80908925027372e-45, 8.407790785948902e-45, 0.0055155158042907715)
+retracked (no movement): 14 copies at (0.22112802043557167, 0.5035701543092728, 0.19082055985927582)
+at (0.0, 0.3, 0.2) dist 734.1 best 225.8 cells 33 blocked 39
+retracked (no movement): 11 copies at (0.009596170857548714, 0.801072895526886, 0.7668116092681885)

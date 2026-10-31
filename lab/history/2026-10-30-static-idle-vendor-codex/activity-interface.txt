@@ -1,0 +1,73 @@
+FUNCTION 25aaf0..25ab60
+0x0025aaf0 push      rbp
+0x0025aaf1 mov       rbp, rsp
+0x0025aaf4 push      r14
+0x0025aaf6 push      rbx
+0x0025aaf7 mov       r14d, edx
+0x0025aafa mov       ebx, esi
+0x0025aafc lea       rax, [rip + 0x23f7cdd] ; [0x26527e0]
+0x0025ab03 mov       rdi, qword ptr [rax]
+0x0025ab06 mov       rax, qword ptr [rdi]
+0x0025ab09 call      qword ptr [rax + 0x88]
+0x0025ab0f mov       rcx, rax
+0x0025ab12 xor       eax, eax
+0x0025ab14 test      rcx, rcx
+0x0025ab17 je        0x25ab4e
+0x0025ab19 mov       rdx, qword ptr [rcx]
+0x0025ab1c test      rdx, rdx
+0x0025ab1f jle       0x25ab4e
+0x0025ab21 mov       rax, qword ptr [rcx + 8]
+0x0025ab25 lea       rcx, [rax + rcx + 0x18]
+0x0025ab2a xor       esi, esi
+0x0025ab2c nop       dword ptr [rax]
+0x0025ab30 cmp       byte ptr [rcx], bl
+0x0025ab32 jne       0x25ab3d
+0x0025ab34 cmp       byte ptr [rcx + 1], r14b
+0x0025ab38 mov       rax, rcx
+0x0025ab3b je        0x25ab4e
+0x0025ab3d add       rcx, 0xb0
+0x0025ab44 inc       rsi
+0x0025ab47 xor       eax, eax
+0x0025ab49 cmp       rsi, rdx
+0x0025ab4c jl        0x25ab30
+0x0025ab4e pop       rbx
+0x0025ab4f pop       r14
+0x0025ab51 pop       rbp
+0x0025ab52 ret       
+0x0025ab53 nop       word ptr cs:[rax + rax]
+FUNCTION 25ab60..25abd0
+0x0025ab60 push      rbp
+0x0025ab61 mov       rbp, rsp
+0x0025ab64 push      rbx
+0x0025ab65 push      rax
+0x0025ab66 mov       ebx, esi
+0x0025ab68 lea       rax, [rip + 0x23f7c71] ; [0x26527e0]
+0x0025ab6f mov       rdi, qword ptr [rax]
+0x0025ab72 mov       rax, qword ptr [rdi]
+0x0025ab75 call      qword ptr [rax + 0x88]
+0x0025ab7b test      rax, rax
+0x0025ab7e je        0x25abbd
+0x0025ab80 mov       rdx, qword ptr [rax + 0x10]
+0x0025ab84 add       rax, 0x18
+0x0025ab88 mov       rdi, 0xffffffffffffffff
+0x0025ab8f mov       rsi, 0xffffffffffffffe8
+0x0025ab96 nop       word ptr cs:[rax + rax]
+0x0025aba0 inc       rdi
+0x0025aba3 cmp       rdi, rdx
+0x0025aba6 jge       0x25abc1
+0x0025aba8 mov       rcx, qword ptr [rax]
+0x0025abab add       rcx, rax
+0x0025abae cmp       byte ptr [rsi + rcx + 0x28], bl
+0x0025abb2 lea       rsi, [rsi + 0x28]
+0x0025abb6 jne       0x25aba0
+0x0025abb8 add       rcx, rsi
+0x0025abbb jmp       0x25abc3
+0x0025abbd xor       ecx, ecx
+0x0025abbf jmp       0x25abc3
+0x0025abc1 xor       ecx, ecx
+0x0025abc3 mov       rax, rcx
+0x0025abc6 add       rsp, 8
+0x0025abca pop       rbx
+0x0025abcb pop       rbp
+0x0025abcc ret       
+0x0025abcd nop       dword ptr [rax]

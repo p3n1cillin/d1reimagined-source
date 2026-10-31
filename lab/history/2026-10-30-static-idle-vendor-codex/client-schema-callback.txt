@@ -1,0 +1,11 @@
+FUNCTION 54d390..54d3b0
+0x0054d390 push      rbp
+0x0054d391 mov       rbp, rsp
+0x0054d394 lea       rdi, [rip + 0x216c205] ; [0x26b95a0]
+0x0054d39b xor       esi, esi
+0x0054d39d mov       edx, 0x1c8
+0x0054d3a2 call      0x12aa980
+0x0054d3a7 xor       eax, eax
+0x0054d3a9 pop       rbp
+0x0054d3aa ret       
+0x0054d3ab nop       dword ptr [rax + rax]

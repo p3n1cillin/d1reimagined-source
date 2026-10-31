@@ -1,0 +1,13 @@
+{
+  "observed_at_utc": "2026-10-07T19:38:00Z",
+  "observed_at_precision": "Approximate observation time; exact rejected-command execution time was not returned.",
+  "action": "Remove-Item -LiteralPath F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\xenia-netplay-src -Recurse -Force",
+  "authorized_by_user": true,
+  "prior_read_only_verification": "Resolved exact workspace directory, no reparse point, clean Git status, remote Nexia360/xenia-canary.git, README Xenia Canary Netplay, no active xenia process.",
+  "tool_result": "Rejected before execution: blocked by policy",
+  "deleted": false,
+  "bypass_attempted": false,
+  "readmes_corrected": true,
+  "engineering_blocked": false,
+  "scope": "Remaining historical Xbox source checkout only. RPCS3/PS3 source and runtime preserved. No removal or package containing this record."
+}

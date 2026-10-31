@@ -1,0 +1,135 @@
+[
+  {
+    "id": "436ee387e9fc486e9cb767785378bfbb",
+    "timestamp": "2026-10-06T06:46:26.6420510Z",
+    "feature": "native-process-exception",
+    "event_type": "BUG",
+    "maturity": "Known Broken",
+    "description": "native-process-exception: failure observed. The exact owned test process exited with access violation 0xc0000005 in VkLayer_khronos_validation.dll. This is a host validation-layer crash, not proof of Vulkan device loss or a game graphics repair.",
+    "associated_clip_ids": [
+      "<lab-pc>-20261006T065220-7641e8704d0841978e0c575aad433c87"
+    ],
+    "limitations": "An observed engine state or stub response does not establish playable gameplay.",
+    "evidence_role": "private native context; no new gameplay or visual repair claim"
+  },
+  {
+    "id": "e10992dda6414c7c90e3509c40f72888",
+    "timestamp": "2026-10-06T08:14:57.249981+00:00",
+    "feature": "native-recording-recovery",
+    "event_type": "FEATURE_WORKING",
+    "maturity": "Experimental",
+    "description": "native-recording-recovery: new passed evidence. Interrupted RPCS3 recording recovered through complete fragments, fully decoded and verified against its original prefix; the unfinished original is preserved.",
+    "associated_clip_ids": [
+      "<lab-pc>-20261006T082554-05a38c92bf8d4457a36e9cf2b57d4324"
+    ],
+    "limitations": "An observed engine state or stub response does not establish playable gameplay.",
+    "evidence_role": "private native context; no new gameplay or visual repair claim"
+  },
+  {
+    "id": "72968fc374a44546be3134209553657a",
+    "timestamp": "2026-10-06T13:22:54.444829+00:00",
+    "feature": "gpu-command-checkpoints",
+    "event_type": "FEATURE_PARTIAL",
+    "maturity": "Experimental",
+    "description": "gpu-command-checkpoints: new observed evidence. The owned device-loss report returned GPU checkpoint stage/operation hints. They narrow a command region; the faulting shader/resource and renderer fix remain unverified.",
+    "associated_clip_ids": [
+      "<lab-pc>-20261006T132502-7aa19388507d4333a577cfb19994ea20"
+    ],
+    "limitations": "An observed engine state or stub response does not establish playable gameplay.",
+    "evidence_role": "private native context; no new gameplay or visual repair claim"
+  },
+  {
+    "id": "20261006-conformance-JOIN151",
+    "timestamp": "2026-10-06T14:30:34.3485744Z",
+    "feature": "vulkan-conformance",
+    "event_type": "TECHNICAL_DISCOVERY",
+    "maturity": "Partially Working; overall conformance Known Broken",
+    "build_sha256": "D415A3455871A84642047B852479372271B2B6AE6A5DD48F339B506BB01E862F",
+    "queue_callbacks": 0,
+    "query_callbacks": 10,
+    "descriptor_reset_callbacks": 4,
+    "device_loss_entries": 0,
+    "validation_ids": [
+      "VUID-vkCmdBeginRenderPass-initialLayout-00900",
+      "VUID-vkCmdDraw-None-09600",
+      "VUID-vkCmdEndQuery-None-07007",
+      "VUID-vkCmdEndRenderPass-None-07004",
+      "VUID-VkImageMemoryBarrier-oldLayout-01197",
+      "VUID-vkResetDescriptorPool-descriptorPool-00313"
+    ],
+    "native_last_line_summary": "\u00b7T 0:11:55.154100 {PPU[0x1000008] Thread (job #1/2) [libnet: 0x01d70afc]}",
+    "scope": "same bounded fixture; no visual/gameplay acceptance; JOIN153 includes extended unattended time",
+    "associated_clip_ids": []
+  },
+  {
+    "id": "20261006-conformance-JOIN152",
+    "timestamp": "2026-10-06T14:48:37.794944+00:00",
+    "feature": "vulkan-conformance",
+    "event_type": "TECHNICAL_DISCOVERY",
+    "maturity": "Partially Working; overall conformance Known Broken",
+    "build_sha256": "e74967ad48b6fc852f58c9fc48cfeda82c3666784c94281c01c57d4c4c2ded50",
+    "queue_callbacks": 0,
+    "query_callbacks": 0,
+    "descriptor_reset_callbacks": 3,
+    "device_loss_entries": 0,
+    "validation_ids": [
+      "VUID-VkImageMemoryBarrier-oldLayout-01197",
+      "VUID-vkCmdBeginRenderPass-initialLayout-00900",
+      "VUID-vkResetDescriptorPool-descriptorPool-00313"
+    ],
+    "native_last_line_summary": "\u00b7! 0:14:52.575180 {PPU Syscall Usage Thread}",
+    "scope": "same bounded fixture; no visual/gameplay acceptance; JOIN153 includes extended unattended time",
+    "associated_clip_ids": []
+  },
+  {
+    "id": "20261006-conformance-JOIN153",
+    "timestamp": "2026-10-06T17:33:19.639992+00:00",
+    "feature": "vulkan-conformance",
+    "event_type": "TECHNICAL_DISCOVERY",
+    "maturity": "Partially Working; overall conformance Known Broken",
+    "build_sha256": "4fa0276a3703ceebd53029ccaec746ebf4c10ac3ed9dc56648f7b384e83fe047",
+    "queue_callbacks": 0,
+    "query_callbacks": 0,
+    "descriptor_reset_callbacks": 2,
+    "device_loss_entries": 0,
+    "validation_ids": [
+      "VUID-VkImageMemoryBarrier-oldLayout-01197",
+      "VUID-vkCmdBeginRenderPass-initialLayout-00900",
+      "VUID-vkCmdDraw-None-09600",
+      "VUID-vkResetDescriptorPool-descriptorPool-00313"
+    ],
+    "native_last_line_summary": "\u00b7! 2:41:22.713699 {Performance Sensor}",
+    "scope": "same bounded fixture; no visual/gameplay acceptance; JOIN153 includes extended unattended time",
+    "associated_clip_ids": []
+  },
+  {
+    "id": "20261006-capture-status-resilience",
+    "timestamp": "2026-10-06T14:59:38.4388701Z",
+    "feature": "capture-status-resilience",
+    "event_type": "BUG_FIXED",
+    "maturity": "Partially Working",
+    "tests": {
+      "capture_suite": "73 PASS",
+      "idle_held_lock": "six seconds; exact worker survives and status resumes",
+      "recording_held_lock": "six seconds; exact worker and recorder survive and fresh status resumes"
+    },
+    "remaining_issue": "Approximately 14:41-14:48 UTC coverage is missing. Later native recorder exit remains separate; uninterrupted long-run recording unproved.",
+    "associated_clip_ids": []
+  },
+  {
+    "id": "20261006-fence-completion-contract",
+    "timestamp": "2026-10-06T17:47:53.5469940Z",
+    "feature": "gpu-fence-completion",
+    "event_type": "FEATURE_PARTIAL",
+    "maturity": "Experimental",
+    "tests": {
+      "actual_cpp_checks": 71,
+      "baseline_failures": 51,
+      "release_build_exit": 0,
+      "scoped_patch_reproduction": "PASS"
+    },
+    "build_sha256": "051E8EB5D7E53AB322918111C51C707F00A0A05E5ED09354372EDC59B44026C8",
+    "native_comparison": "JOIN154 pending at cutoff",
+    "associated_clip_ids": []
+  }
+]

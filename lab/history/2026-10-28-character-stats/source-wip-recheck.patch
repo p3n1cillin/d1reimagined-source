@@ -1,0 +1,175 @@
+diff --git a/docs/PS4_WEAPON_STATS.md b/docs/PS4_WEAPON_STATS.md
+index 774293b..d6f56d7 100644
+--- a/docs/PS4_WEAPON_STATS.md
++++ b/docs/PS4_WEAPON_STATS.md
+@@ -23,10 +23,12 @@ The baseline HUD was 12/114. Raw traces, screenshots and generated fixtures rema
+ private. A codec round trip alone establishes shape, not native gameplay.
+ 
+ A second fresh natural pickup used the command's full base-stat list. The native
+-builder received Magazine 44, Impact 80 and Inventory 15, and the HUD showed
++builder received Magazine 44, Impact 80, Optics 15 and Inventory Size 32, and the HUD showed
+ **25/134**. The debugger detached cleanly after four hardware hits. This proves
+ the full table reaches the builder, but the reserve still differs from the
+-reference's 285; its allocation needs a separate trace. Actual damage and kills
++reference's immediate-pickup reserve of 292; its allocation needs a separate trace.
++The earlier 285 comparison was footage after shooting, not the pickup itself.
++Stat index 28 is Optics; Inventory Size is index 21. Actual damage and kills
+ have not been measured by these stat-table tests.
+ 
+ ## Generate a peer candidate from owned content
+diff --git a/ps4/d1-server/crates/d1-oracle/src/lib.rs b/ps4/d1-server/crates/d1-oracle/src/lib.rs
+index 5ecb1de..2b72ac5 100644
+--- a/ps4/d1-server/crates/d1-oracle/src/lib.rs
++++ b/ps4/d1-server/crates/d1-oracle/src/lib.rs
+@@ -71,6 +71,8 @@ pub mod harness;
+ pub mod inventory;
+ pub mod item_index;
+ pub mod message;
++pub mod native_item_stat;
++mod scalar_float;
+ pub mod object;
+ pub mod oodle;
+ pub mod profile;
+diff --git a/ps4/d1-server/crates/d1-oracle/src/main.rs b/ps4/d1-server/crates/d1-oracle/src/main.rs
+index 5e7ed43..82b3436 100644
+--- a/ps4/d1-server/crates/d1-oracle/src/main.rs
++++ b/ps4/d1-server/crates/d1-oracle/src/main.rs
+@@ -416,6 +416,20 @@ enum ProfileCmd {
+ /// `d1-oracle character …` - see [`d1_oracle::character`] for why each default is what it is.
+ #[derive(Subcommand)]
+ enum CharacterCmd {
++    /// Derive one packed base stat through the 56578 client's own item-level curves.
++    /// Talented/progressing instances are refused; output must be new. This is an explicit trial.
++    DerivedStat {
++        #[arg(long)]
++        input: PathBuf,
++        #[arg(long)]
++        out: PathBuf,
++        #[arg(long)]
++        inventory: PathBuf,
++        #[arg(long, value_parser = ["character", "primary", "special", "heavy"])]
++        table: String,
++        #[arg(long)]
++        stat: u8,
++    },
+     /// Fill one peer weapon-stat table from its equipped item's owned base definition (56578).
+     /// Preserves every decoded byte outside that table; output must be a new file.
+     WeaponStats {
+@@ -1347,6 +1361,36 @@ fn run_character(cli: &Cli, cmd: &CharacterCmd) -> anyhow::Result<ExitCode> {
+     use d1_oracle::character::{self, CharacterSpec};
+ 
+     match cmd {
++        CharacterCmd::DerivedStat { input, out, inventory, table, stat } => {
++            use d1_oracle::{native_item_stat, weapon_stats};
++            use std::io::Write;
++            let base = match table.as_str() {
++                "character" => native_item_stat::PEER_CHARACTER_TABLE,
++                "primary" => weapon_stats::PEER_TABLES[0],
++                "special" => weapon_stats::PEER_TABLES[1],
++                "heavy" => weapon_stats::PEER_TABLES[2],
++                _ => anyhow::bail!("unknown table"),
++            };
++            let mut codec = ObjectOracle::new(character::PEER_TAG)?;
++            let peer = codec.decode(&std::fs::read(input)?)?;
++            codec.round_trip(&peer.object, 0x4000)?;
++            let indices = d1_oracle::IndexTable::load_default()?;
++            let mut content = d1_oracle::oodle::Content::open_default()?;
++            let result = native_item_stat::derive_peer_stat(
++                &peer.object, inventory, base, *stat, &mut content, &indices)?;
++            let (encoded, decoded) = codec.round_trip(&result.peer, 0x4000)?;
++            anyhow::ensure!(decoded.object == result.peer, "derived peer did not round-trip identical");
++            let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(out)?;
++            file.write_all(&encoded.payload)?;
++            file.sync_all()?;
++            println!("{}", serde_json::json!({
++                "table": table, "stat": stat, "value": result.total,
++                "contributions_slot_index_soid_value": result.contributions,
++                "round_trip": "IDENTICAL", "source": "native 56578 base-stat calculation",
++                "limitations": "no talent/progression contributions; native gameplay still requires testing"
++            }));
++            Ok(ExitCode::SUCCESS)
++        }
+         CharacterCmd::WeaponStats { input, out, slot, only_stat } => {
+             use d1_oracle::{art_arrangement, weapon_stats};
+             use std::io::Write;
+diff --git a/tools/ps4_setup/d1-watchwrite.py b/tools/ps4_setup/d1-watchwrite.py
+index 7e8b8a0..c7652e5 100644
+--- a/tools/ps4_setup/d1-watchwrite.py
++++ b/tools/ps4_setup/d1-watchwrite.py
+@@ -65,6 +65,7 @@ class Ctx:
+ 
+ EXEC = set()   # indices of DR slots that are execute breakpoints (RW=00, LEN=00)
+ READ = set()   # indices of DR slots that break on read or write (RW=11), 8 bytes
++BYTE_READ = set()  # subset of READ: one-byte selector, without neighbouring-field noise
+ 
+ 
+ def dr7_for(n):
+@@ -72,7 +73,8 @@ def dr7_for(n):
+     for i in range(n):
+         v |= 1 << (2 * i)                  # L_i
+         if i in READ:
+-            v |= (0b11 | (0b10 << 2)) << (16 + 4 * i)   # RW=read/write, LEN=8 bytes
++            length = 0 if i in BYTE_READ else 0b10
++            v |= (0b11 | (length << 2)) << (16 + 4 * i)
+         elif i not in EXEC:
+             v |= (0b01 | (0b11 << 2)) << (16 + 4 * i)   # RW=write, LEN=4 bytes
+     return v
+@@ -98,6 +100,7 @@ def main():
+     ap.add_argument('--out', default=os.path.join(HERE, 'd1-watchwrite.jsonl'))
+     ap.add_argument('--max-hits', type=int, default=200)
+     ap.add_argument('--read', action='append', default=[], help='absolute 8-aligned address: break on read or write (8 bytes)')
++    ap.add_argument('--read-byte', action='append', default=[], help='absolute address: break on read or write of this one byte only')
+     ap.add_argument('--exec', action='append', default=[], help='eboot-relative address: execute breakpoint; logs rax/rbp/rdi and 16 bytes at [rbp-0x150]')
+     ap.add_argument('--peek', action='append', default=[], help='on an exec hit, log the u32 at this register expression, e.g. "rcx+rdx*4+0xc" (repeatable)')
+     ap.add_argument('--log-av', action='store_true', help='log access violations outside the guest image (still passed on)')
+@@ -114,17 +117,22 @@ def main():
+         addrs += [entry + int(f, 16) for f in a.field]
+     for x in a.read:
+         READ.add(len(addrs)); addrs.append(int(x, 16))
++    for x in a.read_byte:
++        BYTE_READ.add(len(addrs)); READ.add(len(addrs)); addrs.append(int(x, 16))
+     for x in a.exec:
+         EXEC.add(len(addrs)); addrs.append(base + int(x, 16))
+-    if not 1 <= len(addrs) <= 4 or any(x & 3 for i, x in enumerate(addrs) if i not in EXEC):
+-        sys.exit(f'need 1..4 dword-aligned addresses, got {[hex(x) for x in addrs]}')
++    if not 1 <= len(addrs) <= 4 or any(
++            x & (7 if i in READ else 3) for i, x in enumerate(addrs)
++            if i not in EXEC and i not in BYTE_READ):
++        sys.exit(f'need 1..4 addresses aligned to their watch widths, got {[hex(x) for x in addrs]}')
+     pid = int(__import__('subprocess').run(['tasklist', '/FI', 'IMAGENAME eq shadPS4.exe', '/FO', 'CSV', '/NH'],
+               capture_output=True, text=True).stdout.split('","')[1])
+     out = open(a.out, 'a')
+     def log(**kw):
+         kw['t'] = time.time(); out.write(json.dumps(kw) + '\n'); out.flush()
+         print(json.dumps(kw), flush=True)
+-    log(event='start', pid=pid, base=hex(base), addrs=[hex(x) for x in addrs])
++    log(event='start', pid=pid, base=hex(base), addrs=[hex(x) for x in addrs],
++        byte_read_slots=sorted(BYTE_READ))
+     if not k32.DebugActiveProcess(pid):
+         sys.exit(f'DebugActiveProcess failed ({ctypes.get_last_error()})')
+     k32.DebugSetProcessKillOnExit(False)
+@@ -188,7 +196,8 @@ def main():
+                             ctypes.c_uint32.from_address(c.addr + OFF_EFLAGS).value |= 0x10000   # RF
+                         else:
+                             log(event='write', tid=tid, rip=hex(rip), rip_img=hex(rip - base) if base <= rip < base + 0x18D8000 else None,
+-                                which=which, values=[hex(p.u(x, 'I')) for x in addrs], stack_img=img)
++                                which=which, values=[hex(p.u(x, 'B' if i in BYTE_READ else 'I'))
++                                                     for i, x in enumerate(addrs)], stack_img=img)
+                         hits += 1
+                         c.set64(OFF_DR6, 0); c.put(h)
+                     else:
+diff --git a/tools/ps4_setup/d1-waypoint.py b/tools/ps4_setup/d1-waypoint.py
+index e9f94d3..b9fe6e3 100644
+--- a/tools/ps4_setup/d1-waypoint.py
++++ b/tools/ps4_setup/d1-waypoint.py
+@@ -188,7 +188,9 @@ def main():
+     t_end, step, still, last = time.time() + a.seconds, 0, 0, None
+     while time.time() < t_end:
+         step += 1
+-        pad('Space,Space')               # touchpad twice: nav mode on and off leaves the waypoint shown
++        # Both button and stick activity are required by the client's idle check, including
++        # repeated combat looks whose target is already centred and needs no camera turn.
++        pad('Space,Space,Hold:A:80,Hold:D:80')
+         time.sleep(0.4)
+         img = grab(os.path.join(a.shots or HERE, f'waypoint-{step:03d}.png' if a.shots else 'waypoint.png'))
+         found = markers(img)

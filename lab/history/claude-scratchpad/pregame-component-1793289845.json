@@ -1,0 +1,24 @@
+{
+  "time": 1793289845.632924,
+  "base": "0x5110000",
+  "vtable": "0x6a73c30",
+  "scanned_mb": 12797,
+  "scan_s": 47.6,
+  "components": [],
+  "collector": {
+    "address": "0x37f8de330",
+    "state": 0,
+    "target": 0,
+    "activity": -1,
+    "level_xp": [
+      0,
+      0,
+      0
+    ],
+    "prestige_xp": [
+      0,
+      0,
+      0
+    ]
+  }
+}

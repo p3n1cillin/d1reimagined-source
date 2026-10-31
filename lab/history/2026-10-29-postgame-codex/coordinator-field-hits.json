@@ -1,0 +1,48 @@
+{
+  "7794928": [
+    [
+      "0x76f0f0",
+      "mov",
+      "byte ptr [rdi + 0x1e60], 1"
+    ],
+    [
+      "0x76f0f7",
+      "mov",
+      "dword ptr [rdi + 0x1e64], esi"
+    ],
+    [
+      "0x76f0fd",
+      "mov",
+      "byte ptr [rdi + 0x1e68], 1"
+    ],
+    [
+      "0x76f104",
+      "mov",
+      "dword ptr [rdi + 0x1e6c], edx"
+    ]
+  ],
+  "7800592": [
+    [
+      "0x770743",
+      "lea",
+      "r9, [rbx + 0xe928]"
+    ]
+  ],
+  "7801760": [
+    [
+      "0x770bae",
+      "lea",
+      "r8, [rbx + 0x109d0]"
+    ],
+    [
+      "0x770bb5",
+      "lea",
+      "r9, [rbx + 0xe928]"
+    ],
+    [
+      "0x770bd1",
+      "mov",
+      "qword ptr [rbx + 0x109c8], rax"
+    ]
+  ]
+}

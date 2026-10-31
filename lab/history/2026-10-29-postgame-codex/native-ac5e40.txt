@@ -1,0 +1,37 @@
+0x00ac5e40 push      rbp
+0x00ac5e41 mov       rbp, rsp
+0x00ac5e44 push      rbx
+0x00ac5e45 push      rax
+0x00ac5e46 xor       ebx, ebx
+0x00ac5e48 cmp       byte ptr [rip + 0x1cd7441], 0 ; [0x279d290]
+0x00ac5e4f je        0xac5eb1
+0x00ac5e51 lea       rdi, [rip + 0x1cd7307] ; [0x279d15f]
+0x00ac5e58 test      rdi, -8
+0x00ac5e5f je        0xac5eb1
+0x00ac5e61 and       rdi, 0xfffffffffffffff8
+0x00ac5e65 call      0xac5790
+0x00ac5e6a cmp       eax, -1
+0x00ac5e6d je        0xac5eb1
+0x00ac5e6f mov       edx, eax
+0x00ac5e71 sar       edx, 0xd
+0x00ac5e74 mov       ecx, edx
+0x00ac5e76 shr       ecx, 0x12
+0x00ac5e79 or        ecx, 0x3ff
+0x00ac5e7f and       ecx, edx
+0x00ac5e81 shl       rcx, 6
+0x00ac5e85 lea       rdx, [rip + 0xf5da14] ; [0x1a238a0]
+0x00ac5e8c mov       rdx, qword ptr [rdx]
+0x00ac5e8f mov       rsi, qword ptr [rdx]
+0x00ac5e92 mov       rbx, qword ptr [rsi + rcx + 0x10]
+0x00ac5e97 movsxd    rdx, dword ptr [rsi + rcx + 0x34]
+0x00ac5e9c and       eax, 0x1fff
+0x00ac5ea1 imul      eax, dword ptr [rsi + rcx + 0x30]
+0x00ac5ea6 and       rdx, qword ptr [rbx + rax + 8]
+0x00ac5eab add       rbx, rax
+0x00ac5eae sub       rbx, rdx
+0x00ac5eb1 mov       rax, rbx
+0x00ac5eb4 add       rsp, 8
+0x00ac5eb8 pop       rbx
+0x00ac5eb9 pop       rbp
+0x00ac5eba ret       
+0x00ac5ebb nop       dword ptr [rax + rax]

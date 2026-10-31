@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "source_machine": "<lab-pc>",
+  "clip_id": "<lab-pc>-20261029T153851-502fb1114dc64a16ac724cb5005b9d9b",
+  "project": "destiny1-preservation",
+  "recorded_at": "2026-10-29T15:38:51.361098+00:00",
+  "devblog": null,
+  "contains_voice": false,
+  "contains_microphone_audio": false,
+  "importance": "MAJOR",
+  "clips": [
+    {
+      "file": "clips/clip01.mp4",
+      "duration_seconds": 80.017,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.85,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip02.mp4",
+      "duration_seconds": 85.0,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.8,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip03.mp4",
+      "duration_seconds": 95.0,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.76,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip04.mp4",
+      "duration_seconds": 74.834,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.89,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip05.mp4",
+      "duration_seconds": 60.0,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.4,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    }
+  ],
+  "new_video_count": 5,
+  "new_screenshot_count": 8,
+  "package_kind": "engineering-report",
+  "reporting_date": "2026-10-29",
+  "reporting_timezone": "Europe/London",
+  "topic": "A Guardian Rises: ending, end-of-mission screens and Continue",
+  "feature": "mission completion",
+  "event_type": "milestone",
+  "description": "The opening mission plays its ending cinematic, shows the end-of-mission screens with the Guardian's results, and Continue now leaves them and loads the Guardian into a world.",
+  "previous_state": "The mission stopped at Clear Out the Fallen; after the cinematic the screen stayed black.",
+  "current_state": "All eight hangar groups clear; outro plays in full; end-of-mission screens show server-provided results; holding Continue launches the next story activity and spawns the Guardian in a world.",
+  "remaining_issue": "Destination world is the server default, not the Tower; advancement tab empty; loading indicator remains; values synthetic.",
+  "next_task": "Serve the correct world for the next story activity and arrive in the Tower.",
+  "game_build": "PS4 56578",
+  "contains_sensitive_information": false,
+  "requires_manual_review": true,
+  "audio": "game audio only, one emulator port; music may be present",
+  "git_commit": "bd2addb7b3318385ceb1d8ff02af51e4223c6a09"
+}

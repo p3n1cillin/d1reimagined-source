@@ -1,0 +1,11 @@
+0x004fb0f0 mov       rax, qword ptr [rdi]
+0x004fb0f3 mov       eax, dword ptr [rax + 0x1c8]
+0x004fb0f9 ret       
+0x004fb0fa nop       word ptr [rax + rax]
+0x004fb100 add       byte ptr [rax], al
+0x004fb102 add       byte ptr [rax], al
+0x004fb104 add       rsp, 8
+0x004fb108 pop       rbx
+0x004fb109 pop       rbp
+0x004fb10a ret       
+0x004fb10b nop       dword ptr [rax + rax]

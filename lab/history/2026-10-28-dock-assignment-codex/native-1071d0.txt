@@ -1,0 +1,70 @@
+0x001071d0 push      rbp
+0x001071d1 mov       rbp, rsp
+0x001071d4 push      r15
+0x001071d6 push      r14
+0x001071d8 push      r13
+0x001071da push      r12
+0x001071dc push      rbx
+0x001071dd push      rax
+0x001071de mov       r13, rdx
+0x001071e1 mov       r14d, esi
+0x001071e4 mov       r15, rdi
+0x001071e7 xor       r12d, r12d
+0x001071ea movzx     eax, word ptr [rip + 0x24cfe07] ; [0x25d6ff8]
+0x001071f1 test      rax, rax
+0x001071f4 je        0x10720a
+0x001071f6 lea       rcx, [rip + 0x19cde03] ; [0x1ad5000]
+0x001071fd imul      rax, qword ptr [rcx + 0x10]
+0x00107202 add       rcx, qword ptr [rcx]
+0x00107205 mov       r12, qword ptr [rax + rcx + 0x30]
+0x0010720a test      r13b, 3
+0x0010720e mov       qword ptr [r13 + 8], 0
+0x00107216 mov       qword ptr [r13], 0
+0x0010721e mov       dword ptr [r13], 0xffffffff
+0x00107226 mov       dword ptr [r13 + 0x10], 0xffffffff
+0x0010722e mov       rdi, r15
+0x00107231 call      0x1076c0
+0x00107236 mov       cl, al
+0x00107238 xor       al, al
+0x0010723a test      cl, cl
+0x0010723c je        0x1072a8
+0x0010723e lea       rcx, [r12 + 0x14]
+0x00107243 mov       edx, dword ptr [r12 + 8]
+0x00107248 mov       edi, dword ptr [r15]
+0x0010724b xor       esi, esi
+0x0010724d nop       dword ptr [rax]
+0x00107250 cmp       esi, edx
+0x00107252 jge       0x1072a8
+0x00107254 inc       esi
+0x00107256 mov       ebx, dword ptr [rcx]
+0x00107258 add       rcx, 0x14
+0x0010725c cmp       ebx, edi
+0x0010725e jne       0x107250
+0x00107260 test      esi, esi
+0x00107262 je        0x1072a8
+0x00107264 movsx     edx, word ptr [r15 + 6]
+0x00107269 add       edx, dword ptr [rcx - 0x18]
+0x0010726c movsxd    rcx, edx
+0x0010726f imul      rcx, rcx, 0x38
+0x00107273 add       r12, rcx
+0x00107276 movsxd    rcx, r14d
+0x00107279 lea       rcx, [rcx + rcx*2]
+0x0010727d cmp       dword ptr [r12 + rcx*8 + 0x520], -1
+0x00107286 je        0x1072a8
+0x00107288 lea       rax, [r12 + rcx*8 + 0x520]
+0x00107290 mov       ecx, dword ptr [rax + 0x10]
+0x00107293 mov       dword ptr [r13 + 0x10], ecx
+0x00107297 mov       rcx, qword ptr [rax]
+0x0010729a mov       rax, qword ptr [rax + 8]
+0x0010729e mov       qword ptr [r13 + 8], rax
+0x001072a2 mov       qword ptr [r13], rcx
+0x001072a6 mov       al, 1
+0x001072a8 add       rsp, 8
+0x001072ac pop       rbx
+0x001072ad pop       r12
+0x001072af pop       r13
+0x001072b1 pop       r14
+0x001072b3 pop       r15
+0x001072b5 pop       rbp
+0x001072b6 ret       
+0x001072b7 nop       word ptr [rax + rax]

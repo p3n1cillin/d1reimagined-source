@@ -1,0 +1,7 @@
+0x001c27f0 lea       rax, [rdi + 0x1d8]
+0x001c27f7 add       rax, qword ptr [rdi + 0x1d8]
+0x001c27fe movsxd    rcx, esi
+0x001c2801 shl       rcx, 4
+0x001c2805 lea       rax, [rcx + rax + 0x10]
+0x001c280a ret       
+0x001c280b nop       dword ptr [rax + rax]

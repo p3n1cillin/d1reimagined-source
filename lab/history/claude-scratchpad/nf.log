@@ -1,0 +1,26 @@
+shadPS4 pid 15268  eboot base 0x5210000  control vtable[0]=0x5964410 PASS
+start (388.9500427246094, -771.5260009765625, 7.975397109985352)
+step 1: waypoint at x=484 (score 0.91), turn -20 deg
+step 2: walked to (392.0, -792.0, 18.8) moved 31.5
+step 3: walked to (392.5, -791.0, 18.9) moved 1.1
+step 4: walked to (392.5, -790.4, 18.7) moved 0.4
+step 5: walked to (392.3, -787.0, 18.7) moved 0.5
+step 6: no waypoint (nav mode)
+step 7: waypoint at x=1200 (score 0.88), turn +9 deg
+step 8: walked to (392.5, -787.0, 18.7) moved 0.3
+step 9: walked to (392.5, -789.8, 18.7) moved 0.0
+step 10: no waypoint (nav mode)
+step 11: walked to (392.5, -790.1, 18.7) moved 0.2
+step 12: walked to (392.5, -787.2, 18.7) moved 0.1
+step 13: no waypoint (nav mode)
+step 14: walked to (392.5, -787.0, 18.7) moved 0.0
+step 15: walked to (392.5, -789.9, 18.7) moved 0.0
+step 16: no waypoint (nav mode)
+step 17: walked to (392.5, -790.1, 18.8) moved 0.1
+step 18: walked to (392.5, -787.3, 18.7) moved 0.1
+step 19: no waypoint (nav mode)
+step 20: walked to (392.5, -787.1, 18.7) moved 0.0
+step 21: walked to (392.5, -790.0, 18.7) moved 0.1
+step 22: no waypoint (nav mode)
+step 23: walked to (392.5, -790.2, 18.7) moved 0.2
+step 24: walked to (392.5, -787.3, 18.7) moved 0.1

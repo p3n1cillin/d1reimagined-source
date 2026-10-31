@@ -1,0 +1,80 @@
+[
+ {
+  "id": "2026-10-31-vendor-buy",
+  "time": "2026-10-30T22:45:03Z",
+  "feature": "Buying from vendors",
+  "maturity": "Working",
+  "claim": "At Eva Levante, Crypto Shift bought for 570 Glimmer: the purchase request reached the server, the Glimmer went from 24,430 to 23,860, the acquisition notice showed and the emblem is marked owned (the server's response applied by hand)",
+  "evidence": [
+   "clips/clip01.mp4",
+   "screenshots/01.png",
+   "screenshots/02.png",
+   "screenshots/03.png"
+  ]
+ },
+ {
+  "id": "2026-10-31-vendor-buy-server",
+  "time": "2026-10-30T23:39:26Z",
+  "feature": "Buying from vendors",
+  "maturity": "Working",
+  "claim": "At Eva Levante, Command and Crypto Shift bought with the server applying each purchase itself: Glimmer 25,000 to 24,430 to 23,860, acquisition notices, emblems owned",
+  "evidence": [
+   "clips/clip02.mp4",
+   "screenshots/04.png"
+  ]
+ },
+ {
+  "id": "2026-10-31-pc-mouse",
+  "time": "2026-10-31T00:53:00Z",
+  "feature": "PC controls",
+  "maturity": "Working",
+  "claim": "The PC mouse moves the game's menu cursor and turns the camera in a match, through the emulator's new detours (opt-in)",
+  "evidence": [
+   "clips/clip03.mp4",
+   "screenshots/05.png"
+  ]
+ },
+ {
+  "id": "2026-10-31-60hz-speed",
+  "time": "2026-10-31T00:46:00Z",
+  "feature": "60 fps",
+  "maturity": "Working",
+  "claim": "With the 60 Hz game clock and the fixed-clock override off, the game's own tick count advanced 0.99 game seconds per real second in a Moon match; 60 fps in menus and orbit, mid-30s in busy scenes",
+  "evidence": [
+   "clips/clip03.mp4"
+  ]
+ },
+ {
+  "id": "2026-10-31-pc-keyboard",
+  "time": "2026-10-31T01:28:00Z",
+  "feature": "PC controls",
+  "maturity": "Partial",
+  "claim": "The game's own PC keyboard layer reads the keyboard: with W removed from the emulator's controller mapping, holding W walked the Guardian 10.2 m in 2 s, the same as the stick; R switched weapons rather than reloading, so the game's default key bindings are still to be mapped",
+  "evidence": [
+   "clips/clip04.mp4",
+   "screenshots/06.png"
+  ]
+ },
+ {
+  "id": "2026-10-31-keyboard-emotes",
+  "time": "2026-10-31T01:45:00Z",
+  "feature": "PC controls",
+  "maturity": "Partial",
+  "claim": "Through the game's own key layer, T plays the wave emote (the game reports \"D1Guardian waves\") and G the sit emote; in third person the Guardian is drawn with a head (the served mask's horned crest)",
+  "evidence": [
+   "clips/clip05.mp4",
+   "screenshots/07.png"
+  ]
+ },
+ {
+  "id": "2026-10-31-keyboard-remap",
+  "time": "2026-10-31T02:47:00Z",
+  "feature": "PC controls",
+  "maturity": "Partial",
+  "claim": "With the emulator's new key table, R reloads (magazine 24 to 25 after one shot), Space jumps, W walks and T waves, all through the game's own keyboard layer; the Saint-14 helmet draws normally in third person on the Moon",
+  "evidence": [
+   "clips/clip06.mp4",
+   "screenshots/08.png"
+  ]
+ }
+]

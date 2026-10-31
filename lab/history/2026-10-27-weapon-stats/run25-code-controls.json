@@ -1,0 +1,36 @@
+{
+  "base": "0x51d0000",
+  "sha256": "672f03411c0503dfbcda804cbb9fb27cdd9a8d73a8bcb71bf0c4f688073b0833",
+  "controls": [
+    {
+      "address": "0x54dfc0",
+      "bytes": 48,
+      "native_matches_owned": true
+    },
+    {
+      "address": "0x54e14e",
+      "bytes": 24,
+      "native_matches_owned": true
+    },
+    {
+      "address": "0x910c60",
+      "bytes": 41,
+      "native_matches_owned": true
+    },
+    {
+      "address": "0x910da7",
+      "bytes": 5,
+      "native_matches_owned": true
+    },
+    {
+      "address": "0x910dac",
+      "bytes": 8,
+      "native_matches_owned": true
+    },
+    {
+      "address": "0x28a2f0",
+      "bytes": 64,
+      "native_matches_owned": true
+    }
+  ]
+}

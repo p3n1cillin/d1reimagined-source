@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Destiny 1 (PS4) CUSA00219 01.29: the cloth time step as a guest patch (FRAME-RATE-INDEPENDENCE-
+  20261006.md section 4.2; implementation FRAME-RATE-PHASE1-IMPL-20261006.md). Same format and
+  address convention as the launcher's manifest (Address = eboot virtual address + 0x400000);
+  `Original` holds the bytes the write replaces, which native/guest_patches.py checks.
+
+  The cloth solve (0x7f0850, every rendered frame) loads a constant 0.0333 s as its step at
+  two sites: 0x7f0905 (the flag byte 0x18c6eda clear) and 0x7f090f (the byte set, the shipped
+  default, and the frame's time over 1 ms). At 60 frames a second that is cloth at twice its
+  speed. Each load becomes `vmovss xmm0, [rdx + 0x192e8]`, the render packet's accepted time,
+  the value the engine's own guard at 0x7f08ee compares against 1 ms (that guard, which gives
+  dt 0 and sets a pause byte, is kept).
+
+  SCOPE: only with the fixed-clock override on (one tick per rendered frame, so no catch-up
+  groups), the emulator's 60 FPS profile. Do not combine it with guest/CUSA00219-native-clock.xml
+  or any native-clock configuration: there, every frame of a 2-tick catch-up group carries the
+  whole group's accepted time in the packet (the continuation path copies it, 0x590d92, and X5
+  publishes it on every frame, 0x7eaf7c), so cloth would integrate up to twice the wall time
+  below 60 FPS. That the override gives one tick per frame and no continuation frames is [I]
+  (FRAME-CAPS-REMOVED-20261005.md section 5), not checked on the emulator.
+
+  The native loader does not use these bytes. Under D1_FRAME_UNITS=1 it hooks both loads
+  (d1_frame_time.c) and gives cloth each frame's own share of its group (frame record +0x08,
+  which sums to the group's accepted time); if this manifest was applied first, the hooks
+  replace its loads just the same. Findings that depend on this file carry the launcher
+  manifest's provenance rule (synthetic_ancestor).
+-->
+<Patch>
+  <Metadata Name="D1 frame units: cloth steps the packet's accepted time, not 1/30 s (fixed-clock override only)"
+            isEnabled="true" AppVer="01.29" Author="native-client frame time" PatchVer="1.1">
+    <PatchList>
+      <!-- 0x7f0905: vmovss xmm0,[rip+0xe61863] (0x1652170 = 0.0333) -> vmovss xmm0,[rdx+0x192e8] -->
+      <Line Type="bytes" Address="0xBF0905" Value="c5fa1082e8920100" Original="c5fa10056318e600"/>
+      <!-- 0x7f090f: vmovss xmm0,[rip+0xe61859] (0x1652170 = 0.0333) -> vmovss xmm0,[rdx+0x192e8] -->
+      <Line Type="bytes" Address="0xBF090F" Value="c5fa1082e8920100" Original="c5fa10055918e600"/>
+    </PatchList>
+  </Metadata>
+</Patch>

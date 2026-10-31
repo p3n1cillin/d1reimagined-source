@@ -1,0 +1,1491 @@
+0x00237710 push      rbp
+0x00237711 mov       rbp, rsp
+0x00237714 push      r15
+0x00237716 push      r14
+0x00237718 push      r13
+0x0023771a push      r12
+0x0023771c push      rbx
+0x0023771d sub       rsp, 0x288
+0x00237724 mov       rax, qword ptr [rip + 0x17e79d5] ; [0x1a1f100]
+0x0023772b mov       rax, qword ptr [rax]
+0x0023772e mov       qword ptr [rbp - 0x30], rax
+0x00237732 movsxd    rax, dword ptr [rdi + 0x2c]
+0x00237736 test      rax, rax
+0x00237739 je        0x23774a
+0x0023773b lea       rbx, [rip + 0x16d1e1e] ; [0x1909560]
+0x00237742 call      qword ptr [rbx + rax*8]
+0x00237745 jmp       0x239110
+0x0023774a mov       qword ptr [rbp - 0x2a8], rsi
+0x00237751 mov       qword ptr [rbp - 0x2a0], rdx
+0x00237758 mov       qword ptr [rbp - 0x298], rcx
+0x0023775f mov       rax, qword ptr [rdi + 8]
+0x00237763 xor       ebx, ebx
+0x00237765 test      rax, rax
+0x00237768 mov       r12d, 0
+0x0023776e je        0x237779
+0x00237770 lea       rcx, [rdi + 8]
+0x00237774 lea       r12, [rax + rcx + 0x10]
+0x00237779 mov       rax, qword ptr [rdi]
+0x0023777c mov       qword ptr [rbp - 0x290], rax
+0x00237783 mov       rax, qword ptr [rdi + 0x18]
+0x00237787 test      rax, rax
+0x0023778a je        0x237795
+0x0023778c add       rdi, 0x18
+0x00237790 lea       rbx, [rax + rdi + 0x10]
+0x00237795 cmp       qword ptr [rbp - 0x290], 0
+0x0023779d jle       0x239110
+0x002377a3 add       qword ptr [rbp - 0x290], r12
+0x002377aa lea       r15, [rbp - 0x240]
+0x002377b1 jmp       0x239100
+0x002377b6 nop       word ptr cs:[rax + rax]
+0x002377c0 lea       rcx, [rip + 0x1971] ; [0x239138]
+0x002377c7 movsxd    rax, dword ptr [rcx + rax*4]
+0x002377cb add       rax, rcx
+0x002377ce jmp       rax
+0x002377d0 vaddps    xmm7, xmm7, xmmword ptr [r15 - 0x10]
+0x002377d6 jmp       0x237953
+0x002377db vmulps    xmm7, xmm7, xmmword ptr [r15 - 0x10]
+0x002377e1 jmp       0x237953
+0x002377e6 vmovaps   xmm0, xmmword ptr [r15 - 0x10]
+0x002377ec vsubps    xmm7, xmm0, xmm7
+0x002377f0 jmp       0x237953
+0x002377f5 vmovaps   xmm0, xmmword ptr [r15 - 0x10]
+0x002377fb vxorps    xmm1, xmm1, xmm1
+0x002377ff vcmpltps  xmm2, xmm0, xmm1
+0x00237804 lea       rax, [rip + 0x188eb75] ; [0x1ac6380]
+0x0023780b vandps    xmm3, xmm2, xmmword ptr [rax]
+0x0023780f vandnps   xmm2, xmm2, xmm0
+0x00237813 vorps     xmm2, xmm2, xmm3
+0x00237817 vcmpltps  xmm3, xmm1, xmm0
+0x0023781c vandnps   xmm2, xmm3, xmm2
+0x00237820 vandps    xmm3, xmm3, xmmword ptr [rip + 0x13e8188] ; [0x161f9b0]
+0x00237828 vdivps    xmm0, xmm0, xmm7
+0x0023782c vsubps    xmm1, xmm1, xmm7
+0x00237830 vmaxps    xmm1, xmm1, xmm7
+0x00237834 lea       rax, [rip + 0x188ead5] ; [0x1ac6310]
+0x0023783b vmovaps   xmm4, xmmword ptr [rax]
+0x0023783f vcmpltps  xmm1, xmm4, xmm1
+0x00237844 vandps    xmm0, xmm1, xmm0
+0x00237848 vorps     xmm2, xmm2, xmm3
+0x0023784c vmulps    xmm2, xmm2, xmmword ptr [rip + 0x13e819c] ; [0x161f9f0]
+0x00237854 inc       r12
+0x00237857 vandnps   xmm1, xmm1, xmm2
+0x0023785b vorps     xmm7, xmm1, xmm0
+0x0023785f vmovaps   xmmword ptr [r15 - 0x10], xmm7
+0x00237865 jmp       0x23795c
+0x0023786a vxorps    xmm0, xmm0, xmm0
+0x0023786e vcmpeqps  xmm0, xmm0, xmm7
+0x00237873 vandps    xmm7, xmm0, xmmword ptr [rip + 0x13e8135] ; [0x161f9b0]
+0x0023787b jmp       0x237d91
+0x00237880 vmovaps   xmm0, xmmword ptr [r15 - 0x10]
+0x00237886 vminps    xmm7, xmm0, xmm7
+0x0023788a jmp       0x237953
+0x0023788f vmovaps   xmm0, xmmword ptr [r15 - 0x10]
+0x00237895 vmaxps    xmm7, xmm0, xmm7
+0x00237899 jmp       0x237953
+0x0023789e vcmpltps  xmm0, xmm7, xmmword ptr [r15 - 0x10]
+0x002378a5 vandnps   xmm7, xmm0, xmmword ptr [rip + 0x13e8103] ; [0x161f9b0]
+0x002378ad jmp       0x237953
+0x002378b2 vmulps    xmm0, xmm7, xmmword ptr [r15 - 0x10]
+0x002378b8 vpshufd   xmm1, xmm0, 0x4e
+0x002378bd vaddps    xmm0, xmm0, xmm1
+0x002378c1 vpshufd   xmm1, xmm0, 0x93
+0x002378c6 jmp       0x2378f6
+0x002378c8 vxorps    xmm0, xmm0, xmm0
+0x002378cc vpshufd   xmm1, xmm7, 0x90
+0x002378d1 vmovss    xmm0, xmm1, xmm0
+0x002378d5 vmovd     xmm1, dword ptr [r15 - 0x10]
+0x002378db jmp       0x2378f6
+0x002378dd vmovaps   xmm1, xmmword ptr [r15 - 0x10]
+0x002378e3 vxorps    xmm0, xmm0, xmm0
+0x002378e7 vshufps   xmm1, xmm1, xmm0, 4
+0x002378ec vpshufd   xmm2, xmm7, 0x40
+0x002378f1 vshufps   xmm0, xmm0, xmm2, 0xe0
+0x002378f6 vaddps    xmm7, xmm0, xmm1
+0x002378fa jmp       0x237953
+0x002378fc vmovaps   xmm0, xmmword ptr [r15 - 0x10]
+0x00237902 vandps    xmm0, xmm0, xmmword ptr [rip + 0x13e8076] ; [0x161f980]
+0x0023790a vpshufd   xmm1, xmm7, 0
+0x0023790f vpand     xmm1, xmm1, xmmword ptr [rip + 0x13e8079] ; [0x161f990]
+0x00237917 vaddps    xmm7, xmm1, xmm0
+0x0023791b jmp       0x237953
+0x0023791d vmovaps   xmm0, xmmword ptr [r15 - 0x10]
+0x00237923 vpshufd   xmm1, xmm7, 0xaa
+0x00237928 vmulps    xmm1, xmm1, xmm0
+0x0023792c vpshufd   xmm2, xmm7, 0xff
+0x00237931 vaddps    xmm1, xmm2, xmm1
+0x00237935 vpshufd   xmm2, xmm7, 0
+0x0023793a vmulps    xmm2, xmm2, xmm0
+0x0023793e vpshufd   xmm3, xmm7, 0x55
+0x00237943 vaddps    xmm2, xmm3, xmm2
+0x00237947 vmulps    xmm0, xmm0, xmm0
+0x0023794b vmulps    xmm0, xmm0, xmm2
+0x0023794f vaddps    xmm7, xmm1, xmm0
+0x00237953 vmovaps   xmmword ptr [r15 - 0x10], xmm7
+0x00237959 inc       r12
+0x0023795c add       r15, -0x10
+0x00237960 jmp       0x2390d0
+0x00237965 vmovaps   xmm0, xmmword ptr [r15 - 0x20]
+0x0023796b vmovaps   xmm1, xmmword ptr [r15 - 0x10]
+0x00237971 vsubps    xmm1, xmm1, xmm0
+0x00237975 vmulps    xmm1, xmm7, xmm1
+0x00237979 vaddps    xmm7, xmm0, xmm1
+0x0023797d jmp       0x2379cb
+0x0023797f vmovaps   xmm0, xmmword ptr [r15 - 0x20]
+0x00237985 vmovaps   xmm1, xmmword ptr [r15 - 0x10]
+0x0023798b vsubps    xmm1, xmm1, xmm0
+0x0023798f vmulps    xmm1, xmm7, xmm1
+0x00237993 vaddps    xmm0, xmm0, xmm1
+0x00237997 vxorps    xmm1, xmm1, xmm1
+0x0023799b vmaxps    xmm0, xmm0, xmm1
+0x0023799f vminps    xmm7, xmm0, xmmword ptr [rip + 0x13e8009] ; [0x161f9b0]
+0x002379a7 jmp       0x2379cb
+0x002379a9 vmovaps   xmm0, xmmword ptr [r15 - 0x20]
+0x002379af vmulps    xmm0, xmm0, xmmword ptr [r15 - 0x10]
+0x002379b5 vaddps    xmm7, xmm7, xmm0
+0x002379b9 jmp       0x2379cb
+0x002379bb vmovaps   xmm0, xmmword ptr [r15 - 0x20]
+0x002379c1 vmaxps    xmm0, xmm0, xmmword ptr [r15 - 0x10]
+0x002379c7 vminps    xmm7, xmm0, xmm7
+0x002379cb vmovaps   xmmword ptr [r15 - 0x20], xmm7
+0x002379d1 inc       r12
+0x002379d4 add       r15, -0x20
+0x002379d8 jmp       0x2390d0
+0x002379dd vmovaps   xmm0, xmmword ptr [r15 - 0x20]
+0x002379e3 vmovaps   xmm1, xmmword ptr [r15 - 0x10]
+0x002379e9 vsubps    xmm3, xmm7, xmm1
+0x002379ed vsubps    xmm2, xmm0, xmm1
+0x002379f1 vdivps    xmm1, xmm3, xmm2
+0x002379f5 vxorps    xmm0, xmm0, xmm0
+0x002379f9 vsubps    xmm3, xmm0, xmm2
+0x002379fd vmaxps    xmm2, xmm3, xmm2
+0x00237a01 lea       rax, [rip + 0x188e918] ; [0x1ac6320]
+0x00237a08 vmovaps   xmm3, xmmword ptr [rax]
+0x00237a0c vcmpltps  xmm2, xmm3, xmm2
+0x00237a11 vandps    xmm1, xmm2, xmm1
+0x00237a15 vandnps   xmm2, xmm2, xmmword ptr [rip + 0x13e7fd3] ; [0x161f9f0]
+0x00237a1d vorps     xmm1, xmm2, xmm1
+0x00237a21 inc       r12
+0x00237a24 vmaxps    xmm0, xmm1, xmm0
+0x00237a28 vminps    xmm1, xmm0, xmmword ptr [rip + 0x13e7f80] ; [0x161f9b0]
+0x00237a30 vmulps    xmm0, xmm1, xmm1
+0x00237a34 vmulps    xmm1, xmm1, xmmword ptr [rip + 0x13e7ff4] ; [0x161fa30]
+0x00237a3c vaddps    xmm1, xmm1, xmmword ptr [rip + 0x13e7ffc] ; [0x161fa40]
+0x00237a44 vmulps    xmm7, xmm0, xmm1
+0x00237a48 vmovaps   xmmword ptr [r15 - 0x20], xmm7
+0x00237a4e add       r15, -0x20
+0x00237a52 jmp       0x2390d0
+0x00237a57 vxorps    xmm0, xmm0, xmm0
+0x00237a5b vsubps    xmm0, xmm0, xmm7
+0x00237a5f vmaxps    xmm7, xmm0, xmm7
+0x00237a63 jmp       0x237d91
+0x00237a68 vxorps    xmm0, xmm0, xmm0
+0x00237a6c vcmpltps  xmm1, xmm7, xmm0
+0x00237a71 lea       rax, [rip + 0x188e908] ; [0x1ac6380]
+0x00237a78 vandps    xmm2, xmm1, xmmword ptr [rax]
+0x00237a7c vandnps   xmm1, xmm1, xmm7
+0x00237a80 vorps     xmm1, xmm1, xmm2
+0x00237a84 vcmpltps  xmm0, xmm0, xmm7
+0x00237a89 vandnps   xmm1, xmm0, xmm1
+0x00237a8d vandps    xmm0, xmm0, xmmword ptr [rip + 0x13e7f1b] ; [0x161f9b0]
+0x00237a95 vorps     xmm7, xmm1, xmm0
+0x00237a99 jmp       0x237d91
+0x00237a9e vpand     xmm0, xmm7, xmmword ptr [rip + 0x13e7f5a] ; [0x161fa00]
+0x00237aa6 vmovdqa   xmm1, xmmword ptr [rip + 0x13e7f62] ; [0x161fa10]
+0x00237aae vpcmpgtd  xmm0, xmm1, xmm0
+0x00237ab2 vcvttps2dq xmm1, xmm7
+0x00237ab6 vcvtdq2ps xmm1, xmm1
+0x00237aba vcmpltps  xmm2, xmm7, xmm1
+0x00237abf vandps    xmm2, xmm2, xmmword ptr [rip + 0x13e7ee9] ; [0x161f9b0]
+0x00237ac7 vsubps    xmm1, xmm1, xmm2
+0x00237acb jmp       0x237afa
+0x00237acd vpand     xmm0, xmm7, xmmword ptr [rip + 0x13e7f2b] ; [0x161fa00]
+0x00237ad5 vmovdqa   xmm1, xmmword ptr [rip + 0x13e7f33] ; [0x161fa10]
+0x00237add vpcmpgtd  xmm0, xmm1, xmm0
+0x00237ae1 vcvttps2dq xmm1, xmm7
+0x00237ae5 vcvtdq2ps xmm1, xmm1
+0x00237ae9 vcmpltps  xmm2, xmm1, xmm7
+0x00237aee vandps    xmm2, xmm2, xmmword ptr [rip + 0x13e7eba] ; [0x161f9b0]
+0x00237af6 vaddps    xmm1, xmm1, xmm2
+0x00237afa vpand     xmm1, xmm0, xmm1
+0x00237afe vpandn    xmm0, xmm0, xmm7
+0x00237b02 inc       r12
+0x00237b05 vpor      xmm7, xmm1, xmm0
+0x00237b09 vmovdqa   xmmword ptr [r15], xmm7
+0x00237b0e jmp       0x2390d0
+0x00237b13 vpand     xmm0, xmm7, xmmword ptr [rip + 0x13e7ee5] ; [0x161fa00]
+0x00237b1b vmovdqa   xmm1, xmmword ptr [rip + 0x13e7eed] ; [0x161fa10]
+0x00237b23 vpcmpgtd  xmm0, xmm1, xmm0
+0x00237b27 vpandn    xmm1, xmm0, xmm7
+0x00237b2b vcvtps2dq xmm2, xmm7
+0x00237b2f vcvtdq2ps xmm2, xmm2
+0x00237b33 vpand     xmm0, xmm0, xmm2
+0x00237b37 vpor      xmm7, xmm0, xmm1
+0x00237b3b jmp       0x237d91
+0x00237b40 vpand     xmm0, xmm7, xmmword ptr [rip + 0x13e7eb8] ; [0x161fa00]
+0x00237b48 vmovdqa   xmm1, xmmword ptr [rip + 0x13e7ec0] ; [0x161fa10]
+0x00237b50 vpcmpgtd  xmm0, xmm1, xmm0
+0x00237b54 vcvttps2dq xmm1, xmm7
+0x00237b58 vcvtdq2ps xmm1, xmm1
+0x00237b5c vcmpltps  xmm2, xmm7, xmm1
+0x00237b61 vandps    xmm2, xmm2, xmmword ptr [rip + 0x13e7e47] ; [0x161f9b0]
+0x00237b69 vsubps    xmm1, xmm1, xmm2
+0x00237b6d vpand     xmm1, xmm0, xmm1
+0x00237b71 vpandn    xmm0, xmm0, xmm7
+0x00237b75 inc       r12
+0x00237b78 vpor      xmm0, xmm1, xmm0
+0x00237b7c vsubps    xmm7, xmm7, xmm0
+0x00237b80 vmovaps   xmmword ptr [r15], xmm7
+0x00237b85 jmp       0x2390d0
+0x00237b8a vmulps    xmm0, xmm7, xmm7
+0x00237b8e vpshufd   xmm1, xmm0, 0x4e
+0x00237b93 vaddps    xmm0, xmm0, xmm1
+0x00237b97 vpshufd   xmm1, xmm0, 0x93
+0x00237b9c vaddps    xmm0, xmm0, xmm1
+0x00237ba0 vmovaps   xmm1, xmmword ptr [rip + 0x13e7e38] ; [0x161f9e0]
+0x00237ba8 vmulps    xmm2, xmm0, xmm1
+0x00237bac vrsqrtps  xmm0, xmm0
+0x00237bb0 inc       r12
+0x00237bb3 vmulps    xmm3, xmm0, xmm0
+0x00237bb7 jmp       0x237beb
+0x00237bb9 vmulps    xmm0, xmm7, xmm7
+0x00237bbd vpshufd   xmm1, xmm0, 0x55
+0x00237bc2 vpshufd   xmm2, xmm0, 0
+0x00237bc7 vaddps    xmm1, xmm2, xmm1
+0x00237bcb vpshufd   xmm0, xmm0, 0xaa
+0x00237bd0 vaddps    xmm0, xmm0, xmm1
+0x00237bd4 vmovaps   xmm1, xmmword ptr [rip + 0x13e7e04] ; [0x161f9e0]
+0x00237bdc vmulps    xmm2, xmm0, xmm1
+0x00237be0 vrsqrtps  xmm0, xmm0
+0x00237be4 vmulps    xmm3, xmm0, xmm0
+0x00237be8 inc       r12
+0x00237beb vmulps    xmm2, xmm2, xmm3
+0x00237bef vsubps    xmm1, xmm1, xmm2
+0x00237bf3 vmulps    xmm1, xmm0, xmm1
+0x00237bf7 vaddps    xmm1, xmm0, xmm1
+0x00237bfb vcmpeqps  xmm2, xmm1, xmm1
+0x00237c00 vandps    xmm1, xmm2, xmm1
+0x00237c04 vandnps   xmm0, xmm2, xmm0
+0x00237c08 vorps     xmm0, xmm0, xmm1
+0x00237c0c vmulps    xmm1, xmm7, xmm0
+0x00237c10 vcmpeqps  xmm0, xmm0, xmmword ptr [rip + 0x13e7dd7] ; [0x161f9f0]
+0x00237c19 vandnps   xmm7, xmm0, xmm1
+0x00237c1d vmovaps   xmmword ptr [r15], xmm7
+0x00237c22 jmp       0x2390d0
+0x00237c27 vxorps    xmm0, xmm0, xmm0
+0x00237c2b vsubps    xmm7, xmm0, xmm7
+0x00237c2f jmp       0x237d91
+0x00237c34 vpand     xmm0, xmm7, xmmword ptr [rip + 0x13e7dc4] ; [0x161fa00]
+0x00237c3c vmovdqa   xmm1, xmmword ptr [rip + 0x13e7dcc] ; [0x161fa10]
+0x00237c44 vpcmpgtd  xmm0, xmm1, xmm0
+0x00237c48 vpandn    xmm1, xmm0, xmm7
+0x00237c4c vcvtps2dq xmm2, xmm7
+0x00237c50 vcvtdq2ps xmm2, xmm2
+0x00237c54 vpand     xmm0, xmm0, xmm2
+0x00237c58 vpor      xmm0, xmm0, xmm1
+0x00237c5c vsubps    xmm0, xmm7, xmm0
+0x00237c60 vpxor     xmm1, xmm1, xmm1
+0x00237c64 vsubps    xmm2, xmm1, xmm0
+0x00237c68 inc       r12
+0x00237c6b jmp       0x237cf1
+0x00237c70 vaddps    xmm0, xmm7, xmmword ptr [rip + 0x13e7e78] ; [0x161faf0]
+0x00237c78 vandps    xmm1, xmm0, xmmword ptr [rip + 0x13e7d80] ; [0x161fa00]
+0x00237c80 vmovdqa   xmm2, xmmword ptr [rip + 0x13e7d88] ; [0x161fa10]
+0x00237c88 vpcmpgtd  xmm1, xmm2, xmm1
+0x00237c8c vpandn    xmm2, xmm1, xmm0
+0x00237c90 vcvtps2dq xmm3, xmm0
+0x00237c94 vcvtdq2ps xmm3, xmm3
+0x00237c98 vpand     xmm1, xmm1, xmm3
+0x00237c9c vpor      xmm1, xmm1, xmm2
+0x00237ca0 vsubps    xmm0, xmm0, xmm1
+0x00237ca4 inc       r12
+0x00237ca7 vpxor     xmm1, xmm1, xmm1
+0x00237cab jmp       0x237ced
+0x00237cad vpshufd   xmm0, xmm7, 0x50
+0x00237cb2 vaddps    xmm0, xmm0, xmmword ptr [rip + 0x13e7ee6] ; [0x161fba0]
+0x00237cba vandps    xmm1, xmm0, xmmword ptr [rip + 0x13e7d3e] ; [0x161fa00]
+0x00237cc2 vmovdqa   xmm2, xmmword ptr [rip + 0x13e7d46] ; [0x161fa10]
+0x00237cca vpcmpgtd  xmm1, xmm2, xmm1
+0x00237cce vpandn    xmm2, xmm1, xmm0
+0x00237cd2 vcvtps2dq xmm3, xmm0
+0x00237cd6 vcvtdq2ps xmm3, xmm3
+0x00237cda vpand     xmm1, xmm1, xmm3
+0x00237cde vpor      xmm2, xmm1, xmm2
+0x00237ce2 inc       r12
+0x00237ce5 vpxor     xmm1, xmm1, xmm1
+0x00237ce9 vsubps    xmm0, xmm0, xmm2
+0x00237ced vsubps    xmm2, xmm1, xmm0
+0x00237cf1 vmaxps    xmm2, xmm2, xmm0
+0x00237cf5 vmulps    xmm2, xmm2, xmmword ptr [rip + 0x13e7db3] ; [0x161fab0]
+0x00237cfd vaddps    xmm2, xmm2, xmmword ptr [rip + 0x13e7d9b] ; [0x161faa0]
+0x00237d05 vmulps    xmm0, xmm2, xmm0
+0x00237d09 vsubps    xmm1, xmm1, xmm0
+0x00237d0d vmaxps    xmm1, xmm1, xmm0
+0x00237d11 vmulps    xmm1, xmm1, xmmword ptr [rip + 0x13e7e97] ; [0x161fbb0]
+0x00237d19 vaddps    xmm1, xmm1, xmmword ptr [rip + 0x13e7e9f] ; [0x161fbc0]
+0x00237d21 vmulps    xmm7, xmm1, xmm0
+0x00237d25 vmovaps   xmmword ptr [r15], xmm7
+0x00237d2a jmp       0x2390d0
+0x00237d2f vpshufd   xmm7, xmm7, 0
+0x00237d34 jmp       0x237d91
+0x00237d36 movzx     eax, byte ptr [r12 + 1]
+0x00237d3c mov       ecx, 0x202
+0x00237d41 bextr     ecx, eax, ecx
+0x00237d46 mov       edx, 0x204
+0x00237d4b bextr     edx, eax, edx
+0x00237d50 mov       esi, eax
+0x00237d52 shr       esi, 6
+0x00237d55 vmovd     xmm0, esi
+0x00237d59 vpinsrd   xmm0, xmm0, edx, 1
+0x00237d5f vpinsrd   xmm0, xmm0, ecx, 2
+0x00237d65 and       eax, 3
+0x00237d68 vpinsrd   xmm0, xmm0, eax, 3
+0x00237d6e add       r12, 2
+0x00237d72 vpermilps xmm7, xmm7, xmm0
+0x00237d77 vmovaps   xmmword ptr [r15], xmm7
+0x00237d7c jmp       0x2390d0
+0x00237d81 vxorps    xmm0, xmm0, xmm0
+0x00237d85 vmaxps    xmm0, xmm7, xmm0
+0x00237d89 vminps    xmm7, xmm0, xmmword ptr [rip + 0x13e7c1f] ; [0x161f9b0]
+0x00237d91 vmovdqa   xmmword ptr [r15], xmm7
+0x00237d96 inc       r12
+0x00237d99 jmp       0x2390d0
+0x00237d9e vcvtps2dq xmm0, xmm7
+0x00237da2 vcvtdq2ps xmm1, xmm0
+0x00237da6 vsubps    xmm1, xmm7, xmm1
+0x00237daa vmulps    xmm2, xmm1, xmmword ptr [rip + 0x13e7dbe] ; [0x161fb70]
+0x00237db2 vaddps    xmm2, xmm2, xmmword ptr [rip + 0x13e7bf6] ; [0x161f9b0]
+0x00237dba vmulps    xmm1, xmm1, xmm1
+0x00237dbe vmulps    xmm1, xmm1, xmmword ptr [rip + 0x13e7dba] ; [0x161fb80]
+0x00237dc6 vaddps    xmm1, xmm1, xmm2
+0x00237dca inc       r12
+0x00237dcd vpaddd    xmm0, xmm0, xmmword ptr [rip + 0x13e7dbb] ; [0x161fb90]
+0x00237dd5 vpslld    xmm0, xmm0, 0x17
+0x00237dda jmp       0x237f91
+0x00237ddf vandps    xmm0, xmm7, xmmword ptr [rip + 0x13e7d29] ; [0x161fb10]
+0x00237de7 vcvtdq2ps xmm0, xmm0
+0x00237deb vmulps    xmm0, xmm0, xmmword ptr [rip + 0x13e7d2d] ; [0x161fb20]
+0x00237df3 vmulps    xmm1, xmm0, xmm0
+0x00237df7 vmulps    xmm2, xmm0, xmmword ptr [rip + 0x13e7d31] ; [0x161fb30]
+0x00237dff vaddps    xmm2, xmm2, xmmword ptr [rip + 0x13e7d39] ; [0x161fb40]
+0x00237e07 vmulps    xmm1, xmm1, xmm2
+0x00237e0b inc       r12
+0x00237e0e vandps    xmm2, xmm7, xmmword ptr [rip + 0x13e7bda] ; [0x161f9f0]
+0x00237e16 vpsrld    xmm2, xmm2, 0x17
+0x00237e1b vpaddd    xmm2, xmm2, xmmword ptr [rip + 0x13e7d2d] ; [0x161fb50]
+0x00237e23 vcvtdq2ps xmm2, xmm2
+0x00237e27 vmulps    xmm0, xmm0, xmmword ptr [rip + 0x13e7d31] ; [0x161fb60]
+0x00237e2f vaddps    xmm0, xmm0, xmm1
+0x00237e33 vaddps    xmm7, xmm2, xmm0
+0x00237e37 vmovaps   xmmword ptr [r15], xmm7
+0x00237e3c jmp       0x2390d0
+0x00237e41 vmulps    xmm0, xmm7, xmm7
+0x00237e45 vpshufd   xmm1, xmm0, 0x4e
+0x00237e4a vaddps    xmm0, xmm0, xmm1
+0x00237e4e vpshufd   xmm1, xmm0, 0x93
+0x00237e53 vaddps    xmm0, xmm0, xmm1
+0x00237e57 vmovaps   xmm2, xmmword ptr [rip + 0x13e7b81] ; [0x161f9e0]
+0x00237e5f vmulps    xmm3, xmm0, xmm2
+0x00237e63 vrsqrtps  xmm1, xmm0
+0x00237e67 inc       r12
+0x00237e6a vmulps    xmm4, xmm1, xmm1
+0x00237e6e vmulps    xmm3, xmm3, xmm4
+0x00237e72 vsubps    xmm2, xmm2, xmm3
+0x00237e76 vmulps    xmm2, xmm1, xmm2
+0x00237e7a vaddps    xmm2, xmm1, xmm2
+0x00237e7e vcmpeqps  xmm3, xmm2, xmm2
+0x00237e83 vandps    xmm2, xmm3, xmm2
+0x00237e87 vandnps   xmm1, xmm3, xmm1
+0x00237e8b vorps     xmm1, xmm1, xmm2
+0x00237e8f vmulps    xmm0, xmm0, xmm1
+0x00237e93 vcmpeqps  xmm1, xmm1, xmmword ptr [rip + 0x13e7b54] ; [0x161f9f0]
+0x00237e9c vandnps   xmm7, xmm1, xmm0
+0x00237ea0 vmovaps   xmmword ptr [r15], xmm7
+0x00237ea5 jmp       0x2390d0
+0x00237eaa vpand     xmm0, xmm7, xmmword ptr [rip + 0x13e7b4e] ; [0x161fa00]
+0x00237eb2 vmovdqa   xmm1, xmmword ptr [rip + 0x13e7b56] ; [0x161fa10]
+0x00237eba vpcmpgtd  xmm0, xmm1, xmm0
+0x00237ebe vpandn    xmm1, xmm0, xmm7
+0x00237ec2 vcvtps2dq xmm2, xmm7
+0x00237ec6 vcvtdq2ps xmm2, xmm2
+0x00237eca vpand     xmm0, xmm0, xmm2
+0x00237ece vpor      xmm0, xmm0, xmm1
+0x00237ed2 vsubps    xmm0, xmm7, xmm0
+0x00237ed6 vpxor     xmm1, xmm1, xmm1
+0x00237eda vsubps    xmm1, xmm1, xmm0
+0x00237ede inc       r12
+0x00237ee1 vmaxps    xmm0, xmm1, xmm0
+0x00237ee5 vmulps    xmm7, xmm0, xmmword ptr [rip + 0x13e7c13] ; [0x161fb00]
+0x00237eed vmovaps   xmmword ptr [r15], xmm7
+0x00237ef2 jmp       0x2390d0
+0x00237ef7 vpshufd   xmm0, xmm7, 0
+0x00237efc vmulps    xmm0, xmm0, xmmword ptr [rip + 0x13e7bcc] ; [0x161fad0]
+0x00237f04 vaddps    xmm0, xmm0, xmmword ptr [rip + 0x13e7bd4] ; [0x161fae0]
+0x00237f0c vandps    xmm1, xmm0, xmmword ptr [rip + 0x13e7aec] ; [0x161fa00]
+0x00237f14 vmovdqa   xmm2, xmmword ptr [rip + 0x13e7af4] ; [0x161fa10]
+0x00237f1c vpcmpgtd  xmm2, xmm2, xmm1
+0x00237f20 vcvtps2dq xmm3, xmm0
+0x00237f24 vpandn    xmm1, xmm2, xmm0
+0x00237f28 vcvtdq2ps xmm3, xmm3
+0x00237f2c vpand     xmm2, xmm2, xmm3
+0x00237f30 inc       r12
+0x00237f33 vxorps    xmm3, xmm3, xmm3
+0x00237f37 vpor      xmm1, xmm2, xmm1
+0x00237f3b vsubps    xmm0, xmm0, xmm1
+0x00237f3f vsubps    xmm1, xmm3, xmm0
+0x00237f43 vmaxps    xmm1, xmm1, xmm0
+0x00237f47 vmulps    xmm1, xmm1, xmmword ptr [rip + 0x13e7b61] ; [0x161fab0]
+0x00237f4f vaddps    xmm1, xmm1, xmmword ptr [rip + 0x13e7b49] ; [0x161faa0]
+0x00237f57 vmulps    xmm0, xmm0, xmmword ptr [rip + 0x13e7b91] ; [0x161faf0]
+0x00237f5f vmulps    xmm0, xmm1, xmm0
+0x00237f63 vpshufd   xmm1, xmm0, 0x4e
+0x00237f68 vaddps    xmm0, xmm0, xmm1
+0x00237f6c vpshufd   xmm1, xmm0, 0x93
+0x00237f71 vaddps    xmm0, xmm0, xmm1
+0x00237f75 vaddps    xmm1, xmm0, xmmword ptr [rip + 0x13e7a63] ; [0x161f9e0]
+0x00237f7d vmulps    xmm0, xmm1, xmm1
+0x00237f81 vmulps    xmm1, xmm1, xmmword ptr [rip + 0x13e7aa7] ; [0x161fa30]
+0x00237f89 vaddps    xmm1, xmm1, xmmword ptr [rip + 0x13e7aaf] ; [0x161fa40]
+0x00237f91 vmulps    xmm7, xmm0, xmm1
+0x00237f95 vmovaps   xmmword ptr [r15], xmm7
+0x00237f9a jmp       0x2390d0
+0x00237f9f vpshufd   xmm0, xmm7, 0
+0x00237fa4 vmulps    xmm1, xmm0, xmmword ptr [rip + 0x13e7ab4] ; [0x161fa60]
+0x00237fac vaddps    xmm1, xmm1, xmmword ptr [rip + 0x13e7abc] ; [0x161fa70]
+0x00237fb4 vmovaps   xmm4, xmmword ptr [rip + 0x13e7a44] ; [0x161fa00]
+0x00237fbc vandps    xmm2, xmm1, xmm4
+0x00237fc0 vmovdqa   xmm3, xmmword ptr [rip + 0x13e7a48] ; [0x161fa10]
+0x00237fc8 vpcmpgtd  xmm2, xmm3, xmm2
+0x00237fcc vmulps    xmm0, xmm0, xmmword ptr [rip + 0x13e7aac] ; [0x161fa80]
+0x00237fd4 vaddps    xmm0, xmm0, xmmword ptr [rip + 0x13e7ab4] ; [0x161fa90]
+0x00237fdc vandps    xmm4, xmm0, xmm4
+0x00237fe0 vcvtps2dq xmm5, xmm1
+0x00237fe4 vcvtdq2ps xmm5, xmm5
+0x00237fe8 vpcmpgtd  xmm3, xmm3, xmm4
+0x00237fec vpandn    xmm6, xmm2, xmm1
+0x00237ff0 vpand     xmm7, xmm2, xmm5
+0x00237ff4 inc       r12
+0x00237ff7 vmovaps   xmm8, xmmword ptr [rip + 0x13e7aa1] ; [0x161faa0]
+0x00237fff vmovaps   xmm4, xmmword ptr [rip + 0x13e7aa9] ; [0x161fab0]
+0x00238007 vxorps    xmm5, xmm5, xmm5
+0x0023800b vpor      xmm6, xmm7, xmm6
+0x0023800f vsubps    xmm1, xmm1, xmm6
+0x00238013 vsubps    xmm6, xmm5, xmm1
+0x00238017 vmaxps    xmm6, xmm6, xmm1
+0x0023801b vmulps    xmm6, xmm6, xmm4
+0x0023801f vaddps    xmm6, xmm6, xmm8
+0x00238024 vpandn    xmm7, xmm3, xmm0
+0x00238028 vcvtps2dq xmm2, xmm0
+0x0023802c vcvtdq2ps xmm2, xmm2
+0x00238030 vpand     xmm2, xmm3, xmm2
+0x00238034 vpor      xmm3, xmm2, xmm7
+0x00238038 vmulps    xmm1, xmm6, xmm1
+0x0023803c vsubps    xmm0, xmm0, xmm3
+0x00238040 vsubps    xmm2, xmm5, xmm0
+0x00238044 vmaxps    xmm2, xmm2, xmm0
+0x00238048 vmulps    xmm2, xmm2, xmm4
+0x0023804c vaddps    xmm2, xmm2, xmm8
+0x00238051 vmulps    xmm0, xmm2, xmm0
+0x00238055 vmulps    xmm0, xmm0, xmmword ptr [rip + 0x13e7a63] ; [0x161fac0]
+0x0023805d vmulps    xmm0, xmm1, xmm0
+0x00238061 vpshufd   xmm1, xmm0, 0x4e
+0x00238066 vaddps    xmm0, xmm0, xmm1
+0x0023806a vpshufd   xmm1, xmm0, 0x93
+0x0023806f vaddps    xmm0, xmm0, xmm1
+0x00238073 vaddps    xmm7, xmm0, xmmword ptr [rip + 0x13e7965] ; [0x161f9e0]
+0x0023807b vmovaps   xmmword ptr [r15], xmm7
+0x00238080 jmp       0x2390d0
+0x00238085 vpshufd   xmm3, xmm7, 0
+0x0023808a vmovdqa   xmm0, xmmword ptr [rip + 0x13e796e] ; [0x161fa00]
+0x00238092 vpand     xmm1, xmm3, xmm0
+0x00238096 vcvttps2dq xmm2, xmm3
+0x0023809a vcvtdq2ps xmm5, xmm2
+0x0023809e vmovdqa   xmm2, xmmword ptr [rip + 0x13e796a] ; [0x161fa10]
+0x002380a6 vpcmpgtd  xmm4, xmm2, xmm1
+0x002380aa vcmpltps  xmm6, xmm3, xmm5
+0x002380af vmovaps   xmm1, xmmword ptr [rip + 0x13e78f9] ; [0x161f9b0]
+0x002380b7 vandps    xmm6, xmm6, xmm1
+0x002380bb vsubps    xmm5, xmm5, xmm6
+0x002380bf inc       r12
+0x002380c2 vpand     xmm5, xmm4, xmm5
+0x002380c6 vpandn    xmm3, xmm4, xmm3
+0x002380ca vpor      xmm3, xmm5, xmm3
+0x002380ce vmulps    xmm3, xmm3, xmmword ptr [rip + 0x13e794a] ; [0x161fa20]
+0x002380d6 vpshufd   xmm4, xmm3, 0x4e
+0x002380db vaddps    xmm3, xmm3, xmm4
+0x002380df vpshufd   xmm4, xmm3, 0x93
+0x002380e4 vaddps    xmm3, xmm3, xmm4
+0x002380e8 vandps    xmm4, xmm3, xmm0
+0x002380ec vpcmpgtd  xmm4, xmm2, xmm4
+0x002380f0 vpandn    xmm5, xmm4, xmm3
+0x002380f4 vcvttps2dq xmm6, xmm3
+0x002380f8 vcvtdq2ps xmm6, xmm6
+0x002380fc vcmpltps  xmm7, xmm3, xmm6
+0x00238101 vandps    xmm7, xmm7, xmm1
+0x00238105 vsubps    xmm6, xmm6, xmm7
+0x00238109 vpand     xmm4, xmm4, xmm6
+0x0023810d vpor      xmm4, xmm4, xmm5
+0x00238111 vsubps    xmm3, xmm3, xmm4
+0x00238115 vmulps    xmm3, xmm3, xmm3
+0x00238119 vmulps    xmm3, xmm3, xmmword ptr [rip + 0x13e792f] ; [0x161fa50]
+0x00238121 vandps    xmm0, xmm3, xmm0
+0x00238125 vpcmpgtd  xmm0, xmm2, xmm0
+0x00238129 vpandn    xmm2, xmm0, xmm3
+0x0023812d vcvttps2dq xmm4, xmm3
+0x00238131 vcvtdq2ps xmm4, xmm4
+0x00238135 vcmpltps  xmm5, xmm3, xmm4
+0x0023813a vandps    xmm1, xmm5, xmm1
+0x0023813e vsubps    xmm1, xmm4, xmm1
+0x00238142 vpand     xmm0, xmm0, xmm1
+0x00238146 vpor      xmm0, xmm0, xmm2
+0x0023814a vsubps    xmm7, xmm3, xmm0
+0x0023814e vmovaps   xmmword ptr [r15], xmm7
+0x00238153 jmp       0x2390d0
+0x00238158 vpshufd   xmm3, xmm7, 0
+0x0023815d vcvttps2dq xmm0, xmm3
+0x00238161 vcvtdq2ps xmm0, xmm0
+0x00238165 vcmpltps  xmm4, xmm3, xmm0
+0x0023816a vmovdqa   xmm10, xmmword ptr [rip + 0x13e788e] ; [0x161fa00]
+0x00238172 vpand     xmm5, xmm3, xmm10
+0x00238177 vmovaps   xmm8, xmmword ptr [rip + 0x13e7831] ; [0x161f9b0]
+0x0023817f vmovdqa   xmm2, xmmword ptr [rip + 0x13e7889] ; [0x161fa10]
+0x00238187 vpcmpgtd  xmm5, xmm2, xmm5
+0x0023818b vandps    xmm1, xmm4, xmm8
+0x00238190 vsubps    xmm0, xmm0, xmm1
+0x00238194 inc       r12
+0x00238197 vmovaps   xmm4, xmmword ptr [rip + 0x13e7881] ; [0x161fa20]
+0x0023819f vpand     xmm0, xmm5, xmm0
+0x002381a3 vpandn    xmm1, xmm5, xmm3
+0x002381a7 vpor      xmm6, xmm0, xmm1
+0x002381ab vmulps    xmm0, xmm6, xmm4
+0x002381af vpshufd   xmm1, xmm0, 0x4e
+0x002381b4 vaddps    xmm0, xmm0, xmm1
+0x002381b8 vpshufd   xmm1, xmm0, 0x93
+0x002381bd vaddps    xmm5, xmm0, xmm1
+0x002381c1 vcvttps2dq xmm0, xmm5
+0x002381c5 vcvtdq2ps xmm0, xmm0
+0x002381c9 vcmpltps  xmm1, xmm5, xmm0
+0x002381ce vandps    xmm7, xmm1, xmm8
+0x002381d3 vandps    xmm1, xmm5, xmm10
+0x002381d8 vsubps    xmm7, xmm0, xmm7
+0x002381dc vpcmpgtd  xmm0, xmm2, xmm1
+0x002381e0 vsubps    xmm3, xmm3, xmm6
+0x002381e4 vaddps    xmm1, xmm6, xmmword ptr [rip + 0x13e77c4] ; [0x161f9b0]
+0x002381ec vmulps    xmm1, xmm1, xmm4
+0x002381f0 vpshufd   xmm4, xmm1, 0x4e
+0x002381f5 vaddps    xmm6, xmm1, xmm4
+0x002381f9 vmulps    xmm4, xmm3, xmm3
+0x002381fd vmulps    xmm1, xmm3, xmmword ptr [rip + 0x13e782b] ; [0x161fa30]
+0x00238205 vaddps    xmm1, xmm1, xmmword ptr [rip + 0x13e7833] ; [0x161fa40]
+0x0023820d vmovaps   xmm9, xmmword ptr [rip + 0x13e783b] ; [0x161fa50]
+0x00238215 vmulps    xmm3, xmm4, xmm1
+0x00238219 vpandn    xmm4, xmm0, xmm5
+0x0023821d vpand     xmm0, xmm0, xmm7
+0x00238221 vpshufd   xmm1, xmm6, 0x93
+0x00238226 vpor      xmm0, xmm0, xmm4
+0x0023822a vaddps    xmm6, xmm6, xmm1
+0x0023822e vcvttps2dq xmm1, xmm6
+0x00238232 vcvtdq2ps xmm4, xmm1
+0x00238236 vcmpltps  xmm1, xmm6, xmm4
+0x0023823b vsubps    xmm0, xmm5, xmm0
+0x0023823f vandps    xmm1, xmm1, xmm8
+0x00238244 vsubps    xmm4, xmm4, xmm1
+0x00238248 vandps    xmm1, xmm6, xmm10
+0x0023824d vpcmpgtd  xmm1, xmm2, xmm1
+0x00238251 vpandn    xmm5, xmm1, xmm6
+0x00238255 vpand     xmm1, xmm1, xmm4
+0x00238259 vpor      xmm7, xmm1, xmm5
+0x0023825d vmulps    xmm0, xmm0, xmm0
+0x00238261 vmulps    xmm5, xmm0, xmm9
+0x00238266 vcvttps2dq xmm0, xmm5
+0x0023826a vcvtdq2ps xmm0, xmm0
+0x0023826e vcmpltps  xmm1, xmm5, xmm0
+0x00238273 vandps    xmm1, xmm1, xmm8
+0x00238278 vsubps    xmm0, xmm0, xmm1
+0x0023827c vsubps    xmm6, xmm6, xmm7
+0x00238280 vandps    xmm1, xmm5, xmm10
+0x00238285 vpcmpgtd  xmm1, xmm2, xmm1
+0x00238289 vpandn    xmm4, xmm1, xmm5
+0x0023828d vpand     xmm0, xmm1, xmm0
+0x00238291 vmulps    xmm1, xmm6, xmm6
+0x00238295 vpor      xmm4, xmm0, xmm4
+0x00238299 vmulps    xmm0, xmm1, xmm9
+0x0023829e vandps    xmm1, xmm0, xmm10
+0x002382a3 vpcmpgtd  xmm2, xmm2, xmm1
+0x002382a7 vsubps    xmm1, xmm5, xmm4
+0x002382ab vpandn    xmm4, xmm2, xmm0
+0x002382af vcvttps2dq xmm5, xmm0
+0x002382b3 vcvtdq2ps xmm5, xmm5
+0x002382b7 vcmpltps  xmm6, xmm0, xmm5
+0x002382bc vandps    xmm6, xmm6, xmm8
+0x002382c1 vsubps    xmm5, xmm5, xmm6
+0x002382c5 vpand     xmm2, xmm2, xmm5
+0x002382c9 vpor      xmm2, xmm2, xmm4
+0x002382cd vsubps    xmm0, xmm0, xmm2
+0x002382d1 vsubps    xmm0, xmm0, xmm1
+0x002382d5 vmulps    xmm0, xmm3, xmm0
+0x002382d9 jmp       0x239088
+0x002382de vmulps    xmm0, xmm7, xmm7
+0x002382e2 vpshufd   xmm1, xmm0, 0x55
+0x002382e7 vpshufd   xmm2, xmm0, 0
+0x002382ec vaddps    xmm1, xmm2, xmm1
+0x002382f0 vpshufd   xmm0, xmm0, 0xaa
+0x002382f5 vaddps    xmm1, xmm0, xmm1
+0x002382f9 vrsqrtps  xmm2, xmm1
+0x002382fd vmovaps   xmmword ptr [rbp - 0x250], xmm2
+0x00238305 vpshufd   xmm3, xmm7, 3
+0x0023830a vmovaps   xmm0, xmmword ptr [rip + 0x13e76ce] ; [0x161f9e0]
+0x00238312 vmulps    xmm1, xmm1, xmm0
+0x00238316 vmulps    xmm2, xmm2, xmm2
+0x0023831a vmulss    xmm3, xmm3, dword ptr [rip + 0x13e78ae] ; [0x161fbd0]
+0x00238322 inc       r12
+0x00238325 lea       r13, [r15 - 0x10]
+0x00238329 vmulss    xmm3, xmm3, dword ptr [rip + 0x13e78a3] ; [0x161fbd4]
+0x00238331 vmovss    dword ptr [rbp - 0x284], xmm3
+0x00238339 lea       r14, [rip + 0x188e080] ; [0x1ac63c0]
+0x00238340 vmulps    xmm1, xmm1, xmm2
+0x00238344 vsubps    xmm0, xmm0, xmm1
+0x00238348 vmovaps   xmmword ptr [rbp - 0x280], xmm0
+0x00238350 vmovaps   xmm0, xmm3
+0x00238354 xor       edi, edi
+0x00238356 xor       esi, esi
+0x00238358 vmovaps   xmmword ptr [rbp - 0x270], xmm7
+0x00238360 call      0x12aaa30
+0x00238365 vmovss    dword ptr [rbp - 0x254], xmm0
+0x0023836d vmovss    xmm0, dword ptr [rbp - 0x284]
+0x00238375 mov       edi, 1
+0x0023837a xor       esi, esi
+0x0023837c call      0x12aaa30
+0x00238381 vmovdqa   xmm1, xmmword ptr [r15 - 0x10]
+0x00238387 vmovaps   xmm3, xmmword ptr [rbp - 0x250]
+0x0023838f vmulps    xmm2, xmm3, xmmword ptr [rbp - 0x280]
+0x00238397 vaddps    xmm2, xmm3, xmm2
+0x0023839b vmovaps   xmm4, xmm3
+0x0023839f vcmpeqps  xmm3, xmm2, xmm2
+0x002383a4 vandps    xmm2, xmm3, xmm2
+0x002383a8 vandnps   xmm3, xmm3, xmm4
+0x002383ac vorps     xmm2, xmm3, xmm2
+0x002383b0 vmovaps   xmm3, xmmword ptr [rbp - 0x270]
+0x002383b8 vmulps    xmm3, xmm3, xmm2
+0x002383bc vcmpeqps  xmm2, xmm2, xmmword ptr [rip + 0x13e762b] ; [0x161f9f0]
+0x002383c5 vandnps   xmm4, xmm2, xmm3
+0x002383c9 vpshufd   xmm2, xmm1, 0xd2
+0x002383ce vpshufd   xmm3, xmm1, 0xc9
+0x002383d3 vmovss    xmm7, dword ptr [rbp - 0x254]
+0x002383db vmulss    xmm5, xmm7, xmm4
+0x002383df vpshufd   xmm6, xmm4, 1
+0x002383e4 vmulss    xmm6, xmm7, xmm6
+0x002383e8 vinsertps xmm5, xmm5, xmm6, 0x10
+0x002383ee vmovhlps  xmm4, xmm4, xmm4
+0x002383f2 vmulss    xmm4, xmm7, xmm4
+0x002383f6 vinsertps xmm4, xmm5, xmm4, 0x20
+0x002383fc vinsertps xmm0, xmm4, xmm0, 0x30
+0x00238402 vpshufd   xmm4, xmm0, 0xd2
+0x00238407 vmulps    xmm3, xmm3, xmm4
+0x0023840b vpshufd   xmm4, xmm0, 0xc9
+0x00238410 vmulps    xmm2, xmm2, xmm4
+0x00238414 vsubps    xmm2, xmm2, xmm3
+0x00238418 vmulps    xmm3, xmm1, xmm0
+0x0023841c vpshufd   xmm5, xmm3, 0x55
+0x00238421 vpshufd   xmm6, xmm3, 0
+0x00238426 vpshufd   xmm4, xmm0, 0xff
+0x0023842b vmulps    xmm2, xmm4, xmm2
+0x0023842f vaddps    xmm5, xmm6, xmm5
+0x00238433 vpshufd   xmm3, xmm3, 0xaa
+0x00238438 vaddps    xmm3, xmm3, xmm5
+0x0023843c vmulps    xmm0, xmm0, xmm3
+0x00238440 vmulps    xmm3, xmm4, xmm4
+0x00238444 vsubps    xmm3, xmm3, xmmword ptr [r14]
+0x00238449 vmulps    xmm1, xmm1, xmm3
+0x0023844d vaddps    xmm0, xmm1, xmm0
+0x00238451 vaddps    xmm0, xmm2, xmm0
+0x00238455 vaddps    xmm0, xmm0, xmm0
+0x00238459 vandps    xmm7, xmm0, xmmword ptr [rip + 0x13e751f] ; [0x161f980]
+0x00238461 vmovaps   xmmword ptr [r15 - 0x10], xmm7
+0x00238467 mov       r15, r13
+0x0023846a jmp       0x2390d0
+0x0023846f vmovaps   xmm9, xmmword ptr [r15 - 0x70]
+0x00238475 vmovaps   xmm1, xmmword ptr [r15 - 0x60]
+0x0023847b vmovaps   xmm2, xmmword ptr [r15 - 0x50]
+0x00238481 vmovaps   xmm3, xmmword ptr [r15 - 0x40]
+0x00238487 vmovdqa   xmm4, xmmword ptr [r15 - 0x30]
+0x0023848d vpshufd   xmm0, xmm4, 0xff
+0x00238492 vmulps    xmm0, xmm0, xmm3
+0x00238496 vpshufd   xmm5, xmm4, 0xaa
+0x0023849b vmulps    xmm5, xmm5, xmm2
+0x0023849f vaddps    xmm5, xmm5, xmm0
+0x002384a3 vpshufd   xmm0, xmm4, 0x55
+0x002384a8 vmulps    xmm0, xmm0, xmm1
+0x002384ac vpshufd   xmm4, xmm4, 0
+0x002384b1 vmulps    xmm4, xmm4, xmm9
+0x002384b6 vaddps    xmm0, xmm4, xmm0
+0x002384ba vmovdqa   xmm6, xmmword ptr [r15 - 0x20]
+0x002384c0 vaddps    xmm8, xmm0, xmm5
+0x002384c4 vpshufd   xmm0, xmm6, 0xff
+0x002384c9 vmulps    xmm7, xmm0, xmm3
+0x002384cd vpshufd   xmm0, xmm6, 0xaa
+0x002384d2 vmulps    xmm0, xmm0, xmm2
+0x002384d6 vmovdqa   xmm4, xmmword ptr [r15]
+0x002384db vmovdqa   xmm5, xmmword ptr [r15 - 0x10]
+0x002384e1 vmovaps   xmmword ptr [r15 - 0x70], xmm8
+0x002384e7 vaddps    xmm7, xmm0, xmm7
+0x002384eb vpshufd   xmm0, xmm6, 0x55
+0x002384f0 vmulps    xmm0, xmm0, xmm1
+0x002384f4 vpshufd   xmm6, xmm6, 0
+0x002384f9 vmulps    xmm6, xmm6, xmm9
+0x002384fe vaddps    xmm0, xmm6, xmm0
+0x00238502 vaddps    xmm6, xmm0, xmm7
+0x00238506 vpshufd   xmm0, xmm5, 0xff
+0x0023850b vmulps    xmm0, xmm0, xmm3
+0x0023850f vpshufd   xmm7, xmm5, 0xaa
+0x00238514 vmulps    xmm7, xmm7, xmm2
+0x00238518 vmovaps   xmmword ptr [r15 - 0x60], xmm6
+0x0023851e vaddps    xmm6, xmm7, xmm0
+0x00238522 vpshufd   xmm0, xmm5, 0x55
+0x00238527 vmulps    xmm0, xmm0, xmm1
+0x0023852b vpshufd   xmm5, xmm5, 0
+0x00238530 vmulps    xmm5, xmm5, xmm9
+0x00238535 vaddps    xmm0, xmm5, xmm0
+0x00238539 vaddps    xmm5, xmm0, xmm6
+0x0023853d vpshufd   xmm0, xmm4, 0xff
+0x00238542 vmulps    xmm3, xmm0, xmm3
+0x00238546 vpshufd   xmm0, xmm4, 0xaa
+0x0023854b vmulps    xmm0, xmm0, xmm2
+0x0023854f lea       rax, [r15 - 0x40]
+0x00238553 vmovaps   xmmword ptr [r15 - 0x50], xmm5
+0x00238559 vaddps    xmm2, xmm0, xmm3
+0x0023855d vpshufd   xmm0, xmm4, 0x55
+0x00238562 vmulps    xmm0, xmm0, xmm1
+0x00238566 vpshufd   xmm1, xmm4, 0
+0x0023856b vmulps    xmm1, xmm9, xmm1
+0x0023856f vaddps    xmm0, xmm1, xmm0
+0x00238573 vaddps    xmm7, xmm0, xmm2
+0x00238577 inc       r12
+0x0023857a vmovaps   xmmword ptr [r15 - 0x40], xmm7
+0x00238580 mov       r15, rax
+0x00238583 jmp       0x2390d0
+0x00238588 vpshufd   xmm0, xmm7, 0xff
+0x0023858d vmulps    xmm0, xmm0, xmmword ptr [r15 - 0x10]
+0x00238593 vpshufd   xmm1, xmm7, 0xaa
+0x00238598 vmulps    xmm1, xmm1, xmmword ptr [r15 - 0x20]
+0x0023859e vaddps    xmm0, xmm1, xmm0
+0x002385a2 vpshufd   xmm1, xmm7, 0x55
+0x002385a7 vmulps    xmm1, xmm1, xmmword ptr [r15 - 0x30]
+0x002385ad vpshufd   xmm2, xmm7, 0
+0x002385b2 vmulps    xmm2, xmm2, xmmword ptr [r15 - 0x40]
+0x002385b8 vaddps    xmm1, xmm2, xmm1
+0x002385bc vaddps    xmm7, xmm1, xmm0
+0x002385c0 vmovaps   xmmword ptr [r15 - 0x40], xmm7
+0x002385c6 inc       r12
+0x002385c9 add       r15, -0x40
+0x002385cd jmp       0x2390d0
+0x002385d2 vmovaps   xmm0, xmmword ptr [r15 - 0x10]
+0x002385d8 vcmpleps  xmm0, xmm0, xmm7
+0x002385dd vpxor     xmm1, xmm1, xmm1
+0x002385e1 vpalignr  xmm1, xmm1, xmm0, 4
+0x002385e7 vpxor     xmm0, xmm0, xmm1
+0x002385eb vmulps    xmm1, xmm7, xmmword ptr [r15 - 0x30]
+0x002385f1 vaddps    xmm1, xmm1, xmmword ptr [r15 - 0x20]
+0x002385f7 vmulps    xmm2, xmm7, xmmword ptr [r15 - 0x50]
+0x002385fd vaddps    xmm2, xmm2, xmmword ptr [r15 - 0x40]
+0x00238603 vmulps    xmm3, xmm7, xmm7
+0x00238607 vmulps    xmm2, xmm3, xmm2
+0x0023860b vaddps    xmm1, xmm2, xmm1
+0x0023860f vandps    xmm0, xmm1, xmm0
+0x00238613 vpshufd   xmm1, xmm0, 0x4e
+0x00238618 vpxor     xmm0, xmm0, xmm1
+0x0023861c inc       r12
+0x0023861f vpshufd   xmm1, xmm0, 0x1b
+0x00238624 vpxor     xmm7, xmm0, xmm1
+0x00238628 vmovdqa   xmmword ptr [r15 - 0x50], xmm7
+0x0023862e add       r15, -0x50
+0x00238632 jmp       0x2390d0
+0x00238637 vmovaps   xmm1, xmmword ptr [r15 - 0x20]
+0x0023863d vmovaps   xmm0, xmmword ptr [r15 - 0x10]
+0x00238643 vcmpleps  xmm2, xmm0, xmm7
+0x00238648 vpxor     xmm3, xmm3, xmm3
+0x0023864c vpalignr  xmm0, xmm3, xmm2, 4
+0x00238652 vpxor     xmm4, xmm2, xmm0
+0x00238656 vmulps    xmm0, xmm7, xmmword ptr [r15 - 0x40]
+0x0023865c vaddps    xmm5, xmm0, xmmword ptr [r15 - 0x30]
+0x00238662 vmulps    xmm0, xmm7, xmmword ptr [r15 - 0x60]
+0x00238668 vaddps    xmm6, xmm0, xmmword ptr [r15 - 0x50]
+0x0023866e vmulps    xmm0, xmm7, xmm7
+0x00238672 vmulps    xmm6, xmm0, xmm6
+0x00238676 vaddps    xmm5, xmm6, xmm5
+0x0023867a vandps    xmm4, xmm5, xmm4
+0x0023867e vpshufd   xmm5, xmm4, 0x4e
+0x00238683 vpxor     xmm4, xmm4, xmm5
+0x00238687 lea       rax, [r15 - 0xa0]
+0x0023868e vpshufd   xmm6, xmm4, 0x1b
+0x00238693 vcmpleps  xmm5, xmm1, xmm7
+0x00238698 vpalignr  xmm3, xmm3, xmm5, 4
+0x0023869e vpshufd   xmm1, xmm2, 0
+0x002386a3 inc       r12
+0x002386a6 vpxor     xmm2, xmm4, xmm6
+0x002386aa vpand     xmm2, xmm1, xmm2
+0x002386ae vpxor     xmm3, xmm5, xmm3
+0x002386b2 vmulps    xmm4, xmm7, xmmword ptr [r15 - 0x80]
+0x002386b8 vaddps    xmm4, xmm4, xmmword ptr [r15 - 0x70]
+0x002386be vmulps    xmm5, xmm7, xmmword ptr [r15 - 0xa0]
+0x002386c7 vaddps    xmm5, xmm5, xmmword ptr [r15 - 0x90]
+0x002386d0 vmulps    xmm0, xmm0, xmm5
+0x002386d4 vaddps    xmm0, xmm0, xmm4
+0x002386d8 vandps    xmm0, xmm0, xmm3
+0x002386dc vpshufd   xmm3, xmm0, 0x4e
+0x002386e1 vpxor     xmm0, xmm0, xmm3
+0x002386e5 vpshufd   xmm3, xmm0, 0x1b
+0x002386ea vpxor     xmm0, xmm0, xmm3
+0x002386ee vpandn    xmm0, xmm1, xmm0
+0x002386f2 vpor      xmm7, xmm0, xmm2
+0x002386f6 vmovdqa   xmmword ptr [r15 - 0xa0], xmm7
+0x002386ff mov       r15, rax
+0x00238702 jmp       0x2390d0
+0x00238707 vmovaps   xmm1, xmmword ptr [r15 - 0x20]
+0x0023870d vmovaps   xmm0, xmmword ptr [r15 - 0x10]
+0x00238713 vcmpleps  xmm0, xmm0, xmm7
+0x00238718 vpxor     xmm3, xmm3, xmm3
+0x0023871c vpalignr  xmm2, xmm3, xmm0, 4
+0x00238722 vpxor     xmm2, xmm0, xmm2
+0x00238726 vmulps    xmm4, xmm7, xmmword ptr [r15 - 0x40]
+0x0023872c vaddps    xmm5, xmm4, xmmword ptr [r15 - 0x30]
+0x00238732 vmulps    xmm4, xmm7, xmmword ptr [r15 - 0x60]
+0x00238738 vaddps    xmm6, xmm4, xmmword ptr [r15 - 0x50]
+0x0023873e vmulps    xmm4, xmm7, xmm7
+0x00238742 vmulps    xmm6, xmm4, xmm6
+0x00238746 vaddps    xmm5, xmm6, xmm5
+0x0023874a vandps    xmm5, xmm5, xmm2
+0x0023874e vpshufd   xmm6, xmm5, 0x4e
+0x00238753 vcmpleps  xmm2, xmm1, xmm7
+0x00238758 vpalignr  xmm3, xmm3, xmm2, 4
+0x0023875e vpxor     xmm1, xmm5, xmm6
+0x00238762 vpxor     xmm3, xmm2, xmm3
+0x00238766 vmulps    xmm5, xmm7, xmmword ptr [r15 - 0x80]
+0x0023876c vaddps    xmm5, xmm5, xmmword ptr [r15 - 0x70]
+0x00238772 vmulps    xmm6, xmm7, xmmword ptr [r15 - 0xa0]
+0x0023877b vaddps    xmm6, xmm6, xmmword ptr [r15 - 0x90]
+0x00238784 vmulps    xmm4, xmm4, xmm6
+0x00238788 vaddps    xmm4, xmm4, xmm5
+0x0023878c vandps    xmm3, xmm4, xmm3
+0x00238790 lea       rax, [r15 - 0xb0]
+0x00238797 vpshufd   xmm5, xmm1, 0x1b
+0x0023879c vpshufd   xmm4, xmm3, 0x4e
+0x002387a1 vpshufd   xmm2, xmm2, 0
+0x002387a6 vpshufd   xmm0, xmm0, 0
+0x002387ab inc       r12
+0x002387ae vpxor     xmm1, xmm1, xmm5
+0x002387b2 vpand     xmm1, xmm0, xmm1
+0x002387b6 vpxor     xmm3, xmm3, xmm4
+0x002387ba vpshufd   xmm4, xmm3, 0x1b
+0x002387bf vpxor     xmm3, xmm3, xmm4
+0x002387c3 vpand     xmm3, xmm2, xmm3
+0x002387c7 vpandn    xmm2, xmm2, xmmword ptr [r15 - 0xb0]
+0x002387d0 vpor      xmm2, xmm2, xmm3
+0x002387d4 vpandn    xmm0, xmm0, xmm2
+0x002387d8 vpor      xmm7, xmm0, xmm1
+0x002387dc jmp       0x238a9c
+0x002387e1 vmovdqa   xmm1, xmmword ptr [r15 - 0x10]
+0x002387e7 vpshufd   xmm0, xmm1, 0x39
+0x002387ec vpand     xmm0, xmm0, xmmword ptr [rip + 0x13e718c] ; [0x161f980]
+0x002387f4 vpor      xmm0, xmm0, xmmword ptr [rip + 0x13e71a4] ; [0x161f9a0]
+0x002387fc vsubps    xmm3, xmm0, xmm1
+0x00238800 vxorps    xmm0, xmm0, xmm0
+0x00238804 vsubps    xmm4, xmm0, xmm3
+0x00238808 vsubps    xmm1, xmm7, xmm1
+0x0023880c vdivps    xmm2, xmm1, xmm3
+0x00238810 vmaxps    xmm3, xmm4, xmm3
+0x00238814 inc       r12
+0x00238817 lea       rax, [r15 - 0x60]
+0x0023881b lea       rcx, [rip + 0x188dafe] ; [0x1ac6320]
+0x00238822 vmovaps   xmm4, xmmword ptr [rcx]
+0x00238826 vcmpltps  xmm3, xmm4, xmm3
+0x0023882b vandps    xmm2, xmm3, xmm2
+0x0023882f vcmpleps  xmm1, xmm0, xmm1
+0x00238834 vandps    xmm1, xmm1, xmmword ptr [rip + 0x13e7174] ; [0x161f9b0]
+0x0023883c vandnps   xmm1, xmm3, xmm1
+0x00238840 vorps     xmm1, xmm1, xmm2
+0x00238844 vmaxps    xmm1, xmm1, xmm0
+0x00238848 vminps    xmm1, xmm1, xmmword ptr [rip + 0x13e7160] ; [0x161f9b0]
+0x00238850 vmulps    xmm2, xmm1, xmmword ptr [r15 - 0x50]
+0x00238856 vaddps    xmm2, xmm2, xmm0
+0x0023885a vpshufd   xmm3, xmm2, 0x4e
+0x0023885f vaddps    xmm2, xmm2, xmm3
+0x00238863 vpshufd   xmm3, xmm2, 0x93
+0x00238868 vaddps    xmm2, xmm2, xmm3
+0x0023886c vmulps    xmm3, xmm1, xmmword ptr [r15 - 0x40]
+0x00238872 vmovss    xmm2, xmm0, xmm2
+0x00238876 vaddps    xmm3, xmm3, xmm0
+0x0023887a vpshufd   xmm4, xmm3, 0x4e
+0x0023887f vaddps    xmm3, xmm3, xmm4
+0x00238883 vaddps    xmm2, xmm2, xmmword ptr [r15 - 0x60]
+0x00238889 vpshufd   xmm4, xmm3, 0x93
+0x0023888e vaddps    xmm3, xmm3, xmm4
+0x00238892 vandps    xmm3, xmm3, xmmword ptr [rip + 0x13e7126] ; [0x161f9c0]
+0x0023889a vmulps    xmm4, xmm1, xmmword ptr [r15 - 0x30]
+0x002388a0 vaddps    xmm4, xmm4, xmm0
+0x002388a4 vpshufd   xmm5, xmm4, 0x4e
+0x002388a9 vaddps    xmm4, xmm4, xmm5
+0x002388ad vaddps    xmm2, xmm3, xmm2
+0x002388b1 vpshufd   xmm3, xmm4, 0x93
+0x002388b6 vaddps    xmm3, xmm4, xmm3
+0x002388ba vandps    xmm3, xmm3, xmmword ptr [rip + 0x13e710e] ; [0x161f9d0]
+0x002388c2 vmulps    xmm1, xmm1, xmmword ptr [r15 - 0x20]
+0x002388c8 vaddps    xmm0, xmm1, xmm0
+0x002388cc vpshufd   xmm1, xmm0, 0x4e
+0x002388d1 vaddps    xmm1, xmm0, xmm1
+0x002388d5 vaddps    xmm0, xmm3, xmm2
+0x002388d9 vpshufd   xmm2, xmm1, 0x93
+0x002388de vaddps    xmm1, xmm1, xmm2
+0x002388e2 vandps    xmm1, xmm1, xmmword ptr [rip + 0x13e70a6] ; [0x161f990]
+0x002388ea vaddps    xmm7, xmm1, xmm0
+0x002388ee vmovaps   xmmword ptr [r15 - 0x60], xmm7
+0x002388f4 mov       r15, rax
+0x002388f7 jmp       0x2390d0
+0x002388fc vmovdqa   xmm3, xmmword ptr [r15 - 0x20]
+0x00238902 vmovdqa   xmm2, xmmword ptr [r15 - 0x10]
+0x00238908 vpshufd   xmm0, xmm2, 0
+0x0023890d vmovdqa   xmm8, xmmword ptr [rip + 0x13e707b] ; [0x161f990]
+0x00238915 vpand     xmm1, xmm0, xmm8
+0x0023891a vpshufd   xmm4, xmm3, 0x39
+0x0023891f vmovdqa   xmm0, xmmword ptr [rip + 0x13e7059] ; [0x161f980]
+0x00238927 vpand     xmm4, xmm4, xmm0
+0x0023892b vaddps    xmm1, xmm4, xmm1
+0x0023892f vsubps    xmm5, xmm1, xmm3
+0x00238933 vxorps    xmm1, xmm1, xmm1
+0x00238937 vsubps    xmm6, xmm1, xmm5
+0x0023893b vpshufd   xmm4, xmm2, 0x39
+0x00238940 vpand     xmm0, xmm4, xmm0
+0x00238944 vpor      xmm0, xmm0, xmmword ptr [rip + 0x13e7054] ; [0x161f9a0]
+0x0023894c vsubps    xmm4, xmm0, xmm2
+0x00238950 vmaxps    xmm10, xmm6, xmm5
+0x00238954 vsubps    xmm0, xmm1, xmm4
+0x00238958 vsubps    xmm3, xmm7, xmm3
+0x0023895c vdivps    xmm9, xmm3, xmm5
+0x00238960 vmaxps    xmm5, xmm0, xmm4
+0x00238964 vcmpleps  xmm6, xmm1, xmm3
+0x00238969 vsubps    xmm2, xmm7, xmm2
+0x0023896d lea       rax, [rip + 0x188d9ac] ; [0x1ac6320]
+0x00238974 vmovaps   xmm3, xmmword ptr [rax]
+0x00238978 lea       rax, [r15 - 0xb0]
+0x0023897f vcmpltps  xmm0, xmm3, xmm10
+0x00238985 vdivps    xmm10, xmm2, xmm4
+0x00238989 vmovaps   xmm4, xmmword ptr [rip + 0x13e701f] ; [0x161f9b0]
+0x00238991 vcmpltps  xmm5, xmm3, xmm5
+0x00238996 vandps    xmm3, xmm6, xmm4
+0x0023899a inc       r12
+0x0023899d vandps    xmm7, xmm0, xmm9
+0x002389a2 vandnps   xmm0, xmm0, xmm3
+0x002389a6 vorps     xmm0, xmm0, xmm7
+0x002389aa vmaxps    xmm0, xmm0, xmm1
+0x002389ae vminps    xmm3, xmm0, xmm4
+0x002389b2 vmulps    xmm0, xmm3, xmmword ptr [r15 - 0xa0]
+0x002389bb vaddps    xmm7, xmm0, xmm1
+0x002389bf vandps    xmm0, xmm5, xmm10
+0x002389c4 vcmpleps  xmm2, xmm1, xmm2
+0x002389c9 vandps    xmm2, xmm2, xmm4
+0x002389cd vandnps   xmm2, xmm5, xmm2
+0x002389d1 vorps     xmm0, xmm2, xmm0
+0x002389d5 vmaxps    xmm0, xmm0, xmm1
+0x002389d9 vminps    xmm2, xmm0, xmm4
+0x002389dd vmulps    xmm0, xmm2, xmmword ptr [r15 - 0x60]
+0x002389e3 vaddps    xmm0, xmm7, xmm0
+0x002389e7 vpshufd   xmm4, xmm0, 0x4e
+0x002389ec vaddps    xmm0, xmm0, xmm4
+0x002389f0 vpshufd   xmm4, xmm0, 0x93
+0x002389f5 vmulps    xmm5, xmm3, xmmword ptr [r15 - 0x80]
+0x002389fb vaddps    xmm5, xmm5, xmm1
+0x002389ff vmulps    xmm6, xmm2, xmmword ptr [r15 - 0x40]
+0x00238a05 vaddps    xmm5, xmm5, xmm6
+0x00238a09 vpshufd   xmm6, xmm5, 0x4e
+0x00238a0e vaddps    xmm0, xmm0, xmm4
+0x00238a12 vaddps    xmm4, xmm5, xmm6
+0x00238a16 vmulps    xmm5, xmm3, xmmword ptr [r15 - 0x90]
+0x00238a1f vaddps    xmm6, xmm5, xmm1
+0x00238a23 vmulps    xmm7, xmm2, xmmword ptr [r15 - 0x50]
+0x00238a29 vpshufd   xmm5, xmm4, 0x93
+0x00238a2e vaddps    xmm6, xmm6, xmm7
+0x00238a32 vmulps    xmm3, xmm3, xmmword ptr [r15 - 0x70]
+0x00238a38 vmovss    xmm0, xmm1, xmm0
+0x00238a3c vaddps    xmm0, xmm0, xmmword ptr [r15 - 0xb0]
+0x00238a45 vpshufd   xmm7, xmm6, 0x4e
+0x00238a4a vaddps    xmm6, xmm6, xmm7
+0x00238a4e vpshufd   xmm7, xmm6, 0x93
+0x00238a53 vaddps    xmm6, xmm6, xmm7
+0x00238a57 vandps    xmm6, xmm6, xmmword ptr [rip + 0x13e6f61] ; [0x161f9c0]
+0x00238a5f vaddps    xmm0, xmm6, xmm0
+0x00238a63 vaddps    xmm4, xmm4, xmm5
+0x00238a67 vandps    xmm4, xmm4, xmmword ptr [rip + 0x13e6f61] ; [0x161f9d0]
+0x00238a6f vaddps    xmm1, xmm3, xmm1
+0x00238a73 vmulps    xmm2, xmm2, xmmword ptr [r15 - 0x30]
+0x00238a79 vaddps    xmm1, xmm1, xmm2
+0x00238a7d vpshufd   xmm2, xmm1, 0x4e
+0x00238a82 vaddps    xmm1, xmm1, xmm2
+0x00238a86 vaddps    xmm0, xmm4, xmm0
+0x00238a8a vpshufd   xmm2, xmm1, 0x93
+0x00238a8f vaddps    xmm1, xmm1, xmm2
+0x00238a93 vandps    xmm1, xmm1, xmm8
+0x00238a98 vaddps    xmm7, xmm1, xmm0
+0x00238a9c vmovdqa   xmmword ptr [r15 - 0xb0], xmm7
+0x00238aa5 mov       r15, rax
+0x00238aa8 jmp       0x2390d0
+0x00238aad movzx     eax, byte ptr [r12 + 1]
+0x00238ab3 shl       rax, 4
+0x00238ab7 vmovdqu   xmm7, xmmword ptr [rbx + rax]
+0x00238abc jmp       0x2390bc
+0x00238ac1 movzx     eax, byte ptr [r12 + 1]
+0x00238ac7 shl       rax, 4
+0x00238acb vmovups   xmm0, xmmword ptr [rbx + rax]
+0x00238ad0 vmovups   xmm1, xmmword ptr [rbx + rax + 0x10]
+0x00238ad6 vsubps    xmm1, xmm1, xmm0
+0x00238ada vmulps    xmm1, xmm7, xmm1
+0x00238ade vaddps    xmm7, xmm0, xmm1
+0x00238ae2 vmovaps   xmmword ptr [r15], xmm7
+0x00238ae7 add       r12, 2
+0x00238aeb jmp       0x2390d0
+0x00238af0 movzx     eax, byte ptr [r12 + 1]
+0x00238af6 shl       rax, 4
+0x00238afa vmovups   xmm0, xmmword ptr [rbx + rax]
+0x00238aff vmovups   xmm1, xmmword ptr [rbx + rax + 0x10]
+0x00238b05 vsubps    xmm1, xmm1, xmm0
+0x00238b09 vmulps    xmm1, xmm7, xmm1
+0x00238b0d vaddps    xmm0, xmm0, xmm1
+0x00238b11 add       r12, 2
+0x00238b15 vxorps    xmm1, xmm1, xmm1
+0x00238b19 vmaxps    xmm0, xmm0, xmm1
+0x00238b1d vminps    xmm7, xmm0, xmmword ptr [rip + 0x13e6e8b] ; [0x161f9b0]
+0x00238b25 vmovaps   xmmword ptr [r15], xmm7
+0x00238b2a jmp       0x2390d0
+0x00238b2f movzx     eax, byte ptr [r12 + 1]
+0x00238b35 shl       rax, 4
+0x00238b39 vmovups   xmm0, xmmword ptr [rbx + rax]
+0x00238b3e vmovups   xmm1, xmmword ptr [rbx + rax + 0x10]
+0x00238b44 vmovups   xmm2, xmmword ptr [rbx + rax + 0x20]
+0x00238b4a vmovups   xmm3, xmmword ptr [rbx + rax + 0x30]
+0x00238b50 vmulps    xmm4, xmm7, xmm0
+0x00238b54 vmulps    xmm0, xmm7, xmm2
+0x00238b58 vaddps    xmm0, xmm3, xmm0
+0x00238b5c vaddps    xmm1, xmm1, xmm4
+0x00238b60 vmulps    xmm2, xmm7, xmm7
+0x00238b64 vmulps    xmm1, xmm2, xmm1
+0x00238b68 add       r12, 2
+0x00238b6c vxorps    xmm2, xmm2, xmm2
+0x00238b70 vaddps    xmm0, xmm1, xmm0
+0x00238b74 vmovups   xmm1, xmmword ptr [rbx + rax + 0x40]
+0x00238b7a vcmpleps  xmm1, xmm1, xmm7
+0x00238b7f vpalignr  xmm2, xmm2, xmm1, 4
+0x00238b85 vpxor     xmm1, xmm1, xmm2
+0x00238b89 vandps    xmm0, xmm0, xmm1
+0x00238b8d vpshufd   xmm1, xmm0, 0x4e
+0x00238b92 vpxor     xmm0, xmm0, xmm1
+0x00238b96 vpshufd   xmm1, xmm0, 0x1b
+0x00238b9b vpxor     xmm7, xmm0, xmm1
+0x00238b9f vmovdqa   xmmword ptr [r15], xmm7
+0x00238ba4 jmp       0x2390d0
+0x00238ba9 movzx     eax, byte ptr [r12 + 1]
+0x00238baf shl       rax, 4
+0x00238bb3 vmovups   xmm0, xmmword ptr [rbx + rax + 0x50]
+0x00238bb9 vmovups   xmm1, xmmword ptr [rbx + rax + 0x40]
+0x00238bbf vmulps    xmm1, xmm7, xmm1
+0x00238bc3 vaddps    xmm3, xmm0, xmm1
+0x00238bc7 vmovups   xmm2, xmmword ptr [rbx + rax]
+0x00238bcc vmovups   xmm6, xmmword ptr [rbx + rax + 0x10]
+0x00238bd2 vmovups   xmm1, xmmword ptr [rbx + rax + 0x20]
+0x00238bd8 vmovups   xmm8, xmmword ptr [rbx + rax + 0x30]
+0x00238bde vmulps    xmm0, xmm7, xmm2
+0x00238be2 vmovups   xmm2, xmmword ptr [rbx + rax + 0x70]
+0x00238be8 vmovups   xmm4, xmmword ptr [rbx + rax + 0x60]
+0x00238bee vmulps    xmm5, xmm7, xmm4
+0x00238bf2 vmulps    xmm4, xmm7, xmm7
+0x00238bf6 vaddps    xmm2, xmm2, xmm5
+0x00238bfa vmulps    xmm5, xmm4, xmm3
+0x00238bfe vaddps    xmm0, xmm6, xmm0
+0x00238c02 vmovups   xmm3, xmmword ptr [rbx + rax + 0x90]
+0x00238c0b vcmpleps  xmm6, xmm3, xmm7
+0x00238c10 vmulps    xmm3, xmm7, xmm1
+0x00238c14 add       r12, 2
+0x00238c18 vxorps    xmm1, xmm1, xmm1
+0x00238c1c vaddps    xmm3, xmm8, xmm3
+0x00238c20 vmulps    xmm4, xmm4, xmm0
+0x00238c24 vpshufd   xmm0, xmm6, 0
+0x00238c29 vaddps    xmm2, xmm5, xmm2
+0x00238c2d vpalignr  xmm5, xmm1, xmm6, 4
+0x00238c33 vpxor     xmm5, xmm6, xmm5
+0x00238c37 vandps    xmm2, xmm2, xmm5
+0x00238c3b vpshufd   xmm5, xmm2, 0x4e
+0x00238c40 vpxor     xmm2, xmm2, xmm5
+0x00238c44 vpshufd   xmm5, xmm2, 0x1b
+0x00238c49 vpxor     xmm2, xmm2, xmm5
+0x00238c4d vpand     xmm2, xmm0, xmm2
+0x00238c51 vaddps    xmm3, xmm4, xmm3
+0x00238c55 vmovups   xmm4, xmmword ptr [rbx + rax + 0x80]
+0x00238c5e vcmpleps  xmm4, xmm4, xmm7
+0x00238c63 vpalignr  xmm1, xmm1, xmm4, 4
+0x00238c69 vpxor     xmm1, xmm4, xmm1
+0x00238c6d vandps    xmm1, xmm3, xmm1
+0x00238c71 vpshufd   xmm3, xmm1, 0x4e
+0x00238c76 vpxor     xmm1, xmm1, xmm3
+0x00238c7a vpshufd   xmm3, xmm1, 0x1b
+0x00238c7f vpxor     xmm1, xmm1, xmm3
+0x00238c83 vpandn    xmm0, xmm0, xmm1
+0x00238c87 vpor      xmm7, xmm0, xmm2
+0x00238c8b vmovdqa   xmmword ptr [r15], xmm7
+0x00238c90 jmp       0x2390d0
+0x00238c95 movzx     eax, byte ptr [r12 + 1]
+0x00238c9b shl       rax, 4
+0x00238c9f vmovups   xmm2, xmmword ptr [rbx + rax]
+0x00238ca4 vmovups   xmm3, xmmword ptr [rbx + rax + 0x10]
+0x00238caa vmovups   xmm1, xmmword ptr [rbx + rax + 0x20]
+0x00238cb0 vmovups   xmm0, xmmword ptr [rbx + rax + 0x30]
+0x00238cb6 vmulps    xmm2, xmm7, xmm2
+0x00238cba vaddps    xmm2, xmm3, xmm2
+0x00238cbe vmovups   xmm3, xmmword ptr [rbx + rax + 0x70]
+0x00238cc4 vmovups   xmm4, xmmword ptr [rbx + rax + 0x60]
+0x00238cca vmulps    xmm5, xmm7, xmm4
+0x00238cce vmulps    xmm1, xmm7, xmm1
+0x00238cd2 vmulps    xmm4, xmm7, xmm7
+0x00238cd6 vaddps    xmm1, xmm0, xmm1
+0x00238cda vmulps    xmm2, xmm4, xmm2
+0x00238cde vaddps    xmm3, xmm3, xmm5
+0x00238ce2 vmovups   xmm0, xmmword ptr [rbx + rax + 0x50]
+0x00238ce8 vmovups   xmm5, xmmword ptr [rbx + rax + 0x40]
+0x00238cee vmulps    xmm5, xmm7, xmm5
+0x00238cf2 vaddps    xmm0, xmm0, xmm5
+0x00238cf6 vmulps    xmm4, xmm4, xmm0
+0x00238cfa vmovups   xmm0, xmmword ptr [rbx + rax + 0x90]
+0x00238d03 vcmpleps  xmm0, xmm0, xmm7
+0x00238d08 vxorps    xmm5, xmm5, xmm5
+0x00238d0c vpalignr  xmm6, xmm5, xmm0, 4
+0x00238d12 vaddps    xmm4, xmm4, xmm3
+0x00238d16 vaddps    xmm1, xmm2, xmm1
+0x00238d1a vpxor     xmm2, xmm0, xmm6
+0x00238d1e vmovups   xmm3, xmmword ptr [rbx + rax + 0x80]
+0x00238d27 vcmpleps  xmm6, xmm3, xmm7
+0x00238d2c vpalignr  xmm3, xmm5, xmm6, 4
+0x00238d32 vpxor     xmm3, xmm6, xmm3
+0x00238d36 lea       rax, [r15 - 0x10]
+0x00238d3a vandps    xmm3, xmm1, xmm3
+0x00238d3e vandps    xmm4, xmm4, xmm2
+0x00238d42 vpshufd   xmm1, xmm6, 0
+0x00238d47 vpandn    xmm2, xmm1, xmmword ptr [r15 - 0x10]
+0x00238d4d vpshufd   xmm0, xmm0, 0
+0x00238d52 add       r12, 2
+0x00238d56 vpshufd   xmm5, xmm4, 0x4e
+0x00238d5b vpxor     xmm4, xmm4, xmm5
+0x00238d5f vpshufd   xmm5, xmm4, 0x1b
+0x00238d64 vpxor     xmm4, xmm4, xmm5
+0x00238d68 vpand     xmm4, xmm0, xmm4
+0x00238d6c vpshufd   xmm5, xmm3, 0x4e
+0x00238d71 vpxor     xmm3, xmm3, xmm5
+0x00238d75 vpshufd   xmm5, xmm3, 0x1b
+0x00238d7a vpxor     xmm3, xmm3, xmm5
+0x00238d7e vpand     xmm1, xmm1, xmm3
+0x00238d82 vpor      xmm1, xmm2, xmm1
+0x00238d86 vpandn    xmm0, xmm0, xmm1
+0x00238d8a vpor      xmm7, xmm0, xmm4
+0x00238d8e vmovdqa   xmmword ptr [r15 - 0x10], xmm7
+0x00238d94 mov       r15, rax
+0x00238d97 jmp       0x2390d0
+0x00238d9c movzx     eax, byte ptr [r12 + 1]
+0x00238da2 shl       rax, 4
+0x00238da6 vmovdqu   xmm4, xmmword ptr [rbx + rax + 0x50]
+0x00238dac vpshufd   xmm0, xmm4, 0x39
+0x00238db1 vpand     xmm0, xmm0, xmmword ptr [rip + 0x13e6bc7] ; [0x161f980]
+0x00238db9 vpor      xmm2, xmm0, xmmword ptr [rip + 0x13e6bdf] ; [0x161f9a0]
+0x00238dc1 add       r12, 2
+0x00238dc5 lea       rcx, [rip + 0x188d554] ; [0x1ac6320]
+0x00238dcc vmovaps   xmm1, xmmword ptr [rcx]
+0x00238dd0 vpxor     xmm0, xmm0, xmm0
+0x00238dd4 vsubps    xmm3, xmm2, xmm4
+0x00238dd8 vsubps    xmm2, xmm0, xmm3
+0x00238ddc vmaxps    xmm2, xmm2, xmm3
+0x00238de0 vmovups   xmm10, xmmword ptr [rbx + rax]
+0x00238de5 vmovups   xmm6, xmmword ptr [rbx + rax + 0x10]
+0x00238deb vmovups   xmm5, xmmword ptr [rbx + rax + 0x20]
+0x00238df1 vmovups   xmm9, xmmword ptr [rbx + rax + 0x30]
+0x00238df7 vcmpltps  xmm1, xmm1, xmm2
+0x00238dfc vmovups   xmm8, xmmword ptr [rbx + rax + 0x40]
+0x00238e02 vsubps    xmm4, xmm7, xmm4
+0x00238e06 vdivps    xmm2, xmm4, xmm3
+0x00238e0a vandps    xmm2, xmm1, xmm2
+0x00238e0e vcmpleps  xmm4, xmm0, xmm4
+0x00238e13 vandps    xmm4, xmm4, xmmword ptr [rip + 0x13e6b95] ; [0x161f9b0]
+0x00238e1b vandnps   xmm1, xmm1, xmm4
+0x00238e1f vorps     xmm1, xmm1, xmm2
+0x00238e23 vmaxps    xmm1, xmm1, xmm0
+0x00238e27 vminps    xmm4, xmm1, xmmword ptr [rip + 0x13e6b81] ; [0x161f9b0]
+0x00238e2f vmulps    xmm1, xmm6, xmm4
+0x00238e33 vaddps    xmm1, xmm1, xmm0
+0x00238e37 vpshufd   xmm2, xmm1, 0x4e
+0x00238e3c vaddps    xmm1, xmm1, xmm2
+0x00238e40 vpshufd   xmm2, xmm1, 0x93
+0x00238e45 vaddps    xmm1, xmm1, xmm2
+0x00238e49 vmulps    xmm2, xmm5, xmm4
+0x00238e4d vmovss    xmm1, xmm0, xmm1
+0x00238e51 vaddps    xmm2, xmm2, xmm0
+0x00238e55 vpshufd   xmm5, xmm2, 0x4e
+0x00238e5a vaddps    xmm2, xmm2, xmm5
+0x00238e5e vaddps    xmm3, xmm10, xmm1
+0x00238e62 vpshufd   xmm1, xmm2, 0x93
+0x00238e67 vaddps    xmm1, xmm2, xmm1
+0x00238e6b vandps    xmm1, xmm1, xmmword ptr [rip + 0x13e6b4d] ; [0x161f9c0]
+0x00238e73 vmulps    xmm2, xmm9, xmm4
+0x00238e77 vaddps    xmm2, xmm2, xmm0
+0x00238e7b vpshufd   xmm5, xmm2, 0x4e
+0x00238e80 vaddps    xmm5, xmm2, xmm5
+0x00238e84 vaddps    xmm2, xmm1, xmm3
+0x00238e88 vpshufd   xmm1, xmm5, 0x93
+0x00238e8d vaddps    xmm1, xmm5, xmm1
+0x00238e91 vandps    xmm1, xmm1, xmmword ptr [rip + 0x13e6b37] ; [0x161f9d0]
+0x00238e99 vmulps    xmm3, xmm8, xmm4
+0x00238e9d vaddps    xmm0, xmm3, xmm0
+0x00238ea1 vpshufd   xmm3, xmm0, 0x4e
+0x00238ea6 vaddps    xmm3, xmm0, xmm3
+0x00238eaa vaddps    xmm0, xmm1, xmm2
+0x00238eae vpshufd   xmm1, xmm3, 0x93
+0x00238eb3 vaddps    xmm1, xmm3, xmm1
+0x00238eb7 vandps    xmm1, xmm1, xmmword ptr [rip + 0x13e6ad1] ; [0x161f990]
+0x00238ebf jmp       0x239088
+0x00238ec4 movzx     eax, byte ptr [r12 + 1]
+0x00238eca shl       rax, 4
+0x00238ece vmovdqu   xmm2, xmmword ptr [rbx + rax + 0xa0]
+0x00238ed7 vmovdqu   xmm3, xmmword ptr [rbx + rax + 0x90]
+0x00238ee0 vpshufd   xmm1, xmm2, 0
+0x00238ee5 vpshufd   xmm0, xmm2, 0x39
+0x00238eea vmovdqa   xmm5, xmmword ptr [rip + 0x13e6a8e] ; [0x161f980]
+0x00238ef2 vpand     xmm0, xmm0, xmm5
+0x00238ef6 vmovdqa   xmm8, xmmword ptr [rip + 0x13e6a92] ; [0x161f990]
+0x00238efe vpor      xmm4, xmm0, xmmword ptr [rip + 0x13e6a9a] ; [0x161f9a0]
+0x00238f06 vpand     xmm6, xmm1, xmm8
+0x00238f0b vpshufd   xmm0, xmm3, 0x39
+0x00238f10 vpand     xmm0, xmm0, xmm5
+0x00238f14 add       r12, 2
+0x00238f18 lea       rcx, [rip + 0x188d401] ; [0x1ac6320]
+0x00238f1f vmovaps   xmm5, xmmword ptr [rcx]
+0x00238f23 vpxor     xmm1, xmm1, xmm1
+0x00238f27 vaddps    xmm6, xmm0, xmm6
+0x00238f2b vsubps    xmm0, xmm4, xmm2
+0x00238f2f vsubps    xmm4, xmm1, xmm0
+0x00238f33 vmaxps    xmm4, xmm4, xmm0
+0x00238f37 vcmpltps  xmm4, xmm5, xmm4
+0x00238f3c vsubps    xmm2, xmm7, xmm2
+0x00238f40 vdivps    xmm0, xmm2, xmm0
+0x00238f44 vandps    xmm0, xmm4, xmm0
+0x00238f48 vcmpleps  xmm2, xmm1, xmm2
+0x00238f4d vmovaps   xmm10, xmmword ptr [rip + 0x13e6a5b] ; [0x161f9b0]
+0x00238f55 vandps    xmm2, xmm2, xmm10
+0x00238f5a vandnps   xmm2, xmm4, xmm2
+0x00238f5e vorps     xmm0, xmm2, xmm0
+0x00238f62 vmaxps    xmm0, xmm0, xmm1
+0x00238f66 vsubps    xmm6, xmm6, xmm3
+0x00238f6a vsubps    xmm2, xmm1, xmm6
+0x00238f6e vmaxps    xmm4, xmm2, xmm6
+0x00238f72 vminps    xmm2, xmm0, xmm10
+0x00238f77 vcmpltps  xmm5, xmm5, xmm4
+0x00238f7c vmovups   xmm4, xmmword ptr [rbx + rax + 0x50]
+0x00238f82 vsubps    xmm3, xmm7, xmm3
+0x00238f86 vdivps    xmm0, xmm3, xmm6
+0x00238f8a vandps    xmm0, xmm5, xmm0
+0x00238f8e vcmpleps  xmm3, xmm1, xmm3
+0x00238f93 vandps    xmm3, xmm3, xmm10
+0x00238f98 vandnps   xmm3, xmm5, xmm3
+0x00238f9c vmulps    xmm6, xmm4, xmm2
+0x00238fa0 vorps     xmm0, xmm3, xmm0
+0x00238fa4 vmaxps    xmm0, xmm0, xmm1
+0x00238fa8 vmovups   xmm9, xmmword ptr [rbx + rax]
+0x00238fad vmovups   xmm3, xmmword ptr [rbx + rax + 0x10]
+0x00238fb3 vmovups   xmm5, xmmword ptr [rbx + rax + 0x20]
+0x00238fb9 vmovups   xmm7, xmmword ptr [rbx + rax + 0x30]
+0x00238fbf vminps    xmm4, xmm0, xmm10
+0x00238fc4 vmulps    xmm0, xmm3, xmm4
+0x00238fc8 vaddps    xmm3, xmm0, xmm1
+0x00238fcc vmovups   xmm0, xmmword ptr [rbx + rax + 0x70]
+0x00238fd2 vaddps    xmm3, xmm3, xmm6
+0x00238fd6 vpshufd   xmm6, xmm3, 0x4e
+0x00238fdb vaddps    xmm6, xmm3, xmm6
+0x00238fdf vmulps    xmm0, xmm0, xmm2
+0x00238fe3 vmulps    xmm3, xmm7, xmm4
+0x00238fe7 vaddps    xmm7, xmm3, xmm1
+0x00238feb vmovups   xmm3, xmmword ptr [rbx + rax + 0x60]
+0x00238ff1 vaddps    xmm7, xmm7, xmm0
+0x00238ff5 vpshufd   xmm0, xmm6, 0x93
+0x00238ffa vaddps    xmm10, xmm6, xmm0
+0x00238ffe vmulps    xmm0, xmm3, xmm2
+0x00239002 vmulps    xmm3, xmm5, xmm4
+0x00239006 vaddps    xmm3, xmm3, xmm1
+0x0023900a vpshufd   xmm5, xmm7, 0x4e
+0x0023900f vaddps    xmm5, xmm7, xmm5
+0x00239013 vmovups   xmm6, xmmword ptr [rbx + rax + 0x40]
+0x00239019 vaddps    xmm7, xmm3, xmm0
+0x0023901d vmovups   xmm0, xmmword ptr [rbx + rax + 0x80]
+0x00239026 vmulps    xmm2, xmm0, xmm2
+0x0023902a vmulps    xmm4, xmm6, xmm4
+0x0023902e vmovss    xmm0, xmm1, xmm10
+0x00239032 vaddps    xmm0, xmm9, xmm0
+0x00239036 vpshufd   xmm3, xmm7, 0x4e
+0x0023903b vaddps    xmm3, xmm7, xmm3
+0x0023903f vpshufd   xmm6, xmm3, 0x93
+0x00239044 vaddps    xmm3, xmm3, xmm6
+0x00239048 vandps    xmm3, xmm3, xmmword ptr [rip + 0x13e6970] ; [0x161f9c0]
+0x00239050 vaddps    xmm3, xmm3, xmm0
+0x00239054 vpshufd   xmm0, xmm5, 0x93
+0x00239059 vaddps    xmm0, xmm5, xmm0
+0x0023905d vandps    xmm0, xmm0, xmmword ptr [rip + 0x13e696b] ; [0x161f9d0]
+0x00239065 vaddps    xmm1, xmm4, xmm1
+0x00239069 vaddps    xmm1, xmm1, xmm2
+0x0023906d vpshufd   xmm2, xmm1, 0x4e
+0x00239072 vaddps    xmm1, xmm1, xmm2
+0x00239076 vaddps    xmm0, xmm0, xmm3
+0x0023907a vpshufd   xmm2, xmm1, 0x93
+0x0023907f vaddps    xmm1, xmm1, xmm2
+0x00239083 vandps    xmm1, xmm1, xmm8
+0x00239088 vaddps    xmm7, xmm1, xmm0
+0x0023908c vmovaps   xmmword ptr [r15], xmm7
+0x00239091 jmp       0x2390d0
+0x00239093 movzx     eax, byte ptr [r12 + 1]
+0x00239099 shl       rax, 4
+0x0023909d mov       rcx, qword ptr [rbp - 0x2a8]
+0x002390a4 jmp       0x2390b7
+0x002390a6 movzx     eax, byte ptr [r12 + 1]
+0x002390ac shl       rax, 4
+0x002390b0 mov       rcx, qword ptr [rbp - 0x2a0]
+0x002390b7 vmovdqa   xmm7, xmmword ptr [rcx + rax]
+0x002390bc vmovdqa   xmmword ptr [r15 + 0x10], xmm7
+0x002390c2 add       r12, 2
+0x002390c6 add       r15, 0x10
+0x002390ca nop       word ptr [rax + rax]
+0x002390d0 cmp       r12, qword ptr [rbp - 0x290]
+0x002390d7 jb        0x239100
+0x002390d9 jmp       0x239110
+0x002390db movzx     eax, byte ptr [r12 + 1]
+0x002390e1 shl       rax, 4
+0x002390e5 mov       rcx, qword ptr [rbp - 0x298]
+0x002390ec vmovaps   xmmword ptr [rcx + rax], xmm7
+0x002390f1 add       r12, 2
+0x002390f5 vmovaps   xmm7, xmmword ptr [r15 - 0x10]
+0x002390fb jmp       0x23795c
+0x00239100 movzx     eax, byte ptr [r12]
+0x00239105 dec       eax
+0x00239107 cmp       eax, 0x3d
+0x0023910a jbe       0x2377c0
+0x00239110 mov       rax, qword ptr [rip + 0x17e5fe9] ; [0x1a1f100]
+0x00239117 mov       rax, qword ptr [rax]
+0x0023911a cmp       rax, qword ptr [rbp - 0x30]
+0x0023911e jne       0x239132
+0x00239120 add       rsp, 0x288
+0x00239127 pop       rbx
+0x00239128 pop       r12
+0x0023912a pop       r13
+0x0023912c pop       r14
+0x0023912e pop       r15
+0x00239130 pop       rbp
+0x00239131 ret       
+0x00239132 call      0x12aa7f0
+0x00239137 nop       
+0x00239138 cwde      
+0x00239139 out       0xff, al
+0x0023913b jmp       ptr [rsi - 0x5c00001a]
+0x00239141 out       0xff, al
+0x00239143 .byte     0xff
+0x00239144 mov       ebp, 0xa3ffffe6
+0x00239149 out       0xff, al
+0x0023914b call      ptr [rax + 0x32ffffe6]
+0x00239151 out       0xff, eax
+0x00239153 dec       dword ptr [rax - 0x19]
+0x00239156 .byte     0xff
+0x00239157 call      qword ptr [rdi - 0x19]
+0x0023915a .byte     0xff
+0x0023915b jmp       qword ptr [rsi - 0x19]
+0x0023915e .byte     0xff
+0x0023915f .byte     0xff
+0x00239160 jp        0x239149
+0x00239162 .byte     0xff
+0x00239163 call      qword ptr [rax - 0x5a000019]
+0x00239169 out       0xff, eax
+0x0023916b inc       esp
+0x0023916d out       0xff, eax
+0x0023916f jmp       rbp
+0x00239171 out       0xff, eax
+0x00239173 jmp       ptr [rip + 0x47ffffe8] ; [0x48239161]
+0x00239179 call      0xffffffffe895917d
+0x0023917e .byte     0xff
+0x0023917f inc       dword ptr [rbx - 0x5a000018]
+0x00239185 call      0xffffffffe9439189
+0x0023918a .byte     0xff
+0x0023918b push      qword ptr [rax]
+0x0023918d jmp       0xffffffffe98a9191
+0x00239192 .byte     0xff
+0x00239193 call      qword ptr [rbp - 0x24000017]
+0x00239199 jmp       0xffffffffea2c919d
+0x0023919e .byte     0xff
+0x0023919f call      qword ptr [rdx - 0x16]
+0x002391a2 .byte     0xff
+0x002391a3 inc       dword ptr [rcx - 0x10000016]
+0x002391a9 .byte     0xea
+0x002391aa .byte     0xff
+0x002391ab .byte     0xff
+0x002391ac cld       
+0x002391ad .byte     0xea
+0x002391ae .byte     0xff
+0x002391af .byte     0xff
+0x002391b0 cmp       bl, ch
+0x002391b2 .byte     0xff
+0x002391b3 push      qword ptr [rbp - 0x15]
+0x002391b6 .byte     0xff
+0x002391b7 push      rdi
+0x002391b9 jmp       0x2391ba
+0x002391bb .byte     0xff
+0x002391bc .byte     0xfe
+0x002391bd jmp       0x2391be
+0x002391bf dec       dword ptr [rcx - 0x14]
+0x002391c2 .byte     0xff
+0x002391c3 jmp       qword ptr [rsi - 0x14]
+0x002391c6 .byte     0xff
+0x002391c7 jmp       qword ptr [rdi + 0x9ffffec]
+0x002391cd in        eax, dx
+0x002391ce .byte     0xff
+0x002391cf push      qword ptr [rdx - 0x13]
+0x002391d2 .byte     0xff
+0x002391d3 .byte     0xff
+0x002391d4 mov       edi, 0x67ffffed
+0x002391d9 out       dx, al
+0x002391da .byte     0xff
+0x002391db dec       dword ptr [rbp - 0x11]
+0x002391de .byte     0xff
+0x002391df jmp       qword ptr [rax]
+0x002391e1 .byte     0xf0
+0x002391e2 .byte     0xff
+0x002391e3 jmp       qword ptr [rsi + 0x37fffff1]
+0x002391e9 .byte     0xf3
+0x002391ea .byte     0xff
+0x002391eb call      qword ptr [rax - 0xc]
+0x002391ee .byte     0xff
+0x002391ef call      ptr [rdx - 0xc]
+0x002391f5 hlt       
+0x002391f6 .byte     0xff
+0x002391f7 dec       edi
+0x002391f9 cmc       
+0x002391fa .byte     0xff
+0x002391fb jmp       ptr [rcx - 0x3b00000a]
+0x00239201 idiv      edi
+0x00239203 push      qword ptr [rbp - 7]
+0x00239206 .byte     0xff
+0x00239207 dec       dword ptr [rcx - 0x47000007]
+0x0023920d stc       
+0x0023920e .byte     0xff
+0x0023920f push      rdi
+0x00239211 stc       
+0x00239212 .byte     0xff
+0x00239213 push      qword ptr [rcx - 6]
+0x00239216 .byte     0xff
+0x00239217 call      ptr [rbp - 5]
+0x0023921a .byte     0xff
+0x0023921b jmp       qword ptr [rsp + rdi*8 - 1]
+0x0023921f dec       dword ptr [rbp + rdi*8 - 0xa40001]
+0x00239226 .byte     0xff
+0x00239227 jmp       ptr [rsi - 1]
+0x0023922a .byte     0xff
+0x0023922b .byte     0xff
+0x0023922c .byte     0xa3
+0x0023922d .byte     0xff
+0x0023922e .byte     0xff
+0x0023922f .byte     0xff

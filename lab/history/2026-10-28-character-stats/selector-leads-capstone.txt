@@ -1,0 +1,196 @@
+
+LEAD 0x553440
+553440 je 0x553482
+553442 add al, bh
+553444 add ebx, ebx
+553446 cmovns eax, dword ptr [rax + 0x48]
+55344a mov dword ptr [rax], 1
+553450 lea rax, [rip + 0x2407441]
+553457 cmp byte ptr [rax], 0
+55345a jne 0x553470
+55345c lea rcx, [rip + 0x240742d]
+553463 mov dword ptr [rcx], 0x3fc90fdb
+553469 mov qword ptr [rax], 1
+
+LEAD 0x553450
+553450 lea rax, [rip + 0x2407441]
+553457 cmp byte ptr [rax], 0
+55345a jne 0x553470
+55345c lea rcx, [rip + 0x240742d]
+553463 mov dword ptr [rcx], 0x3fc90fdb
+553469 mov qword ptr [rax], 1
+553470 lea rax, [rip + 0x2407431]
+553477 cmp byte ptr [rax], 0
+55347a jne 0x553490
+
+LEAD 0x553460
+553460 je 0x5534a2
+553462 add al, bh
+553464 add ebx, ebx
+553466 bswap ecx
+
+LEAD 0x553470
+553470 lea rax, [rip + 0x2407431]
+553477 cmp byte ptr [rax], 0
+55347a jne 0x553490
+55347c lea rcx, [rip + 0x240741d]
+553483 mov dword ptr [rcx], 0x3f490fdb
+553489 mov qword ptr [rax], 1
+553490 lea rax, [rip + 0x2407421]
+553497 cmp byte ptr [rax], 0
+55349a jne 0x5534b0
+
+LEAD 0x553480
+553480 je 0x5534c2
+553482 add al, bh
+553484 add ebx, ebx
+553486 cmovns edi, dword ptr [rdi]
+553489 mov qword ptr [rax], 1
+553490 lea rax, [rip + 0x2407421]
+553497 cmp byte ptr [rax], 0
+55349a jne 0x5534b0
+55349c lea rcx, [rip + 0x240740d]
+5534a3 mov dword ptr [rcx], 0x3f3504f3
+5534a9 mov qword ptr [rax], 1
+
+LEAD 0x553490
+553490 lea rax, [rip + 0x2407421]
+553497 cmp byte ptr [rax], 0
+55349a jne 0x5534b0
+55349c lea rcx, [rip + 0x240740d]
+5534a3 mov dword ptr [rcx], 0x3f3504f3
+5534a9 mov qword ptr [rax], 1
+5534b0 lea rax, [rip + 0x2407411]
+5534b7 cmp byte ptr [rax], 0
+5534ba jne 0x5534d0
+
+LEAD 0x5534a0
+5534a0 je 0x5534e2
+5534a2 add al, bh
+5534a4 add ebx, esi
+5534a6 add al, 0x35
+
+LEAD 0x5534b0
+5534b0 lea rax, [rip + 0x2407411]
+5534b7 cmp byte ptr [rax], 0
+5534ba jne 0x5534d0
+5534bc lea rcx, [rip + 0x24073fd]
+5534c3 mov dword ptr [rcx], 0x3f3504f3
+5534c9 mov qword ptr [rax], 1
+5534d0 lea rax, [rip + 0x2407401]
+5534d7 cmp byte ptr [rax], 0
+5534da jne 0x5534f0
+
+LEAD 0x5534c0
+5534c0 jae 0x553502
+5534c2 add al, bh
+5534c4 add ebx, esi
+5534c6 add al, 0x35
+
+LEAD 0x5534d0
+5534d0 lea rax, [rip + 0x2407401]
+5534d7 cmp byte ptr [rax], 0
+5534da jne 0x5534f0
+5534dc lea rcx, [rip + 0x24073ed]
+5534e3 mov dword ptr [rcx], 0x3f000000
+5534e9 mov qword ptr [rax], 1
+5534f0 lea rax, [rip + 0x24073f1]
+5534f7 cmp byte ptr [rax], 0
+5534fa jne 0x553510
+
+LEAD 0x5534e0
+5534e0 jae 0x553522
+5534e2 add al, bh
+5534e4 add dword ptr [rax], eax
+5534e6 add byte ptr [rax], al
+
+LEAD 0x5534f0
+5534f0 lea rax, [rip + 0x24073f1]
+5534f7 cmp byte ptr [rax], 0
+5534fa jne 0x553510
+5534fc lea rcx, [rip + 0x24073dd]
+553503 mov dword ptr [rcx], 0x3f5db3d7
+553509 mov qword ptr [rax], 1
+553510 lea rax, [rip + 0x24073e1]
+553517 cmp byte ptr [rax], 0
+55351a jne 0x553530
+
+LEAD 0x553500
+553500 jae 0x553542
+553502 add al, bh
+553504 add edi, edx
+553506 mov bl, 0x5d
+
+LEAD 0x553510
+553510 lea rax, [rip + 0x24073e1]
+553517 cmp byte ptr [rax], 0
+55351a jne 0x553530
+55351c lea rcx, [rip + 0x24073cd]
+553523 mov dword ptr [rcx], 0x3fcf1bbd
+553529 mov qword ptr [rax], 1
+553530 lea rax, [rip + 0x24073d1]
+553537 cmp byte ptr [rax], 0
+55353a jne 0x553550
+
+LEAD 0x553520
+553520 jae 0x553562
+553522 add al, bh
+553524 add dword ptr [rbp + 0x483fcf1b], edi
+55352a mov dword ptr [rax], 1
+553530 lea rax, [rip + 0x24073d1]
+553537 cmp byte ptr [rax], 0
+55353a jne 0x553550
+55353c lea rcx, [rip + 0x24073bd]
+553543 mov dword ptr [rcx], 0x3f1e377a
+553549 mov qword ptr [rax], 1
+
+LEAD 0x553530
+553530 lea rax, [rip + 0x24073d1]
+553537 cmp byte ptr [rax], 0
+55353a jne 0x553550
+55353c lea rcx, [rip + 0x24073bd]
+553543 mov dword ptr [rcx], 0x3f1e377a
+553549 mov qword ptr [rax], 1
+553550 mov qword ptr [rip + 0x216629d], 0x1000
+
+LEAD 0x553540
+553540 jae 0x553582
+553542 add al, bh
+553544 add dword ptr [rdx + 0x37], edi
+
+LEAD 0x553550
+553550 mov qword ptr [rip + 0x216629d], 0x1000
+55355b mov qword ptr [rip + 0x216629a], 0x40
+553566 mov qword ptr [rip + 0x2166297], 0x800
+553571 ret 
+
+LEAD 0x553560
+
+LEAD 0x553570
+553570 add bl, al
+553572 nop 
+553573 nop 
+553574 nop 
+553575 nop 
+553576 nop 
+553577 nop 
+553578 nop 
+553579 nop 
+55357a nop 
+55357b nop 
+55357c nop 
+55357d nop 
+55357e nop 
+55357f nop 
+553580 push rbp
+553581 mov rbp, rsp
+553584 push r14
+553586 push rbx
+553587 mov r14d, edi
+55358a call 0x25cc10
+55358f mov bl, 0xff
+553591 test al, al
+553593 je 0x5535ea
+553595 call 0x25cbd0
+55359a mov rcx, qword ptr [rax]
+55359d mov rdi, rax

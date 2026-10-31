@@ -1,0 +1,5 @@
+0x001c2d70 lea       rdi, [rip + 0x24165c1] ; [0x25d9338]
+0x001c2d77 jmp       0x23e240
+0x001c2d7c nop       dword ptr [rax]
+0x001c2d80 ret       
+0x001c2d81 nop       word ptr cs:[rax + rax]

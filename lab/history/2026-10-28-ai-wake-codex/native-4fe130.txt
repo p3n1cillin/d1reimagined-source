@@ -1,0 +1,5 @@
+0x004fe130 mov       rax, qword ptr [rdi + 8]
+0x004fe134 test      byte ptr [rax + 0x30c], 2
+0x004fe13b sete      al
+0x004fe13e ret       
+0x004fe13f nop       

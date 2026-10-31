@@ -1,0 +1,28 @@
+{
+  "base": "0x53b0000",
+  "primary": 0,
+  "seconds": 1.0,
+  "changes": [
+    {
+      "utc": "2026-10-29T13:56:02.439395+00:00",
+      "held106": 0,
+      "consumed108": 0,
+      "route110": 0,
+      "route114": 37,
+      "hold_elapsed5c": 0,
+      "ordinary64": 0,
+      "alternate65": 0,
+      "reward66": 0,
+      "rewardhold67": 0,
+      "edge68": 0,
+      "screen_gate11b": 4,
+      "context_state": 43,
+      "world_state": 36,
+      "handler31": 0,
+      "handler32": 0,
+      "recall_valid": 0,
+      "recall_active": 0,
+      "recall_seconds": 0
+    }
+  ]
+}

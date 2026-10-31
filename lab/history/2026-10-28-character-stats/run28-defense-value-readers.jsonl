@@ -1,0 +1,5 @@
+{"event": "start", "pid": 27540, "base": "0x5130000", "addrs": ["0x37f816aec"], "byte_read_slots": [0], "t": 1793150788.664434}
+{"event": "write", "tid": 460, "rip": "0x617a870", "rip_img": "0x104a870", "which": ["0x37f816aec"], "values": ["0xb0"], "stack_img": ["0x104a409", "0x9118ef", "0x30e5ef", "0x33804e", "0x31cb63", "0xfb49d", "0x22fd55", "0x2215df", "0x325630"], "t": 1793151002.164324}
+{"event": "write", "tid": 460, "rip": "0x5396a66", "rip_img": "0x266a66", "which": ["0x37f816aec"], "values": ["0xb0"], "stack_img": ["0x547000", "0x9127a1"], "t": 1793151002.2095585}
+{"event": "write", "tid": 460, "rip": "0x53ba31f", "rip_img": "0x28a31f", "which": ["0x37f816aec"], "values": ["0xb0"], "stack_img": ["0x9128f1", "0x911a0b"], "t": 1793151002.2664564}
+{"event": "detached", "hits": 3, "t": 1793151991.7499764}

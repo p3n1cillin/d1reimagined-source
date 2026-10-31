@@ -1,0 +1,16 @@
+0x00bdcbb0 mov       rax, qword ptr [rdi]
+0x00bdcbb3 mov       rdi, qword ptr [rdi + 8]
+0x00bdcbb7 mov       r9, qword ptr [rax + 0x18]
+0x00bdcbbb mov       r8, qword ptr [rax + r9 + 0x48]
+0x00bdcbc0 add       rdi, qword ptr [rax + r9 + 0x50]
+0x00bdcbc5 test      r8b, 1
+0x00bdcbc9 je        0xbdcbd3
+0x00bdcbcb mov       rax, qword ptr [rdi]
+0x00bdcbce mov       r8, qword ptr [r8 + rax - 1]
+0x00bdcbd3 movzx     esi, sil
+0x00bdcbd7 movzx     edx, dl
+0x00bdcbda movzx     ecx, cl
+0x00bdcbdd jmp       r8
+0x00bdcbe0 .byte     0xff
+0x00bdcbe1 jmp       rax
+0x00bdcbe3 nop       word ptr cs:[rax + rax]

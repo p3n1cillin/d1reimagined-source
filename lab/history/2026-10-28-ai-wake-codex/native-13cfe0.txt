@@ -1,0 +1,105 @@
+0x0013cfe0 push      rbp
+0x0013cfe1 mov       rbp, rsp
+0x0013cfe4 push      r15
+0x0013cfe6 push      r14
+0x0013cfe8 push      r12
+0x0013cfea push      rbx
+0x0013cfeb sub       rsp, 0x40
+0x0013cfef mov       r12, rdi
+0x0013cff2 mov       r14, qword ptr [rip + 0x18e2107] ; [0x1a1f100]
+0x0013cff9 mov       rax, qword ptr [r14]
+0x0013cffc mov       qword ptr [rbp - 0x28], rax
+0x0013d000 mov       eax, dword ptr [r12 + 0xa88]
+0x0013d008 mov       ebx, eax
+0x0013d00a sar       ebx, 0xd
+0x0013d00d mov       edi, ebx
+0x0013d00f shr       edi, 0x12
+0x0013d012 or        edi, 0x3ff
+0x0013d018 lea       r15, [rip + 0x18e6881] ; [0x1a238a0]
+0x0013d01f and       edi, ebx
+0x0013d021 mov       rbx, qword ptr [r15]
+0x0013d024 mov       r9, qword ptr [rbx]
+0x0013d027 shl       rdi, 6
+0x0013d02b mov       rbx, qword ptr [r9 + rdi + 0x10]
+0x0013d030 movsxd    r8, dword ptr [r9 + rdi + 0x34]
+0x0013d035 and       eax, 0x1fff
+0x0013d03a imul      eax, dword ptr [r9 + rdi + 0x30]
+0x0013d040 and       r8, qword ptr [rbx + rax + 8]
+0x0013d045 mov       byte ptr [r12 + 0xa90], sil
+0x0013d04d mov       byte ptr [r12 + 0xa91], dl
+0x0013d055 mov       byte ptr [r12 + 0xa92], cl
+0x0013d05d add       rbx, rax
+0x0013d060 sub       rbx, r8
+0x0013d063 mov       byte ptr [rbx + 0x20b], dl
+0x0013d069 mov       byte ptr [rbx + 0x20a], sil
+0x0013d070 mov       byte ptr [rbx + 0x20c], cl
+0x0013d076 cmp       qword ptr [r12 + 0x18], 0
+0x0013d07c je        0x13d0a6
+0x0013d07e mov       rcx, r12
+0x0013d081 nop       word ptr cs:[rax + rax]
+0x0013d090 mov       rdx, qword ptr [rcx + 0x18]
+0x0013d094 lea       rax, [rcx + rdx + 0x18]
+0x0013d099 cmp       qword ptr [rcx + rdx + 0x30], 0
+0x0013d09f mov       rcx, rax
+0x0013d0a2 jne       0x13d090
+0x0013d0a4 jmp       0x13d0a9
+0x0013d0a6 mov       rax, r12
+0x0013d0a9 mov       edi, dword ptr [rax + 0x24]
+0x0013d0ac call      0x2d94f0
+0x0013d0b1 mov       byte ptr [rbp - 0x30], 0
+0x0013d0b5 mov       ecx, dword ptr [r12 + 0x870]
+0x0013d0bd mov       rax, qword ptr [r15]
+0x0013d0c0 mov       rax, qword ptr [rax]
+0x0013d0c3 mov       esi, ecx
+0x0013d0c5 sar       esi, 0xd
+0x0013d0c8 lea       rdi, [rbp - 0x58]
+0x0013d0cc mov       edx, esi
+0x0013d0ce shr       edx, 0x12
+0x0013d0d1 or        edx, 0x3ff
+0x0013d0d7 and       edx, esi
+0x0013d0d9 shl       rdx, 6
+0x0013d0dd mov       rsi, qword ptr [rax + rdx + 0x10]
+0x0013d0e2 movsxd    rbx, dword ptr [rax + rdx + 0x34]
+0x0013d0e7 and       ecx, 0x1fff
+0x0013d0ed imul      ecx, dword ptr [rax + rdx + 0x30]
+0x0013d0f2 and       rbx, qword ptr [rsi + rcx + 8]
+0x0013d0f7 add       rsi, rcx
+0x0013d0fa sub       rsi, rbx
+0x0013d0fd mov       qword ptr [rbp - 0x58], rsi
+0x0013d101 mov       ecx, dword ptr [r12 + 0x878]
+0x0013d109 mov       edx, ecx
+0x0013d10b sar       edx, 0xd
+0x0013d10e mov       esi, edx
+0x0013d110 shr       esi, 0x12
+0x0013d113 or        esi, 0x3ff
+0x0013d119 and       esi, edx
+0x0013d11b shl       rsi, 6
+0x0013d11f mov       rdx, qword ptr [rax + rsi + 0x10]
+0x0013d124 movsxd    rbx, dword ptr [rax + rsi + 0x34]
+0x0013d129 and       ecx, 0x1fff
+0x0013d12f imul      ecx, dword ptr [rax + rsi + 0x30]
+0x0013d134 and       rbx, qword ptr [rdx + rcx + 8]
+0x0013d139 add       rdx, rcx
+0x0013d13c sub       rdx, rbx
+0x0013d13f add       rdx, qword ptr [r12 + 0x880]
+0x0013d147 mov       qword ptr [rbp - 0x50], rdx
+0x0013d14b mov       eax, dword ptr [r12 + 0x888]
+0x0013d153 mov       dword ptr [rbp - 0x38], eax
+0x0013d156 mov       rax, qword ptr [r12 + 0x878]
+0x0013d15e mov       rcx, qword ptr [r12 + 0x880]
+0x0013d166 mov       qword ptr [rbp - 0x40], rcx
+0x0013d16a mov       qword ptr [rbp - 0x48], rax
+0x0013d16e call      0xbddbc0
+0x0013d173 mov       rax, qword ptr [r14]
+0x0013d176 cmp       rax, qword ptr [rbp - 0x28]
+0x0013d17a jne       0x13d189
+0x0013d17c add       rsp, 0x40
+0x0013d180 pop       rbx
+0x0013d181 pop       r12
+0x0013d183 pop       r14
+0x0013d185 pop       r15
+0x0013d187 pop       rbp
+0x0013d188 ret       
+0x0013d189 call      0x12aa7f0
+0x0013d18e nop       
+0x0013d18f nop       

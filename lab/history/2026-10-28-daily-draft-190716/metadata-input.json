@@ -1,0 +1,31 @@
+{
+  "recorded_at": "2026-10-28T19:07:16.316895+00:00",
+  "reporting_date": "2026-10-28",
+  "reporting_timezone": "Europe/London",
+  "reporting_interval_start": "2026-10-27T19:00:00Z",
+  "reporting_interval_end": "2026-10-28T19:00:00Z",
+  "daily_update_id": "d1-engineering-2026-10-28",
+  "description": "Consolidated private report: Dock13 objective progression, clock and pilot controls, remaining inert enemies and damage investigation.",
+  "feature": "opening-mission-dock13-combat",
+  "event_type": "GENERAL_PROGRESS",
+  "importance": "USEFUL",
+  "previous_state": "Divide traversal and combat incomplete; repeated trigger reports; uncertain remaining enemy bindings.",
+  "current_state": "Dock13 and hangar objective reached; current squad bodies linked; encounter remains blocked.",
+  "remaining_issue": "Inert enemy wake/health, weak outgoing damage, sprint pose and unvalidated ending.",
+  "reporting_source_commit": "53a37e4baf64aad38fa6baf912d915be45d4074c",
+  "reporting_source_branch": "codex/native-squad-targets",
+  "reporting_source_dirty": false,
+  "referenced_package_ids": [
+    "<lab-pc>-20261027T163920-483d90b903ad47e69f966f0c5fb71f27",
+    "<lab-pc>-20261027T190944-ff2b8032cd2f48d3b8b3b4f400293ba8"
+  ],
+  "late_delivery": true,
+  "late_evidence_rule": "Exclude outcomes after19:00Z; preserve dated earlier results; roll later evidence to next eligible report.",
+  "media_included": false,
+  "new_media_decode": "NOT RUN; no media included",
+  "handoff_scope": "text-only consolidated engineering facts; separate media unreviewed",
+  "native_safe_checkpoint_observed_at": "2026-10-28T19:08:45.684589+00:00",
+  "safe_checkpoint_basis": "Read-only process inventory: no other D1 Python/route/combat/watch driver; native game remains live and no process/input was changed by the report.",
+  "within_requested_1930_deadline": true,
+  "delivery_timing_basis": "Policy target19:00; bounded native combat allowed to reach an input-idle checkpoint. Post-cutoff outcomes excluded; text-only transfer."
+}

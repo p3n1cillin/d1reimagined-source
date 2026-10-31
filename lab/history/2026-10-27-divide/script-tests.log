@@ -1,0 +1,47 @@
+.................................................................................................F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:87: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpwst9i9od\\tracked.json' mode='r' encoding='cp1252'>
+  tracked = json.load(open(a.tracked))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:93: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpwst9i9od\\lethal.json' mode='r' encoding='cp1252'>
+  lethal = {((x, y), kk) for x, y, kk in json.load(open(a.lethal))}
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+usage: d1-explore.py [-h] --tracked TRACKED --goal GOAL --out OUT
+                     [--reach REACH] [--max-seconds MAX_SECONDS] [--rate RATE]
+                     [--crouch] [--stop-on-death] [--lethal LETHAL]
+
+options:
+  -h, --help            show this help message and exit
+  --tracked TRACKED
+  --goal GOAL
+  --out OUT
+  --reach REACH
+  --max-seconds MAX_SECONDS
+  --rate RATE           camera turn, rad per ms of J/L
+  --crouch              explore crouched (Circle toggled at the start, no
+                        jumps: a jump stands up again), for low passages such
+                        as the mine corridor in the Wall
+  --stop-on-death       end after a death (the caller replays the known route
+                        back to the frontier)
+  --lethal LETHAL       JSON file of [cell x, cell y, direction] moves that
+                        killed the Guardian; read at start, extended on each
+                        death
+start (100.0, -100.0, 10.0) goal [100.0, -50.0]
+retracked (no movement): 0 copies at (100.0, -98.0, 10.0)
+retracked (no movement): 0 copies at (100.0, -98.0, 10.0)
+retracked (no movement): 0 copies at (100.0, -98.0, 10.0)
+.F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:87: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpvsur1xcx\\tracked.json' mode='r' encoding='cp1252'>
+  tracked = json.load(open(a.tracked))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:93: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpvsur1xcx\\lethal.json' mode='r' encoding='cp1252'>
+  lethal = {((x, y), kk) for x, y, kk in json.load(open(a.lethal))}
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+start (100.0, -100.0, 10.0) goal [200.0, -100.0]
+no non-lethal direction from (50, -50); stopping without another move
+F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:207: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpvsur1xcx\\out.json' mode='w' encoding='cp1252'>
+  json.dump(route, open(a.out, 'w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+......................................................................................
+----------------------------------------------------------------------
+Ran 184 tests in 3.251s
+
+OK
+stopped (100.0, -100.0, 10.0) dist 100.0 route 1 points -> %USERPROFILE%\AppData\Local\Temp\tmpvsur1xcx\out.json

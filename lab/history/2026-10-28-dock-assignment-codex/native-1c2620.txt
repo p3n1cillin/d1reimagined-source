@@ -1,0 +1,19 @@
+0x001c2620 lea       rcx, [rdi + 0x1c8]
+0x001c2627 add       rcx, qword ptr [rdi + 0x1c8]
+0x001c262e movsxd    rax, esi
+0x001c2631 imul      rax, rax, 0x31
+0x001c2635 add       rax, rcx
+0x001c2638 movsxd    rsi, edx
+0x001c263b movsx     edx, byte ptr [rax + rsi*2 + 0x11]
+0x001c2640 xor       edi, edi
+0x001c2642 inc       edx
+0x001c2644 mov       cl, 0x28
+0x001c2646 cmovs     edx, edi
+0x001c2649 cmp       edx, 0x28
+0x001c264c jg        0x1c2650
+0x001c264e mov       cl, dl
+0x001c2650 mov       byte ptr [rax + rsi*2 + 0x11], cl
+0x001c2654 ret       
+0x001c2655 nop       word ptr cs:[rax + rax]
+0x001c2660 jmp       0x1c2665
+0x001c2665 nop       word ptr cs:[rax + rax]

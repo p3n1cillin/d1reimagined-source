@@ -1,0 +1,82 @@
+[
+  {
+    "file": "screenshots/01.png",
+    "source_path": "F:\\d1\\d1preservation-main\\cfw-staging\\2026-10-14-objwp3\\enter-the-wall.png",
+    "source_modified_at_utc": "2026-10-14T20:49:28.450056+00:00",
+    "source_sha256": "607c8ba4b6e8da96cc9b596d81f891f7b0e1502b05e1d49c87dd179b6a5e27e0",
+    "bytes": 1588968,
+    "visual_review": "inspected for private handoff only",
+    "claim": "Late 14 October objective-path experiment: ENTER THE WALL is visible, with a marker. The launched activity was The Dark Within, mapped to tutorial content; this is not a coherent tutorial or accepted waypoint implementation.",
+    "dimensions": [
+      1296,
+      759
+    ],
+    "publication_approved": false,
+    "suggested_production_crop": {
+      "x": 8,
+      "y": 31,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  {
+    "file": "screenshots/02.png",
+    "source_path": "F:\\d1\\d1preservation-main\\cfw-staging\\2026-10-15-agr9\\s2.png",
+    "source_modified_at_utc": "2026-10-15T14:42:48.189762+00:00",
+    "source_sha256": "840e18fb9d2cd40b8d46f24b0094390a44f7393c5e7efd679ebdf9cc974fbe44",
+    "bytes": 1284140,
+    "visual_review": "inspected for private handoff only",
+    "claim": "A frame of the tutorial opening cinematic over the wrecked cars. Still proof of a rendered cinematic scene, not continuous playback, dialogue, Ghost presence or complete cutscene fidelity.",
+    "dimensions": [
+      1296,
+      759
+    ],
+    "publication_approved": false,
+    "suggested_production_crop": {
+      "x": 8,
+      "y": 31,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  {
+    "file": "screenshots/03.png",
+    "source_path": "F:\\d1\\d1preservation-main\\cfw-staging\\2026-10-15-agr9\\s20.png",
+    "source_modified_at_utc": "2026-10-15T14:45:56.889764+00:00",
+    "source_sha256": "7ad14359eb3813dbc703a014edf4c10a2045ba9a8cdcfefab4ba72b7c818a224",
+    "bytes": 2047549,
+    "visual_review": "inspected for private handoff only",
+    "claim": "Armed first-person Guardian in daylight facing the Wall after the recorded opening/teleport. Hand cannon is a known incorrect tutorial starting loadout; the objective HUD is missing.",
+    "dimensions": [
+      1296,
+      759
+    ],
+    "publication_approved": false,
+    "suggested_production_crop": {
+      "x": 8,
+      "y": 31,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  {
+    "file": "screenshots/04.png",
+    "source_path": "F:\\d1\\d1preservation-main\\cfw-staging\\2026-10-15-agr17\\wall.png",
+    "source_modified_at_utc": "2026-10-15T16:09:07.107582+00:00",
+    "source_sha256": "6f907d7233effc9f2320bf0328d37b389acfda4001958f6f2dec709b0b1944f3",
+    "bytes": 351853,
+    "visual_review": "inspected for private handoff only",
+    "claim": "Dark interior walkway reached in the recorded pad-driven route. Traversal is source-reported; this still does not prove objective completion, trigger delivery or the route in motion.",
+    "dimensions": [
+      1296,
+      759
+    ],
+    "publication_approved": false,
+    "suggested_production_crop": {
+      "x": 8,
+      "y": 31,
+      "width": 1280,
+      "height": 720
+    }
+  }
+]

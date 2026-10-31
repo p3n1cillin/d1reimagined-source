@@ -1,0 +1,269 @@
+FUNCTION 78c820..78ccc0
+0x0078c820 push      rbp
+0x0078c821 mov       rbp, rsp
+0x0078c824 push      r15
+0x0078c826 push      r14
+0x0078c828 push      rbx
+0x0078c829 sub       rsp, 0x158
+0x0078c830 mov       ebx, edi
+0x0078c832 mov       rax, qword ptr [rip + 0x12928c7] ; [0x1a1f100]
+0x0078c839 mov       rax, qword ptr [rax]
+0x0078c83c mov       qword ptr [rbp - 0x20], rax
+0x0078c840 call      0x34e3c0
+0x0078c845 mov       r15, rax
+0x0078c848 mov       edi, 3
+0x0078c84d call      0x752150
+0x0078c852 mov       ecx, 0xffffffff
+0x0078c857 cmp       dword ptr [rip + 0x1f41e36], 2 ; [0x26ce694]
+0x0078c85e sete      dl
+0x0078c861 test      dl, al
+0x0078c863 cmovne    ecx, dword ptr [rip + 0x1f41e32] ; [0x26ce69c]
+0x0078c86a cmp       byte ptr [r15 + 0x8d], 0
+0x0078c872 je        0x78c8f0
+0x0078c874 test      ecx, ecx
+0x0078c876 jne       0x78c8f0
+0x0078c878 mov       edi, 5
+0x0078c87d mov       esi, 3
+0x0078c882 call      0xe4d70
+0x0078c887 mov       r14b, 1
+0x0078c88a test      al, al
+0x0078c88c je        0x78cc97
+0x0078c892 mov       al, byte ptr [rip + 0x1f42a50] ; [0x26cf2e8]
+0x0078c898 test      al, al
+0x0078c89a jne       0x78c8ca
+0x0078c89c lea       rdi, [rip + 0x1f42a45] ; [0x26cf2e8]
+0x0078c8a3 call      0x12aa7d0
+0x0078c8a8 test      eax, eax
+0x0078c8aa je        0x78c8ca
+0x0078c8ac lea       rdi, [rip + 0xecad8b] ; [0x165763e] 'world_controller: Force-enabling soft KTOs due to global PvE force-enable.'
+0x0078c8b3 call      0xe4a10
+0x0078c8b8 mov       dword ptr [rip + 0x1f42a22], eax ; [0x26cf2e0]
+0x0078c8be lea       rdi, [rip + 0x1f42a23] ; [0x26cf2e8]
+0x0078c8c5 call      0x12aa7e0
+0x0078c8ca lea       rbx, [rbp - 0x160]
+0x0078c8d1 lea       rsi, [rip + 0xecad66] ; [0x165763e] 'world_controller: Force-enabling soft KTOs due to global PvE force-enable.'
+0x0078c8d8 mov       rdi, rbx
+0x0078c8db xor       al, al
+0x0078c8dd call      0x1008290
+0x0078c8e2 mov       edi, dword ptr [rip + 0x1f429f8] ; [0x26cf2e0]
+0x0078c8e8 mov       rsi, rbx
+0x0078c8eb jmp       0x78cc92
+0x0078c8f0 cmp       byte ptr [r15 + 0x8e], 0
+0x0078c8f8 je        0x78c977
+0x0078c8fa cmp       ecx, 1
+0x0078c8fd jne       0x78c977
+0x0078c8ff mov       edi, 5
+0x0078c904 mov       esi, 3
+0x0078c909 call      0xe4d70
+0x0078c90e mov       r14b, 1
+0x0078c911 test      al, al
+0x0078c913 je        0x78cc97
+0x0078c919 mov       al, byte ptr [rip + 0x1f429d9] ; [0x26cf2f8]
+0x0078c91f test      al, al
+0x0078c921 jne       0x78c951
+0x0078c923 lea       rdi, [rip + 0x1f429ce] ; [0x26cf2f8]
+0x0078c92a call      0x12aa7d0
+0x0078c92f test      eax, eax
+0x0078c931 je        0x78c951
+0x0078c933 lea       rdi, [rip + 0xecad4f] ; [0x1657689] 'world_controller: Force-enabling soft KTOs due to global PvP force-enable.'
+0x0078c93a call      0xe4a10
+0x0078c93f mov       dword ptr [rip + 0x1f429ab], eax ; [0x26cf2f0]
+0x0078c945 lea       rdi, [rip + 0x1f429ac] ; [0x26cf2f8]
+0x0078c94c call      0x12aa7e0
+0x0078c951 lea       rbx, [rbp - 0x160]
+0x0078c958 lea       rsi, [rip + 0xecad2a] ; [0x1657689] 'world_controller: Force-enabling soft KTOs due to global PvP force-enable.'
+0x0078c95f mov       rdi, rbx
+0x0078c962 xor       al, al
+0x0078c964 call      0x1008290
+0x0078c969 mov       edi, dword ptr [rip + 0x1f42981] ; [0x26cf2f0]
+0x0078c96f mov       rsi, rbx
+0x0078c972 jmp       0x78cc92
+0x0078c977 cmp       byte ptr [r15 + 0x8f], 0
+0x0078c97f je        0x78c9fe
+0x0078c981 cmp       ecx, 2
+0x0078c984 jne       0x78c9fe
+0x0078c986 mov       edi, 5
+0x0078c98b mov       esi, 3
+0x0078c990 call      0xe4d70
+0x0078c995 mov       r14b, 1
+0x0078c998 test      al, al
+0x0078c99a je        0x78cc97
+0x0078c9a0 mov       al, byte ptr [rip + 0x1f42962] ; [0x26cf308]
+0x0078c9a6 test      al, al
+0x0078c9a8 jne       0x78c9d8
+0x0078c9aa lea       rdi, [rip + 0x1f42957] ; [0x26cf308]
+0x0078c9b1 call      0x12aa7d0
+0x0078c9b6 test      eax, eax
+0x0078c9b8 je        0x78c9d8
+0x0078c9ba lea       rdi, [rip + 0xecad13] ; [0x16576d4] 'world_controller: Force-enabling soft KTOs due to global social force-enable.'
+0x0078c9c1 call      0xe4a10
+0x0078c9c6 mov       dword ptr [rip + 0x1f42934], eax ; [0x26cf300]
+0x0078c9cc lea       rdi, [rip + 0x1f42935] ; [0x26cf308]
+0x0078c9d3 call      0x12aa7e0
+0x0078c9d8 lea       rbx, [rbp - 0x160]
+0x0078c9df lea       rsi, [rip + 0xecacee] ; [0x16576d4] 'world_controller: Force-enabling soft KTOs due to global social force-enable.'
+0x0078c9e6 mov       rdi, rbx
+0x0078c9e9 xor       al, al
+0x0078c9eb call      0x1008290
+0x0078c9f0 mov       edi, dword ptr [rip + 0x1f4290a] ; [0x26cf300]
+0x0078c9f6 mov       rsi, rbx
+0x0078c9f9 jmp       0x78cc92
+0x0078c9fe mov       eax, dword ptr [rip + 0x1f4289c] ; [0x26cf2a0]
+0x0078ca04 mov       dword ptr [rbp - 0x170], eax
+0x0078ca0a lea       rdi, [rbp - 0x170]
+0x0078ca11 call      0x118870
+0x0078ca16 test      rax, rax
+0x0078ca19 je        0x78cacb
+0x0078ca1f lea       rcx, [rip + 0x12095fa] ; [0x1996020]
+0x0078ca26 mov       rcx, qword ptr [rcx]
+0x0078ca29 mov       edx, dword ptr [rax + 4]
+0x0078ca2c cmp       edx, dword ptr [rcx]
+0x0078ca2e jne       0x78cacb
+0x0078ca34 cmp       byte ptr [rax + 8], 0
+0x0078ca38 je        0x78cacb
+0x0078ca3e mov       edi, 5
+0x0078ca43 mov       esi, 3
+0x0078ca48 call      0xe4d70
+0x0078ca4d mov       r14b, 1
+0x0078ca50 test      al, al
+0x0078ca52 je        0x78cc97
+0x0078ca58 mov       al, byte ptr [rip + 0x1f428ba] ; [0x26cf318]
+0x0078ca5e test      al, al
+0x0078ca60 jne       0x78ca90
+0x0078ca62 lea       rdi, [rip + 0x1f428af] ; [0x26cf318]
+0x0078ca69 call      0x12aa7d0
+0x0078ca6e test      eax, eax
+0x0078ca70 je        0x78ca90
+0x0078ca72 lea       rdi, [rip + 0xecaca9] ; [0x1657722] "world_controller: Force-enabling soft KTOs due to activity option '%s'."
+0x0078ca79 call      0xe4a10
+0x0078ca7e mov       dword ptr [rip + 0x1f4288c], eax ; [0x26cf310]
+0x0078ca84 lea       rdi, [rip + 0x1f4288d] ; [0x26cf318]
+0x0078ca8b call      0x12aa7e0
+0x0078ca90 mov       esi, dword ptr [rip + 0x1f4280a] ; [0x26cf2a0]
+0x0078ca96 lea       rdi, [rip + 0xe9359a] ; [0x1620037] 'HASH'
+0x0078ca9d call      0x79a30
+0x0078caa2 lea       rbx, [rbp - 0x160]
+0x0078caa9 lea       rsi, [rip + 0xecac72] ; [0x1657722] "world_controller: Force-enabling soft KTOs due to activity option '%s'."
+0x0078cab0 mov       rdi, rbx
+0x0078cab3 mov       rdx, rax
+0x0078cab6 xor       al, al
+0x0078cab8 call      0x1008290
+0x0078cabd mov       edi, dword ptr [rip + 0x1f4284d] ; [0x26cf310]
+0x0078cac3 mov       rsi, rbx
+0x0078cac6 jmp       0x78cc92
+0x0078cacb test      ebx, ebx
+0x0078cacd jne       0x78cba0
+0x0078cad3 mov       eax, dword ptr [rip + 0x1f427cf] ; [0x26cf2a8]
+0x0078cad9 mov       dword ptr [rbp - 0x168], eax
+0x0078cadf lea       rdi, [rbp - 0x168]
+0x0078cae6 call      0x118870
+0x0078caeb test      rax, rax
+0x0078caee je        0x78cba0
+0x0078caf4 lea       rcx, [rip + 0x1209525] ; [0x1996020]
+0x0078cafb mov       rcx, qword ptr [rcx]
+0x0078cafe mov       edx, dword ptr [rax + 4]
+0x0078cb01 cmp       edx, dword ptr [rcx]
+0x0078cb03 jne       0x78cba0
+0x0078cb09 cmp       byte ptr [rax + 8], 0
+0x0078cb0d je        0x78cba0
+0x0078cb13 mov       edi, 5
+0x0078cb18 mov       esi, 3
+0x0078cb1d call      0xe4d70
+0x0078cb22 mov       r14b, 1
+0x0078cb25 test      al, al
+0x0078cb27 je        0x78cc97
+0x0078cb2d mov       al, byte ptr [rip + 0x1f427f5] ; [0x26cf328]
+0x0078cb33 test      al, al
+0x0078cb35 jne       0x78cb65
+0x0078cb37 lea       rdi, [rip + 0x1f427ea] ; [0x26cf328]
+0x0078cb3e call      0x12aa7d0
+0x0078cb43 test      eax, eax
+0x0078cb45 je        0x78cb65
+0x0078cb47 lea       rdi, [rip + 0xecabd4] ; [0x1657722] "world_controller: Force-enabling soft KTOs due to activity option '%s'."
+0x0078cb4e call      0xe4a10
+0x0078cb53 mov       dword ptr [rip + 0x1f427c7], eax ; [0x26cf320]
+0x0078cb59 lea       rdi, [rip + 0x1f427c8] ; [0x26cf328]
+0x0078cb60 call      0x12aa7e0
+0x0078cb65 mov       esi, dword ptr [rip + 0x1f4273d] ; [0x26cf2a8]
+0x0078cb6b lea       rdi, [rip + 0xe934c5] ; [0x1620037] 'HASH'
+0x0078cb72 call      0x79a30
+0x0078cb77 lea       rbx, [rbp - 0x160]
+0x0078cb7e lea       rsi, [rip + 0xecab9d] ; [0x1657722] "world_controller: Force-enabling soft KTOs due to activity option '%s'."
+0x0078cb85 mov       rdi, rbx
+0x0078cb88 mov       rdx, rax
+0x0078cb8b xor       al, al
+0x0078cb8d call      0x1008290
+0x0078cb92 mov       edi, dword ptr [rip + 0x1f42788] ; [0x26cf320]
+0x0078cb98 mov       rsi, rbx
+0x0078cb9b jmp       0x78cc92
+0x0078cba0 xor       edi, edi
+0x0078cba2 call      0x775770
+0x0078cba7 mov       rbx, rax
+0x0078cbaa xor       r14b, r14b
+0x0078cbad test      rbx, rbx
+0x0078cbb0 je        0x78cc97
+0x0078cbb6 add       rbx, 0x9b8
+0x0078cbbd mov       rdi, rbx
+0x0078cbc0 call      0xb8f690
+0x0078cbc5 test      al, al
+0x0078cbc7 je        0x78cc97
+0x0078cbcd mov       rdi, rbx
+0x0078cbd0 call      0x11c3f80
+0x0078cbd5 movsx     ebx, word ptr [rax + 2]
+0x0078cbd9 cmp       ebx, dword ptr [r15 + 0xa8]
+0x0078cbe0 je        0x78cc21
+0x0078cbe2 cmp       ebx, dword ptr [r15 + 0xac]
+0x0078cbe9 je        0x78cc21
+0x0078cbeb cmp       ebx, dword ptr [r15 + 0xb0]
+0x0078cbf2 je        0x78cc21
+0x0078cbf4 cmp       ebx, dword ptr [r15 + 0xb4]
+0x0078cbfb je        0x78cc21
+0x0078cbfd cmp       ebx, dword ptr [r15 + 0xb8]
+0x0078cc04 je        0x78cc21
+0x0078cc06 cmp       ebx, dword ptr [r15 + 0xbc]
+0x0078cc0d je        0x78cc21
+0x0078cc0f cmp       ebx, dword ptr [r15 + 0xc0]
+0x0078cc16 je        0x78cc21
+0x0078cc18 cmp       ebx, dword ptr [r15 + 0xc4]
+0x0078cc1f jne       0x78cc97
+0x0078cc21 mov       edi, 5
+0x0078cc26 mov       esi, 3
+0x0078cc2b call      0xe4d70
+0x0078cc30 mov       r14b, 1
+0x0078cc33 test      al, al
+0x0078cc35 je        0x78cc97
+0x0078cc37 mov       al, byte ptr [rip + 0x1f426fb] ; [0x26cf338]
+0x0078cc3d test      al, al
+0x0078cc3f jne       0x78cc6f
+0x0078cc41 lea       rdi, [rip + 0x1f426f0] ; [0x26cf338]
+0x0078cc48 call      0x12aa7d0
+0x0078cc4d test      eax, eax
+0x0078cc4f je        0x78cc6f
+0x0078cc51 lea       rdi, [rip + 0xecab12] ; [0x165776a] "world_controller: Force-enabling soft KTOs due to global force-enable for activity index '%d'."
+0x0078cc58 call      0xe4a10
+0x0078cc5d mov       dword ptr [rip + 0x1f426cd], eax ; [0x26cf330]
+0x0078cc63 lea       rdi, [rip + 0x1f426ce] ; [0x26cf338]
+0x0078cc6a call      0x12aa7e0
+0x0078cc6f lea       r15, [rbp - 0x160]
+0x0078cc76 lea       rsi, [rip + 0xecaaed] ; [0x165776a] "world_controller: Force-enabling soft KTOs due to global force-enable for activity index '%d'."
+0x0078cc7d mov       rdi, r15
+0x0078cc80 mov       edx, ebx
+0x0078cc82 xor       al, al
+0x0078cc84 call      0x1008290
+0x0078cc89 mov       edi, dword ptr [rip + 0x1f426a1] ; [0x26cf330]
+0x0078cc8f mov       rsi, r15
+0x0078cc92 call      0xe4aa0
+0x0078cc97 mov       rax, qword ptr [rip + 0x1292462] ; [0x1a1f100]
+0x0078cc9e mov       rax, qword ptr [rax]
+0x0078cca1 cmp       rax, qword ptr [rbp - 0x20]
+0x0078cca5 jne       0x78ccb8
+0x0078cca7 mov       al, r14b
+0x0078ccaa add       rsp, 0x158
+0x0078ccb1 pop       rbx
+0x0078ccb2 pop       r14
+0x0078ccb4 pop       r15
+0x0078ccb6 pop       rbp
+0x0078ccb7 ret       
+0x0078ccb8 call      0x12aa7f0
+0x0078ccbd nop       
+0x0078ccbe nop       

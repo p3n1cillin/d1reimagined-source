@@ -1,0 +1,22 @@
+# Turns on auto-merge (squash) for the maintainer's and Dependabot's pull requests.
+# GitHub merges them once the checks required on main pass; contributors' PRs still wait for review.
+name: Auto-merge
+
+on:
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, synchronize]
+
+permissions: {}
+
+jobs:
+  enable:
+    if: ${{ !github.event.pull_request.draft && (github.event.pull_request.user.login == github.repository_owner || github.event.pull_request.user.login == 'dependabot[bot]') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --squash "$PR"

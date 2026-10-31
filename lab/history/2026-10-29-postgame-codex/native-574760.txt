@@ -1,0 +1,26 @@
+0x00574760 push      rbp
+0x00574761 mov       rbp, rsp
+0x00574764 push      rbx
+0x00574765 push      rax
+0x00574766 mov       rbx, rdi
+0x00574769 cmp       word ptr [rbx + 2], -1
+0x0057476e jne       0x574774
+0x00574770 xor       edx, edx
+0x00574772 jmp       0x5747a4
+0x00574774 call      0x25a550
+0x00574779 movzx     esi, word ptr [rbx + 2]
+0x0057477d mov       rcx, qword ptr [rax]
+0x00574780 mov       rdi, rax
+0x00574783 call      qword ptr [rcx + 0x320]
+0x00574789 mov       rbx, rax
+0x0057478c call      0x5494c0
+0x00574791 movzx     esi, byte ptr [rbx + 0xa2]
+0x00574798 mov       rdi, rax
+0x0057479b call      0x549bf0
+0x005747a0 sub       rdx, -0x80
+0x005747a4 mov       rax, rdx
+0x005747a7 add       rsp, 8
+0x005747ab pop       rbx
+0x005747ac pop       rbp
+0x005747ad ret       
+0x005747ae nop       

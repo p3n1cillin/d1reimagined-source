@@ -1,0 +1,21 @@
+0x00239920 push      rbp
+0x00239921 mov       rbp, rsp
+0x00239924 push      rbx
+0x00239925 sub       rsp, 0x18
+0x00239929 mov       rbx, qword ptr [rip + 0x17e57d0] ; [0x1a1f100]
+0x00239930 mov       rax, qword ptr [rbx]
+0x00239933 mov       qword ptr [rbp - 0x10], rax
+0x00239937 lea       rcx, [rbp - 0x20]
+0x0023993b mov       rsi, rdx
+0x0023993e xor       edx, edx
+0x00239940 call      0x237710
+0x00239945 mov       rax, qword ptr [rbx]
+0x00239948 vmovaps   xmm0, xmmword ptr [rbp - 0x20]
+0x0023994d cmp       rax, qword ptr [rbp - 0x10]
+0x00239951 jne       0x23995a
+0x00239953 add       rsp, 0x18
+0x00239957 pop       rbx
+0x00239958 pop       rbp
+0x00239959 ret       
+0x0023995a call      0x12aa7f0
+0x0023995f nop       

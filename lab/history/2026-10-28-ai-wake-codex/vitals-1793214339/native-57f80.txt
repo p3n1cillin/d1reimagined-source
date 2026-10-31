@@ -1,0 +1,9 @@
+0x00057f80 mov       rax, rdi
+0x00057f83 ret       
+0x00057f84 nop       word ptr cs:[rax + rax]
+0x00057f90 mov       rax, rdi
+0x00057f93 ret       
+0x00057f94 nop       word ptr cs:[rax + rax]
+0x00057fa0 xor       eax, eax
+0x00057fa2 ret       
+0x00057fa3 nop       word ptr cs:[rax + rax]

@@ -1,0 +1,93 @@
+[
+  {
+    "tag": "owned-80cb86ff",
+    "n": 9,
+    "en": "0x80cc0ad4",
+    "matches": []
+  },
+  {
+    "tag": "owned-80cb8d0a",
+    "n": 12,
+    "en": "0x80cc0adb",
+    "matches": []
+  },
+  {
+    "tag": "owned-80cb8d0d",
+    "n": 6,
+    "en": "0x80cc0ae2",
+    "matches": []
+  },
+  {
+    "tag": "owned-80cb91b6",
+    "n": 33,
+    "en": "0x80cc0ae9",
+    "matches": []
+  },
+  {
+    "tag": "owned-80cb9370",
+    "n": 16,
+    "en": "0x80cc0a99",
+    "matches": []
+  },
+  {
+    "tag": "owned-80cb949a",
+    "n": 16,
+    "en": "0x80cc0aa0",
+    "matches": []
+  },
+  {
+    "tag": "owned-80cb9635",
+    "n": 18,
+    "en": "0x80cc0aa7",
+    "matches": []
+  },
+  {
+    "tag": "owned-80cb97a1",
+    "n": 96,
+    "en": "0x80cc0a62",
+    "matches": [
+      [
+        "0x8fdae8cc",
+        59
+      ],
+      [
+        "0xe79b4cd9",
+        91
+      ],
+      [
+        "0xe622dd44",
+        90
+      ],
+      [
+        "0x2081ac17",
+        14
+      ],
+      [
+        "0x7d48724",
+        5
+      ],
+      [
+        "0x155f7e1f",
+        9
+      ]
+    ]
+  },
+  {
+    "tag": "owned-80cb9857",
+    "n": 20,
+    "en": "0x80cc0aae",
+    "matches": []
+  },
+  {
+    "tag": "owned-80cb9deb",
+    "n": 14,
+    "en": "0x80cc0b13",
+    "matches": []
+  },
+  {
+    "tag": "owned-80cb9e1e",
+    "n": 13,
+    "en": "0x80cc0ab5",
+    "matches": []
+  }
+]

@@ -1,0 +1,9 @@
+0x01053250 test      sil, 3
+0x01053254 mov       qword ptr [rsi + 0x10], 0
+0x0105325c mov       qword ptr [rsi + 8], 0
+0x01053264 mov       qword ptr [rsi], 0
+0x0105326b ret       
+0x0105326c nop       
+0x0105326d nop       
+0x0105326e nop       
+0x0105326f nop       

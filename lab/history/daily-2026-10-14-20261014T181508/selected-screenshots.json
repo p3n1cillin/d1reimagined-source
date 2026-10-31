@@ -1,0 +1,62 @@
+[
+  {
+    "file": "screenshots/01.png",
+    "source_path": "F:\\d1\\d1preservation-main\\cfw-staging\\2026-10-14-armed4\\fired.png",
+    "source_modified_at_utc": "2026-10-14T08:18:53.914971+00:00",
+    "source_sha256": "ce4d02159eeaddaae3ee33a45e0bf7276bb4cc55524ce9ab433b7327a2c4092c",
+    "bytes": 1216088,
+    "visual_review": "inspected for private handoff only",
+    "claim": "Armed first-person Moon scene; HUD shows one round remaining. The source record reports two shots from three. A still alone does not prove recoil or damage.",
+    "dimensions": [
+      1296,
+      759
+    ],
+    "suggested_production_crop": {
+      "x": 8,
+      "y": 31,
+      "width": 1280,
+      "height": 720
+    },
+    "publication_approved": false
+  },
+  {
+    "file": "screenshots/02.png",
+    "source_path": "F:\\d1\\d1preservation-main\\cfw-staging\\2026-10-14-earth\\e3.png",
+    "source_modified_at_utc": "2026-10-14T15:37:17.464414+00:00",
+    "source_sha256": "bbdeb36670342661199b09aeca9b37ab03518a2001c13e882f35ee479802d365",
+    "bytes": 1789949,
+    "visual_review": "inspected for private handoff only",
+    "claim": "Earth map with The Dark Within focused, story description and Resume/Restart options. This is UI availability, not mission completion.",
+    "dimensions": [
+      1296,
+      759
+    ],
+    "suggested_production_crop": {
+      "x": 8,
+      "y": 31,
+      "width": 1280,
+      "height": 720
+    },
+    "publication_approved": false
+  },
+  {
+    "file": "screenshots/03.png",
+    "source_path": "F:\\d1\\d1preservation-main\\cfw-staging\\2026-10-14-dw-highway2\\W8.png",
+    "source_modified_at_utc": "2026-10-14T17:56:40.762145+00:00",
+    "source_sha256": "ef14e90e5ba50292c07001573a42cfae5ae7c4242422f24152570584d736478b",
+    "bytes": 1584258,
+    "visual_review": "inspected for private handoff only",
+    "claim": "Armed first-person Cosmodrome scene from the story-launch run. Still image only; continuous traversal, encounter logic and completion are unproved.",
+    "dimensions": [
+      1296,
+      759
+    ],
+    "suggested_production_crop": {
+      "x": 8,
+      "y": 31,
+      "width": 1280,
+      "height": 720
+    },
+    "publication_approved": false
+  }
+]

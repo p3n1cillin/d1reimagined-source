@@ -1,0 +1,17 @@
+target 0x26f7e0: 1 confirmed reference(s) over 2 candidate window(s) [kinds: call,jmp,riprel,rela]
+   call    fn 0x0a85c70  0x0a85e4b  call    0x26f7e0
+  ?riprel  fn 0x0a85c70  0x0a85e4c  call    0x26f7e0
+
+POSITIVE CONTROL: none supplied - 'not found' from this run is NOT evidence of absence
+
+=== fn 0x0a85c70 around 0x0a85e4b ===
+0x0a85e69  mov      edi, r13d
+0x0a85e6c  mov      rsi, rbx
+0x0a85e6f  call     0x553760
+0x0a85e74  mov      r13d, eax
+0x0a85e77  mov      edi, r15d
+0x0a85e7a  mov      rsi, rbx
+0x0a85e7d  call     0x553760
+0x0a85e82  mov      r15d, eax
+0x0a85e85  mov      r14, [rbp-0x68]
+0x0a85e89  cmp      [r12+0x3c], r13d

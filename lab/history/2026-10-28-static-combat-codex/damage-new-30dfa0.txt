@@ -1,0 +1,39 @@
+0x0030dfa0 push      rbp
+0x0030dfa1 mov       rbp, rsp
+0x0030dfa4 push      rbx
+0x0030dfa5 push      rax
+0x0030dfa6 mov       r8d, esi
+0x0030dfa9 and       r8d, 0x1fff
+0x0030dfb0 lea       r10, [rip + 0x237b839] ; [0x26897f0]
+0x0030dfb7 imul      r8d, dword ptr [r10 + 0x10]
+0x0030dfbc mov       r9d, edx
+0x0030dfbf sar       r9d, 0xd
+0x0030dfc3 mov       ebx, r9d
+0x0030dfc6 shr       ebx, 0x12
+0x0030dfc9 or        ebx, 0x3ff
+0x0030dfcf and       ebx, r9d
+0x0030dfd2 mov       r9, qword ptr [r10 + 8]
+0x0030dfd6 movsxd    r10, dword ptr [r10 + 0x28]
+0x0030dfda shl       rbx, 6
+0x0030dfde and       r10, qword ptr [r9 + r8 + 8]
+0x0030dfe3 add       r9, r8
+0x0030dfe6 lea       rax, [rip + 0x17158b3] ; [0x1a238a0]
+0x0030dfed mov       rax, qword ptr [rax]
+0x0030dff0 mov       r11, qword ptr [rax]
+0x0030dff3 sub       r9, r10
+0x0030dff6 movzx     r8d, cl
+0x0030dffa mov       rcx, qword ptr [r11 + rbx + 0x10]
+0x0030dfff movsxd    r10, dword ptr [r11 + rbx + 0x34]
+0x0030e004 and       edx, 0x1fff
+0x0030e00a imul      edx, dword ptr [r11 + rbx + 0x30]
+0x0030e010 and       r10, qword ptr [rcx + rdx + 8]
+0x0030e015 add       rcx, rdx
+0x0030e018 sub       rcx, r10
+0x0030e01b mov       ecx, dword ptr [rcx + 8]
+0x0030e01e mov       rdx, r9
+0x0030e021 call      0x30e030
+0x0030e026 add       rsp, 8
+0x0030e02a pop       rbx
+0x0030e02b pop       rbp
+0x0030e02c ret       
+0x0030e02d nop       dword ptr [rax]

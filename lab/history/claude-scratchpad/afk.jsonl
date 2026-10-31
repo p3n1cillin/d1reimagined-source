@@ -1,0 +1,5 @@
+{"event": "start", "pid": 25376, "base": "0x51d0000", "addrs": ["0x789b060"], "t": 1792978591.089269}
+{"event": "write", "tid": 3628, "rip": "0x595397f", "rip_img": "0x78397f", "which": ["0x789b060"], "values": ["0x6822b32"], "stack_img": ["0x792db8", "0x7850a9"], "t": 1792979457.510264}
+{"event": "write", "tid": 3628, "rip": "0x59544aa", "rip_img": "0x7844aa", "which": ["0x789b060"], "values": ["0x6822b32"], "stack_img": [], "t": 1792979457.5107293}
+{"event": "write", "tid": 3628, "rip": "0x5953bb9", "rip_img": "0x783bb9", "which": ["0x789b060"], "values": ["0x6822b32"], "stack_img": ["0x7850a9", "0x75255c", "0x76c27f", "0x7839c8", "0x34c801", "0x239680"], "t": 1792979457.5150213}
+{"event": "write", "tid": 3628, "rip": "0x5953cbb", "rip_img": "0x783cbb", "which": ["0x789b060"], "values": ["0x6822b32"], "stack_img": ["0x7850a9", "0x75255c", "0x76c27f", "0x7839c8", "0x34c801", "0x239680"], "t": 1792979457.5175698}

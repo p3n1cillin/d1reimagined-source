@@ -1,0 +1,30 @@
+shadPS4 pid 24364  eboot base 0x5100000  control vtable[0]=0x5854410 PASS
+start (438.74542236328125, -695.9813842773438, 11.403162956237793) goal [560.0, -690.0]
+at (442.9, -697.3, 11.6) dist 117.3 best 117.3 cells 4 blocked 8
+at (444.9, -696.6, 11.7) dist 115.2 best 115.8 cells 6 blocked 8
+at (444.9, -693.6, 11.8) dist 115.1 best 115.8 cells 7 blocked 8
+at (444.9, -694.1, 11.8) dist 115.1 best 115.8 cells 8 blocked 8
+at (444.9, -691.1, 11.9) dist 115.1 best 115.8 cells 8 blocked 8
+at (444.9, -691.3, 11.9) dist 115.1 best 115.8 cells 9 blocked 8
+at (444.9, -688.7, 11.8) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -690.0, 11.9) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -688.7, 11.8) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -689.9, 11.8) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -688.7, 11.8) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -690.1, 11.9) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -688.7, 11.8) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -690.0, 11.9) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -688.7, 11.8) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -690.2, 11.7) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -688.7, 11.9) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -690.3, 11.7) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -688.7, 11.9) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -690.4, 11.7) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -688.7, 11.8) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -690.7, 11.7) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -688.7, 11.9) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -690.6, 11.7) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -689.4, 11.9) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -692.4, 11.7) dist 115.1 best 115.8 cells 10 blocked 8
+at (444.9, -691.5, 11.9) dist 115.1 best 115.8 cells 10 blocked 8
+stopped (444.9461975097656, -693.2683715820312, 11.694783210754395) dist 115.1 route 4 points -> route-cr1.json

@@ -1,0 +1,35 @@
+0x0056dc00 movsxd    rax, esi
+0x0056dc03 lea       rsi, [rax + rax*2]
+0x0056dc07 shl       rsi, 5
+0x0056dc0b add       rsi, rdi
+0x0056dc0e movsxd    r8, edx
+0x0056dc11 shl       r8, 4
+0x0056dc15 mov       eax, dword ptr [r8 + rsi + 0x4fd90]
+0x0056dc1d mov       edx, 0xffffffff
+0x0056dc22 cmp       rax, rdx
+0x0056dc25 jne       0x56dc2a
+0x0056dc27 xor       eax, eax
+0x0056dc29 ret       
+0x0056dc2a movsxd    rdx, dword ptr [r8 + rsi + 0x4fd98]
+0x0056dc32 lea       rax, [rdi + rax + 0x40a0]
+0x0056dc3a movsx     r8d, word ptr [r8 + rsi + 0x4fd94]
+0x0056dc43 mov       edi, 0xffffffff
+0x0056dc48 nop       dword ptr [rax + rax]
+0x0056dc50 inc       edi
+0x0056dc52 cmp       edi, r8d
+0x0056dc55 jge       0x56dc66
+0x0056dc57 mov       rsi, qword ptr [rax]
+0x0056dc5a add       rax, rdx
+0x0056dc5d cmp       rsi, qword ptr [rcx]
+0x0056dc60 jne       0x56dc50
+0x0056dc62 sub       rax, rdx
+0x0056dc65 ret       
+0x0056dc66 xor       eax, eax
+0x0056dc68 ret       
+0x0056dc69 nop       dword ptr [rax]
+0x0056dc70 jne       0x56dc60
+0x0056dc72 sub       rax, rdx
+0x0056dc75 ret       
+0x0056dc76 xor       eax, eax
+0x0056dc78 ret       
+0x0056dc79 nop       dword ptr [rax]

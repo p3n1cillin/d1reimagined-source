@@ -1,0 +1,52 @@
+0x007adfe0 push      rbp
+0x007adfe1 mov       rbp, rsp
+0x007adfe4 push      rbx
+0x007adfe5 push      rax
+0x007adfe6 mov       rbx, rdi
+0x007adfe9 call      0x78c3e0
+0x007adfee mov       rax, qword ptr [rbx + 0x58]
+0x007adff2 mov       rcx, qword ptr [rbx + 0x68]
+0x007adff6 cmp       rcx, rax
+0x007adff9 je        0x7ae04c
+0x007adffb test      al, 1
+0x007adffd je        0x7ae04c
+0x007adfff test      cl, 1
+0x007ae002 jne       0x7ae04c
+0x007ae004 xor       eax, ecx
+0x007ae006 and       eax, dword ptr [rbx + 0x38]
+0x007ae009 test      al, 1
+0x007ae00b jne       0x7ae04c
+0x007ae00d mov       rax, qword ptr [rbx + 0x40]
+0x007ae011 test      rax, rax
+0x007ae014 je        0x7ae01a
+0x007ae016 call      rax
+0x007ae018 jmp       0x7ae034
+0x007ae01a mov       rdi, qword ptr [rbx + 0x50]
+0x007ae01e add       rdi, rbx
+0x007ae021 mov       rcx, qword ptr [rbx + 0x48]
+0x007ae025 test      cl, 1
+0x007ae028 je        0x7ae032
+0x007ae02a mov       rax, qword ptr [rdi]
+0x007ae02d mov       rcx, qword ptr [rcx + rax - 1]
+0x007ae032 call      rcx
+0x007ae034 cmp       eax, 1
+0x007ae037 jne       0x7ae03f
+0x007ae039 or        byte ptr [rbx + 0x60], 1
+0x007ae03d jmp       0x7ae04c
+0x007ae03f cmp       eax, 2
+0x007ae042 jne       0x7ae04c
+0x007ae044 or        byte ptr [rbx + 0x60], 1
+0x007ae048 or        byte ptr [rbx + 0x68], 1
+0x007ae04c mov       rax, qword ptr [rbx + 0x68]
+0x007ae050 cmp       rax, qword ptr [rbx + 0x58]
+0x007ae054 jne       0x7ae069
+0x007ae056 mov       esi, dword ptr [rbx + 0x70]
+0x007ae059 mov       edi, 0x1b
+0x007ae05e add       rsp, 8
+0x007ae062 pop       rbx
+0x007ae063 pop       rbp
+0x007ae064 jmp       0x784e50
+0x007ae069 add       rsp, 8
+0x007ae06d pop       rbx
+0x007ae06e pop       rbp
+0x007ae06f ret       

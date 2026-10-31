@@ -1,0 +1,66 @@
+{
+  "verified_at": "2026-10-14T19:33:07.599819+00:00",
+  "reporting_date": "2026-10-14",
+  "daily_report": "<lab-pc>-20261014T193305-e7a2a8daaa4a4f7d9e50a3f454ddd3b4",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\14\\<lab-pc>-20261014T193305-e7a2a8daaa4a4f7d9e50a3f454ddd3b4.ready",
+  "ready_verified": true,
+  "manifest_bytes_match": true,
+  "payloads": [
+    {
+      "file": "daily-report.md",
+      "size": 13497,
+      "sha256": "2c00eba67d44a4f7e416e276e7436911b22255036f0f4cb1b3d63ff5f4e05673",
+      "matches": true
+    },
+    {
+      "file": "events.json",
+      "size": 4520,
+      "sha256": "70b00d6bee9192db3ec9125593db3f277b21cfc35b52216b52e85abfc81fb9e5",
+      "matches": true
+    },
+    {
+      "file": "metadata.json",
+      "size": 6600,
+      "sha256": "86435713d9193815ea046a8aaa08db3f05ce5cf0be75a63a94a27da38b2bd0a2",
+      "matches": true
+    },
+    {
+      "file": "screenshots/01.png",
+      "size": 1216088,
+      "sha256": "ce4d02159eeaddaae3ee33a45e0bf7276bb4cc55524ce9ab433b7327a2c4092c",
+      "matches": true
+    },
+    {
+      "file": "screenshots/02.png",
+      "size": 1789949,
+      "sha256": "bbdeb36670342661199b09aeca9b37ab03518a2001c13e882f35ee479802d365",
+      "matches": true
+    },
+    {
+      "file": "screenshots/03.png",
+      "size": 1584258,
+      "sha256": "ef14e90e5ba50292c07001573a42cfae5ae7c4242422f24152570584d736478b",
+      "matches": true
+    }
+  ],
+  "transfer_started_at": "2026-10-14T19:33:06.567464+00:00",
+  "submitted_at": "2026-10-14T19:33:07.198022+00:00",
+  "new_screenshots": 3,
+  "new_clips": 0,
+  "screenshot_bytes_match_inspected_originals": true,
+  "screenshot_decode": "PASS",
+  "video_decode": "NOT APPLICABLE: no video",
+  "earlier_media_resent": false,
+  "referenced_package_ids": [
+    "<lab-pc>-20261013T181812-ae94e24c41d043fda43b6500d0e35f5c"
+  ],
+  "nas_free_bytes_at_verification": 524702711808,
+  "pending_outbox": [],
+  "terminal_superseded_not_queued": [
+    "<lab-pc>-20261006T082350-35a26ff986fc4d87a5428cdef765c812"
+  ],
+  "late_delivery": true,
+  "source_checkpoint": "575358ba33b96acf5e666b8d60c1edb54dfc3d09",
+  "publication_review_required": true,
+  "handoff_complete": true
+}

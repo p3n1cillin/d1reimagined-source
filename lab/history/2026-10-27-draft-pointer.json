@@ -1,0 +1,28 @@
+{
+  "draft": "lab/history\\daily-2026-10-27-20261027T190450",
+  "prepared_utc": "2026-10-27T19:04:50.083456+00:00",
+  "state": "DELIVERED_AND_VERIFIED",
+  "reporting_date": "2026-10-27",
+  "pre_cutoff_source": "7cc9a8eb1aee5d2c9d06f6641ccfe5d794c25adc",
+  "checked_utc": "2026-10-27T19:08:57.797777+00:00",
+  "active_driver_inventory": [
+    {
+      "ProcessId": 23492,
+      "ParentProcessId": 20516,
+      "Name": "python.exe",
+      "CreationDate": "2026-10-27T19:06:44.173703+00:00",
+      "CommandLine": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe -I d1-record.py --out F:/d1/d1preservation-main/cfw-staging/2026-10-27-divide20/clips/aim1.mp4 --seconds 160 --tap F:\\d1\\tools\\shadPS4\\audio-tap"
+    },
+    {
+      "ProcessId": 19424,
+      "ParentProcessId": 10580,
+      "Name": "python.exe",
+      "CreationDate": "2026-10-27T19:06:44.189231+00:00",
+      "CommandLine": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe -I -u %USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/aim.py --seconds 150 --shots %USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/aim1"
+    }
+  ],
+  "package": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\content-outbox\\<lab-pc>-20261027T190944-ff2b8032cd2f48d3b8b3b4f400293ba8",
+  "clip_id": "<lab-pc>-20261027T190944-ff2b8032cd2f48d3b8b3b4f400293ba8",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\27\\<lab-pc>-20261027T190944-ff2b8032cd2f48d3b8b3b4f400293ba8.ready",
+  "verified_at": "2026-10-27T19:09:46.088436+00:00"
+}

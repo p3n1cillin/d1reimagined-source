@@ -1,0 +1,29 @@
+0x007ac810 push      rbp
+0x007ac811 mov       rbp, rsp
+0x007ac814 cmp       edx, 1
+0x007ac817 jne       0x7ac81b
+0x007ac819 pop       rbp
+0x007ac81a ret       
+0x007ac81b call      0x771940
+0x007ac820 mov       rdi, rax
+0x007ac823 call      0x76d1b0
+0x007ac828 call      0x766d30
+0x007ac82d xor       edi, edi
+0x007ac82f call      0x774f50
+0x007ac834 xor       edi, edi
+0x007ac836 xor       esi, esi
+0x007ac838 call      0x774980
+0x007ac83d call      0x7ac880
+0x007ac842 call      0x78bc50
+0x007ac847 mov       edi, 8
+0x007ac84c call      0x765fb0
+0x007ac851 xor       edi, edi
+0x007ac853 call      0x58ebb0
+0x007ac858 call      0x78ece0
+0x007ac85d xor       edi, edi
+0x007ac85f call      0x954790
+0x007ac864 call      0x5979a0
+0x007ac869 mov       rdi, rax
+0x007ac86c pop       rbp
+0x007ac86d jmp       0x597b80
+0x007ac872 nop       word ptr cs:[rax + rax]

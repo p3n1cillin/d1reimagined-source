@@ -1,0 +1,12 @@
+{
+  "verified_at": "2026-10-09T12:57:47.3224819Z",
+  "reporting_date": "2026-10-09",
+  "daily_report": "<lab-pc>-20261009T125718-1d066e3db5a04e1aa2f57c03b33c0c2b",
+  "clip_packages": [
+    "<lab-pc>-20261009T125544-09cb974a0e1e437c81a2a894a944a91a JOIN232 rifle pickup and notification",
+    "<lab-pc>-20261009T125545-28ab7c371d894cb198306a0e9bbf0b63 JOIN232 rifle firing and Fallen contacts",
+    "<lab-pc>-20261009T125546-9759fa314de647ed8276a6f0b481dcba JOIN232 Guardian Down and respawn"
+  ],
+  "independent_nas_check": "4 packages today, all listed files hash-match, only hashes.json unlisted",
+  "source_head": "fe1d77f"
+}

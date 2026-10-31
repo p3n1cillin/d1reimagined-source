@@ -1,0 +1,30 @@
+target 0x1976118: 1 confirmed reference(s) over 1 candidate window(s) [kinds: riprel]
+   riprel  fn 0x0bde5c0  0x0be1834  lea     r9, [rip+0xd948dd]
+
+POSITIVE CONTROL: none supplied - 'not found' from this run is NOT evidence of absence
+
+=== fn 0x0bde5c0 around 0x0be1834 ===
+0x0be17d2  lea      r8, [rip+0xd949af]
+0x0be17d9  mov      [rip+0x1cdf948], r15
+0x0be17e0  lea      rcx, [rip+0xd43919]
+0x0be17e7  mov      [rip+0x1cdf95a], r12
+0x0be17ee  lea      rdx, [rip+0xd949a3]
+0x0be17f5  mov      [rip+0x1cdf96c], rsi
+0x0be17fc  lea      rbx, [rip+0xd949a5]
+0x0be1803  mov      [rip+0x1cdf97e], rdi
+0x0be180a  lea      rsi, [rip+0xd949a7]
+0x0be1811  mov      [rip+0x1cdf990], rbp
+0x0be1818  lea      r12, [rip+0xd948d9]
+0x0be181f  mov      [rip+0x1cdf9a2], rax
+0x0be1826  lea      r11, [rip+0xd948db]
+0x0be182d  mov      [rip+0x1cdf9b4], r9
+0x0be1834  lea      r9, [rip+0xd948dd] <<<
+0x0be183b  mov      [rip+0x1cdf9c6], r14
+0x0be1842  lea      rax, [rip+0xd948df]
+0x0be1849  lea      rdi, [rip+0xd94978]
+0x0be1850  mov      [rip+0x1cdf9d1], rdi
+0x0be1857  lea      rbp, [rip+0xd948da]
+0x0be185e  mov      [rip+0x1cdf9e3], rsi
+0x0be1865  lea      rsi, [rip+0xd948dc]
+0x0be186c  mov      [rip+0x1cdf9f5], rbx
+0x0be1873  lea      rdi, [rip+0xd948de]

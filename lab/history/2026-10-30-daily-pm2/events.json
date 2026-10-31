@@ -1,0 +1,63 @@
+[
+  {
+    "id": "2026-10-30-tower-stay",
+    "time": "2026-10-30T10:07:12Z",
+    "feature": "Staying in the Tower",
+    "maturity": "Working",
+    "claim": "With input that includes a button press, the Guardian stayed in Tower North from 10:07 to 12:03 UTC; with all input stopped, the game returned it to orbit exactly 15 minutes after the last press (its normal idle rule)",
+    "evidence": [
+      "clips/clip01.mp4",
+      "screenshots/01.png"
+    ]
+  },
+  {
+    "id": "2026-10-30-tower-social",
+    "time": "2026-10-30T16:10:03Z",
+    "feature": "The Tower as the social space",
+    "maturity": "Working",
+    "claim": "Presented as the Tower's own activity, with two unlock flags its rule requires clear no longer served, the game stayed and loaded the social-space menus; the Tower's own Armsday objective is shown",
+    "evidence": [
+      "screenshots/03.png",
+      "clips/clip02.mp4"
+    ]
+  },
+  {
+    "id": "2026-10-30-vendor-hideo",
+    "time": "2026-10-30T16:38:10Z",
+    "feature": "Vendors",
+    "maturity": "Working",
+    "claim": "At Executor Hideo (New Monarchy), the Approach prompt opens the allegiance offer and the vendor screen (reputation, material exchange, rank reward, stock refresh, item details), which closes back to the Tower. Seen twice",
+    "evidence": [
+      "clips/clip02.mp4",
+      "screenshots/04.png"
+    ]
+  },
+  {
+    "id": "2026-10-30-vendor-eva",
+    "time": "2026-10-30T19:34:00Z",
+    "feature": "Vendors",
+    "maturity": "Working",
+    "claim": "Eva Levante's Guardian Outfitter screen opens from the Approach prompt with her stock (18 emblems, 6 shaders, 4 ornaments), item details with rarity, level requirement and price, and the stock-refresh timer, and closes back to the Tower",
+    "evidence": [
+      "clips/clip03.mp4",
+      "screenshots/05.png",
+      "screenshots/06.png"
+    ]
+  },
+  {
+    "id": "2026-10-30-vendor-buy-blocked",
+    "time": "2026-10-30T19:31:00Z",
+    "feature": "Buying from vendors",
+    "maturity": "Not working",
+    "claim": "Trying to buy an emblem was refused by the game itself because the test Guardian has 0 Glimmer; no purchase request reached the server. Characters are not given currency yet",
+    "evidence": []
+  },
+  {
+    "id": "2026-10-30-vendor-research-assistant",
+    "time": "2026-10-30T19:22:00Z",
+    "feature": "Vendors",
+    "maturity": "Broken",
+    "claim": "Patches 99-40's Research Assistant screen opens but stays on its loading indicator; the game sent the server nothing new while waiting",
+    "evidence": []
+  }
+]

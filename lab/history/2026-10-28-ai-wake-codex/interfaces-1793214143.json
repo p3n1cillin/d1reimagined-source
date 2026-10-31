@@ -1,0 +1,125 @@
+[
+  {
+    "squad": 5,
+    "interface_offset": "0x78",
+    "error": "null object"
+  },
+  {
+    "squad": 5,
+    "interface_offset": "0x138",
+    "error": "null object"
+  },
+  {
+    "squad": 5,
+    "interface_offset": "0xa8",
+    "error": "null object"
+  },
+  {
+    "squad": 6,
+    "interface_offset": "0x78",
+    "template": "0x38447a000",
+    "this": "0x37fdacc90",
+    "fn": "0x13cfb0",
+    "function": "0x13cfb0",
+    "size": 48
+  },
+  {
+    "squad": 6,
+    "interface_offset": "0x138",
+    "template": "0x3842b6360",
+    "this": "0x37fdaaa10",
+    "fn": "0x425c10",
+    "function": "0x425c10",
+    "size": 96
+  },
+  {
+    "squad": 6,
+    "interface_offset": "0xa8",
+    "template": "0x3842b6920",
+    "this": "0x37fdaaa10",
+    "fn": "0x428f20",
+    "function": "0x428f20",
+    "size": 112
+  },
+  {
+    "squad": 8,
+    "interface_offset": "0x78",
+    "template": "0x38447a000",
+    "this": "0x37fd2fe20",
+    "fn": "0x13cfb0",
+    "function": "0x13cfb0",
+    "size": 48
+  },
+  {
+    "squad": 8,
+    "interface_offset": "0x138",
+    "template": "0x3842b6360",
+    "this": "0x37fd30e50",
+    "fn": "0x425c10",
+    "function": "0x425c10",
+    "size": 96
+  },
+  {
+    "squad": 8,
+    "interface_offset": "0xa8",
+    "template": "0x3842b6920",
+    "this": "0x37fd30e50",
+    "fn": "0x428f20",
+    "function": "0x428f20",
+    "size": 112
+  },
+  {
+    "squad": 11,
+    "interface_offset": "0x78",
+    "template": "0x38447a000",
+    "this": "0x37fd51aa0",
+    "fn": "0x13cfb0",
+    "function": "0x13cfb0",
+    "size": 48
+  },
+  {
+    "squad": 11,
+    "interface_offset": "0x138",
+    "template": "0x3842b6360",
+    "this": "0x37fd52ad0",
+    "fn": "0x425c10",
+    "function": "0x425c10",
+    "size": 96
+  },
+  {
+    "squad": 11,
+    "interface_offset": "0xa8",
+    "template": "0x3842b6920",
+    "this": "0x37fd52ad0",
+    "fn": "0x428f20",
+    "function": "0x428f20",
+    "size": 112
+  },
+  {
+    "squad": 12,
+    "interface_offset": "0x78",
+    "template": "0x38447a000",
+    "this": "0x37fd01290",
+    "fn": "0x13cfb0",
+    "function": "0x13cfb0",
+    "size": 48
+  },
+  {
+    "squad": 12,
+    "interface_offset": "0x138",
+    "template": "0x3842b6360",
+    "this": "0x37fd022c0",
+    "fn": "0x425c10",
+    "function": "0x425c10",
+    "size": 96
+  },
+  {
+    "squad": 12,
+    "interface_offset": "0xa8",
+    "template": "0x3842b6920",
+    "this": "0x37fd022c0",
+    "fn": "0x428f20",
+    "function": "0x428f20",
+    "size": 112
+  }
+]

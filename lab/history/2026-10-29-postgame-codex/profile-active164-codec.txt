@@ -1,0 +1,4 @@
+tag 0x80801743  struct 29560 (=0x7378) bytes
+payload 20836 bytes / 166685 bits -> F:\d1\d1preservation-main\cfw-staging\profile-active164-xp0.draft.bin
+round trip: 166685 bits consumed, object IDENTICAL
+

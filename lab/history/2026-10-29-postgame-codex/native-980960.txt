@@ -1,0 +1,50 @@
+0x00980960 mov       edx, 1
+0x00980965 mov       cl, sil
+0x00980968 shl       rdx, cl
+0x0098096b add       rdi, 0xe0
+0x00980972 mov       ecx, 0xffffffff
+0x00980977 nop       word ptr [rax + rax]
+0x00980980 inc       ecx
+0x00980982 xor       al, al
+0x00980984 cmp       ecx, 1
+0x00980987 jg        0x980994
+0x00980989 mov       al, 1
+0x0098098b test      qword ptr [rdi], rdx
+0x0098098e lea       rdi, [rdi + 0x38]
+0x00980992 je        0x980980
+0x00980994 ret       
+0x00980995 nop       word ptr cs:[rax + rax]
+0x009809a0 mov       edx, 1
+0x009809a5 mov       cl, sil
+0x009809a8 shl       rdx, cl
+0x009809ab add       rdi, 0xe8
+0x009809b2 mov       ecx, 0xffffffff
+0x009809b7 nop       word ptr [rax + rax]
+0x009809c0 inc       ecx
+0x009809c2 xor       al, al
+0x009809c4 cmp       ecx, 1
+0x009809c7 jg        0x9809d4
+0x009809c9 mov       al, 1
+0x009809cb test      qword ptr [rdi], rdx
+0x009809ce lea       rdi, [rdi + 0x38]
+0x009809d2 je        0x9809c0
+0x009809d4 ret       
+0x009809d5 nop       word ptr cs:[rax + rax]
+0x009809e0 mov       edx, 1
+0x009809e5 mov       cl, sil
+0x009809e8 shl       rdx, cl
+0x009809eb add       rdi, 0xe8
+0x009809f2 mov       ecx, 0xffffffff
+0x009809f7 nop       word ptr [rax + rax]
+0x00980a00 inc       ecx
+0x00980a02 xor       al, al
+0x00980a04 cmp       ecx, 1
+0x00980a07 jg        0x980a1a
+0x00980a09 mov       al, 1
+0x00980a0b test      qword ptr [rdi - 8], rdx
+0x00980a0f jne       0x980a1a
+0x00980a11 test      qword ptr [rdi], rdx
+0x00980a14 lea       rdi, [rdi + 0x38]
+0x00980a18 je        0x980a00
+0x00980a1a ret       
+0x00980a1b nop       dword ptr [rax + rax]

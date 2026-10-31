@@ -1,0 +1,15 @@
+{
+  "utc": "2026-10-28T12:34:26.960585+00:00",
+  "world": "0x37fb1a200",
+  "clock": "0x37fb1cb80",
+  "tick_ms": 33.33333206176758,
+  "received_stamp": 0,
+  "monotonic_seconds": 11.233332633972168,
+  "receive_time": 1848,
+  "triggers": [],
+  "engine_tick_info": {
+    "address": "0x37f805fc0",
+    "hex": "010000001e0000008988083d620800004da0083d010000000000000000000000e0000000000000000000000000000000",
+    "ticks_per_second": 30
+  }
+}

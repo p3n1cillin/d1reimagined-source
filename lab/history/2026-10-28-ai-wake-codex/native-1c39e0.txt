@@ -1,0 +1,72 @@
+0x001c39e0 push      rbp
+0x001c39e1 mov       rbp, rsp
+0x001c39e4 push      r15
+0x001c39e6 push      r14
+0x001c39e8 push      r12
+0x001c39ea push      rbx
+0x001c39eb mov       r14d, esi
+0x001c39ee mov       r12, rdi
+0x001c39f1 lea       rax, [rip + 0x17b1398] ; [0x1974d90]
+0x001c39f8 mov       rax, qword ptr [rax]
+0x001c39fb mov       r15, qword ptr [rax + 8]
+0x001c39ff mov       rdi, r15
+0x001c3a02 xor       esi, esi
+0x001c3a04 mov       edx, 0xffffffff
+0x001c3a09 call      0xe8680
+0x001c3a0e mov       rdi, r12
+0x001c3a11 xor       esi, esi
+0x001c3a13 mov       rdx, rax
+0x001c3a16 call      0x12aa980
+0x001c3a1b mov       ax, word ptr [r15 + 0x1c]
+0x001c3a20 mov       dx, ax
+0x001c3a23 and       dx, 0x78
+0x001c3a27 setne     cl
+0x001c3a2a test      dx, dx
+0x001c3a2d jne       0x1c3a67
+0x001c3a2f mov       ebx, dword ptr [r15 + 0x20]
+0x001c3a33 test      al, 0x40
+0x001c3a35 je        0x1c3a5e
+0x001c3a37 test      r12, r12
+0x001c3a3a je        0x1c3a58
+0x001c3a3c mov       rdi, r15
+0x001c3a3f mov       rsi, r12
+0x001c3a42 call      0xe8a90
+0x001c3a47 test      rax, rax
+0x001c3a4a je        0x1c3a58
+0x001c3a4c mov       ecx, 0x5488bf
+0x001c3a51 and       ecx, dword ptr [rax + 0x20]
+0x001c3a54 or        ebx, ecx
+0x001c3a56 jmp       0x1c3a5e
+0x001c3a58 or        ebx, 0x5488bf
+0x001c3a5e test      ebx, 0xc08070
+0x001c3a64 setne     cl
+0x001c3a67 test      cl, cl
+0x001c3a69 je        0x1c3a80
+0x001c3a6b mov       rdi, r15
+0x001c3a6e mov       rsi, r12
+0x001c3a71 xor       edx, edx
+0x001c3a73 mov       ecx, 0xffffffff
+0x001c3a78 xor       r8d, r8d
+0x001c3a7b call      0xe6730
+0x001c3a80 mov       dword ptr [r12 + 0x1c], r14d
+0x001c3a85 test      r14d, r14d
+0x001c3a88 jle       0x1c3aa3
+0x001c3a8a add       r12, 0x20
+0x001c3a8e dec       r14d
+0x001c3a91 lea       rdx, [r14*4 + 4]
+0x001c3a99 mov       rdi, r12
+0x001c3a9c xor       esi, esi
+0x001c3a9e call      0x12aa980
+0x001c3aa3 pop       rbx
+0x001c3aa4 pop       r12
+0x001c3aa6 pop       r14
+0x001c3aa8 pop       r15
+0x001c3aaa pop       rbp
+0x001c3aab ret       
+0x001c3aac nop       dword ptr [rax]
+0x001c3ab0 add       eax, dword ptr [rdi + rdx*4 + 0x20]
+0x001c3ab4 inc       rdx
+0x001c3ab7 cmp       edx, ecx
+0x001c3ab9 jl        0x1c3ab0
+0x001c3abb ret       
+0x001c3abc nop       dword ptr [rax]

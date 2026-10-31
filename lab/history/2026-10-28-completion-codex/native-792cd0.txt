@@ -1,0 +1,124 @@
+0x00792cd0 push      rbp
+0x00792cd1 mov       rbp, rsp
+0x00792cd4 push      r15
+0x00792cd6 push      r14
+0x00792cd8 push      r13
+0x00792cda push      r12
+0x00792cdc push      rbx
+0x00792cdd sub       rsp, 0x258
+0x00792ce4 mov       r14, rdi
+0x00792ce7 mov       rax, qword ptr [rip + 0x128c412] ; [0x1a1f100]
+0x00792cee mov       rax, qword ptr [rax]
+0x00792cf1 mov       qword ptr [rbp - 0x30], rax
+0x00792cf5 mov       rax, qword ptr [r14 + 8]
+0x00792cf9 xor       ebx, ebx
+0x00792cfb lea       r15, [rbp - 0x130]
+0x00792d02 lea       r12, [rbp - 0x274]
+0x00792d09 xor       r13b, r13b
+0x00792d0c nop       dword ptr [rax]
+0x00792d10 bt        rax, rbx
+0x00792d14 jae       0x792d48
+0x00792d16 mov       dword ptr [rbp - 0x274], 0xffffffff
+0x00792d20 mov       byte ptr [rbp - 0x130], 0
+0x00792d27 mov       rdi, r14
+0x00792d2a mov       esi, ebx
+0x00792d2c mov       rdx, r15
+0x00792d2f mov       rcx, r12
+0x00792d32 call      0x792ed0
+0x00792d37 cmp       eax, 1
+0x00792d3a je        0x792ea5
+0x00792d40 test      eax, eax
+0x00792d42 jne       0x792d6b
+0x00792d44 mov       rax, qword ptr [r14 + 8]
+0x00792d48 inc       rbx
+0x00792d4b cmp       ebx, 0x26
+0x00792d4e jl        0x792d10
+0x00792d50 mov       r13b, 1
+0x00792d53 test      eax, 0x40000000
+0x00792d58 je        0x792ea5
+0x00792d5e mov       rdi, r14
+0x00792d61 call      0x7933d0
+0x00792d66 jmp       0x792ea5
+0x00792d6b mov       al, byte ptr [rip + 0x1f3cbdf] ; [0x26cf950]
+0x00792d71 test      al, al
+0x00792d73 jne       0x792da3
+0x00792d75 lea       rdi, [rip + 0x1f3cbd4] ; [0x26cf950]
+0x00792d7c call      0x12aa7d0
+0x00792d81 test      eax, eax
+0x00792d83 je        0x792da3
+0x00792d85 lea       rdi, [rip + 0xec6bd4] ; [0x1659960] "world_controller:state_manager: Prerequisite '%s' failed for reason '%s', proceeding to cleanup state."
+0x00792d8c call      0xe4a10
+0x00792d91 mov       dword ptr [rip + 0x1f3cbb5], eax ; [0x26cf94c]
+0x00792d97 lea       rdi, [rip + 0x1f3cbb2] ; [0x26cf950]
+0x00792d9e call      0x12aa7e0
+0x00792da3 mov       edi, ebx
+0x00792da5 call      0xe9fa0
+0x00792daa mov       rbx, rax
+0x00792dad mov       edi, dword ptr [rbp - 0x274]
+0x00792db3 call      0x783960
+0x00792db8 lea       r15, [rbp - 0x270]
+0x00792dbf lea       rsi, [rip + 0xec6b9a] ; [0x1659960] "world_controller:state_manager: Prerequisite '%s' failed for reason '%s', proceeding to cleanup state."
+0x00792dc6 mov       rdi, r15
+0x00792dc9 mov       rdx, rbx
+0x00792dcc mov       rcx, rax
+0x00792dcf xor       al, al
+0x00792dd1 call      0x1008290
+0x00792dd6 mov       edi, dword ptr [rip + 0x1f3cb70] ; [0x26cf94c]
+0x00792ddc mov       rsi, r15
+0x00792ddf call      0xe4aa0
+0x00792de4 lea       rsi, [rbp - 0x278]
+0x00792deb mov       dword ptr [rbp - 0x278], 0xffffffff
+0x00792df5 mov       rdi, r14
+0x00792df8 call      0x7926b0
+0x00792dfd test      al, al
+0x00792dff je        0x792e89
+0x00792e05 mov       ebx, dword ptr [rbp - 0x278]
+0x00792e0b cmp       ebx, dword ptr [rbp - 0x274]
+0x00792e11 je        0x792e8f
+0x00792e13 mov       al, byte ptr [rip + 0x1f3cb47] ; [0x26cf960]
+0x00792e19 test      al, al
+0x00792e1b jne       0x792e4b
+0x00792e1d lea       rdi, [rip + 0x1f3cb3c] ; [0x26cf960]
+0x00792e24 call      0x12aa7d0
+0x00792e29 test      eax, eax
+0x00792e2b je        0x792e4b
+0x00792e2d lea       rdi, [rip + 0xec6b93] ; [0x16599c7] "world_controller:state_manager: Before changing state, found a more accurate state-change reason: '%s'."
+0x00792e34 call      0xe4a10
+0x00792e39 mov       dword ptr [rip + 0x1f3cb19], eax ; [0x26cf958]
+0x00792e3f lea       rdi, [rip + 0x1f3cb1a] ; [0x26cf960]
+0x00792e46 call      0x12aa7e0
+0x00792e4b mov       ebx, dword ptr [rbp - 0x278]
+0x00792e51 mov       edi, ebx
+0x00792e53 call      0x783960
+0x00792e58 lea       r14, [rbp - 0x270]
+0x00792e5f lea       rsi, [rip + 0xec6b61] ; [0x16599c7] "world_controller:state_manager: Before changing state, found a more accurate state-change reason: '%s'."
+0x00792e66 mov       rdi, r14
+0x00792e69 mov       rdx, rax
+0x00792e6c xor       al, al
+0x00792e6e call      0x1008290
+0x00792e73 mov       edi, dword ptr [rip + 0x1f3cadf] ; [0x26cf958]
+0x00792e79 mov       rsi, r14
+0x00792e7c call      0xe4aa0
+0x00792e81 mov       dword ptr [rbp - 0x274], ebx
+0x00792e87 jmp       0x792e8f
+0x00792e89 mov       ebx, dword ptr [rbp - 0x274]
+0x00792e8f lea       rdx, [rbp - 0x130]
+0x00792e96 mov       edi, 0x19
+0x00792e9b mov       esi, ebx
+0x00792e9d call      0x783ee0
+0x00792ea2 xor       r13b, r13b
+0x00792ea5 mov       rax, qword ptr [rip + 0x128c254] ; [0x1a1f100]
+0x00792eac mov       rax, qword ptr [rax]
+0x00792eaf cmp       rax, qword ptr [rbp - 0x30]
+0x00792eb3 jne       0x792eca
+0x00792eb5 mov       al, r13b
+0x00792eb8 add       rsp, 0x258
+0x00792ebf pop       rbx
+0x00792ec0 pop       r12
+0x00792ec2 pop       r13
+0x00792ec4 pop       r14
+0x00792ec6 pop       r15
+0x00792ec8 pop       rbp
+0x00792ec9 ret       
+0x00792eca call      0x12aa7f0
+0x00792ecf nop       

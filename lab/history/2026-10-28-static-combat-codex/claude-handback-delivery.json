@@ -1,0 +1,17 @@
+{
+  "verified_utc": "2026-10-28T13:08:25.970900+00:00",
+  "status": "queued for current Claude session",
+  "method": "Send clicked; composer became empty; matching queue-operation persisted in Claude session transcript",
+  "session_title": "PS4 build 56578 retarget",
+  "transcript": "%USERPROFILE%\\.claude\\projects\\F--d1-d1xenia\\eb49bdd6-2562-42a0-a73d-ed14111dbab8.jsonl",
+  "matches": [
+    {
+      "timestamp": "2026-10-28T13:06:39.444Z",
+      "operation": "enqueue",
+      "sessionId": "eb49bdd6-2562-42a0-a73d-ed14111dbab8",
+      "content_chars": 9877,
+      "contains_final_update": true,
+      "content_sha256": "e760752c01fec20e3e651b4e38121f1c8c94bda7c083cffd970e756f9b4d4058"
+    }
+  ]
+}

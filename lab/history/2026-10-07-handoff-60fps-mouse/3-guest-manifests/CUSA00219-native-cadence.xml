@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Destiny 1 (PS4) CUSA00219 01.29: the client modification the native client applies besides the
+  launcher's manifest when it runs the 60 Hz patch set. Same format and address convention as
+  that manifest (Address = eboot virtual address + 0x400000). `Original` is this project's
+  addition: the bytes the write replaces, which native/guest_patches.py checks.
+
+  The outer wake is the emulator fork's SHADPS4_D1_OUTER_WAKE_5994 (its record:
+  documents/d1-outer-wake-5994.md in the fork). There it is installed by a module of the emulator;
+  the native loader takes it as a write, since it is one byte. The game's outer loop waits for a
+  deadline it reads from its configuration at +0x08, 33,366 us. The write changes the
+  displacement of that read (48 03 4e 08 at 0x5938eb) to +0x28, the 16,683 us deadline the
+  configuration already holds. The fork's record: with the launcher's 60 Hz constants and this
+  deadline, every outer entry is one 1/60 tick; with the stock constants it runs the game fast,
+  so it is applied only together with the 60 Hz manifest.
+
+  These are client modifications: findings that depend on them carry the provenance rule the
+  launcher manifest states (synthetic_ancestor).
+-->
+<Patch>
+  <Metadata Name="D1 cadence: outer wake 59.94 (the 16,683 us outer deadline)"
+            isEnabled="true" AppVer="01.29" Author="fork d1_outer_wake_5994" PatchVer="1.0">
+    <PatchList>
+      <!-- the whole instruction is written and checked, as the fork pins it -->
+      <Line Type="bytes" Address="0x9938EB" Value="48034e28" Original="48034e08"/>
+    </PatchList>
+  </Metadata>
+</Patch>

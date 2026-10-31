@@ -1,0 +1,9 @@
+0x001051f0 vaddss    xmm1, xmm0, dword ptr [rip + 0x15120cc] ; [0x16172c4]
+0x001051f8 vxorps    xmm2, xmm2, xmm2
+0x001051fc vucomiss  xmm1, xmm2
+0x00105200 jb        0x10520a
+0x00105202 vmovss    xmm0, dword ptr [rip + 0x15120be] ; [0x16172c8]
+0x0010520a movsxd    rax, esi
+0x0010520d vmovss    dword ptr [rdi + rax*4 + 0x1ec], xmm0
+0x00105216 ret       
+0x00105217 nop       word ptr [rax + rax]

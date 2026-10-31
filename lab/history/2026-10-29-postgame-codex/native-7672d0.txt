@@ -1,0 +1,421 @@
+0x007672d0 push      rbp
+0x007672d1 mov       rbp, rsp
+0x007672d4 push      rbx
+0x007672d5 sub       rsp, 0x18
+0x007672d9 lea       rax, [rip + 0x11dddc8] ; [0x19450a8]
+0x007672e0 mov       rax, qword ptr [rax]
+0x007672e3 mov       r8d, 0xffffffff
+0x007672e9 test      rax, rax
+0x007672ec je        0x7672f1
+0x007672ee mov       r8d, dword ptr [rax]
+0x007672f1 lea       rax, [rip + 0x8a55c8] ; [0x100c8c0]
+0x007672f8 mov       qword ptr [rsp + 0x10], rax
+0x007672fd mov       dword ptr [rsp + 8], 0x19
+0x00767305 mov       dword ptr [rsp], 3
+0x0076730c lea       rdi, [rip + 0x1f62d5d] ; [0x26ca070]
+0x00767313 lea       rsi, [rip + 0xee5906] ; [0x164cc20] 'world controller retail datamine'
+0x0076731a mov       edx, 0x13178
+0x0076731f mov       ecx, 4
+0x00767324 mov       r9d, 2
+0x0076732a call      0x23e010
+0x0076732f mov       rdi, qword ptr [rip + 0x1f62d3a] ; [0x26ca070]
+0x00767336 test      rdi, rdi
+0x00767339 je        0x767340
+0x0076733b call      0x76b9e0
+0x00767340 lea       rax, [rip + 0x11ddd51] ; [0x1945098]
+0x00767347 mov       rax, qword ptr [rax]
+0x0076734a mov       r8d, 0xffffffff
+0x00767350 test      rax, rax
+0x00767353 je        0x767358
+0x00767355 mov       r8d, dword ptr [rax]
+0x00767358 lea       rax, [rip + 0x8a5561] ; [0x100c8c0]
+0x0076735f mov       qword ptr [rsp + 0x10], rax
+0x00767364 mov       dword ptr [rsp + 8], 0x19
+0x0076736c mov       dword ptr [rsp], 3
+0x00767373 lea       rdi, [rip + 0x1f62d0e] ; [0x26ca088]
+0x0076737a lea       rsi, [rip + 0xee58c0] ; [0x164cc41] 'world controller activity manager'
+0x00767381 mov       edx, 0xad0
+0x00767386 mov       ecx, 4
+0x0076738b mov       r9d, 2
+0x00767391 call      0x23e010
+0x00767396 mov       rbx, qword ptr [rip + 0x1f62ceb] ; [0x26ca088]
+0x0076739d test      rbx, rbx
+0x007673a0 je        0x76747a
+0x007673a6 mov       rdi, rbx
+0x007673a9 xor       esi, esi
+0x007673ab mov       edx, 0xad0
+0x007673b0 call      0x12aa980
+0x007673b5 mov       byte ptr [rbx], 0
+0x007673b8 mov       dword ptr [rbx + 0x27c], 0x811c9dc5
+0x007673c2 mov       byte ptr [rbx + 0x290], 0
+0x007673c9 mov       dword ptr [rbx + 0x4a4], 0x811c9dc5
+0x007673d3 mov       dword ptr [rbx + 0x4c0], 0x811c9dc5
+0x007673dd mov       dword ptr [rbx + 0x4dc], 0x811c9dc5
+0x007673e7 lea       rdi, [rbx + 0x640]
+0x007673ee mov       dword ptr [rbx + 0x500], 0
+0x007673f8 mov       dword ptr [rbx + 0x5d8], 0
+0x00767402 mov       dword ptr [rbx + 0x5f4], 0xffffffff
+0x0076740c mov       byte ptr [rbx + 0x600], 0
+0x00767413 call      0x595250
+0x00767418 lea       rdi, [rbx + 0x830]
+0x0076741f mov       dword ptr [rbx + 0x6f0], 0
+0x00767429 mov       dword ptr [rbx + 0x7c8], 0
+0x00767433 mov       dword ptr [rbx + 0x7e4], 0xffffffff
+0x0076743d mov       byte ptr [rbx + 0x7f0], 0
+0x00767444 call      0x595250
+0x00767449 mov       dword ptr [rbx + 0x8e0], 0
+0x00767453 mov       dword ptr [rbx + 0x9b8], 0
+0x0076745d mov       dword ptr [rbx + 0x9d4], 0xffffffff
+0x00767467 mov       byte ptr [rbx + 0x9e0], 0
+0x0076746e lea       rdi, [rbx + 0xa20]
+0x00767475 call      0x595250
+0x0076747a lea       rax, [rip + 0x11ddc07] ; [0x1945088]
+0x00767481 mov       rax, qword ptr [rax]
+0x00767484 mov       r8d, 0xffffffff
+0x0076748a test      rax, rax
+0x0076748d je        0x767492
+0x0076748f mov       r8d, dword ptr [rax]
+0x00767492 lea       rax, [rip + 0x8a5427] ; [0x100c8c0]
+0x00767499 mov       qword ptr [rsp + 0x10], rax
+0x0076749e mov       dword ptr [rsp + 8], 0xd
+0x007674a6 mov       dword ptr [rsp], 3
+0x007674ad lea       rdi, [rip + 0x1f62bdc] ; [0x26ca090]
+0x007674b4 lea       rsi, [rip + 0xee57a8] ; [0x164cc63] 'world controller activity world globals manager'
+0x007674bb mov       edx, 0xb1
+0x007674c0 mov       ecx, 4
+0x007674c5 mov       r9d, 1
+0x007674cb call      0x23e010
+0x007674d0 mov       rbx, qword ptr [rip + 0x1f62bb9] ; [0x26ca090]
+0x007674d7 test      rbx, rbx
+0x007674da je        0x7674ee
+0x007674dc mov       rdi, rbx
+0x007674df xor       esi, esi
+0x007674e1 mov       edx, 0xb1
+0x007674e6 call      0x12aa980
+0x007674eb mov       byte ptr [rbx], 0
+0x007674ee lea       rax, [rip + 0x11ddb83] ; [0x1945078]
+0x007674f5 mov       rax, qword ptr [rax]
+0x007674f8 mov       r8d, 0xffffffff
+0x007674fe test      rax, rax
+0x00767501 je        0x767506
+0x00767503 mov       r8d, dword ptr [rax]
+0x00767506 lea       rax, [rip + 0x8a53b3] ; [0x100c8c0]
+0x0076750d mov       qword ptr [rsp + 0x10], rax
+0x00767512 mov       dword ptr [rsp + 8], 0x19
+0x0076751a mov       dword ptr [rsp], 3
+0x00767521 lea       rdi, [rip + 0x1f62b50] ; [0x26ca078]
+0x00767528 lea       rsi, [rip + 0xee5764] ; [0x164cc93] 'world controller state manager'
+0x0076752f mov       edx, 0x1d0
+0x00767534 mov       ecx, 4
+0x00767539 mov       r9d, 2
+0x0076753f call      0x23e010
+0x00767544 mov       rbx, qword ptr [rip + 0x1f62b2d] ; [0x26ca078]
+0x0076754b test      rbx, rbx
+0x0076754e je        0x767562
+0x00767550 mov       rdi, rbx
+0x00767553 xor       esi, esi
+0x00767555 mov       edx, 0x1d0
+0x0076755a call      0x12aa980
+0x0076755f mov       byte ptr [rbx], 0
+0x00767562 lea       rax, [rip + 0x11ddaff] ; [0x1945068]
+0x00767569 mov       rax, qword ptr [rax]
+0x0076756c mov       r8d, 0xffffffff
+0x00767572 test      rax, rax
+0x00767575 je        0x76757a
+0x00767577 mov       r8d, dword ptr [rax]
+0x0076757a lea       rax, [rip + 0x8a533f] ; [0x100c8c0]
+0x00767581 mov       qword ptr [rsp + 0x10], rax
+0x00767586 mov       dword ptr [rsp + 8], 0x19
+0x0076758e mov       dword ptr [rsp], 3
+0x00767595 lea       rdi, [rip + 0x1f62ae4] ; [0x26ca080]
+0x0076759c lea       rsi, [rip + 0xee570f] ; [0x164ccb2] 'world controller session manager'
+0x007675a3 mov       edx, 0x80
+0x007675a8 mov       ecx, 4
+0x007675ad mov       r9d, 2
+0x007675b3 call      0x23e010
+0x007675b8 mov       rax, qword ptr [rip + 0x1f62ac1] ; [0x26ca080]
+0x007675bf test      rax, rax
+0x007675c2 je        0x76764a
+0x007675c8 mov       qword ptr [rax + 0x78], 0
+0x007675d0 mov       qword ptr [rax + 0x70], 0
+0x007675d8 mov       qword ptr [rax + 0x68], 0
+0x007675e0 mov       qword ptr [rax + 0x60], 0
+0x007675e8 mov       qword ptr [rax + 0x58], 0
+0x007675f0 mov       qword ptr [rax + 0x50], 0
+0x007675f8 mov       qword ptr [rax + 0x48], 0
+0x00767600 mov       qword ptr [rax + 0x40], 0
+0x00767608 mov       qword ptr [rax + 0x38], 0
+0x00767610 mov       qword ptr [rax + 0x30], 0
+0x00767618 mov       qword ptr [rax + 0x28], 0
+0x00767620 mov       qword ptr [rax + 0x20], 0
+0x00767628 mov       qword ptr [rax + 0x18], 0
+0x00767630 mov       qword ptr [rax + 0x10], 0
+0x00767638 mov       qword ptr [rax + 8], 0
+0x00767640 mov       qword ptr [rax], 0
+0x00767647 mov       byte ptr [rax], 0
+0x0076764a lea       rax, [rip + 0x11dda07] ; [0x1945058]
+0x00767651 mov       rax, qword ptr [rax]
+0x00767654 mov       r8d, 0xffffffff
+0x0076765a test      rax, rax
+0x0076765d je        0x767662
+0x0076765f mov       r8d, dword ptr [rax]
+0x00767662 lea       rax, [rip + 0x8a5257] ; [0x100c8c0]
+0x00767669 mov       qword ptr [rsp + 0x10], rax
+0x0076766e mov       dword ptr [rsp + 8], 0x19
+0x00767676 mov       dword ptr [rsp], 0
+0x0076767d lea       rdi, [rip + 0x1f62a44] ; [0x26ca0c8]
+0x00767684 lea       rsi, [rip + 0xee5648] ; [0x164ccd3] 'world controller slice set globals'
+0x0076768b mov       edx, 0x168
+0x00767690 mov       ecx, 4
+0x00767695 mov       r9d, 2
+0x0076769b call      0x23e010
+0x007676a0 mov       rbx, qword ptr [rip + 0x1f62a21] ; [0x26ca0c8]
+0x007676a7 test      rbx, rbx
+0x007676aa je        0x7676dd
+0x007676ac mov       rdi, rbx
+0x007676af xor       esi, esi
+0x007676b1 mov       edx, 0x168
+0x007676b6 call      0x12aa980
+0x007676bb mov       dword ptr [rbx + 0xc], 0x811c9dc5
+0x007676c2 mov       dword ptr [rbx + 0x1c], 0
+0x007676c9 mov       dword ptr [rbx + 0xac], 0x811c9dc5
+0x007676d3 mov       dword ptr [rbx + 0xbc], 0
+0x007676dd lea       rax, [rip + 0x11dd964] ; [0x1945048]
+0x007676e4 mov       rax, qword ptr [rax]
+0x007676e7 mov       r8d, 0xffffffff
+0x007676ed test      rax, rax
+0x007676f0 je        0x7676f5
+0x007676f2 mov       r8d, dword ptr [rax]
+0x007676f5 lea       rax, [rip + 0x8a51c4] ; [0x100c8c0]
+0x007676fc mov       qword ptr [rsp + 0x10], rax
+0x00767701 mov       dword ptr [rsp + 8], 0x19
+0x00767709 mov       dword ptr [rsp], 3
+0x00767710 lea       rdi, [rip + 0x1f62981] ; [0x26ca098]
+0x00767717 lea       rsi, [rip + 0xee55d8] ; [0x164ccf6] 'world controller slice set manager'
+0x0076771e mov       edx, 0x5b8
+0x00767723 mov       ecx, 4
+0x00767728 mov       r9d, 2
+0x0076772e call      0x23e010
+0x00767733 mov       rbx, qword ptr [rip + 0x1f6295e] ; [0x26ca098]
+0x0076773a test      rbx, rbx
+0x0076773d je        0x7677de
+0x00767743 mov       rdi, rbx
+0x00767746 xor       esi, esi
+0x00767748 mov       edx, 0x5b8
+0x0076774d call      0x12aa980
+0x00767752 mov       byte ptr [rbx], 0
+0x00767755 mov       dword ptr [rbx + 0x94], 0x811c9dc5
+0x0076775f mov       dword ptr [rbx + 0xa4], 0
+0x00767769 mov       dword ptr [rbx + 0x134], 0x811c9dc5
+0x00767773 mov       dword ptr [rbx + 0x144], 0
+0x0076777d mov       dword ptr [rbx + 0x1fc], 0x811c9dc5
+0x00767787 lea       rdi, [rbx + 0x590]
+0x0076778e mov       dword ptr [rbx + 0x20c], 0
+0x00767798 mov       dword ptr [rbx + 0x29c], 0x811c9dc5
+0x007677a2 mov       dword ptr [rbx + 0x2ac], 0
+0x007677ac mov       dword ptr [rbx + 0x3a8], 0x811c9dc5
+0x007677b6 mov       dword ptr [rbx + 0x404], 0
+0x007677c0 mov       dword ptr [rbx + 0x4dc], 0
+0x007677ca call      0x298430
+0x007677cf add       rbx, 0x5a8
+0x007677d6 mov       rdi, rbx
+0x007677d9 call      0x7785c0
+0x007677de lea       rax, [rip + 0x11dd853] ; [0x1945038]
+0x007677e5 mov       rax, qword ptr [rax]
+0x007677e8 mov       r8d, 0xffffffff
+0x007677ee test      rax, rax
+0x007677f1 je        0x7677f6
+0x007677f3 mov       r8d, dword ptr [rax]
+0x007677f6 lea       rax, [rip + 0x8a50c3] ; [0x100c8c0]
+0x007677fd mov       qword ptr [rsp + 0x10], rax
+0x00767802 mov       dword ptr [rsp + 8], 0x19
+0x0076780a mov       dword ptr [rsp], 3
+0x00767811 lea       rdi, [rip + 0x1f62888] ; [0x26ca0a0]
+0x00767818 lea       rsi, [rip + 0xee54fa] ; [0x164cd19] 'world controller matchmaking manager'
+0x0076781f mov       edx, 0x6408
+0x00767824 mov       ecx, 4
+0x00767829 mov       r9d, 2
+0x0076782f call      0x23e010
+0x00767834 mov       rbx, qword ptr [rip + 0x1f62865] ; [0x26ca0a0]
+0x0076783b test      rbx, rbx
+0x0076783e je        0x7678eb
+0x00767844 mov       rdi, rbx
+0x00767847 xor       esi, esi
+0x00767849 mov       edx, 0x6408
+0x0076784e call      0x12aa980
+0x00767853 mov       byte ptr [rbx], 0
+0x00767856 mov       byte ptr [rbx + 0x98], 0
+0x0076785d mov       byte ptr [rbx + 0x99], 0
+0x00767864 mov       byte ptr [rbx + 0xa8], 0
+0x0076786b mov       byte ptr [rbx + 0xa9], 0
+0x00767872 lea       rdi, [rbx + 0xb0]
+0x00767879 call      0xb2b640
+0x0076787e lea       rdi, [rbx + 0x2038]
+0x00767885 call      0xb2ae80
+0x0076788a lea       rdi, [rbx + 0x21d8]
+0x00767891 mov       word ptr [rbx + 0x21c0], 0
+0x0076789a mov       byte ptr [rbx + 0x21d0], 0
+0x007678a1 mov       byte ptr [rbx + 0x21d1], 0
+0x007678a8 call      0xb2b640
+0x007678ad lea       rdi, [rbx + 0x4160]
+0x007678b4 call      0xb2ae80
+0x007678b9 lea       rdi, [rbx + 0x4300]
+0x007678c0 mov       word ptr [rbx + 0x42e8], 0
+0x007678c9 mov       byte ptr [rbx + 0x42f8], 0
+0x007678d0 mov       byte ptr [rbx + 0x42f9], 0
+0x007678d7 call      0xb2b640
+0x007678dc add       rbx, 0x6288
+0x007678e3 mov       rdi, rbx
+0x007678e6 call      0xb2ae80
+0x007678eb lea       rax, [rip + 0x11dd736] ; [0x1945028]
+0x007678f2 mov       rax, qword ptr [rax]
+0x007678f5 mov       r8d, 0xffffffff
+0x007678fb test      rax, rax
+0x007678fe je        0x767903
+0x00767900 mov       r8d, dword ptr [rax]
+0x00767903 lea       rax, [rip + 0x8a4fb6] ; [0x100c8c0]
+0x0076790a mov       qword ptr [rsp + 0x10], rax
+0x0076790f mov       dword ptr [rsp + 8], 0x19
+0x00767917 mov       dword ptr [rsp], 0
+0x0076791e lea       rdi, [rip + 0x1f62783] ; [0x26ca0a8]
+0x00767925 lea       rsi, [rip + 0xee5412] ; [0x164cd3e] 'world controller cinematics manager'
+0x0076792c mov       edx, 0xac
+0x00767931 mov       ecx, 4
+0x00767936 mov       r9d, 1
+0x0076793c call      0x23e010
+0x00767941 mov       rbx, qword ptr [rip + 0x1f62760] ; [0x26ca0a8]
+0x00767948 test      rbx, rbx
+0x0076794b je        0x767969
+0x0076794d mov       rdi, rbx
+0x00767950 xor       esi, esi
+0x00767952 mov       edx, 0xac
+0x00767957 call      0x12aa980
+0x0076795c mov       byte ptr [rbx], 0
+0x0076795f mov       dword ptr [rbx + 0x98], 0
+0x00767969 lea       rax, [rip + 0x11dd6a8] ; [0x1945018]
+0x00767970 mov       rax, qword ptr [rax]
+0x00767973 mov       r8d, 0xffffffff
+0x00767979 test      rax, rax
+0x0076797c je        0x767981
+0x0076797e mov       r8d, dword ptr [rax]
+0x00767981 lea       rax, [rip + 0x8a4f38] ; [0x100c8c0]
+0x00767988 mov       qword ptr [rsp + 0x10], rax
+0x0076798d mov       dword ptr [rsp + 8], 0x19
+0x00767995 mov       dword ptr [rsp], 3
+0x0076799c lea       rdi, [rip + 0x1f62715] ; [0x26ca0b8]
+0x007679a3 lea       rsi, [rip + 0xee53b8] ; [0x164cd62] 'world controller client config manager'
+0x007679aa mov       edx, 0x90
+0x007679af mov       ecx, 4
+0x007679b4 mov       r9d, 2
+0x007679ba call      0x23e010
+0x007679bf mov       rdi, qword ptr [rip + 0x1f626f2] ; [0x26ca0b8]
+0x007679c6 test      rdi, rdi
+0x007679c9 je        0x7679d0
+0x007679cb call      0x766f50
+0x007679d0 lea       rax, [rip + 0x11dd631] ; [0x1945008]
+0x007679d7 mov       rax, qword ptr [rax]
+0x007679da mov       r8d, 0xffffffff
+0x007679e0 test      rax, rax
+0x007679e3 je        0x7679e8
+0x007679e5 mov       r8d, dword ptr [rax]
+0x007679e8 lea       rax, [rip + 0x8a4ed1] ; [0x100c8c0]
+0x007679ef mov       qword ptr [rsp + 0x10], rax
+0x007679f4 mov       dword ptr [rsp + 8], 0x19
+0x007679fc mov       dword ptr [rsp], 3
+0x00767a03 lea       rdi, [rip + 0x1f626a6] ; [0x26ca0b0]
+0x00767a0a lea       rsi, [rip + 0xee5378] ; [0x164cd89] 'world controller ui-stage manager'
+0x00767a11 mov       edx, 0x88
+0x00767a16 mov       ecx, 4
+0x00767a1b mov       r9d, 2
+0x00767a21 call      0x23e010
+0x00767a26 mov       rbx, qword ptr [rip + 0x1f62683] ; [0x26ca0b0]
+0x00767a2d test      rbx, rbx
+0x00767a30 je        0x767a44
+0x00767a32 mov       rdi, rbx
+0x00767a35 xor       esi, esi
+0x00767a37 mov       edx, 0x88
+0x00767a3c call      0x12aa980
+0x00767a41 mov       byte ptr [rbx], 0
+0x00767a44 lea       rax, [rip + 0x11dd5ad] ; [0x1944ff8]
+0x00767a4b mov       rax, qword ptr [rax]
+0x00767a4e mov       r8d, 0xffffffff
+0x00767a54 test      rax, rax
+0x00767a57 je        0x767a5c
+0x00767a59 mov       r8d, dword ptr [rax]
+0x00767a5c lea       rax, [rip + 0x8a4e5d] ; [0x100c8c0]
+0x00767a63 mov       qword ptr [rsp + 0x10], rax
+0x00767a68 mov       dword ptr [rsp + 8], 0x19
+0x00767a70 mov       dword ptr [rsp], 3
+0x00767a77 lea       rdi, [rip + 0x1f62642] ; [0x26ca0c0]
+0x00767a7e lea       rsi, [rip + 0xee5326] ; [0x164cdab] 'world controller statistics manager'
+0x00767a85 mov       edx, 0x1b0
+0x00767a8a mov       ecx, 4
+0x00767a8f mov       r9d, 2
+0x00767a95 call      0x23e010
+0x00767a9a mov       rbx, qword ptr [rip + 0x1f6261f] ; [0x26ca0c0]
+0x00767aa1 test      rbx, rbx
+0x00767aa4 je        0x767c14
+0x00767aaa mov       rdi, rbx
+0x00767aad xor       esi, esi
+0x00767aaf mov       edx, 0x1b0
+0x00767ab4 call      0x12aa980
+0x00767ab9 mov       byte ptr [rbx], 0
+0x00767abc mov       dword ptr [rbx + 0x90], 0
+0x00767ac6 mov       dword ptr [rbx + 0xb0], 0
+0x00767ad0 mov       qword ptr [rbx + 0xa8], 0
+0x00767adb mov       qword ptr [rbx + 0xa0], 0
+0x00767ae6 mov       qword ptr [rbx + 0x98], 0
+0x00767af1 mov       dword ptr [rbx + 0xd0], 0
+0x00767afb mov       qword ptr [rbx + 0xc8], 0
+0x00767b06 mov       qword ptr [rbx + 0xc0], 0
+0x00767b11 mov       qword ptr [rbx + 0xb8], 0
+0x00767b1c mov       dword ptr [rbx + 0xf0], 0
+0x00767b26 mov       qword ptr [rbx + 0xe8], 0
+0x00767b31 mov       qword ptr [rbx + 0xe0], 0
+0x00767b3c mov       qword ptr [rbx + 0xd8], 0
+0x00767b47 mov       qword ptr [rbx + 0x188], 0
+0x00767b52 mov       qword ptr [rbx + 0x180], 0
+0x00767b5d mov       qword ptr [rbx + 0x178], 0
+0x00767b68 mov       dword ptr [rbx + 0x130], 0
+0x00767b72 mov       qword ptr [rbx + 0x128], 0
+0x00767b7d mov       qword ptr [rbx + 0x120], 0
+0x00767b88 mov       qword ptr [rbx + 0x118], 0
+0x00767b93 mov       dword ptr [rbx + 0x150], 0
+0x00767b9d mov       qword ptr [rbx + 0x148], 0
+0x00767ba8 mov       qword ptr [rbx + 0x140], 0
+0x00767bb3 mov       qword ptr [rbx + 0x138], 0
+0x00767bbe mov       dword ptr [rbx + 0x170], 0
+0x00767bc8 mov       qword ptr [rbx + 0x168], 0
+0x00767bd3 mov       qword ptr [rbx + 0x160], 0
+0x00767bde mov       qword ptr [rbx + 0x158], 0
+0x00767be9 mov       dword ptr [rbx + 0x110], 0
+0x00767bf3 mov       qword ptr [rbx + 0x108], 0
+0x00767bfe mov       qword ptr [rbx + 0x100], 0
+0x00767c09 mov       qword ptr [rbx + 0xf8], 0
+0x00767c14 mov       rdi, qword ptr [rip + 0x1f62455] ; [0x26ca070]
+0x00767c1b call      0x76beb0
+0x00767c20 mov       rdi, qword ptr [rip + 0x1f62469] ; [0x26ca090]
+0x00767c27 call      0x763cf0
+0x00767c2c mov       rdi, qword ptr [rip + 0x1f62455] ; [0x26ca088]
+0x00767c33 call      0x759320
+0x00767c38 call      0x34c400
+0x00767c3d mov       rdi, qword ptr [rip + 0x1f6243c] ; [0x26ca080]
+0x00767c44 call      0x6c520
+0x00767c49 mov       rdi, qword ptr [rip + 0x1f62450] ; [0x26ca0a0]
+0x00767c50 call      0x76a240
+0x00767c55 mov       rdi, qword ptr [rip + 0x1f6243c] ; [0x26ca098]
+0x00767c5c call      0x778600
+0x00767c61 mov       rdi, qword ptr [rip + 0x1f62440] ; [0x26ca0a8]
+0x00767c68 call      0x7644d0
+0x00767c6d mov       rdi, qword ptr [rip + 0x1f62444] ; [0x26ca0b8]
+0x00767c74 call      0x766f70
+0x00767c79 mov       rdi, qword ptr [rip + 0x1f62430] ; [0x26ca0b0]
+0x00767c80 call      0x788580
+0x00767c85 mov       rdi, qword ptr [rip + 0x1f62434] ; [0x26ca0c0]
+0x00767c8c call      0x7873e0
+0x00767c91 mov       rdi, qword ptr [rip + 0x1f623e0] ; [0x26ca078]
+0x00767c98 add       rsp, 0x18
+0x00767c9c pop       rbx
+0x00767c9d pop       rbp
+0x00767c9e jmp       0x783780
+0x00767ca3 nop       word ptr cs:[rax + rax]

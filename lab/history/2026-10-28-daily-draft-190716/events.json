@@ -1,0 +1,39 @@
+[
+  {
+    "event_id": "d1-20261028-clock",
+    "timestamp": "2026-10-28T13:20:00Z",
+    "timestamp_basis": "dated operator handoff; exact trigger times in private run log",
+    "feature": "world-clock-and-trigger-reporting",
+    "maturity": "Fully Working within tested clock-enabled configuration",
+    "claim": "Exactly one report each for four armed triggers in sense39; no full mission claim."
+  },
+  {
+    "event_id": "d1-20261028-dock-objective",
+    "timestamp": "2026-10-28T14:17:32Z",
+    "feature": "dock13-route-objectives",
+    "maturity": "Partially Working",
+    "claim": "Operator source journal records hangar trigger41 and Clear Out the Fallen; encounter not cleared."
+  },
+  {
+    "event_id": "d1-20261028-power-selector",
+    "timestamp": "2026-10-28T14:41:10.340024Z",
+    "feature": "damage-investigation",
+    "maturity": "Experimental",
+    "claim": "Native byte identity plus offline replica gives base multiplier1.0 for measured40-vs1 power; live hit profile unresolved."
+  },
+  {
+    "event_id": "d1-20261028-members",
+    "timestamp": "2026-10-28T18:51:57.549Z",
+    "feature": "native-squad-targets",
+    "maturity": "Partially Working",
+    "claim": "Five remaining current members have physical body bindings; health and wake state unknown."
+  },
+  {
+    "event_id": "d1-20261028-inert",
+    "timestamp": "2026-10-28T18:56:00Z",
+    "timestamp_basis": "operator handoff inspection time; approximate minute",
+    "feature": "dock13-ai",
+    "maturity": "Known Broken",
+    "claim": "Operator reports five upright but stationary and non-engaging members; not a verified damage-immunity finding."
+  }
+]

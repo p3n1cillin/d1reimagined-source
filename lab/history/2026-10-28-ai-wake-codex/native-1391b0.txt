@@ -1,0 +1,9 @@
+0x001391b0 and       edi, 0x1fff
+0x001391b6 lea       rax, [rip + 0x249e7e3] ; [0x25d79a0]
+0x001391bd imul      edi, dword ptr [rax + 0x10]
+0x001391c1 mov       rax, qword ptr [rax + 8]
+0x001391c5 mov       al, byte ptr [rdi + rax + 0x209]
+0x001391cc cmp       al, 1
+0x001391ce sete      al
+0x001391d1 ret       
+0x001391d2 nop       word ptr cs:[rax + rax]

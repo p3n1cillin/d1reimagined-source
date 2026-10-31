@@ -1,0 +1,45 @@
+0x0073dac0 push      rbp
+0x0073dac1 mov       rbp, rsp
+0x0073dac4 push      r15
+0x0073dac6 push      r14
+0x0073dac8 push      rbx
+0x0073dac9 push      rax
+0x0073daca mov       r14, rsi
+0x0073dacd mov       ebx, edi
+0x0073dacf call      0x66ae60
+0x0073dad4 mov       rdi, rax
+0x0073dad7 mov       rsi, r14
+0x0073dada mov       edx, 0x1098
+0x0073dadf call      0x12aa820
+0x0073dae4 mov       r15d, eax
+0x0073dae7 call      0x14d0
+0x0073daec test      al, al
+0x0073daee jne       0x73daf5
+0x0073daf0 test      r15d, r15d
+0x0073daf3 jne       0x73db00
+0x0073daf5 add       rsp, 8
+0x0073daf9 pop       rbx
+0x0073dafa pop       r14
+0x0073dafc pop       r15
+0x0073dafe pop       rbp
+0x0073daff ret       
+0x0073db00 mov       edi, ebx
+0x0073db02 mov       rsi, r14
+0x0073db05 add       rsp, 8
+0x0073db09 pop       rbx
+0x0073db0a pop       r14
+0x0073db0c pop       r15
+0x0073db0e pop       rbp
+0x0073db0f jmp       0x73d910
+0x0073db14 nop       word ptr cs:[rax + rax]
+0x0073db20 ret       
+0x0073db21 nop       word ptr cs:[rax + rax]
+0x0073db30 ret       
+0x0073db31 nop       word ptr cs:[rax + rax]
+0x0073db40 xor       al, al
+0x0073db42 ret       
+0x0073db43 nop       word ptr cs:[rax + rax]
+0x0073db50 ret       
+0x0073db51 nop       word ptr cs:[rax + rax]
+0x0073db60 ret       
+0x0073db61 nop       word ptr cs:[rax + rax]

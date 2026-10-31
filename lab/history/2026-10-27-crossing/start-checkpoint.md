@@ -1,0 +1,3 @@
+# Codex continuation — 27 October 2026, 14:50 UK
+
+Resumed the user's 14:55-labelled Claude handoff; actual clock was14:50 UK. PR39 merged, origin/main0ace655. Clean new branch ps4/divide-crossing. Correct commit identity verified. Run divide17 live (emulator25744, AH21420, idle guard26212), started13:46:27; expected90-minute stop near15:16. No controls/input yet. Priority: authored Divide route, then encounter logic; promote the validated objective17 scheduled list and harden rifle/boot replay. Policy read; daily handoff at safe checkpoint near19:00 and by user's19:30 deadline. Compare reference geometry and loaded region data before treating the apparent chasm as a jump. Do not reuse run16 addresses.

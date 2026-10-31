@@ -1,0 +1,6 @@
+0x0076f0f0 mov       byte ptr [rdi + 0x1e60], 1
+0x0076f0f7 mov       dword ptr [rdi + 0x1e64], esi
+0x0076f0fd mov       byte ptr [rdi + 0x1e68], 1
+0x0076f104 mov       dword ptr [rdi + 0x1e6c], edx
+0x0076f10a ret       
+0x0076f10b nop       dword ptr [rax + rax]

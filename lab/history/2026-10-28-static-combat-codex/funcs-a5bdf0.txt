@@ -1,0 +1,74 @@
+0x00a5bdf0 lea       rax, [rip + 0x1d214c9] ; [0x277d2c0]
+0x00a5bdf7 ret       
+0x00a5bdf8 nop       dword ptr [rax + rax]
+0x00a5be00 mov       rax, qword ptr [rsi]
+0x00a5be03 cmp       rax, qword ptr [rsi + 8]
+0x00a5be07 je        0xa5be10
+0x00a5be09 xor       edx, edx
+0x00a5be0b jmp       0x11776f0
+0x00a5be10 xor       eax, eax
+0x00a5be12 ret       
+0x00a5be13 nop       word ptr cs:[rax + rax]
+0x00a5be20 mov       rax, qword ptr [rsi]
+0x00a5be23 cmp       rax, qword ptr [rsi + 8]
+0x00a5be27 je        0xa5be30
+0x00a5be29 xor       edx, edx
+0x00a5be2b jmp       0x11774d0
+0x00a5be30 xor       eax, eax
+0x00a5be32 ret       
+0x00a5be33 nop       word ptr cs:[rax + rax]
+0x00a5be40 push      rbp
+0x00a5be41 mov       rbp, rsp
+0x00a5be44 mov       rax, qword ptr [rsi]
+0x00a5be47 cmp       rax, qword ptr [rsi + 8]
+0x00a5be4b je        0xa5be56
+0x00a5be4d xor       ecx, ecx
+0x00a5be4f call      0x11772f0
+0x00a5be54 pop       rbp
+0x00a5be55 ret       
+0x00a5be56 xor       al, al
+0x00a5be58 pop       rbp
+0x00a5be59 ret       
+0x00a5be5a nop       word ptr [rax + rax]
+0x00a5be60 push      rbp
+0x00a5be61 mov       rbp, rsp
+0x00a5be64 mov       rax, qword ptr [rsi]
+0x00a5be67 cmp       rax, qword ptr [rsi + 8]
+0x00a5be6b je        0xa5be76
+0x00a5be6d xor       ecx, ecx
+0x00a5be6f call      0x1176e00
+0x00a5be74 pop       rbp
+0x00a5be75 ret       
+0x00a5be76 xor       al, al
+0x00a5be78 pop       rbp
+0x00a5be79 ret       
+0x00a5be7a nop       word ptr [rax + rax]
+0x00a5be80 push      rbp
+0x00a5be81 mov       rbp, rsp
+0x00a5be84 mov       rcx, qword ptr [rsi]
+0x00a5be87 xor       al, al
+0x00a5be89 cmp       rcx, qword ptr [rsi + 8]
+0x00a5be8d je        0xa5be9f
+0x00a5be8f cmp       word ptr [rcx], 0
+0x00a5be93 je        0xa5be9f
+0x00a5be95 mov       ecx, 1
+0x00a5be9a call      0x1176ab0
+0x00a5be9f pop       rbp
+0x00a5bea0 ret       
+0x00a5bea1 nop       word ptr cs:[rax + rax]
+0x00a5beb0 push      rbp
+0x00a5beb1 mov       rbp, rsp
+0x00a5beb4 push      r15
+0x00a5beb6 push      r14
+0x00a5beb8 push      r12
+0x00a5beba push      rbx
+0x00a5bebb mov       rbx, rsi
+0x00a5bebe mov       r12, rdi
+0x00a5bec1 call      0x9438f0
+0x00a5bec6 lea       r14, [r12 + 0x300]
+0x00a5bece mov       rdi, r14
+0x00a5bed1 call      0xa7d120
+0x00a5bed6 mov       edx, dword ptr [rbx + 4]
+0x00a5bed9 .byte     0x41
+0x00a5beda .byte     0x0f
+0x00a5bedb mov       esi, 0x8824b4

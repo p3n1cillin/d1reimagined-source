@@ -1,0 +1,110 @@
+[
+  {
+    "event_id": "d1-20261014-slot-refresh-fix",
+    "timestamp": "2026-10-14T11:22:11+00:00",
+    "timestamp_basis": "Engineering commit time, not an invented test instant.",
+    "source_commit": "975df749d90ab4bb2c3f332a90592574f346f702",
+    "feature": "activity-entity-lifetime",
+    "maturity": "Partially Working / Experimental",
+    "claim": "Correct refresh delta avoids freeing/reallocating live entity indices; reproduced teardown survives.",
+    "verification": "source-reported test outcomes; original screenshots and closed story receipt independently inspected",
+    "retained_lab_client_patch": true,
+    "full_game_accepted": false
+  },
+  {
+    "event_id": "d1-20261014-served-director",
+    "timestamp": "2026-10-14T13:01:29+00:00",
+    "timestamp_basis": "Engineering commit time, not an invented test instant.",
+    "source_commit": "f1a96c60f52b80c7f1b93686baaddf4ff0051787",
+    "feature": "director-and-normal-spawn",
+    "maturity": "Partially Working / Experimental",
+    "claim": "Served Director flags allow Private Match launch and armed spawn without former runtime state overrides.",
+    "verification": "source-reported test outcomes; original screenshots and closed story receipt independently inspected",
+    "retained_lab_client_patch": true,
+    "full_game_accepted": false
+  },
+  {
+    "event_id": "d1-20261014-story-world",
+    "timestamp": "2026-10-14T17:57:18+00:00",
+    "timestamp_basis": "Engineering commit time, not an invented test instant.",
+    "source_commit": "575358ba33b96acf5e666b8d60c1edb54dfc3d09",
+    "feature": "story-ui-to-world",
+    "maturity": "Partially Working / Experimental",
+    "claim": "The Dark Within selected through Earth launches an armed Cosmodrome scene using the corrected served team -1 bundle.",
+    "verification": "source-reported test outcomes; original screenshots and closed story receipt independently inspected",
+    "retained_lab_client_patch": true,
+    "full_game_accepted": false
+  },
+  {
+    "event_id": "d1-20261014-closed-story-receipt",
+    "timestamp": "2026-10-14T17:58:11.0381214Z",
+    "started_at": "2026-10-14T17:52:14.7259529Z",
+    "feature": "story-ui-to-world",
+    "maturity": "Experimental",
+    "observed": {
+      "servers_stopped": true,
+      "emulator_exit_code": -1,
+      "emulator_fault": [],
+      "native_boot_accepted": false
+    },
+    "evidence": [
+      {
+        "file": "screenshots/01.png",
+        "source_modified_at_utc": "2026-10-14T08:18:53.914971+00:00",
+        "source_sha256": "ce4d02159eeaddaae3ee33a45e0bf7276bb4cc55524ce9ab433b7327a2c4092c",
+        "bytes": 1216088,
+        "visual_review": "inspected for private handoff only",
+        "claim": "Armed first-person Moon scene; HUD shows one round remaining. The source record reports two shots from three. A still alone does not prove recoil or damage.",
+        "dimensions": [
+          1296,
+          759
+        ],
+        "suggested_production_crop": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 720
+        },
+        "publication_approved": false
+      },
+      {
+        "file": "screenshots/02.png",
+        "source_modified_at_utc": "2026-10-14T15:37:17.464414+00:00",
+        "source_sha256": "bbdeb36670342661199b09aeca9b37ab03518a2001c13e882f35ee479802d365",
+        "bytes": 1789949,
+        "visual_review": "inspected for private handoff only",
+        "claim": "Earth map with The Dark Within focused, story description and Resume/Restart options. This is UI availability, not mission completion.",
+        "dimensions": [
+          1296,
+          759
+        ],
+        "suggested_production_crop": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 720
+        },
+        "publication_approved": false
+      },
+      {
+        "file": "screenshots/03.png",
+        "source_modified_at_utc": "2026-10-14T17:56:40.762145+00:00",
+        "source_sha256": "ef14e90e5ba50292c07001573a42cfae5ae7c4242422f24152570584d736478b",
+        "bytes": 1584258,
+        "visual_review": "inspected for private handoff only",
+        "claim": "Armed first-person Cosmodrome scene from the story-launch run. Still image only; continuous traversal, encounter logic and completion are unproved.",
+        "dimensions": [
+          1296,
+          759
+        ],
+        "suggested_production_crop": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 720
+        },
+        "publication_approved": false
+      }
+    ]
+  }
+]

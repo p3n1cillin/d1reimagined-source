@@ -1,0 +1,139 @@
+[
+  {
+    "event_id": "ui-urgent-suppression-join252",
+    "timestamp": "2026-10-09T21:18:25+00:00",
+    "timestamp_meaning": "Start of supplied native segment; grant at 21:18:28.314 UTC.",
+    "feature": "opening-mission-notices",
+    "maturity": "Partially Working",
+    "claims": [
+      "No urgent dialog is visible in the sampled grant sequence.",
+      "The retained native watch log has zero dialog-enqueue entries in JOIN252."
+    ],
+    "implementation": "Launch defaults override universe flags 2059, 2065 and 2066 to false; committed as 48c3992.",
+    "tested_source": "bb55871 plus the recorded launch-default change; native worktree dirty.",
+    "evidence": [
+      {
+        "package_id": "<lab-pc>-20261010T180802-6a22199448334c9d9b7c118ae9ddbfb6",
+        "file": "clip.mp4",
+        "start_seconds": 0,
+        "end_seconds": 15,
+        "confidence": "Moderate: sampled frames and native enqueue watch, one bounded run."
+      }
+    ],
+    "comparison_group": "urgent-dialog-at-rifle-grant",
+    "comparison_role": "after",
+    "before_package_id": "<lab-pc>-20261009T125544-09cb974a0e1e437c81a2a894a944a91a",
+    "limitations": [
+      "NEW MISSION banner still visible later in this clip.",
+      "No full-game notice policy acceptance."
+    ],
+    "closure": {
+      "closed_at": "2026-10-09T21:19:29.5427239Z",
+      "identities_checked": 7,
+      "baseline_hashes_restored": 3,
+      "input": "Handler: XInput",
+      "shared_rpcn_preserved": true
+    }
+  },
+  {
+    "event_id": "ui-objective-banner-join253",
+    "timestamp": "2026-10-10T00:53:41+00:00",
+    "timestamp_meaning": "Start of supplied native handover segment.",
+    "feature": "opening-mission-objective-presentation",
+    "maturity": "Partially Working",
+    "claims": [
+      "Sampled Enter the Wall -> Find a Weapon handover has no NEW MISSION banner."
+    ],
+    "implementation": "Mission objectives begin active (state 5) rather than incoming (state 1); committed as 1d5b7e2.",
+    "tested_source": "48c3992 plus uncommitted mission objective-state change; native worktree dirty.",
+    "evidence": [
+      {
+        "package_id": "<lab-pc>-20261010T180808-5edaf0838d814fb9b5895bd5a98f1515",
+        "file": "clip.mp4",
+        "start_seconds": 5,
+        "end_seconds": 25,
+        "confidence": "Moderate: sampled native video, one handover."
+      }
+    ],
+    "limitations": [
+      "Later connection loss prevents acceptance of the post-grant banner in JOIN253.",
+      "This is not mission completion or an end-to-end regression pass."
+    ],
+    "closure": {
+      "closed_at": "2026-10-10T01:00:31.0190961Z",
+      "identities_checked": 7,
+      "baseline_hashes_restored": 3,
+      "input": "Handler: XInput",
+      "shared_rpcn_preserved": true
+    }
+  },
+  {
+    "event_id": "connection-rejoin-join253",
+    "timestamp": "2026-10-10T00:55:02.078+00:00",
+    "feature": "activity-connection-stability",
+    "maturity": "Known Broken",
+    "claims": [
+      "The original activity connection aborts; a new connection appears 55 ms later and requests a host join.",
+      "The client returns to initial slice 113 and later hands over to outdoor slice 112 again."
+    ],
+    "evidence": [
+      {
+        "file": "daily-report.md",
+        "section": "Remaining failure and next acceptance",
+        "confidence": "High for reconnect sequence; root cause unknown."
+      }
+    ],
+    "limitations": [
+      "Earlier checkpoint reports an approximately 16 s client stall; no causal renderer/backend attribution accepted.",
+      "Native footage of this failure is retained locally but not duplicated in this handoff."
+    ]
+  },
+  {
+    "event_id": "ammo-and-aiming-negative-followup",
+    "timestamp": "2026-10-09T14:00:35+00:00",
+    "timestamp_meaning": "Commit timestamp of d0ffccd documenting JOIN233-235, not a fabricated native event instant.",
+    "feature": "combat-fidelity",
+    "maturity": "Known Broken",
+    "claims": [
+      "The tested magazine-stat override still displays 12 rounds; reference is 25/184.",
+      "Aimed-fire experiments do not establish a Dreg kill; entity-pointer samples are not an accepted enemy list."
+    ],
+    "evidence": [
+      {
+        "file": "daily-report.md",
+        "section": "Private engineering summary",
+        "confidence": "Documented earlier test observations, not rerun today."
+      }
+    ],
+    "limitations": [
+      "Failed stat experiment was not retained.",
+      "Kills, XP, ammunition pickups and later encounters remain unverified."
+    ]
+  },
+  {
+    "event_id": "source-validation-20261010",
+    "timestamp": "2026-10-10T18:10:53.856326+00:00",
+    "feature": "backend-and-diagnostics",
+    "maturity": "Fully Working within automated test scope",
+    "tests": [
+      {
+        "command": "python -m unittest discover -s server -p test_*.py",
+        "result": "PASS",
+        "count": 225,
+        "seconds": 14.406
+      },
+      {
+        "command": "python -m unittest discover -s scripts -p test_*.py",
+        "result": "PASS",
+        "count": 176,
+        "seconds": 9.369
+      }
+    ],
+    "source_commit": "1d5b7e291220425e81c26197dda039aac9fa259e",
+    "dirty_worktree": false,
+    "limitations": [
+      "Automated tests do not establish native graphics, combat kills, persistence/reload or full-game playability.",
+      "No new native run or final-schema preflight was executed today for this handoff."
+    ]
+  }
+]

@@ -1,0 +1,7 @@
+0x003db470 cmp       dword ptr [rdi + 0x4804], 0
+0x003db477 jle       0x3db481
+0x003db479 lea       rax, [rip + 0x10] ; [0x3db490]
+0x003db480 ret       
+0x003db481 lea       rax, [rip + 0xb8] ; [0x3db540]
+0x003db488 ret       
+0x003db489 nop       dword ptr [rax]

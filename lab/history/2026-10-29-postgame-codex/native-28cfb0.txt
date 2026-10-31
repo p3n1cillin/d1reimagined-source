@@ -1,0 +1,18 @@
+0x0028cfb0 push      rbp
+0x0028cfb1 mov       rbp, rsp
+0x0028cfb4 push      rbx
+0x0028cfb5 push      rax
+0x0028cfb6 mov       ebx, esi
+0x0028cfb8 call      0x2601f0
+0x0028cfbd xor       cl, cl
+0x0028cfbf cmp       bx, 0x1fff
+0x0028cfc4 ja        0x28cfd2
+0x0028cfc6 movsx     rcx, bx
+0x0028cfca cmp       byte ptr [rax + rcx + 4], 2
+0x0028cfcf sete      cl
+0x0028cfd2 mov       al, cl
+0x0028cfd4 add       rsp, 8
+0x0028cfd8 pop       rbx
+0x0028cfd9 pop       rbp
+0x0028cfda ret       
+0x0028cfdb nop       dword ptr [rax + rax]

@@ -1,0 +1,22 @@
+0x003545d0 push      rbp
+0x003545d1 mov       rbp, rsp
+0x003545d4 mov       rax, qword ptr [rdi]
+0x003545d7 mov       rdi, qword ptr [rdi + 8]
+0x003545db mov       rcx, qword ptr [rax + 0x18]
+0x003545df add       rdi, qword ptr [rax + rcx + 0x128]
+0x003545e7 mov       rax, qword ptr [rax + rcx + 0x120]
+0x003545ef test      al, 1
+0x003545f1 je        0x3545fb
+0x003545f3 mov       rcx, qword ptr [rdi]
+0x003545f6 mov       rax, qword ptr [rax + rcx - 1]
+0x003545fb call      rax
+0x003545fd pop       rbp
+0x003545fe ret       
+0x003545ff nop       
+0x00354600 add       dword ptr [rax + rcx + 0x48], esi
+0x00354604 mov       ecx, dword ptr [rdi]
+0x00354606 mov       rax, qword ptr [rax + rcx - 1]
+0x0035460b call      rax
+0x0035460d pop       rbp
+0x0035460e ret       
+0x0035460f nop       

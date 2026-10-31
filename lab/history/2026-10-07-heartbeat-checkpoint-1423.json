@@ -1,0 +1,125 @@
+{
+  "checked_at": "2026-10-07T14:23:00.1871434Z",
+  "automation_id": "daily-engineering-handoff",
+  "trigger_timestamp": "2026-10-06T19:57:30.649Z",
+  "current_reporting_date": "2026-10-07",
+  "timezone": "Europe/London",
+  "october6_handoff_complete": true,
+  "previous_ready_reverified": {
+    "at": "2026-10-07T14:18:15.9253345Z",
+    "clip_id": "<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56",
+    "ready_directory": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\06\\<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56.ready",
+    "all_payloads_verified": true,
+    "checks": [
+      {
+        "name": "daily-report.md",
+        "bytes": 10718,
+        "size_match": true,
+        "sha256": "42cf784815acf56661aa3b98418ef239fc24de3e1df08f64b20846408b39322e",
+        "hash_match": true
+      },
+      {
+        "name": "events.json",
+        "bytes": 6256,
+        "size_match": true,
+        "sha256": "fb6e92abeb23c6ac0108e543ccb4a3df5d0d03a2e084988c1551551bbae36993",
+        "hash_match": true
+      },
+      {
+        "name": "metadata.json",
+        "bytes": 2381,
+        "size_match": true,
+        "sha256": "2b74514382e1210feefabdf507a1d7b2c91ae6c6a9404e1ce27ef75c2dbdd2d4",
+        "hash_match": true
+      }
+    ]
+  },
+  "new_package_created": false,
+  "media_resent": false,
+  "previous_ready_modified": false,
+  "pending_outbox": 0,
+  "state_counts": [
+    {
+      "status": "SUBMITTED",
+      "count": 12
+    },
+    {
+      "status": "SUPERSEDED",
+      "count": 1
+    }
+  ],
+  "capture_status_at": "2026-10-07T15:23:01.839624+01:00",
+  "nas_connected": true,
+  "nas_available_bytes": 536707203072,
+  "monitor_identity": {
+    "tag": "content-monitor",
+    "id": 11840,
+    "startTimeUtcTicks": "639269734774778973",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "monitor_alive": true,
+  "safe_checkpoint_reached": true,
+  "all_test_owned_closed": true,
+  "native_run": "FINAL124_JOIN168",
+  "native_cleanup": {
+    "at": "2026-10-07T14:16:44.0135439Z",
+    "fixture_completed": true,
+    "all_owned_closed": true,
+    "title_unchanged": true,
+    "watch_unchanged": true,
+    "input": "Handler: XInput",
+    "active_controls": [],
+    "shared_rpcn_preserved": true,
+    "errors": []
+  },
+  "native_replay_cleanup": {
+    "at": "2026-10-07T14:18:17.3201609Z",
+    "identity": {
+      "tag": "rpcs3",
+      "id": 10156,
+      "startTimeUtcTicks": "639269794648452920",
+      "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+    },
+    "capture_sha256": "f17d48b7ec856e2cf8335d78a37a672d3ae9beaa430dafa32735fa32d34479dc",
+    "capture_build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+    "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+    "screenshots": [
+      {
+        "sample": 1,
+        "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_07_15_18_05.png",
+        "at": "2026-10-07T14:18:05.6292355Z",
+        "bytes": 16468,
+        "sha256": "ed6d7f3a32cfb159b43d7360b4dbcd1d38e1005f3f6640885a518b335f3c3be3",
+        "core_layer": [
+          {
+            "ModuleName": "VkLayer_khronos_validation.dll",
+            "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+          }
+        ]
+      },
+      {
+        "sample": 2,
+        "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_07_15_18_16.png",
+        "at": "2026-10-07T14:18:16.4170401Z",
+        "bytes": 16468,
+        "sha256": "f5b172aec3df31dd5d43fb51d319e9506a3e3faa39747097fc29dfa9b00f5381",
+        "core_layer": [
+          {
+            "ModuleName": "VkLayer_khronos_validation.dll",
+            "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+          }
+        ]
+      }
+    ],
+    "native_full_parse": "Native parser reached rendered output; visual inspection pending",
+    "visual_comparison": "NOT RUN",
+    "graphics": "NOT ACCEPTED",
+    "owned_closed": true,
+    "global_restored": true,
+    "title_unchanged": true,
+    "errors": []
+  },
+  "next_handoff": "October 7 near 19:00 Europe/London, next safe checkpoint. Current local time is earlier than cutoff; do not duplicate the completed October 6 package.",
+  "late_evidence": "Late October 6 and October 7 events retain actual dates for next eligible consolidated edition; reference prior packages without media resends.",
+  "next_engineering": "Align captured frame and inspected reference; preserve actual loading replay outcome. Obtain useful outdoor control/fault pair and combined character/world/mission evidence."
+}

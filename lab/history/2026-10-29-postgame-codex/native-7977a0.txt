@@ -1,0 +1,126 @@
+0x007977a0 push      rbp
+0x007977a1 mov       rbp, rsp
+0x007977a4 push      r15
+0x007977a6 push      r14
+0x007977a8 push      r13
+0x007977aa push      r12
+0x007977ac push      rbx
+0x007977ad sub       rsp, 0x148
+0x007977b4 mov       r15, rcx
+0x007977b7 mov       r12, rdx
+0x007977ba mov       rbx, rsi
+0x007977bd mov       rax, qword ptr [rip + 0x128793c] ; [0x1a1f100]
+0x007977c4 mov       rax, qword ptr [rax]
+0x007977c7 mov       qword ptr [rbp - 0x30], rax
+0x007977cb call      0x3db440
+0x007977d0 mov       r13, rax
+0x007977d3 test      r13, r13
+0x007977d6 je        0x79785f
+0x007977dc cmp       byte ptr [r13 + 0x47c5], 0xff
+0x007977e4 jne       0x7978df
+0x007977ea mov       edi, 6
+0x007977ef mov       esi, 2
+0x007977f4 call      0xe4d70
+0x007977f9 xor       r14b, r14b
+0x007977fc test      al, al
+0x007977fe je        0x797990
+0x00797804 mov       al, byte ptr [rip + 0x1f3852e] ; [0x26cfd38]
+0x0079780a test      al, al
+0x0079780c jne       0x79783c
+0x0079780e lea       rdi, [rip + 0x1f38523] ; [0x26cfd38]
+0x00797815 call      0x12aa7d0
+0x0079781a test      eax, eax
+0x0079781c je        0x79783c
+0x0079781e lea       rdi, [rip + 0xec378b] ; [0x165afb0] 'world_controller:state:in_world: team based skill submission requested, no winning team set'
+0x00797825 call      0xe4a10
+0x0079782a mov       dword ptr [rip + 0x1f38500], eax ; [0x26cfd30]
+0x00797830 lea       rdi, [rip + 0x1f38501] ; [0x26cfd38]
+0x00797837 call      0x12aa7e0
+0x0079783c lea       rbx, [rbp - 0x170]
+0x00797843 lea       rsi, [rip + 0xec3766] ; [0x165afb0] 'world_controller:state:in_world: team based skill submission requested, no winning team set'
+0x0079784a xor       r14b, r14b
+0x0079784d mov       rdi, rbx
+0x00797850 xor       al, al
+0x00797852 call      0x1008290
+0x00797857 mov       edi, dword ptr [rip + 0x1f384d3] ; [0x26cfd30]
+0x0079785d jmp       0x7978d2
+0x0079785f mov       edi, 6
+0x00797864 mov       esi, 4
+0x00797869 call      0xe4d70
+0x0079786e xor       r14b, r14b
+0x00797871 test      al, al
+0x00797873 je        0x797990
+0x00797879 mov       al, byte ptr [rip + 0x1f384a9] ; [0x26cfd28]
+0x0079787f test      al, al
+0x00797881 jne       0x7978b1
+0x00797883 lea       rdi, [rip + 0x1f3849e] ; [0x26cfd28]
+0x0079788a call      0x12aa7d0
+0x0079788f test      eax, eax
+0x00797891 je        0x7978b1
+0x00797893 lea       rdi, [rip + 0xec369a] ; [0x165af34] "world_controller:state:in_world: team based skill submission requested, can't get scorboard data, skill write being skipped"
+0x0079789a call      0xe4a10
+0x0079789f mov       dword ptr [rip + 0x1f3847b], eax ; [0x26cfd20]
+0x007978a5 lea       rdi, [rip + 0x1f3847c] ; [0x26cfd28]
+0x007978ac call      0x12aa7e0
+0x007978b1 lea       rbx, [rbp - 0x170]
+0x007978b8 lea       rsi, [rip + 0xec3675] ; [0x165af34] "world_controller:state:in_world: team based skill submission requested, can't get scorboard data, skill write being skipped"
+0x007978bf xor       r14b, r14b
+0x007978c2 mov       rdi, rbx
+0x007978c5 xor       al, al
+0x007978c7 call      0x1008290
+0x007978cc mov       edi, dword ptr [rip + 0x1f3844e] ; [0x26cfd20]
+0x007978d2 mov       rsi, rbx
+0x007978d5 call      0xe4aa0
+0x007978da jmp       0x797990
+0x007978df mov       rdi, rbx
+0x007978e2 call      0xb82620
+0x007978e7 mov       r14b, 1
+0x007978ea jmp       0x797987
+0x007978ef nop       
+0x007978f0 movsxd    rsi, eax
+0x007978f3 imul      rax, rsi, 0xe8
+0x007978fa mov       dl, byte ptr [rbx + rax + 0x1d08]
+0x00797901 movsxd    rcx, dword ptr [r12]
+0x00797905 lea       edi, [rcx + 1]
+0x00797908 lea       rcx, [rcx + rcx*2]
+0x0079790c shl       rcx, 4
+0x00797910 cmp       dl, byte ptr [r13 + 0x47c5]
+0x00797917 mov       dword ptr [r12], edi
+0x0079791b mov       rdi, qword ptr [rbx + rax + 0x1cc0]
+0x00797923 mov       rdx, qword ptr [rbx + rax + 0x1cc8]
+0x0079792b sete      r8b
+0x0079792f mov       qword ptr [r12 + rcx + 0x30], rdx
+0x00797934 mov       qword ptr [r12 + rcx + 0x28], rdi
+0x00797939 mov       rdx, qword ptr [rbx + rax + 0x1cb8]
+0x00797941 mov       qword ptr [r12 + rcx + 0x20], rdx
+0x00797946 mov       rdx, qword ptr [rbx + rax + 0x1cb0]
+0x0079794e mov       qword ptr [r12 + rcx + 0x18], rdx
+0x00797953 mov       rdi, qword ptr [rbx + rax + 0x1ca0]
+0x0079795b mov       rax, qword ptr [rbx + rax + 0x1ca8]
+0x00797963 mov       qword ptr [r12 + rcx + 0x10], rax
+0x00797968 mov       qword ptr [r12 + rcx + 8], rdi
+0x0079796d movsxd    rax, dword ptr [r15]
+0x00797970 lea       ecx, [rax + 1]
+0x00797973 mov       dword ptr [r15], ecx
+0x00797976 movzx     ecx, r8b
+0x0079797a mov       dword ptr [r15 + rax*4 + 4], ecx
+0x0079797f mov       rdi, rbx
+0x00797982 call      0xb82650
+0x00797987 cmp       eax, -1
+0x0079798a jne       0x7978f0
+0x00797990 mov       rax, qword ptr [rip + 0x1287769] ; [0x1a1f100]
+0x00797997 mov       rax, qword ptr [rax]
+0x0079799a cmp       rax, qword ptr [rbp - 0x30]
+0x0079799e jne       0x7979b5
+0x007979a0 mov       al, r14b
+0x007979a3 add       rsp, 0x148
+0x007979aa pop       rbx
+0x007979ab pop       r12
+0x007979ad pop       r13
+0x007979af pop       r14
+0x007979b1 pop       r15
+0x007979b3 pop       rbp
+0x007979b4 ret       
+0x007979b5 call      0x12aa7f0
+0x007979ba nop       
+0x007979bb nop       dword ptr [rax + rax]

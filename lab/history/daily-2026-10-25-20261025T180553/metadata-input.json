@@ -1,0 +1,88 @@
+{
+  "recorded_at": "2026-10-25T18:05:53.035336+00:00",
+  "reporting_date": "2026-10-25",
+  "reporting_timezone": "Europe/London",
+  "reporting_interval_start": "2026-10-24T18:00:00Z",
+  "reporting_interval_end": "2026-10-25T18:05:53.035336+00:00",
+  "scheduled_cutoff_utc": "2026-10-25T19:00:00Z",
+  "reporting_window_complete": false,
+  "early_checkpoint": true,
+  "late_delivery": false,
+  "daily_update_id": "destiny1-2026-10-25",
+  "development_session": "bounded-client-update-diagnostics",
+  "topic": "wall-trigger-observability-and-validation-limits",
+  "feature": "bounded-client-update-diagnostics",
+  "event_type": "GENERAL_PROGRESS",
+  "importance": "USEFUL",
+  "description": "Early private checkpoint: seven targeted diagnostic tests pass; full schema checks lack their pinned input. Contained native probe ends in WEASEL; one original failure screenshot, no video.",
+  "previous_state": "Only the first 21/47 payload was visible per connection; no later-state diagnostic window.",
+  "current_state": "Bounded diagnostics unit-tested and exercised; objective activation is the next lead, no gameplay fix accepted.",
+  "remaining_issue": "Actual client-owned trigger decoding, objective progression, correct loadout, combat, persistence, lighting and required schema-test fixture.",
+  "referenced_package_ids": [
+    "<lab-pc>-20261015T180922-747c0780f05a4e3c83f61acaebb0578d"
+  ],
+  "new_media_included": true,
+  "new_screenshot_count": 1,
+  "new_video_count": 0,
+  "publication_review_required": true,
+  "native_boot_accepted": false,
+  "tested_source_commit": "19150dcad115d3c9c7ef218084abdef4cf982a9d",
+  "reporting_snapshot_commit": "d4f9cdab3be6373d93c0a97dbbe17772a215d901",
+  "tested_source_branch": "main",
+  "tested_worktree_clean": true,
+  "changed_source_sha256": {
+    "ps4/d1-server/crates/d1-activity-host/src/listener.rs": "3628d502ee2cef564c9568988483e145538542b1c7c9a8bf25510ec35aa38352",
+    "ps4/design/client-update-capture.md": "ed5b67744e3417fd43643100e55ded53287a3fc51afe21a4f15824e5eaecf286"
+  },
+  "dirty_build_description": "Concurrent workflow committed the tested diagnostic source and deployed a matching runtime copy. Legacy report-tool changes/untracked file 3 are preserved.",
+  "legacy_source_commit": "512c659de0db2ff2673c6b1dee87cad975b83301",
+  "legacy_worktree_status": "M tools/content_capture/README.md\n M tools/content_capture/capture.py\n M tools/content_capture/test_capture.py\n?? 3",
+  "handoff_tool_source_sha256": {
+    "tools/content_capture/capture.py": "e7205cd538ced672a5cb6ce1bb28868de9b0097983e8f86f46e87fb781bd9136",
+    "tools/content_capture/test_capture.py": "557e8fc38e548abb284ee1fa6b66814d6c137218649489b9ab86652d67ee0b50",
+    "tools/content_capture/README.md": "08acad44f8d334cc83bf46d30970fa7d7776b6c6916198e5dc03a46dfe517df6"
+  },
+  "runtime_listener_sha256": "3628d502ee2cef564c9568988483e145538542b1c7c9a8bf25510ec35aa38352",
+  "native_run_receipt": {
+    "name": "2026-10-25-agr-cap",
+    "startedUtc": "2026-10-25T17:44:29.1947033Z",
+    "endedUtc": "2026-10-25T18:00:56.8891726Z",
+    "emulatorExitCode": -1,
+    "emulatorExitedByItself": true,
+    "serversStopped": true,
+    "emulatorFault": [],
+    "guestCrashReport": null,
+    "nativeBootAccepted": false,
+    "emulatorSha256": "31c3ff14f3f734dc933a1c78c7e48c76e9b88ee19c058949f817b63f978c5d8c",
+    "clientPatch": {
+      "path": "F:\\d1\\d1preservation-main\\patches\\CUSA00219-56578-lab-orbit.xml",
+      "sha256": "dd3ed7495b0601b63bbb09a18314a99a8b948ebc3b241e91c26c75c298526bb5",
+      "synthetic": true
+    }
+  },
+  "native_validation": "Diagnostic exercise only; mission progression not accepted",
+  "screenshot_evidence": [
+    {
+      "file": "screenshots/01.png",
+      "source_modified_at_utc": "2026-10-25T17:59:58.866403+00:00",
+      "source_sha256": "432eedd3be72e69fe48612382e4396d7ecd158b8c8f4883a3517f35a9bbcf0d3",
+      "bytes": 51569,
+      "dimensions": [
+        1296,
+        759
+      ],
+      "visual_review": "inspected for private handoff only",
+      "claim": "Visible WEASEL error after the diagnostic probe; no proof of the cause or mission completion.",
+      "publication_approved": false,
+      "suggested_production_crop": {
+        "x": 8,
+        "y": 31,
+        "width": 1280,
+        "height": 720
+      }
+    }
+  ],
+  "post_checkpoint_evidence": "Not observed by this early package; preserve actual instants in the next eligible handoff.",
+  "native_safe_checkpoint_observed_at": "2026-10-25T18:24:39.484846+00:00",
+  "safe_checkpoint_basis": "Read-only native process inventory is empty; no emulator or server was stopped by this handoff."
+}

@@ -1,0 +1,23 @@
+{
+ "time": 1793320310.4568748,
+ "players": [
+  0,
+  -1,
+  -1,
+  -1
+ ],
+ "busy": {
+  "b0": 0,
+  "b1": 1,
+  "count": 0
+ },
+ "ready_obj": "0x22dbc4a00",
+ "ready": {
+  "vtable": "0x190cf40",
+  "fn0": "0x1d1b20",
+  "field_c": -2136637439
+ },
+ "investment": "0x22dbc4a00",
+ "investment_vtable": "0x190cf40",
+ "fn_2d8": "0x25fd30"
+}

@@ -1,0 +1,233 @@
+D1 dump: started
+D1 trace 0x377b10000: type 9 32x32x1 L1 bind 2 view base 0 n 1 size 0x8000
+D1 trace free #2152 type 10 32x32x32 L1
+D1 trace new #2859 type 9 32x32x1 L1 (from guest memory)
+D1 event RT 44734111020c5924 cb0 377b10000 32x32 slices 0-0 gsize 0x8000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L1 bind 2 view base 0 n 1 size 0x1000
+D1 trace free #2197 type 10 32x32x32 L1
+D1 trace new #2863 type 9 32x32x1 L1 (from guest memory)
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 0-0 gsize 0x1000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L2 bind 2 view base 1 n 1 size 0x2000
+D1 trace expand #2863 type 9 d1 L1 -> #1769 type 9 d1 L2
+D1 trace free #2863 type 9 32x32x1 L1
+D1 trace -> #1769 type 9 32x32x1 L2 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 1-1 gsize 0x2000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L3 bind 2 view base 2 n 1 size 0x3000
+D1 trace expand #1769 type 9 d1 L2 -> #2122 type 9 d1 L3
+D1 trace free #1769 type 9 32x32x1 L2
+D1 trace -> #2122 type 9 32x32x1 L3 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 2-2 gsize 0x3000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L4 bind 2 view base 3 n 1 size 0x4000
+D1 trace expand #2122 type 9 d1 L3 -> #1974 type 9 d1 L4
+D1 trace free #2122 type 9 32x32x1 L3
+D1 trace -> #1974 type 9 32x32x1 L4 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 3-3 gsize 0x4000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L5 bind 2 view base 4 n 1 size 0x5000
+D1 trace expand #1974 type 9 d1 L4 -> #3327 type 9 d1 L5
+D1 trace free #1974 type 9 32x32x1 L4
+D1 trace -> #3327 type 9 32x32x1 L5 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 4-4 gsize 0x5000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L6 bind 2 view base 5 n 1 size 0x6000
+D1 trace expand #3327 type 9 d1 L5 -> #1779 type 9 d1 L6
+D1 trace free #3327 type 9 32x32x1 L5
+D1 trace -> #1779 type 9 32x32x1 L6 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 5-5 gsize 0x6000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L7 bind 2 view base 6 n 1 size 0x7000
+D1 trace expand #1779 type 9 d1 L6 -> #3328 type 9 d1 L7
+D1 trace free #1779 type 9 32x32x1 L6
+D1 trace -> #3328 type 9 32x32x1 L7 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 6-6 gsize 0x7000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L8 bind 2 view base 7 n 1 size 0x8000
+D1 trace expand #2859 type 9 d1 L1 -> #1732 type 9 d1 L8
+D1 trace free #2859 type 9 32x32x1 L1
+D1 trace -> #1732 type 9 32x32x1 L8 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 7-7 gsize 0x8000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L9 bind 2 view base 8 n 1 size 0x9000
+D1 trace expand #3328 type 9 d1 L7 -> #3018 type 9 d1 L9
+D1 trace free #3328 type 9 32x32x1 L7
+D1 trace expand #1732 type 9 d1 L8 -> #491 type 9 d1 L9
+D1 trace free #1732 type 9 32x32x1 L8
+D1 trace -> #491 type 9 32x32x1 L9 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 8-8 gsize 0x9000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L10 bind 2 view base 9 n 1 size 0xa000
+D1 trace expand #3018 type 9 d1 L9 -> #3352 type 9 d1 L10
+D1 trace free #3018 type 9 32x32x1 L9
+D1 trace expand #491 type 9 d1 L9 -> #3332 type 9 d1 L10
+D1 trace free #491 type 9 32x32x1 L9
+D1 trace -> #3332 type 9 32x32x1 L10 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 9-9 gsize 0xa000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L11 bind 2 view base 10 n 1 size 0xb000
+D1 trace expand #3352 type 9 d1 L10 -> #782 type 9 d1 L11
+D1 trace free #3352 type 9 32x32x1 L10
+D1 trace expand #3332 type 9 d1 L10 -> #3334 type 9 d1 L11
+D1 trace free #3332 type 9 32x32x1 L10
+D1 trace -> #3334 type 9 32x32x1 L11 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 10-10 gsize 0xb000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L12 bind 2 view base 11 n 1 size 0xc000
+D1 trace expand #782 type 9 d1 L11 -> #3325 type 9 d1 L12
+D1 trace free #782 type 9 32x32x1 L11
+D1 trace expand #3334 type 9 d1 L11 -> #3324 type 9 d1 L12
+D1 trace free #3334 type 9 32x32x1 L11
+D1 trace -> #3324 type 9 32x32x1 L12 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 11-11 gsize 0xc000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L13 bind 2 view base 12 n 1 size 0xd000
+D1 trace expand #3325 type 9 d1 L12 -> #2713 type 9 d1 L13
+D1 trace free #3325 type 9 32x32x1 L12
+D1 trace expand #3324 type 9 d1 L12 -> #943 type 9 d1 L13
+D1 trace free #3324 type 9 32x32x1 L12
+D1 trace -> #943 type 9 32x32x1 L13 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 12-12 gsize 0xd000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L14 bind 2 view base 13 n 1 size 0xe000
+D1 trace expand #2713 type 9 d1 L13 -> #2714 type 9 d1 L14
+D1 trace free #2713 type 9 32x32x1 L13
+D1 trace expand #943 type 9 d1 L13 -> #3300 type 9 d1 L14
+D1 trace free #943 type 9 32x32x1 L13
+D1 trace -> #3300 type 9 32x32x1 L14 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 13-13 gsize 0xe000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L15 bind 2 view base 14 n 1 size 0xf000
+D1 trace expand #2714 type 9 d1 L14 -> #797 type 9 d1 L15
+D1 trace free #2714 type 9 32x32x1 L14
+D1 trace expand #3300 type 9 d1 L14 -> #2889 type 9 d1 L15
+D1 trace free #3300 type 9 32x32x1 L14
+D1 trace -> #2889 type 9 32x32x1 L15 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 14-14 gsize 0xf000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L16 bind 2 view base 15 n 1 size 0x10000
+D1 trace expand #797 type 9 d1 L15 -> #1575 type 9 d1 L16
+D1 trace free #797 type 9 32x32x1 L15
+D1 trace expand #2889 type 9 d1 L15 -> #2908 type 9 d1 L16
+D1 trace free #2889 type 9 32x32x1 L15
+D1 trace -> #2908 type 9 32x32x1 L16 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 15-15 gsize 0x10000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L17 bind 2 view base 16 n 1 size 0x11000
+D1 trace expand #1575 type 9 d1 L16 -> #3247 type 9 d1 L17
+D1 trace free #1575 type 9 32x32x1 L16
+D1 trace expand #2908 type 9 d1 L16 -> #3246 type 9 d1 L17
+D1 trace free #2908 type 9 32x32x1 L16
+D1 trace -> #3246 type 9 32x32x1 L17 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 16-16 gsize 0x11000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L18 bind 2 view base 17 n 1 size 0x12000
+D1 trace expand #3247 type 9 d1 L17 -> #2194 type 9 d1 L18
+D1 trace free #3247 type 9 32x32x1 L17
+D1 trace expand #3246 type 9 d1 L17 -> #3292 type 9 d1 L18
+D1 trace free #3246 type 9 32x32x1 L17
+D1 trace -> #3292 type 9 32x32x1 L18 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 17-17 gsize 0x12000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L19 bind 2 view base 18 n 1 size 0x13000
+D1 trace expand #2194 type 9 d1 L18 -> #567 type 9 d1 L19
+D1 trace free #2194 type 9 32x32x1 L18
+D1 trace expand #3292 type 9 d1 L18 -> #2534 type 9 d1 L19
+D1 trace free #3292 type 9 32x32x1 L18
+D1 trace -> #2534 type 9 32x32x1 L19 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 18-18 gsize 0x13000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L20 bind 2 view base 19 n 1 size 0x14000
+D1 trace expand #567 type 9 d1 L19 -> #1988 type 9 d1 L20
+D1 trace free #567 type 9 32x32x1 L19
+D1 trace expand #2534 type 9 d1 L19 -> #3256 type 9 d1 L20
+D1 trace free #2534 type 9 32x32x1 L19
+D1 trace -> #3256 type 9 32x32x1 L20 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 19-19 gsize 0x14000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L21 bind 2 view base 20 n 1 size 0x15000
+D1 trace expand #1988 type 9 d1 L20 -> #2871 type 9 d1 L21
+D1 trace free #1988 type 9 32x32x1 L20
+D1 trace expand #3256 type 9 d1 L20 -> #55 type 9 d1 L21
+D1 trace free #3256 type 9 32x32x1 L20
+D1 trace -> #55 type 9 32x32x1 L21 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 20-20 gsize 0x15000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L22 bind 2 view base 21 n 1 size 0x16000
+D1 trace expand #2871 type 9 d1 L21 -> #1766 type 9 d1 L22
+D1 trace free #2871 type 9 32x32x1 L21
+D1 trace expand #55 type 9 d1 L21 -> #837 type 9 d1 L22
+D1 trace free #55 type 9 32x32x1 L21
+D1 trace -> #837 type 9 32x32x1 L22 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 21-21 gsize 0x16000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L23 bind 2 view base 22 n 1 size 0x17000
+D1 trace expand #1766 type 9 d1 L22 -> #889 type 9 d1 L23
+D1 trace free #1766 type 9 32x32x1 L22
+D1 trace expand #837 type 9 d1 L22 -> #925 type 9 d1 L23
+D1 trace free #837 type 9 32x32x1 L22
+D1 trace -> #925 type 9 32x32x1 L23 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 22-22 gsize 0x17000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L24 bind 2 view base 23 n 1 size 0x18000
+D1 trace expand #889 type 9 d1 L23 -> #2193 type 9 d1 L24
+D1 trace free #889 type 9 32x32x1 L23
+D1 trace expand #925 type 9 d1 L23 -> #1775 type 9 d1 L24
+D1 trace free #925 type 9 32x32x1 L23
+D1 trace -> #1775 type 9 32x32x1 L24 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 23-23 gsize 0x18000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L25 bind 2 view base 24 n 1 size 0x19000
+D1 trace expand #2193 type 9 d1 L24 -> #2490 type 9 d1 L25
+D1 trace free #2193 type 9 32x32x1 L24
+D1 trace expand #1775 type 9 d1 L24 -> #3221 type 9 d1 L25
+D1 trace free #1775 type 9 32x32x1 L24
+D1 trace -> #3221 type 9 32x32x1 L25 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 24-24 gsize 0x19000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L26 bind 2 view base 25 n 1 size 0x1a000
+D1 trace expand #2490 type 9 d1 L25 -> #755 type 9 d1 L26
+D1 trace free #2490 type 9 32x32x1 L25
+D1 trace expand #3221 type 9 d1 L25 -> #2780 type 9 d1 L26
+D1 trace free #3221 type 9 32x32x1 L25
+D1 trace -> #2780 type 9 32x32x1 L26 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 25-25 gsize 0x1a000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L27 bind 2 view base 26 n 1 size 0x1b000
+D1 trace expand #755 type 9 d1 L26 -> #2783 type 9 d1 L27
+D1 trace free #755 type 9 32x32x1 L26
+D1 trace expand #2780 type 9 d1 L26 -> #3058 type 9 d1 L27
+D1 trace free #2780 type 9 32x32x1 L26
+D1 trace -> #3058 type 9 32x32x1 L27 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 26-26 gsize 0x1b000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L28 bind 2 view base 27 n 1 size 0x1c000
+D1 trace expand #2783 type 9 d1 L27 -> #250 type 9 d1 L28
+D1 trace free #2783 type 9 32x32x1 L27
+D1 trace expand #3058 type 9 d1 L27 -> #3056 type 9 d1 L28
+D1 trace free #3058 type 9 32x32x1 L27
+D1 trace -> #3056 type 9 32x32x1 L28 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 27-27 gsize 0x1c000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L29 bind 2 view base 28 n 1 size 0x1d000
+D1 trace expand #250 type 9 d1 L28 -> #3313 type 9 d1 L29
+D1 trace free #250 type 9 32x32x1 L28
+D1 trace expand #3056 type 9 d1 L28 -> #2862 type 9 d1 L29
+D1 trace free #3056 type 9 32x32x1 L28
+D1 trace -> #2862 type 9 32x32x1 L29 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 28-28 gsize 0x1d000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L30 bind 2 view base 29 n 1 size 0x1e000
+D1 trace expand #3313 type 9 d1 L29 -> #379 type 9 d1 L30
+D1 trace free #3313 type 9 32x32x1 L29
+D1 trace expand #2862 type 9 d1 L29 -> #351 type 9 d1 L30
+D1 trace free #2862 type 9 32x32x1 L29
+D1 trace -> #351 type 9 32x32x1 L30 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 29-29 gsize 0x1e000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L31 bind 2 view base 30 n 1 size 0x1f000
+D1 trace expand #379 type 9 d1 L30 -> #362 type 9 d1 L31
+D1 trace free #379 type 9 32x32x1 L30
+D1 trace expand #351 type 9 d1 L30 -> #2903 type 9 d1 L31
+D1 trace free #351 type 9 32x32x1 L30
+D1 trace -> #2903 type 9 32x32x1 L31 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 30-30 gsize 0x1f000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 32x32x1 L32 bind 2 view base 31 n 1 size 0x20000
+D1 trace expand #362 type 9 d1 L31 -> #1743 type 9 d1 L32
+D1 trace free #362 type 9 32x32x1 L31
+D1 trace expand #2903 type 9 d1 L31 -> #923 type 9 d1 L32
+D1 trace free #2903 type 9 32x32x1 L31
+D1 trace -> #923 type 9 32x32x1 L32 view base -1
+D1 event RT f26f085511bab1f0 cb0 377b10000 32x32 slices 31-31 gsize 0x20000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 10 32x32x32 L1 bind 0 view base 0 n 1 size 0x20000
+D1 trace expand #1743 type 9 d1 L32 -> #554 type 10 d32 L1
+D1 trace free #1743 type 9 32x32x1 L32
+D1 trace expand #923 type 9 d1 L32 -> #487 type 10 d32 L1
+D1 trace free #923 type 9 32x32x1 L32
+D1 trace -> #487 type 10 32x32x32 L1 view base -1
+D1 event T 27d596fb07cd3321 0 377b10000 32x32
+D1 trace 0x377b10000: type 9 12x18x1 L1 bind 2 view base 0 n 1 size 0x8000
+D1 trace -> #598 type 9 12x18x1 L1 view base -1
+D1 event RT 0c278fd25d983a1a cb0 377b10000 12x18 slices 0-0 gsize 0x8000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 trace 0x377b10000: type 9 12x18x1 L1 bind 2 view base 0 n 1 size 0x8000
+D1 trace -> #598 type 9 12x18x1 L1 view base -1
+D1 event RT 53148dad29f861f8 cb0 377b10000 12x18 slices 0-0 gsize 0x8000 R8G8B8A8Unorm wm15 blend1 clearfalse
+D1 trace 0x377b10000: type 9 12x18x1 L1 bind 0 view base 0 n 1 size 0x8000
+D1 trace -> #598 type 9 12x18x1 L1 view base -1
+D1 event T 53148dad29f861f8 0 377b10000 12x18
+D1 trace 0x377b10000: type 9 32x32x1 L1 bind 2 view base 0 n 1 size 0x8000
+D1 trace free #554 type 10 32x32x32 L1
+D1 trace new #2860 type 9 32x32x1 L1 (from guest memory)
+D1 event RT 44734111020c5924 cb0 377b10000 32x32 slices 0-0 gsize 0x8000 R8G8B8A8Unorm wm15 blend0 clearfalse
+D1 dump: 583 textures written to F:\d1\d1preservation-main\cfw-staging\2026-10-26-gfx14\dump

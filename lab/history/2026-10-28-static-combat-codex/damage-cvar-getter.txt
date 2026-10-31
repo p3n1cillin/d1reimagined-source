@@ -1,0 +1,8 @@
+0x003d95f0 lea       rax, [rip + 0x22d4e61] ; [0x26ae458]
+0x003d95f7 mov       rax, qword ptr [rax + 8]
+0x003d95fb ret       
+0x003d95fc nop       dword ptr [rax]
+0x003d9600 lea       rax, [rip]
+0x003d9607 mov       rax, qword ptr [rax + 8]
+0x003d960b ret       
+0x003d960c nop       dword ptr [rax]

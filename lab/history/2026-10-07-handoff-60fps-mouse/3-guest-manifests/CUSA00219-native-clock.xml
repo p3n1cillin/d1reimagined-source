@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Destiny 1 (PS4) CUSA00219 01.29: the engine's own clock, as the Xbox One compatibility layer
+  runs it. Same format and address convention as the launcher's manifest (Address = eboot
+  virtual address + 0x400000); `Original` holds the bytes the write replaces, which
+  native/guest_patches.py checks before anything is written.
+
+  1. Fixed-clock override off. The host-delta routine 0x5905c0 computes the simulation ticks a
+     frame deserves from measured elapsed time (ticks = trunc(scale * elapsed * 1e6/CFG+0x08 +
+     the kept fraction), allowance 2..10 at normal speed, zero-tick frames allowed, extra ticks
+     run as immediate continuation frames). Then, at 0x5908cb, it reads one data byte
+     (0x18c4aa4, default 1) and, while it is set, replaces that result with "one tick of the
+     fixed step per rendered frame" (0x5908e2-0x590965): the game's speed becomes the frame
+     rate divided by the tick rate (measured 2026-10-05: 39.4 frames a second gave 0.656
+     simulated seconds per wall second). With the byte 0 the native accumulator decides: 59.94
+     ticks a second under the 60 Hz constants (CFG+0x08 = 16,683 us) whatever the frame rate,
+     as long as the outer loop can deliver them. The Xbox layer clears the same flag at start.
+
+  2. Outer deadline off. The outer loop (0x593310) sleeps until its deadline (CFG+0x08 /
+     +0x28: 16,683 us) before building the next frame: 0x59393a `cmp r12, 13` on the microseconds
+     left, 0x59393e `jg 0x593990` to the sleep path. With the jump replaced by two nops the loop
+     builds the next frame as soon as the job checks that follow allow, so frames are limited by
+     the renderer, not by the deadline. Only meaningful together with 1: with the override on,
+     more frames would mean a faster game.
+
+  Client modifications: findings that depend on them carry the provenance rule the launcher
+  manifest states (synthetic_ancestor). Applied by the native loader only (D1_GUEST_PATCHES);
+  leave one out with D1_GUEST_SKIP="deadline" or D1_GUEST_SKIP="override".
+-->
+<Patch>
+  <Metadata Name="D1 clock: native elapsed-time ticks (fixed-clock override off)"
+            isEnabled="true" AppVer="01.29" Author="native-client clock" PatchVer="1.0">
+    <PatchList>
+      <!-- the byte 0x5908cb compares with 0: `lea rax,[0x18c4aa4]; cmp byte [rax],0; je keep-native` -->
+      <Line Type="bytes" Address="0x1CC4AA4" Value="00" Original="01"/>
+    </PatchList>
+  </Metadata>
+  <Metadata Name="D1 clock: outer deadline off (frames limited by the renderer)"
+            isEnabled="true" AppVer="01.29" Author="native-client clock" PatchVer="1.0">
+    <PatchList>
+      <!-- 0x59393e: jg 0x593990 (the sleep-until-deadline path) becomes two nops -->
+      <Line Type="bytes" Address="0x99393E" Value="9090" Original="7F50"/>
+    </PatchList>
+  </Metadata>
+</Patch>

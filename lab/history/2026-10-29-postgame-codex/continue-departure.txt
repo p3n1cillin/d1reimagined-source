@@ -1,0 +1,411 @@
+0x0078be00 push      rbp
+0x0078be01 mov       rbp, rsp
+0x0078be04 push      r14
+0x0078be06 push      rbx
+0x0078be07 mov       edi, 3
+0x0078be0c call      0x752150
+0x0078be11 xor       r14b, r14b
+0x0078be14 test      al, al
+0x0078be16 je        0x78be5e
+0x0078be18 lea       rdi, [rip + 0xecb69d] ; [0x16574bc] 'is_fireteam_recall_countdown_active'
+0x0078be1f mov       esi, 0x24
+0x0078be24 call      0x78b8a0
+0x0078be29 test      al, al
+0x0078be2b je        0x78be5e
+0x0078be2d xor       edi, edi
+0x0078be2f call      0x775770
+0x0078be34 mov       rbx, rax
+0x0078be37 test      rbx, rbx
+0x0078be3a je        0x78be5e
+0x0078be3c add       rbx, 0xeb8
+0x0078be43 mov       rdi, rbx
+0x0078be46 call      0xb8f690
+0x0078be4b test      al, al
+0x0078be4d je        0x78be5e
+0x0078be4f mov       rdi, rbx
+0x0078be52 call      0xb8ffb0
+0x0078be57 cmp       eax, -1
+0x0078be5a setne     r14b
+0x0078be5e mov       al, r14b
+0x0078be61 pop       rbx
+0x0078be62 pop       r14
+0x0078be64 pop       rbp
+0x0078be65 ret       
+0x0078be66 nop       word ptr cs:[rax + rax]
+
+0x0078be70 push      rbp
+0x0078be71 mov       rbp, rsp
+0x0078be74 push      rbx
+0x0078be75 push      rax
+0x0078be76 mov       edi, 3
+0x0078be7b call      0x752150
+0x0078be80 test      al, al
+0x0078be82 je        0x78bec8
+0x0078be84 lea       rdi, [rip + 0xecb655] ; [0x16574e0] 'get_fireteam_recall_countdown_remaining_seconds'
+0x0078be8b mov       esi, 0x24
+0x0078be90 call      0x78b8a0
+0x0078be95 test      al, al
+0x0078be97 je        0x78bec8
+0x0078be99 xor       edi, edi
+0x0078be9b call      0x775770
+0x0078bea0 mov       rbx, rax
+0x0078bea3 test      rbx, rbx
+0x0078bea6 je        0x78bec8
+0x0078bea8 add       rbx, 0xeb8
+0x0078beaf mov       rdi, rbx
+0x0078beb2 call      0xb8f690
+0x0078beb7 test      al, al
+0x0078beb9 je        0x78bec8
+0x0078bebb mov       rdi, rbx
+0x0078bebe call      0xb8ffb0
+0x0078bec3 cmp       eax, -1
+0x0078bec6 jne       0x78bed4
+0x0078bec8 mov       eax, 0xffffffff
+0x0078becd add       rsp, 8
+0x0078bed1 pop       rbx
+0x0078bed2 pop       rbp
+0x0078bed3 ret       
+0x0078bed4 mov       rdi, rbx
+0x0078bed7 add       rsp, 8
+0x0078bedb pop       rbx
+0x0078bedc pop       rbp
+0x0078bedd jmp       0xb8ff80
+0x0078bee2 nop       word ptr cs:[rax + rax]
+
+0x0078bef0 push      rbp
+0x0078bef1 mov       rbp, rsp
+0x0078bef4 push      rbx
+0x0078bef5 push      rax
+0x0078bef6 mov       edi, 3
+0x0078befb call      0x752150
+0x0078bf00 test      al, al
+0x0078bf02 je        0x78bf48
+0x0078bf04 lea       rdi, [rip + 0xecb5d5] ; [0x16574e0] 'get_fireteam_recall_countdown_remaining_seconds'
+0x0078bf0b mov       esi, 0x24
+0x0078bf10 call      0x78b8a0
+0x0078bf15 test      al, al
+0x0078bf17 je        0x78bf48
+0x0078bf19 xor       edi, edi
+0x0078bf1b call      0x775770
+0x0078bf20 mov       rbx, rax
+0x0078bf23 test      rbx, rbx
+0x0078bf26 je        0x78bf48
+0x0078bf28 add       rbx, 0xeb8
+0x0078bf2f mov       rdi, rbx
+0x0078bf32 call      0xb8f690
+0x0078bf37 test      al, al
+0x0078bf39 je        0x78bf48
+0x0078bf3b mov       rdi, rbx
+0x0078bf3e call      0xb8ffb0
+0x0078bf43 cmp       eax, -1
+0x0078bf46 jne       0x78bf54
+0x0078bf48 mov       eax, 0xffffffff
+0x0078bf4d add       rsp, 8
+0x0078bf51 pop       rbx
+0x0078bf52 pop       rbp
+0x0078bf53 ret       
+0x0078bf54 mov       rdi, rbx
+0x0078bf57 add       rsp, 8
+0x0078bf5b pop       rbx
+0x0078bf5c pop       rbp
+0x0078bf5d jmp       0xb8ffb0
+0x0078bf62 nop       word ptr cs:[rax + rax]
+
+0x0078c010 push      rbp
+0x0078c011 mov       rbp, rsp
+0x0078c014 push      r14
+0x0078c016 push      rbx
+0x0078c017 mov       edi, 3
+0x0078c01c call      0x752150
+0x0078c021 xor       r14b, r14b
+0x0078c024 test      al, al
+0x0078c026 je        0x78c08d
+0x0078c028 lea       rdi, [rip + 0xecb501] ; [0x1657530] 'abort_fireteam_recall_countdown'
+0x0078c02f mov       esi, 0x24
+0x0078c034 call      0x78b8a0
+0x0078c039 test      al, al
+0x0078c03b je        0x78c08d
+0x0078c03d xor       edi, edi
+0x0078c03f call      0x7754d0
+0x0078c044 test      al, al
+0x0078c046 jne       0x78c053
+0x0078c048 xor       edi, edi
+0x0078c04a call      0x775530
+0x0078c04f test      al, al
+0x0078c051 je        0x78c08d
+0x0078c053 xor       edi, edi
+0x0078c055 call      0x775770
+0x0078c05a mov       rbx, rax
+0x0078c05d test      rbx, rbx
+0x0078c060 je        0x78c08d
+0x0078c062 add       rbx, 0xeb8
+0x0078c069 mov       rdi, rbx
+0x0078c06c call      0xb8f690
+0x0078c071 test      al, al
+0x0078c073 je        0x78c08d
+0x0078c075 mov       rdi, rbx
+0x0078c078 call      0xb8ffb0
+0x0078c07d cmp       eax, -1
+0x0078c080 je        0x78c08d
+0x0078c082 mov       rdi, rbx
+0x0078c085 call      0xb90240
+0x0078c08a mov       r14b, al
+0x0078c08d mov       al, r14b
+0x0078c090 pop       rbx
+0x0078c091 pop       r14
+0x0078c093 pop       rbp
+0x0078c094 ret       
+0x0078c095 nop       word ptr cs:[rax + rax]
+
+0x0078c0a0 push      rbp
+0x0078c0a1 mov       rbp, rsp
+0x0078c0a4 push      r14
+0x0078c0a6 push      rbx
+0x0078c0a7 mov       edi, 3
+0x0078c0ac call      0x752150
+0x0078c0b1 xor       r14b, r14b
+0x0078c0b4 test      al, al
+0x0078c0b6 je        0x78c121
+0x0078c0b8 lea       rdi, [rip + 0xecb3d9] ; [0x1657498] 'decrement_fireteam_recall_countdown'
+0x0078c0bf mov       esi, 0x24
+0x0078c0c4 call      0x78b8a0
+0x0078c0c9 test      al, al
+0x0078c0cb je        0x78c121
+0x0078c0cd xor       edi, edi
+0x0078c0cf call      0x775770
+0x0078c0d4 mov       rbx, rax
+0x0078c0d7 test      rbx, rbx
+0x0078c0da je        0x78c121
+0x0078c0dc add       rbx, 0xeb8
+0x0078c0e3 mov       rdi, rbx
+0x0078c0e6 call      0xb8f690
+0x0078c0eb test      al, al
+0x0078c0ed je        0x78c121
+0x0078c0ef mov       rdi, rbx
+0x0078c0f2 call      0xb8ffb0
+0x0078c0f7 cmp       eax, -1
+0x0078c0fa je        0x78c121
+0x0078c0fc mov       rdi, rbx
+0x0078c0ff call      0xb8ffb0
+0x0078c104 test      eax, eax
+0x0078c106 jle       0x78c121
+0x0078c108 dec       eax
+0x0078c10a mov       rdi, rbx
+0x0078c10d mov       esi, 1
+0x0078c112 mov       edx, eax
+0x0078c114 xor       ecx, ecx
+0x0078c116 xor       r8d, r8d
+0x0078c119 call      0xb90000
+0x0078c11e mov       r14b, al
+0x0078c121 mov       al, r14b
+0x0078c124 pop       rbx
+0x0078c125 pop       r14
+0x0078c127 pop       rbp
+0x0078c128 ret       
+0x0078c129 nop       dword ptr [rax]
+
+0x00796e50 push      rbp
+0x00796e51 mov       rbp, rsp
+0x00796e54 push      r14
+0x00796e56 push      rbx
+0x00796e57 sub       rsp, 0x160
+0x00796e5e mov       r14, rdi
+0x00796e61 mov       rax, qword ptr [rip + 0x1288298] ; [0x1a1f100]
+0x00796e68 mov       rax, qword ptr [rax]
+0x00796e6b mov       qword ptr [rbp - 0x18], rax
+0x00796e6f call      0x771940
+0x00796e74 mov       rbx, rax
+0x00796e77 mov       rdi, rbx
+0x00796e7a call      0x76ef00
+0x00796e7f mov       rdi, rbx
+0x00796e82 call      0x770710
+0x00796e87 mov       byte ptr [r14 + 0x30], 0
+0x00796e8c mov       byte ptr [r14 + 0x31], 0
+0x00796e91 mov       byte ptr [r14 + 0x32], 0
+0x00796e96 mov       qword ptr [r14 + 0x38], 0xffffffffffffffff
+0x00796e9e mov       rdi, r14
+0x00796ea1 call      0x797160
+0x00796ea6 call      0x78c010
+0x00796eab lea       rdi, [rbp - 0x158]
+0x00796eb2 lea       rsi, [rbp - 0x160]
+0x00796eb9 lea       rdx, [rbp - 0x168]
+0x00796ec0 mov       dword ptr [rbp - 0x158], 0
+0x00796eca mov       dword ptr [rbp - 0x160], 6
+0x00796ed4 mov       dword ptr [rbp - 0x168], 1
+0x00796ede call      0x766200
+0x00796ee3 call      0x78c600
+0x00796ee8 call      0x76aa30
+0x00796eed call      0x76aab0
+0x00796ef2 call      0x34e3c0
+0x00796ef7 cmp       byte ptr [rax + 0x82], 0
+0x00796efe je        0x796f17
+0x00796f00 call      0x574ef0
+0x00796f05 cmp       byte ptr [rax + 0x12c], 0
+0x00796f0c sete      al
+0x00796f0f movzx     edi, al
+0x00796f12 call      0x2459c0
+0x00796f17 lea       rdi, [rip + 0xec3e82] ; [0x165ada0] 'Enter in-world'
+0x00796f1e call      0xaeb030
+0x00796f23 call      0x574ef0
+0x00796f28 mov       rdi, rax
+0x00796f2b call      0x574bb0
+0x00796f30 mov       qword ptr [r14 + 0x78], 0
+0x00796f38 mov       qword ptr [r14 + 0x70], 0
+0x00796f40 mov       qword ptr [r14 + 0x68], 0
+0x00796f48 mov       edi, 1
+0x00796f4d call      0x954790
+0x00796f52 mov       edi, 2
+0x00796f57 call      0xc5b20
+0x00796f5c call      0xaf380
+0x00796f61 call      0x34e540
+0x00796f66 cmp       byte ptr [rax + 0xf0], 0
+0x00796f6d je        0x79713a
+0x00796f73 call      0x34e540
+0x00796f78 cmp       byte ptr [rax + 0xfc], 0
+0x00796f7f je        0x796ff3
+0x00796f81 mov       edi, 6
+0x00796f86 mov       esi, 3
+0x00796f8b call      0xe4d70
+0x00796f90 test      al, al
+0x00796f92 je        0x7970c4
+0x00796f98 mov       al, byte ptr [rip + 0x1f38d4a] ; [0x26cfce8]
+0x00796f9e test      al, al
+0x00796fa0 jne       0x796fd0
+0x00796fa2 lea       rdi, [rip + 0x1f38d3f] ; [0x26cfce8]
+0x00796fa9 call      0x12aa7d0
+0x00796fae test      eax, eax
+0x00796fb0 je        0x796fd0
+0x00796fb2 lea       rdi, [rip + 0xec3df6] ; [0x165adaf] 'networking:world_controller:state:in_world: Configured to start ping test for all activities.'
+0x00796fb9 call      0xe4a10
+0x00796fbe mov       dword ptr [rip + 0x1f38d1c], eax ; [0x26cfce0]
+0x00796fc4 lea       rdi, [rip + 0x1f38d1d] ; [0x26cfce8]
+0x00796fcb call      0x12aa7e0
+0x00796fd0 lea       rbx, [rbp - 0x158]
+0x00796fd7 lea       rsi, [rip + 0xec3dd1] ; [0x165adaf] 'networking:world_controller:state:in_world: Configured to start ping test for all activities.'
+0x00796fde mov       rdi, rbx
+0x00796fe1 xor       al, al
+0x00796fe3 call      0x1008290
+0x00796fe8 mov       edi, dword ptr [rip + 0x1f38cf2] ; [0x26cfce0]
+0x00796fee jmp       0x7970bc
+0x00796ff3 xor       edi, edi
+0x00796ff5 call      0x777280
+0x00796ffa mov       bx, ax
+0x00796ffd call      0x25a550
+0x00797002 mov       rcx, qword ptr [rax]
+0x00797005 mov       rdi, rax
+0x00797008 mov       esi, ebx
+0x0079700a call      qword ptr [rcx + 0x328]
+0x00797010 mov       rbx, rax
+0x00797013 call      0x34e540
+0x00797018 xor       ecx, ecx
+0x0079701a nop       word ptr [rax + rax]
+0x00797020 mov       edx, dword ptr [rax + rcx*4 + 0x100]
+0x00797027 cmp       edx, 0x811c9dc5
+0x0079702d je        0x797033
+0x0079702f cmp       dword ptr [rbx], edx
+0x00797031 je        0x797040
+0x00797033 inc       rcx
+0x00797036 cmp       ecx, 8
+0x00797039 jl        0x797020
+0x0079703b jmp       0x79713a
+0x00797040 mov       edi, 6
+0x00797045 mov       esi, 3
+0x0079704a call      0xe4d70
+0x0079704f test      al, al
+0x00797051 je        0x7970c4
+0x00797053 mov       al, byte ptr [rip + 0x1f38c9f] ; [0x26cfcf8]
+0x00797059 test      al, al
+0x0079705b jne       0x79708b
+0x0079705d lea       rdi, [rip + 0x1f38c94] ; [0x26cfcf8]
+0x00797064 call      0x12aa7d0
+0x00797069 test      eax, eax
+0x0079706b je        0x79708b
+0x0079706d lea       rdi, [rip + 0xec3d99] ; [0x165ae0d] 'networking:world_controller:state:in_world: Found activity hash: [%s (%d)], will attempt to start ping test.'
+0x00797074 call      0xe4a10
+0x00797079 mov       dword ptr [rip + 0x1f38c71], eax ; [0x26cfcf0]
+0x0079707f lea       rdi, [rip + 0x1f38c72] ; [0x26cfcf8]
+0x00797086 call      0x12aa7e0
+0x0079708b mov       esi, dword ptr [rbx]
+0x0079708d lea       rdi, [rip + 0xe88fa3] ; [0x1620037] 'HASH'
+0x00797094 call      0x79a30
+0x00797099 mov       ecx, dword ptr [rbx]
+0x0079709b lea       rbx, [rbp - 0x158]
+0x007970a2 lea       rsi, [rip + 0xec3d64] ; [0x165ae0d] 'networking:world_controller:state:in_world: Found activity hash: [%s (%d)], will attempt to start ping test.'
+0x007970a9 mov       rdi, rbx
+0x007970ac mov       rdx, rax
+0x007970af xor       al, al
+0x007970b1 call      0x1008290
+0x007970b6 mov       edi, dword ptr [rip + 0x1f38c34] ; [0x26cfcf0]
+0x007970bc mov       rsi, rbx
+0x007970bf call      0xe4aa0
+0x007970c4 mov       edi, 6
+0x007970c9 mov       esi, 3
+0x007970ce call      0xe4d70
+0x007970d3 test      al, al
+0x007970d5 je        0x797135
+0x007970d7 mov       al, byte ptr [rip + 0x1f38c2b] ; [0x26cfd08]
+0x007970dd test      al, al
+0x007970df jne       0x79710f
+0x007970e1 lea       rdi, [rip + 0x1f38c20] ; [0x26cfd08]
+0x007970e8 call      0x12aa7d0
+0x007970ed test      eax, eax
+0x007970ef je        0x79710f
+0x007970f1 lea       rdi, [rip + 0xec3d82] ; [0x165ae7a] 'networking:world_controller:state:in_world: Starting ping test while in-world.'
+0x007970f8 call      0xe4a10
+0x007970fd mov       dword ptr [rip + 0x1f38bfd], eax ; [0x26cfd00]
+0x00797103 lea       rdi, [rip + 0x1f38bfe] ; [0x26cfd08]
+0x0079710a call      0x12aa7e0
+0x0079710f lea       rbx, [rbp - 0x158]
+0x00797116 lea       rsi, [rip + 0xec3d5d] ; [0x165ae7a] 'networking:world_controller:state:in_world: Starting ping test while in-world.'
+0x0079711d mov       rdi, rbx
+0x00797120 xor       al, al
+0x00797122 call      0x1008290
+0x00797127 mov       edi, dword ptr [rip + 0x1f38bd3] ; [0x26cfd00]
+0x0079712d mov       rsi, rbx
+0x00797130 call      0xe4aa0
+0x00797135 call      0xb9c2e0
+0x0079713a mov       rax, qword ptr [rip + 0x1287fbf] ; [0x1a1f100]
+0x00797141 mov       rax, qword ptr [rax]
+0x00797144 cmp       rax, qword ptr [rbp - 0x18]
+0x00797148 jne       0x797156
+0x0079714a add       rsp, 0x160
+0x00797151 pop       rbx
+0x00797152 pop       r14
+0x00797154 pop       rbp
+0x00797155 ret       
+0x00797156 call      0x12aa7f0
+0x0079715b nop       
+0x0079715c nop       dword ptr [rax]
+
+0x007971d0 push      rbp
+0x007971d1 mov       rbp, rsp
+0x007971d4 push      rbx
+0x007971d5 push      rax
+0x007971d6 mov       rbx, rdi
+0x007971d9 call      0x771940
+0x007971de test      rax, rax
+0x007971e1 je        0x7971eb
+0x007971e3 mov       rdi, rax
+0x007971e6 call      0x76ef80
+0x007971eb call      0x34e3c0
+0x007971f0 cmp       byte ptr [rax + 0x82], 0
+0x007971f7 je        0x797200
+0x007971f9 xor       edi, edi
+0x007971fb call      0x2459c0
+0x00797200 xor       edi, edi
+0x00797202 xor       esi, esi
+0x00797204 call      0x774980
+0x00797209 mov       rdi, rbx
+0x0079720c call      0x797160
+0x00797211 xor       edi, edi
+0x00797213 call      0x774f50
+0x00797218 call      0x78c010
+0x0079721d xor       edi, edi
+0x0079721f call      0x77b710
+0x00797224 call      0x76a670
+0x00797229 xor       edi, edi
+0x0079722b add       rsp, 8
+0x0079722f pop       rbx
+0x00797230 pop       rbp
+0x00797231 jmp       0x954790
+0x00797236 nop       word ptr cs:[rax + rax]

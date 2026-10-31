@@ -1,0 +1,14 @@
+0x003b6a60 mov       eax, edi
+0x003b6a62 mov       ecx, 0x805
+0x003b6a67 bextr     edx, eax, ecx
+0x003b6a6c mov       esi, 1
+0x003b6a71 mov       cl, al
+0x003b6a73 shl       esi, cl
+0x003b6a75 not       esi
+0x003b6a77 lea       rcx, [rip + 0x22f6712] ; [0x26ad190]
+0x003b6a7e mov       rcx, qword ptr [rcx]
+0x003b6a81 and       dword ptr [rcx + rdx*4], esi
+0x003b6a84 lea       rdi, [rip + 0x22f6685] ; [0x26ad110]
+0x003b6a8b mov       esi, eax
+0x003b6a8d jmp       0x6ecb0
+0x003b6a92 nop       word ptr cs:[rax + rax]

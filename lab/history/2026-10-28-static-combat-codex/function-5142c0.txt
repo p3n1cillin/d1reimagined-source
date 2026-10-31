@@ -1,0 +1,25 @@
+0x005142c0 push      rbp
+0x005142c1 mov       rbp, rsp
+0x005142c4 push      rbx
+0x005142c5 push      rax
+0x005142c6 mov       rbx, rdi
+0x005142c9 cmp       byte ptr [rbx + 0xb4], 1
+0x005142d0 jne       0x5142f5
+0x005142d2 mov       rax, qword ptr [rsi]
+0x005142d5 mov       rcx, qword ptr [rsi + 8]
+0x005142d9 mov       qword ptr [rbx + 0x9c], rcx
+0x005142e0 mov       qword ptr [rbx + 0x94], rax
+0x005142e7 mov       rdi, rbx
+0x005142ea call      0x513050
+0x005142ef cmp       dword ptr [rbx + 0x2c], -1
+0x005142f3 jne       0x5142fc
+0x005142f5 add       rsp, 8
+0x005142f9 pop       rbx
+0x005142fa pop       rbp
+0x005142fb ret       
+0x005142fc mov       edi, dword ptr [rbx + 0x24]
+0x005142ff add       rsp, 8
+0x00514303 pop       rbx
+0x00514304 pop       rbp
+0x00514305 jmp       0x2d94f0
+0x0051430a nop       word ptr [rax + rax]

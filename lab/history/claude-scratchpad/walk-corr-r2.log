@@ -1,0 +1,9 @@
+shadPS4 pid 3592  eboot base 0x51b0000  control vtable[0]=0x5904410 PASS
+Traceback (most recent call last):
+  File "F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py", line 313, in <module>
+    main()
+    ~~~~^^
+  File "F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py", line 158, in main
+    route = json.load(open(a.route))
+                      ~~~~^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'missions/routes/breach_corridor.json'

@@ -1,0 +1,239 @@
+[
+  {
+    "event_id": "d1-20261015-per-activity-world-team",
+    "timestamp": "2026-10-14T18:26:28+00:00",
+    "timestamp_basis": "Recorded source commit time, not an invented test instant.",
+    "source_commit": "6b4f9e42f269f0f7aaea90ed888686426ebb7ae6",
+    "feature": "per-activity-world-team",
+    "claim": "World and team follow configured launched-activity rows; not arbitrary client-selected PvP map routing.",
+    "maturity": "Experimental",
+    "verification": "source-recorded outcomes, not rerun by handoff",
+    "full_game_accepted": false,
+    "retained_lab_client_patch": true
+  },
+  {
+    "event_id": "d1-20261015-objective-hud-and-bap-reconnect",
+    "timestamp": "2026-10-14T20:49:31+00:00",
+    "timestamp_basis": "Recorded source commit time, not an invented test instant.",
+    "source_commit": "b74591b011bba6c2252ebb4b6a410a716feb4695",
+    "feature": "objective-hud-and-bap-reconnect",
+    "claim": "ENTER THE WALL display in a mismatched activity/world experiment; reconnect baseline path repaired.",
+    "maturity": "Partially Working",
+    "verification": "source-recorded outcomes, not rerun by handoff",
+    "full_game_accepted": false,
+    "retained_lab_client_patch": true
+  },
+  {
+    "event_id": "d1-20261015-earth-world-identification",
+    "timestamp": "2026-10-14T23:18:55+00:00",
+    "timestamp_basis": "Recorded source commit time, not an invented test instant.",
+    "source_commit": "359f048dcfd5759f4397add72b5348fee5c435d2",
+    "feature": "earth-world-identification",
+    "claim": "Earth story worlds identified from content; private Dark Within start is a stand-in.",
+    "maturity": "Experimental",
+    "verification": "source-recorded outcomes, not rerun by handoff",
+    "full_game_accepted": false,
+    "retained_lab_client_patch": true
+  },
+  {
+    "event_id": "d1-20261015-renderer-texture-cache",
+    "timestamp": "2026-10-14T23:42:31+00:00",
+    "timestamp_basis": "Recorded source commit time, not an invented test instant.",
+    "source_commit": "19f51a0c47eb6bc24162eca32ca559c4e8decc07",
+    "feature": "renderer-texture-cache",
+    "claim": "Compatible-array expansion retained; severe colour/darkness remains.",
+    "maturity": "Partially Working",
+    "verification": "source-recorded outcomes, not rerun by handoff",
+    "full_game_accepted": false,
+    "retained_lab_client_patch": true
+  },
+  {
+    "event_id": "d1-20261015-tutorial-opening",
+    "timestamp": "2026-10-15T14:48:05+00:00",
+    "timestamp_basis": "Recorded source commit time, not an invented test instant.",
+    "source_commit": "ffd2201857ffd7de6ec239a76710222a338f9cfa",
+    "feature": "tutorial-opening",
+    "claim": "Served revival/wake-up/teleport reaches the daylight tutorial highway with lab interventions retained.",
+    "maturity": "Experimental",
+    "verification": "source-recorded outcomes, not rerun by handoff",
+    "full_game_accepted": false,
+    "retained_lab_client_patch": true
+  },
+  {
+    "event_id": "d1-20261015-renderer-volume-attempt",
+    "timestamp": "2026-10-15T15:21:15+00:00",
+    "timestamp_basis": "Recorded source commit time, not an invented test instant.",
+    "source_commit": "cae68336950bb3432488673bab61783329d31053",
+    "feature": "renderer-volume-attempt",
+    "claim": "Colour-volume attempt worsened gameplay and was reverted.",
+    "maturity": "Known Broken / Reverted",
+    "verification": "source-recorded outcomes, not rerun by handoff",
+    "full_game_accepted": false,
+    "retained_lab_client_patch": true
+  },
+  {
+    "event_id": "d1-20261015-cinematic-skip-incidents",
+    "timestamp": "2026-10-15T16:04:11+00:00",
+    "timestamp_basis": "Recorded source commit time, not an invented test instant.",
+    "source_commit": "ba87b1dc3f8dc20e1b6ff8ccb7c7d8638debfe52",
+    "feature": "cinematic-skip-incidents",
+    "claim": "Host can advance tutorial steps on stop/skip incidents with timeout fallback.",
+    "maturity": "Partially Working",
+    "verification": "source-recorded outcomes, not rerun by handoff",
+    "full_game_accepted": false,
+    "retained_lab_client_patch": true
+  },
+  {
+    "event_id": "d1-20261015-enter-wall-trigger",
+    "timestamp": "2026-10-15T16:18:49+00:00",
+    "timestamp_basis": "Recorded source commit time, not an invented test instant.",
+    "source_commit": "512c659de0db2ff2673c6b1dee87cad975b83301",
+    "feature": "enter-wall-trigger",
+    "claim": "Walking reaches the Wall but the expected trigger report is absent; local ownership is an investigation lead.",
+    "maturity": "Known Broken",
+    "verification": "source-recorded outcomes, not rerun by handoff",
+    "full_game_accepted": false,
+    "retained_lab_client_patch": true
+  },
+  {
+    "event_id": "d1-20261015-inspected-evidence",
+    "timestamp": "2026-10-15T18:09:12.990699+00:00",
+    "timestamp_basis": "Handoff inspection/preparation; original capture modification instants are separate.",
+    "feature": "private-evidence-validation",
+    "maturity": "Inspected stills and closed-run receipts only",
+    "receipts": [
+      {
+        "reference": "cfw-staging/contained-boot/20261015-143808-2026-10-15-agr9/receipt.json",
+        "name": "2026-10-15-agr9",
+        "startedUtc": "2026-10-15T14:38:12.3804693Z",
+        "endedUtc": "2026-10-15T14:48:32.4545335Z",
+        "emulatorExitCode": -1,
+        "emulatorExitedByItself": true,
+        "serversStopped": true,
+        "emulatorFault": [],
+        "guestCrashReport": null,
+        "nativeBootAccepted": false,
+        "emulatorSha256": "31c3ff14f3f734dc933a1c78c7e48c76e9b88ee19c058949f817b63f978c5d8c",
+        "clientPatch": {
+          "path": "F:\\d1\\d1preservation-main\\patches\\CUSA00219-56578-lab-orbit.xml",
+          "sha256": "dd3ed7495b0601b63bbb09a18314a99a8b948ebc3b241e91c26c75c298526bb5",
+          "synthetic": true
+        }
+      },
+      {
+        "reference": "cfw-staging/contained-boot/20261015-155733-2026-10-15-agr17/receipt.json",
+        "name": "2026-10-15-agr17",
+        "startedUtc": "2026-10-15T15:57:35.6590531Z",
+        "endedUtc": "2026-10-15T16:09:58.6481540Z",
+        "emulatorExitCode": -1,
+        "emulatorExitedByItself": true,
+        "serversStopped": true,
+        "emulatorFault": [],
+        "guestCrashReport": null,
+        "nativeBootAccepted": false,
+        "emulatorSha256": "31c3ff14f3f734dc933a1c78c7e48c76e9b88ee19c058949f817b63f978c5d8c",
+        "clientPatch": {
+          "path": "F:\\d1\\d1preservation-main\\patches\\CUSA00219-56578-lab-orbit.xml",
+          "sha256": "dd3ed7495b0601b63bbb09a18314a99a8b948ebc3b241e91c26c75c298526bb5",
+          "synthetic": true
+        }
+      },
+      {
+        "reference": "cfw-staging/contained-boot/20261015-161002-2026-10-15-agr18/receipt.json",
+        "name": "2026-10-15-agr18",
+        "startedUtc": "2026-10-15T16:10:04.3303561Z",
+        "endedUtc": "2026-10-15T16:18:49.3785147Z",
+        "emulatorExitCode": -1,
+        "emulatorExitedByItself": true,
+        "serversStopped": true,
+        "emulatorFault": [],
+        "guestCrashReport": null,
+        "nativeBootAccepted": false,
+        "emulatorSha256": "31c3ff14f3f734dc933a1c78c7e48c76e9b88ee19c058949f817b63f978c5d8c",
+        "clientPatch": {
+          "path": "F:\\d1\\d1preservation-main\\patches\\CUSA00219-56578-lab-orbit.xml",
+          "sha256": "dd3ed7495b0601b63bbb09a18314a99a8b948ebc3b241e91c26c75c298526bb5",
+          "synthetic": true
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "file": "screenshots/01.png",
+        "source_modified_at_utc": "2026-10-14T20:49:28.450056+00:00",
+        "source_sha256": "607c8ba4b6e8da96cc9b596d81f891f7b0e1502b05e1d49c87dd179b6a5e27e0",
+        "bytes": 1588968,
+        "visual_review": "inspected for private handoff only",
+        "claim": "Late 14 October objective-path experiment: ENTER THE WALL is visible, with a marker. The launched activity was The Dark Within, mapped to tutorial content; this is not a coherent tutorial or accepted waypoint implementation.",
+        "dimensions": [
+          1296,
+          759
+        ],
+        "publication_approved": false,
+        "suggested_production_crop": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "file": "screenshots/02.png",
+        "source_modified_at_utc": "2026-10-15T14:42:48.189762+00:00",
+        "source_sha256": "840e18fb9d2cd40b8d46f24b0094390a44f7393c5e7efd679ebdf9cc974fbe44",
+        "bytes": 1284140,
+        "visual_review": "inspected for private handoff only",
+        "claim": "A frame of the tutorial opening cinematic over the wrecked cars. Still proof of a rendered cinematic scene, not continuous playback, dialogue, Ghost presence or complete cutscene fidelity.",
+        "dimensions": [
+          1296,
+          759
+        ],
+        "publication_approved": false,
+        "suggested_production_crop": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "file": "screenshots/03.png",
+        "source_modified_at_utc": "2026-10-15T14:45:56.889764+00:00",
+        "source_sha256": "7ad14359eb3813dbc703a014edf4c10a2045ba9a8cdcfefab4ba72b7c818a224",
+        "bytes": 2047549,
+        "visual_review": "inspected for private handoff only",
+        "claim": "Armed first-person Guardian in daylight facing the Wall after the recorded opening/teleport. Hand cannon is a known incorrect tutorial starting loadout; the objective HUD is missing.",
+        "dimensions": [
+          1296,
+          759
+        ],
+        "publication_approved": false,
+        "suggested_production_crop": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "file": "screenshots/04.png",
+        "source_modified_at_utc": "2026-10-15T16:09:07.107582+00:00",
+        "source_sha256": "6f907d7233effc9f2320bf0328d37b389acfda4001958f6f2dec709b0b1944f3",
+        "bytes": 351853,
+        "visual_review": "inspected for private handoff only",
+        "claim": "Dark interior walkway reached in the recorded pad-driven route. Traversal is source-reported; this still does not prove objective completion, trigger delivery or the route in motion.",
+        "dimensions": [
+          1296,
+          759
+        ],
+        "publication_approved": false,
+        "suggested_production_crop": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 720
+        }
+      }
+    ]
+  }
+]

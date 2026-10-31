@@ -1,0 +1,3 @@
+{"event": "start", "pid": 16292, "base": "0x5110000", "addrs": ["0x535a1f5"], "t": 1793020153.0593872}
+{"event": "exec", "tid": 21960, "rip_img": "0x24a1f5", "rax": "0x204ff5920", "al": 32, "rdi": "0x77585c0", "rsi": "0x165", "rdx": "0x7efb76a88", "rcx": "0x6a488c0", "defn": "0x0", "defn_head": "", "defn_type": null, "stack_img": ["0x259219", "0x5342ed", "0xb641f7", "0x534218", "0x30e0a0", "0x259056"], "peek": {"rcx+0x68": "0x5643290", "rcx+0x6c": "0x0"}, "t": 1793020160.2863734}
+{"event": "detached", "hits": 1, "t": 1793020169.1031892}

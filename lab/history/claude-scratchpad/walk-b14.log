@@ -1,0 +1,12 @@
+shadPS4 pid 24076  eboot base 0x52d0000  control vtable[0]=0x5a24410 PASS
+start None
+Traceback (most recent call last):
+  File "F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py", line 241, in <module>
+    main()
+    ~~~~^^
+  File "F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py", line 140, in main
+    i = min(range(len(route)), key=lambda k: math.dist(route[k][:2], here[:2]))
+  File "F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py", line 140, in <lambda>
+    i = min(range(len(route)), key=lambda k: math.dist(route[k][:2], here[:2]))
+                                                                     ~~~~^^^^
+TypeError: 'NoneType' object is not subscriptable

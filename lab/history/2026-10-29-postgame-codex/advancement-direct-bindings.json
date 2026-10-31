@@ -1,0 +1,51 @@
+[
+  {
+    "graph": "80aa2ed2",
+    "post_data_node": 120,
+    "links": [
+      {
+        "index": 30,
+        "source": 0,
+        "source_property": "0x60b",
+        "target": 120,
+        "target_property": "0x2"
+      },
+      {
+        "index": 31,
+        "source": 0,
+        "source_property": "0x60b",
+        "target": 120,
+        "target_property": "0x3"
+      }
+    ],
+    "direct_character_xp_links": []
+  },
+  {
+    "graph": "80aa2ed4",
+    "post_data_node": 1237,
+    "links": [
+      {
+        "index": 7,
+        "source": 1237,
+        "source_property": "0x18",
+        "target": 1186,
+        "target_property": "0xa07"
+      },
+      {
+        "index": 43,
+        "source": 0,
+        "source_property": "0x60b",
+        "target": 1237,
+        "target_property": "0x2"
+      },
+      {
+        "index": 44,
+        "source": 0,
+        "source_property": "0x60b",
+        "target": 1237,
+        "target_property": "0x3"
+      }
+    ],
+    "direct_character_xp_links": []
+  }
+]

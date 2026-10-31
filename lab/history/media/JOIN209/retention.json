@@ -1,0 +1,36 @@
+{
+  "scope": "Unchanged full native source segments; no montage, trims or publishing. Allocation is verified by private native traces, not by these camera views. Pickup and lighting remain unaccepted.",
+  "reporting": "Late October 8 engineering evidence for next report; existing ready packages and today\u2019s report remain unchanged. No NAS delivery claimed for these copies.",
+  "clips": [
+    {
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_19_04_18.mp4",
+      "retained": "lab/history\\media\\JOIN209\\BLES01857_recording_2026_10_08_19_04_18.mp4",
+      "bytes": 15333949,
+      "sha256": "9dbb8da44e71b94746acd82c818d91d4fde060256e325cf7e9fe6905ceacd0ba",
+      "copy_verified": true,
+      "full_decode": "PASS",
+      "actual_filename_timezone": "Europe/London",
+      "audio_content_review": "NOT REVIEWED"
+    },
+    {
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_19_04_48.mp4",
+      "retained": "lab/history\\media\\JOIN209\\BLES01857_recording_2026_10_08_19_04_48.mp4",
+      "bytes": 14909267,
+      "sha256": "06f9a0f3311e0065fceb713ef275d7cb773ce0006d20066daca6df728c65a688",
+      "copy_verified": true,
+      "full_decode": "PASS",
+      "actual_filename_timezone": "Europe/London",
+      "audio_content_review": "NOT REVIEWED"
+    },
+    {
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_19_07_21.mp4",
+      "retained": "lab/history\\media\\JOIN209\\BLES01857_recording_2026_10_08_19_07_21.mp4",
+      "bytes": 4432240,
+      "sha256": "d3c1cb68dbfb50df1fc14bf4f007548536d8756154c960e9ea43dfe746ea7461",
+      "copy_verified": true,
+      "full_decode": "PASS",
+      "actual_filename_timezone": "Europe/London",
+      "audio_content_review": "NOT REVIEWED"
+    }
+  ]
+}

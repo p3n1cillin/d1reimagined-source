@@ -1,0 +1,111 @@
+0x004fa830 push      rbp
+0x004fa831 mov       rbp, rsp
+0x004fa834 push      r15
+0x004fa836 push      r14
+0x004fa838 push      r13
+0x004fa83a push      r12
+0x004fa83c push      rbx
+0x004fa83d sub       rsp, 0x48
+0x004fa841 mov       qword ptr [rbp - 0x60], r9
+0x004fa845 mov       qword ptr [rbp - 0x70], r8
+0x004fa849 mov       qword ptr [rbp - 0x68], rcx
+0x004fa84d mov       r13, rdx
+0x004fa850 mov       r9, rdi
+0x004fa853 mov       rax, qword ptr [rip + 0x15248a6] ; [0x1a1f100]
+0x004fa85a mov       rax, qword ptr [rax]
+0x004fa85d mov       qword ptr [rbp - 0x30], rax
+0x004fa861 mov       rdx, qword ptr [r9]
+0x004fa864 mov       r8, qword ptr [rdx + 0x1c8]
+0x004fa86b mov       eax, dword ptr [rsi]
+0x004fa86d add       rdx, 0x1d0
+0x004fa874 xor       ebx, ebx
+0x004fa876 mov       esi, 0x28
+0x004fa87b nop       dword ptr [rax + rax]
+0x004fa880 mov       edi, ebx
+0x004fa882 cmp       edi, r8d
+0x004fa885 jge       0x4fa89e
+0x004fa887 mov       rcx, qword ptr [rdx]
+0x004fa88a add       rcx, rdx
+0x004fa88d mov       ecx, dword ptr [rsi + rcx]
+0x004fa890 add       rsi, 0xd0
+0x004fa897 lea       ebx, [rdi + 1]
+0x004fa89a cmp       ecx, eax
+0x004fa89c jne       0x4fa880
+0x004fa89e mov       r12d, 0xffffffff
+0x004fa8a4 cmp       r8d, edi
+0x004fa8a7 cmovne    r12d, edi
+0x004fa8ab xor       al, al
+0x004fa8ad cmp       r12d, -1
+0x004fa8b1 je        0x4fa999
+0x004fa8b7 xor       eax, eax
+0x004fa8b9 test      r12d, r12d
+0x004fa8bc js        0x4fa8d5
+0x004fa8be cmp       r8d, r12d
+0x004fa8c1 jle       0x4fa8d5
+0x004fa8c3 add       rdx, qword ptr [rdx]
+0x004fa8c6 movsxd    rcx, r12d
+0x004fa8c9 imul      rcx, rcx, 0xd0
+0x004fa8d0 lea       rax, [rcx + rdx + 0x10]
+0x004fa8d5 mov       edx, dword ptr [rax + 0xa4]
+0x004fa8db lea       rbx, [rbp - 0x58]
+0x004fa8df mov       rdi, rbx
+0x004fa8e2 mov       rsi, r9
+0x004fa8e5 mov       r14, r9
+0x004fa8e8 call      0x50e220
+0x004fa8ed mov       r15, qword ptr [rbp - 0x68]
+0x004fa8f1 mov       dword ptr [r15], r12d
+0x004fa8f4 mov       rdi, rbx
+0x004fa8f7 call      0x50ebb0
+0x004fa8fc mov       rbx, 0xffffffffffffff60
+0x004fa903 mov       ecx, 0xffffffff
+0x004fa908 mov       rax, qword ptr [rbp - 0x70]
+0x004fa90c vmovss    dword ptr [rax], xmm0
+0x004fa910 mov       rsi, qword ptr [r14]
+0x004fa913 lea       rdx, [rsi + 0x1d0]
+0x004fa91a add       rdx, qword ptr [rsi + 0x1d0]
+0x004fa921 movsxd    rsi, dword ptr [r15]
+0x004fa924 imul      rdi, rsi, 0xd0
+0x004fa92b lea       rsi, [rdi + rdx + 0x78]
+0x004fa930 mov       edi, dword ptr [rdi + rdx + 0x70]
+0x004fa934 nop       word ptr cs:[rax + rax]
+0x004fa940 inc       ecx
+0x004fa942 cmp       ecx, edi
+0x004fa944 jge       0x4fa997
+0x004fa946 mov       rdx, qword ptr [rsi]
+0x004fa949 add       rdx, rsi
+0x004fa94c mov       eax, dword ptr [rbx + rdx + 0xb0]
+0x004fa953 add       rbx, 0xb8
+0x004fa95a cmp       eax, dword ptr [r13]
+0x004fa95e jne       0x4fa940
+0x004fa960 vmovss    xmm0, dword ptr [rdx + rbx]
+0x004fa965 mov       rcx, qword ptr [rbp - 0x60]
+0x004fa969 vmovss    dword ptr [rcx], xmm0
+0x004fa96d mov       cl, byte ptr [rdx + rbx + 4]
+0x004fa971 and       cl, 0xfe
+0x004fa974 cmp       cl, 2
+0x004fa977 mov       rcx, qword ptr [rbp + 0x10]
+0x004fa97b sete      byte ptr [rcx]
+0x004fa97e mov       al, 1
+0x004fa980 mov       rdi, qword ptr [rbp + 0x18]
+0x004fa984 test      rdi, rdi
+0x004fa987 je        0x4fa999
+0x004fa989 lea       rsi, [rdx + rbx + 0x48]
+0x004fa98e mov       ecx, 0x13
+0x004fa993 rep movsd dword ptr [rdi], dword ptr [rsi]
+0x004fa995 jmp       0x4fa999
+0x004fa997 xor       al, al
+0x004fa999 mov       rcx, qword ptr [rip + 0x1524760] ; [0x1a1f100]
+0x004fa9a0 mov       rcx, qword ptr [rcx]
+0x004fa9a3 cmp       rcx, qword ptr [rbp - 0x30]
+0x004fa9a7 jne       0x4fa9b8
+0x004fa9a9 add       rsp, 0x48
+0x004fa9ad pop       rbx
+0x004fa9ae pop       r12
+0x004fa9b0 pop       r13
+0x004fa9b2 pop       r14
+0x004fa9b4 pop       r15
+0x004fa9b6 pop       rbp
+0x004fa9b7 ret       
+0x004fa9b8 call      0x12aa7f0
+0x004fa9bd nop       
+0x004fa9be nop       

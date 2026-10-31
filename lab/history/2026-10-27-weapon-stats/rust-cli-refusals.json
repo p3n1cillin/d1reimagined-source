@@ -1,0 +1,17 @@
+[
+  {
+    "name": "existing-output",
+    "refused": true,
+    "message": "error: The file exists. (os error 80)"
+  },
+  {
+    "name": "empty-heavy",
+    "refused": true,
+    "message": "error: the selected weapon slot is empty"
+  },
+  {
+    "name": "absent-stat",
+    "refused": true,
+    "message": "error: requested stat is absent or duplicated in definition"
+  }
+]

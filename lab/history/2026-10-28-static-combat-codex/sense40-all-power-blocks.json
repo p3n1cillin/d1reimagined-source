@@ -1,0 +1,680 @@
+{
+  "utc": "2026-10-28T14:24:47.313668+00:00",
+  "capacity": 1500,
+  "rows": [
+    {
+      "index": 354,
+      "entity": "0x20fb8162",
+      "parent": "0x21fac36a",
+      "component": "0x37fcc9a60",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 355,
+      "entity": "0x5bfb8163",
+      "parent": "0x57fac36d",
+      "component": "0x37fcc93e0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 426,
+      "entity": "0x5efb81aa",
+      "parent": "0x2facdbc",
+      "component": "0x37fdd6240",
+      "owned": "0x80aade40",
+      "power": [
+        40.0,
+        40.0,
+        40.0
+      ],
+      "category_a6": 1,
+      "mode_b4": 3
+    },
+    {
+      "index": 431,
+      "entity": "0x7afb81af",
+      "parent": "0x3bfac89a",
+      "component": "0x37fd8eba0",
+      "owned": "0x80aac4b3",
+      "power": [
+        40.0,
+        40.0,
+        40.0
+      ],
+      "category_a6": 1,
+      "mode_b4": 1
+    },
+    {
+      "index": 432,
+      "entity": "0x52fb81b0",
+      "parent": "0x6fface71",
+      "component": "0x37fdf1cb0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 439,
+      "entity": "0x55fb81b7",
+      "parent": "0x62face48",
+      "component": "0x37fde28a0",
+      "owned": "0x80aade40",
+      "power": [
+        40.0,
+        40.0,
+        40.0
+      ],
+      "category_a6": 1,
+      "mode_b4": 3
+    },
+    {
+      "index": 449,
+      "entity": "0x52fb81c1",
+      "parent": "0xfaca3c",
+      "component": "0x37fd7cc40",
+      "owned": "0x80aade40",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 3
+    },
+    {
+      "index": 450,
+      "entity": "0x4ffb81c2",
+      "parent": "0x69faca4e",
+      "component": "0x37fd7a740",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 3
+    },
+    {
+      "index": 451,
+      "entity": "0x1fb81c3",
+      "parent": "0x7fac675",
+      "component": "0x37fd75f20",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 1
+    },
+    {
+      "index": 452,
+      "entity": "0xbfb81c4",
+      "parent": "0x31fac67c",
+      "component": "0x37fd673c0",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 3
+    },
+    {
+      "index": 453,
+      "entity": "0x42fb81c5",
+      "parent": "0x33facab4",
+      "component": "0x37fd62080",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 1
+    },
+    {
+      "index": 454,
+      "entity": "0x14fb81c6",
+      "parent": "0x30facaa2",
+      "component": "0x37fd55270",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 3
+    },
+    {
+      "index": 455,
+      "entity": "0xdfb81c7",
+      "parent": "0x41fac4b6",
+      "component": "0x37fd50590",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 1
+    },
+    {
+      "index": 456,
+      "entity": "0xafb81c8",
+      "parent": "0xafac88c",
+      "component": "0x37fdca3f0",
+      "owned": "0x80aac4b3",
+      "power": [
+        40.0,
+        40.0,
+        40.0
+      ],
+      "category_a6": 1,
+      "mode_b4": 3
+    },
+    {
+      "index": 458,
+      "entity": "0x16fb81ca",
+      "parent": "0x49fac6ac",
+      "component": "0x37fd42be0",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 1
+    },
+    {
+      "index": 461,
+      "entity": "0x5ffb81cd",
+      "parent": "0x4ffac706",
+      "component": "0x37fd34d50",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 1
+    },
+    {
+      "index": 464,
+      "entity": "0x6efb81d0",
+      "parent": "0xafac918",
+      "component": "0x37fd26ec0",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 1
+    },
+    {
+      "index": 469,
+      "entity": "0x1fb81d5",
+      "parent": "0xfac9bc",
+      "component": "0x37fdefeb0",
+      "owned": "0x80aade40",
+      "power": [
+        40.0,
+        40.0,
+        40.0
+      ],
+      "category_a6": 1,
+      "mode_b4": 2
+    },
+    {
+      "index": 471,
+      "entity": "0x2efb81d7",
+      "parent": "0x53fac8f8",
+      "component": "0x37fd19030",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 1
+    },
+    {
+      "index": 472,
+      "entity": "0x5dfb81d8",
+      "parent": "0x58fac8b2",
+      "component": "0x37fd0c040",
+      "owned": "0x80aade40",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 3
+    },
+    {
+      "index": 473,
+      "entity": "0x40fb81d9",
+      "parent": "0x74facac2",
+      "component": "0x37fd09b40",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 3
+    },
+    {
+      "index": 474,
+      "entity": "0x9fb81da",
+      "parent": "0x70facb29",
+      "component": "0x37fd05320",
+      "owned": "0x80aac4b3",
+      "power": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "category_a6": 2,
+      "mode_b4": 1
+    },
+    {
+      "index": 475,
+      "entity": "0x60fb81db",
+      "parent": "0x3dfacb2f",
+      "component": "0x37fcf8570",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 476,
+      "entity": "0xafb81dc",
+      "parent": "0x3dfacb35",
+      "component": "0x37fcf7e80",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 477,
+      "entity": "0x5efb81dd",
+      "parent": "0x17facb03",
+      "component": "0x37fcf7790",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 478,
+      "entity": "0x32fb81de",
+      "parent": "0x1facb09",
+      "component": "0x37fcf70a0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 479,
+      "entity": "0x17fb81df",
+      "parent": "0x1bfacb0f",
+      "component": "0x37fcf69b0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 480,
+      "entity": "0x5bfb81e0",
+      "parent": "0xcfacb15",
+      "component": "0x37fcf62c0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 500,
+      "entity": "0x42fb81f4",
+      "parent": "0x58facb4e",
+      "component": "0x37fcf4440",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 680,
+      "entity": "0x5cfb82a8",
+      "parent": "0x70faccd9",
+      "component": "0x37fce4a30",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 766,
+      "entity": "0x54fb82fe",
+      "parent": "0x1dfacd25",
+      "component": "0x37fcde060",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 767,
+      "entity": "0x7cfb82ff",
+      "parent": "0x24facd2a",
+      "component": "0x37fcdd9e0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 768,
+      "entity": "0xcfb8300",
+      "parent": "0x42facd2f",
+      "component": "0x37fcdd360",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 769,
+      "entity": "0x4dfb8301",
+      "parent": "0x37facd34",
+      "component": "0x37fcdcce0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 770,
+      "entity": "0x66fb8302",
+      "parent": "0x18facd39",
+      "component": "0x37fcdc660",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 771,
+      "entity": "0xdfb8303",
+      "parent": "0x59facd3e",
+      "component": "0x37fcdbfe0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 772,
+      "entity": "0x29fb8304",
+      "parent": "0x12facd43",
+      "component": "0x37fcdb960",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 773,
+      "entity": "0x31fb8305",
+      "parent": "0x4efacd5a",
+      "component": "0x37fcdb2e0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 775,
+      "entity": "0x69fb8307",
+      "parent": "0x7afacd5f",
+      "component": "0x37fcdac60",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 776,
+      "entity": "0x72fb8308",
+      "parent": "0x18facd56",
+      "component": "0x37fcda5e0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 777,
+      "entity": "0x8fb8309",
+      "parent": "0x28facd46",
+      "component": "0x37fcd9f60",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 778,
+      "entity": "0x9fb830a",
+      "parent": "0x49facd4b",
+      "component": "0x37fcd98e0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 779,
+      "entity": "0x79fb830b",
+      "parent": "0x47facd50",
+      "component": "0x37fcd9260",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 780,
+      "entity": "0x7cfb830c",
+      "parent": "0x52facd55",
+      "component": "0x37fcd8be0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 781,
+      "entity": "0x21fb830d",
+      "parent": "0x2cfacd65",
+      "component": "0x37fcd8560",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 782,
+      "entity": "0x1dfb830e",
+      "parent": "0x34facd6a",
+      "component": "0x37fcd7ee0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 783,
+      "entity": "0x51fb830f",
+      "parent": "0x1dfacd6f",
+      "component": "0x37fcd7860",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    },
+    {
+      "index": 784,
+      "entity": "0x56fb8310",
+      "parent": "0x2afacd74",
+      "component": "0x37fcd71e0",
+      "owned": "0x80aade40",
+      "power": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "category_a6": 0,
+      "mode_b4": 0
+    }
+  ],
+  "refused_rows": 0,
+  "read_only": true
+}

@@ -1,0 +1,116 @@
+0x0016fd50 push      rbp
+0x0016fd51 mov       rbp, rsp
+0x0016fd54 push      r15
+0x0016fd56 push      r14
+0x0016fd58 push      r13
+0x0016fd5a push      r12
+0x0016fd5c push      rbx
+0x0016fd5d sub       rsp, 0xa8
+0x0016fd64 mov       ebx, ecx
+0x0016fd66 mov       dword ptr [rbp - 0x9c], ebx
+0x0016fd6c mov       r14d, edx
+0x0016fd6f mov       dword ptr [rbp - 0xa0], r14d
+0x0016fd76 mov       dword ptr [rbp - 0xa4], esi
+0x0016fd7c mov       qword ptr [rbp - 0x98], rdi
+0x0016fd83 mov       rax, qword ptr [rip + 0x18af376] ; [0x1a1f100]
+0x0016fd8a mov       rax, qword ptr [rax]
+0x0016fd8d mov       qword ptr [rbp - 0x30], rax
+0x0016fd91 mov       r12d, esi
+0x0016fd94 and       r12d, 0x1fff
+0x0016fd9b call      0x16ad10
+0x0016fda0 mov       r15d, dword ptr [rax + 0x10]
+0x0016fda4 imul      r15d, r12d
+0x0016fda8 mov       r13, qword ptr [rax + 8]
+0x0016fdac movsxd    rax, ebx
+0x0016fdaf mov       qword ptr [rbp - 0x90], rax
+0x0016fdb6 mov       ebx, r14d
+0x0016fdb9 and       ebx, 0x1fff
+0x0016fdbf call      0x16ad10
+0x0016fdc4 lea       rsi, [rbp - 0x78]
+0x0016fdc8 lea       rdx, [rbp - 0x70]
+0x0016fdcc imul      ebx, dword ptr [rax + 0x10]
+0x0016fdd0 add       rbx, qword ptr [rax + 8]
+0x0016fdd4 mov       rax, qword ptr [rbp - 0x90]
+0x0016fddb mov       eax, dword ptr [rbx + rax*4 + 4]
+0x0016fddf mov       dword ptr [rbp - 0x78], eax
+0x0016fde2 mov       rdi, qword ptr [rbp - 0x98]
+0x0016fde9 call      0x1f0d10
+0x0016fdee mov       ebx, 0xffffffff
+0x0016fdf3 cmp       dword ptr [r13 + r15], 0
+0x0016fdf9 jle       0x16ff46
+0x0016fdff vmovss    xmm1, dword ptr [rax]
+0x0016fe03 vmovss    xmm0, dword ptr [rax + 8]
+0x0016fe08 vinsertps xmm1, xmm1, dword ptr [rax + 4], 0x10
+0x0016fe0f vinsertps xmm0, xmm1, xmm0, 0x20
+0x0016fe15 vinsertps xmm0, xmm0, dword ptr [rip + 0x14a8d99], 0x30 ; [0x1618bb8]
+0x0016fe1f vmovaps   xmmword ptr [rbp - 0xc0], xmm0
+0x0016fe27 lea       rax, [rip + 0x1956512] ; [0x1ac6340]
+0x0016fe2e vmovaps   xmm1, xmmword ptr [rax]
+0x0016fe32 mov       ebx, 0xffffffff
+0x0016fe37 xor       r14d, r14d
+0x0016fe3a vxorps    xmm0, xmm0, xmm0
+0x0016fe3e vcmpeqps  xmm0, xmm0, xmm0
+0x0016fe43 vmovaps   xmmword ptr [rbp - 0xd0], xmm0
+0x0016fe4b nop       dword ptr [rax + rax]
+0x0016fe50 vmovaps   xmmword ptr [rbp - 0x90], xmm1
+0x0016fe58 mov       edi, dword ptr [rbp - 0xa4]
+0x0016fe5e mov       esi, r14d
+0x0016fe61 mov       edx, dword ptr [rbp - 0xa0]
+0x0016fe67 mov       ecx, dword ptr [rbp - 0x9c]
+0x0016fe6d call      0x16ff70
+0x0016fe72 test      al, al
+0x0016fe74 je        0x16ff30
+0x0016fe7a call      0x16ad10
+0x0016fe7f mov       ecx, dword ptr [rax + 0x10]
+0x0016fe82 imul      ecx, r12d
+0x0016fe86 add       rcx, qword ptr [rax + 8]
+0x0016fe8a mov       eax, dword ptr [rcx + r14*4 + 4]
+0x0016fe8f mov       dword ptr [rbp - 0x78], eax
+0x0016fe92 mov       rdi, qword ptr [rbp - 0x98]
+0x0016fe99 lea       rsi, [rbp - 0x78]
+0x0016fe9d lea       rdx, [rbp - 0x70]
+0x0016fea1 call      0x1f0d10
+0x0016fea6 vmovss    xmm1, dword ptr [rax]
+0x0016feaa vmovss    xmm0, dword ptr [rax + 8]
+0x0016feaf vinsertps xmm1, xmm1, dword ptr [rax + 4], 0x10
+0x0016feb6 vinsertps xmm0, xmm1, xmm0, 0x20
+0x0016febc vinsertps xmm0, xmm0, dword ptr [rip + 0x14a8cf2], 0x30 ; [0x1618bb8]
+0x0016fec6 vmovaps   xmm1, xmmword ptr [rbp - 0xc0]
+0x0016fece vsubps    xmm0, xmm1, xmm0
+0x0016fed2 vmulps    xmm0, xmm0, xmm0
+0x0016fed6 vpshufd   xmm1, xmm0, 0x55
+0x0016fedb vpshufd   xmm2, xmm0, 0
+0x0016fee0 vaddps    xmm1, xmm2, xmm1
+0x0016fee4 vpshufd   xmm0, xmm0, 0xaa
+0x0016fee9 vaddps    xmm0, xmm0, xmm1
+0x0016feed vmovaps   xmm2, xmmword ptr [rbp - 0x90]
+0x0016fef5 vcmpltps  xmm1, xmm0, xmm2
+0x0016fefa vxorps    xmm1, xmm1, xmmword ptr [rbp - 0xd0]
+0x0016ff02 vcmpeqps  xmm1, xmm1, xmmword ptr [rip + 0x14a8c35] ; [0x1618b40]
+0x0016ff0b vmovmskps eax, xmm1
+0x0016ff0f cmp       eax, 0xf
+0x0016ff12 je        0x16ff18
+0x0016ff14 vmovaps   xmm0, xmm2
+0x0016ff18 cmove     ebx, r14d
+0x0016ff1c vmovaps   xmm1, xmm0
+0x0016ff20 jmp       0x16ff38
+0x0016ff22 nop       word ptr cs:[rax + rax]
+0x0016ff30 vmovaps   xmm1, xmmword ptr [rbp - 0x90]
+0x0016ff38 inc       r14
+0x0016ff3b cmp       r14d, dword ptr [r13 + r15]
+0x0016ff40 jl        0x16fe50
+0x0016ff46 mov       rax, qword ptr [rip + 0x18af1b3] ; [0x1a1f100]
+0x0016ff4d mov       rax, qword ptr [rax]
+0x0016ff50 cmp       rax, qword ptr [rbp - 0x30]
+0x0016ff54 jne       0x16ff6a
+0x0016ff56 mov       eax, ebx
+0x0016ff58 add       rsp, 0xa8
+0x0016ff5f pop       rbx
+0x0016ff60 pop       r12
+0x0016ff62 pop       r13
+0x0016ff64 pop       r14
+0x0016ff66 pop       r15
+0x0016ff68 pop       rbp
+0x0016ff69 ret       
+0x0016ff6a call      0x12aa7f0
+0x0016ff6f nop       

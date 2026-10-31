@@ -1,0 +1,22 @@
+[
+  {
+    "file": "screenshots/01.png",
+    "source_path": "F:\\d1\\d1preservation-main\\cfw-staging\\2026-10-25-agr-cap\\stuck.png",
+    "source_modified_at_utc": "2026-10-25T17:59:58.866403+00:00",
+    "source_sha256": "432eedd3be72e69fe48612382e4396d7ecd158b8c8f4883a3517f35a9bbcf0d3",
+    "bytes": 51569,
+    "dimensions": [
+      1296,
+      759
+    ],
+    "visual_review": "inspected for private handoff only",
+    "claim": "Visible WEASEL error after the diagnostic probe; no proof of the cause or mission completion.",
+    "publication_approved": false,
+    "suggested_production_crop": {
+      "x": 8,
+      "y": 31,
+      "width": 1280,
+      "height": 720
+    }
+  }
+]

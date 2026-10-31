@@ -1,0 +1,20 @@
+shadPS4 pid 24364  eboot base 0x5100000  control vtable[0]=0x5854410 PASS
+start (444.9463195800781, -692.0040283203125, 11.707942962646484) goal [420.0, -600.0]
+at (439.3, -696.5, 11.9) dist 98.5 best 95.3 cells 6 blocked 9
+at (438.6, -686.7, 12.0) dist 88.6 best 88.2 cells 11 blocked 11
+at (432.8, -693.4, 11.5) dist 94.3 best 88.2 cells 13 blocked 11
+at (436.6, -689.8, 12.0) dist 91.3 best 88.2 cells 15 blocked 11
+at (436.4, -686.5, 12.0) dist 88.0 best 88.2 cells 15 blocked 11
+at (433.1, -695.4, 11.5) dist 96.3 best 88.2 cells 16 blocked 12
+at (430.6, -686.7, 12.0) dist 87.4 best 88.2 cells 19 blocked 13
+at (426.8, -686.5, 11.1) dist 86.7 best 87.0 cells 23 blocked 14
+at (426.6, -697.2, 10.4) dist 97.4 best 87.0 cells 27 blocked 17
+at (425.2, -699.9, 10.1) dist 100.1 best 87.0 cells 31 blocked 17
+at (423.7, -686.5, 11.0) dist 86.5 best 87.0 cells 34 blocked 18
+at (425.5, -694.3, 10.4) dist 94.5 best 87.0 cells 35 blocked 21
+at (424.9, -698.2, 10.4) dist 98.3 best 87.0 cells 37 blocked 21
+at (429.2, -686.7, 11.4) dist 87.2 best 87.0 cells 39 blocked 23
+at (433.5, -692.8, 12.0) dist 93.7 best 87.0 cells 42 blocked 23
+at (432.2, -689.4, 11.6) dist 90.2 best 87.0 cells 46 blocked 23
+at (429.9, -688.4, 11.7) dist 88.9 best 87.0 cells 48 blocked 23
+stopped (430.17626953125, -694.9600219726562, 11.871373653411865) dist 95.5 route 9 points -> route-pb2.json

@@ -1,0 +1,60 @@
+0x00553610  55                             push     rbp
+0x00553611  4889e5                         mov      rbp, rsp
+0x00553614  4156                           push     r14
+0x00553616  53                             push     rbx
+0x00553617  4189fe                         mov      r14d, edi
+0x0055361a  e8f195d0ff                     call     0x25cc10   ; -> 0x25cc10
+0x0055361f  b3ff                           mov      bl, 0xff
+0x00553621  84c0                           test     al, al
+0x00553623  0f84d2000000                   je       0x5536fb   ; -> 0x5536fb
+0x00553629  e8a295d0ff                     call     0x25cbd0   ; -> 0x25cbd0
+0x0055362e  488b08                         mov      rcx, [rax]
+0x00553631  4889c7                         mov      rdi, rax
+0x00553634  ff5168                         call     qword ptr [rcx+0x68]
+0x00553637  4183fe13                       cmp      r14d, 0x13
+0x0055363b  0f87ba000000                   ja       0x5536fb   ; -> 0x5536fb
+0x00553641  4489f1                         mov      ecx, r14d
+0x00553644  488d15b9000000                 lea      rdx, [rip+0xb9]   ; [0x553704]
+0x0055364b  48630c8a                       movsxd   rcx, [rdx+rcx*4]
+0x0055364f  4801d1                         add      rcx, rdx
+0x00553652  ffe1                           jmp      rcx
+0x00553654  8a9846010000                   mov      bl, [rax+0x146]
+0x0055365a  e99c000000                     jmp      0x5536fb   ; -> 0x5536fb
+0x0055365f  8a9847010000                   mov      bl, [rax+0x147]
+0x00553665  e991000000                     jmp      0x5536fb   ; -> 0x5536fb
+0x0055366a  8a9848010000                   mov      bl, [rax+0x148]
+0x00553670  e986000000                     jmp      0x5536fb   ; -> 0x5536fb
+0x00553675  8a9849010000                   mov      bl, [rax+0x149]
+0x0055367b  eb7e                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x0055367d  8a984a010000                   mov      bl, [rax+0x14a]
+0x00553683  eb76                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x00553685  8a984b010000                   mov      bl, [rax+0x14b]
+0x0055368b  eb6e                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x0055368d  8a984d010000                   mov      bl, [rax+0x14d]
+0x00553693  eb66                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x00553695  8a984e010000                   mov      bl, [rax+0x14e]
+0x0055369b  eb5e                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x0055369d  8a984f010000                   mov      bl, [rax+0x14f]
+0x005536a3  eb56                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536a5  8a9850010000                   mov      bl, [rax+0x150]
+0x005536ab  eb4e                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536ad  8a9851010000                   mov      bl, [rax+0x151]
+0x005536b3  eb46                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536b5  8a9852010000                   mov      bl, [rax+0x152]
+0x005536bb  eb3e                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536bd  8a9853010000                   mov      bl, [rax+0x153]
+0x005536c3  eb36                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536c5  8a9854010000                   mov      bl, [rax+0x154]
+0x005536cb  eb2e                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536cd  8a9855010000                   mov      bl, [rax+0x155]
+0x005536d3  eb26                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536d5  8a9856010000                   mov      bl, [rax+0x156]
+0x005536db  eb1e                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536dd  8a9857010000                   mov      bl, [rax+0x157]
+0x005536e3  eb16                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536e5  8a9858010000                   mov      bl, [rax+0x158]
+0x005536eb  eb0e                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536ed  8a9859010000                   mov      bl, [rax+0x159]
+0x005536f3  eb06                           jmp      short 0x5536fb   ; -> 0x5536fb
+0x005536f5  8a985a010000                   mov      bl, [rax+0x15a]
+0x005536fb  88d8                           mov      al, bl

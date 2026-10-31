@@ -1,0 +1,658 @@
+{
+  "unix": 1793214206.0193317,
+  "base": "0x5090000",
+  "geometry": {
+    "0x25d79a0": {
+      "data": "0x38049d780",
+      "stride": 10944,
+      "capacity": 40
+    },
+    "0x25d7a20": {
+      "data": "0x380508600",
+      "stride": 1136,
+      "capacity": 40
+    },
+    "0x2692220": {
+      "data": "0x37fbbf600",
+      "stride": 240,
+      "capacity": 1500
+    }
+  },
+  "rows": [
+    {
+      "group": "0x62dd95d",
+      "index": 5,
+      "component": "0x380276930",
+      "members": []
+    },
+    {
+      "group": "0x62dd95d",
+      "index": 6,
+      "component": "0x380276dc0",
+      "members": []
+    },
+    {
+      "group": "0x62dd95d",
+      "index": 7,
+      "component": "0x380277250",
+      "members": []
+    },
+    {
+      "group": "0x62dd95d",
+      "index": 8,
+      "component": "0x3802776e0",
+      "members": [
+        {
+          "handle": "0x1af58003",
+          "flags": "0x1",
+          "entity": "0x3804a57c0",
+          "active": true,
+          "root": "0x37fd27d30",
+          "transform": "0x49fb81c0",
+          "parent": "0x14fac6be",
+          "components": [
+            {
+              "offset": "0x30",
+              "tag": "0x809ddc67",
+              "self": "0x3fac6bd"
+            },
+            {
+              "offset": "0x630",
+              "tag": "0x80cd0b30",
+              "self": "0x31fac6bc"
+            },
+            {
+              "offset": "0xbe0",
+              "tag": "0x80cd18e7",
+              "self": "0x4cfac6bb"
+            },
+            {
+              "offset": "0xf80",
+              "tag": "0x80cd18e8",
+              "self": "0x41fac6ba"
+            },
+            {
+              "offset": "0x13e0",
+              "tag": "0x809ddabc",
+              "self": "0x36fac6b8"
+            },
+            {
+              "offset": "0x2050",
+              "tag": "0x809ddb36",
+              "self": "0x33fac6b7"
+            },
+            {
+              "offset": "0x21b0",
+              "tag": "0x80cd18e9",
+              "self": "0x37fac6b5"
+            },
+            {
+              "offset": "0x28e0",
+              "tag": "0x809dec68",
+              "self": "0x24fac6b4"
+            },
+            {
+              "offset": "0x2990",
+              "tag": "0x80cc4969",
+              "self": "0x40fac6b2"
+            },
+            {
+              "offset": "0x2c80",
+              "tag": "0x809dea34",
+              "self": "0x36fac6b0"
+            },
+            {
+              "offset": "0x2d30",
+              "tag": "0x809dea35",
+              "self": "0x13fac6af"
+            },
+            {
+              "offset": "0x3210",
+              "tag": "0x809ddb37",
+              "self": "0x41fac6ad"
+            },
+            {
+              "offset": "0x3640",
+              "tag": "0x809dea36",
+              "self": "0x65fac6ac"
+            },
+            {
+              "offset": "0x3b60",
+              "tag": "0x809de133",
+              "self": "0x26fac6a9"
+            },
+            {
+              "offset": "0x3e10",
+              "tag": "0x80cd0554",
+              "self": "0x56fac6a5"
+            },
+            {
+              "offset": "0x47f0",
+              "tag": "0x80cd0567",
+              "self": "0x30fac6a4"
+            },
+            {
+              "offset": "0x4e50",
+              "tag": "0x80cd18ac",
+              "self": "0x5cfac69f"
+            },
+            {
+              "offset": "0x5190",
+              "tag": "0x80cd18aa",
+              "self": "0x38fac6a0"
+            },
+            {
+              "offset": "0x6310",
+              "tag": "0x80cd18ab",
+              "self": "0x46fac6a1"
+            },
+            {
+              "offset": "0x7540",
+              "tag": "0x809dcce5",
+              "self": "0x2fac69e"
+            },
+            {
+              "offset": "0x7980",
+              "tag": "0x80cd0d62",
+              "self": "0x56fac69b"
+            },
+            {
+              "offset": "0x89e0",
+              "tag": "0x80cd1863",
+              "self": "0x7fac69c"
+            },
+            {
+              "offset": "0x9290",
+              "tag": "0x80cd1703",
+              "self": "0x7afaca83"
+            },
+            {
+              "offset": "0x9750",
+              "tag": "0x80cd1706",
+              "self": "0x45faca84"
+            },
+            {
+              "offset": "0x9bb0",
+              "tag": "0x80cd1707",
+              "self": "0x19faca82"
+            },
+            {
+              "offset": "0xa030",
+              "tag": "0x809d9f18",
+              "self": "0x2afaca80"
+            },
+            {
+              "offset": "0xaa70",
+              "tag": "0x809dffe5",
+              "self": "0x2cfaca7b"
+            },
+            {
+              "offset": "0xb0f0",
+              "tag": "0x809d9f25",
+              "self": "0x29faca4c"
+            },
+            {
+              "offset": "0xbed0",
+              "tag": "0x809d9f19",
+              "self": "0x54faca50"
+            },
+            {
+              "offset": "0xc0d0",
+              "tag": "0x80aac4b3",
+              "self": "0x9faca47"
+            },
+            {
+              "offset": "0xc2a0",
+              "tag": "0x809ddc5f",
+              "self": "0x2dfaca4d"
+            }
+          ],
+          "reader": {
+            "member_handle": 452296707,
+            "active": true,
+            "parts": [
+              {
+                "role": "body",
+                "handle": 49989278,
+                "address": 15029432944,
+                "position": [
+                  72.40325927734375,
+                  -568.3720703125,
+                  5.571632385253906
+                ]
+              }
+            ],
+            "health": null,
+            "sense_matches": true,
+            "transform_handle": 1241219520,
+            "parent_handle": 351979198
+          }
+        }
+      ]
+    },
+    {
+      "group": "0x62dd95d",
+      "index": 9,
+      "component": "0x380277b70",
+      "members": []
+    },
+    {
+      "group": "0x62dd95d",
+      "index": 10,
+      "component": "0x380278000",
+      "members": []
+    },
+    {
+      "group": "0x62dd95d",
+      "index": 11,
+      "component": "0x380278490",
+      "members": [
+        {
+          "handle": "0x76f58000",
+          "flags": "0x1",
+          "entity": "0x38049d780",
+          "active": true,
+          "root": "0x37fd48ef0",
+          "transform": "0x71fb81bb",
+          "parent": "0x5afac9dd",
+          "components": [
+            {
+              "offset": "0x30",
+              "tag": "0x809de53a",
+              "self": "0x1afac9d8"
+            },
+            {
+              "offset": "0x650",
+              "tag": "0x80cd0afe",
+              "self": "0xefac9dc"
+            },
+            {
+              "offset": "0xb90",
+              "tag": "0x80cd189d",
+              "self": "0x72fac9da"
+            },
+            {
+              "offset": "0xf30",
+              "tag": "0x80cd003a",
+              "self": "0x70fac9db"
+            },
+            {
+              "offset": "0x1390",
+              "tag": "0x809de134",
+              "self": "0x4efac9d7"
+            },
+            {
+              "offset": "0x2000",
+              "tag": "0x809de135",
+              "self": "0x4ffac9d2"
+            },
+            {
+              "offset": "0x2160",
+              "tag": "0x80cd003b",
+              "self": "0x1dfac9d4"
+            },
+            {
+              "offset": "0x2890",
+              "tag": "0x809dec68",
+              "self": "0x71fac9d5"
+            },
+            {
+              "offset": "0x2940",
+              "tag": "0x80cc4954",
+              "self": "0x7fac9d1"
+            },
+            {
+              "offset": "0x2c30",
+              "tag": "0x809dea34",
+              "self": "0x59fac9d0"
+            },
+            {
+              "offset": "0x2ce0",
+              "tag": "0x809dea35",
+              "self": "0xcfac9ce"
+            },
+            {
+              "offset": "0x31c0",
+              "tag": "0x809de136",
+              "self": "0x3efac9cd"
+            },
+            {
+              "offset": "0x35f0",
+              "tag": "0x809dea36",
+              "self": "0x6cfac9cb"
+            },
+            {
+              "offset": "0x3b10",
+              "tag": "0x809de133",
+              "self": "0x4afac9c8"
+            },
+            {
+              "offset": "0x3dc0",
+              "tag": "0x80cd0037",
+              "self": "0x25fac9c0"
+            },
+            {
+              "offset": "0x51c0",
+              "tag": "0x80cd0d6e",
+              "self": "0x1afac9bf"
+            },
+            {
+              "offset": "0x5500",
+              "tag": "0x80cd0d67",
+              "self": "0xffac9ba"
+            },
+            {
+              "offset": "0x6970",
+              "tag": "0x80cd18a9",
+              "self": "0x1dfac09d"
+            },
+            {
+              "offset": "0x8000",
+              "tag": "0x809dcef6",
+              "self": "0x1dfac09e"
+            },
+            {
+              "offset": "0x8440",
+              "tag": "0x80cd0d66",
+              "self": "0x54fac09c"
+            },
+            {
+              "offset": "0x94a0",
+              "tag": "0x816e23ed",
+              "self": "0x3ffac09b"
+            },
+            {
+              "offset": "0x9da0",
+              "tag": "0x80cd16e6",
+              "self": "0x2bfac093"
+            },
+            {
+              "offset": "0xa260",
+              "tag": "0x80cd16e9",
+              "self": "0x15fac092"
+            },
+            {
+              "offset": "0xa6c0",
+              "tag": "0x80cd16ea",
+              "self": "0x60fac090"
+            },
+            {
+              "offset": "0xab40",
+              "tag": "0x816e23e8",
+              "self": "0x2afac094"
+            },
+            {
+              "offset": "0xb3e0",
+              "tag": "0x816e6a39",
+              "self": "0x45fac08a"
+            },
+            {
+              "offset": "0xba60",
+              "tag": "0x816e23eb",
+              "self": "0x3dfac08f"
+            },
+            {
+              "offset": "0xc730",
+              "tag": "0x80aac4df",
+              "self": "0x5ffac08d"
+            },
+            {
+              "offset": "0xca40",
+              "tag": "0x816e23ec",
+              "self": "0x26fac088"
+            },
+            {
+              "offset": "0xcc40",
+              "tag": "0x80aac4b3",
+              "self": "0x3efac087"
+            },
+            {
+              "offset": "0xce10",
+              "tag": "0x816e23e5",
+              "self": "0x47fac083"
+            }
+          ],
+          "reader": {
+            "member_handle": 1995800576,
+            "active": true,
+            "parts": [
+              {
+                "role": "body",
+                "handle": 502972574,
+                "address": 15029571312,
+                "position": [
+                  98.14962005615234,
+                  -581.558349609375,
+                  7.378823757171631
+                ]
+              }
+            ],
+            "health": null,
+            "sense_matches": true,
+            "transform_handle": 1912308155,
+            "parent_handle": 1526385117
+          }
+        }
+      ]
+    },
+    {
+      "group": "0x62dd95d",
+      "index": 12,
+      "component": "0x380278920",
+      "members": [
+        {
+          "handle": "0x65f58009",
+          "flags": "0x1",
+          "entity": "0x3804b5840",
+          "active": true,
+          "root": "0x37fcf86e0",
+          "transform": "0x5efb81ce",
+          "parent": "0x7bfac90f",
+          "components": [
+            {
+              "offset": "0x30",
+              "tag": "0x809de53a",
+              "self": "0x46fac910"
+            },
+            {
+              "offset": "0x650",
+              "tag": "0x80cd0afe",
+              "self": "0x1afac90e"
+            },
+            {
+              "offset": "0xb90",
+              "tag": "0x80cd189d",
+              "self": "0x73fac912"
+            },
+            {
+              "offset": "0xf30",
+              "tag": "0x80cd003a",
+              "self": "0x56fac913"
+            },
+            {
+              "offset": "0x1390",
+              "tag": "0x809de134",
+              "self": "0x72fac915"
+            },
+            {
+              "offset": "0x2000",
+              "tag": "0x809de135",
+              "self": "0x14fac916"
+            },
+            {
+              "offset": "0x2160",
+              "tag": "0x80cd003b",
+              "self": "0x7fac918"
+            },
+            {
+              "offset": "0x2890",
+              "tag": "0x809dec68",
+              "self": "0x7fac919"
+            },
+            {
+              "offset": "0x2940",
+              "tag": "0x80cc4954",
+              "self": "0x2afaca5a"
+            },
+            {
+              "offset": "0x2c30",
+              "tag": "0x809dea34",
+              "self": "0x6faca5c"
+            },
+            {
+              "offset": "0x2ce0",
+              "tag": "0x809dea35",
+              "self": "0x22faca5d"
+            },
+            {
+              "offset": "0x31c0",
+              "tag": "0x809de136",
+              "self": "0x6afaca5f"
+            },
+            {
+              "offset": "0x35f0",
+              "tag": "0x809dea36",
+              "self": "0x6cfaca60"
+            },
+            {
+              "offset": "0x3b10",
+              "tag": "0x809de133",
+              "self": "0x2cfaca63"
+            },
+            {
+              "offset": "0x3dc0",
+              "tag": "0x80cd0037",
+              "self": "0x6efaca67"
+            },
+            {
+              "offset": "0x51c0",
+              "tag": "0x80cd0d6e",
+              "self": "0x2faca6c"
+            },
+            {
+              "offset": "0x5500",
+              "tag": "0x80cd0d67",
+              "self": "0x41faca6d"
+            },
+            {
+              "offset": "0x6970",
+              "tag": "0x80cd18a9",
+              "self": "0x31faca6e"
+            },
+            {
+              "offset": "0x8000",
+              "tag": "0x809dcef6",
+              "self": "0x5ffaca6f"
+            },
+            {
+              "offset": "0x8440",
+              "tag": "0x80cd0d66",
+              "self": "0x7faca70"
+            },
+            {
+              "offset": "0x94a0",
+              "tag": "0x816e23ed",
+              "self": "0x50faca71"
+            },
+            {
+              "offset": "0x9da0",
+              "tag": "0x80cd16e6",
+              "self": "0x22faca74"
+            },
+            {
+              "offset": "0xa260",
+              "tag": "0x80cd16e9",
+              "self": "0x22faca75"
+            },
+            {
+              "offset": "0xa6c0",
+              "tag": "0x80cd16ea",
+              "self": "0xbfaca76"
+            },
+            {
+              "offset": "0xab40",
+              "tag": "0x816e23e8",
+              "self": "0x56faca77"
+            },
+            {
+              "offset": "0xb3e0",
+              "tag": "0x816e6a39",
+              "self": "0x68fac757"
+            },
+            {
+              "offset": "0xba60",
+              "tag": "0x816e23eb",
+              "self": "0x5cfac759"
+            },
+            {
+              "offset": "0xc730",
+              "tag": "0x80aac4df",
+              "self": "0x62fac758"
+            },
+            {
+              "offset": "0xca40",
+              "tag": "0x816e23ec",
+              "self": "0x41fac75a"
+            },
+            {
+              "offset": "0xcc40",
+              "tag": "0x80aac4b3",
+              "self": "0x5fac72e"
+            },
+            {
+              "offset": "0xce10",
+              "tag": "0x816e23e5",
+              "self": "0x62fac72d"
+            }
+          ],
+          "reader": {
+            "member_handle": 1710587913,
+            "active": true,
+            "parts": [
+              {
+                "role": "body",
+                "handle": 1610271343,
+                "address": 15029241568,
+                "position": [
+                  98.92869567871094,
+                  -578.5518798828125,
+                  7.4420084953308105
+                ]
+              }
+            ],
+            "health": null,
+            "sense_matches": true,
+            "transform_handle": 1593541070,
+            "parent_handle": 2080033039
+          }
+        }
+      ]
+    }
+  ],
+  "cells": [
+    {
+      "slot": "0x19b1a30",
+      "tag": "0x8080206f",
+      "key": "0xe52389ae"
+    },
+    {
+      "slot": "0x19b3058",
+      "tag": "0x80802ba7",
+      "key": "0x1939b49e"
+    },
+    {
+      "slot": "0x191a2d0",
+      "tag": "0x80800817",
+      "key": "0x9606332a"
+    },
+    {
+      "slot": "0x1974d90",
+      "tag": "0x80800357",
+      "key": "0x96a20fc"
+    }
+  ],
+  "content": [
+    182,
+    "0x22db75300"
+  ]
+}

@@ -1,0 +1,4 @@
+0x00105220 mov       eax, dword ptr [rdi + 0x3f4]
+0x00105226 mov       dword ptr [rdi + 0x1b0], eax
+0x0010522c ret       
+0x0010522d nop       dword ptr [rax]

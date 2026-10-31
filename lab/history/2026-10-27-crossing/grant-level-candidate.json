@@ -1,0 +1,23 @@
+{
+  "source_sha256": "31280eba3104a72a491e981ae86c8e15d9d3e92df87e8316e6a73c54823cb19b",
+  "content_index": 3598,
+  "changed_decoded_field": "+0x18 i32 item level 40 to 1 only",
+  "baseline_roundtrip_identical": true,
+  "candidate_roundtrip_identical": true,
+  "native_test": "NOT RUN",
+  "published": false,
+  "variants": [
+    {
+      "level": 40,
+      "bytes": 171,
+      "sha256": "31280eba3104a72a491e981ae86c8e15d9d3e92df87e8316e6a73c54823cb19b",
+      "file": "grant-level40-candidate.bin"
+    },
+    {
+      "level": 1,
+      "bytes": 171,
+      "sha256": "f6129f33de9ffa01032d7ca1b0729690f2d075e0a26b3920bdca3599bf889c30",
+      "file": "grant-level1-candidate.bin"
+    }
+  ]
+}

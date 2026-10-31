@@ -1,0 +1,13 @@
+0x00105920 push      rbp
+0x00105921 mov       rbp, rsp
+0x00105924 push      rbx
+0x00105925 push      rax
+0x00105926 mov       rbx, rdi
+0x00105929 call      0x241180
+0x0010592e mov       dword ptr [rbx + 0x40c], eax
+0x00105934 mov       dword ptr [rbx + 0x410], 0xffffffff
+0x0010593e add       rsp, 8
+0x00105942 pop       rbx
+0x00105943 pop       rbp
+0x00105944 ret       
+0x00105945 nop       word ptr cs:[rax + rax]

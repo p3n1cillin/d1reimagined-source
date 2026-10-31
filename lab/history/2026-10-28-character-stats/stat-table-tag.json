@@ -1,0 +1,6 @@
+{
+  "tag": "0x80a5e244",
+  "globals": "0x380b00750",
+  "derived_from": "25CC50 returns cached root without +8;25F120 reads root+448",
+  "supersedes": "earlier tag0 lead used wrong +8 and is not evidence"
+}

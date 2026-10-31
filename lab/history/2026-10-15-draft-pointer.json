@@ -1,0 +1,12 @@
+{
+  "draft": "lab/history\\daily-2026-10-15-20261015T180912",
+  "prepared_utc": "2026-10-15T18:09:12.990699+00:00",
+  "state": "DELIVERED_AND_VERIFIED",
+  "reporting_date": "2026-10-15",
+  "pre_cutoff_source": "512c659de0db2ff2673c6b1dee87cad975b83301",
+  "delivery_worker_started_utc": "2026-10-15T18:09:19.682296+00:00",
+  "package": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\content-outbox\\<lab-pc>-20261015T180922-747c0780f05a4e3c83f61acaebb0578d",
+  "clip_id": "<lab-pc>-20261015T180922-747c0780f05a4e3c83f61acaebb0578d",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\15\\<lab-pc>-20261015T180922-747c0780f05a4e3c83f61acaebb0578d.ready",
+  "verified_at": "2026-10-15T18:09:24.363425+00:00"
+}

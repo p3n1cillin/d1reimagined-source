@@ -1,0 +1,14 @@
+0x004fa7f0 xor       eax, eax
+0x004fa7f2 test      esi, esi
+0x004fa7f4 js        0x4fa820
+0x004fa7f6 mov       rcx, qword ptr [rdi]
+0x004fa7f9 mov       edx, dword ptr [rcx + 0x1c8]
+0x004fa7ff cmp       edx, esi
+0x004fa801 jle       0x4fa820
+0x004fa803 lea       rax, [rcx + 0x1d0]
+0x004fa80a add       rax, qword ptr [rcx + 0x1d0]
+0x004fa811 movsxd    rcx, esi
+0x004fa814 imul      rcx, rcx, 0xd0
+0x004fa81b lea       rax, [rcx + rax + 0x10]
+0x004fa820 ret       
+0x004fa821 nop       word ptr cs:[rax + rax]

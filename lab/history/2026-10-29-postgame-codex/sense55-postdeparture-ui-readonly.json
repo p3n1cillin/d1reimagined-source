@@ -1,0 +1,25 @@
+{
+  "base": "0x5300000",
+  "screens": [
+    {
+      "o": "0x22c554d80",
+      "id": 18,
+      "tag": "0x80aa2057"
+    }
+  ],
+  "visited": 2293,
+  "pending": 0,
+  "components": [],
+  "collector": {
+    "state": 4,
+    "target": 4,
+    "xp": [
+      0,
+      900,
+      900
+    ],
+    "items": 0,
+    "queued": 0,
+    "rewards": 0
+  }
+}

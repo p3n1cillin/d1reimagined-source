@@ -1,0 +1,179 @@
+[
+  {
+    "event_id": "ps4-0129-owned-input-review-20261011",
+    "timestamp": "2026-10-11T11:59:40Z",
+    "timestamp_basis": "Source checkpoint 8b35b1e commit time, not a game capture",
+    "feature": "exact-build-inputs",
+    "milestone": "exact-0129-preparation",
+    "maturity": "Known Blocked",
+    "claims": [
+      "Owned base contains later April 2017 executable, not exact target.",
+      "Correct retail update was joined and verified but its image key/executable was not recovered.",
+      "No later executable substituted; console unavailable."
+    ],
+    "evidence": [
+      {
+        "file": "daily-report.md",
+        "kind": "Sanitized private engineering facts; raw inputs stay local",
+        "section": "Private engineering summary"
+      }
+    ],
+    "tests": [
+      {
+        "result": "PASS for version mismatch identification; target absent",
+        "scenario": "Clear SELF/build/layout review"
+      },
+      {
+        "result": "FAIL to recover retail image key; no game boot",
+        "scenario": "Repack unwrap and base-image reuse against retail update"
+      }
+    ],
+    "native_boot_accepted": false
+  },
+  {
+    "event_id": "ps4-0129-content-recovery-20261011",
+    "timestamp": "2026-10-11T13:38:06.4200226Z",
+    "feature": "content-recovery",
+    "milestone": "exact-0129-content",
+    "maturity": "Fully Working within tested content scope",
+    "claims": [
+      "1647 selected earlier packages recovered and installed.",
+      "All layouts/tables and 701164 stored-block hashes pass; exact English manifest reproduced.",
+      "Short-read and same-generation owner defects fixed; failed output retained."
+    ],
+    "tests": [
+      {
+        "stored_blocks": 701164,
+        "packages": 1647,
+        "failures": 0,
+        "result": "PASS",
+        "scenario": "d1-pkg verify --blocks"
+      },
+      {
+        "result": "PASS",
+        "skips": 0,
+        "passes": 28,
+        "scenario": "Package controls"
+      },
+      {
+        "result": "PASS",
+        "tests": 21,
+        "scenario": "Library and header audit tests"
+      }
+    ],
+    "evidence": [
+      {
+        "section": "Tests and reproduction scope",
+        "file": "daily-report.md"
+      }
+    ],
+    "native_boot_accepted": false,
+    "executable_recovered": false
+  },
+  {
+    "event_id": "ps4-0129-platform-preparation-20261011",
+    "timestamp": "2026-10-11T14:22:34.7585225Z",
+    "timestamp_basis": "Post-run owned child cleanup receipt",
+    "feature": "canonical-platform-preparation",
+    "milestone": "contained-server-only-check",
+    "maturity": "Fully Working within tested synthetic scope; native port Experimental",
+    "claims": [
+      "Canonical Plan and ServerCheck run without game/emulator/input.",
+      "Nineteen actual namespace/server checks pass and both server children are gone.",
+      "Ten real-curl synthetic FTP controls and two unit tests pass on each platform."
+    ],
+    "tests": [
+      {
+        "child_cleanup": "PASS",
+        "checks": 19,
+        "result": "PASS",
+        "scenario": "Live canonical ServerCheck"
+      },
+      {
+        "windows": 10,
+        "ubuntu": 10,
+        "result": "PASS",
+        "scenario": "Rust platform controls"
+      },
+      {
+        "windows": 2,
+        "ubuntu": 2,
+        "result": "PASS",
+        "scenario": "Rust platform unit tests"
+      },
+      {
+        "wrong_manifest_exit": 2,
+        "result": "PASS",
+        "missing_executable_exit": 1,
+        "scenario": "Canonical negative/source controls",
+        "existing_output_exit": 2,
+        "wrong_executable_exit": 2
+      },
+      {
+        "result": "NOT RUN",
+        "scenario": "Actual owned console transfer"
+      },
+      {
+        "result": "NOT RUN",
+        "scenario": "Native Windows game boot"
+      }
+    ],
+    "evidence": [
+      {
+        "section": "Tests and reproduction scope",
+        "file": "daily-report.md"
+      }
+    ],
+    "native_boot_accepted": false,
+    "windows_transport_validated": false
+  },
+  {
+    "event_id": "ps4-0129-readiness-20261011",
+    "timestamp": "2026-10-11T14:24:43.9949433Z",
+    "feature": "native-readiness",
+    "milestone": "exact-0129-boot",
+    "maturity": "Known Blocked",
+    "claims": [
+      "Readiness exit2 with 12 PASS and two explicit gates still open.",
+      "Exact executable and native Windows/WSL runtime acceptance remain missing."
+    ],
+    "tests": [
+      {
+        "fail": 2,
+        "pass": 12,
+        "result": "NOT READY",
+        "exit": 2,
+        "scenario": "Read-only readiness"
+      }
+    ],
+    "evidence": [
+      {
+        "section": "Remaining work and next acceptance",
+        "file": "daily-report.md"
+      }
+    ],
+    "native_boot_accepted": false
+  },
+  {
+    "event_id": "prior-ps3-packages-reference-20261011",
+    "timestamp": "2026-10-10T18:11:44.815214Z",
+    "timestamp_basis": "Prior NAS verification receipt",
+    "feature": "retained-ps3-background",
+    "maturity": "Partially Working; historical evidence only",
+    "referenced_package_ids": [
+      "<lab-pc>-20261010T181054-bbc9e7edfce14abfb991cee8485b098c",
+      "<lab-pc>-20261010T180802-6a22199448334c9d9b7c118ae9ddbfb6",
+      "<lab-pc>-20261010T180808-5edaf0838d814fb9b5895bd5a98f1515"
+    ],
+    "media_resent": false,
+    "claims": [
+      "Historical PS3 evidence remains previously delivered; no new PS4 footage or native claims."
+    ],
+    "evidence": [
+      {
+        "section": "Maturity and evidence index",
+        "file": "daily-report.md"
+      }
+    ]
+  }
+]

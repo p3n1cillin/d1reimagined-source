@@ -1,0 +1,24 @@
+[
+  {
+    "id": "2026-10-29-tower-arrival",
+    "time": "2026-10-29T17:34:11Z",
+    "feature": "travel to the Tower",
+    "maturity": "Partially Working",
+    "claim": "After CONTINUE on the end-of-mission screens the game loads the Tower and the Guardian stands in Tower North with the HUD up; the story cinematic step in between is mapped directly to the Tower as a stand-in",
+    "evidence": [
+      "clips/clip01.mp4",
+      "screenshots/01.png",
+      "screenshots/02.png"
+    ]
+  },
+  {
+    "id": "2026-10-29-postgame-cursor",
+    "time": "2026-10-29T16:40:14Z",
+    "feature": "post-game screens",
+    "maturity": "Partially Working",
+    "claim": "The ring on the end-of-mission screens is the menu cursor (moves with the stick), not a loading indicator",
+    "evidence": [
+      "screenshots/03.png"
+    ]
+  }
+]

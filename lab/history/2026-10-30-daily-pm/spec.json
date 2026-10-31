@@ -1,0 +1,36 @@
+{
+ "machine": "<lab-pc>",
+ "report": "daily-report.md",
+ "events": "events.json",
+ "clips": [
+  "clips/clip01.mp4",
+  "clips/clip02.mp4"
+ ],
+ "screenshots": [
+  "screenshots/01.png",
+  "screenshots/02.png",
+  "screenshots/03.png",
+  "screenshots/04.png"
+ ],
+ "metadata": {
+  "package_kind": "engineering-report",
+  "reporting_date": "2026-10-30",
+  "reporting_timezone": "Europe/London",
+  "topic": "Vendors open in the Tower",
+  "feature": "Tower North",
+  "event_type": "milestone",
+  "importance": "USEFUL",
+  "description": "The Tower now loads as the city's social space and a vendor screen opens; the Guardian stays for as long as it is played.",
+  "previous_state": "The Tower ran as a stand-in for a story mission, so no vendor screen could open.",
+  "current_state": "The Tower loads as its own social space with its menus and objective; Executor Hideo's New Monarchy vendor screen opens and closes.",
+  "remaining_issue": "Other vendors and buying are untested; CONTINUE still goes to the Tower instead of the next story mission.",
+  "next_task": "Try the other vendors and buying, make the corrected flag set the default, and serve the scripted first Tower visit.",
+  "game_build": "PS4 56578",
+  "contains_sensitive_information": false,
+  "requires_manual_review": true,
+  "contains_voice": false,
+  "audio": "game audio only, one emulator port; music may be present",
+  "supersedes_clip_id": "<lab-pc>-20261030T131040-ae037d882a7c44f582ab76765b8801cc",
+  "git_commit": "243a9c5bdb9cba4ee4a5a05f61e808c787a1de37"
+ }
+}

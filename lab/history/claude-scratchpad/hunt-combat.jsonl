@@ -1,0 +1,173 @@
+{"t": 1793218182.8055267, "k": 1, "msg": "1: lock ('sq', 103668061, 10, 1660256257) d 1.7 aimed False plates 0 health 0.8819444444444444"}
+{"t": 1793218185.5865452, "k": 2, "msg": "2: lock ('sq', 103668061, 8, 955613188) d 12.6 aimed True plates 0 health None vit 3.000->1.734"}
+{"t": 1793218186.887022, "k": 3, "msg": "3: lock ('sq', 103668061, 8, 955613188) d 13.4 aimed False plates 1 health 0.6550925925925926"}
+{"t": 1793218188.13989, "k": 4, "msg": "4: lock ('sq', 103668061, 8, 955613188) d 13.9 aimed False plates 1 health 0.5879629629629629"}
+{"t": 1793218196.3690295, "k": 6, "msg": "6: lock ('sq', 103668061, 8, 955613188) d 17.5 aimed True plates 1 health None vit 1.734->1.734"}
+{"t": 1793218197.6316447, "k": 7, "msg": "7: lock ('sq', 103668061, 8, 955613188) d 17.9 aimed False plates 1 health None"}
+{"t": 1793218199.8220844, "k": 8, "msg": "8: lock ('sq', 103668061, 8, 955613188) d 17.8 aimed True plates 1 health None vit 1.734->1.734"}
+{"t": 1793218201.1302817, "k": 9, "msg": "9: lock ('sq', 103668061, 8, 955613188) d 17.7 aimed False plates 1 health None"}
+{"t": 1793218209.3371322, "k": 11, "msg": "11: lock ('sq', 103668061, 8, 955613188) d 22.0 aimed True plates 1 health None vit 1.734->1.000"}
+{"t": 1793218211.0934753, "k": 12, "msg": "12: lock ('sq', 103668061, 7, 1811251205) d 29.9 aimed False plates 0 health None"}
+{"t": 1793218213.159034, "k": 13, "msg": "13: lock ('sq', 103668061, 7, 1811251205) d 30.0 aimed True plates 0 health None vit 2.480->2.480"}
+{"t": 1793218214.3911903, "k": 14, "msg": "14: lock ('sq', 103668061, 7, 1811251205) d 30.0 aimed False plates 0 health None"}
+{"t": 1793218216.4836502, "k": 15, "msg": "15: lock ('sq', 103668061, 7, 1811251205) d 29.9 aimed True plates 0 health None vit 2.480->2.480"}
+{"t": 1793218217.7572172, "k": 16, "msg": "16: lock ('sq', 103668061, 7, 1811251205) d 30.2 aimed False plates 0 health 0.7361111111111112"}
+{"t": 1793218219.870288, "k": 17, "msg": "17: lock ('sq', 103668061, 7, 1811251205) d 30.2 aimed True plates 0 health 1.0 vit 2.480->2.480"}
+{"t": 1793218222.0305965, "k": 18, "msg": "18: lock ('sq', 103668061, 7, 1811251205) d 30.2 aimed True plates 0 health 1.0"}
+{"t": 1793218224.1429052, "k": 19, "msg": "19: lock ('sq', 103668061, 7, 1811251205) d 26.5 aimed True plates 0 health None"}
+{"t": 1793218226.245196, "k": 20, "msg": "20: lock ('sq', 103668061, 7, 1811251205) d 22.6 aimed True plates 0 health None vit 2.480->2.480"}
+{"t": 1793218227.507221, "k": 21, "msg": "21: lock ('sq', 103668061, 7, 1811251205) d 22.6 aimed False plates 0 health None"}
+{"t": 1793218244.601965, "k": 1, "msg": "1: lock ('sq', 103668061, 6, 1593147398) d 2.0 aimed True plates 0 health 0.4513888888888889"}
+{"t": 1793218252.129396, "k": 3, "msg": "3: lock ('sq', 103668061, 6, 1593147398) d 7.7 aimed False plates 0 health None"}
+{"t": 1793218254.1610522, "k": 4, "msg": "4: lock ('sq', 103668061, 6, 1593147398) d 7.9 aimed True plates 1 health None vit 3.000->3.000"}
+{"t": 1793218255.4895961, "k": 5, "msg": "5: lock ('sq', 103668061, 6, 1593147398) d 8.3 aimed False plates 0 health None"}
+{"t": 1793218257.3993115, "k": 6, "msg": "6: lock ('sq', 103668061, 6, 1593147398) d 8.2 aimed True plates 1 health None vit 3.000->3.000"}
+{"t": 1793218258.7932715, "k": 7, "msg": "7: lock ('sq', 103668061, 6, 1593147398) d 8.4 aimed False plates 0 health None"}
+{"t": 1793218259.9791787, "k": 8, "msg": "8: lock ('sq', 103668061, 6, 1593147398) d 8.4 aimed False plates 0 health None"}
+{"t": 1793218261.979502, "k": 9, "msg": "9: lock ('sq', 103668061, 6, 1593147398) d 8.4 aimed True plates 0 health None vit 3.000->3.000"}
+{"t": 1793218264.39287, "k": 10, "msg": "10: lock ('sq', 103668061, 6, 1593147398) d 9.3 aimed True plates 0 health 0.5833333333333334"}
+{"t": 1793218266.865521, "k": 11, "msg": "11: lock ('sq', 103668061, 6, 1593147398) d 3.6 aimed True plates 1 health 0.48148148148148145"}
+{"t": 1793218271.5888877, "k": 12, "msg": "12: lock ('sq', 103668061, 6, 1593147398) d 0.3 aimed False plates 0 health 0.48148148148148145"}
+{"t": 1793218274.334591, "k": 13, "msg": "13: lock ('sq', 103668061, 6, 1593147398) d 1.3 aimed True plates 0 health None"}
+{"t": 1793218275.8742497, "k": 14, "msg": "14: lock 0x37fd1a1e0 d 1.0 aimed False plates 0 health None"}
+{"t": 1793266602.747822, "k": 1, "msg": "1: lock ('sq', 103668061, 10, 1777696768) d 2.9 aimed False plates 1 health None"}
+{"t": 1793266630.5636241, "k": 1, "msg": "1: lock ('sq', 103668061, 5, 603291656) d 6.2 aimed True plates 0 health 0.7361111111111112 vit 3.000->2.000"}
+{"t": 1793266633.2436888, "k": 2, "msg": "2: lock ('sq', 103668061, 10, 1777696768) d 43.5 aimed False plates 0 health 0.6921296296296297"}
+{"t": 1793266634.514657, "k": 3, "msg": "3: lock ('sq', 103668061, 10, 1777696768) d 43.5 aimed False plates 0 health 0.6921296296296297"}
+{"t": 1793266635.7913897, "k": 4, "msg": "4: lock ('sq', 103668061, 10, 1777696768) d 43.4 aimed False plates 0 health 0.6921296296296297"}
+{"t": 1793266637.9322767, "k": 5, "msg": "5: lock ('sq', 103668061, 10, 1777696768) d 43.4 aimed True plates 0 health 0.8819444444444444"}
+{"t": 1793266640.0550106, "k": 6, "msg": "6: lock ('sq', 103668061, 10, 1777696768) d 39.5 aimed True plates 0 health 1.0"}
+{"t": 1793266641.3165689, "k": 7, "msg": "7: lock ('sq', 103668061, 10, 1777696768) d 35.7 aimed False plates 0 health None"}
+{"t": 1793266643.4678836, "k": 8, "msg": "8: lock ('sq', 103668061, 10, 1777696768) d 35.8 aimed True plates 0 health None"}
+{"t": 1793266644.715207, "k": 9, "msg": "9: lock ('sq', 103668061, 10, 1777696768) d 33.0 aimed False plates 0 health None"}
+{"t": 1793266646.7462032, "k": 10, "msg": "10: lock ('sq', 103668061, 10, 1777696768) d 33.0 aimed True plates 0 health None"}
+{"t": 1793266647.9568994, "k": 11, "msg": "11: lock ('sq', 103668061, 10, 1777696768) d 32.6 aimed False plates 0 health None"}
+{"t": 1793266649.1299217, "k": 12, "msg": "12: lock ('sq', 103668061, 10, 1777696768) d 32.5 aimed False plates 0 health None"}
+{"t": 1793266650.331788, "k": 13, "msg": "13: lock ('sq', 103668061, 10, 1777696768) d 32.4 aimed False plates 0 health None"}
+{"t": 1793266652.4129646, "k": 14, "msg": "14: lock ('sq', 103668061, 10, 1777696768) d 32.6 aimed True plates 0 health None"}
+{"t": 1793266654.45684, "k": 15, "msg": "15: lock ('sq', 103668061, 10, 1777696768) d 32.3 aimed True plates 0 health None"}
+{"t": 1793266656.5575469, "k": 16, "msg": "16: lock ('sq', 103668061, 10, 1777696768) d 32.4 aimed True plates 0 health None"}
+{"t": 1793266658.6751847, "k": 17, "msg": "17: lock ('sq', 103668061, 10, 1777696768) d 32.4 aimed True plates 0 health None"}
+{"t": 1793266660.7364256, "k": 18, "msg": "18: lock ('sq', 103668061, 10, 1777696768) d 32.3 aimed True plates 0 health None"}
+{"t": 1793266662.786601, "k": 19, "msg": "19: lock ('sq', 103668061, 10, 1777696768) d 32.3 aimed True plates 0 health None"}
+{"t": 1793266664.8650837, "k": 20, "msg": "20: lock ('sq', 103668061, 10, 1777696768) d 32.5 aimed True plates 0 health None"}
+{"t": 1793266666.9387712, "k": 21, "msg": "21: lock ('sq', 103668061, 10, 1777696768) d 32.4 aimed True plates 0 health None"}
+{"t": 1793266668.9794295, "k": 22, "msg": "22: lock ('sq', 103668061, 10, 1777696768) d 32.3 aimed True plates 0 health None"}
+{"t": 1793266671.0180511, "k": 23, "msg": "23: lock ('sq', 103668061, 10, 1777696768) d 32.4 aimed True plates 0 health None"}
+{"t": 1793266673.1717935, "k": 24, "msg": "24: lock ('sq', 103668061, 10, 1777696768) d 32.3 aimed True plates 0 health None"}
+{"t": 1793266675.221094, "k": 25, "msg": "25: lock ('sq', 103668061, 10, 1777696768) d 32.3 aimed True plates 0 health None"}
+{"t": 1793266677.2443578, "k": 26, "msg": "26: lock ('sq', 103668061, 10, 1777696768) d 32.4 aimed True plates 0 health None"}
+{"t": 1793266720.0898309, "k": 1, "msg": "1: lock ('sq', 103668061, 10, 1777696768) d 2.3 aimed True plates 1 health 0.9027777777777778"}
+{"t": 1793266721.739253, "k": 2, "msg": "2: lock ('sq', 103668061, 8, 200638467) d 16.5 aimed False plates 0 health 0.8587962962962963"}
+{"t": 1793266723.9284987, "k": 3, "msg": "3: lock ('sq', 103668061, 8, 200638467) d 16.4 aimed True plates 1 health 0.7615740740740741 vit 2.928->2.928"}
+{"t": 1793266725.335162, "k": 4, "msg": "4: lock ('sq', 103668061, 8, 200638467) d 16.7 aimed False plates 1 health 0.6944444444444444"}
+{"t": 1793266726.6535382, "k": 5, "msg": "5: lock ('sq', 103668061, 8, 200638467) d 17.2 aimed False plates 1 health 0.6944444444444444"}
+{"t": 1793266728.0351892, "k": 6, "msg": "6: lock ('sq', 103668061, 8, 200638467) d 17.5 aimed False plates 1 health 0.5648148148148148"}
+{"t": 1793266736.414923, "k": 8, "msg": "8: lock ('sq', 103668061, 8, 200638467) d 21.4 aimed True plates 1 health None vit 2.928->2.928"}
+{"t": 1793266744.041669, "k": 10, "msg": "10: lock ('sq', 103668061, 8, 200638467) d 25.5 aimed False plates 0 health None"}
+{"t": 1793266746.1951797, "k": 11, "msg": "11: lock ('sq', 103668061, 8, 200638467) d 25.8 aimed True plates 2 health None vit 2.928->2.928"}
+{"t": 1793266747.5394094, "k": 12, "msg": "12: lock ('sq', 103668061, 8, 200638467) d 25.6 aimed False plates 0 health None"}
+{"t": 1793266748.8007195, "k": 13, "msg": "13: lock ('sq', 103668061, 8, 200638467) d 25.4 aimed False plates 2 health None"}
+{"t": 1793266750.957585, "k": 14, "msg": "14: lock ('sq', 103668061, 8, 200638467) d 25.9 aimed True plates 2 health None"}
+{"t": 1793266753.1496093, "k": 15, "msg": "15: lock ('sq', 103668061, 8, 200638467) d 21.6 aimed True plates 2 health None vit 2.928->1.963"}
+{"t": 1793266754.5084188, "k": 16, "msg": "16: lock ('sq', 103668061, 8, 200638467) d 21.7 aimed False plates 1 health None"}
+{"t": 1793266755.7788804, "k": 17, "msg": "17: lock ('sq', 103668061, 8, 200638467) d 21.8 aimed False plates 1 health None"}
+{"t": 1793266758.0258298, "k": 18, "msg": "18: lock ('sq', 103668061, 8, 200638467) d 22.0 aimed True plates 1 health None vit 1.963->1.092"}
+{"t": 1793269752.9556904, "k": 1, "msg": "1: lock ('sq', 103668061, 6, 1307934726) d 6.5 aimed True plates 0 health 0.8958333333333334 vit 2.840->2.840"}
+{"t": 1793269755.1027827, "k": 2, "msg": "2: lock ('sq', 103668061, 6, 1307934726) d 7.6 aimed True plates 0 health 0.8518518518518519 vit 2.840->2.840"}
+{"t": 1793269757.2476485, "k": 3, "msg": "3: lock ('sq', 103668061, 6, 1307934726) d 8.1 aimed True plates 0 health 0.8287037037037037 vit 2.840->2.840"}
+{"t": 1793269759.6506274, "k": 4, "msg": "4: lock ('sq', 103668061, 6, 1307934726) d 9.6 aimed True plates 0 health 0.7847222222222222"}
+{"t": 1793269761.7211294, "k": 5, "msg": "5: lock ('sq', 103668061, 6, 1307934726) d 5.7 aimed True plates 0 health 0.7407407407407407"}
+{"t": 1793269763.5778952, "k": 6, "msg": "6: lock ('sq', 103668061, 6, 1307934726) d 3.7 aimed True plates 0 health 0.7407407407407407 vit 2.840->2.840"}
+{"t": 1793269765.5477793, "k": 7, "msg": "7: lock ('sq', 103668061, 6, 1307934726) d 5.0 aimed True plates 0 health 0.7407407407407407 vit 2.840->2.840"}
+{"t": 1793269767.6450884, "k": 8, "msg": "8: lock ('sq', 103668061, 6, 1307934726) d 5.2 aimed True plates 0 health 0.5763888888888888 vit 2.840->2.840"}
+{"t": 1793269769.9430735, "k": 9, "msg": "9: lock ('sq', 103668061, 6, 1307934726) d 5.6 aimed True plates 0 health 0.5347222222222222"}
+{"t": 1793269772.285131, "k": 10, "msg": "10: lock ('sq', 103668061, 6, 1307934726) d 3.9 aimed True plates 0 health 0.3680555555555556"}
+{"t": 1793269779.6334817, "k": 12, "msg": "12: lock ('sq', 103668061, 6, 1307934726) d 8.1 aimed False plates 0 health None"}
+{"t": 1793269781.586272, "k": 13, "msg": "13: lock ('sq', 103668061, 6, 1307934726) d 8.0 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269783.471041, "k": 14, "msg": "14: lock ('sq', 103668061, 6, 1307934726) d 7.7 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269785.5564282, "k": 15, "msg": "15: lock ('sq', 103668061, 6, 1307934726) d 8.7 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269787.9302835, "k": 16, "msg": "16: lock ('sq', 103668061, 6, 1307934726) d 9.6 aimed True plates 1 health None"}
+{"t": 1793269796.0789328, "k": 18, "msg": "18: lock ('sq', 103668061, 6, 1307934726) d 9.2 aimed True plates 1 health None"}
+{"t": 1793269831.6486957, "k": 1, "msg": "1: lock ('sq', 103668061, 7, 1777696773) d 0.3 aimed True plates 0 health 0.7523148148148148"}
+{"t": 1793269834.0893676, "k": 2, "msg": "2: lock ('sq', 103668061, 7, 1777696773) d 1.4 aimed True plates 0 health 0.5995370370370371"}
+{"t": 1793269836.9808502, "k": 3, "msg": "3: lock ('sq', 103668061, 6, 1307934726) d 2.5 aimed True plates 0 health 0.5347222222222222 vit 2.840->2.840"}
+{"t": 1793269839.2379937, "k": 4, "msg": "4: lock ('sq', 103668061, 6, 1307934726) d 5.0 aimed True plates 0 health 0.5347222222222222 vit 2.840->2.840"}
+{"t": 1793269841.3465936, "k": 5, "msg": "5: lock ('sq', 103668061, 6, 1307934726) d 5.6 aimed True plates 0 health 0.5347222222222222 vit 2.840->2.840"}
+{"t": 1793269843.7017357, "k": 6, "msg": "6: lock ('sq', 103668061, 6, 1307934726) d 6.4 aimed True plates 0 health 0.7013888888888888"}
+{"t": 1793269845.9188595, "k": 7, "msg": "7: lock ('sq', 103668061, 6, 1307934726) d 4.0 aimed True plates 0 health 1.0"}
+{"t": 1793269847.9392571, "k": 8, "msg": "8: lock ('sq', 103668061, 6, 1307934726) d 4.2 aimed True plates 0 health 1.0 vit 2.840->2.840"}
+{"t": 1793269850.0175507, "k": 9, "msg": "9: lock ('sq', 103668061, 6, 1307934726) d 4.9 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269852.130823, "k": 10, "msg": "10: lock ('sq', 103668061, 6, 1307934726) d 5.6 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269854.4520292, "k": 11, "msg": "11: lock ('sq', 103668061, 6, 1307934726) d 6.0 aimed True plates 0 health None"}
+{"t": 1793269856.5058217, "k": 12, "msg": "12: lock ('sq', 103668061, 6, 1307934726) d 3.1 aimed True plates 0 health None"}
+{"t": 1793269858.4242058, "k": 13, "msg": "13: lock ('sq', 103668061, 6, 1307934726) d 3.4 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269860.509521, "k": 14, "msg": "14: lock ('sq', 103668061, 6, 1307934726) d 4.7 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269862.5874712, "k": 15, "msg": "15: lock ('sq', 103668061, 6, 1307934726) d 5.1 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269864.1031759, "k": 16, "msg": "16: lock ('sq', 103668061, 6, 1307934726) d 5.7 aimed False plates 0 health None"}
+{"t": 1793269866.1607552, "k": 17, "msg": "17: lock ('sq', 103668061, 6, 1307934726) d 5.6 aimed True plates 0 health None"}
+{"t": 1793269868.2593498, "k": 18, "msg": "18: lock ('sq', 103668061, 6, 1307934726) d 5.4 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269870.4685957, "k": 19, "msg": "19: lock ('sq', 103668061, 6, 1307934726) d 5.5 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269871.8833265, "k": 20, "msg": "20: lock ('sq', 103668061, 6, 1307934726) d 6.2 aimed False plates 0 health None"}
+{"t": 1793269873.8141196, "k": 21, "msg": "21: lock ('sq', 103668061, 6, 1307934726) d 6.3 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269875.2462063, "k": 22, "msg": "22: lock ('sq', 103668061, 6, 1307934726) d 7.7 aimed False plates 0 health None"}
+{"t": 1793269974.4181113, "k": 1, "msg": "1: lock ('sq', 103668061, 6, 1307934726) d 3.4 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269976.4119956, "k": 2, "msg": "2: lock ('sq', 103668061, 6, 1307934726) d 4.5 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269978.5048661, "k": 3, "msg": "3: lock ('sq', 103668061, 6, 1307934726) d 5.1 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269980.8579433, "k": 4, "msg": "4: lock ('sq', 103668061, 6, 1307934726) d 5.6 aimed True plates 0 health None"}
+{"t": 1793269983.036869, "k": 5, "msg": "5: lock ('sq', 103668061, 6, 1307934726) d 3.9 aimed True plates 0 health None"}
+{"t": 1793269985.0944767, "k": 6, "msg": "6: lock ('sq', 103668061, 6, 1307934726) d 5.0 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269987.2225375, "k": 7, "msg": "7: lock ('sq', 103668061, 6, 1307934726) d 5.2 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269989.4115384, "k": 8, "msg": "8: lock ('sq', 103668061, 6, 1307934726) d 5.8 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269991.7318513, "k": 9, "msg": "9: lock ('sq', 103668061, 6, 1307934726) d 6.5 aimed True plates 0 health None"}
+{"t": 1793269993.8433182, "k": 10, "msg": "10: lock ('sq', 103668061, 6, 1307934726) d 3.1 aimed True plates 0 health None"}
+{"t": 1793269995.734816, "k": 11, "msg": "11: lock ('sq', 103668061, 6, 1307934726) d 3.5 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269997.802205, "k": 12, "msg": "12: lock ('sq', 103668061, 6, 1307934726) d 4.7 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793269999.8665352, "k": 13, "msg": "13: lock ('sq', 103668061, 6, 1307934726) d 5.3 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270002.2513502, "k": 14, "msg": "14: lock ('sq', 103668061, 6, 1307934726) d 5.9 aimed True plates 0 health None"}
+{"t": 1793270004.4170432, "k": 15, "msg": "15: lock ('sq', 103668061, 6, 1307934726) d 3.9 aimed True plates 0 health None"}
+{"t": 1793270006.603467, "k": 16, "msg": "16: lock ('sq', 103668061, 6, 1307934726) d 5.2 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270008.8000493, "k": 17, "msg": "17: lock ('sq', 103668061, 6, 1307934726) d 5.2 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270010.8729904, "k": 18, "msg": "18: lock ('sq', 103668061, 6, 1307934726) d 5.9 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270013.184764, "k": 19, "msg": "19: lock ('sq', 103668061, 6, 1307934726) d 6.4 aimed True plates 0 health None"}
+{"t": 1793270015.3589458, "k": 20, "msg": "20: lock ('sq', 103668061, 6, 1307934726) d 3.2 aimed True plates 0 health None"}
+{"t": 1793270017.1816733, "k": 21, "msg": "21: lock ('sq', 103668061, 6, 1307934726) d 3.4 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270019.2463846, "k": 22, "msg": "22: lock ('sq', 103668061, 6, 1307934726) d 4.7 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270021.3308048, "k": 23, "msg": "23: lock ('sq', 103668061, 6, 1307934726) d 5.2 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270023.7158535, "k": 24, "msg": "24: lock ('sq', 103668061, 6, 1307934726) d 5.7 aimed True plates 0 health None"}
+{"t": 1793270094.5399866, "k": 1, "msg": "1: lock ('sq', 103668061, 6, 1307934726) d 2.8 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270096.32237, "k": 2, "msg": "2: lock ('sq', 103668061, 6, 1307934726) d 10.2 aimed False plates 0 health None"}
+{"t": 1793270098.300575, "k": 3, "msg": "3: lock ('sq', 103668061, 6, 1307934726) d 10.0 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270100.3257418, "k": 4, "msg": "4: lock ('sq', 103668061, 6, 1307934726) d 10.6 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270101.7264948, "k": 5, "msg": "5: lock ('sq', 103668061, 6, 1307934726) d 11.1 aimed False plates 0 health None"}
+{"t": 1793270103.8367586, "k": 6, "msg": "6: lock ('sq', 103668061, 6, 1307934726) d 11.0 aimed True plates 0 health None"}
+{"t": 1793270105.9902792, "k": 7, "msg": "7: lock ('sq', 103668061, 6, 1307934726) d 5.7 aimed True plates 0 health None vit 2.840->2.840"}
+{"t": 1793270108.0939062, "k": 8, "msg": "8: lock ('sq', 103668061, 6, 1307934726) d 7.5 aimed True plates 0 health 0.9768518518518519 vit 2.840->2.840"}
+{"t": 1793270110.2467515, "k": 9, "msg": "9: lock ('sq', 103668061, 6, 1307934726) d 7.3 aimed True plates 0 health 0.9768518518518519 vit 2.840->2.840"}
+{"t": 1793270111.6054597, "k": 10, "msg": "10: lock ('sq', 103668061, 6, 1307934726) d 8.5 aimed False plates 0 health 0.9351851851851852"}
+{"t": 1793270113.6765294, "k": 11, "msg": "11: lock ('sq', 103668061, 6, 1307934726) d 8.5 aimed True plates 0 health 0.9351851851851852"}
+{"t": 1793270115.463432, "k": 12, "msg": "12: lock ('sq', 103668061, 6, 1307934726) d 6.9 aimed True plates 0 health 0.9351851851851852 vit 2.840->2.840"}
+{"t": 1793270117.6135771, "k": 13, "msg": "13: lock ('sq', 103668061, 6, 1307934726) d 6.8 aimed True plates 0 health 0.9351851851851852 vit 2.840->1.970"}
+{"t": 1793270119.0084603, "k": 14, "msg": "14: lock ('sq', 103668061, 6, 1307934726) d 9.3 aimed False plates 0 health 1.0"}
+{"t": 1793270121.0149395, "k": 15, "msg": "15: lock ('sq', 103668061, 6, 1307934726) d 9.3 aimed True plates 0 health 1.0 vit 1.970->1.970"}
+{"t": 1793270122.3651857, "k": 16, "msg": "16: lock ('sq', 103668061, 6, 1307934726) d 9.2 aimed False plates 0 health None"}
+{"t": 1793270124.1798124, "k": 17, "msg": "17: lock ('sq', 103668061, 6, 1307934726) d 9.2 aimed True plates 0 health None vit 1.970->1.970"}
+{"t": 1793270126.0574691, "k": 18, "msg": "18: lock ('sq', 103668061, 6, 1307934726) d 8.7 aimed True plates 0 health None vit 1.970->1.970"}
+{"t": 1793270128.3531344, "k": 19, "msg": "19: lock ('sq', 103668061, 6, 1307934726) d 9.0 aimed True plates 0 health None"}
+{"t": 1793270130.459521, "k": 20, "msg": "20: lock ('sq', 103668061, 6, 1307934726) d 5.1 aimed True plates 1 health 0.9560185185185185"}
+{"t": 1793270132.3527117, "k": 21, "msg": "21: lock ('sq', 103668061, 6, 1307934726) d 1.6 aimed True plates 0 health 0.7476851851851852"}
+{"t": 1793270136.8848653, "k": 22, "msg": "22: lock ('sq', 103668061, 6, 1307934726) d 0.6 aimed False plates 0 health 0.7476851851851852"}
+{"t": 1793270141.8058085, "k": 23, "msg": "23: lock ('sq', 103668061, 6, 1307934726) d 0.4 aimed False plates 0 health 0.5833333333333334"}
+{"t": 1793270144.3518188, "k": 24, "msg": "24: lock ('sq', 103668061, 10, 452296705) d 43.9 aimed True plates 0 health 0.5833333333333334"}
+{"t": 1793270159.6239898, "k": 1, "msg": "1: lock ('sq', 103668061, 10, 452296705) d 1.0 aimed True plates 0 health 0.6759259259259259"}
+{"t": 1793270162.1077173, "k": 2, "msg": "2: lock ('sq', 103668061, 8, 469073924) d 9.3 aimed False plates 0 health 0.6111111111111112"}
+{"t": 1793270164.221843, "k": 3, "msg": "3: lock ('sq', 103668061, 8, 469073924) d 9.2 aimed True plates 1 health 0.41203703703703703 vit 2.928->2.928"}
+{"t": 1793270166.309685, "k": 4, "msg": "4: lock ('sq', 103668061, 8, 469073924) d 9.5 aimed True plates 1 health None vit 2.928->2.928"}
+{"t": 1793270168.3792343, "k": 5, "msg": "5: lock ('sq', 103668061, 8, 469073924) d 9.6 aimed True plates 1 health None vit 2.928->2.928"}
+{"t": 1793270170.7559922, "k": 6, "msg": "6: lock ('sq', 103668061, 8, 469073924) d 10.0 aimed True plates 4 health None"}
+{"t": 1793270173.1111653, "k": 7, "msg": "7: lock ('sq', 103668061, 8, 469073924) d 3.8 aimed True plates 1 health None"}
+{"t": 1793270195.5641308, "k": 1, "msg": "1: lock ('sq', 103668061, 8, 469073924) d 3.4 aimed True plates 0 health None vit 2.928->2.928"}
+{"t": 1793270198.104041, "k": 2, "msg": "2: lock ('sq', 103668061, 8, 469073924) d 9.2 aimed True plates 0 health 0.8680555555555556 vit 2.928->2.928"}
+{"t": 1793270200.1669176, "k": 3, "msg": "3: lock ('sq', 103668061, 8, 469073924) d 9.2 aimed True plates 1 health 0.8680555555555556 vit 2.928->2.297"}
+{"t": 1793270202.2502801, "k": 4, "msg": "4: lock 0x37fd1bd20 d 11.2 aimed True plates 0 health 0.8680555555555556"}
+{"t": 1793270203.8343182, "k": 5, "msg": "5: lock 0x37fd1bd20 d 1.0 aimed False plates 0 health None"}

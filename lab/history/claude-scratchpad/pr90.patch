@@ -1,0 +1,259 @@
+@@ -209,3 +209,258 @@ mod tests {
+         assert_eq!(loot_pickup_response_body(&[0x48, 0, 0]), None);
+     }
+ }
++
++#[cfg(test)]
++mod loot_roundtrip_properties {
++    use super::*;
++
++    // Independently pack the documented request fields, MSB-first. This test helper
++    // does not call the production bit reader or response encoder.
++    fn write_bits(out: &mut [u8], at: usize, count: usize, value: u128) {
++        for bit in 0..count {
++            let position = at + bit;
++            let mask = 1 << (7 - (position % 8));
++            if (value >> (count - 1 - bit)) & 1 != 0 {
++                out[position / 8] |= mask;
++            } else {
++                out[position / 8] &= !mask;
++            }
++        }
++    }
++
++    fn wire_bit(data: &[u8], at: usize) -> u8 {
++        (data[at / 8] >> (7 - at % 8)) & 1
++    }
++
++    fn claim_request(claim: LootClaim) -> [u8; 17] {
++        assert!(claim.source_kind <= 14, "4-bit kind carries value+1");
++        let mut request = [0u8; 17];
++        write_bits(&mut request, 0, 4, u128::from(claim.source_kind) + 1);
++        write_bits(
++            &mut request,
++            4,
++            32,
++            u128::from((claim.key as u32) ^ 0x8000_0000),
++        );
++        write_bits(&mut request, 36, 64, u128::from(claim.id));
++        write_bits(
++            &mut request,
++            100,
++            32,
++            u128::from((claim.word as u32) ^ 0x8000_0000),
++        );
++        request
++    }
++
++    fn assert_round_trip(claim: LootClaim) {
++        let request = claim_request(claim);
++        assert_eq!(parse_loot_pickup_request(&request), Some(claim));
++        let response = loot_pickup_response_body(&request).expect("complete request");
++        assert_eq!(
++            response.len(),
++            21,
++            "168-bit response including four pad bits"
++        );
++        // The independent response oracle: [status=1][code=0 biased to 0x80000000]
++        // followed by the complete 128-bit nonce (not source_kind) and four zero pad bits.
++        assert_eq!(
++            (0..4)
++                .map(|bit| wire_bit(&response, bit))
++                .collect::<Vec<_>>(),
++            vec![0, 0, 0, 1]
++        );
++        for bit in 0..32 {
++            assert_eq!(
++                wire_bit(&response, bit + 4),
++                ((0x8000_0000u32 >> (31 - bit)) & 1) as u8,
++                "result code bit {bit}",
++            );
++        }
++        for bit in 0..128 {
++            assert_eq!(
++                wire_bit(&response, 36 + bit),
++                wire_bit(&request, 4 + bit),
++                "nonce bit {bit}"
++            );
++        }
++        for bit in 164..168 {
++            assert_eq!(wire_bit(&response, bit), 0, "trailing pad bit {bit}");
++        }
++    }
++
++    #[test]
++    fn claims_and_responses_round_trip_at_bit_field_limits() {
++        for claim in [
++            LootClaim {
++                source_kind: 0,
++                key: i32::MIN,
++                id: 0,
++                word: i32::MIN,
++            },
++            LootClaim {
++                source_kind: 14,
++                key: i32::MAX,
++                id: u64::MAX,
++                word: i32::MAX,
++            },
++            LootClaim {
++                source_kind: 3,
++                key: 1,
++                id: 0x0a3d_0000_0000_2170,
++                word: 1,
++            },
++            LootClaim {
++                source_kind: 7,
++                key: -1,
++                id: 1 << 63,
++                word: 0,
++            },
++            LootClaim {
++                source_kind: 1,
++                key: 0,
++                id: 0x827d_baf0,
++                word: -1,
++            },
++        ] {
++            assert_round_trip(claim);
++        }
++        let first = claim_request(LootClaim {
++            source_kind: 0,
++            key: 1,
++            id: 2,
++            word: 3,
++        });
++        let last = claim_request(LootClaim {
++            source_kind: 14,
++            key: 1,
++            id: 2,
++            word: 3,
++        });
++        assert_eq!(
++            loot_pickup_response_body(&first),
++            loot_pickup_response_body(&last),
++            "source kind does not appear in the echoed nonce",
++        );
++        assert_eq!(
++            parse_loot_pickup_request(&[0u8; 17]),
++            None,
++            "encoded kind 0 is invalid"
++        );
++    }
++
++    #[test]
++    fn claims_round_trip_for_512_deterministic_vectors() {
++        let mut seed = 0x52e4_c0de_1020_3040u64;
++        for _ in 0..512 {
++            seed = seed.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(1);
++            let key = seed as u32 as i32;
++            let kind = ((seed >> 32) % 15) as u8;
++            seed = seed.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(1);
++            let word = (seed >> 32) as u32 as i32;
++            assert_round_trip(LootClaim {
++                source_kind: kind,
++                key,
++                id: seed,
++                word,
++            });
++        }
++    }
++
++    #[test]
++    fn grant_delta_round_trips_empty_boundary_and_maximum_test_payloads() {
++        let account = 0xD100_0000_0000_0001u64;
++        let item = 0xD100_0000_0000_0401u64;
++        let profile = 0x201u64;
++        for size in [0usize, 1, 7, 255, 256, 4_096, 65_535] {
++            let element: Vec<u8> = (0..size).map(|i| (i as u8).wrapping_mul(17)).collect();
++            let profile_bytes: Vec<u8> = (0..size).map(|i| 0xff ^ i as u8).collect();
++            for with_profile in [false, true] {
++                let profile_opt = with_profile.then_some((profile, profile_bytes.as_slice()));
++                let wire = item_grant_delta(account, 3, item, &element, profile_opt);
++                assert_eq!(crate::queuez_span_version(&wire), Some(3));
++                assert_eq!(
++                    crate::queuez_span_flags(&wire),
++                    Some(crate::QUEUEZ_FLAG_DELTA)
++                );
++                let entries =
++                    crate::queuez_span_objects(&wire).expect("encoded objects must decode");
++                assert_eq!(entries.len(), if with_profile { 2 } else { 1 });
++                if with_profile {
++                    assert_eq!(
++                        (entries[0].instance_type, entries[0].key),
++                        (crate::profile_instance_type(), profile)
++                    );
++                    assert_eq!(
++                        &wire[entries[0].payload.0..entries[0].payload.1],
++                        profile_bytes.as_slice()
++                    );
++                }
++                let last = entries.last().unwrap();
++                assert_eq!(
++                    (last.instance_type, last.key),
++                    (crate::INVENTORY_INSTANCE_TYPE, item)
++                );
++                assert_eq!(&wire[last.payload.0..last.payload.1], element.as_slice());
++            }
++        }
++    }
++
++    #[test]
++    fn profile_delta_round_trips_empty_and_large_payloads() {
++        for size in [0usize, 1, 127, 128, 8_192, 65_535] {
++            let bytes: Vec<u8> = (0..size).map(|i| (i as u8).wrapping_add(83)).collect();
++            let wire = profile_delta(u64::MAX, 0xffff_fffe, 0x201, &bytes);
++            assert_eq!(crate::queuez_span_version(&wire), Some(0xffff_fffe));
++            assert_eq!(
++                crate::queuez_span_flags(&wire),
++                Some(crate::QUEUEZ_FLAG_DELTA)
++            );
++            let objects = crate::queuez_span_objects(&wire).expect("profile should decode");
++            assert_eq!(objects.len(), 1);
++            assert_eq!(objects[0].instance_type, crate::profile_instance_type());
++            assert_eq!(objects[0].key, 0x201);
++            assert_eq!(
++                &wire[objects[0].payload.0..objects[0].payload.1],
++                bytes.as_slice()
++            );
++        }
++    }
++
++    #[test]
++    fn malformed_grant_deltas_do_not_decode_partial_or_extra_objects() {
++        let source = item_grant_delta(1, 2, 0x401, &[0xab; 40], Some((0x201, &[0xcd; 9])));
++        assert_eq!(crate::queuez_span_objects(&source).unwrap().len(), 2);
++        for cutoff in [
++            0usize,
++            6,
++            crate::QUEUEZ_SPAN_HEADER_LEN - 1,
++            crate::QUEUEZ_SPAN_HEADER_LEN,
++            source.len() - 1,
++        ] {
++            assert!(
++                crate::queuez_span_objects(&source[..cutoff]).is_none(),
++                "truncated at {cutoff}"
++            );
++        }
++        let mut trailing = source.clone();
++        trailing.push(0);
++        assert!(
++            crate::queuez_span_objects(&trailing).is_none(),
++            "extra bytes cannot be silently ignored"
++        );
++        let mut wrong_count = source.clone();
++        wrong_count[21..25].copy_from_slice(&3u32.to_be_bytes());
++        assert!(
++            crate::queuez_span_objects(&wrong_count).is_none(),
++            "missing third object must fail"
++        );
++        let mut wrong_length = source.clone();
++        // Profile object starts immediately after the 25-byte span header.
++        wrong_length[crate::QUEUEZ_SPAN_HEADER_LEN + 12..crate::QUEUEZ_SPAN_HEADER_LEN + 16]
++            .copy_from_slice(&(u32::MAX).to_be_bytes());
++        assert!(
++            crate::queuez_span_objects(&wrong_length).is_none(),
++            "oversize object must fail"
++        );
++    }
++}

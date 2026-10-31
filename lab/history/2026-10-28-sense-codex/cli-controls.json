@@ -1,0 +1,32 @@
+[
+  {
+    "case": "raw-valid",
+    "exit": 0,
+    "pass": true
+  },
+  {
+    "case": "short",
+    "exit": 1,
+    "pass": true
+  },
+  {
+    "case": "non-ascii",
+    "exit": 1,
+    "pass": true
+  },
+  {
+    "case": "missing-kind",
+    "exit": 1,
+    "pass": true
+  },
+  {
+    "case": "conflict",
+    "exit": 1,
+    "pass": true
+  },
+  {
+    "case": "existing-output-preserved",
+    "exit": 1,
+    "pass": true
+  }
+]

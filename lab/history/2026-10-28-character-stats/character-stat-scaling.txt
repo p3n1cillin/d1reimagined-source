@@ -1,0 +1,100 @@
+0x00281c40  55                             push     rbp
+0x00281c41  4889e5                         mov      rbp, rsp
+0x00281c44  4157                           push     r15
+0x00281c46  4156                           push     r14
+0x00281c48  53                             push     rbx
+0x00281c49  50                             push     rax
+0x00281c4a  4189d7                         mov      r15d, edx
+0x00281c4d  4189f6                         mov      r14d, esi
+0x00281c50  89fb                           mov      ebx, edi
+0x00281c52  e8f988fdff                     call     0x25a550   ; -> 0x25a550
+0x00281c57  488b08                         mov      rcx, [rax]
+0x00281c5a  4889c7                         mov      rdi, rax
+0x00281c5d  89de                           mov      esi, ebx
+0x00281c5f  ff91c8040000                   call     qword ptr [rcx+0x4c8]
+0x00281c65  c5f857c0                       vxorps   xmm0, xmm0, xmm0
+0x00281c69  4885c0                         test     rax, rax
+0x00281c6c  7453                           je       short 0x281cc1   ; -> 0x281cc1
+0x00281c6e  488b7808                       mov      rdi, [rax+8]
+0x00281c72  4885ff                         test     rdi, rdi
+0x00281c75  744a                           je       short 0x281cc1   ; -> 0x281cc1
+0x00281c77  4883c008                       add      rax, 8
+0x00281c7b  4801c7                         add      rdi, rax
+0x00281c7e  c4c17a2ac7                     vcvtsi2ss xmm0, xmm0, r15d
+0x00281c83  e8b859d900                     call     0x1017640   ; -> 0x1017640
+0x00281c88  c5f057c9                       vxorps   xmm1, xmm1, xmm1
+0x00281c8c  c5f82ec1                       vucomiss xmm0, xmm1
+0x00281c90  7627                           jbe      short 0x281cb9   ; -> 0x281cb9
+0x00281c92  c4e3790ac001                   vroundss xmm0, xmm0, xmm0, 1
+0x00281c98  c4c17a2ad6                     vcvtsi2ss xmm2, xmm0, r14d
+0x00281c9d  c5ea5ec0                       vdivss   xmm0, xmm2, xmm0
+0x00281ca1  c5f82ec1                       vucomiss xmm0, xmm1
+0x00281ca5  7304                           jae      short 0x281cab   ; -> 0x281cab
+0x00281ca7  c5f857c0                       vxorps   xmm0, xmm0, xmm0
+0x00281cab  c5fa58159dfb3901               vaddss   xmm2, xmm0, [rip+0x139fb9d]   ; [0x1621850]
+0x00281cb3  c5f82ed1                       vucomiss xmm2, xmm1
+0x00281cb7  7208                           jb       short 0x281cc1   ; -> 0x281cc1
+0x00281cb9  c5fa10058bfb3901               vmovss   xmm0, [rip+0x139fb8b]   ; [0x162184c]
+0x00281cc1  4883c408                       add      rsp, 8
+0x00281cc5  5b                             pop      rbx
+0x00281cc6  415e                           pop      r14
+0x00281cc8  415f                           pop      r15
+0x00281cca  5d                             pop      rbp
+0x00281ccb  c3                             ret      
+0x00281ccc  0f1f4000                       nop      [rax]
+0x00281cd0  55                             push     rbp
+0x00281cd1  4889e5                         mov      rbp, rsp
+0x00281cd4  4157                           push     r15
+0x00281cd6  4156                           push     r14
+0x00281cd8  4155                           push     r13
+0x00281cda  4154                           push     r12
+0x00281cdc  53                             push     rbx
+0x00281cdd  50                             push     rax
+0x00281cde  4989d4                         mov      r12, rdx
+0x00281ce1  4989f5                         mov      r13, rsi
+0x00281ce4  4989fe                         mov      r14, rdi
+0x00281ce7  e86488fdff                     call     0x25a550   ; -> 0x25a550
+0x00281cec  488b08                         mov      rcx, [rax]
+0x00281cef  4889c7                         mov      rdi, rax
+0x00281cf2  ff9140020000                   call     qword ptr [rcx+0x240]
+0x00281cf8  4989c7                         mov      r15, rax
+0x00281cfb  41833f00                       cmp      dword ptr [r15], 0
+0x00281cff  7e69                           jle      short 0x281d6a   ; -> 0x281d6a
+0x00281d01  4d85e4                         test     r12, r12
+0x00281d04  7433                           je       short 0x281d39   ; -> 0x281d39
+0x00281d06  30db                           xor      bl, bl
+0x00281d08  0f1f840000000000               nop      [rax+rax]
+0x00281d10  480fbedb                       movsx    rbx, bl
+0x00281d14  418b549d00                     mov      edx, [r13+rbx*4]
+0x00281d19  498d4c9d00                     lea      rcx, [r13+rbx*4]
+0x00281d1e  4d8d049c                       lea      r8, [r12+rbx*4]
+0x00281d22  0fb6f3                         movzx    esi, bl
+0x00281d25  4c89f7                         mov      rdi, r14
+0x00281d28  e853000000                     call     0x281d80   ; -> 0x281d80
+0x00281d2d  fec3                           inc      bl
+0x00281d2f  0fbec3                         movsx    eax, bl
+0x00281d32  413b07                         cmp      eax, [r15]
+0x00281d35  7cd9                           jl       short 0x281d10   ; -> 0x281d10
+0x00281d37  eb31                           jmp      short 0x281d6a   ; -> 0x281d6a
+0x00281d39  b301                           mov      bl, 1
+0x00281d3b  0f1f440000                     nop      [rax+rax]
+0x00281d40  88d8                           mov      al, bl
+0x00281d42  fec8                           dec      al
+0x00281d44  480fbec0                       movsx    rax, al
+0x00281d48  418b548500                     mov      edx, [r13+rax*4]
+0x00281d4d  498d4c8500                     lea      rcx, [r13+rax*4]
+0x00281d52  0fb6f0                         movzx    esi, al
+0x00281d55  4c89f7                         mov      rdi, r14
+0x00281d58  4531c0                         xor      r8d, r8d
+0x00281d5b  e820000000                     call     0x281d80   ; -> 0x281d80
+0x00281d60  0fbec3                         movsx    eax, bl
+0x00281d63  fec3                           inc      bl
+0x00281d65  413b07                         cmp      eax, [r15]
+0x00281d68  7cd6                           jl       short 0x281d40   ; -> 0x281d40
+0x00281d6a  4883c408                       add      rsp, 8
+0x00281d6e  5b                             pop      rbx
+0x00281d6f  415c                           pop      r12
+0x00281d71  415d                           pop      r13
+0x00281d73  415e                           pop      r14
+0x00281d75  415f                           pop      r15
+0x00281d77  5d                             pop      rbp

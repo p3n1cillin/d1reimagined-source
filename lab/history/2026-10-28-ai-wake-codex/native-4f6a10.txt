@@ -1,0 +1,60 @@
+0x004f6a10 push      rbp
+0x004f6a11 mov       rbp, rsp
+0x004f6a14 push      r15
+0x004f6a16 push      r14
+0x004f6a18 push      rbx
+0x004f6a19 sub       rsp, 0x48
+0x004f6a1d mov       rax, rdi
+0x004f6a20 mov       rcx, qword ptr [rip + 0x15286d9] ; [0x1a1f100]
+0x004f6a27 mov       rcx, qword ptr [rcx]
+0x004f6a2a mov       qword ptr [rbp - 0x20], rcx
+0x004f6a2e lea       rbx, [rbp - 0x38]
+0x004f6a32 mov       rdi, rbx
+0x004f6a35 mov       rsi, rax
+0x004f6a38 call      0x4fa560
+0x004f6a3d lea       rdi, [rbp - 0x60]
+0x004f6a41 mov       rsi, rbx
+0x004f6a44 mov       edx, 0xffffffff
+0x004f6a49 call      0x50e220
+0x004f6a4e mov       rdi, rbx
+0x004f6a51 call      0x4fb0f0
+0x004f6a56 test      eax, eax
+0x004f6a58 jle       0x4f6aba
+0x004f6a5a xor       ebx, ebx
+0x004f6a5c lea       r14, [rbp - 0x38]
+0x004f6a60 lea       r15, [rbp - 0x60]
+0x004f6a64 nop       word ptr cs:[rax + rax]
+0x004f6a70 mov       rdi, r14
+0x004f6a73 mov       esi, ebx
+0x004f6a75 call      0x4fa7f0
+0x004f6a7a cmp       byte ptr [rax + 0xa0], 0
+0x004f6a81 jne       0x4f6aac
+0x004f6a83 mov       esi, dword ptr [rax + 0xa4]
+0x004f6a89 mov       rdi, r15
+0x004f6a8c call      0x50e2d0
+0x004f6a91 cmp       qword ptr [rbp - 0x60], 0
+0x004f6a96 je        0x4f6aac
+0x004f6a98 mov       rdi, r15
+0x004f6a9b call      0x50ec90
+0x004f6aa0 mov       al, 1
+0x004f6aa2 vucomiss  xmm0, dword ptr [rip + 0x11404c2] ; [0x1636f6c]
+0x004f6aaa ja        0x4f6abc
+0x004f6aac inc       ebx
+0x004f6aae mov       rdi, r14
+0x004f6ab1 call      0x4fb0f0
+0x004f6ab6 cmp       ebx, eax
+0x004f6ab8 jl        0x4f6a70
+0x004f6aba xor       al, al
+0x004f6abc mov       rcx, qword ptr [rip + 0x152863d] ; [0x1a1f100]
+0x004f6ac3 mov       rcx, qword ptr [rcx]
+0x004f6ac6 cmp       rcx, qword ptr [rbp - 0x20]
+0x004f6aca jne       0x4f6ad7
+0x004f6acc add       rsp, 0x48
+0x004f6ad0 pop       rbx
+0x004f6ad1 pop       r14
+0x004f6ad3 pop       r15
+0x004f6ad5 pop       rbp
+0x004f6ad6 ret       
+0x004f6ad7 call      0x12aa7f0
+0x004f6adc nop       
+0x004f6add nop       dword ptr [rax]

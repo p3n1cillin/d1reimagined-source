@@ -1,0 +1,18 @@
+[
+  {
+    "id": "2026-10-30-tower-stay",
+    "time": "2026-10-30T10:07:12Z",
+    "feature": "Staying in the Tower",
+    "maturity": "Working",
+    "claim": "With input that includes a button press, the Guardian stayed in Tower North from 10:07 to 12:03 UTC; with all input stopped, the game returned it to orbit exactly 15 minutes after the last press (its normal idle rule)",
+    "evidence": ["clips/clip01.mp4", "screenshots/01.png"]
+  },
+  {
+    "id": "2026-10-30-vendor-trace",
+    "time": "2026-10-30T11:10:00Z",
+    "feature": "Vendors",
+    "maturity": "In progress",
+    "claim": "Opening a vendor reaches the game's vendor code and finds the vendor; the screen itself is missing because the Tower runs under the story-mission menus. Presenting the Tower as its own activity was refused for missing permission. No visual evidence of the trace.",
+    "evidence": []
+  }
+]

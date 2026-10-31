@@ -1,0 +1,77 @@
+[
+  {
+    "event_id": "d1-20261013-full-owned-content",
+    "timestamp": "2026-10-13T07:27:24.4177702Z",
+    "feature": "content-validation",
+    "maturity": "Fully Working (isolated content only)",
+    "claim": "All 2,105 package tables and 964,151 stored-block hashes pass; native boot remains unaccepted.",
+    "tests": {
+      "files": 2119,
+      "packages": 2105,
+      "blocks": 964151,
+      "failures": 0,
+      "receipt_inspected": true
+    },
+    "source_reference": "cfw-staging/2026-10-12/later-56578-content-validation-v2/acceptance.json",
+    "media": []
+  },
+  {
+    "event_id": "d1-20261013-orbit-and-protocol",
+    "timestamp": "2026-10-13T13:01:10Z",
+    "timestamp_basis": "Run name start; duration and outcome from the engineering record.",
+    "feature": "local-native-lab-orbit",
+    "maturity": "Experimental",
+    "synthetic_ancestor": true,
+    "claim": "A bounded lab run reaches orbit; Director content and natural gameplay remain missing.",
+    "source_reference": "notes/ps4-retarget-2026-10-12.md",
+    "verification": "source-reported; not rerun",
+    "media": []
+  },
+  {
+    "event_id": "d1-20261013-forced-spawn-failure",
+    "timestamp": "2026-10-13T16:57:30.6168039Z",
+    "started_at": "2026-10-13T16:51:45.5962672Z",
+    "feature": "spawn-and-rendering",
+    "maturity": "Experimental / Known Broken",
+    "synthetic_ancestor": true,
+    "claim": "Documented forced scene/input response followed by confirmed access violation.",
+    "tests": {
+      "emulator_exit_code": -1073741819,
+      "servers_stopped": true,
+      "native_boot_accepted": false,
+      "closed_receipt_inspected": true
+    },
+    "local_evidence": [
+      {
+        "path": "cfw-staging/2026-10-13-op/64-unfaded.png",
+        "file_modified_utc": "2026-10-13T16:56:49.775241+00:00",
+        "size": 1170903,
+        "sha256": "f04dc43ab11c07308bd3288704d21475a9bab469a3d326bba00be5c44e8c96ac",
+        "transferred": false,
+        "visual_review_by_this_handoff": false
+      },
+      {
+        "path": "cfw-staging/2026-10-13-op/65-moved.png",
+        "file_modified_utc": "2026-10-13T16:57:04.765959+00:00",
+        "size": 1156563,
+        "sha256": "f1e9b6afdf4ea8efb5b431bb8a6e5a1d3e3071886f87096d158168ef62e84a99",
+        "transferred": false,
+        "visual_review_by_this_handoff": false
+      }
+    ],
+    "media": []
+  },
+  {
+    "event_id": "d1-20261013-served-spawn-measurement",
+    "timestamp": "2026-10-13T17:36:14Z",
+    "timestamp_basis": "Recorded source commit time; not a completed-run timestamp.",
+    "feature": "activity-lifetime-phase",
+    "maturity": "Experimental / Known Broken",
+    "claim": "Snapshot records 97 world-container entries, no lifetime-class record; served phase still absent and outer-loop gate unresolved.",
+    "active_run": "20261013-173323-later-56578-worldset",
+    "run_complete": false,
+    "source_reference": "notes/ps4-retarget-2026-10-12.md",
+    "verification": "source-reported committed snapshot; subsequent live evidence excluded",
+    "media": []
+  }
+]

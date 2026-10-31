@@ -1,0 +1,19 @@
+0x0050ec10 push      rbp
+0x0050ec11 mov       rbp, rsp
+0x0050ec14 push      rbx
+0x0050ec15 push      rax
+0x0050ec16 mov       rbx, rdi
+0x0050ec19 call      0x50e800
+0x0050ec1e vmovss    dword ptr [rbp - 0xc], xmm0
+0x0050ec23 mov       rax, qword ptr [rbx]
+0x0050ec26 mov       rcx, qword ptr [rbx + 0x18]
+0x0050ec2a mov       esi, dword ptr [rax]
+0x0050ec2c mov       rdi, qword ptr [rcx + 8]
+0x0050ec30 call      0x4f9aa0
+0x0050ec35 vmovss    xmm1, dword ptr [rbp - 0xc]
+0x0050ec3a vmulss    xmm0, xmm1, xmm0
+0x0050ec3e add       rsp, 8
+0x0050ec42 pop       rbx
+0x0050ec43 pop       rbp
+0x0050ec44 ret       
+0x0050ec45 nop       word ptr cs:[rax + rax]

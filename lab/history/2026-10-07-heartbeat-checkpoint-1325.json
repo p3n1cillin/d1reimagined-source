@@ -1,0 +1,50 @@
+{
+  "checked_at": "2026-10-07T13:25:18.8099574Z",
+  "automation_id": "daily-engineering-handoff",
+  "trigger_timestamp": "2026-10-06T19:57:30.649Z",
+  "current_reporting_date": "2026-10-07",
+  "current_timezone": "Europe/London",
+  "existing_clip_id": "<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56",
+  "existing_october6_handoff_complete": true,
+  "existing_ready_verified_at": "2026-10-07T13:24:28.1043181Z",
+  "payload_sizes_and_hashes_verified": 3,
+  "new_package_created": false,
+  "media_resent": false,
+  "previous_ready_modified": false,
+  "outbox_pending_count": 0,
+  "state_counts": [
+    {
+      "status": "SUBMITTED",
+      "count": 12
+    },
+    {
+      "status": "SUPERSEDED",
+      "count": 1
+    }
+  ],
+  "capture_status_updated_at": "2026-10-07T14:25:17.534441+01:00",
+  "nas_connected": true,
+  "nas_available_bytes": 536707203072,
+  "native_test": "FINAL124_JOIN166",
+  "safe_checkpoint_reached": true,
+  "owned_processes_reverified_closed": true,
+  "cleanup": {
+    "at": "2026-10-07T13:23:28.8224655Z",
+    "fixture_completed": true,
+    "all_owned_closed": true,
+    "title_unchanged": true,
+    "watch_unchanged": true,
+    "input": "Handler: XInput",
+    "active_controls": [],
+    "shared_rpcn_preserved": true,
+    "errors": []
+  },
+  "native_capture_saved": true,
+  "capture_sha256": "c5ae36b0720aef631baba6ecd25cad3e52ce3a5dee8ee062bbdb451da852462c",
+  "capture_scope": "Private inactivity-dialog UI/control diagnostic, not a verified outdoor fault",
+  "full_native_parse": "NOT RUN",
+  "replay": "NOT RUN",
+  "graphics": "NOT ACCEPTED",
+  "late_evidence_rule": "Late October 6 and October 7 evidence keeps actual timestamps for next eligible consolidated daily edition.",
+  "next_action": "Prepare October 7 consolidated handoff near 19:00 Europe/London at a safe checkpoint using existing report command; reference earlier packages without media resends. Resume native capture replay engineering before cutoff."
+}

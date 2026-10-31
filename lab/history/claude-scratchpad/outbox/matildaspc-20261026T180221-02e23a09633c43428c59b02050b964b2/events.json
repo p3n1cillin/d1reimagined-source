@@ -1,0 +1,58 @@
+[
+  {
+    "event_id": "d1-20261026-breach-arrival",
+    "timestamp": "2026-10-26T17:51:09+00:00",
+    "clip": "clips/clip01.mp4",
+    "clip_offset_seconds": 23,
+    "event_type": "MILESTONE",
+    "claim": "The Guardian enters The Breach; location card THE BREACH / OLD RUSSIA, EARTH."
+  },
+  {
+    "event_id": "d1-20261026-find-weapon",
+    "timestamp": "2026-10-26T17:52:56+00:00",
+    "clip": "clips/clip02.mp4",
+    "clip_offset_seconds": 10,
+    "event_type": "MILESTONE",
+    "claim": "Objectives FIND A WEAPON and GRAB THE RIFLE shown."
+  },
+  {
+    "event_id": "d1-20261026-rifle-pickup",
+    "timestamp": "2026-10-26T17:53:03+00:00",
+    "clip": "clips/clip02.mp4",
+    "clip_offset_seconds": 17,
+    "event_type": "MILESTONE",
+    "claim": "The starter auto rifle is picked up and appears in hand; it arrives with no ammunition."
+  },
+  {
+    "event_id": "d1-20261026-fight-through-the-wall",
+    "timestamp": "2026-10-26T17:53:08+00:00",
+    "clip": "clips/clip02.mp4",
+    "clip_offset_seconds": 22,
+    "event_type": "MILESTONE",
+    "claim": "Objective changes to FIGHT THROUGH THE WALL."
+  },
+  {
+    "event_id": "d1-20261026-ammo",
+    "timestamp": "2026-10-26T17:53:32+00:00",
+    "clip": "clips/clip02.mp4",
+    "clip_offset_seconds": 46,
+    "event_type": "GENERAL_PROGRESS",
+    "claim": "An ammunition pickup fills the rifle (12 | 114)."
+  },
+  {
+    "event_id": "d1-20261026-fallen-attack",
+    "timestamp": "2026-10-26T17:53:38+00:00",
+    "clip": "clips/clip03.mp4",
+    "clip_offset_seconds": 12,
+    "event_type": "MILESTONE",
+    "claim": "An enemy health bar and radar contact appear and the Guardian takes damage."
+  },
+  {
+    "event_id": "d1-20261026-guardian-down",
+    "timestamp": "2026-10-26T17:54:00+00:00",
+    "clip": "clips/clip03.mp4",
+    "clip_offset_seconds": 34,
+    "event_type": "MILESTONE",
+    "claim": "GUARDIAN DOWN, killed by a Dreg (House of Devils), then a respawn."
+  }
+]

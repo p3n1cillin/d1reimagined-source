@@ -1,0 +1,5 @@
+0x005745e0 cmp       byte ptr [rdi + 1], 2
+0x005745e4 jl        0x5745ea
+0x005745e6 mov       byte ptr [rdi + 1], 4
+0x005745ea ret       
+0x005745eb nop       dword ptr [rax + rax]

@@ -1,0 +1,46 @@
+{
+  "verified_at": "2026-10-07T17:49:35.1256926Z",
+  "clip_id": "<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962",
+  "ready_directory": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\07\\<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962.ready",
+  "state": {
+    "status": "SUBMITTED",
+    "attempts": 0,
+    "next_attempt": 0,
+    "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\07\\<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962.ready",
+    "updated_at": "2026-10-07T18:49:01.03582+01:00",
+    "transfer_started_at": "2026-10-07T18:49:00.682891+01:00",
+    "submitted_at": "2026-10-07T18:49:01.030431+01:00",
+    "error": null
+  },
+  "schema_version": 1,
+  "all_payloads_hashes_sizes_verified": true,
+  "checks": [
+    {
+      "file": "daily-report.md",
+      "bytes": 13502,
+      "size_match": true,
+      "sha256": "e15ee5d945be9034a38ce6d503f5b65feb2c4b816f786c3e9fd4098a5b4c5439",
+      "hash_match": true
+    },
+    {
+      "file": "events.json",
+      "bytes": 4696,
+      "size_match": true,
+      "sha256": "8cd87ae75d258068c9fb471bd9e9aa8770bdf30273ec2071db0e28294d1ab203",
+      "hash_match": true
+    },
+    {
+      "file": "metadata.json",
+      "bytes": 2957,
+      "size_match": true,
+      "sha256": "58ff3a112466b6ee772f8e3f8ae6cbeb0a8d2f618377adfc1be23ab1191f4258",
+      "hash_match": true
+    }
+  ],
+  "available_nas_bytes": 536707203072,
+  "pending_outbox": 0,
+  "new_media_sent": false,
+  "previous_packages_modified": false,
+  "handoff_complete": true,
+  "engineering_resumed": true
+}

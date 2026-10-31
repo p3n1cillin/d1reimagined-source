@@ -1,0 +1,148 @@
+{
+  "checked_at": "2026-10-07T23:58:45.2822948Z",
+  "automation_id": "daily-engineering-handoff",
+  "trigger_reporting_date": "2026-10-07",
+  "local_checkpoint_date": "2026-10-08",
+  "existing_daily_package": "<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962",
+  "ready_directory": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\07\\<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962.ready",
+  "payload_checks": [
+    {
+      "file": "daily-report.md",
+      "bytes": 13502,
+      "size_match": true,
+      "hash_match": true
+    },
+    {
+      "file": "events.json",
+      "bytes": 4696,
+      "size_match": true,
+      "hash_match": true
+    },
+    {
+      "file": "metadata.json",
+      "bytes": 2957,
+      "size_match": true,
+      "hash_match": true
+    }
+  ],
+  "unmanifested_payloads": 0,
+  "all_recorded_owned_processes": [
+    {
+      "tag": "dns",
+      "id": 21960,
+      "startTimeUtcTicks": "639270131407888988",
+      "exact_live": false
+    },
+    {
+      "tag": "stun",
+      "id": 16232,
+      "startTimeUtcTicks": "639270131408151623",
+      "exact_live": false
+    },
+    {
+      "tag": "signon",
+      "id": 19180,
+      "startTimeUtcTicks": "639270131408285703",
+      "exact_live": false
+    },
+    {
+      "tag": "lobby",
+      "id": 17304,
+      "startTimeUtcTicks": "639270131410870545",
+      "exact_live": false
+    },
+    {
+      "tag": "bap",
+      "id": 15732,
+      "startTimeUtcTicks": "639270131411015029",
+      "exact_live": false
+    },
+    {
+      "tag": "rpcs3",
+      "id": 11212,
+      "startTimeUtcTicks": "639270131441432008",
+      "exact_live": false
+    },
+    {
+      "tag": "gdbd",
+      "id": 10916,
+      "startTimeUtcTicks": "639270131647873421",
+      "exact_live": false
+    },
+    {
+      "tag": "proxy",
+      "id": 3320,
+      "startTimeUtcTicks": "639270133084022653",
+      "exact_live": false
+    },
+    {
+      "tag": "session-probe",
+      "id": 6368,
+      "startTimeUtcTicks": "639270133927154089",
+      "exact_live": false
+    },
+    {
+      "tag": null,
+      "id": 24068,
+      "startTimeUtcTicks": "639270135453510170",
+      "exact_live": false
+    },
+    {
+      "tag": null,
+      "id": 19756,
+      "startTimeUtcTicks": "639270136817039282",
+      "exact_live": false
+    },
+    {
+      "tag": null,
+      "id": 20604,
+      "startTimeUtcTicks": "639270139136394691",
+      "exact_live": false
+    }
+  ],
+  "short_movement_helpers": "Both commands terminate normally; no matching helper command remains. Their live PID/ticks were not captured, so no exact-ID receipt is asserted for them.",
+  "cleanup": {
+    "at": "2026-10-07T23:54:00.1705014Z",
+    "fixture_completed": true,
+    "all_owned_closed": true,
+    "title_unchanged": true,
+    "watch_unchanged": true,
+    "input": "Handler: XInput",
+    "active_controls": [],
+    "shared_rpcn_preserved": true,
+    "errors": []
+  },
+  "capture_status": {
+    "CONTENT_CAPTURE_ENABLED": true,
+    "DEVELOPMENT_MACHINE_ID": "<lab-pc>",
+    "LOCAL_OUTBOX_COUNT": 0,
+    "LOCAL_REVIEW_COUNT": 0,
+    "LAST_SUCCESSFUL_TRANSFER": "2026-10-07T18:49:01.030431+01:00",
+    "CURRENT_DEVBLOG": null,
+    "CURRENT_SESSION": "renderer-and-inventory-restoration",
+    "AVAILABLE_BUFFER_SPACE": 1310163267584,
+    "NAS_CONNECTED": true,
+    "updated_at": "2026-10-08T00:58:45.492753+01:00",
+    "RECORDER_STATUS": "IDLE",
+    "ACTIVE_RUN": null,
+    "RECORDER_EXIT": null,
+    "MONITOR_ERROR": null,
+    "SAMPLE_STATUS": "AVAILABLE",
+    "SAMPLE_ERROR": null,
+    "PROCESSING_ERROR": null,
+    "STATUS_UPDATE_DEFERRED": false,
+    "STATUS_UPDATE_ERROR": null,
+    "AVAILABLE_NAS_SPACE": 536707203072,
+    "NAS_TRANSFER_REQUIRED_BYTES": 21598,
+    "NAS_CAPACITY_ERROR": null
+  },
+  "new_package_created": false,
+  "previous_ready_packages_modified": false,
+  "media_resent": false,
+  "late_evidence": "JOIN175 through JOIN179 post-cutoff evidence retained privately for next eligible daily edition; original UTC7October and UK8October timestamps preserved.",
+  "source_head": "d7944d26b7a13cb83ca472e698924aeacb38190e",
+  "data_head": "827cf0c2839c37ebad82b72b6ddee581a5d92922",
+  "goal_status": "ACTIVE",
+  "engineering_turn": "PROGRESS",
+  "user_action_required": false
+}

@@ -1,0 +1,157 @@
+0x007ae740 push      rbp
+0x007ae741 mov       rbp, rsp
+0x007ae744 push      r15
+0x007ae746 push      r14
+0x007ae748 push      r12
+0x007ae74a push      rbx
+0x007ae74b sub       rsp, 0x150
+0x007ae752 mov       r14, rdi
+0x007ae755 mov       rax, qword ptr [rip + 0x12709a4] ; [0x1a1f100]
+0x007ae75c mov       rax, qword ptr [rax]
+0x007ae75f mov       qword ptr [rbp - 0x28], rax
+0x007ae763 call      0x789240
+0x007ae768 mov       eax, dword ptr [r14 + 0x30]
+0x007ae76c xor       r15b, r15b
+0x007ae76f test      eax, eax
+0x007ae771 jne       0x7ae790
+0x007ae773 call      0x7ae9b0
+0x007ae778 test      al, al
+0x007ae77a je        0x7ae789
+0x007ae77c mov       dword ptr [r14 + 0x30], 1
+0x007ae784 xor       r15b, r15b
+0x007ae787 jmp       0x7ae799
+0x007ae789 mov       eax, dword ptr [r14 + 0x30]
+0x007ae78d mov       r15b, 1
+0x007ae790 cmp       eax, 1
+0x007ae793 jne       0x7ae842
+0x007ae799 call      0x3409a0
+0x007ae79e mov       rdi, rax
+0x007ae7a1 call      0x340cf0
+0x007ae7a6 test      al, al
+0x007ae7a8 jne       0x7ae842
+0x007ae7ae call      0x7aebf0
+0x007ae7b3 mov       r15b, 1
+0x007ae7b6 test      al, al
+0x007ae7b8 je        0x7ae842
+0x007ae7be call      0x766750
+0x007ae7c3 test      al, al
+0x007ae7c5 je        0x7ae7d7
+0x007ae7c7 mov       dword ptr [r14 + 0x30], 3
+0x007ae7cf mov       r15b, 1
+0x007ae7d2 jmp       0x7ae957
+0x007ae7d7 call      0x765d60
+0x007ae7dc lea       rcx, [rip + 0x1f220a9] ; [0x26d088c]
+0x007ae7e3 lea       rbx, [rip + 0x1f2209e] ; [0x26d0888]
+0x007ae7ea cmp       eax, 1
+0x007ae7ed cmove     rbx, rcx
+0x007ae7f1 call      0x765ee0
+0x007ae7f6 mov       r12, rax
+0x007ae7f9 mov       eax, dword ptr [rbx]
+0x007ae7fb mov       dword ptr [rbp - 0x170], eax
+0x007ae801 lea       rsi, [rbp - 0x170]
+0x007ae808 mov       rdi, r12
+0x007ae80b call      0x758320
+0x007ae810 call      0x758d10
+0x007ae815 mov       rdi, r12
+0x007ae818 mov       esi, eax
+0x007ae81a call      0xf8520
+0x007ae81f mov       edi, 9
+0x007ae824 call      0x765fb0
+0x007ae829 mov       rdi, r14
+0x007ae82c call      0x7aecd0
+0x007ae831 test      al, al
+0x007ae833 je        0x7ae842
+0x007ae835 mov       dword ptr [r14 + 0x30], 2
+0x007ae83d xor       r15b, r15b
+0x007ae840 jmp       0x7ae84f
+0x007ae842 mov       eax, dword ptr [r14 + 0x30]
+0x007ae846 cmp       eax, 2
+0x007ae849 jne       0x7ae95b
+0x007ae84f call      0x7662f0
+0x007ae854 test      al, al
+0x007ae856 jne       0x7ae87e
+0x007ae858 mov       rdi, r14
+0x007ae85b call      0x7af030
+0x007ae860 mov       bl, 1
+0x007ae862 test      al, al
+0x007ae864 je        0x7ae881
+0x007ae866 mov       eax, dword ptr [r14 + 0x34]
+0x007ae86a test      eax, eax
+0x007ae86c jle       0x7ae876
+0x007ae86e dec       eax
+0x007ae870 mov       dword ptr [r14 + 0x34], eax
+0x007ae874 jmp       0x7ae87e
+0x007ae876 mov       dword ptr [r14 + 0x30], 3
+0x007ae87e mov       bl, r15b
+0x007ae881 call      0x765ee0
+0x007ae886 mov       rdi, rax
+0x007ae889 call      0x758c40
+0x007ae88e call      0x765c40
+0x007ae893 test      al, al
+0x007ae895 jne       0x7ae954
+0x007ae89b call      0x3ccc70
+0x007ae8a0 mov       rdi, rax
+0x007ae8a3 call      0x3cd710
+0x007ae8a8 test      al, al
+0x007ae8aa je        0x7ae954
+0x007ae8b0 mov       edi, 0x13
+0x007ae8b5 call      0x788e10
+0x007ae8ba call      0x697a0
+0x007ae8bf sub       eax, dword ptr [rip + 0x1f21fcb] ; [0x26d0890]
+0x007ae8c5 cmp       eax, 0x1389
+0x007ae8ca jb        0x7ae954
+0x007ae8d0 mov       edi, 5
+0x007ae8d5 mov       esi, 3
+0x007ae8da call      0xe4d70
+0x007ae8df test      al, al
+0x007ae8e1 je        0x7ae949
+0x007ae8e3 mov       al, byte ptr [rip + 0x1f21faf] ; [0x26d0898]
+0x007ae8e9 test      al, al
+0x007ae8eb jne       0x7ae91b
+0x007ae8ed lea       rdi, [rip + 0x1f21fa4] ; [0x26d0898]
+0x007ae8f4 call      0x12aa7d0
+0x007ae8f9 test      eax, eax
+0x007ae8fb je        0x7ae91b
+0x007ae8fd lea       rdi, [rip + 0xeafc88] ; [0x165e58c] 'world_controller:state:prologue_intro_loading: prologue_intro_loading is taking a long time to load (%lldms in state so far). Covering the cinematic with a loading screen to avoid excessive black scre'
+0x007ae904 call      0xe4a10
+0x007ae909 mov       dword ptr [rip + 0x1f21f85], eax ; [0x26d0894]
+0x007ae90f lea       rdi, [rip + 0x1f21f82] ; [0x26d0898]
+0x007ae916 call      0x12aa7e0
+0x007ae91b call      0x7850c0
+0x007ae920 lea       r15, [rbp - 0x168]
+0x007ae927 lea       rsi, [rip + 0xeafc5e] ; [0x165e58c] 'world_controller:state:prologue_intro_loading: prologue_intro_loading is taking a long time to load (%lldms in state so far). Covering the cinematic with a loading screen to avoid excessive black scre'
+0x007ae92e mov       rdi, r15
+0x007ae931 mov       rdx, rax
+0x007ae934 xor       al, al
+0x007ae936 call      0x1008290
+0x007ae93b mov       edi, dword ptr [rip + 0x1f21f53] ; [0x26d0894]
+0x007ae941 mov       rsi, r15
+0x007ae944 call      0xe4aa0
+0x007ae949 call      0x697a0
+0x007ae94e mov       dword ptr [rip + 0x1f21f3c], eax ; [0x26d0890]
+0x007ae954 mov       r15b, bl
+0x007ae957 mov       eax, dword ptr [r14 + 0x30]
+0x007ae95b cmp       eax, 3
+0x007ae95e jne       0x7ae96c
+0x007ae960 mov       edi, 0x20
+0x007ae965 call      0x783ed0
+0x007ae96a jmp       0x7ae980
+0x007ae96c test      r15b, r15b
+0x007ae96f je        0x7ae980
+0x007ae971 mov       edi, 0x19
+0x007ae976 mov       esi, 0x37
+0x007ae97b call      0x784e50
+0x007ae980 mov       rax, qword ptr [rip + 0x1270779] ; [0x1a1f100]
+0x007ae987 mov       rax, qword ptr [rax]
+0x007ae98a cmp       rax, qword ptr [rbp - 0x28]
+0x007ae98e jne       0x7ae9a0
+0x007ae990 add       rsp, 0x150
+0x007ae997 pop       rbx
+0x007ae998 pop       r12
+0x007ae99a pop       r14
+0x007ae99c pop       r15
+0x007ae99e pop       rbp
+0x007ae99f ret       
+0x007ae9a0 call      0x12aa7f0
+0x007ae9a5 nop       
+0x007ae9a6 nop       word ptr cs:[rax + rax]

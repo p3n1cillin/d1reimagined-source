@@ -1,0 +1,20 @@
+[
+  {
+    "clip_id": "<lab-pc>-20261029T153911-dcb6eb8933d040b4bd6ea1ad58b6980a",
+    "payloads": 16,
+    "bytes": 368103001,
+    "manifest_sha256": "53efe991619ac2f98f45647c36db06792104b43baf0300d688610fa8d7da3e4d",
+    "all_payload_hashes_match": true,
+    "new_decode": "NOT RUN; prior metadata records full decode",
+    "media_resent": false
+  },
+  {
+    "clip_id": "<lab-pc>-20261029T173936-f34dc117b28f4e4fb9325930a78e2c7b",
+    "payloads": 7,
+    "bytes": 20662635,
+    "manifest_sha256": "96fa5928bee34d8b38dbc66c845380064e1720fe095ec3f06a238d7262c5bad1",
+    "all_payload_hashes_match": true,
+    "new_decode": "NOT RUN; prior metadata records full decode",
+    "media_resent": false
+  }
+]

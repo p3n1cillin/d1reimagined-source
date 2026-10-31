@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-10-07T08:05:22.2879203Z",
+  "automation_id": "daily-engineering-handoff",
+  "reporting_date": "2026-10-06",
+  "existing_clip_id": "<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56",
+  "existing_ready_package_verified": true,
+  "payload_sizes_and_hashes_verified": 3,
+  "handoff_complete": true,
+  "new_package_created": false,
+  "media_resent": false,
+  "outbox_count": 0,
+  "review_count": 0,
+  "native_safe_checkpoint": "JOIN160 completed, owned cleanup verified at 2026-10-07T08:04:40.7589653Z",
+  "late_evidence_rule": "Late October 6 and October 7 evidence remains for the next eligible daily edition with actual dates.",
+  "next_action": "Resume renderer engineering and finish JOIN160 evidence review."
+}

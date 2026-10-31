@@ -1,0 +1,19 @@
+0x011c9430 movsx     rax, sil
+0x011c9434 lea       rax, [rax + rax*2]
+0x011c9438 shl       rax, 4
+0x011c943c lea       rax, [rdi + rax + 0x30]
+0x011c9441 ret       
+0x011c9442 nop       
+0x011c9443 nop       
+0x011c9444 nop       
+0x011c9445 nop       
+0x011c9446 nop       
+0x011c9447 nop       
+0x011c9448 nop       
+0x011c9449 nop       
+0x011c944a nop       
+0x011c944b nop       
+0x011c944c nop       
+0x011c944d nop       
+0x011c944e nop       
+0x011c944f nop       

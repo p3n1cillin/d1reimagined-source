@@ -1,0 +1,20 @@
+[
+  {
+    "run": "sense33",
+    "captured": 63,
+    "decoder_exit": 0,
+    "stderr": ""
+  },
+  {
+    "run": "sense34",
+    "captured": 89,
+    "decoder_exit": 0,
+    "stderr": ""
+  },
+  {
+    "run": "sense35",
+    "captured": 232,
+    "decoder_exit": 0,
+    "stderr": ""
+  }
+]

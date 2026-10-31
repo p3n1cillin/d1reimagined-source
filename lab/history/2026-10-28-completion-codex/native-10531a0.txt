@@ -1,0 +1,10 @@
+0x010531a0 mov       rax, qword ptr [rdi + 0x38]
+0x010531a4 xor       rax, qword ptr [rdi + 0x30]
+0x010531a8 ret       
+0x010531a9 nop       
+0x010531aa nop       
+0x010531ab nop       
+0x010531ac nop       
+0x010531ad nop       
+0x010531ae nop       
+0x010531af nop       

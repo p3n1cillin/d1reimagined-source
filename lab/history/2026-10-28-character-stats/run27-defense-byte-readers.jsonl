@@ -1,0 +1,22 @@
+{"event": "start", "pid": 25164, "base": "0x51d0000", "addrs": ["0x3808b0bfd"], "byte_read_slots": [0], "t": 1793150147.4914784}
+{"event": "write", "tid": 21344, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.3195567}
+{"event": "write", "tid": 21344, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.3943055}
+{"event": "write", "tid": 21344, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.4580982}
+{"event": "write", "tid": 21900, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.4916468}
+{"event": "write", "tid": 21900, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.5250382}
+{"event": "write", "tid": 1584, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.558019}
+{"event": "write", "tid": 21344, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.5917327}
+{"event": "write", "tid": 21900, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.6247947}
+{"event": "write", "tid": 21900, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.6580553}
+{"event": "write", "tid": 21344, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.6918952}
+{"event": "write", "tid": 21344, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.7252145}
+{"event": "write", "tid": 21344, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.7588627}
+{"event": "write", "tid": 1584, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.7918758}
+{"event": "write", "tid": 1584, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.825511}
+{"event": "write", "tid": 21900, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.8583877}
+{"event": "write", "tid": 25540, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.8920884}
+{"event": "write", "tid": 21344, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.9252756}
+{"event": "write", "tid": 21344, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.9589007}
+{"event": "write", "tid": 25540, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150181.9917877}
+{"event": "write", "tid": 21900, "rip": "0x5b79042", "rip_img": "0x9a9042", "which": ["0x3808b0bfd"], "values": ["0x1"], "stack_img": [], "t": 1793150182.02558}
+{"event": "detached", "hits": 20, "t": 1793150185.1282547}

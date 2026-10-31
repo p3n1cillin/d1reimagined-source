@@ -1,0 +1,4 @@
+0x0030e110 mov       edx, dword ptr [rdi + 0x18]
+0x0030e113 mov       rdi, qword ptr [rdi + 0x10]
+0x0030e117 jmp       0x324c00
+0x0030e11c nop       dword ptr [rax]

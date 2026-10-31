@@ -1,0 +1,18 @@
+0x00107700 mov       ecx, dword ptr [rdi]
+0x00107702 xor       al, al
+0x00107704 cmp       ecx, dword ptr [rsi]
+0x00107706 jne       0x10771b
+0x00107708 mov       cl, byte ptr [rdi + 4]
+0x0010770b cmp       cl, byte ptr [rsi + 4]
+0x0010770e jne       0x10771b
+0x00107710 mov       ax, word ptr [rdi + 6]
+0x00107714 cmp       ax, word ptr [rsi + 6]
+0x00107718 sete      al
+0x0010771b ret       
+0x0010771c nop       dword ptr [rax]
+0x00107720 lea       rax, [rip]
+0x00107727 ret       
+0x00107728 nop       dword ptr [rax + rax]
+0x00107730 lea       rax, [rip]
+0x00107737 ret       
+0x00107738 nop       dword ptr [rax + rax]

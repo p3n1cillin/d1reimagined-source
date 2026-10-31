@@ -1,0 +1,80 @@
+{
+  "utc": "2026-10-28T14:41:10.340024+00:00",
+  "read_only": true,
+  "base": "0x50c0000",
+  "owned_image_sha256": "672f03411c0503dfbcda804cbb9fb27cdd9a8d73a8bcb71bf0c4f688073b0833",
+  "globals_handle": "0x80b1a005",
+  "globals_bytes": 4192,
+  "globals_match": true,
+  "globals_sha256": "7c963613dfc38c334ae6317627a1619cd424eeaf9ce4b52164834a593a585648",
+  "code_checks": [
+    {
+      "va": "0x528f90",
+      "bytes": 1060,
+      "matches_owned": true
+    },
+    {
+      "va": "0x529c40",
+      "bytes": 1016,
+      "matches_owned": true
+    },
+    {
+      "va": "0x237710",
+      "bytes": 6696,
+      "matches_owned": true
+    },
+    {
+      "va": "0x512b00",
+      "bytes": 346,
+      "matches_owned": true
+    },
+    {
+      "va": "0x546fd0",
+      "bytes": 137,
+      "matches_owned": true
+    },
+    {
+      "va": "0x1616e0",
+      "bytes": 53,
+      "matches_owned": true
+    }
+  ],
+  "optional_override_count": 45,
+  "overrides": [
+    {
+      "slot": "0x26b0a5c",
+      "hash": "0xf958f59e",
+      "present": false
+    },
+    {
+      "slot": "0x26b0a60",
+      "hash": "0x15902f0",
+      "present": false
+    },
+    {
+      "slot": "0x26b0a64",
+      "hash": "0xdfed454",
+      "present": false
+    },
+    {
+      "slot": "0x26b0a68",
+      "hash": "0x3a7b7563",
+      "present": false
+    },
+    {
+      "slot": "0x26b0a6c",
+      "hash": "0x410dffb5",
+      "present": false
+    },
+    {
+      "slot": "0x26b0a70",
+      "hash": "0x4bf45c",
+      "present": false
+    },
+    {
+      "slot": "0x26b0a74",
+      "hash": "0x159758eb",
+      "present": false
+    }
+  ]
+}

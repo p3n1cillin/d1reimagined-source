@@ -1,0 +1,7 @@
+0x0054dd60 xor       al, al
+0x0054dd62 cmp       qword ptr [rdi], 0
+0x0054dd66 je        0x54dd70
+0x0054dd68 cmp       qword ptr [rdi + 8], 0
+0x0054dd6d setne     al
+0x0054dd70 ret       
+0x0054dd71 nop       word ptr cs:[rax + rax]

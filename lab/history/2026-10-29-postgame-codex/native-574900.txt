@@ -1,0 +1,13 @@
+0x00574900 lea       rax, [rdi + 0x258]
+0x00574907 ret       
+0x00574908 nop       dword ptr [rax + rax]
+0x00574910 ret       
+0x00574911 nop       word ptr cs:[rax + rax]
+0x00574920 or        byte ptr [r8], r8b
+0x00574923 add       byte ptr [rax], al
+0x00574925 add       byte ptr [rax - 0x7d], cl
+0x00574928 .byte     0xc7
+0x00574929 or        cl, ch
+0x0057492b add       byte ptr [rax], al
+0x0057492d add       byte ptr [rax], al
+0x0057492f nop       

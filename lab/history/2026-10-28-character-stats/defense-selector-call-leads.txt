@@ -1,0 +1,18 @@
+target 0x2822a0: 1 confirmed reference(s) over 3 candidate window(s) [kinds: call,jmp,riprel,rela]
+  ?riprel  fn 0x0262260  0x026229d  mov     dword ptr [rbp-0x234], 1
+   call    fn 0x09d7ec0  0x09d7fff  call    0x2822a0
+  ?riprel  fn 0x09d7ec0  0x09d8000  call    0x2822a0
+
+POSITIVE CONTROL: none supplied - 'not found' from this run is NOT evidence of absence
+
+=== fn 0x09d7ec0 around 0x09d7fff ===
+0x09d8009  mov      rsi, r15
+0x09d800c  call     0x266a30
+0x09d8011  movsx    rax, bl
+0x09d8015  mov      eax, [rbp+rax*4-0x128]
+0x09d801c  mov      [r14+4], eax
+0x09d8020  mov      dword ptr [r14], 0
+0x09d8027  mov      qword ptr [r14+0x10], 0
+0x09d802f  mov      qword ptr [r14+8], 0
+0x09d8037  mov      rax, [rip+0x10470c2]
+0x09d803e  mov      rax, [rax]

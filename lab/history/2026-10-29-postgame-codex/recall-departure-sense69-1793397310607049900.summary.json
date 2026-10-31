@@ -1,0 +1,151 @@
+{
+  "run": "sense69",
+  "pid": 4304,
+  "base": "0x5160000",
+  "started_utc": "2026-10-30T21:55:10.749501+00:00",
+  "seconds_requested": 180.0,
+  "log_dir": "F:\\d1\\d1preservation-main\\cfw-staging\\contained-boot\\20261030-210012-sense69",
+  "follow_file": "F:\\d1\\d1preservation-main\\cfw-staging\\sense69-launched-activity.txt",
+  "events": "lab/history\\2026-10-29-postgame-codex\\recall-departure-sense69-1793397310607049900.jsonl",
+  "milestones_after_start": {
+    "native_countdown_active": {
+      "utc": "2026-10-30T21:55:15.342541+00:00",
+      "elapsed_s": 4.593
+    },
+    "native_handler31": {
+      "utc": "2026-10-30T21:55:18.403299+00:00",
+      "elapsed_s": 7.654
+    },
+    "native_goal27": {
+      "utc": "2026-10-30T21:55:18.403306+00:00",
+      "elapsed_s": 7.654
+    },
+    "native_desired165": {
+      "utc": "2026-10-30T21:55:21.513450+00:00",
+      "elapsed_s": 10.764
+    },
+    "follow_file165_seen": {
+      "utc": "2026-10-30T21:55:21.613695+00:00",
+      "elapsed_s": 10.864
+    },
+    "bap42_kind4_after_start": {
+      "utc": "2026-10-30T21:55:21.620665+00:00",
+      "elapsed_s": 10.871
+    },
+    "bap42_kind4_hash165_after_start": {
+      "utc": "2026-10-30T21:55:21.620673+00:00",
+      "elapsed_s": 10.871
+    },
+    "ah_join_after_start": {
+      "utc": "2026-10-30T21:55:24.236091+00:00",
+      "elapsed_s": 13.487
+    }
+  },
+  "limits": [
+    "50ms memory samples can miss same-frame flags",
+    "world record indicates loaded scenario, not successful player spawn",
+    "log observations are timestamped when read; log timestamps remain in each line",
+    "startup log history is labelled baseline and never counts as new traffic",
+    "no reattachment or input if the process exits"
+  ],
+  "stop_reason": "duration_elapsed",
+  "ended_utc": "2026-10-30T21:58:10.778828+00:00",
+  "elapsed_s": 180.029,
+  "event_count_before_summary": 137,
+  "last_observed": {
+    "native_fast": {
+      "selection": {
+        "type": 0,
+        "activity": -1
+      },
+      "world_controller": {
+        "state": 36,
+        "cleanup_reason6c4": 0,
+        "cleanup_field6c8": 0
+      },
+      "session0": {
+        "state": 6,
+        "leader": true,
+        "goal_valid": true,
+        "goal": 36,
+        "goal_reason": 0,
+        "recall_valid": true,
+        "recall_active_fc": 0,
+        "recall_seconds_e8": 0,
+        "recall_api_active": false,
+        "desired_valid": true,
+        "desired_type": 1,
+        "desired_activity": 165
+      },
+      "session1": {
+        "state": 6,
+        "leader": true,
+        "goal_valid": true,
+        "goal": 36,
+        "goal_reason": 0,
+        "recall_valid": false,
+        "recall_active_fc": 0,
+        "recall_seconds_e8": 0,
+        "recall_api_active": false,
+        "desired_valid": true,
+        "desired_type": 1,
+        "desired_activity": 165
+      },
+      "input": {
+        "controller": 0,
+        "held106": 0,
+        "consumed108": 0,
+        "route110": 0,
+        "route114": 37,
+        "hold_elapsed5c": 0,
+        "ordinary64": 0,
+        "alternate65": 0,
+        "reward66": 0,
+        "rewardhold67": 0,
+        "edge68": 0,
+        "screen_gate11b": 0,
+        "ui_context_state": 47
+      },
+      "departure": {
+        "handler31": 0,
+        "handler32": 0
+      }
+    },
+    "native_slow": {
+      "recall_gate": {
+        "completion673": 1,
+        "plane2838": 1,
+        "plane_valid": 1
+      },
+      "collector": {
+        "state": 4,
+        "target": 4,
+        "activity": 164,
+        "xp": [
+          0,
+          900,
+          900
+        ]
+      },
+      "world": {
+        "scenario_tag": "0x80c7a005",
+        "world_name": "city_tower_default1",
+        "world_name_hash": "0x545aec79",
+        "private_checksum": "0x24340499",
+        "public_checksum": "0xd067231d",
+        "bubble_count": 5
+      },
+      "lifetime": {
+        "content_index": 182,
+        "phases": [
+          3
+        ]
+      }
+    },
+    "follow_file": {
+      "text": "1856964953",
+      "hash": "0x6eaf0959",
+      "index": 165
+    }
+  }
+}

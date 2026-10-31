@@ -1,0 +1,7052 @@
+[
+  {
+    "elapsed_ms": 3.798199992161244,
+    "snapshot": {
+      "unix": 1793213330.8405464,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65409851074219,
+                    -543.9463500976562,
+                    4.391406536102295
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26290893554688,
+                    -542.2413330078125,
+                    5.143366813659668
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32447052001953,
+                    -581.7907104492188,
+                    7.379380702972412
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63282012939453,
+                    -577.548583984375,
+                    7.5615692138671875
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65409851074219,
+                -543.9463500976562,
+                4.391406536102295
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26290893554688,
+                -542.2413330078125,
+                5.143366813659668
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32447052001953,
+                -581.7907104492188,
+                7.379380702972412
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63282012939453,
+                -577.548583984375,
+                7.5615692138671875
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.444799978751689,
+    "snapshot": {
+      "unix": 1793213331.0403817,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65409851074219,
+                    -543.9463500976562,
+                    4.39140510559082
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26290893554688,
+                    -542.2413330078125,
+                    5.143365859985352
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32819366455078,
+                    -581.7919311523438,
+                    7.379345893859863
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.6270980834961,
+                    -577.5469360351562,
+                    7.561912536621094
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65409851074219,
+                -543.9463500976562,
+                4.39140510559082
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26290893554688,
+                -542.2413330078125,
+                5.143365859985352
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32819366455078,
+                -581.7919311523438,
+                7.379345893859863
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.6270980834961,
+                -577.5469360351562,
+                7.561912536621094
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.665100026410073,
+    "snapshot": {
+      "unix": 1793213331.2408128,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65415954589844,
+                    -543.9458618164062,
+                    4.391396999359131
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26242065429688,
+                    -542.2371826171875,
+                    5.143757343292236
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31766510009766,
+                    -581.7852783203125,
+                    7.37941312789917
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.62540435791016,
+                    -577.5479736328125,
+                    7.561836242675781
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65415954589844,
+                -543.9458618164062,
+                4.391396999359131
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26242065429688,
+                -542.2371826171875,
+                5.143757343292236
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31766510009766,
+                -581.7852783203125,
+                7.37941312789917
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.62540435791016,
+                -577.5479736328125,
+                7.561836242675781
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.583800047636032,
+    "snapshot": {
+      "unix": 1793213331.4408348,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65486145019531,
+                    -543.9403076171875,
+                    4.391235828399658
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26534271240234,
+                    -542.2322387695312,
+                    5.1435041427612305
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31283569335938,
+                    -581.7847290039062,
+                    7.379467487335205
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.62590026855469,
+                    -577.5482177734375,
+                    7.561793804168701
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65486145019531,
+                -543.9403076171875,
+                4.391235828399658
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26534271240234,
+                -542.2322387695312,
+                5.1435041427612305
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31283569335938,
+                -581.7847290039062,
+                7.379467487335205
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.62590026855469,
+                -577.5482177734375,
+                7.561793804168701
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.9120999863371253,
+    "snapshot": {
+      "unix": 1793213331.641433,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65196228027344,
+                    -543.9483032226562,
+                    4.391443729400635
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26741027832031,
+                    -542.2313232421875,
+                    5.14297342300415
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31199645996094,
+                    -581.7857055664062,
+                    7.379489421844482
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.62590026855469,
+                    -577.5482177734375,
+                    7.5617899894714355
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65196228027344,
+                -543.9483032226562,
+                4.391443729400635
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26741027832031,
+                -542.2313232421875,
+                5.14297342300415
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31199645996094,
+                -581.7857055664062,
+                7.379489421844482
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.62590026855469,
+                -577.5482177734375,
+                7.5617899894714355
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.7004000041633844,
+    "snapshot": {
+      "unix": 1793213331.8414614,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65113830566406,
+                    -543.9557495117188,
+                    4.391714572906494
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26741027832031,
+                    -542.2313232421875,
+                    5.142948150634766
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31239318847656,
+                    -581.785888671875,
+                    7.379485607147217
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.62818145751953,
+                    -577.5474853515625,
+                    7.561841011047363
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65113830566406,
+                -543.9557495117188,
+                4.391714572906494
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26741027832031,
+                -542.2313232421875,
+                5.142948150634766
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31239318847656,
+                -581.785888671875,
+                7.379485607147217
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.62818145751953,
+                -577.5474853515625,
+                7.561841011047363
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.5380999906919897,
+    "snapshot": {
+      "unix": 1793213332.0416226,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65287780761719,
+                    -543.9580078125,
+                    4.391783714294434
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26741027832031,
+                    -542.2313232421875,
+                    5.142947673797607
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31239318847656,
+                    -581.785888671875,
+                    7.379485607147217
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63375091552734,
+                    -577.549072265625,
+                    7.561649322509766
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65287780761719,
+                -543.9580078125,
+                4.391783714294434
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26741027832031,
+                -542.2313232421875,
+                5.142947673797607
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31239318847656,
+                -581.785888671875,
+                7.379485607147217
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63375091552734,
+                -577.549072265625,
+                7.561649322509766
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.5715000121854246,
+    "snapshot": {
+      "unix": 1793213332.241834,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65296936035156,
+                    -543.957275390625,
+                    4.3917622566223145
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26972961425781,
+                    -542.2264404296875,
+                    5.142757415771484
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31558227539062,
+                    -581.7850952148438,
+                    7.379453182220459
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63604736328125,
+                    -577.5524291992188,
+                    7.561238765716553
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65296936035156,
+                -543.957275390625,
+                4.3917622566223145
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26972961425781,
+                -542.2264404296875,
+                5.142757415771484
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31558227539062,
+                -581.7850952148438,
+                7.379453182220459
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63604736328125,
+                -577.5524291992188,
+                7.561238765716553
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.867299994453788,
+    "snapshot": {
+      "unix": 1793213332.4422789,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65296936035156,
+                    -543.957275390625,
+                    4.391759395599365
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26615142822266,
+                    -542.23046875,
+                    5.143222808837891
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32099914550781,
+                    -581.7872924804688,
+                    7.379401206970215
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63604736328125,
+                    -577.5524291992188,
+                    7.561187267303467
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65296936035156,
+                -543.957275390625,
+                4.391759395599365
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26615142822266,
+                -542.23046875,
+                5.143222808837891
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32099914550781,
+                -581.7872924804688,
+                7.379401206970215
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63604736328125,
+                -577.5524291992188,
+                7.561187267303467
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 4.2572999955154955,
+    "snapshot": {
+      "unix": 1793213332.6428227,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65196228027344,
+                    -543.9560546875,
+                    4.391740798950195
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.2616958618164,
+                    -542.238525390625,
+                    5.143875598907471
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32260131835938,
+                    -581.7899169921875,
+                    7.37939453125
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63604736328125,
+                    -577.5524291992188,
+                    7.56118631362915
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65196228027344,
+                -543.9560546875,
+                4.391740798950195
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.2616958618164,
+                -542.238525390625,
+                5.143875598907471
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32260131835938,
+                -581.7899169921875,
+                7.37939453125
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63604736328125,
+                -577.5524291992188,
+                7.56118631362915
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.8570999749936163,
+    "snapshot": {
+      "unix": 1793213332.8428292,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65132141113281,
+                    -543.950439453125,
+                    4.391589641571045
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26254272460938,
+                    -542.2420654296875,
+                    5.143491268157959
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32260131835938,
+                    -581.7899169921875,
+                    7.379395008087158
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63925170898438,
+                    -577.5538330078125,
+                    7.56103515625
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65132141113281,
+                -543.950439453125,
+                4.391589641571045
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26254272460938,
+                -542.2420654296875,
+                5.143491268157959
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32260131835938,
+                -581.7899169921875,
+                7.379395008087158
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63925170898438,
+                -577.5538330078125,
+                7.56103515625
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.6116999690420926,
+    "snapshot": {
+      "unix": 1793213333.0428426,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65376281738281,
+                    -543.9464111328125,
+                    4.391427993774414
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26285552978516,
+                    -542.2413940429688,
+                    5.143379211425781
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32340240478516,
+                    -581.7902221679688,
+                    7.379390239715576
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.64053344726562,
+                    -577.5535888671875,
+                    7.560953617095947
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65376281738281,
+                -543.9464111328125,
+                4.391427993774414
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26285552978516,
+                -542.2413940429688,
+                5.143379211425781
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32340240478516,
+                -581.7902221679688,
+                7.379390239715576
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.64053344726562,
+                -577.5535888671875,
+                7.560953617095947
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.6418999661691487,
+    "snapshot": {
+      "unix": 1793213333.2432334,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65409851074219,
+                    -543.9463500976562,
+                    4.39140510559082
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26290893554688,
+                    -542.2413330078125,
+                    5.143365859985352
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32662200927734,
+                    -581.7916259765625,
+                    7.379367351531982
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63018798828125,
+                    -577.5471801757812,
+                    7.561800003051758
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65409851074219,
+                -543.9463500976562,
+                4.39140510559082
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26290893554688,
+                -542.2413330078125,
+                5.143365859985352
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32662200927734,
+                -581.7916259765625,
+                7.379367351531982
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63018798828125,
+                -577.5471801757812,
+                7.561800003051758
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.7109999684616923,
+    "snapshot": {
+      "unix": 1793213333.4436343,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65409851074219,
+                    -543.9463500976562,
+                    4.39140510559082
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26245880126953,
+                    -542.2405395507812,
+                    5.143495082855225
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32543182373047,
+                    -581.7899169921875,
+                    7.37935733795166
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.62576293945312,
+                    -577.5473022460938,
+                    7.561903476715088
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65409851074219,
+                -543.9463500976562,
+                4.39140510559082
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26245880126953,
+                -542.2405395507812,
+                5.143495082855225
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32543182373047,
+                -581.7899169921875,
+                7.37935733795166
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.62576293945312,
+                -577.5473022460938,
+                7.561903476715088
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 4.758599970955402,
+    "snapshot": {
+      "unix": 1793213333.6450038,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65434265136719,
+                    -543.9443359375,
+                    4.391362190246582
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26300811767578,
+                    -542.2352294921875,
+                    5.143778324127197
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31595611572266,
+                    -581.7846069335938,
+                    7.379431247711182
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.62562561035156,
+                    -577.5480346679688,
+                    7.561819553375244
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65434265136719,
+                -543.9443359375,
+                4.391362190246582
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26300811767578,
+                -542.2352294921875,
+                5.143778324127197
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31595611572266,
+                -581.7846069335938,
+                7.379431247711182
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.62562561035156,
+                -577.5480346679688,
+                7.561819553375244
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 4.983399994671345,
+    "snapshot": {
+      "unix": 1793213333.8456376,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65449523925781,
+                    -543.9404296875,
+                    4.391215801239014
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26657104492188,
+                    -542.2314453125,
+                    5.1432695388793945
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31184387207031,
+                    -581.7852172851562,
+                    7.379483699798584
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.62590026855469,
+                    -577.5482177734375,
+                    7.561790943145752
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65449523925781,
+                -543.9404296875,
+                4.391215801239014
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26657104492188,
+                -542.2314453125,
+                5.1432695388793945
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31184387207031,
+                -581.7852172851562,
+                7.379483699798584
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.62590026855469,
+                -577.5482177734375,
+                7.561790943145752
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.8870000280439854,
+    "snapshot": {
+      "unix": 1793213334.0451403,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65098571777344,
+                    -543.952392578125,
+                    4.391586780548096
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26741027832031,
+                    -542.2313232421875,
+                    5.142953872680664
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31222534179688,
+                    -581.7857666015625,
+                    7.379487991333008
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.62590026855469,
+                    -577.5482177734375,
+                    7.5617899894714355
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65098571777344,
+                -543.952392578125,
+                4.391586780548096
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26741027832031,
+                -542.2313232421875,
+                5.142953872680664
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31222534179688,
+                -581.7857666015625,
+                7.379487991333008
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.62590026855469,
+                -577.5482177734375,
+                7.5617899894714355
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.850799985229969,
+    "snapshot": {
+      "unix": 1793213334.2454598,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65177917480469,
+                    -543.9571533203125,
+                    4.3917555809021
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26741027832031,
+                    -542.2313232421875,
+                    5.142947673797607
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31239318847656,
+                    -581.785888671875,
+                    7.379485607147217
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63006591796875,
+                    -577.547607421875,
+                    7.561819076538086
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65177917480469,
+                -543.9571533203125,
+                4.3917555809021
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26741027832031,
+                -542.2313232421875,
+                5.142947673797607
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31239318847656,
+                -581.785888671875,
+                7.379485607147217
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63006591796875,
+                -577.547607421875,
+                7.561819076538086
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 4.610900010447949,
+    "snapshot": {
+      "unix": 1793213334.446502,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65290832519531,
+                    -543.9577026367188,
+                    4.391777038574219
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26783752441406,
+                    -542.2304077148438,
+                    5.142923355102539
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31266021728516,
+                    -581.7855834960938,
+                    7.379483222961426
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63509368896484,
+                    -577.5503540039062,
+                    7.561504364013672
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65290832519531,
+                -543.9577026367188,
+                4.391777038574219
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26783752441406,
+                -542.2304077148438,
+                5.142923355102539
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31266021728516,
+                -581.7855834960938,
+                7.379483222961426
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63509368896484,
+                -577.5503540039062,
+                7.561504364013672
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 4.303800000343472,
+    "snapshot": {
+      "unix": 1793213334.646487,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65296936035156,
+                    -543.957275390625,
+                    4.391760349273682
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.27014923095703,
+                    -542.2255249023438,
+                    5.142695426940918
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.31754302978516,
+                    -581.785400390625,
+                    7.379432678222656
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63604736328125,
+                    -577.5524291992188,
+                    7.56119966506958
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65296936035156,
+                -543.957275390625,
+                4.391760349273682
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.27014923095703,
+                -542.2255249023438,
+                5.142695426940918
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.31754302978516,
+                -581.785400390625,
+                7.379432678222656
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63604736328125,
+                -577.5524291992188,
+                7.56119966506958
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 5.431200028397143,
+    "snapshot": {
+      "unix": 1793213334.8478696,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65296936035156,
+                    -543.957275390625,
+                    4.391759395599365
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26351165771484,
+                    -542.2344360351562,
+                    5.143604755401611
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32211303710938,
+                    -581.7885131835938,
+                    7.379394054412842
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63604736328125,
+                    -577.5524291992188,
+                    7.56118631362915
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65296936035156,
+                -543.957275390625,
+                4.391759395599365
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26351165771484,
+                -542.2344360351562,
+                5.143604755401611
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32211303710938,
+                -581.7885131835938,
+                7.379394054412842
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63604736328125,
+                -577.5524291992188,
+                7.56118631362915
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.6068999907001853,
+    "snapshot": {
+      "unix": 1793213335.046418,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65138244628906,
+                    -543.9544067382812,
+                    4.3917036056518555
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26170349121094,
+                    -542.2401123046875,
+                    5.143802642822266
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32260131835938,
+                    -581.7899169921875,
+                    7.379395008087158
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63604736328125,
+                    -577.5524291992188,
+                    7.56118631362915
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65138244628906,
+                -543.9544067382812,
+                4.3917036056518555
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26170349121094,
+                -542.2401123046875,
+                5.143802642822266
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32260131835938,
+                -581.7899169921875,
+                7.379395008087158
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63604736328125,
+                -577.5524291992188,
+                7.56118631362915
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 4.278199980035424,
+    "snapshot": {
+      "unix": 1793213335.2473927,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65199279785156,
+                    -543.9486083984375,
+                    4.391526699066162
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26264953613281,
+                    -542.2418212890625,
+                    5.1434197425842285
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32260131835938,
+                    -581.7899169921875,
+                    7.379395008087158
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.6408462524414,
+                    -577.5545043945312,
+                    7.560939788818359
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65199279785156,
+                -543.9486083984375,
+                4.391526699066162
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26264953613281,
+                -542.2418212890625,
+                5.1434197425842285
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32260131835938,
+                -581.7899169921875,
+                7.379395008087158
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.6408462524414,
+                -577.5545043945312,
+                7.560939788818359
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 4.862699948716909,
+    "snapshot": {
+      "unix": 1793213335.4482665,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65409851074219,
+                    -543.9463500976562,
+                    4.3914103507995605
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26290893554688,
+                    -542.2413330078125,
+                    5.143369197845459
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32393646240234,
+                    -581.7904663085938,
+                    7.379385471343994
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.63687896728516,
+                    -577.5511474609375,
+                    7.561235427856445
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65409851074219,
+                -543.9463500976562,
+                4.3914103507995605
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26290893554688,
+                -542.2413330078125,
+                5.143369197845459
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32393646240234,
+                -581.7904663085938,
+                7.379385471343994
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.63687896728516,
+                -577.5511474609375,
+                7.561235427856445
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  },
+  {
+    "elapsed_ms": 3.9747999981045723,
+    "snapshot": {
+      "unix": 1793213335.6478653,
+      "content_index": 182,
+      "squads": [
+        {
+          "group": 103668061,
+          "index": 5,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1811251206,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1174061076,
+                  "address": 15029839776,
+                  "position": [
+                    126.65409851074219,
+                    -543.9463500976562,
+                    4.39140510559082
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1408991688,
+              "parent_handle": 1543159823
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 6,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800581,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 419089042,
+                  "address": 15029920944,
+                  "position": [
+                    115.26290893554688,
+                    -542.2413330078125,
+                    5.143365859985352
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 486244805,
+              "parent_handle": 553305351
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 7,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 8,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 452296707,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 49989278,
+                  "address": 15030055344,
+                  "position": [
+                    71.6400375366211,
+                    -569.2494506835938,
+                    5.547999858856201
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1241219520,
+              "parent_handle": 351979198
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 9,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 10,
+          "member_count": 0,
+          "members": [],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 11,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1995800576,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 502972574,
+                  "address": 15030193712,
+                  "position": [
+                    98.32823944091797,
+                    -581.7922973632812,
+                    7.379352569580078
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1912308155,
+              "parent_handle": 1526385117
+            }
+          ],
+          "errors": []
+        },
+        {
+          "group": 103668061,
+          "index": 12,
+          "member_count": 1,
+          "members": [
+            {
+              "member_handle": 1710587913,
+              "active": true,
+              "parts": [
+                {
+                  "role": "body",
+                  "handle": 1610271343,
+                  "address": 15029701632,
+                  "position": [
+                    98.62870788574219,
+                    -577.546875,
+                    7.561886310577393
+                  ]
+                }
+              ],
+              "health": null,
+              "sense_matches": true,
+              "transform_handle": 1593541070,
+              "parent_handle": 2080033039
+            }
+          ],
+          "errors": []
+        }
+      ],
+      "targets": [
+        {
+          "group": 103668061,
+          "squad": 5,
+          "member_handle": 1811251206,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1174061076,
+              "address": 15029839776,
+              "position": [
+                126.65409851074219,
+                -543.9463500976562,
+                4.39140510559082
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1408991688,
+          "parent_handle": 1543159823
+        },
+        {
+          "group": 103668061,
+          "squad": 6,
+          "member_handle": 1995800581,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 419089042,
+              "address": 15029920944,
+              "position": [
+                115.26290893554688,
+                -542.2413330078125,
+                5.143365859985352
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 486244805,
+          "parent_handle": 553305351
+        },
+        {
+          "group": 103668061,
+          "squad": 8,
+          "member_handle": 452296707,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 49989278,
+              "address": 15030055344,
+              "position": [
+                71.6400375366211,
+                -569.2494506835938,
+                5.547999858856201
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1241219520,
+          "parent_handle": 351979198
+        },
+        {
+          "group": 103668061,
+          "squad": 11,
+          "member_handle": 1995800576,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 502972574,
+              "address": 15030193712,
+              "position": [
+                98.32823944091797,
+                -581.7922973632812,
+                7.379352569580078
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1912308155,
+          "parent_handle": 1526385117
+        },
+        {
+          "group": 103668061,
+          "squad": 12,
+          "member_handle": 1710587913,
+          "active": true,
+          "parts": [
+            {
+              "role": "body",
+              "handle": 1610271343,
+              "address": 15029701632,
+              "position": [
+                98.62870788574219,
+                -577.546875,
+                7.561886310577393
+              ]
+            }
+          ],
+          "health": null,
+          "sense_matches": true,
+          "transform_handle": 1593541070,
+          "parent_handle": 2080033039
+        }
+      ]
+    }
+  }
+]

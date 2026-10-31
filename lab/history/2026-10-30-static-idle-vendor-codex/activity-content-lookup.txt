@@ -1,0 +1,70 @@
+FUNCTION 269050..2690c0
+0x00269050 push      rbp
+0x00269051 mov       rbp, rsp
+0x00269054 push      rbx
+0x00269055 push      rax
+0x00269056 mov       ebx, edi
+0x00269058 call      0x25cc10
+0x0026905d test      al, al
+0x0026905f je        0x26907d
+0x00269061 call      0x25a550
+0x00269066 mov       rcx, qword ptr [rax]
+0x00269069 mov       rcx, qword ptr [rcx + 0x328]
+0x00269070 mov       rdi, rax
+0x00269073 mov       esi, ebx
+0x00269075 add       rsp, 8
+0x00269079 pop       rbx
+0x0026907a pop       rbp
+0x0026907b jmp       rcx
+0x0026907d xor       eax, eax
+0x0026907f add       rsp, 8
+0x00269083 pop       rbx
+0x00269084 pop       rbp
+0x00269085 ret       
+0x00269086 nop       word ptr cs:[rax + rax]
+0x00269090 nop       
+0x00269091 add       byte ptr [rax], al
+0x00269093 add       byte ptr [rcx + 0x5e415bd8], cl
+0x00269099 pop       rbp
+0x0026909a ret       
+0x0026909b nop       dword ptr [rax + rax]
+0x002690a0 pop       rbp
+0x002690a1 jmp       0x2690a6
+0x002690a6 nop       word ptr cs:[rax + rax]
+0x002690b0 add       byte ptr [rsi + 0x66], ah
+0x002690b3 nop       word ptr cs:[rax + rax]
+FUNCTION 549bf0..549c60
+0x00549bf0 push      rbp
+0x00549bf1 mov       rbp, rsp
+0x00549bf4 push      r15
+0x00549bf6 push      r14
+0x00549bf8 push      rbx
+0x00549bf9 push      rax
+0x00549bfa mov       r14d, esi
+0x00549bfd mov       rbx, rdi
+0x00549c00 call      0x25cbd0
+0x00549c05 mov       r15, rax
+0x00549c08 mov       rdi, rbx
+0x00549c0b call      0x549c60
+0x00549c10 mov       rbx, rax
+0x00549c13 mov       rax, qword ptr [r15]
+0x00549c16 mov       rdi, r15
+0x00549c19 mov       esi, r14d
+0x00549c1c call      qword ptr [rax + 0x340]
+0x00549c22 movsx     rcx, r14b
+0x00549c26 movsxd    rdx, dword ptr [rbx]
+0x00549c29 cmp       rdx, rcx
+0x00549c2c jbe       0x549c44
+0x00549c2e lea       rdx, [rbx + 8]
+0x00549c32 add       rdx, qword ptr [rbx + 8]
+0x00549c36 imul      rcx, rcx, 0xb8
+0x00549c3d lea       rdx, [rcx + rdx + 0x10]
+0x00549c42 jmp       0x549c46
+0x00549c44 xor       edx, edx
+0x00549c46 add       rsp, 8
+0x00549c4a pop       rbx
+0x00549c4b pop       r14
+0x00549c4d pop       r15
+0x00549c4f pop       rbp
+0x00549c50 ret       
+0x00549c51 nop       word ptr cs:[rax + rax]

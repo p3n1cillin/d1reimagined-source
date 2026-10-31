@@ -1,0 +1,76 @@
+0x001ade40 push      rbp
+0x001ade41 mov       rbp, rsp
+0x001ade44 push      r15
+0x001ade46 push      r14
+0x001ade48 push      r13
+0x001ade4a push      r12
+0x001ade4c push      rbx
+0x001ade4d push      rax
+0x001ade4e mov       r15d, esi
+0x001ade51 mov       dword ptr [rbp - 0x2c], edi
+0x001ade54 mov       ebx, r15d
+0x001ade57 and       ebx, 0x1fff
+0x001ade5d lea       rax, [rip + 0x242b08c] ; [0x25d8ef0]
+0x001ade64 imul      ebx, dword ptr [rax + 0x10]
+0x001ade68 mov       r12, qword ptr [rax + 8]
+0x001ade6c mov       eax, dword ptr [rbx + r12 + 0x14]
+0x001ade71 xor       r13d, r13d
+0x001ade74 cmp       eax, -1
+0x001ade77 je        0x1ade95
+0x001ade79 and       eax, 0x1fff
+0x001ade7e lea       rcx, [rip + 0x242b0eb] ; [0x25d8f70]
+0x001ade85 imul      eax, dword ptr [rcx + 0x10]
+0x001ade89 mov       rcx, qword ptr [rcx + 8]
+0x001ade8d lea       r13, [rax + rcx + 0x80]
+0x001ade95 movzx     r14d, word ptr [rbx + r12 + 0x42]
+0x001ade9b mov       byte ptr [rbx + r12 + 0x20], 3
+0x001adea1 mov       eax, r14d
+0x001adea4 and       eax, 0xfbff
+0x001adea9 mov       word ptr [rbx + r12 + 0x42], ax
+0x001adeaf and       r14d, 0x400
+0x001adeb6 test      r13, r13
+0x001adeb9 je        0x1adee3
+0x001adebb test      r14w, r14w
+0x001adebf jne       0x1adec5
+0x001adec1 test      dl, dl
+0x001adec3 je        0x1adee3
+0x001adec5 and       byte ptr [r13 + 0x73], 0xf7
+0x001adeca mov       esi, r15d
+0x001adecd mov       edx, 1
+0x001aded2 call      0x1ad0b0
+0x001aded7 and       byte ptr [r13 + 0x73], 0xfe
+0x001adedc mov       word ptr [r13 + 0x6a], 0
+0x001adee3 test      r14w, r14w
+0x001adee7 je        0x1adf2c
+0x001adee9 cmp       byte ptr [r12 + rbx], 2
+0x001adeee mov       ebx, dword ptr [rbp - 0x2c]
+0x001adef1 jne       0x1adf14
+0x001adef3 mov       edi, ebx
+0x001adef5 xor       esi, esi
+0x001adef7 call      0x1501e0
+0x001adefc cmp       eax, r15d
+0x001adeff sete      al
+0x001adf02 movzx     ecx, al
+0x001adf05 mov       edi, ebx
+0x001adf07 mov       esi, r15d
+0x001adf0a mov       edx, 0xffffffff
+0x001adf0f call      0x166280
+0x001adf14 mov       edi, ebx
+0x001adf16 mov       esi, r15d
+0x001adf19 add       rsp, 8
+0x001adf1d pop       rbx
+0x001adf1e pop       r12
+0x001adf20 pop       r13
+0x001adf22 pop       r14
+0x001adf24 pop       r15
+0x001adf26 pop       rbp
+0x001adf27 jmp       0x14b9d0
+0x001adf2c add       rsp, 8
+0x001adf30 pop       rbx
+0x001adf31 pop       r12
+0x001adf33 pop       r13
+0x001adf35 pop       r14
+0x001adf37 pop       r15
+0x001adf39 pop       rbp
+0x001adf3a ret       
+0x001adf3b nop       dword ptr [rax + rax]

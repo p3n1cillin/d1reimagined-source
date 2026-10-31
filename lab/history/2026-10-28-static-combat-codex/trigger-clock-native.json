@@ -1,0 +1,33 @@
+{
+  "utc": "2026-10-28T12:04:19.298409+00:00",
+  "world": "0x37fb1a200",
+  "clock": "0x37fb1cb80",
+  "tick_ms": 0.0,
+  "received_stamp": 0,
+  "monotonic_seconds": 0.0,
+  "receive_time": 113335,
+  "triggers": [
+    {
+      "name": [
+        2569778289,
+        29,
+        40
+      ],
+      "component": "0x380273c80",
+      "last_report_tick": -2147483648,
+      "armed": 1,
+      "arm_tick": 1
+    },
+    {
+      "name": [
+        2569778289,
+        29,
+        41
+      ],
+      "component": "0x380273e60",
+      "last_report_tick": -1,
+      "armed": 0,
+      "arm_tick": 0
+    }
+  ]
+}

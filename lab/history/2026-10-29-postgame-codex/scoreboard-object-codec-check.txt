@@ -1,0 +1,4 @@
+tag 0x808008d0  struct 19792 (=0x4d50) bytes
+payload 124 bytes / 988 bits -> lab/history\2026-10-29-postgame-codex\scoreboard-one-player-A.wire.bin
+round trip: 988 bits consumed, object IDENTICAL
+

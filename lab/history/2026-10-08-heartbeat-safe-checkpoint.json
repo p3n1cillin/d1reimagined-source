@@ -1,0 +1,126 @@
+{
+  "checked_at": "2026-10-07T23:10:35.6789801Z",
+  "automation_id": "daily-engineering-handoff",
+  "trigger_reporting_date": "2026-10-07",
+  "local_checkpoint_date": "2026-10-08",
+  "existing_daily_package": "<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962",
+  "ready_directory": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\07\\<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962.ready",
+  "payload_checks": [
+    {
+      "file": "daily-report.md",
+      "bytes": 13502,
+      "size_match": true,
+      "hash_match": true
+    },
+    {
+      "file": "events.json",
+      "bytes": 4696,
+      "size_match": true,
+      "hash_match": true
+    },
+    {
+      "file": "metadata.json",
+      "bytes": 2957,
+      "size_match": true,
+      "hash_match": true
+    }
+  ],
+  "unmanifested_payloads": 0,
+  "all_owned_processes": [
+    {
+      "tag": "dns",
+      "id": 3024,
+      "startTimeUtcTicks": "639270105436442446",
+      "exact_live": false
+    },
+    {
+      "tag": "stun",
+      "id": 19244,
+      "startTimeUtcTicks": "639270105437065456",
+      "exact_live": false
+    },
+    {
+      "tag": "signon",
+      "id": 20152,
+      "startTimeUtcTicks": "639270105437365484",
+      "exact_live": false
+    },
+    {
+      "tag": "lobby",
+      "id": 20144,
+      "startTimeUtcTicks": "639270105439738575",
+      "exact_live": false
+    },
+    {
+      "tag": "bap",
+      "id": 15920,
+      "startTimeUtcTicks": "639270105439876942",
+      "exact_live": false
+    },
+    {
+      "tag": "rpcs3",
+      "id": 23704,
+      "startTimeUtcTicks": "639270105470226732",
+      "exact_live": false
+    },
+    {
+      "tag": "gdbd",
+      "id": 3724,
+      "startTimeUtcTicks": "639270105505681768",
+      "exact_live": false
+    },
+    {
+      "tag": "proxy",
+      "id": 20580,
+      "startTimeUtcTicks": "639270107015258567",
+      "exact_live": false
+    },
+    {
+      "tag": "session-probe",
+      "id": 15888,
+      "startTimeUtcTicks": "639270107860792639",
+      "exact_live": false
+    }
+  ],
+  "cleanup": {
+    "at": "2026-10-07T23:07:48.8103369Z",
+    "fixture_completed": true,
+    "all_owned_closed": true,
+    "title_unchanged": true,
+    "watch_unchanged": true,
+    "input": "Handler: XInput",
+    "active_controls": [],
+    "shared_rpcn_preserved": true,
+    "errors": []
+  },
+  "capture_status": {
+    "CONTENT_CAPTURE_ENABLED": true,
+    "DEVELOPMENT_MACHINE_ID": "<lab-pc>",
+    "LOCAL_OUTBOX_COUNT": 0,
+    "LOCAL_REVIEW_COUNT": 0,
+    "LAST_SUCCESSFUL_TRANSFER": "2026-10-07T18:49:01.030431+01:00",
+    "CURRENT_DEVBLOG": null,
+    "CURRENT_SESSION": "renderer-and-inventory-restoration",
+    "AVAILABLE_BUFFER_SPACE": 1310798094336,
+    "NAS_CONNECTED": true,
+    "updated_at": "2026-10-08T00:10:35.629896+01:00",
+    "RECORDER_STATUS": "IDLE",
+    "ACTIVE_RUN": null,
+    "RECORDER_EXIT": null,
+    "MONITOR_ERROR": null,
+    "SAMPLE_STATUS": "AVAILABLE",
+    "SAMPLE_ERROR": null,
+    "PROCESSING_ERROR": null,
+    "STATUS_UPDATE_DEFERRED": false,
+    "STATUS_UPDATE_ERROR": null,
+    "AVAILABLE_NAS_SPACE": 536707203072,
+    "NAS_TRANSFER_REQUIRED_BYTES": 21598,
+    "NAS_CAPACITY_ERROR": null
+  },
+  "new_package_created": false,
+  "previous_ready_packages_modified": false,
+  "media_resent": false,
+  "late_evidence": "JOIN175/176/177 post-cutoff evidence held for next eligible daily edition with original UTC and Europe/London dates.",
+  "engineering_record": "2026-10-08-progress.md",
+  "user_action_required": false
+}

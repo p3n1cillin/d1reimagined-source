@@ -1,0 +1,18 @@
+   Compiling bindgen v0.71.1
+   Compiling unicorn-engine-sys v2.1.5
+   Compiling unicorn-engine v2.1.5
+   Compiling d1-oracle v0.1.0 (F:\d1\public-work\d1reimagined-source\ps4\d1-server\crates\d1-oracle)
+   Compiling d1-activity-host v0.1.0 (F:\d1\public-work\d1reimagined-source\ps4\d1-server\crates\d1-activity-host)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 17s
+     Running unittests src\lib.rs (target\debug\deps\d1_activity_host-ebe0acd55adda004.exe)
+
+running 6 tests
+test listener::tests::client_update_capture_zero_disables_the_extra_diagnostics ... ok
+test listener::tests::client_update_capture_waits_for_the_requested_window ... ok
+test listener::tests::client_update_capture_is_opt_in_and_preserves_incidents ... ok
+test listener::tests::client_update_capture_tracks_both_types_without_repeating_unchanged_data ... ok
+test listener::tests::client_update_capture_budget_is_shared_and_hard_capped ... ok
+test listener::tests::client_update_capture_bounds_storage_and_labels_oversized_payloads ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 73 filtered out; finished in 0.00s
+

@@ -1,0 +1,17 @@
+   Compiling unicorn-engine-sys v2.1.5
+   Compiling unicorn-engine v2.1.5
+   Compiling d1-oracle v0.1.0 (F:\d1\public-work\d1reimagined-source\ps4\d1-server\crates\d1-oracle)
+   Compiling private-d1-stat-probe v0.1.0 (lab/history\2026-10-28-character-stats\native-stat-probe)
+    Finished `release` profile [optimized] target(s) in 1m 12s
+     Running `lab/history\2026-10-28-character-stats\native-stat-probe\target\release\private-d1-stat-probe.exe lab/history\2026-10-28-character-stats`
+TRACE 915e0 xmm=[-10.0, 25.0, 0.71428573, 0.0] rax=5000a20 rdx=15e flags=13
+TRACE 915ec xmm=[-20.0, 25.0, 0.71428573, 0.0] rax=5000a20 rdx=15e flags=13
+TRACE 281ab5 xmm=[-20.0, 25.0, 0.71428573, 0.0] rax=5000a20 rdx=15e flags=6
+TRACE 281ac1 xmm=[-20.0, 25.0, 0.71428573, 0.0] rax=2 rdx=15e flags=6
+TRACE 281ac9 xmm=[-18.0, 2.0, 0.71428573, 0.0] rax=2 rdx=15e flags=6
+TRACE 1017661 xmm=[0.0, -18.0, 0.71428573, 0.0] rax=2 rdx=15e flags=6
+TRACE 10176b3 xmm=[0.0, -18.0, 0.0, -18.0] rax=38 rdx=50009c0 flags=3
+TRACE 1017730 xmm=[0.0, -18.0, 0.0, -18.0] rax=38 rdx=50009c0 flags=2
+TRACE 1017742 xmm=[3.0, -18.0, 0.0, -18.0] rax=38 rdx=50009c0 flags=2
+TRACE 281ad4 xmm=[3.0, -18.0, 0.0, -18.0] rax=38 rdx=50009c0 flags=6
+TRACE_RESULT 3

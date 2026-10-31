@@ -1,0 +1,31 @@
+{
+  "recorded_at": "2026-10-10T18:10:53.856326+00:00",
+  "reporting_date": "2026-10-10",
+  "reporting_timezone": "Europe/London",
+  "daily_update_id": "destiny1-2026-10-10",
+  "reporting_interval_start": "2026-10-09T12:57:17.9180128Z",
+  "reporting_interval_end": "2026-10-10T18:10:53.856326+00:00",
+  "development_session": "opening-mission-ui-order",
+  "topic": "opening-mission",
+  "feature": "opening-mission-ui-order",
+  "event_type": "MISSION_PROGRESS",
+  "importance": "USEFUL",
+  "description": "Consolidated private daily evidence: urgent notice suppression at rifle acquisition and objective handover without the extra mission banner; connection restart, ammunition, aiming and lighting limits remain explicit.",
+  "previous_state": "Unsolicited urgent dialog blocks input after a grant; incoming objectives show an extra mission banner.",
+  "current_state": "One bounded grant sample has no urgent dialog; one Wall handover has no extra mission banner. These are separate native runs with recorded dirty test revisions.",
+  "remaining_issue": "Post-grant banner acceptance, connection restart, magazine 12 versus reference 25/184, enemy kills, early Level Up, lighting, Ghost glow, flicker/distortion and mission completion.",
+  "referenced_package_ids": [
+    "<lab-pc>-20261009T125718-1d066e3db5a04e1aa2f57c03b33c0c2b",
+    "<lab-pc>-20261009T125544-09cb974a0e1e437c81a2a894a944a91a",
+    "<lab-pc>-20261009T125545-28ab7c371d894cb198306a0e9bbf0b63",
+    "<lab-pc>-20261009T125546-9759fa314de647ed8276a6f0b481dcba",
+    "<lab-pc>-20261010T180802-6a22199448334c9d9b7c118ae9ddbfb6",
+    "<lab-pc>-20261010T180808-5edaf0838d814fb9b5895bd5a98f1515"
+  ],
+  "new_media_included": true,
+  "new_media_delivery": "pending at preparation",
+  "publication_review_required": true,
+  "native_pending_at_cutoff": [],
+  "tested_runtime_build_sha256": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "maturity": "Partially Working; isolated, sampled native scope only"
+}

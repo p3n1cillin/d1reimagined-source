@@ -1,0 +1,8 @@
+0x0050ec70 mov       rax, qword ptr [rdi + 0x20]
+0x0050ec74 movzx     ecx, word ptr [rax + 0xa]
+0x0050ec78 vcvtsi2ss xmm0, xmm0, ecx
+0x0050ec7c vmovss    xmm1, dword ptr [rax]
+0x0050ec80 vmulss    xmm1, xmm1, dword ptr [rax + 4]
+0x0050ec85 vmulss    xmm0, xmm1, xmm0
+0x0050ec89 ret       
+0x0050ec8a nop       word ptr [rax + rax]

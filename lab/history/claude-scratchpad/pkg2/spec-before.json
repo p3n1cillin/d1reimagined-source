@@ -1,0 +1,49 @@
+{
+  "machine": "<lab-pc>",
+  "report": "daily-report.md",
+  "screenshots": [
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/pkg/shots/lut-before.png",
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/pkg/shots/breach-before.png"
+  ],
+  "metadata": {
+    "reporting_date": "2026-10-26",
+    "reporting_timezone": "Europe/London",
+    "daily_update_id": "destiny1-2026-10-26",
+    "package_kind": "comparison-screenshots",
+    "game_build": "PS4 Destiny 56578 (01.33), A Guardian Rises, own servers, emulator with project fixes",
+    "build": "PS4 Destiny 56578 (01.33), A Guardian Rises, own servers, emulator with project fixes",
+    "repository": "https://github.com/p3n1cillin/d1reimagined-source",
+    "git_branch": "main",
+    "emulator_repository": "https://github.com/p3n1cillin/d1reimagined-shadps4",
+    "topic": "graphics-colour-grading",
+    "feature": "colour-grading-lut-fix",
+    "importance": "HIGH",
+    "comparison_group_id": "destiny1-2026-10-26-colour-grading-lut",
+    "previous_state": "Shadows rendered black with blue patches; lit areas of The Breach blew out to white.",
+    "current_state": "Shadows show ambient light and texture detail; lit areas keep warm colour.",
+    "remaining_issue": "Screenshots are from 1280x720 test runs; no side-by-side comparison with the original console yet.",
+    "next_task": "Record a 1080p before/after clip of the same scene.",
+    "contains_sensitive_information": false,
+    "requires_manual_review": true,
+    "publication_review_required": true,
+    "recording_notes": "Screenshots captured earlier today during the fix runs, cropped to the game image (no window border or desktop).",
+    "event_type": "BEFORE",
+    "comparison_role": "BEFORE",
+    "recorded_at": "2026-10-26T11:01:18+00:00",
+    "git_commit": "1c75ec6ce3821b54de5ab568c0ba26cfc22303ed",
+    "description": "Before the colour-grading fix: on the Cosmodrome highway the wrecks and the gun render black with saturated blue patches; in The Breach the lit pipes and walls blow out to white.",
+    "screenshot_notes": [
+      {
+        "file": "screenshots/01.png",
+        "scene": "highway, same spot as AFTER 01",
+        "captured_at": "2026-10-26T11:01:18Z"
+      },
+      {
+        "file": "screenshots/02.png",
+        "scene": "The Breach, same area as AFTER 02 (different view)",
+        "captured_at": "2026-10-26T03:09:29Z"
+      }
+    ],
+    "emulator_state": "emulator without the colour-grading fix"
+  }
+}

@@ -1,0 +1,62 @@
+0x00105500 push      rbp
+0x00105501 mov       rbp, rsp
+0x00105504 push      r15
+0x00105506 push      r14
+0x00105508 push      r12
+0x0010550a push      rbx
+0x0010550b sub       rsp, 0x20
+0x0010550f mov       r12, rdi
+0x00105512 mov       r15, qword ptr [rip + 0x1919be7] ; [0x1a1f100]
+0x00105519 mov       rax, qword ptr [r15]
+0x0010551c mov       qword ptr [rbp - 0x28], rax
+0x00105520 lea       r14, [r12 + 0x3e0]
+0x00105528 mov       rdi, r14
+0x0010552b call      0x1076c0
+0x00105530 test      al, al
+0x00105532 je        0x1055c1
+0x00105538 cmp       dword ptr [r12 + 0x3ec], -1
+0x00105541 je        0x1055c1
+0x00105543 cmp       dword ptr [r12 + 0x3f0], -1
+0x0010554c je        0x1055c1
+0x0010554e lea       rdx, [rbp - 0x40]
+0x00105552 mov       rdi, r14
+0x00105555 xor       esi, esi
+0x00105557 call      0x1071d0
+0x0010555c test      al, al
+0x0010555e je        0x1055c1
+0x00105560 mov       eax, dword ptr [rbp - 0x40]
+0x00105563 mov       edx, eax
+0x00105565 sar       edx, 0xd
+0x00105568 mov       ecx, edx
+0x0010556a shr       ecx, 0x12
+0x0010556d or        ecx, 0x3ff
+0x00105573 and       ecx, edx
+0x00105575 shl       rcx, 6
+0x00105579 lea       rdx, [rip + 0x191e320] ; [0x1a238a0]
+0x00105580 mov       rdx, qword ptr [rdx]
+0x00105583 mov       rbx, qword ptr [rdx]
+0x00105586 mov       esi, dword ptr [r12 + 0x3ec]
+0x0010558e mov       edx, dword ptr [r12 + 0x3f0]
+0x00105596 mov       r8, qword ptr [rbp - 0x38]
+0x0010559a mov       rdi, qword ptr [rbx + rcx + 0x10]
+0x0010559f movsxd    r9, dword ptr [rbx + rcx + 0x34]
+0x001055a4 and       eax, 0x1fff
+0x001055a9 imul      eax, dword ptr [rbx + rcx + 0x30]
+0x001055ae and       r9, qword ptr [rdi + rax + 8]
+0x001055b3 add       rdi, rax
+0x001055b6 sub       rdi, r9
+0x001055b9 add       rdi, r8
+0x001055bc call      0x1c2620
+0x001055c1 mov       rax, qword ptr [r15]
+0x001055c4 cmp       rax, qword ptr [rbp - 0x28]
+0x001055c8 jne       0x1055d7
+0x001055ca add       rsp, 0x20
+0x001055ce pop       rbx
+0x001055cf pop       r12
+0x001055d1 pop       r14
+0x001055d3 pop       r15
+0x001055d5 pop       rbp
+0x001055d6 ret       
+0x001055d7 call      0x12aa7f0
+0x001055dc nop       
+0x001055dd nop       dword ptr [rax]

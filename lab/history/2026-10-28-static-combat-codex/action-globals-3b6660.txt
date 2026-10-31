@@ -1,0 +1,36 @@
+0x003b6660 push      rbp
+0x003b6661 mov       rbp, rsp
+0x003b6664 sub       rsp, 0x30
+0x003b6668 lea       rax, [rip + 0x157f5f9] ; [0x1935c68]
+0x003b666f mov       rax, qword ptr [rax]
+0x003b6672 mov       r8d, 0xffffffff
+0x003b6678 test      rax, rax
+0x003b667b je        0x3b6680
+0x003b667d mov       r8d, dword ptr [rax]
+0x003b6680 lea       rax, [rip + 0xc56239] ; [0x100c8c0]
+0x003b6687 mov       qword ptr [rsp + 0x10], rax
+0x003b668c mov       dword ptr [rsp + 8], 0x30
+0x003b6694 mov       dword ptr [rsp], 0
+0x003b669b lea       rdi, [rip + 0x22f6aee] ; [0x26ad190]
+0x003b66a2 lea       rsi, [rip + 0x127748b] ; [0x162db34] 'g_action_system_globals'
+0x003b66a9 mov       edx, 0x20
+0x003b66ae mov       ecx, 4
+0x003b66b3 mov       r9d, 7
+0x003b66b9 call      0x23e010
+0x003b66be lea       rax, [rip + 0x157f593] ; [0x1935c58]
+0x003b66c5 mov       edx, dword ptr [rax + 8]
+0x003b66c8 lea       rdi, [rip + 0x22f6a41] ; [0x26ad110]
+0x003b66cf lea       rsi, [rip + 0x1277476] ; [0x162db4c] 'g_action_system_component_registry'
+0x003b66d6 mov       dword ptr [rsp + 0x20], 0
+0x003b66de mov       dword ptr [rsp + 0x18], 0x30
+0x003b66e6 mov       dword ptr [rsp + 0x10], 0
+0x003b66ee mov       dword ptr [rsp + 8], 8
+0x003b66f6 mov       dword ptr [rsp], 0x100
+0x003b66fd mov       ecx, 4
+0x003b6702 mov       r8d, 4
+0x003b6708 mov       r9d, 0xffffffff
+0x003b670e call      0x70530
+0x003b6713 add       rsp, 0x30
+0x003b6717 pop       rbp
+0x003b6718 ret       
+0x003b6719 nop       dword ptr [rax]

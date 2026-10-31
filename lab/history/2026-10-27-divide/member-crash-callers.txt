@@ -1,0 +1,36 @@
+target 0x1bdc50: 1 confirmed reference(s) over 1 candidate window(s) [kinds: call]
+   call    fn 0x01bcf40  0x01bcfd9  call    0x1bdc50
+
+POSITIVE CONTROL call    0x107ed0 -> 0x102b7a: PASS
+
+=== fn 0x01bcf40 around 0x01bcfd9 ===
+0x01bcfab  mov      esi, 0x908
+0x01bcfb0  call     0x2cfcd0
+0x01bcfb5  cmp      byte ptr [rax+6], 0
+0x01bcfb9  je       short 0x1bcfcd
+0x01bcfbb  cmp      byte ptr [rbx+0x1f0], 0
+0x01bcfc2  jne      short 0x1bcfcd
+0x01bcfc4  cmp      dword ptr [rbx+0x218], 0xffffffff
+0x01bcfcb  je       short 0x1bcff0
+0x01bcfcd  mov      edx, [rbx+0xab0]
+0x01bcfd3  mov      rdi, rbx
+0x01bcfd6  mov      rsi, r14
+0x01bcfd9  call     0x1bdc50 <<<
+0x01bcfde  mov      rdi, r14
+0x01bcfe1  call     0x1076e0
+0x01bcfe6  mov      dword ptr [rbx+0xab0], 0xffffffff
+0x01bcff0  mov      rdi, rbx
+0x01bcff3  pop      rbx
+0x01bcff4  pop      r14
+0x01bcff6  pop      rbp
+0x01bcff7  jmp      0x1bde70
+0x01bcffc  nop      [rax]
+0x01bd000  pop      rbx
+0x01bd001  pop      rbp
+0x01bd002  ret      
+0x01bd003  nop      [rax+rax]
+0x01bd010  push     rbp
+0x01bd011  mov      rbp, rsp
+0x01bd014  push     r15
+0x01bd016  push     r14
+0x01bd018  push     r12

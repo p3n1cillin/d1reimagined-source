@@ -1,0 +1,24 @@
+shadPS4 pid 24364  eboot base 0x5100000  control vtable[0]=0x5854410 PASS
+start (398.2716064453125, -689.9022827148438, 10.506458282470703) goal [300.0, -705.0]
+at (400.0, -693.6, 10.9) dist 100.6 best 99.4 cells 4 blocked 8
+at (398.3, -689.2, 10.5) dist 99.5 best 99.4 cells 7 blocked 8
+at (398.3, -688.8, 11.0) dist 99.6 best 99.4 cells 7 blocked 8
+at (398.3, -692.3, 10.3) dist 99.1 best 99.4 cells 8 blocked 10
+at (398.2, -687.5, 11.0) dist 99.8 best 99.4 cells 8 blocked 10
+at (398.3, -690.6, 10.1) dist 99.3 best 99.4 cells 8 blocked 10
+at (398.3, -689.7, 11.1) dist 99.4 best 99.4 cells 8 blocked 10
+at (398.1, -693.6, 10.4) dist 98.8 best 99.4 cells 8 blocked 10
+at (398.3, -688.7, 10.3) dist 99.6 best 99.4 cells 8 blocked 10
+at (398.3, -688.5, 11.0) dist 99.7 best 99.4 cells 8 blocked 10
+at (401.3, -686.8, 11.0) dist 102.9 best 99.4 cells 8 blocked 10
+at (398.6, -690.8, 10.9) dist 99.6 best 99.4 cells 9 blocked 12
+at (398.3, -692.4, 10.1) dist 99.1 best 99.4 cells 9 blocked 12
+at (398.3, -688.9, 10.1) dist 99.6 best 99.4 cells 9 blocked 12
+at (398.3, -689.1, 10.5) dist 99.5 best 99.4 cells 10 blocked 17
+at (401.6, -686.5, 11.0) dist 103.3 best 99.4 cells 10 blocked 17
+at (416.9, -689.0, 9.1) dist 118.0 best 99.4 cells 14 blocked 18
+at (431.9, -686.9, 12.1) dist 133.1 best 99.4 cells 19 blocked 18
+at (428.2, -686.7, 10.8) dist 129.5 best 99.4 cells 22 blocked 18
+at (416.0, -687.5, 8.4) dist 117.3 best 99.4 cells 25 blocked 22
+at (406.0, -687.0, 10.0) dist 107.5 best 99.4 cells 30 blocked 22
+stopped (403.4544372558594, -686.5516357421875, 9.396454811096191) dist 105.1 route 11 points -> route-r2-2.json

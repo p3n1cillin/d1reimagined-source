@@ -1,0 +1,20 @@
+[
+  {
+    "file": "daily-report.md",
+    "matches": true,
+    "sha256": "28402963d4b9c0015e79b371393a70fa0b801ef77f127a21a372deee375839b9",
+    "size": 5877
+  },
+  {
+    "file": "events.json",
+    "matches": true,
+    "sha256": "1ee7ce012a58710055c822557d28e98ead6fae063d012fb1eb02289e744c1cc1",
+    "size": 2629
+  },
+  {
+    "file": "metadata.json",
+    "matches": true,
+    "sha256": "60e3d28119325316eac1f8f8d68a1cfb32dadd349fa82eb87b20fe72fd9f3b97",
+    "size": 2391
+  }
+]

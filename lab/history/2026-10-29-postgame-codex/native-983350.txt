@@ -1,0 +1,2 @@
+0x00983350 ret       
+0x00983351 nop       word ptr cs:[rax + rax]

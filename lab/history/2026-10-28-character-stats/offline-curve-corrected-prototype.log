@@ -1,0 +1,28 @@
+   Compiling private-d1-stat-probe v0.1.0 (lab/history\2026-10-28-character-stats\native-stat-probe)
+    Finished `release` profile [optimized] target(s) in 1.86s
+     Running `lab/history\2026-10-28-character-stats\native-stat-probe\target\release\private-d1-stat-probe.exe lab/history\2026-10-28-character-stats`
+TRACE 915e0 code=[c5, f2, 5c, c8] xmm=[-10.0, 35.0, 0.2857143, 0.0] rax=5000a20 rdx=15e flags=13
+TRACE 915e4 code=[c5, f2, 59, ca] xmm=[-10.0, 10.0, 0.2857143, 0.0] rax=5000a20 rdx=15e flags=13
+TRACE 915e8 code=[c5, f2, 58, c0] xmm=[0.0, 10.0, 0.2857143, 0.0] rax=5000a20 rdx=15e flags=13
+TRACE 915ec code=[c3, f, 1f, 0] xmm=[0.0, 10.0, 0.2857143, 0.0] rax=5000a20 rdx=15e flags=13
+TRACE 281ab5 code=[8b, 45, d0, 48] xmm=[0.0, 10.0, 0.2857143, 0.0] rax=5000a20 rdx=15e flags=6
+TRACE 281ac1 code=[c5, fa, 2a, c8] xmm=[0.0, 10.0, 0.2857143, 0.0] rax=2 rdx=15e flags=6
+TRACE 281ac9 code=[4c, 1, e3, 48] xmm=[2.0, 2.0, 0.2857143, 0.0] rax=2 rdx=15e flags=6
+TRACE 1017661 code=[49, 8b, 47, 8] xmm=[0.0, 2.0, 0.2857143, 0.0] rax=2 rdx=15e flags=6
+TRACE 10176b3 code=[c5, fa, 11, 65] xmm=[0.0, 2.0, 0.0, 2.0] rax=38 rdx=50009c0 flags=3
+TRACE 10176ed code=[c5, fa, 2a, c9] xmm=[0.0, 2.0, 0.0, 2.0] rax=50009c0 rdx=50009c0 flags=16
+TRACE 10176ed code=[c5, fa, 2a, c9] xmm=[0.0, 0.0, 1.0, 2.0] rax=50009c0 rdx=1 flags=16
+TRACE 1017705 code=[c5, da, 5c, c1] xmm=[1.0, 1.0, 20.0, 2.0] rax=50009c0 rdx=14 flags=2
+TRACE 915e0 code=[c5, f2, 5c, c8] xmm=[5.0, 95.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=2
+TRACE 915e4 code=[c5, f2, 59, ca] xmm=[5.0, 5.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=2
+TRACE 915e8 code=[c5, f2, 58, c0] xmm=[10.0, 5.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=2
+TRACE 915ec code=[c3, f, 1f, 0] xmm=[10.0, 5.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=2
+TRACE 10176ed code=[c5, fa, 2a, c9] xmm=[10.0, 5.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=16
+TRACE 10176ed code=[c5, fa, 2a, c9] xmm=[10.0, 20.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=16
+TRACE 10176ed code=[c5, fa, 2a, c9] xmm=[10.0, 40.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=16
+TRACE 10176ed code=[c5, fa, 2a, c9] xmm=[10.0, 45.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=16
+TRACE 10176ed code=[c5, fa, 2a, c9] xmm=[10.0, 50.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=16
+TRACE 10176ed code=[c5, fa, 2a, c9] xmm=[10.0, 60.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=16
+TRACE 1017742 code=[48, 83, c4, 8] xmm=[10.0, 70.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=46
+TRACE 281ad4 code=[31, c9, 49, 8b] xmm=[10.0, 70.0, 0.05263158, 2.0] rax=50009c0 rdx=13 flags=6
+TRACE_RESULT 10

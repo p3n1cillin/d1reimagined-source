@@ -1,0 +1,54 @@
+{
+  "verified_at": "2026-10-25T18:24:41.755038+00:00",
+  "reporting_date": "2026-10-25",
+  "daily_report": "<lab-pc>-20261025T182439-b47e0a8703144e07a0d49f7d272ea196",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\25\\<lab-pc>-20261025T182439-b47e0a8703144e07a0d49f7d272ea196.ready",
+  "ready_verified": true,
+  "manifest_bytes_match": true,
+  "payloads": [
+    {
+      "file": "daily-report.md",
+      "size": 11545,
+      "sha256": "d1b1d31bef3020bc37194f4b480d9f6d16bb6d657fb4314b14204b7286b35dba",
+      "matches": true
+    },
+    {
+      "file": "events.json",
+      "size": 2882,
+      "sha256": "88fb8aa09630d556ae3ad5eff5fead4a001959353bebf9b261bfd077a941e5dc",
+      "matches": true
+    },
+    {
+      "file": "metadata.json",
+      "size": 5715,
+      "sha256": "71cf5fe178ccd61f1f8642ec806e1ca65ec58f6bfcdda768d6c22ee0fce07ea6",
+      "matches": true
+    },
+    {
+      "file": "screenshots/01.png",
+      "size": 51569,
+      "sha256": "432eedd3be72e69fe48612382e4396d7ecd158b8c8f4883a3517f35a9bbcf0d3",
+      "matches": true
+    }
+  ],
+  "transfer_started_at": "2026-10-25T18:24:41.028151+00:00",
+  "submitted_at": "2026-10-25T18:24:41.475934+00:00",
+  "new_screenshots": 1,
+  "new_clips": 0,
+  "screenshot_bytes_match_inspected_originals": true,
+  "screenshot_decode": "PASS",
+  "video_decode": "NOT APPLICABLE: no video",
+  "earlier_media_resent": false,
+  "referenced_package_ids": [
+    "<lab-pc>-20261015T180922-747c0780f05a4e3c83f61acaebb0578d"
+  ],
+  "nas_free_bytes_at_verification": 493695008768,
+  "pending_outbox": [],
+  "terminal_superseded_not_queued": [
+    "<lab-pc>-20261006T082350-35a26ff986fc4d87a5428cdef765c812"
+  ],
+  "late_delivery": false,
+  "source_checkpoint": "19150dcad115d3c9c7ef218084abdef4cf982a9d",
+  "publication_review_required": true,
+  "handoff_complete": true
+}

@@ -1,0 +1,3 @@
+8085a000: ps4_ui_pve_002d_6.pkg/0 class8106484f, 1000 bytes
+80830000: ps4_ui_menus_0018_6.pkg/0 class81064e82, 1864 bytes
+80814000: ps4_ui_core_000a_6.pkg/0 class810634af, 2184 bytes

@@ -1,0 +1,25 @@
+0x00266a30 push      rbp
+0x00266a31 mov       rbp, rsp
+0x00266a34 push      r14
+0x00266a36 push      rbx
+0x00266a37 mov       r14, rsi
+0x00266a3a mov       rbx, rdi
+0x00266a3d mov       rdi, r14
+0x00266a40 xor       esi, esi
+0x00266a42 mov       edx, 0x100
+0x00266a47 call      0x12aa980
+0x00266a4c xor       eax, eax
+0x00266a4e nop       
+0x00266a50 movsx     rcx, byte ptr [rbx + rax*8 + 0x808]
+0x00266a59 cmp       rcx, -1
+0x00266a5d je        0x266a6a
+0x00266a5f mov       edx, dword ptr [rbx + rax*8 + 0x80c]
+0x00266a66 mov       dword ptr [r14 + rcx*4], edx
+0x00266a6a inc       rax
+0x00266a6d cmp       eax, 0x10
+0x00266a70 jne       0x266a50
+0x00266a72 pop       rbx
+0x00266a73 pop       r14
+0x00266a75 pop       rbp
+0x00266a76 ret       
+0x00266a77 nop       word ptr [rax + rax]

@@ -1,0 +1,30 @@
+shadPS4 pid 20720  eboot base 0x52c0000  control vtable[0]=0x5a14410 PASS
+start (484.3432922363281, -790.9850463867188, 18.538305282592773) goal [480.0, -650.0]
+at (488.4, -784.4, 18.6) dist 134.7 best 134.7 cells 5 blocked 0
+at (489.6, -784.4, 18.7) dist 134.8 best 134.7 cells 8 blocked 0
+at (485.3, -784.5, 18.3) dist 134.7 best 134.7 cells 9 blocked 0
+at (491.0, -784.7, 18.8) dist 135.2 best 134.7 cells 9 blocked 0
+at (489.4, -784.4, 18.7) dist 134.7 best 134.7 cells 10 blocked 0
+at (492.7, -784.4, 19.0) dist 135.0 best 134.7 cells 10 blocked 0
+at (488.8, -784.4, 18.8) dist 134.7 best 134.7 cells 10 blocked 0
+at (490.0, -784.4, 18.6) dist 134.8 best 134.7 cells 10 blocked 0
+at (486.9, -784.5, 18.5) dist 134.7 best 134.7 cells 10 blocked 0
+at (492.7, -784.4, 18.9) dist 135.0 best 134.7 cells 10 blocked 0
+at (490.6, -784.4, 18.7) dist 134.9 best 134.7 cells 10 blocked 0
+at (492.7, -784.4, 18.8) dist 135.0 best 134.7 cells 10 blocked 0
+at (490.4, -784.4, 18.7) dist 134.8 best 134.7 cells 10 blocked 0
+at (492.5, -784.6, 18.9) dist 135.2 best 134.7 cells 10 blocked 0
+at (490.9, -784.4, 18.8) dist 134.9 best 134.7 cells 10 blocked 0
+at (492.1, -784.4, 18.8) dist 134.9 best 134.7 cells 10 blocked 0
+at (488.8, -784.4, 18.7) dist 134.7 best 134.7 cells 10 blocked 0
+at (492.7, -784.4, 18.9) dist 135.0 best 134.7 cells 10 blocked 0
+at (491.0, -784.4, 18.8) dist 134.9 best 134.7 cells 10 blocked 0
+at (492.7, -784.4, 18.9) dist 135.0 best 134.7 cells 10 blocked 0
+at (489.8, -784.4, 18.7) dist 134.8 best 134.7 cells 10 blocked 0
+at (492.7, -784.4, 18.7) dist 135.0 best 134.7 cells 10 blocked 0
+at (490.7, -784.4, 18.7) dist 134.8 best 134.7 cells 10 blocked 0
+at (492.7, -784.4, 18.9) dist 135.0 best 134.7 cells 10 blocked 0
+at (490.2, -784.5, 18.8) dist 134.8 best 134.7 cells 10 blocked 0
+at (492.6, -784.4, 18.7) dist 135.0 best 134.7 cells 10 blocked 0
+at (490.0, -784.4, 18.7) dist 134.8 best 134.7 cells 10 blocked 0
+stopped (490.0000457763672, -784.4255981445312, 18.683313369750977) dist 134.8 route 4 points -> route-n2.json

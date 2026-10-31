@@ -1,0 +1,18 @@
+0x0078e2a0 push      rbp
+0x0078e2a1 mov       rbp, rsp
+0x0078e2a4 mov       edi, 3
+0x0078e2a9 call      0x752150
+0x0078e2ae test      al, al
+0x0078e2b0 je        0x78e2cb
+0x0078e2b2 mov       edi, 4
+0x0078e2b7 call      0x5753c0
+0x0078e2bc test      rax, rax
+0x0078e2bf je        0x78e2cb
+0x0078e2c1 mov       rdi, rax
+0x0078e2c4 call      0x546f20
+0x0078e2c9 pop       rbp
+0x0078e2ca ret       
+0x0078e2cb xor       al, al
+0x0078e2cd pop       rbp
+0x0078e2ce ret       
+0x0078e2cf nop       

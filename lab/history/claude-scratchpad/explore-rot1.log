@@ -1,0 +1,4 @@
+shadPS4 pid 21172  eboot base 0x5220000  control vtable[0]=0x5974410 PASS
+start (523.6576538085938, -814.0449829101562, 16.2841854095459) goal [545.0, -650.0]
+at (527.7, -813.9, 16.2) dist 164.8 best 165.4 cells 2 blocked 8
+at (526.1, -802.4, 16.1) dist 153.5 best 153.5 cells 7 blocked 10

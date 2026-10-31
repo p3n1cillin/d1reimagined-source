@@ -1,0 +1,2489 @@
+{
+  "jsonl": "lab/history\\2026-10-29-postgame-codex\\hangar-cues-sense58-control-1793304078523280400.jsonl",
+  "seconds": 2.01,
+  "changed_samples": 2,
+  "saw_expected_hangar": false,
+  "accepted_cinematics_observed_in_hangar": [],
+  "last_sample": {
+    "world": {
+      "scenario_tag": "0x80cb800d",
+      "world_name": "act_cosmo_m0_highway",
+      "world_name_hash": "0x992bb471",
+      "private_checksum": "0x8fe07299",
+      "public_checksum": "0xe354f1ea",
+      "bubble_count": 22
+    },
+    "sensors": {
+      "world_generation": 0,
+      "clients": [
+        {
+          "group": "0x992bb471",
+          "kind": 32,
+          "sub": 17,
+          "b_type": "0xffffffff",
+          "a_type": "0x80802a1b",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase02_graveyard.obj_m0_m04._player_objective"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 18,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase02_graveyard.obj_m0_m04._incoming_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 19,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase02_graveyard.obj_m0_m04._completion_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 32,
+          "sub": 7,
+          "b_type": "0xffffffff",
+          "a_type": "0x80802a1b",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_investigate_wall._player_objective"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 8,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_investigate_wall._incoming_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 9,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_investigate_wall._completion_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 6,
+          "sub": 10,
+          "b_type": "0xffffffff",
+          "a_type": "0x8080254d",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 32,
+          "sub": 11,
+          "b_type": "0xffffffff",
+          "a_type": "0x80802a1b",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_get_weapon._player_objective"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 12,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_get_weapon._incoming_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 13,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_get_weapon._completion_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 29,
+          "sub": 37,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01_breach.pf_104a_pwr._player_trigger"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 32,
+          "sub": 20,
+          "b_type": "0xffffffff",
+          "a_type": "0x80802a1b",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_objective"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 21,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._incoming_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 22,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._completion_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 32,
+          "sub": 23,
+          "b_type": "0xffffffff",
+          "a_type": "0x80802a1b",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04a._player_objective"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 24,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04a._incoming_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 25,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04a._completion_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 32,
+          "sub": 26,
+          "b_type": "0xffffffff",
+          "a_type": "0x80802a1b",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04b._player_objective"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 27,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04b._incoming_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 28,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04b._completion_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 32,
+          "sub": 3,
+          "b_type": "0xffffffff",
+          "a_type": "0x80802a1b",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_objective"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 4,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase00_highway.obj_m0_phase00_m1._incoming_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 5,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase00_highway.obj_m0_phase00_m1._completion_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 32,
+          "sub": 14,
+          "b_type": "0xffffffff",
+          "a_type": "0x80802a1b",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_objective"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 15,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01b_breach.obj_goto_graveyard._incoming_sequence"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 16,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01b_breach.obj_goto_graveyard._completion_sequence"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 0,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_m_cue1"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 1,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_m_cue2"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 2,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_m_ascent"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 3,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o1_10"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 4,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o1_15"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 5,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o1_20"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 6,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o1_20b"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 7,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o1_20c"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 8,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o1_20d"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 9,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_10"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 10,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_20"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 11,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_30"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 12,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_35"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 13,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_36"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 14,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_40"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 15,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_50"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 16,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_60"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 17,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_70"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 18,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_80"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 19,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_90"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 20,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o2_95"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 21,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o3_10"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 22,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o3_20"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 23,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o3_30"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 24,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o3_40"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 25,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o3_50"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 26,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o4_20"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 27,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o4_30"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 28,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o4_40"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 29,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o4_45"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 30,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o5_10"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 31,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o5_20"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 32,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_d_o5_30"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 33,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_fallen_scream_far"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 34,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_fallen_scream_mid"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 35,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_fallen_scream_close"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 36,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_fallen_above"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 37,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_fallen_scamper_amb"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 38,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_fallen_around_corner"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 39,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_fallen_scramble"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 40,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_ambush_hallway"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 41,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_ambush_garage"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 42,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_ambush_finalroom"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 43,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_drone_1"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 44,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_drone_2"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 45,
+          "b_type": "0xffffffff",
+          "a_type": "0x808029a1",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "seq_drone_3"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 29,
+          "sub": 46,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "pt_in_wall_2"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 29,
+          "sub": 47,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "pt_fallen_above"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 29,
+          "sub": 48,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "pt_fallen_around_corner"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 29,
+          "sub": 52,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "pt_graveyard_navmode"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 29,
+          "sub": 53,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "pt_hangar1"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 29,
+          "sub": 55,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "pt_audio_drone_end"
+          ]
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 15,
+          "sub": 0,
+          "b_type": "0xffffffff",
+          "a_type": "0x808008d0",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 34,
+          "sub": 1,
+          "b_type": "0xffffffff",
+          "a_type": "0x808004a4",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 17,
+          "sub": 2,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800725",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 16,
+          "sub": 3,
+          "b_type": "0xffffffff",
+          "a_type": "0x808008a3",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 39,
+          "sub": 4,
+          "b_type": "0x80802b18",
+          "a_type": "0x80802aef",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 5,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 6,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 7,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 8,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 9,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 10,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 11,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 12,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 13,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 14,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 15,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 16,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 17,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 18,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 19,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 12,
+          "sub": 20,
+          "b_type": "0x80802c30",
+          "a_type": "0x808022a5",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 37,
+          "sub": 33,
+          "b_type": "0x8080228d",
+          "a_type": "0x80802213",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "skiff_passenger"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 32,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_grenade_backup"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 31,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_exit_shanks"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 30,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_ketch_dropship_2"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 29,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_ketch_dropship"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 28,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_drop_2_ambush"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 27,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_bunker_ambush"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 26,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_drop_2"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 25,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_drop_1"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 24,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_ketch"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 29,
+          "sub": 23,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_ketch_cue"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 2,
+          "sub": 21,
+          "b_type": "0x808005d9",
+          "a_type": "0x80800868",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_m0_dropdown__dreg_a"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 20,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_m0_dropdown"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 19,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_m0_sniper"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 18,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_m0_exit_shanks"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 17,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_m0_upgrade"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 16,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_m0_drop_2_b"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 15,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_m0_drop_2"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 14,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_m0_drop_1"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 2,
+          "sub": 13,
+          "b_type": "0x808005d9",
+          "a_type": "0x80800868",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_tank__pilot"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 12,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_tank"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 2,
+          "sub": 11,
+          "b_type": "0x808005d9",
+          "a_type": "0x80800868",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_4__pilot"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 10,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_4"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 2,
+          "sub": 9,
+          "b_type": "0x808005d9",
+          "a_type": "0x80800868",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_3__pilot"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 8,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_3"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 2,
+          "sub": 7,
+          "b_type": "0x808005d9",
+          "a_type": "0x80800868",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_2__pilot"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 6,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_2"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 2,
+          "sub": 5,
+          "b_type": "0x808005d9",
+          "a_type": "0x80800868",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_1__pilot"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 1,
+          "sub": 4,
+          "b_type": "0x80800357",
+          "a_type": "0x8080071e",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "sq_fallen_dropship_1"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 3,
+          "sub": 3,
+          "b_type": "0x80800830",
+          "a_type": "0x808004fa",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "obj_fallen_m0"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 4,
+          "sub": 2,
+          "b_type": "0x80800387",
+          "a_type": "0x808007d9",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "o_signal_flare"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 4,
+          "sub": 1,
+          "b_type": "0x80800387",
+          "a_type": "0x808007d9",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "o_graveyard_gating_nux"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 4,
+          "sub": 0,
+          "b_type": "0x80800387",
+          "a_type": "0x808007d9",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "o_ketch_gantry"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 6,
+          "sub": 22,
+          "b_type": "0xffffffff",
+          "a_type": "0x8080254d",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "ci_ketch_arrival_cinematic"
+          ]
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 29,
+          "sub": 51,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "pt_graveyard_reveal"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 29,
+          "sub": 39,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "cosmo_m0_phase02_graveyard.pt_obj_backup_adv"
+          ]
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 29,
+          "sub": 38,
+          "b_type": "0xffffffff",
+          "a_type": "0x80800463",
+          "pending": 0,
+          "owner": 12,
+          "labels": [
+            "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_trigger"
+          ]
+        }
+      ],
+      "pending": 0,
+      "lifetime_names": [
+        {
+          "group": "0x4786c0e0",
+          "kind": 16,
+          "sub": 3,
+          "b_type": "0xffffffff",
+          "a_type": "0x808008a3",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": []
+        }
+      ],
+      "cinematic_names": [
+        {
+          "group": "0x992bb471",
+          "kind": 6,
+          "sub": 10,
+          "b_type": "0xffffffff",
+          "a_type": "0x8080254d",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+          ]
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 6,
+          "sub": 22,
+          "b_type": "0xffffffff",
+          "a_type": "0x8080254d",
+          "pending": 0,
+          "owner": 4294967295,
+          "labels": [
+            "ci_ketch_arrival_cinematic"
+          ]
+        }
+      ]
+    },
+    "components": {
+      "content_index": 182,
+      "rows": [
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 4,
+          "labels": [
+            "cosmo_m0_phase00_highway.obj_m0_phase00_m1._incoming_sequence"
+          ],
+          "component": "0x380260cb0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffff3f01000000000000000000000000000000000000000000000000000000ffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200000020fa6c0000000000000000d04600000000000090420000000000001b91cb80000000006802000000000000da2880800000000000000000000000000040fa7600000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000000020fa6c000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 5,
+          "labels": [
+            "cosmo_m0_phase00_highway.obj_m0_phase00_m1._completion_sequence"
+          ],
+          "component": "0x380260ed0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080f00400001820fa340000000000000000c04b000000000000b0440000000000001c91cb80000000003805000000000000932980800000000000000000000000001840fa1d00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000001820fa340000000000000000000000009025808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 8,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_investigate_wall._incoming_sequence"
+          ],
+          "component": "0x38025da30",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200001120fa070000000000000000501400000000000010100000000000000a91cb80000000006802000000000000da2880800000000000000000000000001140fa4200000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000001120fa07000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 9,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_investigate_wall._completion_sequence"
+          ],
+          "component": "0x38025dc50",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080b00200001020fa5a0000000000000000001700000000000030120000000000000b91cb8000000000f802000000000000db2180800000000000000000000000001040fa5900000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000001020fa5a0000000000000000000000008622808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 12,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_get_weapon._incoming_sequence"
+          ],
+          "component": "0x38025e610",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200000d20fa6400000000000000003020000000000000f01b0000000000000e91cb80000000006802000000000000da2880800000000000000000000000000d40fa5200000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000000d20fa64000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 13,
+          "labels": [
+            "cosmo_m0_phase01_breach.obj_get_weapon._completion_sequence"
+          ],
+          "component": "0x38025e830",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080e00100000c20fa0800000000000000001022000000000000101e0000000000000f91cb80000000002802000000000000600380800000000000000000000000000c40fa1100000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000000c20fa08000000000000000000000000e807808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 15,
+          "labels": [
+            "cosmo_m0_phase01b_breach.obj_goto_graveyard._incoming_sequence"
+          ],
+          "component": "0x3802615e0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffff3f01000000000000000000000000000000000000000000000000000000ffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200001a20fa7b00000000000000000050000000000000c04b0000000000001e91cb80000000006802000000000000da2880800000000000000000000000001a40fa0f00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000001a20fa7b000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 16,
+          "labels": [
+            "cosmo_m0_phase01b_breach.obj_goto_graveyard._completion_sequence"
+          ],
+          "component": "0x380261800",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080b00100001b20fa640000000000000000b051000000000000e04d0000000000001f91cb8000000000f801000000000000b00880800000000000000000000000001b40fa3300000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000bc088080010000001b20fa64000000000000000000000000bc08808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 18,
+          "labels": [
+            "cosmo_m0_phase02_graveyard.obj_m0_m04._incoming_sequence"
+          ],
+          "component": "0x38025cf20",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200001520fa1b0000000000000000400900000000000000050000000000000691cb80000000006802000000000000da2880800000000000000000000000001540fa5900000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000001520fa1b000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 19,
+          "labels": [
+            "cosmo_m0_phase02_graveyard.obj_m0_m04._completion_sequence"
+          ],
+          "component": "0x38025d140",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080e00100001420fa7a0000000000000000200b00000000000020070000000000000791cb80000000002002000000000000240580800000000000000000000000001440fa7700000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000001420fa7a0000000000000000000000003607808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 21,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._incoming_sequence"
+          ],
+          "component": "0x38025f120",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200000920fa6e0000000000000000402b00000000000000270000000000001291cb80000000006802000000000000da2880800000000000000000000000000940fa2b00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000000920fa6e000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 22,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._completion_sequence"
+          ],
+          "component": "0x38025f340",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080f00400000820fa550000000000000000303000000000000020290000000000001391cb80000000003805000000000000932980800000000000000000000000000840fa1e00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000000820fa550000000000000000000000009025808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 24,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04a._incoming_sequence"
+          ],
+          "component": "0x38025fa50",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200000620fa2f0000000000000000703400000000000030300000000000001591cb80000000006802000000000000da2880800000000000000000000000000640fa4100000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000000620fa2f000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 25,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04a._completion_sequence"
+          ],
+          "component": "0x38025fc70",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080f00400000520fa300000000000000000603900000000000050320000000000001691cb80000000003805000000000000932980800000000000000000000000000540fa5300000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000000520fa300000000000000000000000009025808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 27,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04b._incoming_sequence"
+          ],
+          "component": "0x380260380",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200000320fa640000000000000000a03d00000000000060390000000000001891cb80000000006802000000000000da2880800000000000000000000000000340fa7400000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000000320fa64000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 5,
+          "sub": 28,
+          "labels": [
+            "cosmo_m0_phase03_hangar.obj_m0_m04b._completion_sequence"
+          ],
+          "component": "0x3802605a0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080f00400000220fa6000000000000000009042000000000000803b0000000000001991cb80000000003805000000000000932980800000000000000000000000000240fa6000000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000000220fa600000000000000000000000009025808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 0,
+          "labels": [
+            "seq_m_cue1"
+          ],
+          "component": "0x380262f00",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000100000000000000ff0000000000000000000000000000000000000000000000da288080200200002320fa5700000000000000002069000000000000e0640000000000002291cb80000000006802000000000000da2880800000000000000000000000002340fa7700000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002320fa57000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 1,
+          "labels": [
+            "seq_m_cue2"
+          ],
+          "component": "0x380263120",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000100000000000000ff0000000000000000000000000000000000000000000000da288080200200002420fa110000000000000000406b00000000000000670000000000002391cb80000000006802000000000000da2880800000000000000000000000002440fa3e00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002420fa11000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 2,
+          "labels": [
+            "seq_m_ascent"
+          ],
+          "component": "0x380263340",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002520fa610000000000000000606d00000000000020690000000000002491cb80000000006802000000000000da2880800000000000000000000000002540fa1000000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002520fa61000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 3,
+          "labels": [
+            "seq_d_o1_10"
+          ],
+          "component": "0x380263560",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002620fa160000000000000000806f000000000000406b0000000000002591cb80000000006802000000000000da2880800000000000000000000000002640fa6900000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002620fa16000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 4,
+          "labels": [
+            "seq_d_o1_15"
+          ],
+          "component": "0x380263780",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002720fa2d0000000000000000a071000000000000606d0000000000002691cb80000000006802000000000000da2880800000000000000000000000002740fa6400000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002720fa2d000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 5,
+          "labels": [
+            "seq_d_o1_20"
+          ],
+          "component": "0x3802639a0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002820fa560000000000000000c073000000000000806f0000000000002791cb80000000006802000000000000da2880800000000000000000000000002840fa3200000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002820fa56000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 6,
+          "labels": [
+            "seq_d_o1_20b"
+          ],
+          "component": "0x380263bc0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002920fa210000000000000000e075000000000000a0710000000000002891cb80000000006802000000000000da2880800000000000000000000000002940fa1e00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002920fa21000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 7,
+          "labels": [
+            "seq_d_o1_20c"
+          ],
+          "component": "0x380263de0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002a20fa5600000000000000000078000000000000c0730000000000002991cb80000000006802000000000000da2880800000000000000000000000002a40fa6600000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002a20fa56000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 8,
+          "labels": [
+            "seq_d_o1_20d"
+          ],
+          "component": "0x380264000",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002b20fa5c0000000000000000207a000000000000e0750000000000002a91cb80000000006802000000000000da2880800000000000000000000000002b40fa2b00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002b20fa5c000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 9,
+          "labels": [
+            "seq_d_o2_10"
+          ],
+          "component": "0x380264220",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002c20fa490000000000000000407c00000000000000780000000000002b91cb80000000006802000000000000da2880800000000000000000000000002c40fa0100000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002c20fa49000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 10,
+          "labels": [
+            "seq_d_o2_20"
+          ],
+          "component": "0x380264440",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002d20fa120000000000000000607e000000000000207a0000000000002c91cb80000000006802000000000000da2880800000000000000000000000002d40fa2f00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002d20fa12000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 11,
+          "labels": [
+            "seq_d_o2_30"
+          ],
+          "component": "0x380264660",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002e20fa6500000000000000008080000000000000407c0000000000002d91cb80000000006802000000000000da2880800000000000000000000000002e40fa2d00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002e20fa65000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 12,
+          "labels": [
+            "seq_d_o2_35"
+          ],
+          "component": "0x380264880",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200002f20fa690000000000000000a082000000000000607e0000000000002e91cb80000000006802000000000000da2880800000000000000000000000002f40fa1200000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000002f20fa69000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 13,
+          "labels": [
+            "seq_d_o2_36"
+          ],
+          "component": "0x380264aa0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003020fa620000000000000000c08400000000000080800000000000002f91cb80000000006802000000000000da2880800000000000000000000000003040fa5800000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003020fa62000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 14,
+          "labels": [
+            "seq_d_o2_40"
+          ],
+          "component": "0x380264cc0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003120fa160000000000000000e086000000000000a0820000000000003091cb80000000006802000000000000da2880800000000000000000000000003140fa1000000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003120fa16000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 15,
+          "labels": [
+            "seq_d_o2_50"
+          ],
+          "component": "0x380264ee0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003220fa0600000000000000000089000000000000c0840000000000003191cb80000000006802000000000000da2880800000000000000000000000003240fa0500000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003220fa06000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 16,
+          "labels": [
+            "seq_d_o2_60"
+          ],
+          "component": "0x380265100",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003320fa190000000000000000208b000000000000e0860000000000003291cb80000000006802000000000000da2880800000000000000000000000003340fa2e00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003320fa19000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 17,
+          "labels": [
+            "seq_d_o2_70"
+          ],
+          "component": "0x380265320",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003420fa340000000000000000408d00000000000000890000000000003391cb80000000006802000000000000da2880800000000000000000000000003440fa5200000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003420fa34000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 18,
+          "labels": [
+            "seq_d_o2_80"
+          ],
+          "component": "0x380265540",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003520fa510000000000000000608f000000000000208b0000000000003491cb80000000006802000000000000da2880800000000000000000000000003540fa2600000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003520fa51000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 19,
+          "labels": [
+            "seq_d_o2_90"
+          ],
+          "component": "0x380265760",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003620fa5700000000000000008091000000000000408d0000000000003591cb80000000006802000000000000da2880800000000000000000000000003640fa1000000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003620fa57000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 20,
+          "labels": [
+            "seq_d_o2_95"
+          ],
+          "component": "0x380265980",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003720fa730000000000000000a093000000000000608f0000000000003691cb80000000006802000000000000da2880800000000000000000000000003740fa0f00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003720fa73000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 21,
+          "labels": [
+            "seq_d_o3_10"
+          ],
+          "component": "0x380265ba0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003820fa650000000000000000c09500000000000080910000000000003791cb80000000006802000000000000da2880800000000000000000000000003840fa3a00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003820fa65000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 22,
+          "labels": [
+            "seq_d_o3_20"
+          ],
+          "component": "0x380265dc0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003920fa480000000000000000e097000000000000a0930000000000003891cb80000000006802000000000000da2880800000000000000000000000003940fa2b00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003920fa48000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 23,
+          "labels": [
+            "seq_d_o3_30"
+          ],
+          "component": "0x380265fe0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003a20fa5c0000000000000000009a000000000000c0950000000000003991cb80000000006802000000000000da2880800000000000000000000000003a40fa0a00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003a20fa5c000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 24,
+          "labels": [
+            "seq_d_o3_40"
+          ],
+          "component": "0x380266200",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003b20fa7a0000000000000000209c000000000000e0970000000000003a91cb80000000006802000000000000da2880800000000000000000000000003b40fa5f00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003b20fa7a000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 25,
+          "labels": [
+            "seq_d_o3_50"
+          ],
+          "component": "0x380266420",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003c20fa750000000000000000409e000000000000009a0000000000003b91cb80000000006802000000000000da2880800000000000000000000000003c40fa3d00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003c20fa75000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 26,
+          "labels": [
+            "seq_d_o4_20"
+          ],
+          "component": "0x380266640",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003d20fa2a000000000000000060a0000000000000209c0000000000003c91cb80000000006802000000000000da2880800000000000000000000000003d40fa0900000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003d20fa2a000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 27,
+          "labels": [
+            "seq_d_o4_30"
+          ],
+          "component": "0x380266860",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003e20fa22000000000000000080a2000000000000409e0000000000003d91cb80000000006802000000000000da2880800000000000000000000000003e40fa2d00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003e20fa22000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 28,
+          "labels": [
+            "seq_d_o4_40"
+          ],
+          "component": "0x380266a80",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200003f20fa450000000000000000a0a400000000000060a00000000000003e91cb80000000006802000000000000da2880800000000000000000000000003f40fa3600000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000003f20fa45000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 29,
+          "labels": [
+            "seq_d_o4_45"
+          ],
+          "component": "0x380266ca0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004020fa0d0000000000000000c0a600000000000080a20000000000003f91cb80000000006802000000000000da2880800000000000000000000000004040fa5d00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004020fa0d000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 30,
+          "labels": [
+            "seq_d_o5_10"
+          ],
+          "component": "0x380266ec0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004120fa400000000000000000e0a8000000000000a0a40000000000004091cb80000000006802000000000000da2880800000000000000000000000004140fa4300000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004120fa40000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 31,
+          "labels": [
+            "seq_d_o5_20"
+          ],
+          "component": "0x3802670e0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004220fa0d000000000000000000ab000000000000c0a60000000000004191cb80000000006802000000000000da2880800000000000000000000000004240fa2200000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004220fa0d000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 32,
+          "labels": [
+            "seq_d_o5_30"
+          ],
+          "component": "0x380267300",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004320fa4c000000000000000020ad000000000000e0a80000000000004291cb80000000006802000000000000da2880800000000000000000000000004340fa5600000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004320fa4c000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 33,
+          "labels": [
+            "seq_fallen_scream_far"
+          ],
+          "component": "0x380267520",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004420fa7b000000000000000040af00000000000000ab0000000000004391cb80000000006802000000000000da2880800000000000000000000000004440fa7200000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004420fa7b000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 34,
+          "labels": [
+            "seq_fallen_scream_mid"
+          ],
+          "component": "0x380267740",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004520fa22000000000000000060b100000000000020ad0000000000004491cb80000000006802000000000000da2880800000000000000000000000004540fa7b00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004520fa22000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 35,
+          "labels": [
+            "seq_fallen_scream_close"
+          ],
+          "component": "0x380267960",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004620fa1d000000000000000080b300000000000040af0000000000004591cb80000000006802000000000000da2880800000000000000000000000004640fa4d00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004620fa1d000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 36,
+          "labels": [
+            "seq_fallen_above"
+          ],
+          "component": "0x380267b80",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004720fa410000000000000000a0b500000000000060b10000000000004691cb80000000006802000000000000da2880800000000000000000000000004740fa3c00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004720fa41000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 37,
+          "labels": [
+            "seq_fallen_scamper_amb"
+          ],
+          "component": "0x380267da0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004820fa020000000000000000c0b700000000000080b30000000000004791cb80000000006802000000000000da2880800000000000000000000000004840fa6a00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004820fa02000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 38,
+          "labels": [
+            "seq_fallen_around_corner"
+          ],
+          "component": "0x380267fc0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004920fa2d0000000000000000e0b9000000000000a0b50000000000004891cb80000000006802000000000000da2880800000000000000000000000004940fa3100000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004920fa2d000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 39,
+          "labels": [
+            "seq_fallen_scramble"
+          ],
+          "component": "0x3802681e0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004a20fa37000000000000000000bc000000000000c0b70000000000004991cb80000000006802000000000000da2880800000000000000000000000004a40fa3900000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004a20fa37000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 40,
+          "labels": [
+            "seq_ambush_hallway"
+          ],
+          "component": "0x380268400",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004b20fa01000000000000000020be000000000000e0b90000000000004a91cb80000000006802000000000000da2880800000000000000000000000004b40fa1300000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004b20fa01000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 41,
+          "labels": [
+            "seq_ambush_garage"
+          ],
+          "component": "0x380268620",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004c20fa55000000000000000040c000000000000000bc0000000000004b91cb80000000006802000000000000da2880800000000000000000000000004c40fa1b00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004c20fa55000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 42,
+          "labels": [
+            "seq_ambush_finalroom"
+          ],
+          "component": "0x380268840",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004d20fa1e000000000000000060c200000000000020be0000000000004c91cb80000000006802000000000000da2880800000000000000000000000004d40fa1e00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004d20fa1e000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 43,
+          "labels": [
+            "seq_drone_1"
+          ],
+          "component": "0x380268a60",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004e20fa3c000000000000000080c400000000000040c00000000000004d91cb80000000006802000000000000da2880800000000000000000000000004e40fa1700000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004e20fa3c000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 44,
+          "labels": [
+            "seq_drone_2"
+          ],
+          "component": "0x380268c80",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080200200004f20fa610000000000000000a0c600000000000060c20000000000004e91cb80000000006802000000000000da2880800000000000000000000000004f40fa3b00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000004f20fa61000000000000000000000000b926808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x3c2f5ed5",
+          "kind": 5,
+          "sub": 45,
+          "labels": [
+            "seq_drone_3"
+          ],
+          "component": "0x380268ea0",
+          "a_type": "0x808029a1",
+          "b_type": "0xffffffff",
+          "state_area_1ac": "ffffffffff00000000000000000000000000000000000000c59d1c81ff00ffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000da288080e00100005020fa31000000000000000080c800000000000080c40000000000004f91cb80000000002802000000000000600380800000000000000000000000005040fa6f00000000ffffffffffffffffffffffff000000000000000000000000ffffffff0000000004048080030000005020fa31000000000000000000000000e807808000000000ffffffffffffffffffffffff000000000000000000000000ffffffff00000000ffffffff"
+        },
+        {
+          "group": "0x992bb471",
+          "kind": 6,
+          "sub": 10,
+          "labels": [
+            "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+          ],
+          "component": "0x38025de70",
+          "a_type": "0x8080254d",
+          "b_type": "0xffffffff",
+          "cinematic": {
+            "counter": 0,
+            "requested_playing": 0,
+            "preload": 0,
+            "optional_ref": {
+              "group": "0x811c9dc5",
+              "kind": 255,
+              "sub": -1
+            },
+            "team_filter": -1,
+            "cast_count": 0,
+            "cast": [],
+            "native_start_accepted": 0,
+            "a_image": "000000000000000000000000c59d1c81ff00ffffff0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          },
+          "native_tail_280": "000000000000000000000000db218080f00400000f20fa3a0000000000000000f01b00000000000050140000000000000c91cb80000000003805000000000000"
+        },
+        {
+          "group": "0x9243dffb",
+          "kind": 6,
+          "sub": 22,
+          "labels": [
+            "ci_ketch_arrival_cinematic"
+          ],
+          "component": "0x3802745e0",
+          "a_type": "0x8080254d",
+          "b_type": "0xffffffff",
+          "cinematic": {
+            "counter": 0,
+            "requested_playing": 0,
+            "preload": 0,
+            "optional_ref": {
+              "group": "0x811c9dc5",
+              "kind": 255,
+              "sub": -1
+            },
+            "team_filter": -1,
+            "cast_count": 0,
+            "cast": [],
+            "native_start_accepted": 0,
+            "a_image": "000000000000000000000000c59d1c81ff00ffffff0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          },
+          "native_tail_280": "000000000000000000000000db218080e0010000fc20fa3900000000000000005080010000000000c07b0100000000001984cb80000000002002000000000000"
+        },
+        {
+          "group": "0x4786c0e0",
+          "kind": 16,
+          "sub": 3,
+          "labels": [],
+          "component": "0x38026fbb0",
+          "a_type": "0x808008a3",
+          "b_type": "0xffffffff",
+          "phase": 3
+        }
+      ],
+      "errors": [
+        {
+          "kind": 6,
+          "slot": 1,
+          "unavailable": "absent content handle"
+        },
+        {
+          "kind": 6,
+          "slot": 2,
+          "unavailable": "absent content handle"
+        },
+        {
+          "kind": 6,
+          "slot": 29,
+          "unavailable": "absent content handle"
+        },
+        {
+          "kind": 28,
+          "slot": 33,
+          "unavailable": "absent content handle"
+        }
+      ]
+    },
+    "world_state": 36,
+    "selected_activity": -1,
+    "expected_hangar_resident": false
+  }
+}

@@ -1,0 +1,27 @@
+shadPS4 pid 24952  eboot base 0x50b0000  control vtable[0]=0x5804410 PASS
+start (286.95550537109375, -623.28564453125, 4.801999568939209) goal [272.0, -566.0]
+at (285.8, -622.1, 5.2) dist 57.7 best 57.7 cells 4 blocked 8
+at (287.7, -624.0, 4.9) dist 60.1 best 57.7 cells 6 blocked 11
+at (288.1, -624.4, 5.0) dist 60.6 best 57.7 cells 8 blocked 11
+at (283.1, -620.3, 5.2) dist 55.4 best 55.4 cells 8 blocked 12
+at (284.4, -629.9, 5.1) dist 65.1 best 54.4 cells 11 blocked 12
+at (279.6, -617.7, 5.5) dist 52.2 best 52.2 cells 16 blocked 12
+at (281.9, -631.5, 4.9) dist 66.2 best 52.2 cells 17 blocked 12
+at (280.8, -627.3, 4.9) dist 62.0 best 52.2 cells 20 blocked 12
+at (277.7, -615.8, 5.7) dist 50.2 best 50.2 cells 24 blocked 12
+at (278.3, -616.4, 5.6) dist 50.8 best 50.2 cells 26 blocked 14
+at (277.2, -616.3, 5.6) dist 50.6 best 50.2 cells 26 blocked 16
+at (275.9, -617.6, 5.3) dist 51.8 best 50.2 cells 28 blocked 17
+at (274.2, -621.0, 6.3) dist 55.0 best 50.2 cells 28 blocked 17
+at (278.1, -620.5, 5.3) dist 54.9 best 50.2 cells 31 blocked 17
+at (278.2, -623.3, 5.0) dist 57.6 best 50.2 cells 34 blocked 17
+at (273.4, -620.2, 7.0) dist 54.2 best 50.2 cells 37 blocked 17
+at (280.9, -622.6, 4.9) dist 57.3 best 50.2 cells 38 blocked 19
+at (278.7, -622.9, 5.4) dist 57.3 best 50.2 cells 38 blocked 19
+at (279.8, -621.5, 5.2) dist 56.0 best 50.2 cells 38 blocked 19
+at (279.0, -621.4, 5.3) dist 55.9 best 50.2 cells 39 blocked 19
+at (278.7, -625.1, 4.8) dist 59.5 best 50.2 cells 39 blocked 20
+at (281.2, -629.4, 4.6) dist 64.1 best 50.2 cells 41 blocked 20
+at (281.0, -618.8, 5.1) dist 53.6 best 50.2 cells 41 blocked 21
+at (280.8, -622.5, 4.9) dist 57.2 best 50.2 cells 42 blocked 21
+stopped (280.7637634277344, -622.5401000976562, 4.9336724281311035) dist 57.2 route 8 points -> %USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/route-cluster.json

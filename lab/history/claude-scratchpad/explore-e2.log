@@ -1,0 +1,22 @@
+shadPS4 pid 15268  eboot base 0x5210000  control vtable[0]=0x5964410 PASS
+start (392.81690979003906, -773.3937377929688, 18.65873146057129) goal [347.43, -646.29]
+at (390.0, -778.0, 17.5) dist 138.4 best 130.7 cells 3 blocked 5
+at (390.1, -773.3, 17.7) dist 133.9 best 130.7 cells 6 blocked 7
+at (393.8, -776.3, 17.7) dist 138.0 best 130.7 cells 8 blocked 7
+at (390.9, -769.7, 3.2) dist 130.8 best 130.7 cells 11 blocked 7
+at (385.9, -773.2, 17.8) dist 132.6 best 130.7 cells 15 blocked 7
+at (390.0, -783.8, 17.7) dist 144.0 best 127.7 cells 19 blocked 7
+at (388.0, -778.0, 17.7) dist 137.8 best 127.7 cells 21 blocked 7
+at (389.0, -775.9, 17.5) dist 136.1 best 127.7 cells 21 blocked 7
+at (384.9, -767.7, 3.7) dist 127.0 best 127.7 cells 24 blocked 7
+at (385.8, -774.1, 17.7) dist 133.4 best 127.7 cells 27 blocked 7
+at (385.8, -775.1, 17.8) dist 134.4 best 127.7 cells 27 blocked 8
+at (386.0, -779.4, 18.1) dist 138.6 best 127.7 cells 28 blocked 8
+at (389.5, -779.1, 18.1) dist 139.3 best 127.7 cells 29 blocked 8
+at (393.5, -775.8, 18.6) dist 137.5 best 127.7 cells 29 blocked 8
+at (396.5, -773.2, 18.6) dist 136.1 best 127.7 cells 31 blocked 8
+at (387.6, -778.2, 18.1) dist 137.9 best 127.7 cells 34 blocked 8
+at (390.4, -773.4, 18.3) dist 134.2 best 127.7 cells 35 blocked 8
+at (396.2, -773.2, 18.6) dist 136.0 best 127.7 cells 37 blocked 8
+at (398.3, -773.2, 18.6) dist 136.8 best 127.7 cells 37 blocked 8
+at (390.1, -771.7, 5.3) dist 132.5 best 127.7 cells 38 blocked 8

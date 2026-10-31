@@ -1,0 +1,15 @@
+0x003b6720 push      rbp
+0x003b6721 mov       rbp, rsp
+0x003b6724 push      rbx
+0x003b6725 push      rax
+0x003b6726 lea       rdi, [rip + 0x22f69e3] ; [0x26ad110]
+0x003b672d call      0x6fd50
+0x003b6732 lea       rbx, [rip + 0x22f6a57] ; [0x26ad190]
+0x003b6739 mov       rdi, rbx
+0x003b673c call      0x23e240
+0x003b6741 mov       rdi, rbx
+0x003b6744 add       rsp, 8
+0x003b6748 pop       rbx
+0x003b6749 pop       rbp
+0x003b674a jmp       0x23dfb0
+0x003b674f nop       

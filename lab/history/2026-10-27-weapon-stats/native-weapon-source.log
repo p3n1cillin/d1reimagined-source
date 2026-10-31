@@ -1,0 +1,3 @@
+shadPS4 pid 10544  eboot base 0x5110000  control vtable[0]=0x5864410 PASS
+{"event": "start", "pid": 10544, "base": "0x5110000", "addrs": ["0x5a20c60"], "t": 1793139316.3167658}
+{"event": "detached", "hits": 0, "t": 1793139379.362831}

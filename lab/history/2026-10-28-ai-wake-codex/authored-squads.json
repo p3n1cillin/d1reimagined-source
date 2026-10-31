@@ -1,0 +1,218 @@
+[
+  {
+    "squad": 5,
+    "entity_definition": "0x80cb86bf",
+    "template": "0x80cc3830",
+    "template_sha256": "276a55acb239c563fc085963278f00b265d7909902c6eba66ae71ca018d772b4",
+    "name_hash": "0xc4254aad",
+    "flags_14": "0x100",
+    "variants": [
+      {
+        "index": 0,
+        "name_hash": "0x75fa83c3",
+        "name": "dreg"
+      },
+      {
+        "index": 1,
+        "name_hash": "0x6d107660",
+        "name": null
+      }
+    ],
+    "inline_spawn_points": [],
+    "sense43_assignment": {
+      "objective_ref_bytes": "c59d1c81ff00ffff",
+      "slot_3ec": 0,
+      "resolved_task_3f0": -1
+    }
+  },
+  {
+    "squad": 6,
+    "entity_definition": "0x80cb86c0",
+    "template": "0x80cc3831",
+    "template_sha256": "b41cd5a7b9b81a641c4158ac5f445afb4f208e15b425b767adfc2c235740b0bf",
+    "name_hash": "0x2d3b96fa",
+    "flags_14": "0x100",
+    "variants": [
+      {
+        "index": 0,
+        "name_hash": "0x6d107663",
+        "name": null
+      }
+    ],
+    "inline_spawn_points": [],
+    "sense43_assignment": {
+      "objective_ref_bytes": "c59d1c81ff00ffff",
+      "slot_3ec": 0,
+      "resolved_task_3f0": -1
+    }
+  },
+  {
+    "squad": 7,
+    "entity_definition": "0x80cb86c1",
+    "template": "0x80cc3832",
+    "template_sha256": "a4df79e89694351622dab00883308cfc0740611c5a27255bdee7682468ad0638",
+    "name_hash": "0x35ed2783",
+    "flags_14": "0x102",
+    "variants": [
+      {
+        "index": 0,
+        "name_hash": "0x75fa83c3",
+        "name": "dreg"
+      },
+      {
+        "index": 1,
+        "name_hash": "0x6d107663",
+        "name": null
+      },
+      {
+        "index": 2,
+        "name_hash": "0x74bdfeeb",
+        "name": "vandal"
+      }
+    ],
+    "inline_spawn_points": [],
+    "sense43_assignment": {
+      "objective_ref_bytes": "c59d1c81ff00ffff",
+      "slot_3ec": 0,
+      "resolved_task_3f0": -1
+    }
+  },
+  {
+    "squad": 8,
+    "entity_definition": "0x80cb86c2",
+    "template": "0x80cc3833",
+    "template_sha256": "23d2ded88e70019dfdb897531e7342983b945aebcc67f06092c09e65aaa1dfdb",
+    "name_hash": "0x77b52b85",
+    "flags_14": "0x100",
+    "variants": [
+      {
+        "index": 0,
+        "name_hash": "0x4dc4aacb",
+        "name": "captain"
+      }
+    ],
+    "inline_spawn_points": [],
+    "sense43_assignment": {
+      "objective_ref_bytes": "c59d1c81ff00ffff",
+      "slot_3ec": 0,
+      "resolved_task_3f0": -1
+    }
+  },
+  {
+    "squad": 9,
+    "entity_definition": "0x80cb86c3",
+    "template": "0x80cc3834",
+    "template_sha256": "7742f9e5bfd3f4f8ed0e137d0eee7faae42827e5dd665bac837c910a7b2e3adc",
+    "name_hash": "0x77b52b86",
+    "flags_14": "0x100",
+    "variants": [
+      {
+        "index": 0,
+        "name_hash": "0xd1f11e74",
+        "name": null
+      }
+    ],
+    "inline_spawn_points": [],
+    "sense43_assignment": {
+      "objective_ref_bytes": "c59d1c81ff00ffff",
+      "slot_3ec": 0,
+      "resolved_task_3f0": -1
+    }
+  },
+  {
+    "squad": 10,
+    "entity_definition": "0x80cb86c4",
+    "template": "0x80cc3835",
+    "template_sha256": "d1b4a6830a0d4fd83e27a0757a6b073774cafd99baba5ebc761fe7a41728b053",
+    "name_hash": "0x77b52b87",
+    "flags_14": "0x100",
+    "variants": [
+      {
+        "index": 0,
+        "name_hash": "0x74bdfeeb",
+        "name": "vandal"
+      }
+    ],
+    "inline_spawn_points": [],
+    "sense43_assignment": {
+      "objective_ref_bytes": "c59d1c81ff00ffff",
+      "slot_3ec": 0,
+      "resolved_task_3f0": -1
+    }
+  },
+  {
+    "squad": 11,
+    "entity_definition": "0x80cb86c5",
+    "template": "0x80cc3836",
+    "template_sha256": "5b45925bf6b35b87b471ba9a2f2554cce08fa0a753fd8f042dd83af3c61fe92b",
+    "name_hash": "0x470ac178",
+    "flags_14": "0x100",
+    "variants": [
+      {
+        "index": 0,
+        "name_hash": "0x75fa83c3",
+        "name": "dreg"
+      }
+    ],
+    "inline_spawn_points": [
+      {
+        "offset": "0x4e0",
+        "position": [
+          101.13961791992188,
+          -580.7420043945312,
+          7.3932647705078125
+        ],
+        "radius": 3.0,
+        "field_80": "0x0",
+        "point_name_84": "0x811c9dc5",
+        "field_88": "0x811c9dc5",
+        "flags_8c": "0x0"
+      }
+    ],
+    "sense43_assignment": {
+      "objective_ref_bytes": "c59d1c81ff00ffff",
+      "slot_3ec": 0,
+      "resolved_task_3f0": -1
+    }
+  },
+  {
+    "squad": 12,
+    "entity_definition": "0x80cb86c6",
+    "template": "0x80cc3837",
+    "template_sha256": "4b46f63e83a0df9f78b16ad842cc3d071c859f67a1ccb49c5c6d2cc271ab1f86",
+    "name_hash": "0x470ac17b",
+    "flags_14": "0x102",
+    "variants": [
+      {
+        "index": 0,
+        "name_hash": "0x75fa83c3",
+        "name": "dreg"
+      },
+      {
+        "index": 1,
+        "name_hash": "0xb6085328",
+        "name": "shank"
+      }
+    ],
+    "inline_spawn_points": [
+      {
+        "offset": "0x960",
+        "position": [
+          101.13961791992188,
+          -580.7420043945312,
+          7.3932647705078125
+        ],
+        "radius": 3.0,
+        "field_80": "0x0",
+        "point_name_84": "0x811c9dc5",
+        "field_88": "0x811c9dc5",
+        "flags_8c": "0x0"
+      }
+    ],
+    "sense43_assignment": {
+      "objective_ref_bytes": "c59d1c81ff00ffff",
+      "slot_3ec": 0,
+      "resolved_task_3f0": -1
+    }
+  }
+]

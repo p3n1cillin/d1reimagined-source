@@ -1,0 +1,26 @@
+{
+ "verified_at": "2026-10-08T10:39:10.278881+00:00",
+ "reporting_date": "2026-10-08",
+ "packages": [
+  {
+   "clip_id": "<lab-pc>-20261008T103817-53f3332efacc4f338a45b51378357f7a",
+   "content": "JOIN188 revival cinematic 09:52:50Z + 4 clean stills",
+   "files": 10
+  },
+  {
+   "clip_id": "<lab-pc>-20261008T103818-d6b04c2f242a4e56be52db500a6662ad",
+   "content": "JOIN188 approach/door 09:55:52Z",
+   "files": 6
+  },
+  {
+   "clip_id": "<lab-pc>-20261008T103820-0fdb2299df29412cbd71ece65493609e",
+   "content": "JOIN188 objective handover + Breach entry 09:56:22Z",
+   "files": 6
+  }
+ ],
+ "transfer": "existing worker: outbox -> .uploading -> verify -> .ready, submitted 10:38:19-10:38:24Z",
+ "independent_nas_check": "all payload sizes/SHA-256 match, no unmanifested files",
+ "nas_free_gb": 536,
+ "overlays": "emulator screenshot/recorder notices listed per package in overlay_time_ranges",
+ "daily_report": "PENDING - consolidated report to follow near the 19:00 UK cutoff"
+}

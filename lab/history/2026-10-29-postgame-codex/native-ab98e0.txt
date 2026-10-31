@@ -1,0 +1,32 @@
+0x00ab98e0 push      rbp
+0x00ab98e1 mov       rbp, rsp
+0x00ab98e4 call      0x982110
+0x00ab98e9 mov       al, byte ptr [rax + 0x11b]
+0x00ab98ef and       al, 4
+0x00ab98f1 shr       al, 2
+0x00ab98f4 pop       rbp
+0x00ab98f5 ret       
+0x00ab98f6 nop       word ptr cs:[rax + rax]
+0x00ab9900 push      rbp
+0x00ab9901 mov       rbp, rsp
+0x00ab9904 call      0x982110
+0x00ab9909 mov       rcx, rax
+0x00ab990c mov       al, 1
+0x00ab990e test      byte ptr [rcx + 0x11b], 4
+0x00ab9915 jne       0xab9922
+0x00ab9917 mov       al, byte ptr [rcx + 0x123]
+0x00ab991d and       al, 4
+0x00ab991f shr       al, 2
+0x00ab9922 pop       rbp
+0x00ab9923 ret       
+0x00ab9924 nop       word ptr cs:[rax + rax]
+0x00ab9930 push      rbp
+0x00ab9931 mov       rbp, rsp
+0x00ab9934 push      r15
+0x00ab9936 push      r14
+0x00ab9938 push      r13
+0x00ab993a push      r12
+0x00ab993c push      rbx
+0x00ab993d .byte     0x48
+0x00ab993e .byte     0x83
+0x00ab993f in        al, dx

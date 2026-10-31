@@ -1,0 +1,54 @@
+0x15bb930 34c_transport_demonware_qos_listener
+0x15c3620 N41c_activity_client_messaging_interface_bap42c_activity_host_transport_address_resolverE
+0x1623309 failed_to_resolve_ahp_transport_address_creating_client
+0x1623341 failed_to_resolve_ah_transport_address_creating_client
+0x1627d63 networking:stun: Unable to bind transport endpoint for STUN
+0x1628681 networking:stun: Invalid external address from signon, can not resolve external address, this will cause a transport startup failure.
+0x16288e2 networking:stun: DNS lookup returned an invalid transport address, skipping lookup for: [%s].
+0x1628dc8 transport globals
+0x1628ec5 CS:Transport Endpoint Pollster
+0x1628ee4 networking:transport:read: recvfrom() failed w/ unknown error '%s' (soc:0x%x) (remote address: %s)
+0x1628f47 networking:transport:read: recv() failed w/ unknown error '%s'
+0x16291ca networking:demonware: unable to set local address for failback transport startup
+0x16293b0 demonware transport qos probes
+0x16293cf networking:demonware:transport: could not unregister secure key with ID [%s] because it was not registered, socket_router=%s
+0x162945f networking:transport:security: received data from address %s but demonware knows nothing about the address; how did it secure?
+0x16294de networking:transport:security: we were asked to resolve a secure address for a connection that isn't already secured, sa=%s, si=%s, a=%s, result=%d
+0x1629572 networking:transport:security: we were asked to resolve a secure address for a connection that we don't know about at all, sa=%s, si=%s
+0x1629604 networking:demonware:transport: bdSocketRouter::sendTo reported sending a different number of bytes than the packet size[bytes_sent=%d, packet_size=%d]
+0x162969c networking:demonware:transport: bdSocketRouter::sendTo reported an error demonware couldn't translate[bytes_sent (error)=%d, packet_size=%d]
+0x1629729 networking:demonware:transport: rejecting incoming connection because we have no free connection slots
+0x16298ad networking:demonware:security:  Adding new transport address to Demonware security, index=%d, address=%s
+0x1629916 networking:transport:security: bdSocketRouter::getStatus(%s) returned unknown result %d
+0x162996e networking:demonware:transport: security to %s terminate because of %s
+0x1631b53 ?omni flying pilot runtimes
+0x1631e10 omni ground pilot runtimes
+0x163d08a networking:relay_channel_manager:remove_relay_connection: invalid transport address specified
+0x163e34f @28c_transport_late_game_system
+0x163e9e0 23c_transport_game_system
+0x1640507 networking:stun: Invalid target transport address, can not verify we're the intended receipient.
+0x1640568 networking:stun: Received a NAT punch intro request with no payload, can not forward to transport.
+0x16405cb networking:stun: Received a NAT punch intro request with invalid transport secure address size: [%d] expected: [%d]
+0x164079f networking:stun: NAT punch intro request forwarded to transport: [%s]
+0x1652df2 error.starting_private_activity_instance_failed_to_resolve_ahp_transport_address_creating_client
+0x1652e53 error.starting_private_activity_instance_failed_to_resolve_ah_transport_address_creating_client
+0x1653894 error.private_activity_host_failed_to_resolve_ahp_transport_address_creating_client
+0x16538e8 error.private_activity_host_failed_to_resolve_ah_transport_address_creating_client
+0x1654414 error.transport_method_invalid
+0x1654cc9 error.sstm_public_current_activity_host_failed_to_resolve_ahp_transport_address_creating_client
+0x1654d29 error.sstm_public_current_activity_host_failed_to_resolve_ah_transport_address_creating_client
+0x16557a4 error.sstm_public_target_activity_host_failed_to_resolve_ahp_transport_address_creating_client
+0x1655803 error.sstm_public_target_activity_host_failed_to_resolve_ah_transport_address_creating_client
+0x1659b34 world_controller:state_manager: The transport method is not ready to send secure data.
+0x1660227 AI Bipeds %d, Ultras %d, AI Biped Pilots %d
+0x1660253 Ultra Vehicles %.1f, Dropships %.1f
+0x167f51d transport
+0x1683287 platform-transport
+0x168654f networking:logic:session_tracker: #%d (#%d): transport_qos_get_result() failed
+0x16888eb _connection_failure_failed_to_create_transport_ip
+0x168891d _connection_failure_failed_to_call_transport_endpoint_async_connect
+0x1688961 _connection_failure_failed_to_call_transport_endpoint_async_is_connected
+0x168a138 networking:server:bap: [%s - %s] Failed to resolve valid transport ip address '%s'.
+0x168a19b networking:server:bap: [%s - %s] Failed to call transport_endpoint_async_connect() [ip address %s].
+0x168a1ff networking:server:bap: [%s - %s] Failed to call transport_endpoint_async_is_connected() [ip address %s].
+0x16babce External STUN client succeeded, finishing transport startup.

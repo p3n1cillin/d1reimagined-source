@@ -1,0 +1,12 @@
+0x001ad260 mov       eax, dword ptr [rdi + 0x14]
+0x001ad263 cmp       eax, -1
+0x001ad266 jne       0x1ad26b
+0x001ad268 xor       eax, eax
+0x001ad26a ret       
+0x001ad26b and       eax, 0x1fff
+0x001ad270 lea       rcx, [rip + 0x242bcf9] ; [0x25d8f70]
+0x001ad277 imul      eax, dword ptr [rcx + 0x10]
+0x001ad27b mov       rcx, qword ptr [rcx + 8]
+0x001ad27f lea       rax, [rax + rcx + 0x80]
+0x001ad287 ret       
+0x001ad288 nop       dword ptr [rax + rax]

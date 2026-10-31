@@ -1,0 +1,70 @@
+[
+  {
+    "hash": "0x8e7bf3ba",
+    "definition": {
+      "itemHash": 2390487994,
+      "itemName": "Arcadia Class Jumpship",
+      "itemDescription": "Arcadians were the most common jumpships during the Golden Age, used for both terrestrial and planetary excursions. Their remains have been reported around most Earth-based space ports.",
+      "itemTypeName": "Ship",
+      "bucketTypeHash": 284967655,
+      "equippingBlock": {
+        "weaponSandboxPatternIndex": 18,
+        "gearArtArrangementIndex": 2321,
+        "defaultDyes": [],
+        "lockedDyes": [
+          {
+            "channelHash": 284967655,
+            "dyeHash": 2750312582
+          }
+        ],
+        "customDyes": [],
+        "customDyeExpression": {
+          "steps": []
+        },
+        "weaponPatternHash": 284967655,
+        "arrangements": [
+          {
+            "classHash": 0,
+            "gearArtArrangementIndex": 2321
+          }
+        ],
+        "equipmentSlotHash": 284967655
+      },
+      "itemIndex": 0
+    }
+  },
+  {
+    "hash": "0x8e7bf3bb",
+    "definition": {
+      "itemHash": 2390487995,
+      "itemName": "Arcadia Class Jumpship",
+      "itemDescription": "Serviced by the Tower shipyard, this jumpship is in much better shape than when it arrived.",
+      "itemTypeName": "Ship",
+      "bucketTypeHash": 284967655,
+      "equippingBlock": {
+        "weaponSandboxPatternIndex": 18,
+        "gearArtArrangementIndex": 2322,
+        "defaultDyes": [],
+        "lockedDyes": [
+          {
+            "channelHash": 284967655,
+            "dyeHash": 2332957895
+          }
+        ],
+        "customDyes": [],
+        "customDyeExpression": {
+          "steps": []
+        },
+        "weaponPatternHash": 284967655,
+        "arrangements": [
+          {
+            "classHash": 0,
+            "gearArtArrangementIndex": 2322
+          }
+        ],
+        "equipmentSlotHash": 284967655
+      },
+      "itemIndex": 0
+    }
+  }
+]

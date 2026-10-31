@@ -1,0 +1,1360 @@
+[
+  {
+    "tag": "80c88015",
+    "group": "8d3f1166",
+    "objects": [
+      {
+        "kind": 3,
+        "index": 0,
+        "name": "obj_patrol_lower"
+      },
+      {
+        "kind": 3,
+        "index": 1,
+        "name": "obj_patrol_upper"
+      },
+      {
+        "kind": 1,
+        "index": 2,
+        "name": "sq_boulevard_vendor_avatar"
+      },
+      {
+        "kind": 2,
+        "index": 3,
+        "name": "sq_boulevard_vendor_avatar__vendor1"
+      },
+      {
+        "kind": 1,
+        "index": 4,
+        "name": "sq_boulevard_vendor_nm"
+      },
+      {
+        "kind": 2,
+        "index": 5,
+        "name": "sq_boulevard_vendor_nm__vendor1"
+      },
+      {
+        "kind": 1,
+        "index": 6,
+        "name": "sq_boulevard_civ_kneelers1"
+      },
+      {
+        "kind": 2,
+        "index": 7,
+        "name": "sq_boulevard_civ_kneelers1__kneeler1"
+      },
+      {
+        "kind": 1,
+        "index": 8,
+        "name": "sq_boulevard_civ_standers_arms_behind_back1"
+      },
+      {
+        "kind": 2,
+        "index": 9,
+        "name": "sq_boulevard_civ_standers_arms_behind_back1__stander1"
+      },
+      {
+        "kind": 2,
+        "index": 10,
+        "name": "sq_boulevard_civ_standers_arms_behind_back1__stander2"
+      },
+      {
+        "kind": 1,
+        "index": 11,
+        "name": "sq_boulevard_civ_standers_arms_at_sides1"
+      },
+      {
+        "kind": 2,
+        "index": 12,
+        "name": "sq_boulevard_civ_standers_arms_at_sides1__stander1"
+      },
+      {
+        "kind": 2,
+        "index": 13,
+        "name": "sq_boulevard_civ_standers_arms_at_sides1__stander2"
+      },
+      {
+        "kind": 2,
+        "index": 14,
+        "name": "sq_boulevard_civ_standers_arms_at_sides1__stander2_alt"
+      },
+      {
+        "kind": 1,
+        "index": 15,
+        "name": "sq_boulevard_civ_standers_arms_folded1"
+      },
+      {
+        "kind": 2,
+        "index": 16,
+        "name": "sq_boulevard_civ_standers_arms_folded1__stander1"
+      },
+      {
+        "kind": 1,
+        "index": 17,
+        "name": "sq_boulevard_civ_couch_sitters1"
+      },
+      {
+        "kind": 2,
+        "index": 18,
+        "name": "sq_boulevard_civ_couch_sitters1__sitter1"
+      },
+      {
+        "kind": 2,
+        "index": 19,
+        "name": "sq_boulevard_civ_couch_sitters1__sitter2"
+      },
+      {
+        "kind": 2,
+        "index": 20,
+        "name": "sq_boulevard_civ_couch_sitters1__sitter3"
+      },
+      {
+        "kind": 1,
+        "index": 21,
+        "name": "sq_boulevard_civ_railing_inward1"
+      },
+      {
+        "kind": 2,
+        "index": 22,
+        "name": "sq_boulevard_civ_railing_inward1__leaner1"
+      },
+      {
+        "kind": 1,
+        "index": 23,
+        "name": "sq_boulevard_civ_railing_outward1"
+      },
+      {
+        "kind": 2,
+        "index": 24,
+        "name": "sq_boulevard_civ_railing_outward1__leaner1"
+      },
+      {
+        "kind": 2,
+        "index": 25,
+        "name": "sq_boulevard_civ_railing_outward1__leaner2"
+      },
+      {
+        "kind": 2,
+        "index": 26,
+        "name": "sq_boulevard_civ_railing_outward1__leaner1_alt"
+      },
+      {
+        "kind": 1,
+        "index": 27,
+        "name": "sq_boulevard_civ_box_sitters1"
+      },
+      {
+        "kind": 2,
+        "index": 28,
+        "name": "sq_boulevard_civ_box_sitters1__sitter1"
+      },
+      {
+        "kind": 2,
+        "index": 29,
+        "name": "sq_boulevard_civ_box_sitters1__sitter1_alt"
+      },
+      {
+        "kind": 1,
+        "index": 30,
+        "name": "sq_boulevard_the_mask"
+      },
+      {
+        "kind": 2,
+        "index": 31,
+        "name": "sq_boulevard_the_mask__mask_a"
+      },
+      {
+        "kind": 2,
+        "index": 32,
+        "name": "sq_boulevard_the_mask__mask_b"
+      },
+      {
+        "kind": 2,
+        "index": 33,
+        "name": "sq_boulevard_the_mask__mask_c"
+      },
+      {
+        "kind": 1,
+        "index": 34,
+        "name": "sq_boulevard_civ_walkers1"
+      },
+      {
+        "kind": 2,
+        "index": 35,
+        "name": "sq_boulevard_civ_walkers1__walker1"
+      },
+      {
+        "kind": 1,
+        "index": 36,
+        "name": "sq_boulevard_civ_walkers2"
+      },
+      {
+        "kind": 2,
+        "index": 37,
+        "name": "sq_boulevard_civ_walkers2__walker1"
+      },
+      {
+        "kind": 1,
+        "index": 38,
+        "name": "sq_boulevard_vendor_black_market"
+      },
+      {
+        "kind": 2,
+        "index": 39,
+        "name": "sq_boulevard_vendor_black_market__vendor_door"
+      },
+      {
+        "kind": 2,
+        "index": 40,
+        "name": "sq_boulevard_vendor_black_market__vendor_rail"
+      },
+      {
+        "kind": 1,
+        "index": 41,
+        "name": "sq_boulevard_vendor_playtest"
+      },
+      {
+        "kind": 2,
+        "index": 42,
+        "name": "sq_boulevard_vendor_playtest__vendor"
+      },
+      {
+        "kind": 40,
+        "index": 43,
+        "name": "vendor_performance_sensor_avatar"
+      },
+      {
+        "kind": 40,
+        "index": 44,
+        "name": "vendor_performance_sensor_nm"
+      },
+      {
+        "kind": 40,
+        "index": 45,
+        "name": "vendor_playtest"
+      },
+      {
+        "kind": 40,
+        "index": 46,
+        "name": "npc_kneeler"
+      },
+      {
+        "kind": 40,
+        "index": 47,
+        "name": "npc_stand_arms_behind_back"
+      },
+      {
+        "kind": 40,
+        "index": 48,
+        "name": "npc_stand_arms_at_side1"
+      },
+      {
+        "kind": 40,
+        "index": 49,
+        "name": "npc_stand_arms_at_side2"
+      },
+      {
+        "kind": 40,
+        "index": 50,
+        "name": "npc_stand_arms_at_side2_alt"
+      },
+      {
+        "kind": 40,
+        "index": 51,
+        "name": "npc_stand_arms_folded"
+      },
+      {
+        "kind": 40,
+        "index": 52,
+        "name": "npc_couch_sitters1"
+      },
+      {
+        "kind": 40,
+        "index": 53,
+        "name": "npc_couch_sitters2"
+      },
+      {
+        "kind": 40,
+        "index": 54,
+        "name": "npc_couch_sitters3"
+      },
+      {
+        "kind": 40,
+        "index": 55,
+        "name": "npc_railing_inward"
+      },
+      {
+        "kind": 40,
+        "index": 56,
+        "name": "npc_railing_outward1"
+      },
+      {
+        "kind": 40,
+        "index": 57,
+        "name": "npc_railing_outward1_alt"
+      },
+      {
+        "kind": 40,
+        "index": 58,
+        "name": "npc_railing_outward2"
+      },
+      {
+        "kind": 40,
+        "index": 59,
+        "name": "npc_box_sitter"
+      },
+      {
+        "kind": 40,
+        "index": 60,
+        "name": "npc_box_sitter_alt"
+      },
+      {
+        "kind": 40,
+        "index": 61,
+        "name": "vendor_black_market_rail"
+      },
+      {
+        "kind": 40,
+        "index": 62,
+        "name": "vendor_black_market_door"
+      },
+      {
+        "kind": 40,
+        "index": 63,
+        "name": "vendor_performance_sensor_mask"
+      },
+      {
+        "kind": 42,
+        "index": 64,
+        "name": "__influencer_firing_area_set_5"
+      },
+      {
+        "kind": 41,
+        "index": 65,
+        "name": "firingarea"
+      },
+      {
+        "kind": 41,
+        "index": 66,
+        "name": "fa_patrol_lower_lounge"
+      },
+      {
+        "kind": 41,
+        "index": 67,
+        "name": "fa_patrol_lower_balcony"
+      },
+      {
+        "kind": 41,
+        "index": 68,
+        "name": "fa_patrol_lower_room"
+      },
+      {
+        "kind": 41,
+        "index": 69,
+        "name": "fa_patrol_upper_center"
+      },
+      {
+        "kind": 41,
+        "index": 70,
+        "name": "fa_patrol_upper_storage"
+      },
+      {
+        "kind": 41,
+        "index": 71,
+        "name": "fa_patrol_upper_corner"
+      },
+      {
+        "kind": 56,
+        "index": 72,
+        "name": "cps_boulevard_droid_patrol1_guard1"
+      },
+      {
+        "kind": 56,
+        "index": 73,
+        "name": "cps_boulevard_droid_patrol1_guard2"
+      },
+      {
+        "kind": 56,
+        "index": 74,
+        "name": "cps_boulevard_tablet_walker_path1"
+      },
+      {
+        "kind": 42,
+        "index": 75,
+        "name": "__influencer_firing_area_set_6"
+      },
+      {
+        "kind": 42,
+        "index": 76,
+        "name": "__influencer_firing_area_set_2"
+      },
+      {
+        "kind": 42,
+        "index": 77,
+        "name": "__influencer_firing_area_set_3"
+      },
+      {
+        "kind": 42,
+        "index": 78,
+        "name": "__influencer_firing_area_set_1"
+      },
+      {
+        "kind": 42,
+        "index": 79,
+        "name": "__influencer_firing_area_set_4"
+      },
+      {
+        "kind": 59,
+        "index": 80,
+        "name": "utils"
+      }
+    ]
+  },
+  {
+    "tag": "80c88175",
+    "group": "19d43443",
+    "objects": [
+      {
+        "kind": 4,
+        "index": 0,
+        "name": "o_jukebox"
+      },
+      {
+        "kind": 1,
+        "index": 1,
+        "name": "vendor_ships"
+      },
+      {
+        "kind": 2,
+        "index": 2,
+        "name": "vendor_ships__vendor"
+      },
+      {
+        "kind": 1,
+        "index": 3,
+        "name": "vendor_vanguard"
+      },
+      {
+        "kind": 2,
+        "index": 4,
+        "name": "vendor_vanguard__vendor"
+      },
+      {
+        "kind": 1,
+        "index": 5,
+        "name": "vendor_future_war_cult"
+      },
+      {
+        "kind": 2,
+        "index": 6,
+        "name": "vendor_future_war_cult__vendor"
+      },
+      {
+        "kind": 1,
+        "index": 7,
+        "name": "vendor_dead_orbit"
+      },
+      {
+        "kind": 2,
+        "index": 8,
+        "name": "vendor_dead_orbit__vendor"
+      },
+      {
+        "kind": 1,
+        "index": 9,
+        "name": "hunter_clubhouse_sitters1"
+      },
+      {
+        "kind": 2,
+        "index": 10,
+        "name": "hunter_clubhouse_sitters1__sitter2"
+      },
+      {
+        "kind": 2,
+        "index": 11,
+        "name": "hunter_clubhouse_sitters1__sitter3"
+      },
+      {
+        "kind": 1,
+        "index": 12,
+        "name": "hunter_clubhouse_sitters2"
+      },
+      {
+        "kind": 2,
+        "index": 13,
+        "name": "hunter_clubhouse_sitters2__sitter1"
+      },
+      {
+        "kind": 2,
+        "index": 14,
+        "name": "hunter_clubhouse_sitters2__sitter2"
+      },
+      {
+        "kind": 2,
+        "index": 15,
+        "name": "hunter_clubhouse_sitters2__sitter3"
+      },
+      {
+        "kind": 1,
+        "index": 16,
+        "name": "hunter_clubhouse_keyboarders1"
+      },
+      {
+        "kind": 2,
+        "index": 17,
+        "name": "hunter_clubhouse_keyboarders1__keyboarder1"
+      },
+      {
+        "kind": 1,
+        "index": 18,
+        "name": "vendor_ships_helpers1"
+      },
+      {
+        "kind": 2,
+        "index": 19,
+        "name": "vendor_ships_helpers1__helper1"
+      },
+      {
+        "kind": 2,
+        "index": 20,
+        "name": "vendor_ships_helpers1__helper2"
+      },
+      {
+        "kind": 1,
+        "index": 21,
+        "name": "vendor_weapons_helpers1"
+      },
+      {
+        "kind": 2,
+        "index": 22,
+        "name": "vendor_weapons_helpers1__helper1"
+      },
+      {
+        "kind": 2,
+        "index": 23,
+        "name": "vendor_weapons_helpers1__helper2"
+      },
+      {
+        "kind": 2,
+        "index": 24,
+        "name": "vendor_weapons_helpers1__helper3"
+      },
+      {
+        "kind": 1,
+        "index": 25,
+        "name": "future_war_cult_sitters1"
+      },
+      {
+        "kind": 2,
+        "index": 26,
+        "name": "future_war_cult_sitters1__sitter1"
+      },
+      {
+        "kind": 1,
+        "index": 27,
+        "name": "future_war_cult_sitters2"
+      },
+      {
+        "kind": 2,
+        "index": 28,
+        "name": "future_war_cult_sitters2__sitter1"
+      },
+      {
+        "kind": 2,
+        "index": 29,
+        "name": "future_war_cult_sitters2__sitter2"
+      },
+      {
+        "kind": 1,
+        "index": 30,
+        "name": "ship_signalers"
+      },
+      {
+        "kind": 2,
+        "index": 31,
+        "name": "ship_signalers__signaler1"
+      },
+      {
+        "kind": 1,
+        "index": 32,
+        "name": "ship_welders"
+      },
+      {
+        "kind": 2,
+        "index": 33,
+        "name": "ship_welders__welder1"
+      },
+      {
+        "kind": 2,
+        "index": 34,
+        "name": "ship_welders__welder2"
+      },
+      {
+        "kind": 1,
+        "index": 35,
+        "name": "dead_orbit_standers"
+      },
+      {
+        "kind": 2,
+        "index": 36,
+        "name": "dead_orbit_standers__stander1"
+      },
+      {
+        "kind": 2,
+        "index": 37,
+        "name": "dead_orbit_standers__stander2"
+      },
+      {
+        "kind": 1,
+        "index": 38,
+        "name": "vendor_black_market"
+      },
+      {
+        "kind": 2,
+        "index": 39,
+        "name": "vendor_black_market__vendor_hunter"
+      },
+      {
+        "kind": 2,
+        "index": 40,
+        "name": "vendor_black_market__vendor_hangar"
+      },
+      {
+        "kind": 1,
+        "index": 41,
+        "name": "sq_droid_repair"
+      },
+      {
+        "kind": 2,
+        "index": 42,
+        "name": "sq_droid_repair__repair1"
+      },
+      {
+        "kind": 5,
+        "index": 43,
+        "name": "track[0]"
+      },
+      {
+        "kind": 5,
+        "index": 44,
+        "name": "track[1]"
+      },
+      {
+        "kind": 5,
+        "index": 45,
+        "name": "track[2]"
+      },
+      {
+        "kind": 5,
+        "index": 46,
+        "name": "track[3]"
+      },
+      {
+        "kind": 5,
+        "index": 47,
+        "name": "track[4]"
+      },
+      {
+        "kind": 5,
+        "index": 48,
+        "name": "track[5]"
+      },
+      {
+        "kind": 5,
+        "index": 49,
+        "name": "track[6]"
+      },
+      {
+        "kind": 5,
+        "index": 50,
+        "name": "track[7]"
+      },
+      {
+        "kind": 5,
+        "index": 51,
+        "name": "track[8]"
+      },
+      {
+        "kind": 5,
+        "index": 52,
+        "name": "track[9]"
+      },
+      {
+        "kind": 5,
+        "index": 53,
+        "name": "track[10]"
+      },
+      {
+        "kind": 40,
+        "index": 54,
+        "name": "vendor_performance_sensor_ships"
+      },
+      {
+        "kind": 40,
+        "index": 55,
+        "name": "vendor_performance_sensor_vanguard"
+      },
+      {
+        "kind": 40,
+        "index": 56,
+        "name": "vendor_performance_sensor_fwc"
+      },
+      {
+        "kind": 40,
+        "index": 57,
+        "name": "vendor_performance_sensor_do"
+      },
+      {
+        "kind": 40,
+        "index": 58,
+        "name": "vendor_black_market_hunter"
+      },
+      {
+        "kind": 40,
+        "index": 59,
+        "name": "vendor_black_market_hangar"
+      },
+      {
+        "kind": 40,
+        "index": 60,
+        "name": "npc_hunter_clubhouse_sitter1_2"
+      },
+      {
+        "kind": 40,
+        "index": 61,
+        "name": "npc_hunter_clubhouse_sitter1_3"
+      },
+      {
+        "kind": 40,
+        "index": 62,
+        "name": "npc_hunter_clubhouse_sitter2_1"
+      },
+      {
+        "kind": 40,
+        "index": 63,
+        "name": "npc_hunter_clubhouse_sitter2_2"
+      },
+      {
+        "kind": 40,
+        "index": 64,
+        "name": "npc_hunter_clubhouse_sitter2_3"
+      },
+      {
+        "kind": 40,
+        "index": 65,
+        "name": "npc_hunter_clubhouse_keyboarder"
+      },
+      {
+        "kind": 40,
+        "index": 66,
+        "name": "npc_fwc_sitter1"
+      },
+      {
+        "kind": 40,
+        "index": 67,
+        "name": "npc_fwc_sitter2"
+      },
+      {
+        "kind": 40,
+        "index": 68,
+        "name": "npc_fwc_sitter3"
+      },
+      {
+        "kind": 40,
+        "index": 69,
+        "name": "npc_vendor_ship_helper1"
+      },
+      {
+        "kind": 40,
+        "index": 70,
+        "name": "npc_vendor_ship_helper2"
+      },
+      {
+        "kind": 40,
+        "index": 71,
+        "name": "npc_vendor_weapons_helper1"
+      },
+      {
+        "kind": 40,
+        "index": 72,
+        "name": "npc_vendor_weapons_helper2"
+      },
+      {
+        "kind": 40,
+        "index": 73,
+        "name": "npc_vendor_weapons_helper3"
+      },
+      {
+        "kind": 40,
+        "index": 74,
+        "name": "npc_do_stander1"
+      },
+      {
+        "kind": 40,
+        "index": 75,
+        "name": "npc_do_stander2"
+      },
+      {
+        "kind": 40,
+        "index": 76,
+        "name": "npc_ship_signaler"
+      },
+      {
+        "kind": 40,
+        "index": 77,
+        "name": "npc_welder"
+      },
+      {
+        "kind": 40,
+        "index": 78,
+        "name": "npc_droid_repair"
+      },
+      {
+        "kind": 44,
+        "index": 79,
+        "name": "ap_jukebox"
+      },
+      {
+        "kind": 59,
+        "index": 80,
+        "name": "utils"
+      }
+    ]
+  },
+  {
+    "tag": "80c882ed",
+    "group": "8cc31436",
+    "objects": [
+      {
+        "kind": 4,
+        "index": 0,
+        "name": "o_vendor_xur_notification"
+      },
+      {
+        "kind": 3,
+        "index": 1,
+        "name": "obj_underwatch_patrol_walkers1"
+      },
+      {
+        "kind": 3,
+        "index": 2,
+        "name": "obj_underwatch_patrol_walkers2"
+      },
+      {
+        "kind": 1,
+        "index": 3,
+        "name": "sq_underwatch_vendor_guardian_mentor"
+      },
+      {
+        "kind": 2,
+        "index": 4,
+        "name": "sq_underwatch_vendor_guardian_mentor__vendor_table1"
+      },
+      {
+        "kind": 1,
+        "index": 5,
+        "name": "sq_underwatch_vendor_hunter_mentor"
+      },
+      {
+        "kind": 2,
+        "index": 6,
+        "name": "sq_underwatch_vendor_hunter_mentor__vendor_table1"
+      },
+      {
+        "kind": 1,
+        "index": 7,
+        "name": "sq_underwatch_vendor_warlock_mentor"
+      },
+      {
+        "kind": 2,
+        "index": 8,
+        "name": "sq_underwatch_vendor_warlock_mentor__vendor_table1"
+      },
+      {
+        "kind": 1,
+        "index": 9,
+        "name": "sq_underwatch_cannon_workers"
+      },
+      {
+        "kind": 2,
+        "index": 10,
+        "name": "sq_underwatch_cannon_workers__worker1"
+      },
+      {
+        "kind": 2,
+        "index": 11,
+        "name": "sq_underwatch_cannon_workers__worker2"
+      },
+      {
+        "kind": 1,
+        "index": 12,
+        "name": "sq_underwatch_workstation_workers"
+      },
+      {
+        "kind": 2,
+        "index": 13,
+        "name": "sq_underwatch_workstation_workers__worker_typist1"
+      },
+      {
+        "kind": 2,
+        "index": 14,
+        "name": "sq_underwatch_workstation_workers__worker_monitor1"
+      },
+      {
+        "kind": 2,
+        "index": 15,
+        "name": "sq_underwatch_workstation_workers__worker_typist2"
+      },
+      {
+        "kind": 2,
+        "index": 16,
+        "name": "sq_underwatch_workstation_workers__worker_monitor2"
+      },
+      {
+        "kind": 1,
+        "index": 17,
+        "name": "sq_underwatch_welder_workers"
+      },
+      {
+        "kind": 2,
+        "index": 18,
+        "name": "sq_underwatch_welder_workers__worker1"
+      },
+      {
+        "kind": 2,
+        "index": 19,
+        "name": "sq_underwatch_welder_workers__supervisor1"
+      },
+      {
+        "kind": 1,
+        "index": 20,
+        "name": "sq_underwatch_crate_workers"
+      },
+      {
+        "kind": 2,
+        "index": 21,
+        "name": "sq_underwatch_crate_workers__worker1"
+      },
+      {
+        "kind": 2,
+        "index": 22,
+        "name": "sq_underwatch_crate_workers__worker2"
+      },
+      {
+        "kind": 2,
+        "index": 23,
+        "name": "sq_underwatch_crate_workers__supervisor1"
+      },
+      {
+        "kind": 1,
+        "index": 24,
+        "name": "sq_underwatch_walkers1"
+      },
+      {
+        "kind": 1,
+        "index": 25,
+        "name": "sq_underwatch_walkers2"
+      },
+      {
+        "kind": 1,
+        "index": 26,
+        "name": "sq_underwatch_shaxx"
+      },
+      {
+        "kind": 2,
+        "index": 27,
+        "name": "sq_underwatch_shaxx__shaxx"
+      },
+      {
+        "kind": 2,
+        "index": 28,
+        "name": "sq_underwatch_shaxx__shaxx_helper"
+      },
+      {
+        "kind": 1,
+        "index": 29,
+        "name": "sq_underwatch_artcite"
+      },
+      {
+        "kind": 2,
+        "index": 30,
+        "name": "sq_underwatch_artcite__artcite"
+      },
+      {
+        "kind": 1,
+        "index": 31,
+        "name": "sq_plaza_vendor_cryptarch"
+      },
+      {
+        "kind": 2,
+        "index": 32,
+        "name": "sq_plaza_vendor_cryptarch__vendor1"
+      },
+      {
+        "kind": 1,
+        "index": 33,
+        "name": "sq_plaza_vendor_postmaster"
+      },
+      {
+        "kind": 2,
+        "index": 34,
+        "name": "sq_plaza_vendor_postmaster__vendor1"
+      },
+      {
+        "kind": 1,
+        "index": 35,
+        "name": "sq_plaza_vendor_gunsmith"
+      },
+      {
+        "kind": 2,
+        "index": 36,
+        "name": "sq_plaza_vendor_gunsmith__vendor1"
+      },
+      {
+        "kind": 1,
+        "index": 37,
+        "name": "sq_plaza_vendor_mtx"
+      },
+      {
+        "kind": 2,
+        "index": 38,
+        "name": "sq_plaza_vendor_mtx__vendor1"
+      },
+      {
+        "kind": 1,
+        "index": 39,
+        "name": "sq_plaza_vendor_city_bounty"
+      },
+      {
+        "kind": 2,
+        "index": 40,
+        "name": "sq_plaza_vendor_city_bounty__vendor1"
+      },
+      {
+        "kind": 1,
+        "index": 41,
+        "name": "sq_underwatch_vendor_black_market"
+      },
+      {
+        "kind": 2,
+        "index": 42,
+        "name": "sq_underwatch_vendor_black_market__vendor_mentors"
+      },
+      {
+        "kind": 2,
+        "index": 43,
+        "name": "sq_underwatch_vendor_black_market__vendor_shaxx"
+      },
+      {
+        "kind": 1,
+        "index": 44,
+        "name": "sq_plaza_vendor_eris"
+      },
+      {
+        "kind": 2,
+        "index": 45,
+        "name": "sq_plaza_vendor_eris__vendor1"
+      },
+      {
+        "kind": 4,
+        "index": 46,
+        "name": "object_ball0"
+      },
+      {
+        "kind": 4,
+        "index": 47,
+        "name": "object_balloon0"
+      },
+      {
+        "kind": 40,
+        "index": 48,
+        "name": "vendor_performance_sensor_titan"
+      },
+      {
+        "kind": 40,
+        "index": 49,
+        "name": "vendor_performance_sensor_hunter"
+      },
+      {
+        "kind": 40,
+        "index": 50,
+        "name": "vendor_performance_sensor_warlock"
+      },
+      {
+        "kind": 40,
+        "index": 51,
+        "name": "vendor_performance_sensor_postmaster"
+      },
+      {
+        "kind": 40,
+        "index": 52,
+        "name": "vendor_performance_sensor_cryptarch"
+      },
+      {
+        "kind": 40,
+        "index": 53,
+        "name": "vendor_performance_sensor_gunsmith"
+      },
+      {
+        "kind": 40,
+        "index": 54,
+        "name": "vendor_performance_sensor_city_bounty"
+      },
+      {
+        "kind": 40,
+        "index": 55,
+        "name": "vendor_performance_sensor_shaxx"
+      },
+      {
+        "kind": 40,
+        "index": 56,
+        "name": "npc_shaxx_helper"
+      },
+      {
+        "kind": 40,
+        "index": 57,
+        "name": "vendor_performance_sensor_artcite"
+      },
+      {
+        "kind": 40,
+        "index": 58,
+        "name": "npc_underwatch_welder_worker"
+      },
+      {
+        "kind": 40,
+        "index": 59,
+        "name": "npc_underwatch_welder_supervisor"
+      },
+      {
+        "kind": 40,
+        "index": 60,
+        "name": "npc_underwatch_crate_workers1"
+      },
+      {
+        "kind": 40,
+        "index": 61,
+        "name": "npc_underwatch_crate_workers2"
+      },
+      {
+        "kind": 40,
+        "index": 62,
+        "name": "npc_underwatch_crate_supervisor"
+      },
+      {
+        "kind": 40,
+        "index": 63,
+        "name": "vendor_black_market_mentors"
+      },
+      {
+        "kind": 40,
+        "index": 64,
+        "name": "vendor_black_market_shaxx"
+      },
+      {
+        "kind": 40,
+        "index": 65,
+        "name": "vendor_performance_sensor_eris"
+      },
+      {
+        "kind": 40,
+        "index": 66,
+        "name": "npc_underwatch_cannon_workers"
+      },
+      {
+        "kind": 40,
+        "index": 67,
+        "name": "npc_underwatch_workstation_workers"
+      },
+      {
+        "kind": 56,
+        "index": 68,
+        "name": "cps_plaza_droid_patrol1_guard2"
+      },
+      {
+        "kind": 56,
+        "index": 69,
+        "name": "cps_plaza_droid_patrol1_guard3"
+      },
+      {
+        "kind": 56,
+        "index": 70,
+        "name": "cps_plaza_droid_patrol1_guard4"
+      },
+      {
+        "kind": 56,
+        "index": 71,
+        "name": "cps_plaza_droid_patrol2_guard1"
+      },
+      {
+        "kind": 56,
+        "index": 72,
+        "name": "cps_plaza_droid_patrol2_guard2"
+      },
+      {
+        "kind": 56,
+        "index": 73,
+        "name": "cps_plaza_droid_patrol2_guard3"
+      },
+      {
+        "kind": 56,
+        "index": 74,
+        "name": "cps_plaza_droid_patrol3_guard1"
+      },
+      {
+        "kind": 56,
+        "index": 75,
+        "name": "cps_plaza_droid_patrol3_guard2"
+      },
+      {
+        "kind": 56,
+        "index": 76,
+        "name": "cps_plaza_droid_patrol3_guard3"
+      },
+      {
+        "kind": 56,
+        "index": 77,
+        "name": "cps_plaza_droid_patrol3_guard4"
+      },
+      {
+        "kind": 56,
+        "index": 78,
+        "name": "cps_plaza_droid_patrol3_guard5"
+      },
+      {
+        "kind": 56,
+        "index": 79,
+        "name": "cps_plaza_droid_patrol3_guard6"
+      },
+      {
+        "kind": 56,
+        "index": 80,
+        "name": "cps_underwatch_guardian_mentor01"
+      },
+      {
+        "kind": 56,
+        "index": 81,
+        "name": "cps_underwatch_guardian_quartermaster01"
+      },
+      {
+        "kind": 56,
+        "index": 82,
+        "name": "cps_underwatch_guardian_quartermaster02"
+      },
+      {
+        "kind": 56,
+        "index": 83,
+        "name": "cps_underwatch_guardian_quartermaster03"
+      },
+      {
+        "kind": 56,
+        "index": 84,
+        "name": "cps_underwatch_guardian_quartermaster04"
+      },
+      {
+        "kind": 42,
+        "index": 85,
+        "name": "__influencer_firing_area_set_4"
+      },
+      {
+        "kind": 42,
+        "index": 86,
+        "name": "__influencer_firing_area_set_5"
+      },
+      {
+        "kind": 42,
+        "index": 87,
+        "name": "__influencer_firing_area_set_6"
+      },
+      {
+        "kind": 42,
+        "index": 88,
+        "name": "__influencer_firing_area_set_2"
+      },
+      {
+        "kind": 41,
+        "index": 89,
+        "name": "firingarea"
+      },
+      {
+        "kind": 41,
+        "index": 90,
+        "name": "fa_plaza_patrol_boulevard"
+      },
+      {
+        "kind": 41,
+        "index": 91,
+        "name": "fa_plaza_patrol_military"
+      },
+      {
+        "kind": 41,
+        "index": 92,
+        "name": "fa_plaza_patrol_monitor1"
+      },
+      {
+        "kind": 41,
+        "index": 93,
+        "name": "fa_plaza_patrol_monitor2"
+      },
+      {
+        "kind": 41,
+        "index": 94,
+        "name": "fa_underwatch_patrol1"
+      },
+      {
+        "kind": 41,
+        "index": 95,
+        "name": "fa_underwatch_patrol2"
+      },
+      {
+        "kind": 41,
+        "index": 96,
+        "name": "fa_underwatch_patrol3"
+      },
+      {
+        "kind": 41,
+        "index": 97,
+        "name": "fa_underwatch_patrol4"
+      },
+      {
+        "kind": 41,
+        "index": 98,
+        "name": "fa_underwatch_patrol5"
+      },
+      {
+        "kind": 58,
+        "index": 99,
+        "name": "tv_ball_safe_zone"
+      },
+      {
+        "kind": 42,
+        "index": 100,
+        "name": "__influencer_firing_area_set_3"
+      },
+      {
+        "kind": 42,
+        "index": 101,
+        "name": "__influencer_firing_area_set_1"
+      },
+      {
+        "kind": 45,
+        "index": 102,
+        "name": "ap_underwatch_guardian_quartermaster01"
+      },
+      {
+        "kind": 45,
+        "index": 103,
+        "name": "ap_underwatch_guardian_mentor01"
+      },
+      {
+        "kind": 56,
+        "index": 104,
+        "name": "cps_plaza_droid_patrol1_guard1"
+      },
+      {
+        "kind": 59,
+        "index": 105,
+        "name": "utils"
+      }
+    ]
+  }
+]

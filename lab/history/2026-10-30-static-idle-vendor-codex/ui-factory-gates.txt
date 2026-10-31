@@ -1,0 +1,60 @@
+FUNCTION 983000..9830c0
+0x00983000 push      rbp
+0x00983001 mov       rbp, rsp
+0x00983004 push      r15
+0x00983006 push      r14
+0x00983008 push      r13
+0x0098300a push      r12
+0x0098300c push      rbx
+0x0098300d sub       rsp, 0x18
+0x00983011 mov       qword ptr [rbp - 0x40], r9
+0x00983015 mov       r15, r8
+0x00983018 mov       r12, rcx
+0x0098301b mov       r14, rsi
+0x0098301e mov       r13, rdi
+0x00983021 mov       rax, qword ptr [rip + 0x109c0d8] ; [0x1a1f100]
+0x00983028 mov       rax, qword ptr [rax]
+0x0098302b mov       qword ptr [rbp - 0x30], rax
+0x0098302f mov       eax, dword ptr [rdx]
+0x00983031 mov       esi, dword ptr [r12]
+0x00983035 mov       dword ptr [rbp - 0x38], eax
+0x00983038 lea       rdx, [rbp - 0x38]
+0x0098303c mov       rcx, qword ptr [r12 + 8]
+0x00983041 mov       rdi, r14
+0x00983044 call      0x97faf0
+0x00983049 mov       rbx, rax
+0x0098304c xor       eax, eax
+0x0098304e test      rbx, rbx
+0x00983051 je        0x98308d
+0x00983053 mov       r9, qword ptr [rbp + 0x10]
+0x00983057 mov       eax, dword ptr [r15]
+0x0098305a mov       dword ptr [rbp - 0x38], eax
+0x0098305d lea       rcx, [rbp - 0x38]
+0x00983061 mov       rdi, r13
+0x00983064 mov       rsi, rbx
+0x00983067 mov       rdx, r12
+0x0098306a mov       r8, qword ptr [rbp - 0x40]
+0x0098306e call      0x9830c0
+0x00983073 mov       r15b, al
+0x00983076 mov       rdi, r14
+0x00983079 mov       rsi, rbx
+0x0098307c mov       rdx, r12
+0x0098307f call      0x982180
+0x00983084 xor       eax, eax
+0x00983086 test      r15b, r15b
+0x00983089 cmovne    rax, rbx
+0x0098308d mov       rcx, qword ptr [rip + 0x109c06c] ; [0x1a1f100]
+0x00983094 mov       rcx, qword ptr [rcx]
+0x00983097 cmp       rcx, qword ptr [rbp - 0x30]
+0x0098309b jne       0x9830ac
+0x0098309d add       rsp, 0x18
+0x009830a1 pop       rbx
+0x009830a2 pop       r12
+0x009830a4 pop       r13
+0x009830a6 pop       r14
+0x009830a8 pop       r15
+0x009830aa pop       rbp
+0x009830ab ret       
+0x009830ac call      0x12aa7f0
+0x009830b1 nop       
+0x009830b2 nop       word ptr cs:[rax + rax]

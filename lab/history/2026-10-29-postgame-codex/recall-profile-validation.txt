@@ -1,0 +1,3 @@
+Raw live normalization: 324 bytes; canonical/template differences: 0
+PASS sense54-completion673-1-recall: only canonical byte+5661 changes2->1; 166685 bits, 20836 bytes; object IDENTICAL
+PASS sense54-completion673-0-recall: only canonical byte+5661 changes2->0; 166685 bits, 20836 bytes; object IDENTICAL

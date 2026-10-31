@@ -1,0 +1,11 @@
+# UNPUBLISHED. Graft after validated Find-the-Ship step17. No active steps file edited.
+# Register actual pending Dock clients at slice104, after rechecking local authority.
+164 %104|14400 0x4786c0e0 lab/history/2026-10-28-static-combat-codex/agr-dock-register-arm40.draft.txt
+164 ^0x992bb471/0x1d/40|14400 0x4786c0e0 lab/history/2026-10-28-static-combat-codex/agr-dock-find23-m60.draft.txt
+164 ^0x062dd95d/0x1d/16|14400 0x4786c0e0 lab/history/2026-10-28-static-combat-codex/agr-dock-clear26-m52.draft.txt
+# ALTERNATE trigger41 is also authored for objective23; choose from native reports,
+# do not require both sequentially or use timeout as proof of entering the room.
+# No executable !GROUP completion: it currently times out and counts only the
+# seen-alive subset. Need expected admitted-wave cohort + strict zero receipt.
+# Then clear objective26, verify actual mission completion, request phase04/outro105.
+# Do not auto-launch cinematic29 from the current !GROUP timeout.

@@ -1,0 +1,371 @@
+0x00abd740 push      rbp
+0x00abd741 mov       rbp, rsp
+0x00abd744 push      r15
+0x00abd746 push      r14
+0x00abd748 push      r13
+0x00abd74a push      r12
+0x00abd74c push      rbx
+0x00abd74d push      rax
+0x00abd74e call      0xac59f0
+0x00abd753 mov       edi, eax
+0x00abd755 call      0x788790
+0x00abd75a mov       r12d, eax
+0x00abd75d call      0x244e40
+0x00abd762 mov       r13d, eax
+0x00abd765 call      0x94de40
+0x00abd76a mov       dword ptr [rbp - 0x30], eax
+0x00abd76d call      0x9545f0
+0x00abd772 mov       byte ptr [rbp - 0x29], al
+0x00abd775 lea       eax, [r12 - 7]
+0x00abd77a cmp       eax, 3
+0x00abd77d jae       0xabd7b0
+0x00abd77f call      0x982110
+0x00abd784 test      rax, rax
+0x00abd787 je        0xabd7a2
+0x00abd789 call      0x982110
+0x00abd78e mov       rdi, rax
+0x00abd791 mov       esi, 1
+0x00abd796 call      0x980960
+0x00abd79b xor       r15b, r15b
+0x00abd79e test      al, al
+0x00abd7a0 jne       0xabd7bc
+0x00abd7a2 call      0xab98e0
+0x00abd7a7 mov       r15b, al
+0x00abd7aa xor       r15b, 1
+0x00abd7ae jmp       0xabd7bc
+0x00abd7b0 mov       r15b, 1
+0x00abd7b3 cmp       r12d, 6
+0x00abd7b7 jne       0xabd7bc
+0x00abd7b9 xor       r15b, r15b
+0x00abd7bc lea       rax, [rip + 0x1cdf6a3] ; [0x279ce66]
+0x00abd7c3 mov       byte ptr [rax], 0
+0x00abd7c6 xor       r14b, r14b
+0x00abd7c9 cmp       r13d, 3
+0x00abd7cd ja        0xabd944
+0x00abd7d3 mov       edi, r13d
+0x00abd7d6 call      0x9521e0
+0x00abd7db cmp       eax, -1
+0x00abd7de je        0xabd83d
+0x00abd7e0 mov       cl, byte ptr [rbp - 0x29]
+0x00abd7e3 xor       cl, 1
+0x00abd7e6 jne       0xabd83d
+0x00abd7e8 mov       edi, eax
+0x00abd7ea call      0x9236f0
+0x00abd7ef cmp       eax, -1
+0x00abd7f2 je        0xabd83d
+0x00abd7f4 mov       edi, eax
+0x00abd7f6 call      0x3db3e0
+0x00abd7fb test      rax, rax
+0x00abd7fe je        0xabd83d
+0x00abd800 xor       ecx, ecx
+0x00abd802 nop       word ptr cs:[rax + rax]
+0x00abd810 cmp       dword ptr [rax], 0
+0x00abd813 je        0xabd824
+0x00abd815 cmp       byte ptr [rax + 0x2f4], 0
+0x00abd81c je        0xabd824
+0x00abd81e cmp       byte ptr [rax + 0x25], 6
+0x00abd822 jne       0xabd833
+0x00abd824 add       rax, 0x300
+0x00abd82a inc       ecx
+0x00abd82c cmp       ecx, 2
+0x00abd82f jl        0xabd810
+0x00abd831 jmp       0xabd83d
+0x00abd833 lea       rax, [rip + 0x1cdf62c] ; [0x279ce66]
+0x00abd83a mov       byte ptr [rax], 1
+0x00abd83d mov       edi, r13d
+0x00abd840 call      0x928560
+0x00abd845 cmp       r12d, 6
+0x00abd849 jne       0xabd872
+0x00abd84b xor       bl, bl
+0x00abd84d test      byte ptr [rax + 0xb8], 1
+0x00abd854 jne       0xabd89a
+0x00abd856 mov       ecx, dword ptr [rax + 0xc4]
+0x00abd85c cmp       ecx, 0x25
+0x00abd85f je        0xabd869
+0x00abd861 cmp       ecx, dword ptr [rax + 0xc0]
+0x00abd867 jne       0xabd89a
+0x00abd869 cmp       byte ptr [rax + 0xb6], 0
+0x00abd870 jmp       0xabd897
+0x00abd872 xor       bl, bl
+0x00abd874 test      byte ptr [rax + 0x108], 1
+0x00abd87b jne       0xabd89a
+0x00abd87d mov       ecx, dword ptr [rax + 0x114]
+0x00abd883 cmp       ecx, 0x25
+0x00abd886 je        0xabd890
+0x00abd888 cmp       ecx, dword ptr [rax + 0x110]
+0x00abd88e jne       0xabd89a
+0x00abd890 cmp       byte ptr [rax + 0x106], 0
+0x00abd897 setne     bl
+0x00abd89a mov       edi, 3
+0x00abd89f call      0x752150
+0x00abd8a4 lea       rcx, [rip + 0x1cdf5bb] ; [0x279ce66]
+0x00abd8ab cmp       byte ptr [rcx], 0
+0x00abd8ae setne     r14b
+0x00abd8b2 or        r14b, al
+0x00abd8b5 and       r14b, bl
+0x00abd8b8 je        0xabd936
+0x00abd8ba mov       al, r15b
+0x00abd8bd xor       al, 1
+0x00abd8bf je        0xabd936
+0x00abd8c1 lea       rax, [rip + 0x1cdf5a0] ; [0x279ce68]
+0x00abd8c8 mov       al, byte ptr [rax]
+0x00abd8ca test      al, al
+0x00abd8cc jne       0xabd936
+0x00abd8ce cmp       r12d, 6
+0x00abd8d2 jne       0xabd8db
+0x00abd8d4 call      0x955d60
+0x00abd8d9 jmp       0xabd936
+0x00abd8db lea       rax, [rip + 0x1cdf584] ; [0x279ce66]
+0x00abd8e2 cmp       byte ptr [rax], 0
+0x00abd8e5 je        0xabd8ff
+0x00abd8e7 lea       rax, [rip + 0x1cdf579] ; [0x279ce67]
+0x00abd8ee cmp       byte ptr [rax], 1
+0x00abd8f1 je        0xabd936
+0x00abd8f3 mov       byte ptr [rax], 1
+0x00abd8f6 lea       rax, [rip + 0x1cdf563] ; [0x279ce60]
+0x00abd8fd jmp       0xabd924
+0x00abd8ff cmp       byte ptr [rbp - 0x29], 0
+0x00abd903 je        0xabd90e
+0x00abd905 call      0x78e2a0
+0x00abd90a test      al, al
+0x00abd90c je        0xabd92c
+0x00abd90e lea       rax, [rip + 0x1cdf550] ; [0x279ce65]
+0x00abd915 cmp       byte ptr [rax], 1
+0x00abd918 je        0xabd936
+0x00abd91a mov       byte ptr [rax], 1
+0x00abd91d lea       rax, [rip + 0x1cdf538] ; [0x279ce5c]
+0x00abd924 mov       dword ptr [rax], 0
+0x00abd92a jmp       0xabd936
+0x00abd92c lea       rax, [rip + 0x1cdf531] ; [0x279ce64]
+0x00abd933 mov       byte ptr [rax], 1
+0x00abd936 mov       al, r14b
+0x00abd939 not       al
+0x00abd93b or        r15b, al
+0x00abd93e test      r15b, 1
+0x00abd942 je        0xabd99a
+0x00abd944 lea       rax, [rip + 0x1cdf51a] ; [0x279ce65]
+0x00abd94b cmp       byte ptr [rax], 0
+0x00abd94e je        0xabd960
+0x00abd950 mov       byte ptr [rax], 0
+0x00abd953 lea       rax, [rip + 0x1cdf502] ; [0x279ce5c]
+0x00abd95a mov       dword ptr [rax], 0
+0x00abd960 lea       rax, [rip + 0x1cdf500] ; [0x279ce67]
+0x00abd967 cmp       byte ptr [rax], 0
+0x00abd96a je        0xabd97c
+0x00abd96c mov       byte ptr [rax], 0
+0x00abd96f lea       rax, [rip + 0x1cdf4ea] ; [0x279ce60]
+0x00abd976 mov       dword ptr [rax], 0
+0x00abd97c cmp       byte ptr [rbp - 0x29], 0
+0x00abd980 je        0xabd990
+0x00abd982 call      0x955d10
+0x00abd987 test      al, al
+0x00abd989 je        0xabd990
+0x00abd98b call      0x955d50
+0x00abd990 lea       rax, [rip + 0x1cdf4cd] ; [0x279ce64]
+0x00abd997 mov       byte ptr [rax], 0
+0x00abd99a lea       rax, [rip + 0x1cdf4c7] ; [0x279ce68]
+0x00abd9a1 mov       byte ptr [rax], r14b
+0x00abd9a4 lea       r15, [rip + 0x1cdf4bc] ; [0x279ce67]
+0x00abd9ab cmp       byte ptr [r15], 0
+0x00abd9af je        0xabda02
+0x00abd9b1 lea       r14, [rip + 0x1cdf4a8] ; [0x279ce60]
+0x00abd9b8 mov       ebx, dword ptr [r14]
+0x00abd9bb add       ebx, dword ptr [rbp - 0x30]
+0x00abd9be mov       dword ptr [r14], ebx
+0x00abd9c1 call      0xac5e40
+0x00abd9c6 xor       ecx, ecx
+0x00abd9c8 test      rax, rax
+0x00abd9cb je        0xabd9d3
+0x00abd9cd mov       ecx, dword ptr [rax + 0x37c]
+0x00abd9d3 cmp       ebx, ecx
+0x00abd9d5 jae       0xabd9ec
+0x00abd9d7 lea       rax, [rip + 0x1cdf488] ; [0x279ce66]
+0x00abd9de cmp       byte ptr [rax], 0
+0x00abd9e1 jne       0xabda02
+0x00abd9e3 mov       al, byte ptr [r15]
+0x00abd9e6 test      al, al
+0x00abd9e8 je        0xabda02
+0x00abd9ea jmp       0xabd9f7
+0x00abd9ec call      0x3df1d0
+0x00abd9f1 cmp       byte ptr [r15], 0
+0x00abd9f5 je        0xabda02
+0x00abd9f7 mov       byte ptr [r15], 0
+0x00abd9fb mov       dword ptr [r14], 0
+0x00abda02 lea       r14, [rip + 0x1cdf45c] ; [0x279ce65]
+0x00abda09 cmp       byte ptr [r14], 0
+0x00abda0d je        0xabda8c
+0x00abda0f lea       r15, [rip + 0x1cdf446] ; [0x279ce5c]
+0x00abda16 mov       ebx, dword ptr [r15]
+0x00abda19 add       ebx, dword ptr [rbp - 0x30]
+0x00abda1c mov       dword ptr [r15], ebx
+0x00abda1f cmp       byte ptr [rbp - 0x29], 0
+0x00abda23 je        0xabda47
+0x00abda25 call      0x78e2a0
+0x00abda2a test      al, al
+0x00abda2c jne       0xabda35
+0x00abda2e mov       al, byte ptr [r14]
+0x00abda31 test      al, al
+0x00abda33 jne       0xabda3a
+0x00abda35 mov       ebx, dword ptr [r15]
+0x00abda38 jmp       0xabda47
+0x00abda3a mov       byte ptr [r14], 0
+0x00abda3e mov       dword ptr [r15], 0
+0x00abda45 xor       ebx, ebx
+0x00abda47 call      0xac5e40
+0x00abda4c xor       ecx, ecx
+0x00abda4e test      rax, rax
+0x00abda51 je        0xabda59
+0x00abda53 mov       ecx, dword ptr [rax + 0x374]
+0x00abda59 cmp       ebx, ecx
+0x00abda5b jb        0xabda8c
+0x00abda5d call      0x78e2a0
+0x00abda62 test      al, al
+0x00abda64 je        0xabda76
+0x00abda66 call      0x25cc10
+0x00abda6b test      al, al
+0x00abda6d je        0xabda7b
+0x00abda6f call      0x552e10
+0x00abda74 jmp       0xabda7b
+0x00abda76 call      0x955d60
+0x00abda7b cmp       byte ptr [r14], 0
+0x00abda7f je        0xabda8c
+0x00abda81 mov       byte ptr [r14], 0
+0x00abda85 mov       dword ptr [r15], 0
+0x00abda8c lea       r14, [rip + 0x1cdf3d1] ; [0x279ce64]
+0x00abda93 cmp       byte ptr [r14], 0
+0x00abda97 je        0xabdae0
+0x00abda99 call      0x955d10
+0x00abda9e test      al, al
+0x00abdaa0 jne       0xabdae0
+0x00abdaa2 call      0xac5e40
+0x00abdaa7 mov       rbx, rax
+0x00abdaaa mov       edi, 7
+0x00abdaaf test      rbx, rbx
+0x00abdab2 je        0xabdad7
+0x00abdab4 call      0x9549a0
+0x00abdab9 cmp       eax, 2
+0x00abdabc jl        0xabdac6
+0x00abdabe mov       edi, dword ptr [rbx + 0x378]
+0x00abdac4 jmp       0xabdad7
+0x00abdac6 mov       eax, dword ptr [rbx + 0x374]
+0x00abdacc imul      rdi, rax, 0x10624dd3
+0x00abdad3 shr       rdi, 0x26
+0x00abdad7 call      0x955d40
+0x00abdadc mov       byte ptr [r14], 0
+0x00abdae0 call      0x955d10
+0x00abdae5 test      al, al
+0x00abdae7 je        0xabdb00
+0x00abdae9 cmp       byte ptr [rbp - 0x29], 0
+0x00abdaed je        0xabdb43
+0x00abdaef lea       rax, [rip + 0x1cdf362] ; [0x279ce58]
+0x00abdaf6 mov       ecx, dword ptr [rbp - 0x30]
+0x00abdaf9 add       dword ptr [rax], ecx
+0x00abdafb jmp       0xabdbb4
+0x00abdb00 lea       rax, [rip + 0x1cdf351] ; [0x279ce58]
+0x00abdb07 mov       dword ptr [rax], 0
+0x00abdb0d call      0x982110
+0x00abdb12 test      byte ptr [rax + 0x11b], 2
+0x00abdb19 je        0xabdbb4
+0x00abdb1f call      0x982110
+0x00abdb24 lea       rdi, [rax + 0x108]
+0x00abdb2b mov       esi, 0x19
+0x00abdb30 add       rsp, 8
+0x00abdb34 pop       rbx
+0x00abdb35 pop       r12
+0x00abdb37 pop       r13
+0x00abdb39 pop       r14
+0x00abdb3b pop       r15
+0x00abdb3d pop       rbp
+0x00abdb3e jmp       0x97f650
+0x00abdb43 call      0x982110
+0x00abdb48 test      byte ptr [rax + 0x11b], 2
+0x00abdb4f jne       0xabdb56
+0x00abdb51 call      0xabd600
+0x00abdb56 call      0x955d30
+0x00abdb5b imul      r14d, eax, 0x3e8
+0x00abdb62 call      0x955d10
+0x00abdb67 test      al, al
+0x00abdb69 je        0xabdb78
+0x00abdb6b call      0x955d20
+0x00abdb70 imul      eax, eax, 0x3e8
+0x00abdb76 jmp       0xabdba3
+0x00abdb78 call      0xac5e40
+0x00abdb7d mov       rbx, rax
+0x00abdb80 xor       eax, eax
+0x00abdb82 test      rbx, rbx
+0x00abdb85 je        0xabdba3
+0x00abdb87 call      0x9549a0
+0x00abdb8c cmp       eax, 2
+0x00abdb8f jl        0xabdb9d
+0x00abdb91 imul      eax, dword ptr [rbx + 0x378], 0x3e8
+0x00abdb9b jmp       0xabdba3
+0x00abdb9d mov       eax, dword ptr [rbx + 0x374]
+0x00abdba3 xor       ecx, ecx
+0x00abdba5 sub       eax, r14d
+0x00abdba8 cmovbe    eax, ecx
+0x00abdbab lea       rcx, [rip + 0x1cdf2a6] ; [0x279ce58]
+0x00abdbb2 mov       dword ptr [rcx], eax
+0x00abdbb4 add       rsp, 8
+0x00abdbb8 pop       rbx
+0x00abdbb9 pop       r12
+0x00abdbbb pop       r13
+0x00abdbbd pop       r14
+0x00abdbbf pop       r15
+0x00abdbc1 pop       rbp
+0x00abdbc2 ret       
+0x00abdbc3 nop       word ptr cs:[rax + rax]
+0x00abdbd0 add       byte ptr [rax], al
+0x00abdbd2 ret       
+0x00abdbd3 nop       word ptr cs:[rax + rax]
+0x00abdbe0 add       byte ptr [rax], al
+0x00abdbe2 ret       
+0x00abdbe3 nop       word ptr cs:[rax + rax]
+
+0x00abdc30 push      rbp
+0x00abdc31 mov       rbp, rsp
+0x00abdc34 push      rbx
+0x00abdc35 push      rax
+0x00abdc36 call      0x955d10
+0x00abdc3b test      al, al
+0x00abdc3d je        0xabdc4c
+0x00abdc3f call      0x955d20
+0x00abdc44 imul      eax, eax, 0x3e8
+0x00abdc4a jmp       0xabdc77
+0x00abdc4c call      0xac5e40
+0x00abdc51 mov       rbx, rax
+0x00abdc54 xor       eax, eax
+0x00abdc56 test      rbx, rbx
+0x00abdc59 je        0xabdc77
+0x00abdc5b call      0x9549a0
+0x00abdc60 cmp       eax, 2
+0x00abdc63 jl        0xabdc71
+0x00abdc65 imul      eax, dword ptr [rbx + 0x378], 0x3e8
+0x00abdc6f jmp       0xabdc77
+0x00abdc71 mov       eax, dword ptr [rbx + 0x374]
+0x00abdc77 add       rsp, 8
+0x00abdc7b pop       rbx
+0x00abdc7c pop       rbp
+0x00abdc7d ret       
+0x00abdc7e nop       
+
+0x00abdc80 push      rbp
+0x00abdc81 mov       rbp, rsp
+0x00abdc84 call      0x78e8e0
+0x00abdc89 cmp       eax, 4
+0x00abdc8c sete      al
+0x00abdc8f pop       rbp
+0x00abdc90 ret       
+0x00abdc91 nop       word ptr cs:[rax + rax]
+
+0x00abdbf0 push      rbp
+0x00abdbf1 mov       rbp, rsp
+0x00abdbf4 call      0xac5e40
+0x00abdbf9 test      rax, rax
+0x00abdbfc je        0xabdc06
+0x00abdbfe mov       eax, dword ptr [rax + 0x37c]
+0x00abdc04 pop       rbp
+0x00abdc05 ret       
+0x00abdc06 xor       eax, eax
+0x00abdc08 pop       rbp
+0x00abdc09 ret       
+0x00abdc0a nop       word ptr [rax + rax]

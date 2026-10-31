@@ -1,0 +1,61 @@
+0x00105670 push      rbp
+0x00105671 mov       rbp, rsp
+0x00105674 push      r15
+0x00105676 push      r14
+0x00105678 push      r12
+0x0010567a push      rbx
+0x0010567b sub       rsp, 0x20
+0x0010567f mov       r14, rdi
+0x00105682 mov       r15, qword ptr [rip + 0x1919a77] ; [0x1a1f100]
+0x00105689 mov       rax, qword ptr [r15]
+0x0010568c mov       qword ptr [rbp - 0x28], rax
+0x00105690 call      0x241180
+0x00105695 cmp       dword ptr [r14 + 0x3f8], eax
+0x0010569c jne       0x1056aa
+0x0010569e add       r14, 0x3fc
+0x001056a5 jmp       0x10573a
+0x001056aa mov       dword ptr [r14 + 0x3f8], eax
+0x001056b1 mov       dword ptr [r14 + 0x3fc], 0
+0x001056bc mov       dword ptr [rbp - 0x40], 8
+0x001056c3 lea       rbx, [rbp - 0x38]
+0x001056c7 lea       rdx, [rbp - 0x40]
+0x001056cb mov       rdi, rbx
+0x001056ce mov       rsi, r14
+0x001056d1 call      0x17b380
+0x001056d6 add       r14, 0x3fc
+0x001056dd mov       rdi, rbx
+0x001056e0 call      0x17a580
+0x001056e5 test      al, al
+0x001056e7 je        0x10573a
+0x001056e9 lea       rbx, [rbp - 0x38]
+0x001056ed lea       r12, [rip + 0x24d22ac] ; [0x25d79a0]
+0x001056f4 nop       word ptr cs:[rax + rax]
+0x00105700 mov       rdi, rbx
+0x00105703 call      0x17a5a0
+0x00105708 and       eax, 0x1fff
+0x0010570d imul      eax, dword ptr [r12 + 0x10]
+0x00105713 mov       rcx, qword ptr [r12 + 8]
+0x00105718 mov       al, byte ptr [rax + rcx + 0x208]
+0x0010571f cmp       al, 1
+0x00105721 jne       0x105726
+0x00105723 inc       dword ptr [r14]
+0x00105726 mov       rdi, rbx
+0x00105729 call      0x17a5b0
+0x0010572e mov       rdi, rbx
+0x00105731 call      0x17a580
+0x00105736 test      al, al
+0x00105738 jne       0x105700
+0x0010573a mov       eax, dword ptr [r14]
+0x0010573d mov       rcx, qword ptr [r15]
+0x00105740 cmp       rcx, qword ptr [rbp - 0x28]
+0x00105744 jne       0x105753
+0x00105746 add       rsp, 0x20
+0x0010574a pop       rbx
+0x0010574b pop       r12
+0x0010574d pop       r14
+0x0010574f pop       r15
+0x00105751 pop       rbp
+0x00105752 ret       
+0x00105753 call      0x12aa7f0
+0x00105758 nop       
+0x00105759 nop       dword ptr [rax]

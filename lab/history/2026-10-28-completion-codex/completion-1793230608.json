@@ -1,0 +1,78 @@
+{
+  "time": 1793230608.9954774,
+  "base": "0x51c0000",
+  "profiles": [
+    {
+      "local": 0,
+      "address": "0x37f901b78",
+      "key": "0xd100000000000001",
+      "stride": 30152,
+      "activity": 0,
+      "completed": 0,
+      "activity_raw": "0000000000000000ffff00000000000000000000000000000000000000000000",
+      "progressions": []
+    },
+    {
+      "local": 1,
+      "address": "0x37f909140",
+      "key": "0xd100000000000201",
+      "stride": 29560,
+      "activity": 164,
+      "completed": 1,
+      "activity_raw": "a400000000000000000000000000000000000000000000000100000000000000",
+      "progressions": [
+        [
+          0,
+          0,
+          118,
+          0
+        ],
+        [
+          0,
+          0,
+          124,
+          0
+        ],
+        [
+          0,
+          0,
+          249,
+          0
+        ],
+        [
+          0,
+          0,
+          250,
+          0
+        ],
+        [
+          0,
+          0,
+          65535,
+          0
+        ]
+      ]
+    }
+  ],
+  "lifetime": [
+    {
+      "component": "0x380262120",
+      "phase": 3,
+      "record": "ffffffff000000001000000000000000e620fa590000000000000000000000009d03808000000000ffffffff000000000000000000000000",
+      "state": "ffffffff000000000420f44803ff0100ffffffffc59d1c81ffffffff00000000"
+    }
+  ],
+  "investment_manager": "0x37f8df960",
+  "content": 182,
+  "globals": {
+    "object": "0x78127f8",
+    "definition": "0x38090b548",
+    "progression_ids": [
+      117,
+      124,
+      118,
+      249,
+      250
+    ]
+  }
+}

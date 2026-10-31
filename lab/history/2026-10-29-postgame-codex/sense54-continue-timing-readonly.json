@@ -1,0 +1,10 @@
+{
+  "first": "0x80814000",
+  "component": "0x38079f7e0",
+  "second": "0x80814001",
+  "config": "0x380795490",
+  "hold374_ms": 3000,
+  "leader378_seconds": 7,
+  "reward37c_ms": 2500,
+  "region370": "00008046b80b000007000000c4090000ffffffff00000000"
+}

@@ -1,0 +1,17 @@
+{
+  "status": "queued_in_requested_claude_code_session",
+  "verified_at": "2026-10-28T13:49:29.094335+00:00",
+  "matches": [
+    {
+      "type": "queue-operation",
+      "operation": "enqueue",
+      "timestamp": "2026-10-28T13:49:26.642Z",
+      "sessionId": "eb49bdd6-2562-42a0-a73d-ed14111dbab8",
+      "chars": 11615,
+      "contains_final_branch": true,
+      "contains_step": true
+    }
+  ],
+  "content_matches_saved_handoff_ignoring_trailing_whitespace": true,
+  "queued_content_sha256": "7a4c1e32f5293d86f73652f78010d4024921a0eb48b02276ee88dd72f89b055e"
+}

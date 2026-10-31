@@ -1,0 +1,452 @@
+{
+  "0": {
+    "object": "0x19334a8",
+    "vtable": "0x1933400",
+    "name": "33c_action_impl_loki_play_animation"
+  },
+  "1": {
+    "object": "0x1932968",
+    "vtable": "0x19328c0",
+    "name": "19c_action_impl_death"
+  },
+  "2": {
+    "object": "0x1934038",
+    "vtable": "0x1933f90",
+    "name": "23c_action_impl_resurrect"
+  },
+  "3": {
+    "object": "0x19337c8",
+    "vtable": "0x1933720",
+    "name": "23c_action_impl_ping_hard"
+  },
+  "4": {
+    "object": "0x1934358",
+    "vtable": "0x19342b0",
+    "name": "30c_action_impl_sequence_ability"
+  },
+  "5": {
+    "object": "0x1933f78",
+    "vtable": "0x1933ed0",
+    "name": "30c_action_impl_radiance_ability"
+  },
+  "6": {
+    "object": "0x1934358",
+    "vtable": "0x19342b0",
+    "name": "30c_action_impl_sequence_ability"
+  },
+  "7": {
+    "object": "0x1934358",
+    "vtable": "0x19342b0",
+    "name": "30c_action_impl_sequence_ability"
+  },
+  "8": {
+    "object": "0x1932658",
+    "vtable": "0x19325b0",
+    "name": "27c_action_impl_blink_ability"
+  },
+  "9": {
+    "object": "0x1934358",
+    "vtable": "0x19342b0",
+    "name": "30c_action_impl_sequence_ability"
+  },
+  "10": {
+    "object": "0x1934358",
+    "vtable": "0x19342b0",
+    "name": "30c_action_impl_sequence_ability"
+  },
+  "11": {
+    "object": "0x1933888",
+    "vtable": "0x19337e0",
+    "name": "33c_action_impl_player_crouch_slide"
+  },
+  "12": {
+    "object": "0x1933888",
+    "vtable": "0x19337e0",
+    "name": "33c_action_impl_player_crouch_slide"
+  },
+  "13": {
+    "object": "0x1933268",
+    "vtable": "0x19331b0",
+    "name": "21c_action_impl_grenade"
+  },
+  "14": {
+    "object": "0x1933268",
+    "vtable": "0x19331b0",
+    "name": "21c_action_impl_grenade"
+  },
+  "15": {
+    "object": "0x1933268",
+    "vtable": "0x19331b0",
+    "name": "21c_action_impl_grenade"
+  },
+  "16": {
+    "object": "0x1934d48",
+    "vtable": "0x1934c90",
+    "name": "22c_action_impl_void_bow"
+  },
+  "17": {
+    "object": "0x1934e08",
+    "vtable": "0x1934d60",
+    "name": "34c_action_impl_ward_of_dawn_ability"
+  },
+  "18": {
+    "object": "0x1934598",
+    "vtable": "0x19344f0",
+    "name": "26c_action_impl_slam_ability"
+  },
+  "19": {
+    "object": "0x1934418",
+    "vtable": "0x1934370",
+    "name": "28c_action_impl_shield_ability"
+  },
+  "20": {
+    "object": "0x1934418",
+    "vtable": "0x1934370",
+    "name": "28c_action_impl_shield_ability"
+  },
+  "21": {
+    "object": "0x1933df8",
+    "vtable": "0x1933d50",
+    "name": "27c_action_impl_pocket_weapon"
+  },
+  "22": {
+    "object": "0x1933df8",
+    "vtable": "0x1933d50",
+    "name": "27c_action_impl_pocket_weapon"
+  },
+  "23": {
+    "object": "0x1934c78",
+    "vtable": "0x1934bd0",
+    "name": "28c_action_impl_vanish_ability"
+  },
+  "24": {
+    "object": "0x1933ae8",
+    "vtable": "0x1933a40",
+    "name": "34c_action_impl_player_evade_ability"
+  },
+  "25": {
+    "object": "0x1933a18",
+    "vtable": "0x1933970",
+    "name": "26c_action_impl_player_dodge"
+  },
+  "26": {
+    "object": "0x1933c68",
+    "vtable": "0x1933b00",
+    "name": "27c_action_impl_player_mantle"
+  },
+  "27": {
+    "object": "0x1933c70",
+    "vtable": "0x1933ba0",
+    "name": "34c_action_impl_player_mantle_simple"
+  },
+  "28": {
+    "object": "0x1932bd8",
+    "vtable": "0x1932b30",
+    "name": "37c_action_impl_dynamic_binding_ability"
+  },
+  "29": {
+    "object": "0x1932bd8",
+    "vtable": "0x1932b30",
+    "name": "37c_action_impl_dynamic_binding_ability"
+  },
+  "30": {
+    "object": "0x1932568",
+    "vtable": "0x19324c0",
+    "name": "25c_action_impl_ai_sequence"
+  },
+  "31": {
+    "object": "0x1932568",
+    "vtable": "0x19324c0",
+    "name": "25c_action_impl_ai_sequence"
+  },
+  "32": {
+    "object": "0x1932568",
+    "vtable": "0x19324c0",
+    "name": "25c_action_impl_ai_sequence"
+  },
+  "33": {
+    "object": "0x1932568",
+    "vtable": "0x19324c0",
+    "name": "25c_action_impl_ai_sequence"
+  },
+  "34": {
+    "object": "0x1932568",
+    "vtable": "0x19324c0",
+    "name": "25c_action_impl_ai_sequence"
+  },
+  "35": {
+    "object": "0x1932568",
+    "vtable": "0x19324c0",
+    "name": "25c_action_impl_ai_sequence"
+  },
+  "36": {
+    "object": "0x19348b8",
+    "vtable": "0x1934810",
+    "name": "27c_action_impl_state_machine"
+  },
+  "37": {
+    "object": "0x1934718",
+    "vtable": "0x1934670",
+    "name": "27c_action_impl_staged_firing"
+  },
+  "38": {
+    "object": "0x19351f8",
+    "vtable": "0x1935150",
+    "name": "27c_action_impl_weapon_pickup"
+  },
+  "39": {
+    "object": "0x1934f88",
+    "vtable": "0x1934ee0",
+    "name": "25c_action_impl_weapon_drop"
+  },
+  "40": {
+    "object": "0x1934bb8",
+    "vtable": "0x1934b10",
+    "name": "28c_action_impl_typed_teleport"
+  },
+  "41": {
+    "object": "0x1934bb8",
+    "vtable": "0x1934b10",
+    "name": "28c_action_impl_typed_teleport"
+  },
+  "42": {
+    "object": "0x1934bb8",
+    "vtable": "0x1934b10",
+    "name": "28c_action_impl_typed_teleport"
+  },
+  "43": {
+    "object": "0x1934a38",
+    "vtable": "0x1934990",
+    "name": "26c_action_impl_stutter_step"
+  },
+  "44": {
+    "object": "0x1932d88",
+    "vtable": "0x1932ce0",
+    "name": "19c_action_impl_evade"
+  },
+  "45": {
+    "object": "0x1934af8",
+    "vtable": "0x1934a50",
+    "name": "22c_action_impl_surprise"
+  },
+  "46": {
+    "object": "0x1932ff8",
+    "vtable": "0x1932f50",
+    "name": "28c_action_impl_ghost_interact"
+  },
+  "47": {
+    "object": "0x19330d8",
+    "vtable": "0x1933030",
+    "name": "26c_action_impl_ghost_summon"
+  },
+  "48": {
+    "object": "0x1932f18",
+    "vtable": "0x1932e70",
+    "name": "26c_action_impl_ghost_deploy"
+  },
+  "49": {
+    "object": "0x1933958",
+    "vtable": "0x19338b0",
+    "name": "39c_action_impl_player_custom_interaction"
+  },
+  "50": {
+    "object": "0x19344d8",
+    "vtable": "0x1934430",
+    "name": "30c_action_impl_simple_animation"
+  },
+  "51": {
+    "object": "0x19344d8",
+    "vtable": "0x1934430",
+    "name": "30c_action_impl_simple_animation"
+  },
+  "52": {
+    "object": "0x19344d8",
+    "vtable": "0x1934430",
+    "name": "30c_action_impl_simple_animation"
+  },
+  "53": {
+    "object": "0x19352b8",
+    "vtable": "0x1935210",
+    "name": "27c_action_impl_weapon_switch"
+  },
+  "54": {
+    "object": "0x1935378",
+    "vtable": "0x19352d0",
+    "name": "26c_action_impl_weapon_ready"
+  },
+  "55": {
+    "object": "0x1935378",
+    "vtable": "0x19352d0",
+    "name": "26c_action_impl_weapon_ready"
+  },
+  "56": {
+    "object": "0x19352b8",
+    "vtable": "0x1935210",
+    "name": "27c_action_impl_weapon_switch"
+  },
+  "57": {
+    "object": "0x1933eb8",
+    "vtable": "0x1933e10",
+    "name": "25c_action_impl_power_melee"
+  },
+  "58": {
+    "object": "0x1933eb8",
+    "vtable": "0x1933e10",
+    "name": "25c_action_impl_power_melee"
+  },
+  "59": {
+    "object": "0x1933eb8",
+    "vtable": "0x1933e10",
+    "name": "25c_action_impl_power_melee"
+  },
+  "60": {
+    "object": "0x1933eb8",
+    "vtable": "0x1933e10",
+    "name": "25c_action_impl_power_melee"
+  },
+  "61": {
+    "object": "0x1933d38",
+    "vtable": "0x1933c90",
+    "name": "26c_action_impl_player_melee"
+  },
+  "62": {
+    "object": "0x1933568",
+    "vtable": "0x19334c0",
+    "name": "27c_action_impl_melee_recover"
+  },
+  "63": {
+    "object": "0x1933328",
+    "vtable": "0x1933280",
+    "name": "21c_action_impl_jetpack"
+  },
+  "64": {
+    "object": "0x1932a58",
+    "vtable": "0x19329b0",
+    "name": "25c_action_impl_double_jump"
+  },
+  "65": {
+    "object": "0x1933198",
+    "vtable": "0x19330f0",
+    "name": "19c_action_impl_glide"
+  },
+  "66": {
+    "object": "0x1934658",
+    "vtable": "0x19345b0",
+    "name": "28c_action_impl_sprint_ability"
+  },
+  "67": {
+    "object": "0x1935438",
+    "vtable": "0x1935390",
+    "name": "27c_action_impl_weapon_reload"
+  },
+  "68": {
+    "object": "0x1935438",
+    "vtable": "0x1935390",
+    "name": "27c_action_impl_weapon_reload"
+  },
+  "69": {
+    "object": "0x1935438",
+    "vtable": "0x1935390",
+    "name": "27c_action_impl_weapon_reload"
+  },
+  "70": {
+    "object": "0x19323a8",
+    "vtable": "0x1932300",
+    "name": "29c_action_impl_aim_down_sights"
+  },
+  "71": {
+    "object": "0x1935128",
+    "vtable": "0x1934fa0",
+    "name": "25c_action_impl_weapon_fire"
+  },
+  "72": {
+    "object": "0x1935130",
+    "vtable": "0x1935050",
+    "name": "28c_action_impl_weapon_charged"
+  },
+  "73": {
+    "object": "0x19333e8",
+    "vtable": "0x1933340",
+    "name": "18c_action_impl_jump"
+  },
+  "74": {
+    "object": "0x1932488",
+    "vtable": "0x19323e0",
+    "name": "21c_action_impl_ai_jump"
+  },
+  "75": {
+    "object": "0x1932ca8",
+    "vtable": "0x1932c00",
+    "name": "19c_action_impl_emote"
+  },
+  "76": {
+    "object": "0x1934ec8",
+    "vtable": "0x1934e20",
+    "name": "25c_action_impl_weapon_down"
+  },
+  "77": {
+    "object": "0x1932b18",
+    "vtable": "0x1932a70",
+    "name": "28c_action_impl_downhill_slide"
+  },
+  "78": {
+    "object": "0x19341d8",
+    "vtable": "0x1934130",
+    "name": "23c_action_impl_seat_exit"
+  },
+  "79": {
+    "object": "0x1934108",
+    "vtable": "0x1934060",
+    "name": "24c_action_impl_seat_enter"
+  },
+  "80": {
+    "object": "0x19356d8",
+    "vtable": "0x1935630",
+    "name": "39c_action_impl_physics_driven_locomotion"
+  },
+  "81": {
+    "object": "0x1935798",
+    "vtable": "0x19356f0",
+    "name": "40c_action_impl_player_floating_locomotion"
+  },
+  "82": {
+    "object": "0x1935608",
+    "vtable": "0x1935560",
+    "name": "42c_action_impl_physics_driven_ai_locomotion"
+  },
+  "83": {
+    "object": "0x19336f8",
+    "vtable": "0x1933650",
+    "name": "42c_action_impl_motion_controller_locomotion"
+  },
+  "84": {
+    "object": "0x1932e48",
+    "vtable": "0x1932da0",
+    "name": "33c_action_impl_floating_locomotion"
+  },
+  "85": {
+    "object": "0x1935538",
+    "vtable": "0x1935490",
+    "name": "35c_action_impl_mechanical_locomotion"
+  },
+  "86": {
+    "object": "0x1935868",
+    "vtable": "0x19357c0",
+    "name": "31c_action_impl_turret_locomotion"
+  },
+  "87": {
+    "object": "0x19328a8",
+    "vtable": "0x1932800",
+    "name": "29c_action_impl_controlled_fall"
+  },
+  "88": {
+    "object": "0x1934298",
+    "vtable": "0x19341f0",
+    "name": "23c_action_impl_seat_idle"
+  },
+  "89": {
+    "object": "0x1932728",
+    "vtable": "0x1932680",
+    "name": "20c_action_impl_bunker"
+  }
+}

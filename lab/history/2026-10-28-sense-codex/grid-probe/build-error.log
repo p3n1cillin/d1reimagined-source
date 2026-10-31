@@ -1,0 +1,22 @@
+     Locking 73 packages to highest compatible versions
+   Compiling d1-build v0.1.0 (F:\d1\public-work\d1reimagined-stats\ps4\d1-server\crates\d1-build)
+   Compiling d1-pkg v0.1.0 (F:\d1\public-work\d1reimagined-stats\ps4\d1-server\crates\d1-pkg)
+   Compiling d1-eboot v0.1.0 (F:\d1\public-work\d1reimagined-stats\ps4\d1-server\crates\d1-eboot)
+   Compiling d1-oracle v0.1.0 (F:\d1\public-work\d1reimagined-stats\ps4\d1-server\crates\d1-oracle)
+   Compiling private-grid-probe v0.1.0 (lab/history\2026-10-28-sense-codex\grid-probe)
+error[E0603]: module `scalar_float` is private
+  --> src\main.rs:5:24
+   |
+ 5 |  let scalar=d1_oracle::scalar_float::ScalarFloat::install(h.uc(),&[(0x286ce0,0x286dff),(0x281a20,0x281b99),(0x1017530,0x101774d),(0x...
+   |                        ^^^^^^^^^^^^  ----------- struct `ScalarFloat` is not publicly re-exported
+   |                        |
+   |                        private module
+   |
+note: the module `scalar_float` is defined here
+  --> F:\d1\public-work\d1reimagined-stats\ps4\d1-server\crates\d1-oracle\src\lib.rs:75:1
+   |
+75 | mod scalar_float;
+   | ^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0603`.
+error: could not compile `private-grid-probe` (bin "private-grid-probe") due to 1 previous error

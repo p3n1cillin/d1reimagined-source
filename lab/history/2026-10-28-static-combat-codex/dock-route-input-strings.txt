@@ -1,0 +1,4 @@
+0x15beb80 28c_action_impl_sprint_ability
+0x16c87ac /v1/users/%s/gameCustomData/items/%lu/thumbnailImage
+0x16c89cf Content-Description:game-data-thumbnail-0
+0x16c9957 thumbnailImageUrl

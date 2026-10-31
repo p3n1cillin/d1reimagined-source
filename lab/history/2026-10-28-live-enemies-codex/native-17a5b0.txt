@@ -1,0 +1,64 @@
+0x0017a5b0 push      rbp
+0x0017a5b1 mov       rbp, rsp
+0x0017a5b4 push      r15
+0x0017a5b6 push      r14
+0x0017a5b8 push      rbx
+0x0017a5b9 push      rax
+0x0017a5ba mov       r15, rdi
+0x0017a5bd mov       ecx, dword ptr [r15 + 8]
+0x0017a5c1 lea       eax, [rcx + 1]
+0x0017a5c4 mov       dword ptr [r15 + 8], eax
+0x0017a5c8 cmp       ecx, -1
+0x0017a5cb jl        0x17a661
+0x0017a5d1 lea       r14, [rip + 0x245d3c8] ; [0x25d79a0]
+0x0017a5d8 nop       dword ptr [rax + rax]
+0x0017a5e0 mov       rcx, qword ptr [r15]
+0x0017a5e3 cmp       eax, dword ptr [rcx + 0x278]
+0x0017a5e9 jge       0x17a661
+0x0017a5eb movsxd    rax, eax
+0x0017a5ee lea       rdi, [rcx + rax*8 + 0x27c]
+0x0017a5f6 call      0x71f60
+0x0017a5fb cmp       eax, -1
+0x0017a5fe je        0x17a637
+0x0017a600 and       eax, 0x1fff
+0x0017a605 imul      eax, dword ptr [r14 + 0x10]
+0x0017a60a mov       rdx, qword ptr [r14 + 8]
+0x0017a60e mov       ecx, dword ptr [rdx + rax + 0x50]
+0x0017a612 mov       dx, word ptr [rdx + rax]
+0x0017a616 and       dx, 1
+0x0017a61a sete      bl
+0x0017a61d mov       eax, dword ptr [r15 + 0xc]
+0x0017a621 test      al, 8
+0x0017a623 jne       0x17a649
+0x0017a625 test      al, 4
+0x0017a627 jne       0x17a64f
+0x0017a629 cmp       ecx, -1
+0x0017a62c sete      dl
+0x0017a62f test      al, 2
+0x0017a631 jne       0x17a656
+0x0017a633 test      al, 1
+0x0017a635 jne       0x17a65c
+0x0017a637 mov       ecx, dword ptr [r15 + 8]
+0x0017a63b lea       eax, [rcx + 1]
+0x0017a63e mov       dword ptr [r15 + 8], eax
+0x0017a642 cmp       ecx, -2
+0x0017a645 jg        0x17a5e0
+0x0017a647 jmp       0x17a661
+0x0017a649 test      bl, bl
+0x0017a64b je        0x17a661
+0x0017a64d jmp       0x17a625
+0x0017a64f test      dx, dx
+0x0017a652 je        0x17a661
+0x0017a654 jmp       0x17a629
+0x0017a656 test      dl, dl
+0x0017a658 je        0x17a661
+0x0017a65a jmp       0x17a633
+0x0017a65c cmp       ecx, -1
+0x0017a65f jne       0x17a637
+0x0017a661 add       rsp, 8
+0x0017a665 pop       rbx
+0x0017a666 pop       r14
+0x0017a668 pop       r15
+0x0017a66a pop       rbp
+0x0017a66b ret       
+0x0017a66c nop       dword ptr [rax]

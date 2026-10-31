@@ -1,0 +1,63 @@
+{
+  "base": "0x5090000",
+  "rows": [
+    {
+      "squad": 11,
+      "root": "0x37fd42f80",
+      "components": [
+        {
+          "key": "0xe52389ae",
+          "offset": "0x3dc0",
+          "component": "0x37fd46d40",
+          "native_tag": "0x80cd0037",
+          "definition": "0x384b2bfd0",
+          "record": "00000000c03d000000000000e6c4aa803700cd8000000000700c000000000000a1c3aa8000000000",
+          "methods": []
+        },
+        {
+          "key": "0x1939b49e",
+          "offset": "0xcc40",
+          "component": "0x37fd4fbc0",
+          "native_tag": "0x80aac4b3",
+          "definition": "0x381799c30",
+          "record": "0000000040cc0000000000009b278080b3c4aa8000000000c0020000000000007bddaa8000000000",
+          "methods": []
+        }
+      ],
+      "position": [
+        98.16053009033203,
+        -581.5577392578125,
+        7.3787336349487305
+      ]
+    },
+    {
+      "squad": 12,
+      "root": "0x37fcf86e0",
+      "components": [
+        {
+          "key": "0xe52389ae",
+          "offset": "0x3dc0",
+          "component": "0x37fcfc4a0",
+          "native_tag": "0x80cd0037",
+          "definition": "0x384b2bfd0",
+          "record": "00000000c03d000000000000e6c4aa803700cd8000000000700c000000000000a1c3aa8000000000",
+          "methods": []
+        },
+        {
+          "key": "0x1939b49e",
+          "offset": "0xcc40",
+          "component": "0x37fd05320",
+          "native_tag": "0x80aac4b3",
+          "definition": "0x381799c30",
+          "record": "0000000040cc0000000000009b278080b3c4aa8000000000c0020000000000007bddaa8000000000",
+          "methods": []
+        }
+      ],
+      "position": [
+        98.2211685180664,
+        -577.759521484375,
+        7.543538570404053
+      ]
+    }
+  ]
+}

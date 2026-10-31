@@ -1,0 +1,57 @@
+[
+  {
+    "id": "2026-10-29-continue",
+    "time": "2026-10-29T15:09:16Z",
+    "feature": "post-game CONTINUE and travel",
+    "maturity": "Partially Working",
+    "claim": "Holding CONTINUE for 3 s leaves the post-game screens; the client launches the next story activity, joins and spawns in a world. The world is the server default lunar test map, not the intended destination",
+    "evidence": [
+      "clips/clip05.mp4",
+      "screenshots/06.png",
+      "screenshots/07.png"
+    ]
+  },
+  {
+    "id": "2026-10-29-outro",
+    "time": "2026-10-29T12:19:49Z",
+    "feature": "mission ending cinematic",
+    "maturity": "Partially Working",
+    "claim": "Outro cinematic plays to completion after the hangar clear",
+    "evidence": [
+      "clips/clip03.mp4"
+    ]
+  },
+  {
+    "id": "2026-10-29-postgame",
+    "time": "2026-10-29T12:22:22Z",
+    "feature": "post-game screens",
+    "maturity": "Partially Working",
+    "claim": "ACTIVITY REWARDS and MISSION SUMMARY show the Guardian's row from server data; values synthetic; jumpship reward shown (sense54) and sent as an item with completion (sense55); ADVANCEMENT empty; loading indicator remains",
+    "evidence": [
+      "clips/clip04.mp4",
+      "screenshots/04.png",
+      "screenshots/05.png",
+      "screenshots/08.png"
+    ]
+  },
+  {
+    "id": "2026-10-29-hangar",
+    "time": "2026-10-29T12:19:05Z",
+    "feature": "hangar encounter",
+    "maturity": "Partially Working",
+    "claim": "All eight hangar Fallen groups clear; two are released by an inferred encounter-task assignment",
+    "evidence": [
+      "clips/clip02.mp4"
+    ]
+  },
+  {
+    "id": "2026-10-29-dock13",
+    "time": "2026-10-29T12:02:00Z",
+    "feature": "Dock 13 traversal",
+    "maturity": "Fully Working (tested scope: this run)",
+    "claim": "Arrival and traversal of Dock 13",
+    "evidence": [
+      "clips/clip01.mp4"
+    ]
+  }
+]

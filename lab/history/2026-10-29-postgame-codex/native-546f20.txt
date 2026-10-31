@@ -1,0 +1,25 @@
+0x00546f20 push      rbp
+0x00546f21 mov       rbp, rsp
+0x00546f24 push      r14
+0x00546f26 push      rbx
+0x00546f27 mov       r14, rdi
+0x00546f2a call      0x25cc10
+0x00546f2f xor       bl, bl
+0x00546f31 test      al, al
+0x00546f33 je        0x546f5a
+0x00546f35 call      0x25a550
+0x00546f3a mov       rcx, qword ptr [rax]
+0x00546f3d mov       rdi, rax
+0x00546f40 call      qword ptr [rcx + 0x68]
+0x00546f43 mov       si, word ptr [rax + 0x192]
+0x00546f4a cmp       si, -1
+0x00546f4e je        0x546f5a
+0x00546f50 mov       rdi, r14
+0x00546f53 call      0x28cfb0
+0x00546f58 mov       bl, al
+0x00546f5a mov       al, bl
+0x00546f5c pop       rbx
+0x00546f5d pop       r14
+0x00546f5f pop       rbp
+0x00546f60 ret       
+0x00546f61 nop       word ptr cs:[rax + rax]

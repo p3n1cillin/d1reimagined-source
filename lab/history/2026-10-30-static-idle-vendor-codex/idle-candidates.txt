@@ -1,0 +1,513 @@
+FUNCTION 7608c0..760df0
+0x007608c0 push      rbp
+0x007608c1 mov       rbp, rsp
+0x007608c4 push      r15
+0x007608c6 push      r14
+0x007608c8 push      r13
+0x007608ca push      r12
+0x007608cc push      rbx
+0x007608cd sub       rsp, 0x158
+0x007608d4 mov       r14d, esi
+0x007608d7 mov       r15, rdi
+0x007608da mov       rax, qword ptr [rip + 0x12be81f] ; [0x1a1f100]
+0x007608e1 mov       rax, qword ptr [rax]
+0x007608e4 mov       qword ptr [rbp - 0x30], rax
+0x007608e8 movsxd    rax, r14d
+0x007608eb imul      r13, rax, 0x1f0
+0x007608f2 lea       rax, [r15 + r13 + 0x4f0]
+0x007608fa mov       qword ptr [rbp - 0x178], rax
+0x00760901 mov       edi, dword ptr [r15 + r13 + 0x5b8]
+0x00760909 cmp       edi, -1
+0x0076090c jne       0x760ab9
+0x00760912 lea       rax, [r15 + r13 + 0x5b8]
+0x0076091a mov       qword ptr [rbp - 0x180], rax
+0x00760921 mov       bl, byte ptr [r15 + r13 + 0x5bc]
+0x00760929 call      0x697a0
+0x0076092e cmp       bl, 0
+0x00760931 je        0x7609d1
+0x00760937 sub       eax, dword ptr [rip + 0x1f690cb] ; [0x26c9a08]
+0x0076093d cmp       eax, 0x3e9
+0x00760942 jb        0x760a71
+0x00760948 mov       edi, 2
+0x0076094d mov       esi, 1
+0x00760952 call      0xe4d70
+0x00760957 test      al, al
+0x00760959 je        0x7609c1
+0x0076095b mov       al, byte ptr [rip + 0x1f690af] ; [0x26c9a10]
+0x00760961 test      al, al
+0x00760963 jne       0x760993
+0x00760965 lea       rdi, [rip + 0x1f690a4] ; [0x26c9a10]
+0x0076096c call      0x12aa7d0
+0x00760971 test      eax, eax
+0x00760973 je        0x760993
+0x00760975 lea       rdi, [rip + 0xeeab97] ; [0x164b513] "world_controller:activity_manager: Waiting for '%s' activity client creation to complete through sim queue."
+0x0076097c call      0xe4a10
+0x00760981 mov       dword ptr [rip + 0x1f69085], eax ; [0x26c9a0c]
+0x00760987 lea       rdi, [rip + 0x1f69082] ; [0x26c9a10]
+0x0076098e call      0x12aa7e0
+0x00760993 lea       rdx, [r15 + r13 + 0x6c8]
+0x0076099b lea       r12, [rbp - 0x170]
+0x007609a2 lea       rsi, [rip + 0xeeab6a] ; [0x164b513] "world_controller:activity_manager: Waiting for '%s' activity client creation to complete through sim queue."
+0x007609a9 mov       rdi, r12
+0x007609ac xor       al, al
+0x007609ae call      0x1008290
+0x007609b3 mov       edi, dword ptr [rip + 0x1f69053] ; [0x26c9a0c]
+0x007609b9 mov       rsi, r12
+0x007609bc call      0xe4aa0
+0x007609c1 call      0x697a0
+0x007609c6 mov       dword ptr [rip + 0x1f6903c], eax ; [0x26c9a08]
+0x007609cc jmp       0x760a71
+0x007609d1 sub       eax, dword ptr [rip + 0x1f69041] ; [0x26c9a18]
+0x007609d7 cmp       eax, 0x3e9
+0x007609dc jb        0x760a66
+0x007609e2 mov       edi, 2
+0x007609e7 mov       esi, 2
+0x007609ec call      0xe4d70
+0x007609f1 test      al, al
+0x007609f3 je        0x760a5b
+0x007609f5 mov       al, byte ptr [rip + 0x1f69025] ; [0x26c9a20]
+0x007609fb test      al, al
+0x007609fd jne       0x760a2d
+0x007609ff lea       rdi, [rip + 0x1f6901a] ; [0x26c9a20]
+0x00760a06 call      0x12aa7d0
+0x00760a0b test      eax, eax
+0x00760a0d je        0x760a2d
+0x00760a0f lea       rdi, [rip + 0xeeab69] ; [0x164b57f] "world_controller:activity_manager: Pumping creation for '%s' activity client."
+0x00760a16 call      0xe4a10
+0x00760a1b mov       dword ptr [rip + 0x1f68ffb], eax ; [0x26c9a1c]
+0x00760a21 lea       rdi, [rip + 0x1f68ff8] ; [0x26c9a20]
+0x00760a28 call      0x12aa7e0
+0x00760a2d lea       rdx, [r15 + r13 + 0x6c8]
+0x00760a35 lea       r12, [rbp - 0x170]
+0x00760a3c lea       rsi, [rip + 0xeeab3c] ; [0x164b57f] "world_controller:activity_manager: Pumping creation for '%s' activity client."
+0x00760a43 mov       rdi, r12
+0x00760a46 xor       al, al
+0x00760a48 call      0x1008290
+0x00760a4d mov       edi, dword ptr [rip + 0x1f68fc9] ; [0x26c9a1c]
+0x00760a53 mov       rsi, r12
+0x00760a56 call      0xe4aa0
+0x00760a5b call      0x697a0
+0x00760a60 mov       dword ptr [rip + 0x1f68fb2], eax ; [0x26c9a18]
+0x00760a66 mov       rdi, r15
+0x00760a69 mov       esi, r14d
+0x00760a6c call      0x75d8e0
+0x00760a71 mov       rax, qword ptr [rbp - 0x180]
+0x00760a78 mov       edi, dword ptr [rax]
+0x00760a7a cmp       edi, -1
+0x00760a7d jne       0x760ab9
+0x00760a7f lea       rax, [rip + 0x1f68c72] ; [0x26c96f8]
+0x00760a86 mov       rax, qword ptr [rax]
+0x00760a89 mov       ecx, 0xffffffff
+0x00760a8e mov       rdx, rax
+0x00760a91 nop       word ptr cs:[rax + rax]
+0x00760aa0 cmp       ecx, 1
+0x00760aa3 je        0x760c23
+0x00760aa9 inc       ecx
+0x00760aab cmp       dword ptr [rdx], r14d
+0x00760aae lea       rdx, [rdx + 4]
+0x00760ab2 jne       0x760aa0
+0x00760ab4 jmp       0x760c28
+0x00760ab9 call      0x2a0010
+0x00760abe mov       rbx, rax
+0x00760ac1 mov       rdi, rbx
+0x00760ac4 call      0x2998a0
+0x00760ac9 test      al, al
+0x00760acb je        0x760b5d
+0x00760ad1 mov       edi, 2
+0x00760ad6 mov       esi, 3
+0x00760adb call      0xe4d70
+0x00760ae0 test      al, al
+0x00760ae2 mov       r14, qword ptr [rbp - 0x178]
+0x00760ae9 je        0x760b51
+0x00760aeb mov       al, byte ptr [rip + 0x1f68f3f] ; [0x26c9a30]
+0x00760af1 test      al, al
+0x00760af3 jne       0x760b23
+0x00760af5 lea       rdi, [rip + 0x1f68f34] ; [0x26c9a30]
+0x00760afc call      0x12aa7d0
+0x00760b01 test      eax, eax
+0x00760b03 je        0x760b23
+0x00760b05 lea       rdi, [rip + 0xeeaac1] ; [0x164b5cd] "world_controller:activity_manager: Connected '%s' activity client."
+0x00760b0c call      0xe4a10
+0x00760b11 mov       dword ptr [rip + 0x1f68f11], eax ; [0x26c9a28]
+0x00760b17 lea       rdi, [rip + 0x1f68f12] ; [0x26c9a30]
+0x00760b1e call      0x12aa7e0
+0x00760b23 lea       rdx, [r15 + r13 + 0x6c8]
+0x00760b2b lea       rbx, [rbp - 0x170]
+0x00760b32 lea       rsi, [rip + 0xeeaa94] ; [0x164b5cd] "world_controller:activity_manager: Connected '%s' activity client."
+0x00760b39 mov       rdi, rbx
+0x00760b3c xor       al, al
+0x00760b3e call      0x1008290
+0x00760b43 mov       edi, dword ptr [rip + 0x1f68edf] ; [0x26c9a28]
+0x00760b49 mov       rsi, rbx
+0x00760b4c call      0xe4aa0
+0x00760b51 mov       dword ptr [r14], 4
+0x00760b58 jmp       0x760dc7
+0x00760b5d mov       rdi, rbx
+0x00760b60 call      0x2998c0
+0x00760b65 test      al, al
+0x00760b67 mov       r14, qword ptr [rbp - 0x178]
+0x00760b6e je        0x760bf9
+0x00760b74 mov       edi, 2
+0x00760b79 mov       esi, 4
+0x00760b7e call      0xe4d70
+0x00760b83 test      al, al
+0x00760b85 je        0x760bed
+0x00760b87 mov       al, byte ptr [rip + 0x1f68eb3] ; [0x26c9a40]
+0x00760b8d test      al, al
+0x00760b8f jne       0x760bbf
+0x00760b91 lea       rdi, [rip + 0x1f68ea8] ; [0x26c9a40]
+0x00760b98 call      0x12aa7d0
+0x00760b9d test      eax, eax
+0x00760b9f je        0x760bbf
+0x00760ba1 lea       rdi, [rip + 0xeeaa68] ; [0x164b610] "world_controller:activity_manager: Waiting for '%s' activity client to be connected, and BAP connection died."
+0x00760ba8 call      0xe4a10
+0x00760bad mov       dword ptr [rip + 0x1f68e85], eax ; [0x26c9a38]
+0x00760bb3 lea       rdi, [rip + 0x1f68e86] ; [0x26c9a40]
+0x00760bba call      0x12aa7e0
+0x00760bbf lea       rdx, [r15 + r13 + 0x6c8]
+0x00760bc7 lea       rbx, [rbp - 0x170]
+0x00760bce lea       rsi, [rip + 0xeeaa3b] ; [0x164b610] "world_controller:activity_manager: Waiting for '%s' activity client to be connected, and BAP connection died."
+0x00760bd5 mov       rdi, rbx
+0x00760bd8 xor       al, al
+0x00760bda call      0x1008290
+0x00760bdf mov       edi, dword ptr [rip + 0x1f68e53] ; [0x26c9a38]
+0x00760be5 mov       rsi, rbx
+0x00760be8 call      0xe4aa0
+0x00760bed mov       dword ptr [r14], 0x13
+0x00760bf4 jmp       0x760dc7
+0x00760bf9 call      0x34e340
+0x00760bfe movsxd    rdx, dword ptr [rax + 8]
+0x00760c02 mov       rdi, r14
+0x00760c05 mov       esi, 0x12
+0x00760c0a call      0x75f890
+0x00760c0f test      al, al
+0x00760c11 je        0x760d2d
+0x00760c17 mov       dword ptr [r14], 0x12
+0x00760c1e jmp       0x760dc7
+0x00760c23 mov       ecx, 0xffffffff
+0x00760c28 add       rax, 8
+0x00760c2c mov       ebx, 0xffffffff
+0x00760c31 nop       word ptr cs:[rax + rax]
+0x00760c40 cmp       ebx, 1
+0x00760c43 je        0x760c52
+0x00760c45 inc       ebx
+0x00760c47 cmp       dword ptr [rax], r14d
+0x00760c4a lea       rax, [rax + 4]
+0x00760c4e jne       0x760c40
+0x00760c50 jmp       0x760c54
+0x00760c52 mov       ebx, ecx
+0x00760c54 call      0x34e340
+0x00760c59 lea       rcx, [rax + 0x30]
+0x00760c5d add       rax, 4
+0x00760c61 cmp       ebx, 1
+0x00760c64 cmove     rax, rcx
+0x00760c68 movsxd    rdx, dword ptr [rax]
+0x00760c6b mov       rbx, qword ptr [rbp - 0x178]
+0x00760c72 mov       rdi, rbx
+0x00760c75 mov       esi, 0x11
+0x00760c7a call      0x75f890
+0x00760c7f test      al, al
+0x00760c81 je        0x760c8e
+0x00760c83 mov       dword ptr [rbx], 0x11
+0x00760c89 jmp       0x760dc7
+0x00760c8e call      0x697a0
+0x00760c93 sub       eax, dword ptr [rip + 0x1f68dbf] ; [0x26c9a58]
+0x00760c99 cmp       eax, 0x1389
+0x00760c9e jb        0x760dc7
+0x00760ca4 mov       edi, 2
+0x00760ca9 mov       esi, 1
+0x00760cae call      0xe4d70
+0x00760cb3 test      al, al
+0x00760cb5 je        0x760d1d
+0x00760cb7 mov       al, byte ptr [rip + 0x1f68da3] ; [0x26c9a60]
+0x00760cbd test      al, al
+0x00760cbf jne       0x760cef
+0x00760cc1 lea       rdi, [rip + 0x1f68d98] ; [0x26c9a60]
+0x00760cc8 call      0x12aa7d0
+0x00760ccd test      eax, eax
+0x00760ccf je        0x760cef
+0x00760cd1 lea       rdi, [rip + 0xeea9f6] ; [0x164b6ce] "world_controller:activity_manager: Waiting for '%s' activity client to be created."
+0x00760cd8 call      0xe4a10
+0x00760cdd mov       dword ptr [rip + 0x1f68d79], eax ; [0x26c9a5c]
+0x00760ce3 lea       rdi, [rip + 0x1f68d76] ; [0x26c9a60]
+0x00760cea call      0x12aa7e0
+0x00760cef lea       rdx, [r15 + r13 + 0x6c8]
+0x00760cf7 lea       rbx, [rbp - 0x170]
+0x00760cfe lea       rsi, [rip + 0xeea9c9] ; [0x164b6ce] "world_controller:activity_manager: Waiting for '%s' activity client to be created."
+0x00760d05 mov       rdi, rbx
+0x00760d08 xor       al, al
+0x00760d0a call      0x1008290
+0x00760d0f mov       edi, dword ptr [rip + 0x1f68d47] ; [0x26c9a5c]
+0x00760d15 mov       rsi, rbx
+0x00760d18 call      0xe4aa0
+0x00760d1d call      0x697a0
+0x00760d22 mov       dword ptr [rip + 0x1f68d30], eax ; [0x26c9a58]
+0x00760d28 jmp       0x760dc7
+0x00760d2d call      0x697a0
+0x00760d32 sub       eax, dword ptr [rip + 0x1f68d10] ; [0x26c9a48]
+0x00760d38 cmp       eax, 0x1389
+0x00760d3d jb        0x760dc7
+0x00760d43 mov       edi, 2
+0x00760d48 mov       esi, 1
+0x00760d4d call      0xe4d70
+0x00760d52 test      al, al
+0x00760d54 je        0x760dbc
+0x00760d56 mov       al, byte ptr [rip + 0x1f68cf4] ; [0x26c9a50]
+0x00760d5c test      al, al
+0x00760d5e jne       0x760d8e
+0x00760d60 lea       rdi, [rip + 0x1f68ce9] ; [0x26c9a50]
+0x00760d67 call      0x12aa7d0
+0x00760d6c test      eax, eax
+0x00760d6e je        0x760d8e
+0x00760d70 lea       rdi, [rip + 0xeea907] ; [0x164b67e] "world_controller:activity_manager: Waiting for '%s' activity client to connect."
+0x00760d77 call      0xe4a10
+0x00760d7c mov       dword ptr [rip + 0x1f68cca], eax ; [0x26c9a4c]
+0x00760d82 lea       rdi, [rip + 0x1f68cc7] ; [0x26c9a50]
+0x00760d89 call      0x12aa7e0
+0x00760d8e lea       rdx, [r15 + r13 + 0x6c8]
+0x00760d96 lea       rbx, [rbp - 0x170]
+0x00760d9d lea       rsi, [rip + 0xeea8da] ; [0x164b67e] "world_controller:activity_manager: Waiting for '%s' activity client to connect."
+0x00760da4 mov       rdi, rbx
+0x00760da7 xor       al, al
+0x00760da9 call      0x1008290
+0x00760dae mov       edi, dword ptr [rip + 0x1f68c98] ; [0x26c9a4c]
+0x00760db4 mov       rsi, rbx
+0x00760db7 call      0xe4aa0
+0x00760dbc call      0x697a0
+0x00760dc1 mov       dword ptr [rip + 0x1f68c81], eax ; [0x26c9a48]
+0x00760dc7 mov       rax, qword ptr [rip + 0x12be332] ; [0x1a1f100]
+0x00760dce mov       rax, qword ptr [rax]
+0x00760dd1 cmp       rax, qword ptr [rbp - 0x30]
+0x00760dd5 jne       0x760de9
+0x00760dd7 add       rsp, 0x158
+0x00760dde pop       rbx
+0x00760ddf pop       r12
+0x00760de1 pop       r13
+0x00760de3 pop       r14
+0x00760de5 pop       r15
+0x00760de7 pop       rbp
+0x00760de8 ret       
+0x00760de9 call      0x12aa7f0
+0x00760dee nop       
+0x00760def nop       
+FUNCTION 7a2d60..7a2e60
+0x007a2d60 push      rbp
+0x007a2d61 mov       rbp, rsp
+0x007a2d64 push      r15
+0x007a2d66 push      r14
+0x007a2d68 push      rbx
+0x007a2d69 push      rax
+0x007a2d6a xor       edi, edi
+0x007a2d6c call      0x7724f0
+0x007a2d71 mov       r14d, 2
+0x007a2d77 test      al, al
+0x007a2d79 je        0x7a2e3c
+0x007a2d7f xor       edi, edi
+0x007a2d81 call      0x7754d0
+0x007a2d86 mov       r15b, al
+0x007a2d89 xor       edi, edi
+0x007a2d8b call      0x775770
+0x007a2d90 mov       rbx, rax
+0x007a2d93 test      r15b, r15b
+0x007a2d96 je        0x7a2dcc
+0x007a2d98 lea       rdi, [rbx + 0x9b8]
+0x007a2d9f call      0xb8e0b0
+0x007a2da4 lea       rdi, [rbx + 0x390]
+0x007a2dab call      0xb8efe0
+0x007a2db0 mov       rdi, rbx
+0x007a2db3 mov       esi, 0x12
+0x007a2db8 call      0xb8c940
+0x007a2dbd call      0x574ef0
+0x007a2dc2 mov       rdi, rax
+0x007a2dc5 call      0x574bc0
+0x007a2dca jmp       0x7a2e3c
+0x007a2dcc xor       edi, edi
+0x007a2dce call      0x7855c0
+0x007a2dd3 test      al, al
+0x007a2dd5 jne       0x7a2e3c
+0x007a2dd7 lea       r15, [rbx + 0x9b8]
+0x007a2dde mov       rdi, r15
+0x007a2de1 call      0xb8f690
+0x007a2de6 test      al, al
+0x007a2de8 je        0x7a2dfc
+0x007a2dea mov       rdi, r15
+0x007a2ded call      0xb8e250
+0x007a2df2 mov       r14d, 1
+0x007a2df8 test      al, al
+0x007a2dfa je        0x7a2e3c
+0x007a2dfc lea       rdi, [rbx + 0x390]
+0x007a2e03 call      0xb8f690
+0x007a2e08 test      al, al
+0x007a2e0a je        0x7a2e1e
+0x007a2e0c mov       rdi, r15
+0x007a2e0f call      0xb8e250
+0x007a2e14 mov       r14d, 1
+0x007a2e1a test      al, al
+0x007a2e1c je        0x7a2e3c
+0x007a2e1e add       rbx, 0x1678
+0x007a2e25 mov       rdi, rbx
+0x007a2e28 call      0xb8f690
+0x007a2e2d mov       cl, al
+0x007a2e2f mov       eax, 1
+0x007a2e34 cmp       cl, 1
+0x007a2e37 adc       eax, 0
+0x007a2e3a jmp       0x7a2e3f
+0x007a2e3c mov       eax, r14d
+0x007a2e3f add       rsp, 8
+0x007a2e43 pop       rbx
+0x007a2e44 pop       r14
+0x007a2e46 pop       r15
+0x007a2e48 pop       rbp
+0x007a2e49 ret       
+0x007a2e4a nop       word ptr [rax + rax]
+0x007a2e50 mov       eax, 2
+0x007a2e55 ret       
+0x007a2e56 nop       word ptr cs:[rax + rax]
+FUNCTION 7a3090..7a3190
+0x007a3090 push      rbp
+0x007a3091 mov       rbp, rsp
+0x007a3094 push      r15
+0x007a3096 push      r14
+0x007a3098 push      rbx
+0x007a3099 push      rax
+0x007a309a mov       edi, 1
+0x007a309f call      0x7724f0
+0x007a30a4 mov       r14d, 2
+0x007a30aa test      al, al
+0x007a30ac je        0x7a3178
+0x007a30b2 mov       edi, 1
+0x007a30b7 call      0x7754d0
+0x007a30bc mov       r15b, al
+0x007a30bf mov       edi, 1
+0x007a30c4 call      0x775770
+0x007a30c9 mov       rbx, rax
+0x007a30cc test      r15b, r15b
+0x007a30cf je        0x7a3105
+0x007a30d1 lea       rdi, [rbx + 0x9b8]
+0x007a30d8 call      0xb8e0b0
+0x007a30dd lea       rdi, [rbx + 0x390]
+0x007a30e4 call      0xb8efe0
+0x007a30e9 mov       rdi, rbx
+0x007a30ec mov       esi, 0x12
+0x007a30f1 call      0xb8c940
+0x007a30f6 call      0x574ef0
+0x007a30fb mov       rdi, rax
+0x007a30fe call      0x574bc0
+0x007a3103 jmp       0x7a3178
+0x007a3105 mov       edi, 1
+0x007a310a call      0x7855c0
+0x007a310f test      al, al
+0x007a3111 jne       0x7a3178
+0x007a3113 lea       r15, [rbx + 0x9b8]
+0x007a311a mov       rdi, r15
+0x007a311d call      0xb8f690
+0x007a3122 test      al, al
+0x007a3124 je        0x7a3138
+0x007a3126 mov       rdi, r15
+0x007a3129 call      0xb8e250
+0x007a312e mov       r14d, 1
+0x007a3134 test      al, al
+0x007a3136 je        0x7a3178
+0x007a3138 lea       rdi, [rbx + 0x390]
+0x007a313f call      0xb8f690
+0x007a3144 test      al, al
+0x007a3146 je        0x7a315a
+0x007a3148 mov       rdi, r15
+0x007a314b call      0xb8e250
+0x007a3150 mov       r14d, 1
+0x007a3156 test      al, al
+0x007a3158 je        0x7a3178
+0x007a315a add       rbx, 0x1678
+0x007a3161 mov       rdi, rbx
+0x007a3164 call      0xb8f690
+0x007a3169 mov       cl, al
+0x007a316b mov       eax, 1
+0x007a3170 cmp       cl, 1
+0x007a3173 adc       eax, 0
+0x007a3176 jmp       0x7a317b
+0x007a3178 mov       eax, r14d
+0x007a317b add       rsp, 8
+0x007a317f pop       rbx
+0x007a3180 pop       r14
+0x007a3182 pop       r15
+0x007a3184 pop       rbp
+0x007a3185 ret       
+0x007a3186 nop       word ptr cs:[rax + rax]
+FUNCTION 7a4520..7a4660
+0x007a4520 push      rbp
+0x007a4521 mov       rbp, rsp
+0x007a4524 push      r15
+0x007a4526 push      r14
+0x007a4528 push      rbx
+0x007a4529 push      rax
+0x007a452a mov       r14, rdi
+0x007a452d call      0x34cbb0
+0x007a4532 mov       rdi, rax
+0x007a4535 movzx     eax, word ptr [r14 + 0x6ba]
+0x007a453d test      ah, 0x30
+0x007a4540 je        0x7a45ac
+0x007a4542 test      ah, 0x20
+0x007a4545 je        0x7a45dd
+0x007a454b call      0xcdbb0
+0x007a4550 mov       ebx, eax
+0x007a4552 mov       r15d, 1
+0x007a4558 cmp       ebx, 3
+0x007a455b je        0x7a4646
+0x007a4561 call      0x7525a0
+0x007a4566 cmp       ebx, 1
+0x007a4569 je        0x7a4638
+0x007a456f xor       al, 1
+0x007a4571 jne       0x7a4638
+0x007a4577 lea       rax, [rip + 0x127ec72] ; [0x1a231f0]
+0x007a457e mov       r15, qword ptr [rax]
+0x007a4581 mov       edi, ebx
+0x007a4583 call      0xcfcb0
+0x007a4588 test      r15, r15
+0x007a458b je        0x7a461a
+0x007a4591 lea       rsi, [rip + 0xeb7ac4] ; [0x165c05c] 'Patchable package unregistration failed with result %s (%d)'
+0x007a4598 mov       edi, 3
+0x007a459d mov       rdx, rax
+0x007a45a0 mov       ecx, ebx
+0x007a45a2 xor       al, al
+0x007a45a4 call      r15
+0x007a45a7 jmp       0x7a4638
+0x007a45ac call      0x34c960
+0x007a45b1 mov       r15d, 1
+0x007a45b7 test      al, al
+0x007a45b9 jne       0x7a4646
+0x007a45bf call      0x34cbb0
+0x007a45c4 mov       rdi, rax
+0x007a45c7 mov       esi, 0x12
+0x007a45cc xor       edx, edx
+0x007a45ce call      0x34c8e0
+0x007a45d3 or        byte ptr [r14 + 0x6bb], 0x10
+0x007a45db jmp       0x7a4646
+0x007a45dd call      0x34c960
+0x007a45e2 mov       r15d, 1
+0x007a45e8 test      al, al
+0x007a45ea jne       0x7a4646
+0x007a45ec call      0xcdba0
+0x007a45f1 call      0x752100
+0x007a45f6 mov       rdi, rax
+0x007a45f9 call      0x78afc0
+0x007a45fe movzx     eax, word ptr [r14 + 0x6ba]
+0x007a4606 and       eax, 0xcfff
+0x007a460b or        eax, 0x2000
+0x007a4610 mov       word ptr [r14 + 0x6ba], ax
+0x007a4618 jmp       0x7a4646
+0x007a461a lea       rdi, [rip + 0xeb7a3b] ; [0x165c05c] 'Patchable package unregistration failed with result %s (%d)'
+0x007a4621 mov       rsi, rax
+0x007a4624 mov       edx, ebx
+0x007a4626 xor       al, al
+0x007a4628 call      0x5c750
+0x007a462d mov       dword ptr [1], 0x2a
+0x007a4638 and       byte ptr [r14 + 0x6bb], 0xdf
+0x007a4640 mov       r15d, 2
+0x007a4646 mov       eax, r15d
+0x007a4649 add       rsp, 8
+0x007a464d pop       rbx
+0x007a464e pop       r14
+0x007a4650 pop       r15
+0x007a4652 pop       rbp
+0x007a4653 ret       
+0x007a4654 nop       word ptr cs:[rax + rax]

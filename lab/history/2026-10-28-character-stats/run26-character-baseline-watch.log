@@ -1,0 +1,3 @@
+shadPS4 pid 14392  eboot base 0x5170000  control vtable[0]=0x58c4410 PASS
+{"event": "start", "pid": 14392, "base": "0x5170000", "addrs": ["0x5a828f1", "0x5a8297a", "0x5a82991"], "t": 1793147326.6161215}
+{"event": "detached", "hits": 0, "t": 1793147509.680683}

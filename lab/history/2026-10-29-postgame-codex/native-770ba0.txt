@@ -1,0 +1,19 @@
+0x00770ba0 push      rbp
+0x00770ba1 mov       rbp, rsp
+0x00770ba4 push      rbx
+0x00770ba5 push      rax
+0x00770ba6 mov       rbx, rdi
+0x00770ba9 call      0x3db440
+0x00770bae lea       r8, [rbx + 0x109d0]
+0x00770bb5 lea       r9, [rbx + 0xe928]
+0x00770bbc mov       esi, 1
+0x00770bc1 mov       edx, 0x10
+0x00770bc6 mov       rcx, rax
+0x00770bc9 call      0x7707c0
+0x00770bce movsxd    rax, eax
+0x00770bd1 mov       qword ptr [rbx + 0x109c8], rax
+0x00770bd8 add       rsp, 8
+0x00770bdc pop       rbx
+0x00770bdd pop       rbp
+0x00770bde ret       
+0x00770bdf nop       

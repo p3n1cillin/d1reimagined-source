@@ -1,0 +1,53 @@
+[
+  {
+    "name": "29c_client_move_to_atom_control",
+    "vtable": "0x1906e60",
+    "slots": [
+      "0x169a40",
+      "0x14d0",
+      "0x169620",
+      "0x1696d0",
+      "0x14d0",
+      "0x168f30",
+      "0x1697d0",
+      "0x116ad0",
+      "0x169a40",
+      "0x169880",
+      "0x169a00"
+    ]
+  },
+  {
+    "name": "29c_client_snap_to_atom_control",
+    "vtable": "0x1907070",
+    "slots": [
+      "0x116ad0",
+      "0x1f70",
+      "0x14d0",
+      "0x168f70",
+      "0x14d0",
+      "0x168f30",
+      "0x169a60",
+      "0x116ad0",
+      "0x116ad0",
+      "0x14d0",
+      "0x168ff0"
+    ]
+  },
+  {
+    "name": "33c_client_set_channel_atom_control",
+    "vtable": "0x1907340",
+    "slots": [
+      "0x116ad0",
+      "0x1f70",
+      "0x14d0",
+      "0x168f70",
+      "0x14d0",
+      "0x168f30",
+      "0x169f80",
+      "0x116ad0",
+      "0x116ad0",
+      "0x14d0",
+      "0x168ff0"
+    ]
+  }
+]

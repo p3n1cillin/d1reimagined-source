@@ -1,0 +1,61 @@
+0x0098fa50 push      rbp
+0x0098fa51 mov       rbp, rsp
+0x0098fa54 push      r14
+0x0098fa56 push      rbx
+0x0098fa57 sub       rsp, 0x30
+0x0098fa5b mov       r8, rdi
+0x0098fa5e mov       r14, qword ptr [rip + 0x108f69b] ; [0x1a1f100]
+0x0098fa65 mov       rax, qword ptr [r14]
+0x0098fa68 mov       qword ptr [rbp - 0x18], rax
+0x0098fa6c mov       rax, qword ptr [rsi]
+0x0098fa6f mov       rcx, qword ptr [rsi + 8]
+0x0098fa73 cmp       rax, rcx
+0x0098fa76 je        0x98facb
+0x0098fa78 movsx     edi, word ptr [rax]
+0x0098fa7b lea       rbx, [rip + 0xf6bc62] ; [0x18fb6e4]
+0x0098fa82 cmp       edi, dword ptr [rbx]
+0x0098fa84 jne       0x98facb
+0x0098fa86 mov       rdi, qword ptr [r8 + 0xf8]
+0x0098fa8d test      rdi, rdi
+0x0098fa90 je        0x98facb
+0x0098fa92 mov       qword ptr [rbp - 0x28], rdi
+0x0098fa96 mov       qword ptr [rbp - 0x20], 0
+0x0098fa9e xor       bl, bl
+0x0098faa0 cmp       word ptr [rax + 2], 0
+0x0098faa5 lea       rax, [rax + 4]
+0x0098faa9 mov       qword ptr [rbp - 0x38], rax
+0x0098faad mov       qword ptr [rbp - 0x30], rcx
+0x0098fab1 jne       0x98fafa
+0x0098fab3 cmp       rax, rcx
+0x0098fab6 je        0x98faec
+0x0098fab8 test      rdi, rdi
+0x0098fabb je        0x98fafa
+0x0098fabd mov       rax, qword ptr [rdi]
+0x0098fac0 lea       rsi, [rbp - 0x38]
+0x0098fac4 call      qword ptr [rax + 0x38]
+0x0098fac7 mov       bl, al
+0x0098fac9 jmp       0x98fafa
+0x0098facb mov       rdi, r8
+0x0098face call      0x97dc10
+0x0098fad3 mov       bl, al
+0x0098fad5 test      bl, bl
+0x0098fad7 setne     al
+0x0098fada mov       rcx, qword ptr [r14]
+0x0098fadd cmp       rcx, qword ptr [rbp - 0x18]
+0x0098fae1 jne       0x98fb0a
+0x0098fae3 add       rsp, 0x30
+0x0098fae7 pop       rbx
+0x0098fae8 pop       r14
+0x0098faea pop       rbp
+0x0098faeb ret       
+0x0098faec lea       rsi, [rbp - 0x28]
+0x0098faf0 mov       rdi, rdx
+0x0098faf3 call      0x1081240
+0x0098faf8 mov       bl, 1
+0x0098fafa mov       rdi, qword ptr [rbp - 0x20]
+0x0098fafe test      rdi, rdi
+0x0098fb01 je        0x98fad5
+0x0098fb03 call      0x8dd4f0
+0x0098fb08 jmp       0x98fad5
+0x0098fb0a call      0x12aa7f0
+0x0098fb0f nop       

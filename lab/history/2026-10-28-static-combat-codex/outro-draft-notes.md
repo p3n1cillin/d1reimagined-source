@@ -1,0 +1,18 @@
+# Private 56578 ending draft, 28 October 2026
+
+Unpublished hypotheses for Claude's owned lab. No ah-control publication, canonical steps edit, game input or memory write.
+
+Owned-source chain (all dumped bytes stay private): scenario80cb800d bubble13 has104/105; the name hash for105 is439d9d22 (cosmo_m0_phase04_outro), flags1/1/1, set801c→86e9. The slice set lists905a,86ea,905b,80cd0c01. Respect their active definitions rather than treating every named script object as a network client. Group86ea lists phase04 definition86ec→cinematic definition86ed. Definition86ed metadata+338 names992bb471/6/29, domainFFFFFFFF, BFFFFFFFF, A8080254d; +360 cinematic hashf8555412, +364 flag1. The non-replicated phase3c/68 and performance3b/69 are not new A records to invent.
+
+The initial predicted105 list is common21 plus cine29=22. Registration, playback and stop lists preserve canonical common21 rows and spawn identity. Authority13 is provisional: reconcile with actual105 native pending clients/local id/generation, including extra arrivals, before use. A read-only snapshot at13:34 of sense40 player-array identity matches canonical bundle: native01020000000000d1, oracle d100000000000201. The earlier broad --all capture reported local3 in its current world, not proof that future Dock/105 authority remains13. Its tool caption says249 pending but --all means249 listed, NOT249 actually pending. Do not read that caption as a failure count.
+
+Cast correction: component403140 copies state D4 bytes to+1ac. 403770/4037e7 reads cast count+248, and40380f reads first identity+24c, i.e. image+9c and+A0. Existing opening helper uses+A8, which is slot1 while count1 names slot0. The draft uses+A0. One local-player identity is the dynamic cast list; Ghost and jumpship are authored by the cinematic content. No evidence justifies guessing additional player identities for them. Static binding correctness does not establish that the Ghost/ship render correctly in the live outro.
+
+The three cine images round-trip through the selected native object codec8080254d with identical212-byte output: register167bits, play231bits, stop167bits. Sensor-controls11/11 PASS. Generic oodle-controls is pinned to the unavailable01.29 reference and refused before executing; it is NOT a56578 control pass and none of its failed output is cited. Owned content extraction uses the selected56578 decoder and self-size/type/name checks, with cached original blocks retained privately.
+
+Phase A step (only after rebuilding PR63 into the lab owner's host):
+164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-outro104-clear26-request105.draft.txt 105
+
+The list clears presentation of26, not service/progression completion. Generic lifetime remains3, not4: phase04 is an authored slice, not the lifetime enum. The region column uses the existing membership slice-request handshake. Wait for actual CURRENT105, not a timer. Existing %105|N can time out, so the draft intentionally has no automatic %105→play chain. Reconcile fresh105 clients, then manually register stopped→play (or use a separate supervised schedule). Counter1 stopped,2 playing,3 stopped; optional object reference absentFNV/FF/FFFF; team filterFF; play castcount1/player identity atA0. Counter must differ from any already-applied cine29 test in the same run.
+
+After cinematic891 or1726, stop the cinematic and separately investigate actual completion/results/rewards. A150s diagnostic stop must never count as a completed mission. Repeated171? or734 aborts are not acceptance. Native cinematic acceptance needs2681/start and actual Guardian/Ghost/jumpship scene, successful completion/skip reporting and no crash/teardown loop.

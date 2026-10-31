@@ -1,0 +1,30 @@
+shadPS4 pid 24364  eboot base 0x5100000  control vtable[0]=0x5854410 PASS
+start (397.3578186035156, -698.0795288085938, 10.414543151855469) goal [347.43, -646.29]
+at (398.0, -698.5, 11.0) dist 72.7 best 68.0 cells 4 blocked 9
+at (391.4, -699.0, 10.3) dist 68.6 best 68.0 cells 8 blocked 9
+at (396.0, -705.1, 10.9) dist 76.3 best 65.6 cells 11 blocked 10
+at (404.5, -712.2, 9.9) dist 87.2 best 65.6 cells 16 blocked 10
+at (392.8, -698.7, 10.9) dist 69.3 best 65.6 cells 21 blocked 10
+at (397.3, -699.4, 10.9) dist 72.9 best 65.6 cells 24 blocked 10
+at (401.1, -709.1, 10.3) dist 82.6 best 65.6 cells 26 blocked 10
+at (389.8, -697.5, 11.2) dist 66.4 best 65.6 cells 29 blocked 10
+at (396.5, -701.8, 11.0) dist 74.1 best 65.6 cells 30 blocked 11
+at (390.6, -699.3, 10.5) dist 68.4 best 65.6 cells 30 blocked 13
+at (391.6, -695.8, 11.1) dist 66.3 best 65.6 cells 30 blocked 14
+at (389.8, -697.6, 10.6) dist 66.5 best 65.6 cells 30 blocked 14
+at (389.8, -699.8, 10.7) dist 68.2 best 65.6 cells 30 blocked 15
+at (389.8, -700.2, 10.9) dist 68.5 best 65.6 cells 31 blocked 15
+at (395.2, -695.8, 11.0) dist 68.8 best 65.6 cells 32 blocked 15
+at (399.8, -709.6, 10.1) dist 82.2 best 65.6 cells 34 blocked 15
+at (390.9, -704.0, 11.3) dist 72.2 best 65.6 cells 38 blocked 16
+at (390.3, -705.2, 10.1) dist 72.8 best 65.6 cells 41 blocked 17
+at (402.9, -717.9, 11.7) dist 90.5 best 65.6 cells 45 blocked 17
+at (410.7, -729.4, 12.6) dist 104.4 best 65.6 cells 50 blocked 17
+at (401.6, -718.4, 12.1) dist 90.2 best 65.6 cells 54 blocked 17
+at (391.7, -708.0, 10.9) dist 75.9 best 65.6 cells 58 blocked 17
+at (390.9, -711.4, 10.1) dist 78.3 best 65.6 cells 59 blocked 17
+at (394.6, -713.5, 10.4) dist 82.1 best 65.6 cells 61 blocked 17
+at (391.4, -705.2, 11.1) dist 73.5 best 65.6 cells 63 blocked 17
+at (395.2, -708.4, 10.1) dist 78.4 best 65.6 cells 64 blocked 19
+at (390.2, -704.2, 10.7) dist 72.0 best 65.6 cells 64 blocked 19
+stopped (390.2436218261719, -704.0086059570312, 11.246408462524414) dist 71.9 route 8 points -> route-jw3.json

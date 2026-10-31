@@ -1,0 +1,334 @@
+[
+  {
+    "function": "0x177ba0",
+    "matches": [
+      "0x001789f2 mov       qword ptr [rsp + 0xc58], 0",
+      "0x00178aa7 lea       rdi, [rsp + 0xc58]",
+      "0x00178aaf mov       qword ptr [rsp + 0xc58], 0",
+      "0x00178ac8 lea       rdi, [rsp + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x225070",
+    "matches": [
+      "0x0022522b call      qword ptr [rax + rbx*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x231510",
+    "matches": [
+      "0x0023173b mov       r14, qword ptr [rdi + rcx*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x2f36f0",
+    "matches": [
+      "0x002f3aee call      qword ptr [rax + rbx*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x5ee570",
+    "matches": [
+      "0x005ee6ac mov       qword ptr [rbx + 0xc58], rcx"
+    ]
+  },
+  {
+    "function": "0x60b1b0",
+    "matches": [
+      "0x0060b21f lea       rdi, [r14 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x60b280",
+    "matches": [
+      "0x0060b29c lea       rdi, [r14 + 0xc58]",
+      "0x0060b382 mov       qword ptr [r14 + 0xc58], 0xffffffffffffffff"
+    ]
+  },
+  {
+    "function": "0x60b410",
+    "matches": [
+      "0x0060b44f lea       rdi, [r15 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x60b560",
+    "matches": [
+      "0x0060b678 lea       rdi, [r12 + 0xc58]",
+      "0x0060b91c lea       rdi, [r12 + 0xc58]",
+      "0x0060bace lea       rdi, [r12 + 0xc58]",
+      "0x0060baf6 mov       qword ptr [r12 + 0xc58], 0xffffffffffffffff"
+    ]
+  },
+  {
+    "function": "0x60c090",
+    "matches": [
+      "0x0060c155 lea       rdi, [r13 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x60c580",
+    "matches": [
+      "0x0060c589 lea       rdi, [rbx + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x60cf00",
+    "matches": [
+      "0x0060d00e mov       qword ptr [r15 + 0xc58], rax"
+    ]
+  },
+  {
+    "function": "0x60df50",
+    "matches": [
+      "0x0060e04b lea       r14, [r15 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x60e850",
+    "matches": [
+      "0x0060ea90 mov       qword ptr [r13 + 0xc58], rax"
+    ]
+  },
+  {
+    "function": "0x60ecd0",
+    "matches": [
+      "0x0060ecdd lea       rdi, [rbx + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x60ed60",
+    "matches": [
+      "0x0060ed80 lea       rdi, [r14 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x6569a0",
+    "matches": [
+      "0x00656a60 mov       eax, dword ptr [r14 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x65c5c0",
+    "matches": [
+      "0x0065cb8b mov       esi, dword ptr [rcx + rdx + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x65fc30",
+    "matches": [
+      "0x006600b2 mov       eax, dword ptr [r12 + r15 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x7cdb30",
+    "matches": [
+      "0x007ce0cf call      qword ptr [rax + r8*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x81d1c0",
+    "matches": [
+      "0x0081d5be call      qword ptr [rax + rbx*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x912240",
+    "matches": [
+      "0x009124d4 lea       rax, [r14 + rbx + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x988be0",
+    "matches": [
+      "0x0098a794 mov       dword ptr [rdx + 0xc58], 2"
+    ]
+  },
+  {
+    "function": "0x9c2370",
+    "matches": [
+      "0x009c51ad mov       dword ptr [rdx + 0xc58], 2"
+    ]
+  },
+  {
+    "function": "0xa43be0",
+    "matches": [
+      "0x00a43daa mov       qword ptr [rbx + 0xc58], 0"
+    ]
+  },
+  {
+    "function": "0xa44450",
+    "matches": [
+      "0x00a44b79 mov       qword ptr [r15 + 0xc58], rdi",
+      "0x00a44b90 mov       rax, qword ptr [r15 + 0xc58]",
+      "0x00a44bda mov       rax, qword ptr [r15 + 0xc58]",
+      "0x00a44bff mov       rdx, qword ptr [r15 + 0xc58]",
+      "0x00a44d9e mov       rdi, qword ptr [r15 + 0xc58]",
+      "0x00a44f71 mov       rax, qword ptr [r15 + 0xc58]",
+      "0x00a452c5 cmp       qword ptr [r15 + 0xc58], 0",
+      "0x00a45804 cmp       qword ptr [r15 + 0xc58], 0",
+      "0x00a458a8 cmp       qword ptr [r15 + 0xc58], 0",
+      "0x00a4593b mov       r8, qword ptr [r15 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0xa45ab0",
+    "matches": [
+      "0x00a45af0 mov       rax, qword ptr [r12 + 0xc58]",
+      "0x00a45f10 mov       r14, qword ptr [r12 + 0xc58]",
+      "0x00a462d2 mov       rax, qword ptr [r12 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0xa46650",
+    "matches": [
+      "0x00a466f0 mov       rcx, qword ptr [r15 + 0xc58]",
+      "0x00a46912 mov       rdi, qword ptr [r15 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0xa5d130",
+    "matches": [
+      "0x00a5e6ae mov       dword ptr [rdx + 0xc58], 3"
+    ]
+  },
+  {
+    "function": "0xa79ae0",
+    "matches": [
+      "0x00a7b024 mov       dword ptr [rdx + 0xc58], 3"
+    ]
+  },
+  {
+    "function": "0xaa9bd0",
+    "matches": [
+      "0x00aab012 mov       dword ptr [rdx + 0xc58], 3"
+    ]
+  },
+  {
+    "function": "0xaab460",
+    "matches": [
+      "0x00aac8a2 mov       dword ptr [rdx + 0xc58], 3"
+    ]
+  },
+  {
+    "function": "0xad1dd0",
+    "matches": [
+      "0x00ad3204 mov       dword ptr [rdx + 0xc58], 3"
+    ]
+  },
+  {
+    "function": "0xada8a0",
+    "matches": [
+      "0x00adc020 mov       dword ptr [r15 + 0xc58], 0x3f800000"
+    ]
+  },
+  {
+    "function": "0xadec40",
+    "matches": [
+      "0x00adf697 vmovss    dword ptr [rbx + 0xc58], xmm0"
+    ]
+  },
+  {
+    "function": "0xaead60",
+    "matches": [
+      "0x00aeaef9 mov       qword ptr [rcx + rsi + 0xc58], 0"
+    ]
+  },
+  {
+    "function": "0xc603f0",
+    "matches": [
+      "0x00c60639 call      qword ptr [rax + r8*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0xc63b60",
+    "matches": [
+      "0x00c63bf9 call      qword ptr [rax + rbx*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0xc6d1f0",
+    "matches": [
+      "0x00c6d33b call      qword ptr [rax + rbx*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0xc70290",
+    "matches": [
+      "0x00c70393 mov       r13, qword ptr [rax + rsi*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0xc756d0",
+    "matches": [
+      "0x00c75798 mov       qword ptr [rbx + 0xc58], rax"
+    ]
+  },
+  {
+    "function": "0xc762c0",
+    "matches": [
+      "0x00c76306 mov       qword ptr [rbx + rax*8 + 0xc58], rcx"
+    ]
+  },
+  {
+    "function": "0xc767a0",
+    "matches": [
+      "0x00c767e6 mov       qword ptr [rbx + rax*8 + 0xc58], rcx"
+    ]
+  },
+  {
+    "function": "0xc92350",
+    "matches": [
+      "0x00c9249b call      qword ptr [rax + rbx*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0xc95b90",
+    "matches": [
+      "0x00c95cd3 call      qword ptr [rax + rbx*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0xc9ff20",
+    "matches": [
+      "0x00c9ffbc call      qword ptr [r13 + rax*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x104fe40",
+    "matches": [
+      "0x0104ffba mov       qword ptr [rbx + 0xc58], 0"
+    ]
+  },
+  {
+    "function": "0x115d5d0",
+    "matches": [
+      "0x0115dbff mov       rax, qword ptr [rax + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x11bfc10",
+    "matches": [
+      "0x011c0221 mov       qword ptr [rbx + 0xc58], 0",
+      "0x011c022c mov       dword ptr [rbx + 0xc58], 0xffffffff"
+    ]
+  },
+  {
+    "function": "0x11c20f0",
+    "matches": [
+      "0x011c222f mov       dword ptr [rbx + 0xc58], 0"
+    ]
+  },
+  {
+    "function": "0x11d7d70",
+    "matches": [
+      "0x011d7e30 call      qword ptr [rax + rbx*8 + 0xc58]"
+    ]
+  },
+  {
+    "function": "0x11ddee0",
+    "matches": [
+      "0x011de03d call      qword ptr [rax + rbx*8 + 0xc58]"
+    ]
+  }
+]

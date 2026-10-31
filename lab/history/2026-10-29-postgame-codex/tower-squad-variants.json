@@ -1,0 +1,294 @@
+[
+  {
+    "index": 2,
+    "tag": "80c8801e",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_vendor_avatar",
+    "nearby_refs": [
+      "0x80c8801a",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c8801a",
+    "variant_count": 1,
+    "variants": [
+      "vendor1"
+    ],
+    "diagnostic_counts": [
+      1
+    ]
+  },
+  {
+    "index": 4,
+    "tag": "80c8801f",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_vendor_nm",
+    "nearby_refs": [
+      "0x80c8801b",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c8801b",
+    "variant_count": 1,
+    "variants": [
+      "vendor1"
+    ],
+    "diagnostic_counts": [
+      1
+    ]
+  },
+  {
+    "index": 6,
+    "tag": "80c88186",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_kneelers1",
+    "nearby_refs": [
+      "0x80c8817b",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c8817b",
+    "variant_count": 1,
+    "variants": [
+      "kneeler1"
+    ],
+    "diagnostic_counts": [
+      1
+    ]
+  },
+  {
+    "index": 8,
+    "tag": "80c88187",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_standers_arms_behind_back1",
+    "nearby_refs": [
+      "0x80c8817c",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c8817c",
+    "variant_count": 2,
+    "variants": [
+      "stander1",
+      "stander2"
+    ],
+    "diagnostic_counts": [
+      1,
+      1
+    ]
+  },
+  {
+    "index": 11,
+    "tag": "80c88188",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_standers_arms_at_sides1",
+    "nearby_refs": [
+      "0x80c8817d",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c8817d",
+    "variant_count": 3,
+    "variants": [
+      "stander1",
+      "stander2",
+      "stander2_alt"
+    ],
+    "diagnostic_counts": [
+      1,
+      1,
+      0
+    ]
+  },
+  {
+    "index": 15,
+    "tag": "80c88189",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_standers_arms_folded1",
+    "nearby_refs": [
+      "0x80c8817e",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c8817e",
+    "variant_count": 1,
+    "variants": [
+      "stander1"
+    ],
+    "diagnostic_counts": [
+      1
+    ]
+  },
+  {
+    "index": 17,
+    "tag": "80c8818a",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_couch_sitters1",
+    "nearby_refs": [
+      "0x80c8817f",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c8817f",
+    "variant_count": 3,
+    "variants": [
+      "sitter1",
+      "sitter2",
+      "sitter3"
+    ],
+    "diagnostic_counts": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "index": 21,
+    "tag": "80c8818b",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_railing_inward1",
+    "nearby_refs": [
+      "0x80c88180",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c88180",
+    "variant_count": 1,
+    "variants": [
+      "leaner1"
+    ],
+    "diagnostic_counts": [
+      1
+    ]
+  },
+  {
+    "index": 23,
+    "tag": "80c8818c",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_railing_outward1",
+    "nearby_refs": [
+      "0x80c88181",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c88181",
+    "variant_count": 3,
+    "variants": [
+      "leaner1",
+      "leaner2",
+      "leaner1_alt"
+    ],
+    "diagnostic_counts": [
+      1,
+      1,
+      0
+    ]
+  },
+  {
+    "index": 27,
+    "tag": "80c8818d",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_box_sitters1",
+    "nearby_refs": [
+      "0x80c88182",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c88182",
+    "variant_count": 2,
+    "variants": [
+      "sitter1",
+      "sitter1_alt"
+    ],
+    "diagnostic_counts": [
+      1,
+      0
+    ]
+  },
+  {
+    "index": 30,
+    "tag": "80c88020",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_the_mask",
+    "nearby_refs": [
+      "0x80c8801c",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c8801c",
+    "variant_count": 3,
+    "variants": [
+      "mask_a",
+      "mask_b",
+      "mask_c"
+    ],
+    "diagnostic_counts": [
+      1,
+      0,
+      0
+    ]
+  },
+  {
+    "index": 34,
+    "tag": "80c8818e",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_walkers1",
+    "nearby_refs": [
+      "0x80c88183",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c88183",
+    "variant_count": 1,
+    "variants": [
+      "walker1"
+    ],
+    "diagnostic_counts": [
+      1
+    ]
+  },
+  {
+    "index": 36,
+    "tag": "80c8818f",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_civ_walkers2",
+    "nearby_refs": [
+      "0x80c88184",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c88184",
+    "variant_count": 1,
+    "variants": [
+      "walker1"
+    ],
+    "diagnostic_counts": [
+      1
+    ]
+  },
+  {
+    "index": 38,
+    "tag": "80c88190",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_vendor_black_market",
+    "nearby_refs": [
+      "0x80c88185",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c88185",
+    "variant_count": 2,
+    "variants": [
+      "vendor_door",
+      "vendor_rail"
+    ],
+    "diagnostic_counts": [
+      1,
+      0
+    ]
+  },
+  {
+    "index": 41,
+    "tag": "80c88021",
+    "sensor_offset": 1304,
+    "name": "sq_boulevard_vendor_playtest",
+    "nearby_refs": [
+      "0x80c8801d",
+      "0x80800184"
+    ],
+    "definition_tag": "0x80c8801d",
+    "variant_count": 1,
+    "variants": [
+      "vendor"
+    ],
+    "diagnostic_counts": [
+      1
+    ]
+  }
+]

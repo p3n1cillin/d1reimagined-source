@@ -1,0 +1,29 @@
+0x00a4f5d0 push      rbp
+0x00a4f5d1 mov       rbp, rsp
+0x00a4f5d4 push      r14
+0x00a4f5d6 push      rbx
+0x00a4f5d7 mov       rbx, rdi
+0x00a4f5da call      0x549510
+0x00a4f5df test      al, al
+0x00a4f5e1 je        0xa4f627
+0x00a4f5e3 call      0x5494c0
+0x00a4f5e8 mov       r14, rax
+0x00a4f5eb test      r14, r14
+0x00a4f5ee je        0xa4f627
+0x00a4f5f0 call      0x78df40
+0x00a4f5f5 mov       rdi, r14
+0x00a4f5f8 mov       esi, eax
+0x00a4f5fa call      0x5498e0
+0x00a4f5ff test      rax, rax
+0x00a4f602 je        0xa4f612
+0x00a4f604 test      rdx, rdx
+0x00a4f607 je        0xa4f612
+0x00a4f609 mov       qword ptr [rbx + 0xa0], rdx
+0x00a4f610 jmp       0xa4f61d
+0x00a4f612 mov       qword ptr [rbx + 0xa0], 0
+0x00a4f61d mov       dword ptr [rbx + 0xa8], 0x811c9dc5
+0x00a4f627 pop       rbx
+0x00a4f628 pop       r14
+0x00a4f62a pop       rbp
+0x00a4f62b ret       
+0x00a4f62c nop       dword ptr [rax]

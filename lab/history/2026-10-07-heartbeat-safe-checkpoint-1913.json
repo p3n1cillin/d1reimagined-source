@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-10-07T19:13:51.4784989Z",
+  "automation_id": "daily-engineering-handoff",
+  "requested_reporting_date": "2026-10-06",
+  "existing_daily_reports": [
+    "<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56",
+    "<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962"
+  ],
+  "existing_ready_packages_verified": true,
+  "payload_sizes_and_hashes_verified": 6,
+  "new_package_created": false,
+  "previous_ready_packages_modified": false,
+  "media_resent": false,
+  "pending_outbox": 0,
+  "pending_review": 0,
+  "nas_connected": true,
+  "available_nas_bytes": 536707203072,
+  "critical_native_test_active": false,
+  "native_checkpoint": "JOIN173 wrapper completed with exit 0; exact client, services, proxy and probe verified closed. Automatic cleanup receipt at 2026-10-07T19:08:36.2388945Z restores title/watch/XInput, controls inactive, errors empty.",
+  "late_evidence_rule": "Evidence after the already delivered October 7 reporting cutoff rolls into the next eligible edition with its actual dates and UTC timestamps.",
+  "next_engineering_task": "Review finalized JOIN173 native direct-send, readiness and return traces. Retain uncommitted caller-filter instrumentation, actual source/build identities and native-test limitations; mission activation and combined character/world graphics remain unresolved.",
+  "user_action_required": false
+}

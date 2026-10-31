@@ -1,0 +1,30 @@
+target 0x16439d0: 1 confirmed reference(s) over 1 candidate window(s) [kinds: riprel]
+   riprel  fn 0x0630c70  0x0630cb2  lea     rsi, [rip+0x1012d17]
+
+POSITIVE CONTROL: none supplied - 'not found' from this run is NOT evidence of absence
+
+=== fn 0x0630c70 around 0x0630cb2 ===
+0x0630c78  lea      rax, [rip+0x1312159]
+0x0630c7f  mov      rax, [rax]
+0x0630c82  mov      r8d, 0xffffffff
+0x0630c88  test     rax, rax
+0x0630c8b  je       short 0x630c90
+0x0630c8d  mov      r8d, [rax]
+0x0630c90  lea      rax, [rip+0x9dbc29]
+0x0630c97  mov      [rsp+0x10], rax
+0x0630c9c  mov      dword ptr [rsp+8], 0x12
+0x0630ca4  mov      dword ptr [rsp], 0
+0x0630cab  lea      rdi, [rip+0x208dbee]
+0x0630cb2  lea      rsi, [rip+0x1012d17] <<<
+0x0630cb9  mov      edx, 0x10
+0x0630cbe  mov      ecx, 4
+0x0630cc3  mov      r9d, 1
+0x0630cc9  call     0x23e010
+0x0630cce  add      rsp, 0x20
+0x0630cd2  pop      rbp
+0x0630cd3  ret      
+0x0630cd4  nop      [rax+rax]
+0x0630ce0  lea      rdi, [rip+0x208dbb9]
+0x0630ce7  jmp      0x23e240
+0x0630cec  nop      [rax]
+0x0630cf0  lea      rax, [rip+0x208dba9]

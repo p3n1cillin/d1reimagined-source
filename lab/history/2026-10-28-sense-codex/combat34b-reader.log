@@ -1,0 +1,3 @@
+shadPS4 pid 19120  eboot base 0x52a0000  control vtable[0]=0x59f4410 PASS
+Native B-image getter code controls passed
+Read-only B snapshots 30

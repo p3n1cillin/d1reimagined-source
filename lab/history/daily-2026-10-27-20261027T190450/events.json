@@ -1,0 +1,37 @@
+[
+  {
+    "event_id": "d1-20261027-objective-replay",
+    "timestamp": "2026-10-27T16:32:32.690354Z",
+    "feature": "opening-mission-replay",
+    "maturity": "Working within tested contained lab scope",
+    "claim": "Natural slice96 crossing and scheduled step16; source-recorded unattended route.",
+    "evidence": {
+      "referenced_package_id": "<lab-pc>-20261027T163920-483d90b903ad47e69f966f0c5fb71f27",
+      "files": [
+        "clips/clip01.mp4",
+        "clips/clip02.mp4",
+        "clips/clip03.mp4"
+      ]
+    },
+    "full_mission_complete": false
+  },
+  {
+    "event_id": "d1-20261027-low-divide-route",
+    "timestamp": "2026-10-27T18:32:06Z",
+    "timestamp_basis": "Source journal checkpoint; explorer terminal position independently checked.",
+    "feature": "divide-crossing-and-exit-fight",
+    "maturity": "Partially Working",
+    "claim": "Low area-centre route reaches exit gate; hostile engagement/death recorded; no verified kill.",
+    "next_region_accepted": false
+  },
+  {
+    "event_id": "d1-20261027-report-verification",
+    "timestamp": "2026-10-27T19:04:50.083456+00:00",
+    "feature": "daily-evidence-integrity",
+    "maturity": "Verified private report integrity",
+    "claim": "Earlier event package payload hashes verified; media not resent or newly decoded.",
+    "referenced_package_id": "<lab-pc>-20261027T163920-483d90b903ad47e69f966f0c5fb71f27",
+    "payload_count": 9,
+    "manifest_sha256": "a7896a5c4ee74cd55f7b8a9cc3b7e61afc7fbd58e917fa76ee3508f1840d546c"
+  }
+]

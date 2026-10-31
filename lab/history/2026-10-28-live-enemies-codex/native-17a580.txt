@@ -1,0 +1,11 @@
+0x0017a580 mov       rcx, qword ptr [rdi]
+0x0017a583 xor       al, al
+0x0017a585 test      rcx, rcx
+0x0017a588 je        0x17a59a
+0x0017a58a mov       edx, dword ptr [rdi + 8]
+0x0017a58d test      edx, edx
+0x0017a58f js        0x17a59a
+0x0017a591 cmp       edx, dword ptr [rcx + 0x278]
+0x0017a597 setl      al
+0x0017a59a ret       
+0x0017a59b nop       dword ptr [rax + rax]

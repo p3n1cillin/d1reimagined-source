@@ -1,0 +1,80 @@
+0x00135fe0 push      rbp
+0x00135fe1 mov       rbp, rsp
+0x00135fe4 push      r15
+0x00135fe6 push      r14
+0x00135fe8 push      r12
+0x00135fea push      rbx
+0x00135feb sub       rsp, 0x70
+0x00135fef mov       r14, rdx
+0x00135ff2 mov       r12d, esi
+0x00135ff5 mov       eax, edi
+0x00135ff7 mov       r15, qword ptr [rip + 0x18e9102] ; [0x1a1f100]
+0x00135ffe mov       rcx, qword ptr [r15]
+0x00136001 mov       qword ptr [rbp - 0x28], rcx
+0x00136005 and       eax, 0x1fff
+0x0013600a lea       rcx, [rip + 0x24a198f] ; [0x25d79a0]
+0x00136011 imul      eax, dword ptr [rcx + 0x10]
+0x00136015 add       rax, qword ptr [rcx + 8]
+0x00136019 lea       rdi, [rbp - 0x58]
+0x0013601d mov       rsi, rax
+0x00136020 call      0x137940
+0x00136025 lea       rax, [rip + 0x18ed874] ; [0x1a238a0]
+0x0013602c lea       rdi, [rbp - 0x88]
+0x00136033 mov       byte ptr [rbp - 0x60], 0
+0x00136037 mov       ecx, dword ptr [rbp - 0x48]
+0x0013603a mov       esi, ecx
+0x0013603c sar       esi, 0xd
+0x0013603f mov       edx, esi
+0x00136041 shr       edx, 0x12
+0x00136044 or        edx, 0x3ff
+0x0013604a and       edx, esi
+0x0013604c shl       rdx, 6
+0x00136050 mov       rax, qword ptr [rax]
+0x00136053 mov       rax, qword ptr [rax]
+0x00136056 mov       rsi, qword ptr [rax + rdx + 0x10]
+0x0013605b movsxd    rbx, dword ptr [rax + rdx + 0x34]
+0x00136060 and       ecx, 0x1fff
+0x00136066 imul      ecx, dword ptr [rax + rdx + 0x30]
+0x0013606b and       rbx, qword ptr [rsi + rcx + 8]
+0x00136070 add       rsi, rcx
+0x00136073 sub       rsi, rbx
+0x00136076 mov       qword ptr [rbp - 0x88], rsi
+0x0013607d mov       ecx, dword ptr [rbp - 0x40]
+0x00136080 mov       edx, ecx
+0x00136082 sar       edx, 0xd
+0x00136085 mov       esi, edx
+0x00136087 shr       esi, 0x12
+0x0013608a or        esi, 0x3ff
+0x00136090 and       esi, edx
+0x00136092 shl       rsi, 6
+0x00136096 mov       rdx, qword ptr [rax + rsi + 0x10]
+0x0013609b movsxd    rbx, dword ptr [rax + rsi + 0x34]
+0x001360a0 and       ecx, 0x1fff
+0x001360a6 imul      ecx, dword ptr [rax + rsi + 0x30]
+0x001360ab and       rbx, qword ptr [rdx + rcx + 8]
+0x001360b0 add       rdx, rcx
+0x001360b3 sub       rdx, rbx
+0x001360b6 add       rdx, qword ptr [rbp - 0x38]
+0x001360ba mov       qword ptr [rbp - 0x80], rdx
+0x001360be mov       eax, dword ptr [rbp - 0x30]
+0x001360c1 mov       dword ptr [rbp - 0x68], eax
+0x001360c4 mov       rax, qword ptr [rbp - 0x40]
+0x001360c8 mov       rcx, qword ptr [rbp - 0x38]
+0x001360cc mov       qword ptr [rbp - 0x70], rcx
+0x001360d0 mov       qword ptr [rbp - 0x78], rax
+0x001360d4 mov       esi, r12d
+0x001360d7 mov       rdx, r14
+0x001360da call      0xbdd510
+0x001360df mov       rax, qword ptr [r15]
+0x001360e2 cmp       rax, qword ptr [rbp - 0x28]
+0x001360e6 jne       0x1360f5
+0x001360e8 add       rsp, 0x70
+0x001360ec pop       rbx
+0x001360ed pop       r12
+0x001360ef pop       r14
+0x001360f1 pop       r15
+0x001360f3 pop       rbp
+0x001360f4 ret       
+0x001360f5 call      0x12aa7f0
+0x001360fa nop       
+0x001360fb nop       dword ptr [rax + rax]

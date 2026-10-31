@@ -1,0 +1,57 @@
+0x0028d000 push      rbp
+0x0028d001 mov       rbp, rsp
+0x0028d004 push      r15
+0x0028d006 push      r14
+0x0028d008 push      r12
+0x0028d00a push      rbx
+0x0028d00b mov       r14d, edx
+0x0028d00e mov       r15d, esi
+0x0028d011 mov       rbx, rdi
+0x0028d014 call      0x25a550
+0x0028d019 mov       rcx, qword ptr [rax]
+0x0028d01c mov       rdi, rax
+0x0028d01f call      qword ptr [rcx + 0x2b8]
+0x0028d025 mov       rcx, qword ptr [rax + 8]
+0x0028d029 lea       r12, [rax + rcx + 0x18]
+0x0028d02e lea       rax, [rax + rcx + 8]
+0x0028d033 movsx     r15, r15w
+0x0028d037 movsx     eax, byte ptr [rax + r15*8 + 0x14]
+0x0028d03d cmp       eax, 3
+0x0028d040 je        0x28d063
+0x0028d042 cmp       eax, 2
+0x0028d045 jne       0x28d07f
+0x0028d047 mov       rax, qword ptr [rbx]
+0x0028d04a mov       rdi, rbx
+0x0028d04d call      qword ptr [rax + 0x88]
+0x0028d053 movsx     rcx, word ptr [r12 + r15*8 + 6]
+0x0028d059 lea       rax, [rax + rcx + 0x5430]
+0x0028d061 jmp       0x28d09e
+0x0028d063 mov       rax, qword ptr [rbx]
+0x0028d066 mov       rdi, rbx
+0x0028d069 call      qword ptr [rax + 0x90]
+0x0028d06f movsx     rcx, word ptr [r12 + r15*8 + 6]
+0x0028d075 lea       rax, [rax + rcx + 0x53c0]
+0x0028d07d jmp       0x28d09e
+0x0028d07f cmp       eax, 1
+0x0028d082 jne       0x28d0bb
+0x0028d084 mov       rax, qword ptr [rbx]
+0x0028d087 mov       rdi, rbx
+0x0028d08a call      qword ptr [rax + 0x88]
+0x0028d090 movsx     rcx, word ptr [r12 + r15*8 + 6]
+0x0028d096 lea       rax, [rax + rcx + 0x383c]
+0x0028d09e movsx     ecx, byte ptr [rax]
+0x0028d0a1 movsx     edx, r14b
+0x0028d0a5 cmp       ecx, edx
+0x0028d0a7 je        0x28d0bb
+0x0028d0a9 mov       byte ptr [rax], r14b
+0x0028d0ac mov       rax, qword ptr [rbx]
+0x0028d0af mov       rdi, rbx
+0x0028d0b2 call      qword ptr [rax + 0xc8]
+0x0028d0b8 mov       byte ptr [rax], 0
+0x0028d0bb pop       rbx
+0x0028d0bc pop       r12
+0x0028d0be pop       r14
+0x0028d0c0 pop       r15
+0x0028d0c2 pop       rbp
+0x0028d0c3 ret       
+0x0028d0c4 nop       word ptr cs:[rax + rax]

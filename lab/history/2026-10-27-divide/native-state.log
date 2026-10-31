@@ -1,0 +1,19 @@
+shadPS4 pid 20620  eboot base 0x5130000  control vtable[0]=0x5884410 PASS
+squad20 client +0x68 0x9560b701 not an established object handle
+native squad (2453921787, 1, 4) gen 2 variant count 1 desired 1 modes ff00 state address 0x37fa9bb70 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a1235b0
+native squad (2453921787, 1, 6) gen 2 variant count 1 desired 1 modes ff00 state address 0x37fa9c7a0 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a1230b0
+native squad (2453921787, 1, 8) gen 2 variant count 1 desired 1 modes ff00 state address 0x37fa9d3d0 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a122bb0
+native squad (2453921787, 1, 10) gen 2 variant count 1 desired 1 modes ff00 state address 0x37fa9e000 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a122680
+native squad (2453921787, 1, 12) gen 2 variant count 1 desired 1 modes ff00 state address 0x37fa9ec30 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a122150
+native squad (2453921787, 1, 14) gen 2 variant count 1 desired 1 modes ff00 state address 0x37fa9f860 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 2 definition -0xfffffffc7a125a50
+native squad (2453921787, 1, 15) gen 2 variant count 1 desired 1 modes ff00 state address 0x37fa9fa80 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a125060
+native squad (2453921787, 1, 16) gen 2 variant count 1 desired 1 modes ff00 state address 0x37fa9fca0 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a124ad0
+native squad (2453921787, 1, 17) gen 2 variant count 1 desired 1 modes ff00 state address 0x37fa9fec0 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a124540
+native squad (2453921787, 1, 18) gen 2 variant count 1 desired 1 modes ff00 state address 0x37faa00e0 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 3 definition -0xfffffffc7a121c50
+native squad (2453921787, 1, 19) gen 2 variant count 1 desired 1 modes ff00 state address 0x37faa0300 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a124010
+native squad (2453921787, 1, 20) gen 2 variant count 1 desired 1 modes ff00 state address 0x37faa0520 effective desired (1, 0, 0, 0, 0, 0, 0, 0) existing (0, 0, 0, 0, 0, 0, 0, 0) definition variants 1 definition -0xfffffffc7a123ae0
+cached primary equipment (15060037153926939649, 3598, 19, 2364)
+world authority held ffffffffffffffff01000000 pending ffefffffffffffff00000000
+primary cached stat pairs [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
+special cached stat pairs [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
+heavy cached stat pairs [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
