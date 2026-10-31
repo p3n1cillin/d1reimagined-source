@@ -122,7 +122,7 @@ instructions, machine provenance and current capture material outside this repos
 | --- | --- | --- |
 | `eboot/` | `RESEARCH/ps3_decrypt/` | Not in the repository: the decrypted `EBOOT.elf` (game executable) was removed on 26 Oct 2026. Use your own copy; its hash is in `SHA256SUMS.txt`. |
 | `schema/` | `SIGNON_LOCAL/` | Current activity, investment, character and world schemas; highway baselines; TEST350 and TEST362 object exports |
-| `logs/` | `SIGNON_LOCAL/logs/` | Available TEST364–367 activity and RPCS3 logs |
+| `logs/` | `SIGNON_LOCAL/logs/` | The TEST366 and TEST367 activity-host logs. The TEST364–367 RPCS3 logs were removed on 31 Oct 2026 (they held a personal path); their hashes stay in `SHA256SUMS.txt`. |
 | `packages/` | `01_WORKING/ps3_destiny/PS3_GAME/USRDIR/packages/` | Not in the repository: the 41 disc packages and the parts of five oversized ones (Cosmodrome, Tower, investment, gear, globals and startup data) were removed on 26 Oct 2026. Use your own copy; `SHA256SUMS.txt` and `split_packages.json` describe them. |
 | `ps3_updates/` | `RESEARCH/ps3_updates/` and Sony update metadata | Type exports, the derived 01.24 service map and package inventory, handle maps, comparison reports and update lists |
 
@@ -168,6 +168,7 @@ are present, with `0104` represented by two parts.
 Only four requested TEST360–366 log files existed in `SIGNON_LOCAL/logs` when this
 bundle was made: `TEST364-rpcs3.log`, `TEST365-rpcs3.log`, `TEST366-ahl.log`, and
 `TEST366-rpcs3.log`. TEST367 supplied `TEST367-ahl.log` and `TEST367-rpcs3.log`.
+The four RPCS3 logs were removed from the repository on 31 Oct 2026.
 There were no matching BAP or lobby logs there. TEST370 screenshots and schema
 exports were not present when this snapshot was prepared. That historical absence
 does not describe the current source project's later character/inventory tests;

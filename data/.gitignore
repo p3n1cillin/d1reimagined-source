@@ -38,12 +38,8 @@
 /eboot/*
 
 /logs/*
-!/logs/TEST364-rpcs3.log
-!/logs/TEST365-rpcs3.log
 !/logs/TEST366-ahl.log
-!/logs/TEST366-rpcs3.log
 !/logs/TEST367-ahl.log
-!/logs/TEST367-rpcs3.log
 
 /packages/*
 
