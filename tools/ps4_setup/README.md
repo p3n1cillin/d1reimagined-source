@@ -21,6 +21,19 @@ The helpers support exact-input checks, content-only validation, planning and bo
 
 The package-owner and canonical-preparation patches must be applied only to their expected source revisions. Preserve unrelated changes and retain existing upstream licences. External reader modifications require their corresponding source and notices when distributed; this repository supplies no reader executable. See THIRD_PARTY_NOTICES.md.
 
+## The whole mission, unattended
+
+`lab/tower-route/ending-run.ps1 -Name <unique-name>` plays A Guardian Rises from boot to Tower North
+with nobody at the pad, using only this repository's scripts and `ps4/fixtures/56578`. It runs:
+- the launcher and replay below;
+- the fight through the Divide, the gate, Dock 13 and the hangar;
+- the post-game screens;
+- CONTINUE.
+
+Its defaults recreate run sense73, vendors included. See [lab/tower-route/README.md](../../lab/tower-route/README.md).
+To play the mission yourself instead, run `d1-agr-run.ps1` alone and take the pad once it reports
+`in gameplay (112)`.
+
 ## 56578 tutorial replay to the Divide
 
 `d1-agr-replay.py` replaces the session-only replay copies. It uses the existing
@@ -41,20 +54,23 @@ on missing completed teleportation. A timeout does not stop the contained lab;
 inspect its owned processes and native log before recovering. Raise the replay's
 `--boot-timeout` too if the combined boot and world loading need more time.
 
-First promote a **previously native-verified** full schedule and its final Divide
-list in private staging. The list must already be the final `%96|900` step:
+The verified full schedule is in the repository:
+`ps4/fixtures/56578/mission/agr-steps-divide.txt`, with every step's sensor list
+beside it. The launcher serves it by default, together with the tutorial characters
+in `ps4/fixtures/56578/characters` (see that folder's README). To test a new
+candidate, promote a **previously native-verified** schedule and its final Divide
+list. The list must already be the final `%96|900` step:
 
 ```text
-python -I tools/ps4_setup/d1-agr-steps.py --promote-steps <verified-run>/steps.txt --divide-list <verified-run>/divide-gen2-objective17.txt --out-dir <private-staging>
+python -I tools/ps4_setup/d1-agr-steps.py --promote-steps <verified-run>/steps.txt --divide-list <verified-run>/divide-gen2-objective17.txt --out-dir <staging>
 ```
 
 This preserves all earlier timings, triggers and incident payloads and writes
 stable `agr-steps-divide.txt` and `agr-divide-objective17.txt`. Different existing
 outputs are refused. This is promotion, not a new native test. Build the objective
 list with the existing Rust `d1-oracle sensor objective` command before testing it;
-the promoter treats its contents as opaque. No generated list belongs in Git.
-The launcher's default now selects this schedule. Keep `-Steps` explicit when
-testing another candidate.
+the promoter treats its contents as opaque. Pass `-Steps` to use the promoted
+schedule, and once it is verified, update the repository's copy.
 
 Launch `d1-agr-run.ps1 -Name <unique-name>` through the existing contained lab
 workflow, redirecting its output to `<run>/boot.log`. Then, with that run's host
