@@ -54,6 +54,8 @@ use clap::Parser;
 use serde_json::json;
 use tracing::{info, warn};
 
+mod vendor;
+
 #[derive(Clone)]
 struct Cfg {
     npid: String,
@@ -2296,6 +2298,10 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_LOOT_GRANT_ROSTER", "<unset>", "roster fixtures served after a loot grant"),
     ("D1_PROFILE_PUSH_FILE", "<unset>", "on-demand family-4 profile delta: write this file (plus optional .item/.soid) to push it"),
     ("D1_ACCOUNT_PUSH_FILE", "<unset>", "on-demand family-4 account delta: write this file (a client-encoded account) to push it"),
+    ("D1_VENDOR_SALES", "<unset>", "vendor-sales.tsv (d1-oracle vendor-sales write): apply 901 purchases and push the account and profile"),
+    ("D1_VENDOR_PROFILE_OBJ", "<unset>", "the served profile as a decoded C object (purchases add items to it)"),
+    ("D1_VENDOR_ITEM_TEMPLATE", "<unset>", "a decoded 0x80801732 item element, the template for bought instances"),
+    ("D1_VENDOR_ACCOUNT_SLOTS", "<unset>", "slot:content:quantity,... - the account slots D1_ACCOUNT_FILE serves (e.g. 308:869:25000 = Glimmer)"),
 ];
 
 /// Print [`KNOBS`] with each knob's effective value.
@@ -3660,6 +3666,9 @@ async fn main() -> Result<()> {
                                                                         warn!("      ⭐ VENDOR {} ({}B request): {}",
                                                                               if id == 901 { "BUY (901)" } else { "SELL (903)" }, req.len(),
                                                                               req.iter().map(|x| format!("{x:02x}")).collect::<String>());
+                                                                        if id == 901 {
+                                                                            vendor::on_buy(req.to_vec());
+                                                                        }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 104 {
                                                                         // FIRST SEEN at `setup:orbit`, 2026-08-07. Response
@@ -4573,6 +4582,7 @@ async fn main() -> Result<()> {
                                                                 if let Some(path) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(std::path::PathBuf::from) {
                                                                     if let Ok(payload) = std::fs::read(&path) {
                                                                         let _ = std::fs::rename(&path, path.with_extension("sent"));
+                                                                        vendor::note_profile_pushed(payload.clone());
                                                                         let version = family4_version.unwrap_or(0).wrapping_add(1);
                                                                         let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
                                                                         let prof_soid = env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201);

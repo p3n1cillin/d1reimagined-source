@@ -57,10 +57,39 @@ identify.
   third person nothing renders above the collar. A peer card with Helm of Saint-14 (content 1065, art 785)
   was served in sense69; the result is not yet confirmed on screen.
 
+## Where each currency lives
+
+From the sale table's cost buckets (`d1-oracle vendor-sales write`, item definition `+0x88`) and the bucket
+table:
+
+| Currency | Content | Bucket | Where |
+|---|---|---|---|
+| Glimmer | 869 | `0x1F` | account slot 308 |
+| Silver | 873 | `0x22` | account slot 309 |
+| Legendary Marks | 4548 | `0x23` | account slot 310 |
+| Vanguard Marks | 870 | `0x20` | profile slot 278 |
+| Crucible Marks | 871 | `0x21` | profile slot 279 |
+| Silver Dust | 6189 | `0x1D` | profile slots 250–261 |
+| Strange Coins, Exotic Shards, Motes of Light, Weapon Parts | 872, 879, 889, 1604 | `0x05` | profile Materials, slots 0–19 |
+
+About a third of all 8,773 prices are paid in character-held items (profile buckets). The vendor header shows
+these slots by position, which is why it showed the earlier test values under unrelated icons.
+
+## Purchases applied by the server
+
+The responder now applies a 901 itself when `D1_VENDOR_SALES` names the sale table:
+- It decodes the request with the client's codec and looks up the item and costs.
+- It deducts each cost from the stacks of the cost item's own bucket, on the account or the profile (the
+  price-check rule), freeing a used-up stack.
+- It puts the item in a free slot of its bucket: a new instance with its own SOID when the definition says
+  instanced.
+- It writes the new account (only the intended fields, plus the inventory) and profile to the existing push
+  files, which the next echo delivers.
+
+The account it builds for a purchase is byte-identical to the one the client accepted in sense69.
+
 ## Still open
 
-- The responder applying a purchase itself: map the 901 request to the vendor's sale item and price, update
-  the stored account and profile, and push both.
 - What the 901 request's u64 is.
-- Selling (903) and the other vendors.
-- Silver Dust and Legendary Marks in their own buckets (read their definitions' `+0x88`).
+- Selling (903), refunds, and the other vendors.
+- Character-held currencies in the served profile, so purchases priced in them can be tried.
