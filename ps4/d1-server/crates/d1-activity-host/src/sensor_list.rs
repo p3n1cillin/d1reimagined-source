@@ -99,9 +99,30 @@ fn parse_authority(value: &str) -> Result<SensorAuthority> {
     Ok(SensorAuthority::all_to_with(machine, seq, applied))
 }
 
+/// A file named in a world table or mission-step list: a relative name is taken from the listing
+/// file's own folder, so a list and its sensor files can be kept together (`ps4/fixtures/`).
+pub fn listed_path(listing: &str, entry: &str) -> std::path::PathBuf {
+    let entry = std::path::Path::new(entry);
+    match std::path::Path::new(listing).parent() {
+        Some(dir) if entry.is_relative() => dir.join(entry),
+        _ => entry.to_path_buf(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn listed_paths_resolve_next_to_the_list() {
+        assert_eq!(
+            listed_path("fixtures/mission/steps.txt", "step1.txt"),
+            std::path::Path::new("fixtures/mission").join("step1.txt")
+        );
+        let absolute = if cfg!(windows) { r"C:\lists\step1.txt" } else { "/lists/step1.txt" };
+        assert_eq!(listed_path("fixtures/mission/steps.txt", absolute), std::path::Path::new(absolute));
+        assert_eq!(listed_path("steps.txt", "step1.txt"), std::path::Path::new("step1.txt"));
+    }
 
     // Synthetic configuration, with no captured client data or executable needed.
     fn base() -> SensorPhaseUpdate {

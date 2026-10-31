@@ -28,3 +28,9 @@ ps4/**/*.patch -text
 *.md whitespace=cr-at-eol
 # Preserve upstream source and golden hashes rather than reformat the imported snapshot.
 ps4/** whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,cr-at-eol
+
+# Shell scripts run under Git Bash or WSL: always LF, whatever core.autocrlf says.
+*.sh text eol=lf
+# Served fixtures are byte-exact server objects.
+ps4/fixtures/**/*.bin binary
+ps4/fixtures/**/*.obj binary

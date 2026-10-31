@@ -16,6 +16,7 @@ Every location resolves lazily, so importing this module never fails. Sources, f
   workspace    D1_WORKSPACE    root/d1preservation-main
   staging      D1_STAGING      workspace/cfw-staging
   pkg_dir      D1_PKG_DIR      root/01.29/d1shad
+  fixtures     D1_FIXTURES     this repository's ps4/fixtures/56578 (served characters, mission lists)
 
 Use from a sibling script (works under `python -I`, which drops the script directory):
 
@@ -23,7 +24,8 @@ Use from a sibling script (works under `python -I`, which drops the script direc
     import d1paths
     log = d1paths.shadps4() / 'user' / 'log' / 'shad_log.txt'
 
-`python d1paths.py` prints every location and where it came from. D1Paths.ps1 is the
+`python d1paths.py` prints every location and where it came from; `python d1paths.py staging`
+prints one (as a forward-slash path, for shell scripts). D1Paths.ps1 is the
 PowerShell twin and must resolve the same way.
 """
 import json, os, sys
@@ -38,7 +40,10 @@ LOCATIONS = {
     'workspace': ('root', 'd1preservation-main'),
     'staging': ('workspace', 'cfw-staging'),
     'pkg_dir': ('root', '01.29/d1shad'),
+    # 'repo': below this repository (two folders up from tools/ps4_setup), not below the root.
+    'fixtures': ('repo', 'ps4/fixtures/56578'),
 }
+REPO = Path(__file__).resolve().parents[2]
 
 
 class D1PathError(SystemExit):
@@ -89,12 +94,14 @@ def resolve(name):
     if value:
         return _clean(value), 'config'
     parent, below = LOCATIONS[name]
+    if parent == 'repo':
+        return REPO.joinpath(*below.split('/')), 'default'
     if parent is None:
         raise D1PathError(
             'd1paths: the D1 root folder is not set. Either set the environment variable D1_ROOT\n'
             '(e.g. D1_ROOT=D:/d1), or create ' + str(config_file()) + ' containing\n'
             '{"root": "D:/d1"} (see tools/ps4_setup/paths.example.json). Individual locations\n'
-            'can be set the same way: ' + ', '.join(env_name(n) for n in LOCATIONS if n != 'root') + '.')
+            'can be set the same way: ' + ', '.join(env_name(n) for n in LOCATIONS if LOCATIONS[n][0]) + '.')
     return resolve(parent)[0].joinpath(*below.split('/')), 'default'
 
 
@@ -109,9 +116,13 @@ def liborbispkg(): return get('liborbispkg')
 def workspace(): return get('workspace')
 def staging(): return get('staging')
 def pkg_dir(): return get('pkg_dir')
+def fixtures(): return get('fixtures')
 
 
 def main():
+    if len(sys.argv) > 1:   # `python d1paths.py staging [child]`: print one location (for shell scripts)
+        print(get(sys.argv[1]).joinpath(*sys.argv[2:]).as_posix())
+        return 0
     print(f'config file: {config_file()}' + ('' if config_file().is_file() else ' (absent)'))
     failed = False
     for name in LOCATIONS:

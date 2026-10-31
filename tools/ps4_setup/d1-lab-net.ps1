@@ -19,7 +19,7 @@ $rule    = 'D1 shadPS4 - block outbound'
 $hosts   = "$env:SystemRoot\System32\drivers\etc\hosts"
 $begin   = "# >>> D1 local redirects ($(Get-D1Path Tools 'contain-d1.ps1'))"
 $end     = '# <<< D1 local redirects'
-$names   = Get-Content -LiteralPath (Get-D1Path Tools 'shadPS4\d1-hosts.txt') | Where-Object { $_ -match '^\s*127\.0\.0\.1\s' } | ForEach-Object { ($_ -split '\s+')[1] }
+$names   = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'd1-hosts.txt') | Where-Object { $_ -match '^\s*127\.0\.0\.1\s' } | ForEach-Object { ($_ -split '\s+')[1] }
 
 function Write-Hosts([string]$target) {
     $lines = @(Get-Content -LiteralPath $hosts)

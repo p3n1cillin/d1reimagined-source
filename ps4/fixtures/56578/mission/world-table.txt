@@ -1,0 +1,5 @@
+# activity_index  world  sensor_group  sensor_file  [start_region = slice-set id, 8*bubble+n]   (56578; read by D1_AH_WORLD_TABLE)
+410  pvp_moonbase          0xc2dacaf7  sensor-clients-pvp_moonbase-bundle7-team0.txt
+416  pvp_moonbase          0xc2dacaf7  sensor-clients-pvp_moonbase-bundle7-team0.txt
+164  act_cosmo_m0_highway  0x4786c0e0  sensor-clients-act_cosmo_m0_highway-r113-cine.txt  113
+168  act_cosmo_m1_dome_a   0x4786c0e0  sensor-clients-act_cosmo_m1_dome_a-bundle.txt  8

@@ -41,3 +41,6 @@ aqtinstall.log
 /ps4/ghidra/lists/
 /ps4/ghidra/structs/
 /ps4/d1-server/crates/d1-eboot/tests/fixtures/
+
+# The pad helper stamps its last press beside itself (read by d1-idle-guard.sh).
+/tools/ps4_setup/d1-pad-last.txt

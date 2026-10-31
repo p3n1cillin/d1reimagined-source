@@ -2,7 +2,7 @@
 param(
     [string]$Repo = (& "$PSScriptRoot\D1Paths.ps1" Workspace),
     [string]$EmulatorDirectory = (& "$PSScriptRoot\D1Paths.ps1" ShadPS4),
-    [string]$HostsList = (& "$PSScriptRoot\D1Paths.ps1" Tools 'shadPS4\d1-hosts.txt'),
+    [string]$HostsList = (Join-Path $PSScriptRoot 'd1-hosts.txt'),
     [string]$Report = (& "$PSScriptRoot\D1Paths.ps1" Staging '2026-10-11\readiness.json')
 )
 # Read-only preflight, apart from its report. This does not launch a game or alter containment.
