@@ -34,4 +34,4 @@ The new pad config was not exercised with a physical controller in this run.
 
 AI-assisted: yes.
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+🤖 Generated with Claude Code (not in the repository: `https://claude.com/claude-code`)

@@ -20,4 +20,4 @@ Keys the pad config also maps (WASD, IJKL and so on in the default config) now a
 
 AI-assisted: yes.
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+🤖 Generated with Claude Code (not in the repository: `https://claude.com/claude-code`)

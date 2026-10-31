@@ -22,7 +22,7 @@ sense56: the hold at 16:41 brought every milestone, including `ah_world_row165`.
 
 So the template's `4786c0e0` namespace was wrong for the Tower. Published live under the host's fixed lifetime sub 3, only `40aebf90/0x27/3` was delivered (1/100).
 
-Host fix: [p3n1cillin/d1reimagined-source#85](https://github.com/p3n1cillin/d1reimagined-source/pull/85) (Closes #84). A list's single lifetime row for its group now sets the record sub. Tests 105/105 pass. Served host swapped (backup `.before-lifetime-sub`).
+Host fix: p3n1cillin/d1reimagined-source#85 (not in the repository: `https://github.com/p3n1cillin/d1reimagined-source/pull/85`) (Closes #84). A list's single lifetime row for its group now sets the record sub. Tests 105/105 pass. Served host swapped (backup `.before-lifetime-sub`).
 
 **sense57** booted 16:51 with `world-table-sense57.txt`: rows 0 and 165 → city_tower_default1, group 40aebf90, list `sensor-clients-city_tower_default1-pending.txt` (the live read; the host loads 99 clients). The same unattended chain and `continue-hold.sh` run after it. The result will be in `cfw-staging\sense57\continue.log`, at around 17:45.
 
@@ -45,7 +45,7 @@ Your open items: 165's own cinematic world, the Advancement bar visibility bindi
 - **Movement works:** W (left stick) for 2.5 s + 3 s walks the Guardian along the courtyard (`capture\walk-0/1/2.png`).
 - **The camera turns:** 6 × 60° with L. A full circle (`capture\look-1..6.png`) shows **no characters or vendors anywhere**: the Tower is empty, as expected with default `8d3f1166` rows.
 - A waypoint diamond sits up the steps, marked **"38 m"**: probably the next quest objective. What owns that marker?
-- Notes PR: [p3n1cillin/d1reimagined-source#86](https://github.com/p3n1cillin/d1reimagined-source/pull/86). #85 is merged (by the bot) and #84 is closed with the live result.
+- Notes PR: p3n1cillin/d1reimagined-source#86 (not in the repository: `https://github.com/p3n1cillin/d1reimagined-source/pull/86`). #85 is merged (by the bot) and #84 is closed with the live result.
 
 The next steps I'd propose, for you to judge:
 1. The Tower's NPC/vendor rows: what A values do the 8d3f1166 kind 1/2/3/0x28 rows need?

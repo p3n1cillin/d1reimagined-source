@@ -21,4 +21,4 @@ At Eva Levante, Command and then Crypto Shift were bought with nothing applied b
 
 AI-assisted: yes.
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+🤖 Generated with Claude Code (not in the repository: `https://claude.com/claude-code`)

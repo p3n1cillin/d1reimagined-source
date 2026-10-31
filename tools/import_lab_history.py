@@ -39,7 +39,10 @@ SCRUB = [(re.compile(rb'192\.168\.\d+\.\d+'), b'<lan>'),
                      rb'local' + SEP + rb'PRIVATE_ENGINEERING', re.I), b'lab/history'),
          (re.compile(rb'lcmcclellan12@gmail\.com', re.I), b'<old-email>'),
          (re.compile(rb'lukespc', re.I), b'<pc>'),
-         (re.compile(rb'matildaspc', re.I), b'<lab-pc>')]
+         (re.compile(rb'matildaspc', re.I), b'<lab-pc>'),
+         (re.compile(rb'/home/runner/'), b'<home>/')]   # CI runner paths in old logs
+# A Markdown link (or image) and its target, as the repository's link check reads them.
+MD_LINK = re.compile(r'(!?)\[([^\]]*)\]\(([^)\s#]+)((?:#[^)\s]*)?)\)')
 TEXT = SOURCE | {'.txt', '.json', '.jsonl', '.log', '.tsv', '.csv', '.xml', '.yml', '.yaml', '.ini', '.patch'}
 PERSONAL = re.compile(rb'(lcmcclellan|lukespc|matildaspc|C:[\\/]+Users[\\/]+lukem|192\.168\.\d+\.\d+)', re.I)
 MAX_BYTES = 5 * 1024 * 1024
@@ -87,6 +90,34 @@ def scrub(data):
     return data
 
 
+def unlink_missing(dest):
+    """Links to files that are not in the repository (the authors' own folders, or files left out)
+    become plain text with the old target in code, so the record keeps it and the link check passes."""
+    changed = 0
+    for top, _, files in os.walk(dest):
+        for name in files:
+            if not name.lower().endswith('.md'):
+                continue
+            path = os.path.join(top, name)
+            text = open(path, encoding='utf-8', errors='replace').read()
+
+            def fix(m):
+                image, label, target = m.group(1), m.group(2), m.group(3)
+                if re.match(r'^[a-z][a-z0-9+.-]*:(?![\\/])', target, re.I) and not re.match(r'^[a-z]:', target, re.I):
+                    return m.group(0)   # a URL (https:, mailto:, ...)
+                if not re.match(r'^([a-z]:|[\\/])', target, re.I) and os.path.exists(os.path.join(top, target)):
+                    return m.group(0)   # a link inside the repository that resolves
+                kept = 'image not kept' if image else 'not in the repository'
+                return f'{label} ({kept}: `{target}`)'
+
+            new = MD_LINK.sub(fix, text)
+            if new != text:
+                with open(path, 'w', encoding='utf-8', newline='') as f:
+                    f.write(new)
+                changed += 1
+    return changed
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('source')
@@ -112,6 +143,8 @@ def main():
                         dst.write(scrub(src.read()))
                 else:
                     shutil.copy2(path, out)
+    if not a.dry_run and os.path.isdir(a.dest):
+        print(f'unlinked missing targets in {unlink_missing(a.dest)} Markdown files')
     for v in sorted(counts):
         print(f'{v:9} {counts[v]:6} files {sizes[v] / 1e6:9.1f} MB')
     for v, rel in held:

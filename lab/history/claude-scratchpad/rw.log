@@ -50,18 +50,18 @@
 2026-10-29T23:30:05.4451678Z ##[endgroup]
 2026-10-29T23:30:05.6874907Z Syncing repository: p3n1cillin/d1reimagined-source
 2026-10-29T23:30:05.6876103Z ##[group]Getting Git version info
-2026-10-29T23:30:05.6876631Z Working directory is '/home/runner/work/d1reimagined-source/d1reimagined-source'
+2026-10-29T23:30:05.6876631Z Working directory is '<home>/work/d1reimagined-source/d1reimagined-source'
 2026-10-29T23:30:05.6877495Z [command]/usr/bin/git version
 2026-10-29T23:30:05.6939597Z git version 2.56.0
 2026-10-29T23:30:05.6956822Z ##[endgroup]
-2026-10-29T23:30:05.6961756Z Temporarily overriding HOME='/home/runner/work/_temp/ffc40c45-4313-45be-be1e-bd8f2905d598' before making global git config changes
+2026-10-29T23:30:05.6961756Z Temporarily overriding HOME='<home>/work/_temp/ffc40c45-4313-45be-be1e-bd8f2905d598' before making global git config changes
 2026-10-29T23:30:05.6962965Z Adding repository directory to the temporary git global config as a safe directory
-2026-10-29T23:30:05.6967502Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/d1reimagined-source/d1reimagined-source
-2026-10-29T23:30:05.7013811Z Deleting the contents of '/home/runner/work/d1reimagined-source/d1reimagined-source'
+2026-10-29T23:30:05.6967502Z [command]/usr/bin/git config --global --add safe.directory <home>/work/d1reimagined-source/d1reimagined-source
+2026-10-29T23:30:05.7013811Z Deleting the contents of '<home>/work/d1reimagined-source/d1reimagined-source'
 2026-10-29T23:30:05.7015909Z ##[group]Determining repository object format
 2026-10-29T23:30:05.7017115Z ##[endgroup]
 2026-10-29T23:30:05.7017706Z ##[group]Initializing the repository
-2026-10-29T23:30:05.7020193Z [command]/usr/bin/git init /home/runner/work/d1reimagined-source/d1reimagined-source
+2026-10-29T23:30:05.7020193Z [command]/usr/bin/git init <home>/work/d1reimagined-source/d1reimagined-source
 2026-10-29T23:30:05.7127724Z hint: Using 'master' as the name for the initial branch. This default branch name
 2026-10-29T23:30:05.7128633Z hint: will change to "main" in Git 3.0. To configure the initial branch name
 2026-10-29T23:30:05.7129429Z hint: to use in all of your new repositories, which will suppress this warning,
@@ -75,7 +75,7 @@
 2026-10-29T23:30:05.7133737Z hint: 	git branch -m <name>
 2026-10-29T23:30:05.7134145Z hint:
 2026-10-29T23:30:05.7134694Z hint: Disable this message with "git config set advice.defaultBranchName false"
-2026-10-29T23:30:05.7137444Z Initialized empty Git repository in /home/runner/work/d1reimagined-source/d1reimagined-source/.git/
+2026-10-29T23:30:05.7137444Z Initialized empty Git repository in <home>/work/d1reimagined-source/d1reimagined-source/.git/
 2026-10-29T23:30:05.7146674Z [command]/usr/bin/git remote add origin https://github.com/p3n1cillin/d1reimagined-source
 2026-10-29T23:30:05.7194260Z ##[endgroup]
 2026-10-29T23:30:05.7194884Z ##[group]Disabling automatic garbage collection
@@ -91,9 +91,9 @@
 2026-10-29T23:30:05.7842416Z Removing includeIf entries pointing to credentials config files
 2026-10-29T23:30:05.7847007Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
 2026-10-29T23:30:05.7885635Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-10-29T23:30:05.8088808Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
-2026-10-29T23:30:05.8133425Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git.path /home/runner/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
-2026-10-29T23:30:05.8212619Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
+2026-10-29T23:30:05.8088808Z [command]/usr/bin/git config --file <home>/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-29T23:30:05.8133425Z [command]/usr/bin/git config --local includeIf.gitdir:<home>/work/d1reimagined-source/d1reimagined-source/.git.path <home>/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
+2026-10-29T23:30:05.8212619Z [command]/usr/bin/git config --local includeIf.gitdir:<home>/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path <home>/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
 2026-10-29T23:30:05.8250314Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
 2026-10-29T23:30:05.8288107Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
 2026-10-29T23:30:05.8323093Z ##[endgroup]
@@ -640,7 +640,7 @@ ps4/d1-server/target
 2026-10-29T23:30:18.2487603Z    Compiling rustix v1.1.4
 2026-10-29T23:30:18.2953066Z    Compiling hashbrown v0.17.1
 2026-10-29T23:30:18.4947911Z    Compiling linux-raw-sys v0.12.1
-2026-10-29T23:30:18.5588110Z    Compiling d1-build v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-build)
+2026-10-29T23:30:18.5588110Z    Compiling d1-build v0.1.0 (<home>/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-build)
 2026-10-29T23:30:18.7497925Z    Compiling indexmap v2.14.0
 2026-10-29T23:30:18.9034364Z    Compiling tracing-core v0.1.36
 2026-10-29T23:30:19.2507956Z    Compiling errno v0.3.14
@@ -663,7 +663,7 @@ ps4/d1-server/target
 2026-10-29T23:30:21.8237981Z    Compiling prettyplease v0.2.37
 2026-10-29T23:30:22.0698045Z    Compiling num-traits v0.2.19
 2026-10-29T23:30:22.1607961Z    Compiling regex-syntax v0.8.11
-2026-10-29T23:30:23.0298327Z    Compiling d1-eboot v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-eboot)
+2026-10-29T23:30:23.0298327Z    Compiling d1-eboot v0.1.0 (<home>/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-eboot)
 2026-10-29T23:30:23.4128019Z    Compiling regex-automata v0.4.18
 2026-10-29T23:30:24.6297850Z    Compiling regex v1.13.1
 2026-10-29T23:30:24.9247926Z    Compiling polling v3.11.0
@@ -777,7 +777,7 @@ ps4/d1-server/target
 2026-10-29T23:30:42.3928089Z    Compiling async-lock v3.4.2
 2026-10-29T23:30:42.8111646Z    Compiling piper v0.2.5
 2026-10-29T23:30:42.9253953Z    Compiling euclid v0.22.14
-2026-10-29T23:30:43.1295137Z    Compiling d1-live v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-live)
+2026-10-29T23:30:43.1295137Z    Compiling d1-live v0.1.0 (<home>/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-live)
 2026-10-29T23:30:43.2817884Z    Compiling color v0.3.3
 2026-10-29T23:30:43.6543037Z    Compiling font-types v0.12.2
 2026-10-29T23:30:43.8976662Z    Compiling itertools v0.13.0
@@ -805,7 +805,7 @@ ps4/d1-server/target
 2026-10-29T23:30:48.6114883Z    Compiling blocking v1.6.2
 2026-10-29T23:30:48.7631327Z    Compiling zbus-lockstep v0.5.2
 2026-10-29T23:30:48.8126586Z    Compiling async-process v2.5.0
-2026-10-29T23:30:48.8716336Z    Compiling shadnet-proto v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/shadnet-proto)
+2026-10-29T23:30:48.8716336Z    Compiling shadnet-proto v0.1.0 (<home>/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/shadnet-proto)
 2026-10-29T23:30:49.3620065Z    Compiling wayland-protocols-wlr v0.3.12
 2026-10-29T23:30:50.0522997Z    Compiling async-executor v1.14.0
 2026-10-29T23:30:50.3059735Z    Compiling zerotrie v0.2.4
@@ -842,10 +842,10 @@ ps4/d1-server/target
 2026-10-29T23:30:55.4028671Z    Compiling zbus v5.18.0
 2026-10-29T23:30:57.3278823Z    Compiling futures-util v0.3.33
 2026-10-29T23:30:58.6572270Z    Compiling icu_provider v2.2.0
-2026-10-29T23:30:58.9245556Z error: failed to run custom build command for `shadnet-proto v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/shadnet-proto)`
+2026-10-29T23:30:58.9245556Z error: failed to run custom build command for `shadnet-proto v0.1.0 (<home>/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/shadnet-proto)`
 2026-10-29T23:30:58.9246250Z 
 2026-10-29T23:30:58.9246554Z Caused by:
-2026-10-29T23:30:58.9248211Z   process didn't exit successfully: `/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/target/debug/build/shadnet-proto-b27c826dfc0c2023/build-script-build` (exit status: 101)
+2026-10-29T23:30:58.9248211Z   process didn't exit successfully: `<home>/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/target/debug/build/shadnet-proto-b27c826dfc0c2023/build-script-build` (exit status: 101)
 2026-10-29T23:30:58.9248984Z   --- stdout
 2026-10-29T23:30:58.9249358Z   cargo:rerun-if-changed=../../proto/shadnet.proto
 2026-10-29T23:30:58.9249548Z 
@@ -859,9 +859,9 @@ ps4/d1-server/target
 2026-10-29T23:31:10.1189975Z Post job cleanup.
 2026-10-29T23:31:10.1866914Z [command]/usr/bin/git version
 2026-10-29T23:31:10.1937039Z git version 2.56.0
-2026-10-29T23:31:10.1967608Z Temporarily overriding HOME='/home/runner/work/_temp/97096554-5461-4810-960e-334eec9f0608' before making global git config changes
+2026-10-29T23:31:10.1967608Z Temporarily overriding HOME='<home>/work/_temp/97096554-5461-4810-960e-334eec9f0608' before making global git config changes
 2026-10-29T23:31:10.1968268Z Adding repository directory to the temporary git global config as a safe directory
-2026-10-29T23:31:10.1969828Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/d1reimagined-source/d1reimagined-source
+2026-10-29T23:31:10.1969828Z [command]/usr/bin/git config --global --add safe.directory <home>/work/d1reimagined-source/d1reimagined-source
 2026-10-29T23:31:10.2005883Z Removing SSH command configuration
 2026-10-29T23:31:10.2011384Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
 2026-10-29T23:31:10.2047476Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
@@ -870,16 +870,16 @@ ps4/d1-server/target
 2026-10-29T23:31:10.2331822Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
 2026-10-29T23:31:10.2549543Z Removing includeIf entries pointing to credentials config files
 2026-10-29T23:31:10.2555381Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-10-29T23:31:10.2594176Z includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git.path
-2026-10-29T23:31:10.2594754Z includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path
+2026-10-29T23:31:10.2594176Z includeif.gitdir:<home>/work/d1reimagined-source/d1reimagined-source/.git.path
+2026-10-29T23:31:10.2594754Z includeif.gitdir:<home>/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path
 2026-10-29T23:31:10.2595417Z includeif.gitdir:/github/workspace/.git.path
 2026-10-29T23:31:10.2595626Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
-2026-10-29T23:31:10.2601619Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git.path
-2026-10-29T23:31:10.2635684Z /home/runner/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
-2026-10-29T23:31:10.2643985Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-5b07a096\-1ff0\-4ec7\-a1ae\-c1f1a3d4bd60\.config
-2026-10-29T23:31:10.2689904Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path
-2026-10-29T23:31:10.2723494Z /home/runner/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
-2026-10-29T23:31:10.2731637Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-5b07a096\-1ff0\-4ec7\-a1ae\-c1f1a3d4bd60\.config
+2026-10-29T23:31:10.2601619Z [command]/usr/bin/git config --local --get-all includeif.gitdir:<home>/work/d1reimagined-source/d1reimagined-source/.git.path
+2026-10-29T23:31:10.2635684Z <home>/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
+2026-10-29T23:31:10.2643985Z [command]/usr/bin/git config --local --unset includeif.gitdir:<home>/work/d1reimagined-source/d1reimagined-source/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-5b07a096\-1ff0\-4ec7\-a1ae\-c1f1a3d4bd60\.config
+2026-10-29T23:31:10.2689904Z [command]/usr/bin/git config --local --get-all includeif.gitdir:<home>/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path
+2026-10-29T23:31:10.2723494Z <home>/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
+2026-10-29T23:31:10.2731637Z [command]/usr/bin/git config --local --unset includeif.gitdir:<home>/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-5b07a096\-1ff0\-4ec7\-a1ae\-c1f1a3d4bd60\.config
 2026-10-29T23:31:10.2774068Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
 2026-10-29T23:31:10.2807439Z /github/runner_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
 2026-10-29T23:31:10.2813909Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-5b07a096\-1ff0\-4ec7\-a1ae\-c1f1a3d4bd60\.config
@@ -887,6 +887,6 @@ ps4/d1-server/target
 2026-10-29T23:31:10.2887781Z /github/runner_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config
 2026-10-29T23:31:10.2894257Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-5b07a096\-1ff0\-4ec7\-a1ae\-c1f1a3d4bd60\.config
 2026-10-29T23:31:10.2937521Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-10-29T23:31:10.3140193Z Removing credentials config '/home/runner/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config'
+2026-10-29T23:31:10.3140193Z Removing credentials config '<home>/work/_temp/git-credentials-5b07a096-1ff0-4ec7-a1ae-c1f1a3d4bd60.config'
 2026-10-29T23:31:10.3307440Z Cleaning up orphan processes
 2026-10-29T23:31:10.3631461Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -6,7 +6,7 @@
 
 The operator reports that Moosh's Xbox One compatibility layer has exceeded 100 FPS in actual gameplay. Carry that observation forward. The archived measurements I independently found cover orbit and menus; their narrower coverage does not contradict the operator's gameplay report. They establish specific implementation lessons, not the maximum achievement of the Xbox project.
 
-This extends [the adversarial plan review](D:/dev/d1-preservation/docs/operations/native-client-20261004/ADVERSARIAL-PLAN-TO-60-20261005.md). Read that review for the detailed CE-counter, label-release, presentation, and occlusion findings. This document concentrates on the full rendering architecture and what a correct donor integration entails.
+This extends the adversarial plan review (not in the repository: `D:/dev/d1-preservation/docs/operations/native-client-20261004/ADVERSARIAL-PLAN-TO-60-20261005.md`). Read that review for the detailed CE-counter, label-release, presentation, and occlusion findings. This document concentrates on the full rendering architecture and what a correct donor integration entails.
 
 ## 1. Conclusions that should change the plan
 
@@ -35,11 +35,11 @@ Source findings below establish control flow and possible failure cases. They do
 
 ### 3.1 The evidence is stronger than “the game was designed for 30”
 
-The Xbox [uncapping report](D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/uncapping-and-clocks.md) documents a corrected-time orbit run at 353.27 FPS, about 290 draws/frame, and game time advancing at 0.99765 times wall time. It distinguishes earlier, invalid fast-animation results from the corrected run.
+The Xbox uncapping report (not in the repository: `D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/uncapping-and-clocks.md`) documents a corrected-time orbit run at 353.27 FPS, about 290 draws/frame, and game time advancing at 0.99765 times wall time. It distinguishes earlier, invalid fast-animation results from the corrected run.
 
-The later [1080p report](D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/uncapped-1080p.md) reports 313.2 FPS in settled orbit, 3.193 ms mean Present interval, 2.706 ms of GPU command ranges, and 3.920 ms p99 Present interval. Its separate short unprofiled check was 279.5 FPS. The [internal-4K report](D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/uncapped-4k.md) reports 141.84 FPS, 7.05 ms mean and 8.44 ms p99 Present interval, on a Ryzen 7 9800X3D and RTX 3080. That test downsampled the 4K scene into a 1080p output window. These are rendering-production measurements, not scanout measurements.
+The later 1080p report (not in the repository: `D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/uncapped-1080p.md`) reports 313.2 FPS in settled orbit, 3.193 ms mean Present interval, 2.706 ms of GPU command ranges, and 3.920 ms p99 Present interval. Its separate short unprofiled check was 279.5 FPS. The internal-4K report (not in the repository: `D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/uncapped-4k.md`) reports 141.84 FPS, 7.05 ms mean and 8.44 ms p99 Present interval, on a Ryzen 7 9800X3D and RTX 3080. That test downsampled the 4K scene into a 1080p output window. These are rendering-production measurements, not scanout measurements.
 
-Those captures retained approximately 30 simulation ticks/second. Newer source separately implements 60 Hz simulation: [kx_simulation.h](D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/kx_simulation.h) changes the scheduler configuration, game-options rate, fixed-step frequency/period, and bounded catch-up allowance together. It explicitly provides no render-snapshot interpolation. Do not attribute the older high-FPS captures to that newer 60 Hz change.
+Those captures retained approximately 30 simulation ticks/second. Newer source separately implements 60 Hz simulation: kx_simulation.h (not in the repository: `D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/kx_simulation.h`) changes the scheduler configuration, game-options rate, fixed-step frequency/period, and bounded catch-up allowance together. It explicitly provides no render-snapshot interpolation. Do not attribute the older high-FPS captures to that newer 60 Hz change.
 
 The operator additionally reports **over 100 FPS in actual gameplay**. That is relevant positive evidence for the intended target. The exact scene, device, settings, and build for that result were not established in this inspection. The next comparable capture should record those variables; it should not spend effort trying to disprove the reported result through an older orbit-only report.
 
@@ -57,7 +57,7 @@ The Xbox uncapping work did more than change a number:
 
 ### 3.3 Xbox begins with more rendering information
 
-The [local binary comparison](D:/dev/d1-xbox/XBOX-VS-PS4-BINARY-20260912.md) identifies Xbox D3D11X resource interfaces and PS4 GNM/PM4 interfaces. Xbox exposes resource creation, views, binding, map/update operations, and deferred command lists. PS4 hands the runtime registers, shader machine code, addresses, and synchronization packets from which much of that structure must be reconstructed.
+The local binary comparison (not in the repository: `D:/dev/d1-xbox/XBOX-VS-PS4-BINARY-20260912.md`) identifies Xbox D3D11X resource interfaces and PS4 GNM/PM4 interfaces. Xbox exposes resource creation, views, binding, map/update operations, and deferred command lists. PS4 hands the runtime registers, shader machine code, addresses, and synchronization packets from which much of that structure must be reconstructed.
 
 This advantage is qualified: Xbox placement textures and direct producer writes still require coherence work. Its source contains write-watch handling and late constant-source capture. “D3D11 resources are explicit” does not mean “every producer write is intercepted by Map/Unmap.”
 
@@ -67,8 +67,8 @@ Two Xbox optimizations are particularly transferable as ideas:
 
 | Xbox mechanism | Evidence | PS4 application and next step |
 | --- | --- | --- |
-| Batched small constant uploads | [Report](D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/batched-constants.md): append-only per-context pages, late source reads, preserved sparse bindings, explicit lifetime and fallback. Synthetic CPU gains; no game-FPS gain claimed for that experiment. | Census constant sizes and versions, then aggregate immutable small snapshots into an append-only allocation. Preserve draw-time contents and retirement. Do not batch by rereading the guest ring later. |
-| Cheap unchanged resource binds | [Report](D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/srv-optimization.md): cached settings, owned immutable wrapper metadata, fewer global-lock/probe operations, dirty-source checks retained. | Separate immutable shader/layout facts from mutable resource contents and mappings. Count hit cost, not only miss rate. Keep required dirty checks on the fast path until a proven version protocol replaces them. |
+| Batched small constant uploads | Report (not in the repository: `D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/batched-constants.md`): append-only per-context pages, late source reads, preserved sparse bindings, explicit lifetime and fallback. Synthetic CPU gains; no game-FPS gain claimed for that experiment. | Census constant sizes and versions, then aggregate immutable small snapshots into an append-only allocation. Preserve draw-time contents and retirement. Do not batch by rereading the guest ring later. |
+| Cheap unchanged resource binds | Report (not in the repository: `D:/dev/d1-preservation/artifacts/renderer-research-20261005/xbox/srv-optimization.md`): cached settings, owned immutable wrapper metadata, fewer global-lock/probe operations, dirty-source checks retained. | Separate immutable shader/layout facts from mutable resource contents and mappings. Count hit cost, not only miss rate. Keep required dirty checks on the fast path until a proven version protocol replaces them. |
 | Demand-driven upload and retained versions | `render_core/README.md` documents immutable versions, consumer-specific uploads, and fence-retired storage. Some facilities are architectural prototype features. | Distinguish code linked into production from demonstrations before claiming a benefit. Transfer ownership principles first; measure real upload bytes and blocking. |
 
 The builds also differ: the inspected Xbox binary is an April 2017 engine build; the PS4 target is the September 2016 v1.29 build. Compare pass structure and workload rather than equating draw counters across binaries.
@@ -95,15 +95,15 @@ flowchart TD
 
 The lower arrows back to the game are part of renderer performance. A guest thread can sleep because the renderer has not released a resource or reported completion. A command processor with no ready input can therefore be downstream-limited.
 
-Bungie's own [2015 renderer presentation](https://advances.realtimerendering.com/destiny/gdc_2015/Tatarchuk_GDC_2015__Destiny_Renderer_web.pdf), especially PDF pages 195–215, emphasizes parallel command generation, ordered flushing, submission timing, and job granularity. It describes grouping work to avoid excessive job overhead while feeding the GPU promptly. Its platform-specific scheduling is evidence against treating one utilization percentage as the whole engine's budget. **Our inference:** adding translation stages can lose the original engine's intended overlap even when each stage appears individually affordable.
+Bungie's own 2015 renderer presentation (not in the repository: `https://advances.realtimerendering.com/destiny/gdc_2015/Tatarchuk_GDC_2015__Destiny_Renderer_web.pdf`), especially PDF pages 195–215, emphasizes parallel command generation, ordered flushing, submission timing, and job granularity. It describes grouping work to avoid excessive job overhead while feeding the GPU promptly. Its platform-specific scheduling is evidence against treating one utilization percentage as the whole engine's budget. **Our inference:** adding translation stages can lose the original engine's intended overlap even when each stage appears individually affordable.
 
 ### 4.1 What the current native stages actually do
 
-- [Draw](D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_rasterizer.cpp:930) performs pipeline selection on stage A, then posts the draw when the pipeline is enabled.
-- [PostDraw](D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_rasterizer.cpp:575) packages register deltas, pipeline/preparation pointers, user data, flattened resource descriptors, and constant-ring bindings.
-- [RunDrawPacket](D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_rasterizer.cpp:718) reconstructs stage B's register state and installs the captured descriptor/user-data views.
-- [DrawRecord](D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_rasterizer.cpp:967) resolves resources and vertex/index inputs, prepares attachments, handles barriers, and records drawing.
-- [SubmitExecution](D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_scheduler.cpp:383) ends rendering, synchronizes deferred recording, waits for host copies, and submits. These are concrete serialization points.
+- Draw (not in the repository: `D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_rasterizer.cpp:930`) performs pipeline selection on stage A, then posts the draw when the pipeline is enabled.
+- PostDraw (not in the repository: `D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_rasterizer.cpp:575`) packages register deltas, pipeline/preparation pointers, user data, flattened resource descriptors, and constant-ring bindings.
+- RunDrawPacket (not in the repository: `D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_rasterizer.cpp:718`) reconstructs stage B's register state and installs the captured descriptor/user-data views.
+- DrawRecord (not in the repository: `D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_rasterizer.cpp:967`) resolves resources and vertex/index inputs, prepares attachments, handles barriers, and records drawing.
+- SubmitExecution (not in the repository: `D:/dev/d1-preservation/d1port/gpu/shadps4/video_core/renderer_vulkan/vk_scheduler.cpp:383`) ends rendering, synchronizes deferred recording, waits for host copies, and submits. These are concrete serialization points.
 
 Three threads are not three independent frame renderers. They form a pipeline whose overlap is repeatedly constrained by ordering, resource lifetime, and completion. Optimizing one stage can expose the next; adding workers can add queue handoffs and memory traffic without changing the critical dependency.
 
@@ -111,7 +111,7 @@ Three threads are not three independent frame renderers. They form a pipeline wh
 
 ### 4.2 What escaping the emulator's generality can buy us
 
-On x86-64, shadPS4 already executes guest CPU code natively; its own [architecture documentation](https://github.com/shadps4-emu/shadPS4/wiki/VI.-Emulator-Design-%5BDevs%5D) distinguishes that from PM4 and GPU translation. Moving into bbport therefore does not automatically remove a CPU instruction translator. It does give us a smaller, title-specific place to fix runtime behavior and expose stronger information to the renderer.
+On x86-64, shadPS4 already executes guest CPU code natively; its own architecture documentation (not in the repository: `https://github.com/shadps4-emu/shadPS4/wiki/VI.-Emulator-Design-%5BDevs%5D`) distinguishes that from PM4 and GPU translation. Moving into bbport therefore does not automatically remove a CPU instruction translator. It does give us a smaller, title-specific place to fix runtime behavior and expose stronger information to the renderer.
 
 There are three useful intervention levels:
 
@@ -156,7 +156,7 @@ Record these quantities per frame and pass:
 | GPU | Queue gaps, draw/dispatch/pass timing, bandwidth/cache pressure, shader occupancy/register spills where supported, query/copy work, attachment transitions. |
 | Feedback | Guest label/flip timing, frame-pool occupancy, acquired images, host presents/results, distinct displayed frames where measurable. |
 
-A batch turning 10,000 guest draws into 2,000 host multi-draw calls still executes 10,000 logical draws. It can remove CPU recording and binding work; it does not remove their vertices, pixels, bandwidth, or legitimate synchronization. Khronos' [multi-draw sample](https://docs.vulkan.org/samples/latest/samples/performance/multi_draw_indirect/README.html) illustrates how shared geometry storage and indexed resource arrays reduce per-object bindings. The relevant opportunity here is amortizing state establishment and avoiding repeated reconstruction.
+A batch turning 10,000 guest draws into 2,000 host multi-draw calls still executes 10,000 logical draws. It can remove CPU recording and binding work; it does not remove their vertices, pixels, bandwidth, or legitimate synchronization. Khronos' multi-draw sample (not in the repository: `https://docs.vulkan.org/samples/latest/samples/performance/multi_draw_indirect/README.html`) illustrates how shared geometry storage and indexed resource arrays reduce per-object bindings. The relevant opportunity here is amortizing state establishment and avoiding repeated reconstruction.
 
 ### 5.3 Four different changes are often confused
 
@@ -167,13 +167,13 @@ A batch turning 10,000 guest draws into 2,000 host multi-draw calls still execut
 | Record independent work in parallel | Wall time on CPU recording's critical path | That shared caches/registers may be accessed concurrently |
 | Use GPU generation or DGC | Some host generation/emission work | Lower total frame time when compute, preprocessing, barriers, and memory traffic are added |
 
-Treat each as a separate experiment. Vendor advice supports batching and suitable parallel recording, but does not supply a universal draw limit. AMD also warns about small command buffers and state/barrier costs; NVIDIA explicitly describes the latency tradeoff from over-batching submissions. Neither says to collect a whole frame before giving the GPU useful work. [AMD RDNA guide](https://gpuopen.com/learn/rdna-performance-guide/), [NVIDIA Vulkan guidance](https://developer.nvidia.com/blog/vulkan-dos-donts/).
+Treat each as a separate experiment. Vendor advice supports batching and suitable parallel recording, but does not supply a universal draw limit. AMD also warns about small command buffers and state/barrier costs; NVIDIA explicitly describes the latency tradeoff from over-batching submissions. Neither says to collect a whole frame before giving the GPU useful work. AMD RDNA guide (not in the repository: `https://gpuopen.com/learn/rdna-performance-guide/`), NVIDIA Vulkan guidance (not in the repository: `https://developer.nvidia.com/blog/vulkan-dos-donts/`).
 
 ## 6. What our donor command processor really is
 
 ### 6.1 The effective default path
 
-Read [vk_gpu_cp.cpp](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:40) and [DispatchRange](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:772):
+Read vk_gpu_cp.cpp (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:40`) and DispatchRange (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:772`):
 
 | Setting/branch | Effective behavior |
 | --- | --- |
@@ -184,7 +184,7 @@ Read [vk_gpu_cp.cpp](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp
 | Unified executor enabled, its default with host sequences | Eligible ranges use runs without requiring prior-frame prediction or a minimum-length threshold. Refused draws have an ordered classic fallback. |
 | `FlushGpuRuns` | Commits dynamic-state changes, binds resources/pipeline/index storage per run, then calls `drawIndexedIndirect` with the run's draw count. |
 
-[FlushGpuRuns](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:2888) is the actual host-emission endpoint. The PM4 parser remains on the CPU. GPU vertex/pixel work remains shader work. The default path's advantage is primarily less repeated CPU preparation and fewer host bindings/calls, with a shader ABI that selects per-draw data.
+FlushGpuRuns (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:2888`) is the actual host-emission endpoint. The PM4 parser remains on the CPU. GPU vertex/pixel work remains shader work. The default path's advantage is primarily less repeated CPU preparation and fewer host bindings/calls, with a shader ABI that selects per-draw data.
 
 **Documentation repair:** describe this as “versioned draw preparation and multi-draw execution.” Keep source setting names for compatibility, but print resolved executor, host/compute preparation, memory mode, sort mode, and fallback counters at startup. A counter named `gpu_draws` does not prove the GPU generated the commands.
 
@@ -202,18 +202,18 @@ The path relies on:
 8. Index representation and correct draw/instance/vertex identity.
 9. GPU completion-based ring reuse, including fallback and exhaustion behavior.
 
-The initialization explicitly disables GPU CP when the fork's parallel recorder is enabled, because that recorder bypasses range boundaries: [source](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:185). This is direct evidence against turning it on inside native A/B/C and assuming the concurrency models compose.
+The initialization explicitly disables GPU CP when the fork's parallel recorder is enabled, because that recorder bypasses range boundaries: source (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:185`). This is direct evidence against turning it on inside native A/B/C and assuming the concurrency models compose.
 
 **Next step:** make an ownership map before porting. For each register view, stage version, cache, descriptor slot, command buffer, and guest write notification, assign one mutable owner and one ordered handoff. Initial integration should preserve a single owner for the donor's coupled mutable state. Parallelize preparation only after inputs are immutable and cache/publication ownership is explicit.
 
 ### 6.3 The retired DGC branch should stay retired
 
-The source comment at [Requested](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:42) calls out an execution-set problem. [AddPipeline](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:378) creates one set from the initial pipeline, then adds subsequent pipelines. The current Vulkan requirement `VUID-vkUpdateIndirectExecutionSetPipelineEXT-None-11040` requires matching static/dynamic state definitions within that set; other requirements constrain layout and fragment interfaces. [Specification](https://docs.vulkan.org/refpages/latest/refpages/source/vkUpdateIndirectExecutionSetPipelineEXT.html).
+The source comment at Requested (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:42`) calls out an execution-set problem. AddPipeline (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:378`) creates one set from the initial pipeline, then adds subsequent pipelines. The current Vulkan requirement `VUID-vkUpdateIndirectExecutionSetPipelineEXT-None-11040` requires matching static/dynamic state definitions within that set; other requirements constrain layout and fragment interfaces. Specification (not in the repository: `https://docs.vulkan.org/refpages/latest/refpages/source/vkUpdateIndirectExecutionSetPipelineEXT.html`).
 
 There are also explicit failure modes in the old path:
 
-- [CloseRange](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:527) counts draws as dropped when no execution set exists yet.
-- [ExecuteRange](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:835) returns when preprocessing storage is exhausted, with a warning that ranges are dropped.
+- CloseRange (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:527`) counts draws as dropped when no execution set exists yet.
+- ExecuteRange (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_gpu_cp.cpp:835`) returns when preprocessing storage is exhausted, with a warning that ranges are dropped.
 - The non-unified refusal path can produce a null sequence and count a dropped draw.
 
 **Repair if DGC is ever reconsidered:** partition execution sets by full legal compatibility, validate every inserted pipeline, provide bounded preprocessing storage, and arrange same-frame ordered fallback before losing command provenance. First demonstrate that host multi-draw emission remains a measured bottleneck. The existence of a Vulkan extension is not a reason to accept a cold-frame rendering omission.
@@ -224,7 +224,7 @@ There are also explicit failure modes in the old path:
 
 The existing native pipeline already copies user data and flattened descriptors into its draw packet. Preserve that achievement. A later worker following a pointer into a CE ring can observe the next tenant of the same address. A pointer and a pipeline handle are not a snapshot.
 
-The donor [stage-version path](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:1580) tries to avoid rediscovery by retaining the exact ranges it read and invalidating affected paths when writers are observed. That is the right kind of optimization, provided its observation protocol is complete. “Unchanged address” and “same shader” are insufficient keys.
+The donor stage-version path (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:1580`) tries to avoid rediscovery by retaining the exact ranges it read and invalidating affected paths when writers are observed. That is the right kind of optimization, provided its observation protocol is complete. “Unchanged address” and “same shader” are insufficient keys.
 
 **Implementation contract:** captured bytes or retained content versions belong to a particular command/submission epoch. They remain usable through their last consumer. Mapping identity, content identity, shader specialization, and descriptor/view identity are separate dimensions. A GPU-written resource must have the correct producer-to-consumer dependency; increasing a CPU-side version counter does not make its bytes ready for a CPU read.
 
@@ -232,7 +232,7 @@ The donor [stage-version path](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_
 
 ### 7.2 Linux write tracking has a concrete race
 
-In the fork, [QuerySoftDirty](D:/dev/shadPS4/src/core/d1_write_watch.cpp:113) reads `/proc/self/pagemap`; [ResetSoftDirty](D:/dev/shadPS4/src/core/d1_write_watch.cpp:164) separately writes `4` to `/proc/self/clear_refs`; [QuerySpans](D:/dev/shadPS4/src/core/d1_write_watch.cpp:234) performs the reset after scanning all spans.
+In the fork, QuerySoftDirty (not in the repository: `D:/dev/shadPS4/src/core/d1_write_watch.cpp:113`) reads `/proc/self/pagemap`; ResetSoftDirty (not in the repository: `D:/dev/shadPS4/src/core/d1_write_watch.cpp:164`) separately writes `4` to `/proc/self/clear_refs`; QuerySpans (not in the repository: `D:/dev/shadPS4/src/core/d1_write_watch.cpp:234`) performs the reset after scanning all spans.
 
 Counterexample:
 
@@ -243,13 +243,13 @@ Counterexample:
 
 The registry's shared lock protects registry structure; it does not stop the guest store. Reset errors/short writes also do not propagate from that function as a failed sweep. Submission coverage and a zero-error query count cannot prove lossless observation.
 
-**Repair:** do not enable trust-only stage reuse based on this Linux protocol. Start with fresh descriptor verification and a conservative content path. Evaluate an atomic dirty-observation/re-arm mechanism or explicit writer exclusion at a proven ownership boundary. Linux documents `PAGEMAP_SCAN` with async userfaultfd write protection as a combined observation/re-protection facility. Probe actual kernel support, permissions, mapping type, aliases, partial `walk_end`, and interaction with Vulkan imports before selecting it. It is a candidate, not a drop-in fix. [Kernel documentation](https://kernel.org/doc/html/latest/admin-guide/mm/pagemap.html#pagemap-scan-ioctl).
+**Repair:** do not enable trust-only stage reuse based on this Linux protocol. Start with fresh descriptor verification and a conservative content path. Evaluate an atomic dirty-observation/re-arm mechanism or explicit writer exclusion at a proven ownership boundary. Linux documents `PAGEMAP_SCAN` with async userfaultfd write protection as a combined observation/re-protection facility. Probe actual kernel support, permissions, mapping type, aliases, partial `walk_end`, and interaction with Vulkan imports before selecting it. It is a candidate, not a drop-in fix. Kernel documentation (not in the repository: `https://kernel.org/doc/html/latest/admin-guide/mm/pagemap.html`).
 
 **Test:** coordinate a writer to modify a page between scan and reset; require its version to appear in the current or next delivered epoch. Include alias writes, reset/query failures, unmap/remap at the same VA, and buffer-full delivery. Never advance “coverage complete” after silently losing observations.
 
 ### 7.3 Native backing writes need explicit version publication
 
-The native runtime already has useful infrastructure: [runtime_memory.c](D:/dev/d1-preservation/d1port/src/runtime_memory.c:104) uses a canonical memfd-backed pool, and [runtime_memory_write_backing](D:/dev/d1-preservation/d1port/src/runtime_memory.c:661) writes through a second mapping. The current GPU shim exposes map/unmap/invalidate hooks, but does not expose the donor's complete physical-span/alias/lease interface.
+The native runtime already has useful infrastructure: runtime_memory.c (not in the repository: `D:/dev/d1-preservation/d1port/src/runtime_memory.c:104`) uses a canonical memfd-backed pool, and runtime_memory_write_backing (not in the repository: `D:/dev/d1-preservation/d1port/src/runtime_memory.c:661`) writes through a second mapping. The current GPU shim exposes map/unmap/invalidate hooks, but does not expose the donor's complete physical-span/alias/lease interface.
 
 The backing-write function does not itself issue the proposed stage-version invalidation. Existing callers may have other cache actions; the specific port obligation is that **every backing writer must participate in the new version protocol**. A tracker watching only the guest VA cannot be assumed to observe a store through another alias.
 
@@ -257,7 +257,7 @@ The backing-write function does not itself issue the proposed stage-version inva
 
 ### 7.4 Direct guest memory changes the release proof
 
-The donor [UMA importer](D:/dev/shadPS4/src/video_core/buffer_cache/uma_import.h:32) can let the GPU read the guest's actual backing. That removes copies but extends the original bytes' lifetime to the GPU's final read. Its `BumpLease` records GPU use, and mapping transitions must respect it.
+The donor UMA importer (not in the repository: `D:/dev/shadPS4/src/video_core/buffer_cache/uma_import.h:32`) can let the GPU read the guest's actual backing. That removes copies but extends the original bytes' lifetime to the GPU's final read. Its `BumpLease` records GPU use, and mapping transitions must respect it.
 
 The native early-label reasoning currently depends partly on host copies/snapshots having finished. If the port replaces those copies with borrowed guest memory, **that premise changes**. GPU queries and BDA stores also introduce GPU authorship of guest-visible bytes. A host recording drain cannot certify those operations complete.
 
@@ -272,19 +272,19 @@ Use explicit release classes:
 | Descriptor/image/index allocation | Last GPU use complete, plus any remaining logical owners |
 | Display image and presentation feedback | The specific WSI/presentation ownership and feedback contract; a queued closure is insufficient |
 
-Khronos makes synchronization the application's responsibility; coherent host memory removes explicit cache-maintenance requirements in relevant cases, not conflicting accesses or lifetime rules. [Synchronization specification](https://docs.vulkan.org/spec/latest/chapters/synchronization.html), [host-memory import](https://docs.vulkan.org/refpages/latest/refpages/source/VK_EXT_external_memory_host.html).
+Khronos makes synchronization the application's responsibility; coherent host memory removes explicit cache-maintenance requirements in relevant cases, not conflicting accesses or lifetime rules. Synchronization specification (not in the repository: `https://docs.vulkan.org/spec/latest/chapters/synchronization.html`), host-memory import (not in the repository: `https://docs.vulkan.org/refpages/latest/refpages/source/VK_EXT_external_memory_host.html`).
 
 **Test:** delay the GPU, signal the candidate guest release, then force immediate ring reuse/remap. Fail if the old draw can read the new bytes. Run this separately for copied and borrowed resources. Keep early release disabled for a borrowed class until its proof is complete.
 
 ### 7.5 Multi-draw needs a complete shader ABI
 
-The donor [DefineStageBlock](D:/dev/shadPS4/src/shader_recompiler/backend/spirv/spirv_emit_context.cpp:205) uses the draw index to choose a stage block, including a per-run address-table path. The vertex shader receives `DrawIndex`; the fragment shader receives a generated flat varying at location 31. Auxiliary rectangle/quad stages forward it.
+The donor DefineStageBlock (not in the repository: `D:/dev/shadPS4/src/shader_recompiler/backend/spirv/spirv_emit_context.cpp:205`) uses the draw index to choose a stage block, including a per-run address-table path. The vertex shader receives `DrawIndex`; the fragment shader receives a generated flat varying at location 31. Auxiliary rectangle/quad stages forward it.
 
-**Concrete counterexample in current source:** [DefineInputs](D:/dev/shadPS4/src/shader_recompiler/backend/spirv/spirv_emit_context.cpp:511) detects when the original fragment interface already uses location 31, logs a warning, and omits the generated draw-index input. `DefineStageBlock` then uses the base block. For a multi-draw whose fragment constants differ, later draws can consume the wrong block. Occurrence in Destiny gameplay was not established here; the unsafe branch is established.
+**Concrete counterexample in current source:** DefineInputs (not in the repository: `D:/dev/shadPS4/src/shader_recompiler/backend/spirv/spirv_emit_context.cpp:511`) detects when the original fragment interface already uses location 31, logs a warning, and omits the generated draw-index input. `DefineStageBlock` then uses the base block. For a multi-draw whose fragment constants differ, later draws can consume the wrong block. Occurrence in Destiny gameplay was not established here; the unsafe branch is established.
 
 **Repair:** make interface allocation a pipeline-level eligibility result. Choose an unused compatible varying location across all participating stages, or force that pipeline onto a correctly bound single-draw path. A warning followed by block-zero reuse is not an acceptable fallback. Include draw ABI/version and translation mode in shader/pipeline cache identity.
 
-Validate signed base vertex, first index, instance offsets, index width, primitive restart, non-indexed-to-identity-index conversion, rectangle/quad expansion, clip-distance handling, and any tessellation/geometry fallback. `DrawIndex` starts at zero for each indirect multi-draw call; splitting a run must rebase its data-table pointer. [DrawIndex specification](https://docs.vulkan.org/refpages/latest/refpages/source/DrawIndex.html).
+Validate signed base vertex, first index, instance offsets, index width, primitive restart, non-indexed-to-identity-index conversion, rectangle/quad expansion, clip-distance handling, and any tessellation/geometry fallback. `DrawIndex` starts at zero for each indirect multi-draw call; splitting a run must rebase its data-table pointer. DrawIndex specification (not in the repository: `https://docs.vulkan.org/refpages/latest/refpages/source/DrawIndex.html`).
 
 ### 7.6 Range compatibility must include attachment semantics
 
@@ -296,7 +296,7 @@ A range is a period over which one attachment arrangement and ordered execution 
 
 ### 7.7 Preserve order before attempting sorting
 
-The donor defaults depth-only run sorting on and color sorting off. [DepthOrderOf](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:3580), [RangeSortableAtClose](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:3657), and `SortGpuRuns` contain explicit eligibility reasoning.
+The donor defaults depth-only run sorting on and color sorting off. DepthOrderOf (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:3580`), RangeSortableAtClose (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:3657`), and `SortGpuRuns` contain explicit eligibility reasoning.
 
 A stable sort by pipeline key preserves order *within equal keys*, not guest order across keys. Matching final depth alone does not prove equivalence when queries, predicates, shader stores, stencil operations, or other observable effects are involved. Equal-depth color ties also make apparently opaque draws order-sensitive.
 
@@ -304,7 +304,7 @@ A stable sort by pipeline key preserves order *within equal keys*, not guest ord
 
 ### 7.8 Fallback must be same-frame, ordered, and exactly once
 
-The active unified path is a useful starting pattern: [GpuRangeStep](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:345) closes earlier work before a refused draw takes the classic path. [RecordGpuDrawVersioned](D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:1848) returns an unused record slot on unified refusal.
+The active unified path is a useful starting pattern: GpuRangeStep (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:345`) closes earlier work before a refused draw takes the classic path. RecordGpuDrawVersioned (not in the repository: `D:/dev/shadPS4/src/video_core/renderer_vulkan/vk_rasterizer_gpu_cp.cpp:1848`) returns an unused record slot on unified refusal.
 
 Keep those semantics when adapting the code. A cold shader/image miss, unsupported primitive, missing feature, or full ring must not turn into “draw it next frame.” The donor has 16,384 records/frame and three frame slots; 13,300 draws is close enough that a larger scene must exercise overflow behavior explicitly. Reserved capacity is not evidence that all bytes are touched each frame: host-sequence mode avoids GPU consumption of the 704-byte records. Measure actual traffic before optimizing that allocation.
 
@@ -373,9 +373,9 @@ void ConsumeOrderedEvent(const CapturedEvent& event) {
 
 The difficult part is `Capture`, before this boundary. It must resolve producer writes and CE ordering at the correct point. Taking a mutex around a late memory read does not recover an overwritten version. Nor should preparation secretly submit half a draw and then report that the classic path must retry it.
 
-For a committed run, establish the shared pipeline, dynamic state, descriptors, attachments, and index binding once; publish its argument/data storage; issue multi-draw; retain every referenced allocation until completion. Split at device limits and rebase the per-run table. Check enabled `multiDrawIndirect`, `maxDrawIndirectCount`, indirect buffer usage/alignment/bounds, shader-draw-parameter support, and any first-instance requirements. A Vulkan version string alone is not the gate. [Indirect-draw contract](https://docs.vulkan.org/refpages/latest/refpages/source/vkCmdDrawIndexedIndirect.html).
+For a committed run, establish the shared pipeline, dynamic state, descriptors, attachments, and index binding once; publish its argument/data storage; issue multi-draw; retain every referenced allocation until completion. Split at device limits and rebase the per-run table. Check enabled `multiDrawIndirect`, `maxDrawIndirectCount`, indirect buffer usage/alignment/bounds, shader-draw-parameter support, and any first-instance requirements. A Vulkan version string alone is not the gate. Indirect-draw contract (not in the repository: `https://docs.vulkan.org/refpages/latest/refpages/source/vkCmdDrawIndexedIndirect.html`).
 
-Host-written indirect arguments need correct host publication and, for noncoherent allocations, mapped-range flushing. Device-generated arguments need the appropriate producer-write → indirect-read dependency; generated shader data needs its own consuming-stage access. Do not copy a compute barrier into the host-sequence path just because the retired path had one. [Khronos synchronization examples](https://docs.vulkan.org/guide/latest/synchronization_examples.html).
+Host-written indirect arguments need correct host publication and, for noncoherent allocations, mapped-range flushing. Device-generated arguments need the appropriate producer-write → indirect-read dependency; generated shader data needs its own consuming-stage access. Do not copy a compute barrier into the host-sequence path just because the retired path had one. Khronos synchronization examples (not in the repository: `https://docs.vulkan.org/guide/latest/synchronization_examples.html`).
 
 ## 9. GPU work and the picture remain part of this investigation
 
@@ -411,7 +411,7 @@ For each meaningful wait record the object, expected value, observed value, resp
 
 Use low-cost aggregate counters plus short bounded detailed captures. Compare capture-off, tracing-only, and GPU-tracing runs. The existing native profiler can be an initial discriminator, but its blocking query collection and rendering-boundary instrumentation must not become the unmeasured baseline. Do not capture screenshots inside a throughput timing window unless measuring that overhead deliberately.
 
-Mesa currently documents `MESA_VK_TRACE=rgp` with `MESA_VK_TRACE_TRIGGER` for RADV captures. Check the installed Mesa build's supported mechanism first; documentation for the latest version does not prove the seat has that interface. Prefer a native application trace for throughput attribution: AMD notes that RenderDoc replay can introduce CPU serialization/gaps of its own. [Mesa tracing controls](https://docs.mesa3d.org/envvars.html#mesa-vk-trace), [AMD replay caveat](https://github.com/GPUOpen-Tools/radeon_gpu_profiler/blob/master/docs/source/renderdoc_and_rgp_interop.rst).
+Mesa currently documents `MESA_VK_TRACE=rgp` with `MESA_VK_TRACE_TRIGGER` for RADV captures. Check the installed Mesa build's supported mechanism first; documentation for the latest version does not prove the seat has that interface. Prefer a native application trace for throughput attribution: AMD notes that RenderDoc replay can introduce CPU serialization/gaps of its own. Mesa tracing controls (not in the repository: `https://docs.mesa3d.org/envvars.html`), AMD replay caveat (not in the repository: `https://github.com/GPUOpen-Tools/radeon_gpu_profiler/blob/master/docs/source/renderdoc_and_rgp_interop.rst`).
 
 ### 10.2 Run experiments that discriminate causes
 
@@ -494,8 +494,8 @@ The four original operator decisions remain separate: target FOV, acceptable pre
 
 ## 14. Evidence retained with this handoff
 
-- [Evidence inventory](D:/dev/d1-preservation/artifacts/renderer-research-20261005/EVIDENCE.md) identifies copied Xbox reports, remote provenance, hashes, and the public Bungie PDF.
-- [Original plan](D:/dev/d1-preservation/docs/operations/native-client-20261004/PLAN-TO-60-20261005.md) and [earlier adversarial review](D:/dev/d1-preservation/docs/operations/native-client-20261004/ADVERSARIAL-PLAN-TO-60-20261005.md).
-- [Donor memory analysis](D:/dev/shadPS4/documents/perf/D1-MEMORY-ARCHITECTURE-AND-FEATURES.md) and [historical frame-wait research](D:/dev/shadPS4/documents/perf/RESEARCH-20260911-where-the-frame-waits.md). Use their qualifications and later corrections; source findings above were checked directly where stated.
+- Evidence inventory (not in the repository: `D:/dev/d1-preservation/artifacts/renderer-research-20261005/EVIDENCE.md`) identifies copied Xbox reports, remote provenance, hashes, and the public Bungie PDF.
+- Original plan (not in the repository: `D:/dev/d1-preservation/docs/operations/native-client-20261004/PLAN-TO-60-20261005.md`) and earlier adversarial review (not in the repository: `D:/dev/d1-preservation/docs/operations/native-client-20261004/ADVERSARIAL-PLAN-TO-60-20261005.md`).
+- Donor memory analysis (not in the repository: `D:/dev/shadPS4/documents/perf/D1-MEMORY-ARCHITECTURE-AND-FEATURES.md`) and historical frame-wait research (not in the repository: `D:/dev/shadPS4/documents/perf/RESEARCH-20260911-where-the-frame-waits.md`). Use their qualifications and later corrections; source findings above were checked directly where stated.
 
 The original plan and runtime code were not edited. No commit was made. The source references are to the inspected local snapshots; verify hashes/revisions before applying line-specific conclusions to a newer tree.

@@ -12,7 +12,7 @@ Screens: `cfw-staging\sense57\capture\director-map.png` plus the scratchpad dire
 Question: is the Tower node's launch gated by that TTK quest marker, or by profile quest/unlock state we serve (our unlock-flag list)? Not urgent.
 
 ## Hangar KnownWorld
-[p3n1cillin/d1reimagined-source#88](https://github.com/p3n1cillin/d1reimagined-source/pull/88), from 134a36c unchanged. 106/106 host tests pass. It is served now (backup `.before-hangar`).
+p3n1cillin/d1reimagined-source#88 (not in the repository: `https://github.com/p3n1cillin/d1reimagined-source/pull/88`), from 134a36c unchanged. 106/106 host tests pass. It is served now (backup `.before-hangar`).
 
 ## sense58 (booted 19:17), as you specified
 - `world-table-sense58-hangar.txt`: 410/416/164/168 unchanged; **0 → city_tower_default1 with your `tower-north-authored-slots.diagnostic.draft.txt`** (the host loads 99 clients); **165 → act_cosmo_m0_5_hangar with a PLACEHOLDER list** (4786c0e0 / tower-common-clients). It's labelled a candidate.

@@ -300,10 +300,10 @@ work and stay.
 3. Any measured per-command cost of RADV on this class of GPU for push descriptors against
    descriptor buffers; otherwise item 3 is measured here.
 
-Sources used in section 3: [zeux, Writing an efficient Vulkan renderer](https://zeux.io/2020/02/27/writing-an-efficient-vulkan-renderer/);
-[AMD RDNA Performance Guide](https://gpuopen.com/learn/rdna-performance-guide/);
-[AMD Vulkan samples, descriptor management](https://gpuopen-librariesandsdks.github.io/Vulkan-Samples/samples/performance/descriptor_management/);
-[Phoronix, RADV merges VK_EXT_device_generated_commands](https://www.phoronix.com/news/RADV-VK-EXT-DGC);
-[WinDurango](https://github.com/WinDurango/WinDurango) for what the Xbox layer is; the fork's
+Sources used in section 3: zeux, Writing an efficient Vulkan renderer (not in the repository: `https://zeux.io/2020/02/27/writing-an-efficient-vulkan-renderer/`);
+AMD RDNA Performance Guide (not in the repository: `https://gpuopen.com/learn/rdna-performance-guide/`);
+AMD Vulkan samples, descriptor management (not in the repository: `https://gpuopen-librariesandsdks.github.io/Vulkan-Samples/samples/performance/descriptor_management/`);
+Phoronix, RADV merges VK_EXT_device_generated_commands (not in the repository: `https://www.phoronix.com/news/RADV-VK-EXT-DGC`);
+WinDurango (not in the repository: `https://github.com/WinDurango/WinDurango`) for what the Xbox layer is; the fork's
 `documents/perf/ASSESSMENT-20260912-command-processor.md`, `PLAN-20260912-cp-round2.md` and
 `RESEARCH-20260911-where-the-frame-waits.md`; bbport's `docs/parallel_gpu.md`.
