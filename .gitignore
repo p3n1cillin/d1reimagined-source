@@ -47,3 +47,4 @@ aqtinstall.log
 
 # Personal scrub patterns for tools/import_lab_history.py (see tools/scrub-patterns.example.txt).
 /tools/scrub-patterns.local.txt
+/lab/tower-route/*.png

@@ -395,10 +395,20 @@ struct SignonCfg {
 /// (`+0x599`) in the 56578 setter switch `0x1033F80`; neither exists in 01.29, where an unknown key
 /// would abort the whole signon parse. So the fallback key is sent ONLY when the request's build is
 /// 56578, and only the conservative one: STUN is still attempted, then our f14 is used.
-fn client_config_delta(manifest_url: &str, build: Option<&str>) -> Vec<u8> {
+///
+/// ## Build 56578: the inactivity limits (`D1_INACTIVITY_MS`, `D1_SOCIAL_INACTIVITY_MS`)
+///
+/// The idle return to orbit (`error.inactivity_timed_out`) compares against engine-config `+0x3214`
+/// (default 900,000 ms, PvE) and `+0x3220` (3,600,000 ms, social), set by the defaults constructor
+/// `0x34E620` that the reset `0x1DB2E0` runs. Setter keys 1020 and 1022 in `0x1033F80` write them
+/// as raw u32 (`read_fixed32`), so the server can raise them without a client patch
+/// (notes/ps4-56578-idle-timer-2026-10-31.md). Sent only for 56578, and only when set.
+fn client_config_delta(manifest_url: &str, build: Option<&str>, inactivity: Inactivity) -> Vec<u8> {
     const MAGIC: u32 = 0x0012_3456;
     const KEY_CONTENT_MANIFEST_URL: u32 = 100;
     const KEY_56578_SIGNON_EXTERNAL_FALLBACK: u32 = 0x000F_1048;
+    const KEY_56578_INACTIVITY_MS: u32 = 1020;
+    const KEY_56578_SOCIAL_INACTIVITY_MS: u32 = 1022;
 
     let mut v = Vec::new();
     v.extend_from_slice(&MAGIC.to_le_bytes());
@@ -410,9 +420,29 @@ fn client_config_delta(manifest_url: &str, build: Option<&str>) -> Vec<u8> {
     if build.is_some_and(|b| b.starts_with("56578.")) {
         v.extend_from_slice(&KEY_56578_SIGNON_EXTERNAL_FALLBACK.to_le_bytes());
         v.push(1); // bool: one raw byte
+        for (key, ms) in [(KEY_56578_INACTIVITY_MS, inactivity.pve_ms), (KEY_56578_SOCIAL_INACTIVITY_MS, inactivity.social_ms)] {
+            if let Some(ms) = ms {
+                v.extend_from_slice(&key.to_le_bytes());
+                v.extend_from_slice(&ms.to_le_bytes()); // u32, read_fixed32
+            }
+        }
     }
     v.extend_from_slice(&0u32.to_le_bytes()); // terminator
     v
+}
+
+/// The inactivity limits a 56578 signon sets (`None`: the client's defaults, 15 and 60 minutes).
+#[derive(Clone, Copy, Default, Debug, PartialEq, Eq)]
+struct Inactivity {
+    pve_ms: Option<u32>,
+    social_ms: Option<u32>,
+}
+
+impl Inactivity {
+    fn from_env() -> Self {
+        let ms = |var: &str| std::env::var(var).ok().and_then(|v| v.trim().parse().ok());
+        Inactivity { pve_ms: ms("D1_INACTIVITY_MS"), social_ms: ms("D1_SOCIAL_INACTIVITY_MS") }
+    }
 }
 
 fn signon_success(build: Option<&str>, c: &SignonCfg) -> Vec<u8> {
@@ -450,7 +480,7 @@ fn signon_success(build: Option<&str>, c: &SignonCfg) -> Vec<u8> {
         let mut cc = Vec::new();
         pb_varint(&mut cc, 1, 0); // f4.1 cookie
         pb_varint(&mut cc, 2, 0); // f4.2 social_matchmaking_id
-        pb_bytes(&mut cc, 3, &client_config_delta(&c.manifest_url, build)); // f4.3 config delta
+        pb_bytes(&mut cc, 3, &client_config_delta(&c.manifest_url, build, Inactivity::from_env())); // f4.3 config delta
         pb_bytes(&mut v, 4, &cc);
     }
     pb_varint(&mut v, 5, c.silo_id);
@@ -2247,6 +2277,8 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_RESEND_FAMILIES", "<unset>", "⛔ re-send family answers as BASELINES - at state 3 that PURGES to the keep-list (0x56B2D0). Use D1_FAMILY4_INVALIDATE for family 4"),
     ("D1_ACK_PROFILE_SETUP", "1", "answer 0x0015 (UPO) and 0x0020 (user message). ⚠ 0 becomes a 500 under FIFO"),
     ("D1_CFG_COOKIE", "0", "0x0013 client_config cookie"),
+    ("D1_INACTIVITY_MS", "<unset>", "56578 signon: the PvE idle limit in ms (engine-config key 1020, client default 900000 = 15 min)"),
+    ("D1_SOCIAL_INACTIVITY_MS", "<unset>", "56578 signon: the social idle limit in ms (engine-config key 1022, client default 3600000 = 60 min)"),
     ("D1_CFG_SOCIAL_MM_ID", "0", "0x0013 social_matchmaking_id"),
     ("D1_AIDT", "<unset>", "online id for platform_to_investment_response"),
     // ── investment messages ──────────────────────────────────────────────────────────────────
@@ -5255,20 +5287,28 @@ mod tests {
     #[test]
     fn client_config_delta_is_fixed32_framed() {
         let url = "http://cdn.deadorbit.net/manifest.bin";
-        let blob = client_config_delta(url, Some("52553.16.09.28.1551.evil"));
+        let blob = client_config_delta(url, Some("52553.16.09.28.1551.evil"), Inactivity::default());
         assert_eq!(&blob[0..4], &0x0012_3456u32.to_le_bytes(), "magic, u32 LE");
         assert_eq!(&blob[4..8], &100u32.to_le_bytes(), "key 100 = content manifest URL, u32 LE");
         assert_eq!(blob[8], 37, "LEB128 string length");
         assert_eq!(&blob[blob.len() - 4..], &[0, 0, 0, 0], "u32 terminator");
         // 01.29 (and an absent build) get NO extra key: unknown keys abort the whole signon parse.
         assert_eq!(blob.len(), 4 + 4 + 1 + 37 + 4);
-        assert_eq!(client_config_delta(url, None), blob);
+        assert_eq!(client_config_delta(url, None, Inactivity::default()), blob);
         // 56578 additionally gets the sparse fallback key 0xF1048 with a one-byte bool 1.
-        let later = client_config_delta(url, Some("56578.17.04.12.1251.evil"));
+        let later = client_config_delta(url, Some("56578.17.04.12.1251.evil"), Inactivity::default());
         assert_eq!(&later[..46], &blob[..46], "magic + key 100 unchanged");
         assert_eq!(&later[46..50], &0x000F_1048u32.to_le_bytes());
         assert_eq!(later[50], 1);
         assert_eq!(&later[51..], &[0, 0, 0, 0]);
+        // The inactivity limits: keys 1020 and 1022, u32 LE each, 56578 only.
+        let idle = Inactivity { pve_ms: Some(86_400_000), social_ms: None };
+        let set = client_config_delta(url, Some("56578.17.04.12.1251.evil"), idle);
+        assert_eq!(&set[..51], &later[..51]);
+        assert_eq!(&set[51..55], &1020u32.to_le_bytes());
+        assert_eq!(&set[55..59], &86_400_000u32.to_le_bytes());
+        assert_eq!(&set[59..], &[0, 0, 0, 0]);
+        assert_eq!(client_config_delta(url, Some("52553.16.09.28.1551.evil"), idle), blob, "never for 01.29");
     }
 }
 

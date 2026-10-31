@@ -26,7 +26,9 @@ param(
     [ValidateRange(1, 3600)][int]$WorldTimeoutSeconds = 900,
     # The host encodes every mission-step list before it listens; a long schedule (25 steps with
     # dropship pilot images) took about 6 minutes in run sense41, past the old fixed 300 s.
-    [ValidateRange(1, 3600)][int]$HostTimeoutSeconds = 900
+    [ValidateRange(1, 3600)][int]$HostTimeoutSeconds = 900,
+    # The client patch, passed to d1-lab-served.ps1 (empty: its default, lab-orbit.xml).
+    [string]$ClientPatch = ''
 )
 # A Guardian Rises tutorial lab boot: title (X), skip the opening Mars
 # cinematic in character:prologue (X, then O - left playing it can trip the BLOCK_DETECT watchdog),
@@ -68,10 +70,12 @@ if (-not $Geared) {
     $x += ",D1_LOOT_GRANT_ROSTER=$GD\rosters-f0-tutorial-khv"
 }
 if ($Extra) { $x += ",$Extra" }
-Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', (Join-Path $PSScriptRoot 'd1-lab-served.ps1'), '-Name', $Name,
+$served = @('-NoProfile', '-File', (Join-Path $PSScriptRoot 'd1-lab-served.ps1'), '-Name', $Name,
     '-Profile', $Profile, '-Minutes', "$Minutes",
     '-UnlockFlags', $UnlockFlags,
     '-Extra', $x)
+if ($ClientPatch) { $served += '-ClientPatch', $ClientPatch }
+Start-Process pwsh -WindowStyle Hidden -ArgumentList $served
 function WaitFor($pattern, $seconds) {
     $t = 0
     while ($t -lt $seconds) {
