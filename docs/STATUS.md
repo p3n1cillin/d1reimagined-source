@@ -38,8 +38,8 @@ With your own inputs:
 - Vendors: turn a purchase request (investment 901) into the price and item it buys, on the server ([notes](../notes/ps4-56578-vendor-purchase-2026-10-30.md)).
 - The next mission's world (activity 165), the Tower's plaza and hangar regions, and ammo and stat fidelity.
 - The emulator: stability and rendering in [d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4).
-- [60 fps](https://github.com/p3n1cillin/d1reimagined-source/issues/112): find where the 30 fps cap comes from and lift it without changing game or network timing.
-- [PC controls](https://github.com/p3n1cillin/d1reimagined-source/issues/113): a ready-made keyboard and mouse layout with good mouse look.
+- [60 fps](https://github.com/p3n1cillin/d1reimagined-source/issues/112): the cap is lifted (`ps4/patches/CUSA00219-56578-lab-orbit-60hz.xml` with the emulator's `D1_FLIP_RATE=0`) at full game speed; heavy scenes run 34–38 fps, limited by the emulator's per-draw cost. Next: render interpolation above the tick rate, and the draw cost.
+- [PC controls](https://github.com/p3n1cillin/d1reimagined-source/issues/113): the emulator fork has a detour framework, and the menu cursor follows the PC mouse (`D1_MOUSE_CURSOR=1`). Next: mouse look, buttons, aim assist and recentering at the mapped sites.
 
 Open a focused issue with the observed failure, source commit, proposed scope and validation, or ask on the
 [Discord](https://d1reimagined.com/discord) first. Bring your own authorised inputs for native work, and never

@@ -74,12 +74,12 @@
     </PatchList>
   </Metadata>
   <!-- 60 Hz engine clock, ported from the 01.29 research: code +0x1150, data +0x18000 against 01.29.
-       Original bytes checked against the 56578 ELF on 30 Oct 2026. First run (30 Oct, with the emulator's
-       D1_FLIP_RATE=0): 60 fps in menus and orbit, 34-38 fps in a Moon Private Match, up from 30. With the
-       override on, game speed follows the frame rate below 60 (measured on 01.29: 39.4 fps = 0.656x); the
-       override-off entry should fix that and is the next test.
-       Locked 60 (Windows, stock 60 Hz vblank): constants + cadence. Uncapped: also the override and deadline
-       entries (off here); the override alone, or the constants alone, give the wrong speed. -->
+       Original bytes checked against the 56578 ELF on 30 Oct 2026. Measured (30-31 Oct, emulator D1_FLIP_RATE=0): 60 fps in menus and orbit,
+       34-38 fps in a Moon Private Match, up from 30. With the fixed-clock override ON, game speed follows
+       the frame rate below 60 (01.29: 39.4 fps = 0.656x), so it is OFF here: the engine's own
+       accumulator then ran 59.2-59.7 ticks/s at 16.667 ms = 0.99 simulated s per wall s in the match
+       (game-time tick count *(*(base+0x26BC880)+0xC), period +0x8). The outer-deadline entry stays off.
+       -->
   <Metadata Name="D1 56578: 60 Hz engine time control (synthetic)"
             isEnabled="true" AppVer="01.00" AppElf="eboot.bin" Author="d1reimagined" PatchVer="1.0">
     <PatchList>
@@ -99,7 +99,7 @@
     </PatchList>
   </Metadata>
   <Metadata Name="D1 56578: engine elapsed-time ticks, fixed-clock override off (synthetic)"
-            isEnabled="false" AppVer="01.00" AppElf="eboot.bin" Author="d1reimagined" PatchVer="1.0">
+            isEnabled="true" AppVer="01.00" AppElf="eboot.bin" Author="d1reimagined" PatchVer="1.0">
     <PatchList>
       <!-- data byte 0x18DCAA4 (read at 0x591A1B) 01 -> 00 -->
       <Line Type="bytes" Address="1CDCAA4" Value="00"/>
