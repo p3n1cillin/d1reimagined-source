@@ -185,10 +185,10 @@ index a8ac368..4cdaa27 100644
  RedZonePatchResult PatchRedZoneMemoryInstructions(u64 segment_addr, u64 segment_size,
 diff --git a/src/core/d1_native_mouse.cpp b/src/core/d1_native_mouse.cpp
 new file mode 100644
-index 0000000..0240e9f
+index 0000000..e96ea05
 --- /dev/null
 +++ b/src/core/d1_native_mouse.cpp
-@@ -0,0 +1,188 @@
+@@ -0,0 +1,268 @@
 +// SPDX-FileCopyrightText: Copyright 2026 d1reimagined contributors
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +
@@ -207,6 +207,9 @@ index 0000000..0240e9f
 +//                      01.29 implementation's fallback route. While no menu cursor is active the PC
 +//                      cursor is re-centred in the game window, so it moves the system cursor:
 +//                      opt in only.
++//   D1_MOUSE_BUTTONS=1 mouse buttons merged into player 0's controls after pad selection (0x9284EF,
++//                      01.29 0x92684F): in menus LMB = cross, RMB = circle; in gameplay LMB = R2
++//                      (fire), RMB = L2 (aim), middle = R3 (melee), Mouse4 = square, Mouse5 = circle.
 +
 +#include <algorithm>
 +#include <array>
@@ -242,6 +245,15 @@ index 0000000..0240e9f
 +constexpr float StickSecondsPerCount = 0.00025f; // 01.29 BaseStickSecondsPerCount
 +constexpr float MaxCountsPerFrame = 400.0f;
 +std::atomic<u64> g_cursor_tick{0};
++
++constexpr u64 ActionsSite = 0x9284EF;
++constexpr std::array<u8, 5> ActionsSpan = {0xE8, 0x4C, 0x4C, 0x78, 0xFF}; // call 0xAD140
++constexpr size_t ActionStride = 20;                                        // 21 controls
++
++struct Key {
++    u16 held_ms{};
++    u8 frames{};
++};
 +
 +bool EnvOn(const char* name) {
 +    const char* v = std::getenv(name);
@@ -343,6 +355,67 @@ index 0000000..0240e9f
 +        StoreFloat(regs->r13 + LookPitchRate, pitch);
 +    }
 +}
++/// The mouse buttons now (LMB, RMB, MMB, X1, X2), as held time and frame count.
++std::array<Key, 5> SampleButtons() {
++    static std::array<u64, 5> down_since{};
++    static std::array<u8, 5> frames{};
++    static constexpr std::array<int, 5> vk{VK_LBUTTON, VK_RBUTTON, VK_MBUTTON, VK_XBUTTON1, VK_XBUTTON2};
++    std::array<Key, 5> out{};
++    const bool focus = GameHasFocus();
++    const u64 now = GetTickCount64();
++    for (size_t i = 0; i < vk.size(); ++i) {
++        const bool down = focus && (GetAsyncKeyState(vk[i]) & 0x8000) != 0;
++        if (!down) {
++            down_since[i] = 0;
++            frames[i] = 0;
++            continue;
++        }
++        if (down_since[i] == 0) {
++            down_since[i] = now;
++        }
++        frames[i] = static_cast<u8>(std::min(255, frames[i] + 1));
++        out[i] = {static_cast<u16>(std::min<u64>(0xFFFF, now - down_since[i])), frames[i]};
++    }
++    return out;
++}
++
++/// 01.29's ActionMerge: merge the mouse buttons into the selected pad's controls, keeping the pad.
++void PS4_SYSV_ABI MergeButtons(D1DetourRegisters*, u64) {
++    static std::array<Key, 21> previous{};
++    auto* record = reinterpret_cast<u8*>(MemoryPatcher::g_eboot_address + PlayerZeroInputRecord);
++    const bool menu = CursorActive();
++    const auto buttons = SampleButtons();
++    std::array<Key, 21> mouse{};
++    mouse[menu ? 10 : 1] = buttons[0]; // LMB: confirm / fire
++    mouse[menu ? 11 : 0] = buttons[1]; // RMB: back / aim
++    if (!menu) {
++        mouse[9] = buttons[2];  // MMB: right stick click (melee by default)
++        mouse[12] = buttons[3]; // Mouse4: square (reload / interact)
++        mouse[11] = buttons[4]; // Mouse5: circle (crouch / slide)
++    }
++    for (const unsigned i : {0u, 1u, 9u, 10u, 11u, 12u}) {
++        u8* action = record + i * ActionStride;
++        u16 held;
++        float value;
++        std::memcpy(&held, action, 2);
++        std::memcpy(&value, action + 8, 4);
++        const bool down = action[2] != 0 || mouse[i].frames != 0;
++        Key merged{};
++        merged.frames = down ? static_cast<u8>(std::min(255, previous[i].frames + 1)) : 0;
++        merged.held_ms = down ? std::max(held, mouse[i].held_ms) : 0;
++        action[3] = previous[i].frames;
++        action[2] = merged.frames;
++        std::memcpy(action, &merged.held_ms, 2);
++        if (!down) {
++            value = 0.0f;
++        }
++        if (mouse[i].frames != 0) {
++            value = std::max(value, 1.0f);
++        }
++        std::memcpy(action + 8, &value, 4);
++        previous[i] = merged;
++    }
++}
 +#endif
 +
 +} // namespace
@@ -351,13 +424,20 @@ index 0000000..0240e9f
 +    if (const char* s = std::getenv("D1_MOUSE_SENS"); s != nullptr && *s != '\0') {
 +        g_sensitivity = static_cast<float>(std::atof(s));
 +    }
-+    if (EnvOn("D1_MOUSE_CURSOR") || EnvOn("D1_MOUSE_LOOK")) {
++    if (EnvOn("D1_MOUSE_CURSOR") || EnvOn("D1_MOUSE_LOOK") || EnvOn("D1_MOUSE_BUTTONS")) {
 +#ifdef _WIN32
 +        if (InstallD1Detour(CursorSite, CursorSpan, MoveCursor)) {
 +            LOG_INFO(Input, "D1 mouse: the menu cursor follows the host mouse (sensitivity {})",
 +                     g_sensitivity);
 +        } else {
 +            LOG_ERROR(Input, "D1 mouse: the cursor detour was refused");
++        }
++        if (EnvOn("D1_MOUSE_BUTTONS")) {
++            if (InstallD1Detour(ActionsSite, ActionsSpan, MergeButtons)) {
++                LOG_INFO(Input, "D1 mouse: buttons merged into player 0's controls");
++            } else {
++                LOG_ERROR(Input, "D1 mouse: the buttons detour was refused");
++            }
 +        }
 +        if (EnvOn("D1_MOUSE_LOOK")) {
 +            if (InstallD1Detour(LookSite, LookSpan, MouseLook)) {
