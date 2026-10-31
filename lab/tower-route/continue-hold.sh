@@ -1,12 +1,16 @@
 #!/bin/bash
 # Post-game CONTINUE on a parked run: pre-departure component read -> recall gate check -> monitor + recording ->
-# hold triangle ~4.2 s (hold-to-confirm, 3 s) -> screenshots through the load. Usage: continue-hold.sh RUNNAME
+# hold triangle ~4.2 s (hold-to-confirm, 3 s) -> screenshots through the load. Usage: continue-hold.sh RUNNAME [--no-record]
+# --no-record (ending-run.ps1 -NoRecord): there is no capture tour to wait for, and the departure is not recorded.
 S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd); REPO=$(cd "$S/../.." && pwd)
 C=$(python "$REPO/tools/ps4_setup/d1paths.py" staging); Q=$C/probes   # probe output (routepaths.probes())
-R=$C/$1; K=$R/capture
+R=$C/$1; K=$R/capture; mkdir -p $K
+NOREC=0; [ "$2" = "--no-record" ] && NOREC=1
 recorders() { powershell -NoProfile -Command "(Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | Where-Object { \$_.CommandLine -match 'd1-record' }).Count"; }
-until grep -q 'recording stopped' $R/capture.log 2>/dev/null; do sleep 10; done
-until [ "$(recorders | tr -d '\r')" = "0" ]; do sleep 10; done
+if [ $NOREC = 0 ]; then
+  until grep -q 'recording stopped' $R/capture.log 2>/dev/null; do sleep 10; done
+  until [ "$(recorders | tr -d '\r')" = "0" ]; do sleep 10; done
+fi
 echo "$(date +%H:%M:%S) tour done, no recorder running"
 # The tour ends on ACTIVITY REWARDS: R1 twice selects ADVANCEMENT. Codex's read-only probe captures the live UI
 # tree there (screen/body tags, visibility, post_game_data) before CONTINUE destroys it.
@@ -20,7 +24,7 @@ g=$(cd $S && timeout 90 python probe-recall-gate-readonly.py 2>/dev/null | grep 
 python -c "
 import json,sys; d=json.load(open(sys.argv[1])); print('gate', {k:d.get(k) for k in ('profile_completion673','plane_state','leader_predicate','selection_activity','ordinary_branch_predicted')})
 sys.exit(0 if d.get('ordinary_branch_predicted') is True and d.get('selection_activity')==165 else 3)" "$g" || { echo "gate not ordinary/165: no input sent"; exit 3; }
-(cd $REPO && python -I tools/ps4_setup/d1-record.py --out $K/continue.mp4 --seconds 240 > $K/continue-record.log 2>&1 &)
+[ $NOREC = 0 ] && (cd $REPO && python -I tools/ps4_setup/d1-record.py --out $K/continue.mp4 --seconds 240 > $K/continue-record.log 2>&1 &)
 (cd $S && timeout 220 python monitor-recall-departure-readonly.py --run $1 --seconds 180 > $K/continue-monitor.out 2>&1 &)
 (cd $S && timeout 220 python probe-hangar-cues-readonly.py --run $1 --seconds 180 --interval 0.25 > $K/continue-cues.out 2>&1 &)   # Codex: read-only world/cue catalogue through the load
 until grep -q READY $K/continue-monitor.out 2>/dev/null; do sleep 0.5; done; sleep 3
