@@ -2,6 +2,7 @@
 # hangar clear) -> outro -> XP + completion + ship + scoreboard + phase 7 -> post-game tour -> CONTINUE
 # (3 s hold) -> 165 -> Tower North with its squads and vendors, recorded with game audio.
 #   ending-run.ps1 -Name sense73 [-WorldTable <file>] [-Postgame postgame5.sh] [-NoContinue] [-NoRecord] [-NoVendors]
+#     [-ClientPatch <xml>] [-ExtraEnv D1_INACTIVITY_MS=86400000]
 # The defaults recreate run sense73 (31 Oct 2026). Served fixtures come from ps4/fixtures/56578
 # (D1_FIXTURES); run output goes to the staging folder (D1_STAGING). The lab must already be stopped.
 # The served host/responder are whatever is in the served target; build and swap them separately,
@@ -26,6 +27,9 @@ param(
     [switch]$NoVendors,
     # Extra D1_KEY=VALUE server variables, comma-joined, appended after the defaults (later wins).
     [string]$ExtraEnv = '',
+    # The client patch (empty: d1-lab-served.ps1's default, lab-orbit.xml); e.g. the
+    # ps4/patches/CUSA00219-56578-lab-orbit-idle-probe.xml inactivity probe.
+    [string]$ClientPatch = '',
     [switch]$NoRecord,
     [string]$Bash = 'C:\Program Files\Git\bin\bash.exe'
 )
@@ -54,7 +58,9 @@ if (-not $NoVendors) {
     $extra += ",D1_VENDOR_ACCOUNT_SLOTS=308:869:25000,309:873:500,310:4548:200,D1_ORACLE=$Oracle"
 }
 if ($ExtraEnv) { $extra += ",$ExtraEnv" }
-Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name', $Name, '-Minutes', '300', '-UnlockFlags', $UnlockFlags, '-Extra', $extra) -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
+$agr = @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name', $Name, '-Minutes', '300', '-UnlockFlags', $UnlockFlags, '-Extra', $extra)
+if ($ClientPatch) { $agr += '-ClientPatch', (Resolve-Path $ClientPatch).Path }
+Start-Process pwsh -WindowStyle Hidden -ArgumentList $agr -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
 $jobs = @(
     # The keep-alive starts in gameplay: an early press can carry the client past the title before the
     # activity host listens (about 9 minutes), and it then fails to reach it (run sense75).
