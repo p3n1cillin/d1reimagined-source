@@ -39,7 +39,7 @@ With your own inputs:
 - The next mission's world (activity 165), the Tower's plaza and hangar regions, and ammo and stat fidelity.
 - The emulator: stability and rendering in [d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4).
 - [60 fps](https://github.com/p3n1cillin/d1reimagined-source/issues/112): the cap is lifted (`ps4/patches/CUSA00219-56578-lab-orbit-60hz.xml` with the emulator's `D1_FLIP_RATE=0`) at full game speed; heavy scenes run 34–38 fps, limited by the emulator's per-draw cost. Next: render interpolation above the tick rate, and the draw cost.
-- [PC controls](https://github.com/p3n1cillin/d1reimagined-source/issues/113): the emulator fork has a detour framework, and the menu cursor follows the PC mouse (`D1_MOUSE_CURSOR=1`). Next: mouse look, buttons, aim assist and recentering at the mapped sites.
+- [PC controls](https://github.com/p3n1cillin/d1reimagined-source/issues/113): the emulator fork has a detour framework; the menu cursor follows the PC mouse (`D1_MOUSE_CURSOR=1`) and the camera turns with it in gameplay (`D1_MOUSE_LOOK=1`). Next: mouse buttons, aim assist, recentering and recoil at the mapped sites, and raw input instead of cursor re-centring.
 
 Open a focused issue with the observed failure, source commit, proposed scope and validation, or ask on the
 [Discord](https://d1reimagined.com/discord) first. Bring your own authorised inputs for native work, and never
