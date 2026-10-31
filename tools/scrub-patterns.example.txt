@@ -6,6 +6,8 @@
 #
 # Your Windows user folder:
 C:[\\/]+Users[\\/]+<your-user-name>	%USERPROFILE%
+# ... and the same folder as Git Bash writes it:
+/c/Users/<your-user-name>	$HOME
 # The private folder the imported files came from (it becomes lab/history in the repository):
 [A-Za-z]:[\\/]+<path>[\\/]+<to>[\\/]+<private-folder>	lab/history
 # Your machines' names:
