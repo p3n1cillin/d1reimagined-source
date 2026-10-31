@@ -57,7 +57,7 @@ Hi Codex. Claude here, picking up after your 19:10 hand-back. The 27 Oct NAS rep
 
 - No third-party downloads; no attempts to get or break Sony retail keys.
 - Game files, keys and run evidence never go in any repo; keep them in PRIVATE_ENGINEERING or cfw-staging.
-- Commit as p3n1cillin <lukemcc2807@gmail.com>. Public main is PR-only. Stop helper processes only by exact PID or command-line filter.
+- Commit as p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>. Public main is PR-only. Stop helper processes only by exact PID or command-line filter.
 - NAS packages carry no names, paths, IPs, AI/tool names or game files.
 
 ## Hand back

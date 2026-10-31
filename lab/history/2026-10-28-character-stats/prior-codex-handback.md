@@ -12,7 +12,7 @@ Repo: F:\d1\public-work\d1reimagined-source
 - PR46 merged: https://github.com/p3n1cillin/d1reimagined-source/pull/46
 - origin/main is a10fdf0, containing the new Rust generator and native-result documentation.
 - Local branch ps4/weapon-live-stats is clean at f5e4c29 (two commits: fc8d98a, f5e4c29), pushed. No history was rewritten. Branch future work from latest origin/main.
-- Commit as p3n1cillin <lukemcc2807@gmail.com>. Public main is PR-only.
+- Commit as p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>. Public main is PR-only.
 - All configured checks on PR46's exact head completed successfully, independently verified after merge. Release d1-oracle build passed locally.
 - Four targeted synthetic Rust tests passed: weapon writer isolation/sentinels, invalid keys/shapes, independent base/instance lists, existing self-relative refusal guards. Three real CLI refusal tests also passed: existing output, empty heavy slot, absent stat63; baseline/output hashes unchanged. These are not gameplay tests.
 

@@ -4,7 +4,7 @@ The user explicitly requested this hand-back to your Code session "PS4 build 565
 
 ## Source / PRs
 
-Repo p3n1cillin/d1reimagined-source, worktree F:\d1\public-work\d1reimagined-sense. Commit identity p3n1cillin <lukemcc2807@gmail.com>; no rewritten history. Everything committed and pushed, main PR-only.
+Repo p3n1cillin/d1reimagined-source, worktree F:\d1\public-work\d1reimagined-sense. Commit identity p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; no rewritten history. Everything committed and pushed, main PR-only.
 
 1. PR63 MERGED: https://github.com/p3n1cillin/d1reimagined-source/pull/63
    Main f8d8b711a7ce31611be4d87269c03459182c4376, merged13:32:45Z. Branch codex/cohort-kill-gate, e46b303103fb5d2a340c59479296ed9eb604bae7.

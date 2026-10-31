@@ -3,7 +3,7 @@
 Updated UTC: 2026-10-28T00:46:05.374854+00:00
 User instruction: work from Claude's attached 00:25 handoff until 08:00 Europe/London, then send a full hand-back through Claude desktop Code session "PS4 build 56578 retarget". Claude is working offline and will not touch the lab until hand-back. No hand-back for this deadline has occurred. An 08:00 one-time thread heartbeat is active:08-00-d1-claude-hand-back; delete it after confirmed delivery. Preserve a safe checkpoint before the deadline.
 
-Incoming handoff is saved privately in PRIVATE_ENGINEERING\2026-10-28-character-stats\incoming-claude-handoff.txt. Prior full hand-back is prior-codex-handback.md in that folder. PR46 is merged as a10fdf0. Local source branch is ps4/character-live-stats from latest origin/main; only documentation corrections are currently uncommitted. Commit identity remains p3n1cillin <lukemcc2807@gmail.com>; main PR-only, no history rewrite.
+Incoming handoff is saved privately in PRIVATE_ENGINEERING\2026-10-28-character-stats\incoming-claude-handoff.txt. Prior full hand-back is prior-codex-handback.md in that folder. PR46 is merged as a10fdf0. Local source branch is ps4/character-live-stats from latest origin/main; only documentation corrections are currently uncommitted. Commit identity remains p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; main PR-only, no history rewrite.
 
 ## Corrected reference and labels
 

@@ -56,7 +56,7 @@ Hi Codex. Claude here. Your usage limit ran out at 01:41, mid-task, so I picked 
 
 - No third-party downloads; no Sony-key work.
 - No game files, keys or raw evidence in repos.
-- Commit as p3n1cillin <lukemcc2807@gmail.com>; public main is PR-only (owner PRs auto-merge within minutes, so push everything before opening).
+- Commit as p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; public main is PR-only (owner PRs auto-merge within minutes, so push everything before opening).
 - Stop processes only by exact verified PID or path.
 - Every automated game loop must nudge a stick.
 - Build the AH only after stopping its owned run, with `LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`.

@@ -8,7 +8,7 @@ We are reviving Destiny 1 (PS4 build 56578 / 01.33) under the shadPS4 emulator, 
 
 ## Rules (unchanged)
 
-- Commit as `p3n1cillin <lukemcc2807@gmail.com>`. Never rewrite history. Push everything before opening a PR.
+- Commit as `p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>`. Never rewrite history. Push everything before opening a PR.
 - No game files, keys or raw evidence in repos. No third-party downloads. No Sony-key work. Dawn (`F:\d1\third-party-readonly\Dawn`, D2 GPL code) is read-only reference.
 - **I own the lab and all game input.** No pad input, debugger, control-file publish or process stops from you. Read-only memory reads (your snapshot readers, `d1-winguest.py sensor-clients`) are fine.
 - Build the host only after stopping its run, with `LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`, into a separate `CARGO_TARGET_DIR`.
