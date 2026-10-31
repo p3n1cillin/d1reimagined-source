@@ -1,0 +1,3 @@
+shadPS4 pid 14392  eboot base 0x5170000  control vtable[0]=0x58c4410 PASS
+Arming four read-only execution points for natural pickup
+Native watch completed and detached; inspect actual hits before making claims

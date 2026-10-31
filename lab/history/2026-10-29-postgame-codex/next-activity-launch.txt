@@ -1,0 +1,1193 @@
+0x007aa6c0 push      rbp
+0x007aa6c1 mov       rbp, rsp
+0x007aa6c4 push      r15
+0x007aa6c6 push      r14
+0x007aa6c8 push      rbx
+0x007aa6c9 sub       rsp, 0x158
+0x007aa6d0 mov       r14, rdi
+0x007aa6d3 mov       rax, qword ptr [rip + 0x1274a26] ; [0x1a1f100]
+0x007aa6da mov       rax, qword ptr [rax]
+0x007aa6dd mov       qword ptr [rbp - 0x20], rax
+0x007aa6e1 xor       edi, edi
+0x007aa6e3 call      0x76a860
+0x007aa6e8 mov       r15d, eax
+0x007aa6eb call      0x766750
+0x007aa6f0 test      al, al
+0x007aa6f2 jne       0x7aa701
+0x007aa6f4 call      0x765ee0
+0x007aa6f9 mov       rdi, rax
+0x007aa6fc call      0x757e10
+0x007aa701 mov       edi, 1
+0x007aa706 call      0x785060
+0x007aa70b cmp       eax, 0x1b
+0x007aa70e jne       0x7aa736
+0x007aa710 xor       edi, edi
+0x007aa712 call      0x7754d0
+0x007aa717 test      al, al
+0x007aa719 je        0x7aa736
+0x007aa71b xor       edi, edi
+0x007aa71d call      0x775770
+0x007aa722 lea       rdi, [rax + 0x9b8]
+0x007aa729 call      0x11c3f80
+0x007aa72e mov       rdi, rax
+0x007aa731 call      0x78b550
+0x007aa736 cmp       byte ptr [r14 + 0x3b], 0
+0x007aa73b je        0x7aa77b
+0x007aa73d call      0x7850c0
+0x007aa742 mov       rbx, rax
+0x007aa745 call      0x34e500
+0x007aa74a movsxd    rax, dword ptr [rax + 0xa8]
+0x007aa751 cmp       rbx, rax
+0x007aa754 jle       0x7aa77b
+0x007aa756 call      0x9503d0
+0x007aa75b mov       ecx, dword ptr [rip + 0x1f25ddf] ; [0x26d0540]
+0x007aa761 mov       dword ptr [rbp - 0x168], ecx
+0x007aa767 lea       rsi, [rbp - 0x168]
+0x007aa76e mov       rdi, rax
+0x007aa771 call      0x950eb0
+0x007aa776 mov       byte ptr [r14 + 0x3b], 0
+0x007aa77b cmp       byte ptr [r14 + 0x3a], 0
+0x007aa780 je        0x7aa80b
+0x007aa786 mov       edi, 6
+0x007aa78b mov       esi, 3
+0x007aa790 call      0xe4d70
+0x007aa795 test      al, al
+0x007aa797 je        0x7aa7f7
+0x007aa799 mov       al, byte ptr [rip + 0x1f25da9] ; [0x26d0548]
+0x007aa79f test      al, al
+0x007aa7a1 jne       0x7aa7d1
+0x007aa7a3 lea       rdi, [rip + 0x1f25d9e] ; [0x26d0548]
+0x007aa7aa call      0x12aa7d0
+0x007aa7af test      eax, eax
+0x007aa7b1 je        0x7aa7d1
+0x007aa7b3 lea       rdi, [rip + 0xeb2df7] ; [0x165d5b1] 'world_controller:state:matchmaking: Leave fireteam requested.'
+0x007aa7ba call      0xe4a10
+0x007aa7bf mov       dword ptr [rip + 0x1f25d7f], eax ; [0x26d0544]
+0x007aa7c5 lea       rdi, [rip + 0x1f25d7c] ; [0x26d0548]
+0x007aa7cc call      0x12aa7e0
+0x007aa7d1 lea       rbx, [rbp - 0x160]
+0x007aa7d8 lea       rsi, [rip + 0xeb2dd2] ; [0x165d5b1] 'world_controller:state:matchmaking: Leave fireteam requested.'
+0x007aa7df mov       rdi, rbx
+0x007aa7e2 xor       al, al
+0x007aa7e4 call      0x1008290
+0x007aa7e9 mov       edi, dword ptr [rip + 0x1f25d55] ; [0x26d0544]
+0x007aa7ef mov       rsi, rbx
+0x007aa7f2 call      0xe4aa0
+0x007aa7f7 mov       edi, 0x19
+0x007aa7fc mov       esi, 9
+0x007aa801 call      0x784e50
+0x007aa806 jmp       0x7aa903
+0x007aa80b mov       edi, 1
+0x007aa810 call      0x7754d0
+0x007aa815 test      al, al
+0x007aa817 je        0x7aa903
+0x007aa81d movzx     edi, word ptr [r14 + 0x50]
+0x007aa822 call      0x545510
+0x007aa827 test      rax, rax
+0x007aa82a je        0x7aa8ea
+0x007aa830 cmp       dword ptr [rax], -1
+0x007aa833 je        0x7aa8f4
+0x007aa839 movzx     edi, word ptr [r14 + 0x50]
+0x007aa83e call      0x545230
+0x007aa843 test      al, al
+0x007aa845 jne       0x7aa8f4
+0x007aa84b mov       edi, r15d
+0x007aa84e call      0x76a8d0
+0x007aa853 test      al, al
+0x007aa855 je        0x7aa93e
+0x007aa85b mov       edi, 6
+0x007aa860 mov       esi, 4
+0x007aa865 call      0xe4d70
+0x007aa86a test      al, al
+0x007aa86c je        0x7aa8d4
+0x007aa86e mov       al, byte ptr [rip + 0x1f25ce4] ; [0x26d0558]
+0x007aa874 test      al, al
+0x007aa876 jne       0x7aa8a6
+0x007aa878 lea       rdi, [rip + 0x1f25cd9] ; [0x26d0558]
+0x007aa87f call      0x12aa7d0
+0x007aa884 test      eax, eax
+0x007aa886 je        0x7aa8a6
+0x007aa888 lea       rdi, [rip + 0xeb2d60] ; [0x165d5ef] "world_controller:state:matchmaking: Matchmaking failed for activity '%d' due to error '%d'."
+0x007aa88f call      0xe4a10
+0x007aa894 mov       dword ptr [rip + 0x1f25cb6], eax ; [0x26d0550]
+0x007aa89a lea       rdi, [rip + 0x1f25cb7] ; [0x26d0558]
+0x007aa8a1 call      0x12aa7e0
+0x007aa8a6 movsx     edx, word ptr [r14 + 0x50]
+0x007aa8ab lea       rbx, [rbp - 0x160]
+0x007aa8b2 lea       rsi, [rip + 0xeb2d36] ; [0x165d5ef] "world_controller:state:matchmaking: Matchmaking failed for activity '%d' due to error '%d'."
+0x007aa8b9 mov       rdi, rbx
+0x007aa8bc mov       ecx, r15d
+0x007aa8bf xor       al, al
+0x007aa8c1 call      0x1008290
+0x007aa8c6 mov       edi, dword ptr [rip + 0x1f25c84] ; [0x26d0550]
+0x007aa8cc mov       rsi, rbx
+0x007aa8cf call      0xe4aa0
+0x007aa8d4 mov       edi, 1
+0x007aa8d9 mov       esi, 0x1b
+0x007aa8de mov       edx, 0x15
+0x007aa8e3 call      0x783e90
+0x007aa8e8 jmp       0x7aa903
+0x007aa8ea mov       edi, 3
+0x007aa8ef call      0x752150
+0x007aa8f4 mov       edi, 1
+0x007aa8f9 mov       esi, 0x24
+0x007aa8fe call      0x783e50
+0x007aa903 mov       rdi, r14
+0x007aa906 call      0x7ab5d0
+0x007aa90b cmp       byte ptr [r14 + 0x39], 0
+0x007aa910 je        0x7aa91c
+0x007aa912 call      0x76a6b0
+0x007aa917 mov       byte ptr [r14 + 0x39], 0
+0x007aa91c mov       rax, qword ptr [rip + 0x12747dd] ; [0x1a1f100]
+0x007aa923 mov       rax, qword ptr [rax]
+0x007aa926 cmp       rax, qword ptr [rbp - 0x20]
+0x007aa92a jne       0x7aab01
+0x007aa930 add       rsp, 0x158
+0x007aa937 pop       rbx
+0x007aa938 pop       r14
+0x007aa93a pop       r15
+0x007aa93c pop       rbp
+0x007aa93d ret       
+0x007aa93e test      r15d, r15d
+0x007aa941 je        0x7aa95a
+0x007aa943 lea       eax, [r15 - 1]
+0x007aa947 cmp       eax, 1
+0x007aa94a ja        0x7aaa74
+0x007aa950 mov       rdi, r14
+0x007aa953 call      0x7aab10
+0x007aa958 jmp       0x7aa903
+0x007aa95a mov       edi, 1
+0x007aa95f call      0x775180
+0x007aa964 mov       rdi, rax
+0x007aa967 call      0xb74340
+0x007aa96c mov       r15, rax
+0x007aa96f mov       rdi, r15
+0x007aa972 call      0xb9aad0
+0x007aa977 test      al, al
+0x007aa979 je        0x7aa9f4
+0x007aa97b mov       edi, 6
+0x007aa980 mov       esi, 1
+0x007aa985 call      0xe4d70
+0x007aa98a test      al, al
+0x007aa98c je        0x7aa9ec
+0x007aa98e mov       al, byte ptr [rip + 0x1f25bd4] ; [0x26d0568]
+0x007aa994 test      al, al
+0x007aa996 jne       0x7aa9c6
+0x007aa998 lea       rdi, [rip + 0x1f25bc9] ; [0x26d0568]
+0x007aa99f call      0x12aa7d0
+0x007aa9a4 test      eax, eax
+0x007aa9a6 je        0x7aa9c6
+0x007aa9a8 lea       rdi, [rip + 0xeb2c9c] ; [0x165d64b] 'world_controller:state:matchmaking: Had to clear team indexes before starting matchmaking in orbit'
+0x007aa9af call      0xe4a10
+0x007aa9b4 mov       dword ptr [rip + 0x1f25ba6], eax ; [0x26d0560]
+0x007aa9ba lea       rdi, [rip + 0x1f25ba7] ; [0x26d0568]
+0x007aa9c1 call      0x12aa7e0
+0x007aa9c6 lea       rbx, [rbp - 0x160]
+0x007aa9cd lea       rsi, [rip + 0xeb2c77] ; [0x165d64b] 'world_controller:state:matchmaking: Had to clear team indexes before starting matchmaking in orbit'
+0x007aa9d4 mov       rdi, rbx
+0x007aa9d7 xor       al, al
+0x007aa9d9 call      0x1008290
+0x007aa9de mov       edi, dword ptr [rip + 0x1f25b7c] ; [0x26d0560]
+0x007aa9e4 mov       rsi, rbx
+0x007aa9e7 call      0xe4aa0
+0x007aa9ec mov       rdi, r15
+0x007aa9ef call      0xb9ab30
+0x007aa9f4 mov       edi, 6
+0x007aa9f9 mov       esi, 1
+0x007aa9fe call      0xe4d70
+0x007aaa03 test      al, al
+0x007aaa05 je        0x7aaa6a
+0x007aaa07 mov       al, byte ptr [rip + 0x1f25b6b] ; [0x26d0578]
+0x007aaa0d test      al, al
+0x007aaa0f jne       0x7aaa3f
+0x007aaa11 lea       rdi, [rip + 0x1f25b60] ; [0x26d0578]
+0x007aaa18 call      0x12aa7d0
+0x007aaa1d test      eax, eax
+0x007aaa1f je        0x7aaa3f
+0x007aaa21 lea       rdi, [rip + 0xeb2c86] ; [0x165d6ae] "world_controller:state:matchmaking: Started matchmaking for activity '%d'."
+0x007aaa28 call      0xe4a10
+0x007aaa2d mov       dword ptr [rip + 0x1f25b3d], eax ; [0x26d0570]
+0x007aaa33 lea       rdi, [rip + 0x1f25b3e] ; [0x26d0578]
+0x007aaa3a call      0x12aa7e0
+0x007aaa3f movsx     edx, word ptr [r14 + 0x50]
+0x007aaa44 lea       rbx, [rbp - 0x160]
+0x007aaa4b lea       rsi, [rip + 0xeb2c5c] ; [0x165d6ae] "world_controller:state:matchmaking: Started matchmaking for activity '%d'."
+0x007aaa52 mov       rdi, rbx
+0x007aaa55 xor       al, al
+0x007aaa57 call      0x1008290
+0x007aaa5c mov       edi, dword ptr [rip + 0x1f25b0e] ; [0x26d0570]
+0x007aaa62 mov       rsi, rbx
+0x007aaa65 call      0xe4aa0
+0x007aaa6a call      0x76a9d0
+0x007aaa6f jmp       0x7aa903
+0x007aaa74 cmp       r15d, 3
+0x007aaa78 jne       0x7aa903
+0x007aaa7e mov       edi, 6
+0x007aaa83 mov       esi, 1
+0x007aaa88 call      0xe4d70
+0x007aaa8d test      al, al
+0x007aaa8f je        0x7aaaf4
+0x007aaa91 mov       al, byte ptr [rip + 0x1f25af1] ; [0x26d0588]
+0x007aaa97 test      al, al
+0x007aaa99 jne       0x7aaac9
+0x007aaa9b lea       rdi, [rip + 0x1f25ae6] ; [0x26d0588]
+0x007aaaa2 call      0x12aa7d0
+0x007aaaa7 test      eax, eax
+0x007aaaa9 je        0x7aaac9
+0x007aaaab lea       rdi, [rip + 0xeb2c47] ; [0x165d6f9] "world_controller:state:matchmaking: Matchmaking for activity '%d' done"
+0x007aaab2 call      0xe4a10
+0x007aaab7 mov       dword ptr [rip + 0x1f25ac3], eax ; [0x26d0580]
+0x007aaabd lea       rdi, [rip + 0x1f25ac4] ; [0x26d0588]
+0x007aaac4 call      0x12aa7e0
+0x007aaac9 movsx     edx, word ptr [r14 + 0x50]
+0x007aaace lea       rbx, [rbp - 0x160]
+0x007aaad5 lea       rsi, [rip + 0xeb2c1d] ; [0x165d6f9] "world_controller:state:matchmaking: Matchmaking for activity '%d' done"
+0x007aaadc mov       rdi, rbx
+0x007aaadf xor       al, al
+0x007aaae1 call      0x1008290
+0x007aaae6 mov       edi, dword ptr [rip + 0x1f25a94] ; [0x26d0580]
+0x007aaaec mov       rsi, rbx
+0x007aaaef call      0xe4aa0
+0x007aaaf4 mov       rdi, r14
+0x007aaaf7 call      0x7ab270
+0x007aaafc jmp       0x7aa903
+0x007aab01 call      0x12aa7f0
+0x007aab06 nop       
+0x007aab07 nop       word ptr [rax + rax]
+
+0x007a6c00 push      rbp
+0x007a6c01 mov       rbp, rsp
+0x007a6c04 push      r15
+0x007a6c06 push      r14
+0x007a6c08 push      r13
+0x007a6c0a push      r12
+0x007a6c0c push      rbx
+0x007a6c0d sub       rsp, 0x2ec8
+0x007a6c14 mov       r13, rdi
+0x007a6c17 mov       rax, qword ptr [rip + 0x12784e2] ; [0x1a1f100]
+0x007a6c1e mov       rax, qword ptr [rax]
+0x007a6c21 mov       qword ptr [rbp - 0x30], rax
+0x007a6c25 xor       edi, edi
+0x007a6c27 xor       esi, esi
+0x007a6c29 call      0x75cbe0
+0x007a6c2e mov       r14d, eax
+0x007a6c31 mov       edi, 1
+0x007a6c36 mov       esi, 4
+0x007a6c3b mov       edx, 1
+0x007a6c40 call      0x777910
+0x007a6c45 mov       ebx, eax
+0x007a6c47 mov       dword ptr [rbp - 0x2eb8], ebx
+0x007a6c4d call      0x789240
+0x007a6c52 test      ebx, 0xfffff
+0x007a6c58 je        0x7a6c78
+0x007a6c5a cmp       byte ptr [r13 + 0x38], 0
+0x007a6c5f je        0x7a6d58
+0x007a6c65 mov       dword ptr [rbp - 0x2edc], r14d
+0x007a6c6c lea       rbx, [rip + 0xeb5682] ; [0x165c2f5] 'JIP'
+0x007a6c73 jmp       0x7a6d66
+0x007a6c78 mov       edi, 4
+0x007a6c7d call      0x777560
+0x007a6c82 test      al, al
+0x007a6c84 je        0x7a702e
+0x007a6c8a call      0x697a0
+0x007a6c8f sub       eax, dword ptr [rip + 0x1f2959b] ; [0x26d0230]
+0x007a6c95 cmp       eax, 0x3e9
+0x007a6c9a jb        0x7a76ca
+0x007a6ca0 mov       al, byte ptr [rip + 0x1f29592] ; [0x26d0238]
+0x007a6ca6 test      al, al
+0x007a6ca8 jne       0x7a6cd8
+0x007a6caa lea       rdi, [rip + 0x1f29587] ; [0x26d0238]
+0x007a6cb1 call      0x12aa7d0
+0x007a6cb6 test      eax, eax
+0x007a6cb8 je        0x7a6cd8
+0x007a6cba lea       rdi, [rip + 0xeb58c4] ; [0x165c585] "world_controller:state:activity_setup: I am in trouble and want to recycle, but the posse host '%s' hasn't echoed my peer status bit yet."
+0x007a6cc1 call      0xe4a10
+0x007a6cc6 mov       dword ptr [rip + 0x1f29568], eax ; [0x26d0234]
+0x007a6ccc lea       rdi, [rip + 0x1f29565] ; [0x26d0238]
+0x007a6cd3 call      0x12aa7e0
+0x007a6cd8 mov       edi, 1
+0x007a6cdd call      0x775180
+0x007a6ce2 mov       rbx, rax
+0x007a6ce5 mov       eax, dword ptr [rbx + 0x8c48]
+0x007a6ceb lea       rdx, [rip + 0xea5c3d] ; [0x164c92f] '<SESSION NOT ESTABLISHED>'
+0x007a6cf2 cmp       eax, 0xa
+0x007a6cf5 ja        0x7a7699
+0x007a6cfb mov       ecx, 0x7f0
+0x007a6d00 bt        ecx, eax
+0x007a6d03 jae       0x7a7699
+0x007a6d09 mov       rdi, rbx
+0x007a6d0c call      0xb742d0
+0x007a6d11 test      al, al
+0x007a6d13 je        0x7a7692
+0x007a6d19 mov       ecx, dword ptr [rbx + 0x64c]
+0x007a6d1f movsxd    rax, dword ptr [rbx + 0x630]
+0x007a6d26 lea       rdx, [rip + 0xea5c2c] ; [0x164c959] '<HOST INDEX INVALID>'
+0x007a6d2d bt        ecx, eax
+0x007a6d30 jae       0x7a7699
+0x007a6d36 imul      rax, rax, 0x168
+0x007a6d3d cmp       dword ptr [rbx + rax + 0x67c], 3
+0x007a6d45 je        0x7a7699
+0x007a6d4b lea       rdx, [rbx + rax + 0x690]
+0x007a6d53 jmp       0x7a7699
+0x007a6d58 mov       dword ptr [rbp - 0x2edc], r14d
+0x007a6d5f lea       rbx, [rip + 0xeb5593] ; [0x165c2f9] 'NOJIP'
+0x007a6d66 lea       r14, [rbp - 0x570]
+0x007a6d6d lea       rsi, [rbp - 0x2eb8]
+0x007a6d74 mov       rdi, r14
+0x007a6d77 call      0x1052b80
+0x007a6d7c lea       rsi, [r13 + 0x3c]
+0x007a6d80 mov       qword ptr [rbp - 0x2ed8], r13
+0x007a6d87 lea       r15, [rbp - 0x970]
+0x007a6d8e mov       rdi, r15
+0x007a6d91 mov       r12, rsi
+0x007a6d94 call      0x1052b80
+0x007a6d99 lea       r13, [rbp - 0x170]
+0x007a6da0 lea       rsi, [rip + 0xeb54ac] ; [0x165c253] 'world_controller:state:activity_setup: Some posse peers failed to start up the instance and want to recycle. My flow=%s, peers in trouble=%s, initial FT peers=%s'
+0x007a6da7 mov       rdi, r13
+0x007a6daa mov       rdx, rbx
+0x007a6dad mov       rcx, r14
+0x007a6db0 mov       r8, r15
+0x007a6db3 xor       al, al
+0x007a6db5 call      0x1008290
+0x007a6dba mov       rdi, r13
+0x007a6dbd mov       esi, 0x140
+0x007a6dc2 call      0x65290
+0x007a6dc7 mov       r14d, 0x811c9dc5
+0x007a6dcd test      eax, eax
+0x007a6dcf je        0x7a6dff
+0x007a6dd1 movsxd    rbx, eax
+0x007a6dd4 mov       r14d, 0x811c9dc5
+0x007a6dda nop       word ptr [rax + rax]
+0x007a6de0 movsx     edi, byte ptr [r13]
+0x007a6de5 imul      r15d, r14d, 0x1000193
+0x007a6dec call      0x64e20
+0x007a6df1 mov       r14d, eax
+0x007a6df4 xor       r14d, r15d
+0x007a6df7 inc       r13
+0x007a6dfa dec       rbx
+0x007a6dfd jne       0x7a6de0
+0x007a6dff mov       eax, dword ptr [rip + 0x1135ceb] ; [0x18dcaf0]
+0x007a6e05 cmp       eax, 0x811c9dc5
+0x007a6e0a je        0x7a6e23
+0x007a6e0c cmp       r14d, eax
+0x007a6e0f jne       0x7a6e23
+0x007a6e11 call      0x697a0
+0x007a6e16 sub       eax, dword ptr [rip + 0x1f293b4] ; [0x26d01d0]
+0x007a6e1c cmp       eax, 0x3e9
+0x007a6e21 jb        0x7a6e7f
+0x007a6e23 mov       al, byte ptr [rip + 0x1f293af] ; [0x26d01d8]
+0x007a6e29 test      al, al
+0x007a6e2b jne       0x7a6e5b
+0x007a6e2d lea       rdi, [rip + 0x1f293a4] ; [0x26d01d8]
+0x007a6e34 call      0x12aa7d0
+0x007a6e39 test      eax, eax
+0x007a6e3b je        0x7a6e5b
+0x007a6e3d lea       rdi, [rip + 0xeb540f] ; [0x165c253] 'world_controller:state:activity_setup: Some posse peers failed to start up the instance and want to recycle. My flow=%s, peers in trouble=%s, initial FT peers=%s'
+0x007a6e44 call      0xe4a10
+0x007a6e49 mov       dword ptr [rip + 0x1f29385], eax ; [0x26d01d4]
+0x007a6e4f lea       rdi, [rip + 0x1f29382] ; [0x26d01d8]
+0x007a6e56 call      0x12aa7e0
+0x007a6e5b mov       edi, dword ptr [rip + 0x1f29373] ; [0x26d01d4]
+0x007a6e61 lea       rsi, [rbp - 0x170]
+0x007a6e68 call      0xe4aa0
+0x007a6e6d mov       dword ptr [rip + 0x1135c7c], r14d ; [0x18dcaf0]
+0x007a6e74 call      0x697a0
+0x007a6e79 mov       dword ptr [rip + 0x1f29351], eax ; [0x26d01d0]
+0x007a6e7f mov       r13, qword ptr [rbp - 0x2ed8]
+0x007a6e86 cmp       byte ptr [r13 + 0x38], 0
+0x007a6e8b mov       rbx, r12
+0x007a6e8e je        0x7a6f5d
+0x007a6e94 mov       eax, dword ptr [rbp - 0x2eb8]
+0x007a6e9a and       eax, dword ptr [rbx]
+0x007a6e9c test      eax, 0xfffff
+0x007a6ea1 je        0x7a6f5d
+0x007a6ea7 mov       al, byte ptr [rip + 0x1f2933b] ; [0x26d01e8]
+0x007a6ead test      al, al
+0x007a6eaf jne       0x7a6edf
+0x007a6eb1 lea       rdi, [rip + 0x1f29330] ; [0x26d01e8]
+0x007a6eb8 call      0x12aa7d0
+0x007a6ebd test      eax, eax
+0x007a6ebf je        0x7a6edf
+0x007a6ec1 lea       rdi, [rip + 0xeb5437] ; [0x165c2ff] 'world_controller:state:activity_setup: We ran into trouble while joining in progress, going back to Orbit. Peers in trouble=%s, inital FT peers=%s'
+0x007a6ec8 call      0xe4a10
+0x007a6ecd mov       dword ptr [rip + 0x1f2930d], eax ; [0x26d01e0]
+0x007a6ed3 lea       rdi, [rip + 0x1f2930e] ; [0x26d01e8]
+0x007a6eda call      0x12aa7e0
+0x007a6edf lea       r14, [rbp - 0xd70]
+0x007a6ee6 lea       rsi, [rbp - 0x2eb8]
+0x007a6eed mov       rdi, r14
+0x007a6ef0 call      0x1052b80
+0x007a6ef5 lea       r12, [rbp - 0x1170]
+0x007a6efc mov       rdi, r12
+0x007a6eff mov       rsi, rbx
+0x007a6f02 call      0x1052b80
+0x007a6f07 lea       r15, [rbp - 0x170]
+0x007a6f0e lea       rsi, [rip + 0xeb53ea] ; [0x165c2ff] 'world_controller:state:activity_setup: We ran into trouble while joining in progress, going back to Orbit. Peers in trouble=%s, inital FT peers=%s'
+0x007a6f15 mov       rdi, r15
+0x007a6f18 mov       rdx, r14
+0x007a6f1b mov       rcx, r12
+0x007a6f1e xor       al, al
+0x007a6f20 call      0x1008290
+0x007a6f25 mov       edi, dword ptr [rip + 0x1f292b5] ; [0x26d01e0]
+0x007a6f2b mov       rsi, r15
+0x007a6f2e call      0xe4aa0
+0x007a6f33 mov       edi, dword ptr [rbp - 0x2edc]
+0x007a6f39 call      0x2a46b0
+0x007a6f3e mov       edi, 0x19
+0x007a6f43 mov       esi, 0x36
+0x007a6f48 mov       rdx, rax
+0x007a6f4b call      0x783ee0
+0x007a6f50 mov       dword ptr [r13 + 0x30], 1
+0x007a6f58 jmp       0x7a78c2
+0x007a6f5d mov       edi, 1
+0x007a6f62 call      0x785060
+0x007a6f67 cmp       eax, 0x1d
+0x007a6f6a jne       0x7a6fbb
+0x007a6f6c xor       edi, edi
+0x007a6f6e call      0x7754d0
+0x007a6f73 test      al, al
+0x007a6f75 je        0x7a739a
+0x007a6f7b mov       edi, 3
+0x007a6f80 call      0x752150
+0x007a6f85 test      al, al
+0x007a6f87 je        0x7a6fa4
+0x007a6f89 xor       edi, edi
+0x007a6f8b call      0x775770
+0x007a6f90 lea       rdi, [rax + 0x9b8]
+0x007a6f97 call      0x11c3f80
+0x007a6f9c mov       rdi, rax
+0x007a6f9f call      0x78b550
+0x007a6fa4 cmp       byte ptr [r13 + 0x38], 0
+0x007a6fa9 je        0x7a72a8
+0x007a6faf lea       rdx, [rip + 0xeb533f] ; [0x165c2f5] 'JIP'
+0x007a6fb6 jmp       0x7a72af
+0x007a6fbb mov       edi, 1
+0x007a6fc0 call      0x7754d0
+0x007a6fc5 test      al, al
+0x007a6fc7 je        0x7a7071
+0x007a6fcd mov       edi, 1
+0x007a6fd2 call      0x785300
+0x007a6fd7 test      al, al
+0x007a6fd9 je        0x7a7231
+0x007a6fdf mov       al, byte ptr [rip + 0x1f29233] ; [0x26d0218]
+0x007a6fe5 test      al, al
+0x007a6fe7 jne       0x7a7017
+0x007a6fe9 lea       rdi, [rip + 0x1f29228] ; [0x26d0218]
+0x007a6ff0 call      0x12aa7d0
+0x007a6ff5 test      eax, eax
+0x007a6ff7 je        0x7a7017
+0x007a6ff9 lea       rdi, [rip + 0xeb549f] ; [0x165c49f] 'world_controller:state:activity_setup: Host (%s) setting goal to matchmaking to get the posse to recycle.'
+0x007a7000 call      0xe4a10
+0x007a7005 mov       dword ptr [rip + 0x1f29205], eax ; [0x26d0210]
+0x007a700b lea       rdi, [rip + 0x1f29206] ; [0x26d0218]
+0x007a7012 call      0x12aa7e0
+0x007a7017 cmp       byte ptr [r13 + 0x38], 0
+0x007a701c je        0x7a7649
+0x007a7022 lea       rdx, [rip + 0xeb52cc] ; [0x165c2f5] 'JIP'
+0x007a7029 jmp       0x7a7650
+0x007a702e cmp       r14d, -1
+0x007a7032 jne       0x7a713f
+0x007a7038 xor       edi, edi
+0x007a703a call      0x775770
+0x007a703f lea       rdi, [rax + 0x9b8]
+0x007a7046 call      0x11c3f80
+0x007a704b mov       rbx, rax
+0x007a704e mov       edi, 3
+0x007a7053 call      0x752150
+0x007a7058 xor       edi, edi
+0x007a705a xor       esi, esi
+0x007a705c mov       rdx, rbx
+0x007a705f call      0x75c720
+0x007a7064 mov       dword ptr [r13 + 0x30], 3
+0x007a706c jmp       0x7a78c2
+0x007a7071 call      0x697a0
+0x007a7076 sub       eax, dword ptr [rip + 0x1f291a4] ; [0x26d0220]
+0x007a707c cmp       eax, 0x3e9
+0x007a7081 jb        0x7a78ba
+0x007a7087 mov       al, byte ptr [rip + 0x1f2919b] ; [0x26d0228]
+0x007a708d test      al, al
+0x007a708f jne       0x7a70bf
+0x007a7091 lea       rdi, [rip + 0x1f29190] ; [0x26d0228]
+0x007a7098 call      0x12aa7d0
+0x007a709d test      eax, eax
+0x007a709f je        0x7a70bf
+0x007a70a1 lea       rdi, [rip + 0xeb5461] ; [0x165c509] "world_controller:state:activity_setup: Waiting for the posse host '%s' to change our goal to matchmaking so we can recycle."
+0x007a70a8 call      0xe4a10
+0x007a70ad mov       dword ptr [rip + 0x1f29171], eax ; [0x26d0224]
+0x007a70b3 lea       rdi, [rip + 0x1f2916e] ; [0x26d0228]
+0x007a70ba call      0x12aa7e0
+0x007a70bf mov       edi, 1
+0x007a70c4 call      0x775180
+0x007a70c9 mov       rbx, rax
+0x007a70cc mov       eax, dword ptr [rbx + 0x8c48]
+0x007a70d2 lea       rdx, [rip + 0xea5856] ; [0x164c92f] '<SESSION NOT ESTABLISHED>'
+0x007a70d9 cmp       eax, 0xa
+0x007a70dc ja        0x7a7889
+0x007a70e2 mov       ecx, 0x7f0
+0x007a70e7 bt        ecx, eax
+0x007a70ea jae       0x7a7889
+0x007a70f0 mov       rdi, rbx
+0x007a70f3 call      0xb742d0
+0x007a70f8 test      al, al
+0x007a70fa je        0x7a7882
+0x007a7100 mov       ecx, dword ptr [rbx + 0x64c]
+0x007a7106 movsxd    rax, dword ptr [rbx + 0x630]
+0x007a710d lea       rdx, [rip + 0xea5845] ; [0x164c959] '<HOST INDEX INVALID>'
+0x007a7114 bt        ecx, eax
+0x007a7117 jae       0x7a7889
+0x007a711d imul      rax, rax, 0x168
+0x007a7124 cmp       dword ptr [rbx + rax + 0x67c], 3
+0x007a712c je        0x7a7889
+0x007a7132 lea       rdx, [rbx + rax + 0x690]
+0x007a713a jmp       0x7a7889
+0x007a713f mov       edi, r14d
+0x007a7142 call      0x75cd90
+0x007a7147 test      al, al
+0x007a7149 je        0x7a7248
+0x007a714f cmp       byte ptr [r13 + 0x38], 0
+0x007a7154 je        0x7a73b6
+0x007a715a cmp       r14d, 0x20
+0x007a715e jne       0x7a73b6
+0x007a7164 mov       al, byte ptr [rip + 0x1f290de] ; [0x26d0248]
+0x007a716a test      al, al
+0x007a716c jne       0x7a719c
+0x007a716e lea       rdi, [rip + 0x1f290d3] ; [0x26d0248]
+0x007a7175 call      0x12aa7d0
+0x007a717a test      eax, eax
+0x007a717c je        0x7a719c
+0x007a717e lea       rdi, [rip + 0xeb548a] ; [0x165c60f] "world_controller:state:activity_setup: Host migration (now [%s], host '%s') while joining in progress; trying to stop and re-start activity instance."
+0x007a7185 call      0xe4a10
+0x007a718a mov       dword ptr [rip + 0x1f290b0], eax ; [0x26d0240]
+0x007a7190 lea       rdi, [rip + 0x1f290b1] ; [0x26d0248]
+0x007a7197 call      0x12aa7e0
+0x007a719c mov       edi, 1
+0x007a71a1 call      0x775180
+0x007a71a6 mov       rdi, rax
+0x007a71a9 call      0xb6db70
+0x007a71ae mov       r15, rax
+0x007a71b1 mov       edi, 1
+0x007a71b6 call      0x775180
+0x007a71bb mov       rbx, rax
+0x007a71be lea       rcx, [rip + 0xea576a] ; [0x164c92f] '<SESSION NOT ESTABLISHED>'
+0x007a71c5 mov       eax, dword ptr [rbx + 0x8c48]
+0x007a71cb cmp       eax, 0xa
+0x007a71ce ja        0x7a7a06
+0x007a71d4 mov       edx, 0x7f0
+0x007a71d9 bt        edx, eax
+0x007a71dc jae       0x7a7a06
+0x007a71e2 mov       rdi, rbx
+0x007a71e5 call      0xb742d0
+0x007a71ea test      al, al
+0x007a71ec je        0x7a79ff
+0x007a71f2 mov       edx, dword ptr [rbx + 0x64c]
+0x007a71f8 movsxd    rax, dword ptr [rbx + 0x630]
+0x007a71ff lea       rcx, [rip + 0xea5753] ; [0x164c959] '<HOST INDEX INVALID>'
+0x007a7206 bt        edx, eax
+0x007a7209 jae       0x7a7a06
+0x007a720f imul      rax, rax, 0x168
+0x007a7216 cmp       dword ptr [rbx + rax + 0x67c], 3
+0x007a721e je        0x7a7a06
+0x007a7224 lea       rcx, [rbx + rax + 0x690]
+0x007a722c jmp       0x7a7a06
+0x007a7231 cmp       byte ptr [r13 + 0x38], 0
+0x007a7236 je        0x7a745a
+0x007a723c lea       rdx, [rip + 0xeb50b2] ; [0x165c2f5] 'JIP'
+0x007a7243 jmp       0x7a7461
+0x007a7248 cmp       r14d, 6
+0x007a724c jne       0x7a744d
+0x007a7252 mov       edi, 1
+0x007a7257 mov       esi, 3
+0x007a725c xor       edx, edx
+0x007a725e call      0x777910
+0x007a7263 mov       ebx, eax
+0x007a7265 mov       dword ptr [rbp - 0x2ec0], ebx
+0x007a726b mov       edi, 3
+0x007a7270 call      0x777560
+0x007a7275 test      al, al
+0x007a7277 je        0x7a76d7
+0x007a727d mov       dword ptr [rbp - 0x2ec8], ebx
+0x007a7283 xor       edi, edi
+0x007a7285 call      0x777460
+0x007a728a mov       dword ptr [rbp - 0x2ed0], eax
+0x007a7290 cmp       byte ptr [r13 + 0x38], 0
+0x007a7295 je        0x7a78e8
+0x007a729b and       eax, ebx
+0x007a729d mov       dword ptr [rbp - 0x2ec8], eax
+0x007a72a3 jmp       0x7a78ea
+0x007a72a8 lea       rdx, [rip + 0xeb504a] ; [0x165c2f9] 'NOJIP'
+0x007a72af lea       r14, [rbp - 0x170]
+0x007a72b6 lea       rsi, [rip + 0xeb50d5] ; [0x165c392] 'world_controller:state:activity_setup: As fireteam host (%s), setting goal-state to orbit to correspond with activity goal-state of matchmaking.'
+0x007a72bd mov       rdi, r14
+0x007a72c0 xor       al, al
+0x007a72c2 call      0x1008290
+0x007a72c7 mov       rdi, r14
+0x007a72ca mov       esi, 0x140
+0x007a72cf call      0x65290
+0x007a72d4 mov       r15d, 0x811c9dc5
+0x007a72da test      eax, eax
+0x007a72dc je        0x7a730e
+0x007a72de movsxd    rbx, eax
+0x007a72e1 mov       r15d, 0x811c9dc5
+0x007a72e7 nop       word ptr [rax + rax]
+0x007a72f0 movsx     edi, byte ptr [r14]
+0x007a72f4 imul      r12d, r15d, 0x1000193
+0x007a72fb call      0x64e20
+0x007a7300 mov       r15d, eax
+0x007a7303 xor       r15d, r12d
+0x007a7306 inc       r14
+0x007a7309 dec       rbx
+0x007a730c jne       0x7a72f0
+0x007a730e mov       eax, dword ptr [rip + 0x11357e0] ; [0x18dcaf4]
+0x007a7314 cmp       eax, 0x811c9dc5
+0x007a7319 je        0x7a7332
+0x007a731b cmp       r15d, eax
+0x007a731e jne       0x7a7332
+0x007a7320 call      0x697a0
+0x007a7325 sub       eax, dword ptr [rip + 0x1f28ec5] ; [0x26d01f0]
+0x007a732b cmp       eax, 0x1389
+0x007a7330 jb        0x7a738e
+0x007a7332 mov       al, byte ptr [rip + 0x1f28ec0] ; [0x26d01f8]
+0x007a7338 test      al, al
+0x007a733a jne       0x7a736a
+0x007a733c lea       rdi, [rip + 0x1f28eb5] ; [0x26d01f8]
+0x007a7343 call      0x12aa7d0
+0x007a7348 test      eax, eax
+0x007a734a je        0x7a736a
+0x007a734c lea       rdi, [rip + 0xeb503f] ; [0x165c392] 'world_controller:state:activity_setup: As fireteam host (%s), setting goal-state to orbit to correspond with activity goal-state of matchmaking.'
+0x007a7353 call      0xe4a10
+0x007a7358 mov       dword ptr [rip + 0x1f28e96], eax ; [0x26d01f4]
+0x007a735e lea       rdi, [rip + 0x1f28e93] ; [0x26d01f8]
+0x007a7365 call      0x12aa7e0
+0x007a736a mov       edi, dword ptr [rip + 0x1f28e84] ; [0x26d01f4]
+0x007a7370 lea       rsi, [rbp - 0x170]
+0x007a7377 call      0xe4aa0
+0x007a737c mov       dword ptr [rip + 0x1135771], r15d ; [0x18dcaf4]
+0x007a7383 call      0x697a0
+0x007a7388 mov       dword ptr [rip + 0x1f28e62], eax ; [0x26d01f0]
+0x007a738e xor       edi, edi
+0x007a7390 mov       esi, 0x1b
+0x007a7395 call      0x783e50
+0x007a739a mov       edi, 0x19
+0x007a739f mov       esi, 5
+0x007a73a4 call      0x784e50
+0x007a73a9 mov       dword ptr [r13 + 0x30], 1
+0x007a73b1 jmp       0x7a78c2
+0x007a73b6 mov       edi, r14d
+0x007a73b9 call      0x75cda0
+0x007a73be test      al, al
+0x007a73c0 je        0x7a754f
+0x007a73c6 mov       al, byte ptr [rip + 0x1f28e8c] ; [0x26d0258]
+0x007a73cc test      al, al
+0x007a73ce jne       0x7a73fe
+0x007a73d0 lea       rdi, [rip + 0x1f28e81] ; [0x26d0258]
+0x007a73d7 call      0x12aa7d0
+0x007a73dc test      eax, eax
+0x007a73de je        0x7a73fe
+0x007a73e0 lea       rdi, [rip + 0xeb52be] ; [0x165c6a5] "world_controller:state:activity_setup: Fatal error '%s' encountered when starting PRIVATE activity instance -- attempting to recycle to matchmaking.  Forced failure=%s"
+0x007a73e7 call      0xe4a10
+0x007a73ec mov       dword ptr [rip + 0x1f28e5e], eax ; [0x26d0250]
+0x007a73f2 lea       rdi, [rip + 0x1f28e5f] ; [0x26d0258]
+0x007a73f9 call      0x12aa7e0
+0x007a73fe mov       edi, r14d
+0x007a7401 call      0x2a46b0
+0x007a7406 lea       rbx, [rbp - 0x170]
+0x007a740d lea       rsi, [rip + 0xeb5291] ; [0x165c6a5] "world_controller:state:activity_setup: Fatal error '%s' encountered when starting PRIVATE activity instance -- attempting to recycle to matchmaking.  Forced failure=%s"
+0x007a7414 lea       rcx, [rip + 0xeb0550] ; [0x165796b] 'NO'
+0x007a741b mov       rdi, rbx
+0x007a741e mov       rdx, rax
+0x007a7421 xor       al, al
+0x007a7423 call      0x1008290
+0x007a7428 mov       edi, dword ptr [rip + 0x1f28e22] ; [0x26d0250]
+0x007a742e mov       rsi, rbx
+0x007a7431 call      0xe4aa0
+0x007a7436 mov       edi, 4
+0x007a743b call      0x777550
+0x007a7440 mov       dword ptr [r13 + 0x30], 4
+0x007a7448 jmp       0x7a78c2
+0x007a744d mov       dword ptr [r13 + 0x30], 7
+0x007a7455 jmp       0x7a78c2
+0x007a745a lea       rdx, [rip + 0xeb4e98] ; [0x165c2f9] 'NOJIP'
+0x007a7461 lea       r14, [rbp - 0x12b0]
+0x007a7468 lea       rsi, [rip + 0xeb4fb4] ; [0x165c423] 'world_controller:state:activity_setup: Host (%s) waiting for all peers to arrive in this state before initiating recycling.'
+0x007a746f mov       rdi, r14
+0x007a7472 xor       al, al
+0x007a7474 call      0x1008290
+0x007a7479 mov       rdi, r14
+0x007a747c mov       esi, 0x140
+0x007a7481 call      0x65290
+0x007a7486 mov       r15d, 0x811c9dc5
+0x007a748c test      eax, eax
+0x007a748e je        0x7a74be
+0x007a7490 movsxd    rbx, eax
+0x007a7493 mov       r15d, 0x811c9dc5
+0x007a7499 nop       dword ptr [rax]
+0x007a74a0 movsx     edi, byte ptr [r14]
+0x007a74a4 imul      r12d, r15d, 0x1000193
+0x007a74ab call      0x64e20
+0x007a74b0 mov       r15d, eax
+0x007a74b3 xor       r15d, r12d
+0x007a74b6 inc       r14
+0x007a74b9 dec       rbx
+0x007a74bc jne       0x7a74a0
+0x007a74be mov       eax, dword ptr [rip + 0x1135634] ; [0x18dcaf8]
+0x007a74c4 cmp       eax, 0x811c9dc5
+0x007a74c9 je        0x7a74e6
+0x007a74cb cmp       r15d, eax
+0x007a74ce jne       0x7a74e6
+0x007a74d0 call      0x697a0
+0x007a74d5 sub       eax, dword ptr [rip + 0x1f28d25] ; [0x26d0200]
+0x007a74db cmp       eax, 0x3e9
+0x007a74e0 jb        0x7a78ba
+0x007a74e6 mov       al, byte ptr [rip + 0x1f28d1c] ; [0x26d0208]
+0x007a74ec test      al, al
+0x007a74ee jne       0x7a751e
+0x007a74f0 lea       rdi, [rip + 0x1f28d11] ; [0x26d0208]
+0x007a74f7 call      0x12aa7d0
+0x007a74fc test      eax, eax
+0x007a74fe je        0x7a751e
+0x007a7500 lea       rdi, [rip + 0xeb4f1c] ; [0x165c423] 'world_controller:state:activity_setup: Host (%s) waiting for all peers to arrive in this state before initiating recycling.'
+0x007a7507 call      0xe4a10
+0x007a750c mov       dword ptr [rip + 0x1f28cf2], eax ; [0x26d0204]
+0x007a7512 lea       rdi, [rip + 0x1f28cef] ; [0x26d0208]
+0x007a7519 call      0x12aa7e0
+0x007a751e mov       edi, dword ptr [rip + 0x1f28ce0] ; [0x26d0204]
+0x007a7524 lea       rsi, [rbp - 0x12b0]
+0x007a752b call      0xe4aa0
+0x007a7530 mov       dword ptr [rip + 0x11355c1], r15d ; [0x18dcaf8]
+0x007a7537 call      0x697a0
+0x007a753c mov       dword ptr [rip + 0x1f28cbe], eax ; [0x26d0200]
+0x007a7542 mov       dword ptr [r13 + 0x30], 1
+0x007a754a jmp       0x7a78c2
+0x007a754f mov       dword ptr [rbp - 0x2ebc], 0xffffffff
+0x007a7559 xor       edi, edi
+0x007a755b call      0x775180
+0x007a7560 lea       r8, [rbp - 0x2ebc]
+0x007a7567 xor       edi, edi
+0x007a7569 xor       esi, esi
+0x007a756b mov       rdx, rax
+0x007a756e mov       ecx, 1
+0x007a7573 call      0x795340
+0x007a7578 test      al, al
+0x007a757a jne       0x7a7586
+0x007a757c mov       dword ptr [rbp - 0x2ebc], 0x19
+0x007a7586 mov       al, byte ptr [rip + 0x1f28cdc] ; [0x26d0268]
+0x007a758c test      al, al
+0x007a758e jne       0x7a75be
+0x007a7590 lea       rdi, [rip + 0x1f28cd1] ; [0x26d0268]
+0x007a7597 call      0x12aa7d0
+0x007a759c test      eax, eax
+0x007a759e je        0x7a75be
+0x007a75a0 lea       rdi, [rip + 0xeb51a6] ; [0x165c74d] "world_controller:state:activity_setup: Fatal error '%s' starting PRIVATE activity instance, aborting to orbit. Posse host=%s"
+0x007a75a7 call      0xe4a10
+0x007a75ac mov       dword ptr [rip + 0x1f28cae], eax ; [0x26d0260]
+0x007a75b2 lea       rdi, [rip + 0x1f28caf] ; [0x26d0268]
+0x007a75b9 call      0x12aa7e0
+0x007a75be mov       edi, r14d
+0x007a75c1 call      0x2a46b0
+0x007a75c6 mov       r15, rax
+0x007a75c9 mov       edi, 1
+0x007a75ce call      0x775180
+0x007a75d3 mov       rbx, rax
+0x007a75d6 mov       eax, dword ptr [rbx + 0x8c48]
+0x007a75dc lea       rcx, [rip + 0xea534c] ; [0x164c92f] '<SESSION NOT ESTABLISHED>'
+0x007a75e3 cmp       eax, 0xa
+0x007a75e6 ja        0x7a79ac
+0x007a75ec mov       edx, 0x7f0
+0x007a75f1 bt        edx, eax
+0x007a75f4 jae       0x7a79ac
+0x007a75fa mov       rdi, rbx
+0x007a75fd call      0xb742d0
+0x007a7602 test      al, al
+0x007a7604 je        0x7a79a5
+0x007a760a mov       edx, dword ptr [rbx + 0x64c]
+0x007a7610 movsxd    rax, dword ptr [rbx + 0x630]
+0x007a7617 lea       rcx, [rip + 0xea533b] ; [0x164c959] '<HOST INDEX INVALID>'
+0x007a761e bt        edx, eax
+0x007a7621 jae       0x7a79ac
+0x007a7627 imul      rax, rax, 0x168
+0x007a762e cmp       dword ptr [rbx + rax + 0x67c], 3
+0x007a7636 je        0x7a79ac
+0x007a763c lea       rcx, [rbx + rax + 0x690]
+0x007a7644 jmp       0x7a79ac
+0x007a7649 lea       rdx, [rip + 0xeb4ca9] ; [0x165c2f9] 'NOJIP'
+0x007a7650 lea       rbx, [rbp - 0x170]
+0x007a7657 lea       rsi, [rip + 0xeb4e41] ; [0x165c49f] 'world_controller:state:activity_setup: Host (%s) setting goal to matchmaking to get the posse to recycle.'
+0x007a765e mov       rdi, rbx
+0x007a7661 xor       al, al
+0x007a7663 call      0x1008290
+0x007a7668 mov       edi, dword ptr [rip + 0x1f28ba2] ; [0x26d0210]
+0x007a766e mov       rsi, rbx
+0x007a7671 call      0xe4aa0
+0x007a7676 mov       edi, 1
+0x007a767b mov       esi, 0x1d
+0x007a7680 call      0x783e50
+0x007a7685 mov       dword ptr [r13 + 0x30], 1
+0x007a768d jmp       0x7a78c2
+0x007a7692 lea       rdx, [rip + 0xea52b0] ; [0x164c949] '<NO MEMBERSHIP>'
+0x007a7699 lea       rbx, [rbp - 0x170]
+0x007a76a0 lea       rsi, [rip + 0xeb4ede] ; [0x165c585] "world_controller:state:activity_setup: I am in trouble and want to recycle, but the posse host '%s' hasn't echoed my peer status bit yet."
+0x007a76a7 mov       rdi, rbx
+0x007a76aa xor       al, al
+0x007a76ac call      0x1008290
+0x007a76b1 mov       edi, dword ptr [rip + 0x1f28b7d] ; [0x26d0234]
+0x007a76b7 mov       rsi, rbx
+0x007a76ba call      0xe4aa0
+0x007a76bf call      0x697a0
+0x007a76c4 mov       dword ptr [rip + 0x1f28b66], eax ; [0x26d0230]
+0x007a76ca mov       dword ptr [r13 + 0x30], 2
+0x007a76d2 jmp       0x7a78c2
+0x007a76d7 mov       edi, 1
+0x007a76dc call      0x7754d0
+0x007a76e1 test      al, al
+0x007a76e3 je        0x7a7793
+0x007a76e9 call      0x75c600
+0x007a76ee test      al, al
+0x007a76f0 jne       0x7a7793
+0x007a76f6 mov       edi, 1
+0x007a76fb mov       esi, 3
+0x007a7700 call      0x7776f0
+0x007a7705 test      al, al
+0x007a7707 je        0x7a7a4a
+0x007a770d mov       edi, 2
+0x007a7712 mov       esi, 2
+0x007a7717 call      0xe4d70
+0x007a771c test      al, al
+0x007a771e je        0x7a7793
+0x007a7720 mov       al, byte ptr [rip + 0x1f28b52] ; [0x26d0278]
+0x007a7726 test      al, al
+0x007a7728 jne       0x7a7758
+0x007a772a lea       rdi, [rip + 0x1f28b47] ; [0x26d0278]
+0x007a7731 call      0x12aa7d0
+0x007a7736 test      eax, eax
+0x007a7738 je        0x7a7758
+0x007a773a lea       rdi, [rip + 0xeb5089] ; [0x165c7ca] 'world_controller:state:activity_setup: As HOST of [%s], all our peers are done setting up, moving forward.'
+0x007a7741 call      0xe4a10
+0x007a7746 mov       dword ptr [rip + 0x1f28b24], eax ; [0x26d0270]
+0x007a774c lea       rdi, [rip + 0x1f28b25] ; [0x26d0278]
+0x007a7753 call      0x12aa7e0
+0x007a7758 mov       edi, 1
+0x007a775d call      0x775180
+0x007a7762 mov       rdi, rax
+0x007a7765 call      0xb6db70
+0x007a776a lea       rbx, [rbp - 0x170]
+0x007a7771 lea       rsi, [rip + 0xeb5052] ; [0x165c7ca] 'world_controller:state:activity_setup: As HOST of [%s], all our peers are done setting up, moving forward.'
+0x007a7778 mov       rdi, rbx
+0x007a777b mov       rdx, rax
+0x007a777e xor       al, al
+0x007a7780 call      0x1008290
+0x007a7785 mov       edi, dword ptr [rip + 0x1f28ae5] ; [0x26d0270]
+0x007a778b mov       rsi, rbx
+0x007a778e call      0xe4aa0
+0x007a7793 mov       edi, 2
+0x007a7798 mov       esi, 2
+0x007a779d call      0xe4d70
+0x007a77a2 test      al, al
+0x007a77a4 je        0x7a7819
+0x007a77a6 mov       al, byte ptr [rip + 0x1f28aec] ; [0x26d0298]
+0x007a77ac test      al, al
+0x007a77ae jne       0x7a77de
+0x007a77b0 lea       rdi, [rip + 0x1f28ae1] ; [0x26d0298]
+0x007a77b7 call      0x12aa7d0
+0x007a77bc test      eax, eax
+0x007a77be je        0x7a77de
+0x007a77c0 lea       rdi, [rip + 0xeb50cc] ; [0x165c893] 'world_controller:state:activity_setup: PRIVATE activity instance is ready for instantiation, setting peer status bit and waiting, session=%s'
+0x007a77c7 call      0xe4a10
+0x007a77cc mov       dword ptr [rip + 0x1f28abe], eax ; [0x26d0290]
+0x007a77d2 lea       rdi, [rip + 0x1f28abf] ; [0x26d0298]
+0x007a77d9 call      0x12aa7e0
+0x007a77de mov       edi, 1
+0x007a77e3 call      0x775180
+0x007a77e8 mov       rdi, rax
+0x007a77eb call      0xb6db70
+0x007a77f0 lea       rbx, [rbp - 0x170]
+0x007a77f7 lea       rsi, [rip + 0xeb5095] ; [0x165c893] 'world_controller:state:activity_setup: PRIVATE activity instance is ready for instantiation, setting peer status bit and waiting, session=%s'
+0x007a77fe mov       rdi, rbx
+0x007a7801 mov       rdx, rax
+0x007a7804 xor       al, al
+0x007a7806 call      0x1008290
+0x007a780b mov       edi, dword ptr [rip + 0x1f28a7f] ; [0x26d0290]
+0x007a7811 mov       rsi, rbx
+0x007a7814 call      0xe4aa0
+0x007a7819 mov       edi, 3
+0x007a781e call      0x777550
+0x007a7823 mov       edi, 1
+0x007a7828 call      0x775770
+0x007a782d mov       rbx, rax
+0x007a7830 xor       edi, edi
+0x007a7832 xor       esi, esi
+0x007a7834 call      0x75d560
+0x007a7839 mov       r14, rax
+0x007a783c add       rbx, 0x9b8
+0x007a7843 mov       rdi, rbx
+0x007a7846 call      0x11c3f80
+0x007a784b mov       r15, rax
+0x007a784e mov       rdi, rbx
+0x007a7851 call      0xb8e190
+0x007a7856 mov       r12, rax
+0x007a7859 mov       rdi, rbx
+0x007a785c call      0xb8e1f0
+0x007a7861 mov       r13, rax
+0x007a7864 mov       rdi, rbx
+0x007a7867 call      0xb8e220
+0x007a786c mov       rdi, r14
+0x007a786f mov       rsi, r15
+0x007a7872 mov       rdx, r12
+0x007a7875 mov       rcx, r13
+0x007a7878 mov       r8d, eax
+0x007a787b call      0x29a4b0
+0x007a7880 jmp       0x7a78c2
+0x007a7882 lea       rdx, [rip + 0xea50c0] ; [0x164c949] '<NO MEMBERSHIP>'
+0x007a7889 lea       rbx, [rbp - 0x170]
+0x007a7890 lea       rsi, [rip + 0xeb4c72] ; [0x165c509] "world_controller:state:activity_setup: Waiting for the posse host '%s' to change our goal to matchmaking so we can recycle."
+0x007a7897 mov       rdi, rbx
+0x007a789a xor       al, al
+0x007a789c call      0x1008290
+0x007a78a1 mov       edi, dword ptr [rip + 0x1f2897d] ; [0x26d0224]
+0x007a78a7 mov       rsi, rbx
+0x007a78aa call      0xe4aa0
+0x007a78af call      0x697a0
+0x007a78b4 mov       dword ptr [rip + 0x1f28966], eax ; [0x26d0220]
+0x007a78ba mov       dword ptr [r13 + 0x30], 1
+0x007a78c2 mov       rax, qword ptr [rip + 0x1277837] ; [0x1a1f100]
+0x007a78c9 mov       rax, qword ptr [rax]
+0x007a78cc cmp       rax, qword ptr [rbp - 0x30]
+0x007a78d0 jne       0x7a7ca4
+0x007a78d6 add       rsp, 0x2ec8
+0x007a78dd pop       rbx
+0x007a78de pop       r12
+0x007a78e0 pop       r13
+0x007a78e2 pop       r14
+0x007a78e4 pop       r15
+0x007a78e6 pop       rbp
+0x007a78e7 ret       
+0x007a78e8 mov       eax, ebx
+0x007a78ea test      eax, 0xfffff
+0x007a78ef je        0x7a78fe
+0x007a78f1 call      0x75c600
+0x007a78f6 test      al, al
+0x007a78f8 je        0x7a7987
+0x007a78fe call      0x75c600
+0x007a7903 test      al, al
+0x007a7905 jne       0x7a7d17
+0x007a790b call      0x697a0
+0x007a7910 sub       eax, dword ptr [rip + 0x1f2899a] ; [0x26d02b0]
+0x007a7916 cmp       eax, 0x3a99
+0x007a791b jb        0x7a7d17
+0x007a7921 mov       edi, 2
+0x007a7926 mov       esi, 2
+0x007a792b call      0xe4d70
+0x007a7930 test      al, al
+0x007a7932 je        0x7a7d0c
+0x007a7938 mov       al, byte ptr [rip + 0x1f2897a] ; [0x26d02b8]
+0x007a793e test      al, al
+0x007a7940 jne       0x7a7970
+0x007a7942 lea       rdi, [rip + 0x1f2896f] ; [0x26d02b8]
+0x007a7949 call      0x12aa7d0
+0x007a794e test      eax, eax
+0x007a7950 je        0x7a7970
+0x007a7952 lea       rdi, [rip + 0xeb504b] ; [0x165c9a4] "world_controller:state:activity_setup: All peers successfully completed PRIVATE activity instance setup, '%s' flow. peers_not_ready_sanitized=%s, peers_not_ready=%s. Moving on."
+0x007a7959 call      0xe4a10
+0x007a795e mov       dword ptr [rip + 0x1f28950], eax ; [0x26d02b4]
+0x007a7964 lea       rdi, [rip + 0x1f2894d] ; [0x26d02b8]
+0x007a796b call      0x12aa7e0
+0x007a7970 cmp       byte ptr [r13 + 0x38], 0
+0x007a7975 je        0x7a7caa
+0x007a797b lea       rbx, [rip + 0xeb4973] ; [0x165c2f5] 'JIP'
+0x007a7982 jmp       0x7a7cb1
+0x007a7987 cmp       byte ptr [r13 + 0x38], 0
+0x007a798c mov       qword ptr [rbp - 0x2ed8], r13
+0x007a7993 je        0x7a7b47
+0x007a7999 lea       rbx, [rip + 0xeb4955] ; [0x165c2f5] 'JIP'
+0x007a79a0 jmp       0x7a7b4e
+0x007a79a5 lea       rcx, [rip + 0xea4f9d] ; [0x164c949] '<NO MEMBERSHIP>'
+0x007a79ac lea       rbx, [rbp - 0x170]
+0x007a79b3 lea       rsi, [rip + 0xeb4d93] ; [0x165c74d] "world_controller:state:activity_setup: Fatal error '%s' starting PRIVATE activity instance, aborting to orbit. Posse host=%s"
+0x007a79ba mov       rdi, rbx
+0x007a79bd mov       rdx, r15
+0x007a79c0 xor       al, al
+0x007a79c2 call      0x1008290
+0x007a79c7 mov       edi, dword ptr [rip + 0x1f28893] ; [0x26d0260]
+0x007a79cd mov       rsi, rbx
+0x007a79d0 call      0xe4aa0
+0x007a79d5 mov       ebx, dword ptr [rbp - 0x2ebc]
+0x007a79db mov       edi, r14d
+0x007a79de call      0x2a46b0
+0x007a79e3 mov       edi, 0x19
+0x007a79e8 mov       esi, ebx
+0x007a79ea mov       rdx, rax
+0x007a79ed call      0x783ee0
+0x007a79f2 mov       dword ptr [r13 + 0x30], 4
+0x007a79fa jmp       0x7a78c2
+0x007a79ff lea       rcx, [rip + 0xea4f43] ; [0x164c949] '<NO MEMBERSHIP>'
+0x007a7a06 lea       rbx, [rbp - 0x170]
+0x007a7a0d lea       rsi, [rip + 0xeb4bfb] ; [0x165c60f] "world_controller:state:activity_setup: Host migration (now [%s], host '%s') while joining in progress; trying to stop and re-start activity instance."
+0x007a7a14 mov       rdi, rbx
+0x007a7a17 mov       rdx, r15
+0x007a7a1a xor       al, al
+0x007a7a1c call      0x1008290
+0x007a7a21 mov       edi, dword ptr [rip + 0x1f28819] ; [0x26d0240]
+0x007a7a27 mov       rsi, rbx
+0x007a7a2a call      0xe4aa0
+0x007a7a2f xor       edi, edi
+0x007a7a31 xor       esi, esi
+0x007a7a33 mov       edx, 0x31
+0x007a7a38 call      0x75c760
+0x007a7a3d mov       dword ptr [r13 + 0x30], 4
+0x007a7a45 jmp       0x7a78c2
+0x007a7a4a lea       r14, [rbp - 0x16b0]
+0x007a7a51 lea       rsi, [rbp - 0x2ec0]
+0x007a7a58 mov       rdi, r14
+0x007a7a5b call      0x1052b80
+0x007a7a60 lea       r12, [rbp - 0x170]
+0x007a7a67 lea       rsi, [rip + 0xeb4dc7] ; [0x165c835] "world_controller:state:activity_setup: As HOST, waiting for peers '%s' to be done with setup."
+0x007a7a6e mov       rdi, r12
+0x007a7a71 mov       rdx, r14
+0x007a7a74 xor       al, al
+0x007a7a76 call      0x1008290
+0x007a7a7b mov       rdi, r12
+0x007a7a7e mov       esi, 0x140
+0x007a7a83 call      0x65290
+0x007a7a88 mov       r15d, 0x811c9dc5
+0x007a7a8e test      eax, eax
+0x007a7a90 je        0x7a7aba
+0x007a7a92 movsxd    rbx, eax
+0x007a7a95 mov       r15d, 0x811c9dc5
+0x007a7a9b movsx     edi, byte ptr [r12]
+0x007a7aa0 imul      r14d, r15d, 0x1000193
+0x007a7aa7 call      0x64e20
+0x007a7aac mov       r15d, eax
+0x007a7aaf xor       r15d, r14d
+0x007a7ab2 inc       r12
+0x007a7ab5 dec       rbx
+0x007a7ab8 jne       0x7a7a9b
+0x007a7aba mov       eax, dword ptr [rip + 0x113503c] ; [0x18dcafc]
+0x007a7ac0 cmp       eax, 0x811c9dc5
+0x007a7ac5 je        0x7a7ade
+0x007a7ac7 cmp       r15d, eax
+0x007a7aca jne       0x7a7ade
+0x007a7acc call      0x697a0
+0x007a7ad1 sub       eax, dword ptr [rip + 0x1f287a9] ; [0x26d0280]
+0x007a7ad7 cmp       eax, 0x1389
+0x007a7adc jb        0x7a7b3a
+0x007a7ade mov       al, byte ptr [rip + 0x1f287a4] ; [0x26d0288]
+0x007a7ae4 test      al, al
+0x007a7ae6 jne       0x7a7b16
+0x007a7ae8 lea       rdi, [rip + 0x1f28799] ; [0x26d0288]
+0x007a7aef call      0x12aa7d0
+0x007a7af4 test      eax, eax
+0x007a7af6 je        0x7a7b16
+0x007a7af8 lea       rdi, [rip + 0xeb4d36] ; [0x165c835] "world_controller:state:activity_setup: As HOST, waiting for peers '%s' to be done with setup."
+0x007a7aff call      0xe4a10
+0x007a7b04 mov       dword ptr [rip + 0x1f2877a], eax ; [0x26d0284]
+0x007a7b0a lea       rdi, [rip + 0x1f28777] ; [0x26d0288]
+0x007a7b11 call      0x12aa7e0
+0x007a7b16 mov       edi, dword ptr [rip + 0x1f28768] ; [0x26d0284]
+0x007a7b1c lea       rsi, [rbp - 0x170]
+0x007a7b23 call      0xe4aa0
+0x007a7b28 mov       dword ptr [rip + 0x1134fcd], r15d ; [0x18dcafc]
+0x007a7b2f call      0x697a0
+0x007a7b34 mov       dword ptr [rip + 0x1f28746], eax ; [0x26d0280]
+0x007a7b3a mov       dword ptr [r13 + 0x30], 5
+0x007a7b42 jmp       0x7a78c2
+0x007a7b47 lea       rbx, [rip + 0xeb47ab] ; [0x165c2f9] 'NOJIP'
+0x007a7b4e lea       rdi, [rbp - 0x1ab0]
+0x007a7b55 lea       rsi, [rbp - 0x2ec8]
+0x007a7b5c call      0x1052b80
+0x007a7b61 lea       rdi, [rbp - 0x1eb0]
+0x007a7b68 lea       rsi, [rbp - 0x2ec0]
+0x007a7b6f mov       r14, rdi
+0x007a7b72 call      0x1052b80
+0x007a7b77 lea       rdi, [rbp - 0x22b0]
+0x007a7b7e lea       rsi, [rbp - 0x2ed0]
+0x007a7b85 mov       r13, rdi
+0x007a7b88 call      0x1052b80
+0x007a7b8d mov       rax, qword ptr [rbp - 0x2ed8]
+0x007a7b94 lea       rsi, [rax + 0x3c]
+0x007a7b98 lea       r12, [rbp - 0x26b0]
+0x007a7b9f mov       rdi, r12
+0x007a7ba2 call      0x1052b80
+0x007a7ba7 lea       r15, [rbp - 0x170]
+0x007a7bae lea       rsi, [rip + 0xeb4d6b] ; [0x165c920] "world_controller:state:activity_setup: '%s' flow, waiting. Peers_not_ready_sanitized=%s, peers_not_ready=%s (ft=%s, original ft=%s)"
+0x007a7bb5 mov       qword ptr [rsp], r12
+0x007a7bb9 mov       rdi, r15
+0x007a7bbc mov       rdx, rbx
+0x007a7bbf lea       rcx, [rbp - 0x1ab0]
+0x007a7bc6 mov       r8, r14
+0x007a7bc9 mov       r9, r13
+0x007a7bcc xor       al, al
+0x007a7bce call      0x1008290
+0x007a7bd3 mov       rdi, r15
+0x007a7bd6 mov       esi, 0x140
+0x007a7bdb call      0x65290
+0x007a7be0 mov       r14d, 0x811c9dc5
+0x007a7be6 test      eax, eax
+0x007a7be8 je        0x7a7c11
+0x007a7bea movsxd    rbx, eax
+0x007a7bed mov       r14d, 0x811c9dc5
+0x007a7bf3 movsx     edi, byte ptr [r15]
+0x007a7bf7 imul      r12d, r14d, 0x1000193
+0x007a7bfe call      0x64e20
+0x007a7c03 mov       r14d, eax
+0x007a7c06 xor       r14d, r12d
+0x007a7c09 inc       r15
+0x007a7c0c dec       rbx
+0x007a7c0f jne       0x7a7bf3
+0x007a7c11 mov       eax, dword ptr [rip + 0x1134ee9] ; [0x18dcb00]
+0x007a7c17 cmp       eax, 0x811c9dc5
+0x007a7c1c je        0x7a7c35
+0x007a7c1e cmp       r14d, eax
+0x007a7c21 jne       0x7a7c35
+0x007a7c23 call      0x697a0
+0x007a7c28 sub       eax, dword ptr [rip + 0x1f28672] ; [0x26d02a0]
+0x007a7c2e cmp       eax, 0x1389
+0x007a7c33 jb        0x7a7c91
+0x007a7c35 mov       al, byte ptr [rip + 0x1f2866d] ; [0x26d02a8]
+0x007a7c3b test      al, al
+0x007a7c3d jne       0x7a7c6d
+0x007a7c3f lea       rdi, [rip + 0x1f28662] ; [0x26d02a8]
+0x007a7c46 call      0x12aa7d0
+0x007a7c4b test      eax, eax
+0x007a7c4d je        0x7a7c6d
+0x007a7c4f lea       rdi, [rip + 0xeb4cca] ; [0x165c920] "world_controller:state:activity_setup: '%s' flow, waiting. Peers_not_ready_sanitized=%s, peers_not_ready=%s (ft=%s, original ft=%s)"
+0x007a7c56 call      0xe4a10
+0x007a7c5b mov       dword ptr [rip + 0x1f28643], eax ; [0x26d02a4]
+0x007a7c61 lea       rdi, [rip + 0x1f28640] ; [0x26d02a8]
+0x007a7c68 call      0x12aa7e0
+0x007a7c6d mov       edi, dword ptr [rip + 0x1f28631] ; [0x26d02a4]
+0x007a7c73 lea       rsi, [rbp - 0x170]
+0x007a7c7a call      0xe4aa0
+0x007a7c7f mov       dword ptr [rip + 0x1134e7a], r14d ; [0x18dcb00]
+0x007a7c86 call      0x697a0
+0x007a7c8b mov       dword ptr [rip + 0x1f2860f], eax ; [0x26d02a0]
+0x007a7c91 mov       rax, qword ptr [rbp - 0x2ed8]
+0x007a7c98 mov       dword ptr [rax + 0x30], 6
+0x007a7c9f jmp       0x7a78c2
+0x007a7ca4 call      0x12aa7f0
+0x007a7ca9 nop       
+0x007a7caa lea       rbx, [rip + 0xeb4648] ; [0x165c2f9] 'NOJIP'
+0x007a7cb1 lea       r14, [rbp - 0x2ab0]
+0x007a7cb8 lea       rsi, [rbp - 0x2ec8]
+0x007a7cbf mov       rdi, r14
+0x007a7cc2 call      0x1052b80
+0x007a7cc7 lea       r15, [rbp - 0x2eb0]
+0x007a7cce lea       rsi, [rbp - 0x2ec0]
+0x007a7cd5 mov       rdi, r15
+0x007a7cd8 call      0x1052b80
+0x007a7cdd lea       r12, [rbp - 0x170]
+0x007a7ce4 lea       rsi, [rip + 0xeb4cb9] ; [0x165c9a4] "world_controller:state:activity_setup: All peers successfully completed PRIVATE activity instance setup, '%s' flow. peers_not_ready_sanitized=%s, peers_not_ready=%s. Moving on."
+0x007a7ceb mov       rdi, r12
+0x007a7cee mov       rdx, rbx
+0x007a7cf1 mov       rcx, r14
+0x007a7cf4 mov       r8, r15
+0x007a7cf7 xor       al, al
+0x007a7cf9 call      0x1008290
+0x007a7cfe mov       edi, dword ptr [rip + 0x1f285b0] ; [0x26d02b4]
+0x007a7d04 mov       rsi, r12
+0x007a7d07 call      0xe4aa0
+0x007a7d0c call      0x697a0
+0x007a7d11 mov       dword ptr [rip + 0x1f28599], eax ; [0x26d02b0]
+0x007a7d17 mov       edi, 0x1f
+0x007a7d1c call      0x783ed0
+0x007a7d21 mov       dword ptr [r13 + 0x30], 8
+0x007a7d29 jmp       0x7a78c2
+0x007a7d2e nop       

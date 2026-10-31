@@ -1,0 +1,41 @@
+0x00770710 push      rbp
+0x00770711 mov       rbp, rsp
+0x00770714 push      r15
+0x00770716 push      r14
+0x00770718 push      rbx
+0x00770719 push      rax
+0x0077071a mov       rbx, rdi
+0x0077071d lea       r8, [rbx + 0xe4a0]
+0x00770724 lea       r9, [rbx + 0xe490]
+0x0077072b xor       esi, esi
+0x0077072d mov       edx, 6
+0x00770732 xor       ecx, ecx
+0x00770734 call      0x7707c0
+0x00770739 mov       r14d, eax
+0x0077073c lea       r8, [rbx + 0xe938]
+0x00770743 lea       r9, [rbx + 0xe928]
+0x0077074a mov       esi, 1
+0x0077074f mov       edx, 0x10
+0x00770754 xor       ecx, ecx
+0x00770756 call      0x7707c0
+0x0077075b mov       r15d, eax
+0x0077075e mov       byte ptr [rbx + 0xe478], 1
+0x00770765 call      0x696a0
+0x0077076a mov       qword ptr [rbx + 0xe480], rax
+0x00770771 mov       byte ptr [rbx + 0xe488], 1
+0x00770778 movsxd    rax, r14d
+0x0077077b mov       qword ptr [rbx + 0xe498], rax
+0x00770782 mov       byte ptr [rbx + 0xe920], 1
+0x00770789 movsxd    rax, r15d
+0x0077078c mov       qword ptr [rbx + 0xe930], rax
+0x00770793 mov       byte ptr [rbx + 0xfa44], 1
+0x0077079a xor       edi, edi
+0x0077079c call      0x775840
+0x007707a1 mov       dword ptr [rbx + 0xfa48], eax
+0x007707a7 add       rsp, 8
+0x007707ab pop       rbx
+0x007707ac pop       r14
+0x007707ae pop       r15
+0x007707b0 pop       rbp
+0x007707b1 ret       
+0x007707b2 nop       word ptr cs:[rax + rax]

@@ -1,0 +1,362 @@
+[
+  {
+    "site": "0x7969d5",
+    "function": "0x7969a0",
+    "target": "0x783ed0",
+    "tail": "0x007969a9 lea       rdi, [rbx + 0x30]\n0x007969ad mov       rsi, rbx\n0x007969b0 call      0x1053270\n0x007969b5 call      0x789460\n0x007969ba mov       rax, qword ptr [rbx + 0x1a8]\n0x007969c1 cmp       rax, qword ptr [rbx + 0x198]\n0x007969c8 jne       0x7969da\n0x007969ca mov       edi, 0x23\n0x007969cf add       rsp, 8\n0x007969d3 pop       rbx\n0x007969d4 pop       rbp\n0x007969d5 jmp       0x783ed0"
+  },
+  {
+    "site": "0x79730b",
+    "function": "0x797240",
+    "target": "0x784e50",
+    "tail": "0x007972de mov       byte ptr [rbx + 0x30], 1\n0x007972e2 call      0x797400\n0x007972e7 call      0x789640\n0x007972ec mov       rdi, rbx\n0x007972ef call      0x797550\n0x007972f4 xor       edi, edi\n0x007972f6 call      0x785060\n0x007972fb cmp       byte ptr [rbx + 0x32], 0\n0x007972ff je        0x797312\n0x00797301 mov       edi, 0x19\n0x00797306 mov       esi, 9\n0x0079730b call      0x784e50"
+  },
+  {
+    "site": "0x797f8e",
+    "function": "0x797f00",
+    "target": "0x783ed0",
+    "tail": "0x00797f62 call      0x765ee0\n0x00797f67 mov       rbx, rax\n0x00797f6a mov       eax, dword ptr [rip + 0x1f37ddc] ; [0x26cfd4c]\n0x00797f70 mov       dword ptr [rbp - 0x28], eax\n0x00797f73 lea       rsi, [rbp - 0x28]\n0x00797f77 mov       rdi, rbx\n0x00797f7a call      0x758320\n0x00797f7f mov       rdi, rbx\n0x00797f82 call      0x758c40\n0x00797f87 jmp       0x797f93\n0x00797f89 mov       edi, 0x24\n0x00797f8e call      0x783ed0"
+  },
+  {
+    "site": "0x7986e8",
+    "function": "0x798410",
+    "target": "0x783ed0",
+    "tail": "0x007986bd call      0x68e80\n0x007986c2 mov       rbx, rax\n0x007986c5 sub       rbx, qword ptr [r14 + 0x38]\n0x007986c9 call      0x68e90\n0x007986ce mov       rcx, rax\n0x007986d1 mov       rax, rbx\n0x007986d4 cqo       \n0x007986d6 idiv      rcx\n0x007986d9 cmp       rax, 0xb\n0x007986dd jl        0x79879c\n0x007986e3 mov       edi, 0x19\n0x007986e8 call      0x783ed0"
+  },
+  {
+    "site": "0x798f9d",
+    "function": "0x798ec0",
+    "target": "0x783ed0",
+    "tail": "0x00798f7f pop       rbp\n0x00798f80 jmp       0x771b10\n0x00798f85 mov       edi, dword ptr [rbx + 0x3c]\n0x00798f88 cmp       edi, 0x12\n0x00798f8b ja        0x798fa2\n0x00798f8d mov       eax, 0x62000\n0x00798f92 bt        eax, edi\n0x00798f95 jae       0x798fa2\n0x00798f97 add       rsp, 8\n0x00798f9b pop       rbx\n0x00798f9c pop       rbp\n0x00798f9d jmp       0x783ed0"
+  },
+  {
+    "site": "0x799249",
+    "function": "0x798fd0",
+    "target": "0x783ed0",
+    "tail": "0x0079922e cmp       ebx, -1\n0x00799231 je        0x79924e\n0x00799233 mov       eax, ebx\n0x00799235 and       eax, 0xfffffffd\n0x00799238 cmp       eax, 9\n0x0079923b je        0x799247\n0x0079923d cmp       ebx, 0xa\n0x00799240 je        0x799247\n0x00799242 cmp       ebx, 0xc\n0x00799245 jne       0x799272\n0x00799247 mov       edi, ebx\n0x00799249 call      0x783ed0"
+  },
+  {
+    "site": "0x799a61",
+    "function": "0x799a50",
+    "target": "0x783ed0",
+    "tail": "0x00799a50 cmp       dword ptr [rdi + 0x30], 0x15\n0x00799a54 jne       0x799a66\n0x00799a56 cmp       dword ptr [rdi + 0x34], 3\n0x00799a5a jne       0x799a6b\n0x00799a5c mov       edi, 0x14\n0x00799a61 jmp       0x783ed0"
+  },
+  {
+    "site": "0x79a71b",
+    "function": "0x79a710",
+    "target": "0x783ed0",
+    "tail": "0x0079a710 cmp       dword ptr [rdi + 0x30], 0x10\n0x0079a714 jne       0x79a720\n0x0079a716 mov       edi, 3\n0x0079a71b jmp       0x783ed0"
+  },
+  {
+    "site": "0x79ba19",
+    "function": "0x79b9d0",
+    "target": "0x783ed0",
+    "tail": "0x0079b9f4 lea       rsi, [rip - 0x475eb] ; [0x754410]\n0x0079b9fb xor       edx, edx\n0x0079b9fd xor       ecx, ecx\n0x0079b9ff xor       r8d, r8d\n0x0079ba02 call      0x78e520\n0x0079ba07 mov       eax, dword ptr [rbx + 0x40]\n0x0079ba0a cmp       eax, 3\n0x0079ba0d je        0x79ba23\n0x0079ba0f cmp       eax, 2\n0x0079ba12 jne       0x79ba37\n0x0079ba14 mov       edi, 8\n0x0079ba19 call      0x783ed0"
+  },
+  {
+    "site": "0x79ba2d",
+    "function": "0x79b9d0",
+    "target": "0x784e50",
+    "tail": "0x0079ba02 call      0x78e520\n0x0079ba07 mov       eax, dword ptr [rbx + 0x40]\n0x0079ba0a cmp       eax, 3\n0x0079ba0d je        0x79ba23\n0x0079ba0f cmp       eax, 2\n0x0079ba12 jne       0x79ba37\n0x0079ba14 mov       edi, 8\n0x0079ba19 call      0x783ed0\n0x0079ba1e jmp       0x79bb21\n0x0079ba23 mov       edi, 0x19\n0x0079ba28 mov       esi, 0x11b\n0x0079ba2d call      0x784e50"
+  },
+  {
+    "site": "0x79bec0",
+    "function": "0x79bda0",
+    "target": "0x783ed0",
+    "tail": "0x0079be9a je        0x79beb2\n0x0079be9c xor       eax, eax\n0x0079be9e mov       ebx, 0x7c\n0x0079bea3 jmp       0x79bf2b\n0x0079bea8 cmp       eax, -1\n0x0079beab jne       0x79bf2b\n0x0079bead jmp       0x79bf49\n0x0079beb2 call      0x1e8e90\n0x0079beb7 test      al, al\n0x0079beb9 je        0x79beff\n0x0079bebb mov       edi, 0xe\n0x0079bec0 call      0x783ed0"
+  },
+  {
+    "site": "0x79c01a",
+    "function": "0x79bda0",
+    "target": "0x784e50",
+    "tail": "0x0079bff3 movzx     eax, al\n0x0079bff6 xor       eax, 1\n0x0079bff9 add       ebx, eax\n0x0079bffb mov       rdi, r15\n0x0079bffe call      0xb9880\n0x0079c003 cmp       eax, -1\n0x0079c006 jne       0x79bfec\n0x0079c008 test      ebx, ebx\n0x0079c00a je        0x79c1e9\n0x0079c010 mov       edi, 0x19\n0x0079c015 mov       esi, 0x112\n0x0079c01a call      0x784e50"
+  },
+  {
+    "site": "0x79c0b2",
+    "function": "0x79bda0",
+    "target": "0x784e50",
+    "tail": "0x0079c07d call      0x1eb050\n0x0079c082 call      0x1eb210\n0x0079c087 cmp       eax, 1\n0x0079c08a jne       0x79c146\n0x0079c090 call      0x1eafa0\n0x0079c095 call      0x1e8c80\n0x0079c09a call      0x1e8e60\n0x0079c09f cmp       eax, 2\n0x0079c0a2 jne       0x79c177\n0x0079c0a8 mov       edi, 0x19\n0x0079c0ad mov       esi, 0x82\n0x0079c0b2 call      0x784e50"
+  },
+  {
+    "site": "0x79c0eb",
+    "function": "0x79bda0",
+    "target": "0x784e50",
+    "tail": "0x0079c0b7 jmp       0x79c1ac\n0x0079c0bc call      0x1e8e40\n0x0079c0c1 call      0x1e8e60\n0x0079c0c6 test      eax, eax\n0x0079c0c8 jne       0x79c1b4\n0x0079c0ce call      0xba160\n0x0079c0d3 call      0x1e8e70\n0x0079c0d8 test      rax, rax\n0x0079c0db je        0x79c1d6\n0x0079c0e1 mov       edi, 0x19\n0x0079c0e6 mov       esi, 0x111\n0x0079c0eb call      0x784e50"
+  },
+  {
+    "site": "0x79c133",
+    "function": "0x79bda0",
+    "target": "0x783ed0",
+    "tail": "0x0079c0fd je        0x79c1b4\n0x0079c103 mov       dword ptr [r14 + 0x34], 7\n0x0079c10b cmp       byte ptr [r14 + 0x38], 0\n0x0079c110 je        0x79c1b4\n0x0079c116 mov       edi, 0xa\n0x0079c11b call      0x788e10\n0x0079c120 jmp       0x79c1b4\n0x0079c125 call      0x1e8e90\n0x0079c12a test      al, al\n0x0079c12c je        0x79c15f\n0x0079c12e mov       edi, 0xe\n0x0079c133 call      0x783ed0"
+  },
+  {
+    "site": "0x79c1a7",
+    "function": "0x79bda0",
+    "target": "0x783ed0",
+    "tail": "0x0079c177 mov       dword ptr [r14 + 0x34], 5\n0x0079c17f cmp       byte ptr [r14 + 0x38], 0\n0x0079c184 je        0x79c1b4\n0x0079c186 mov       edi, 0xc\n0x0079c18b call      0x788e10\n0x0079c190 jmp       0x79c1b4\n0x0079c192 lea       rdi, [rip + 0x1eb9c5f] ; [0x2655df8]\n0x0079c199 call      0x2a9080\n0x0079c19e test      al, al\n0x0079c1a0 je        0x79c1b4\n0x0079c1a2 mov       edi, 0x11\n0x0079c1a7 call      0x783ed0"
+  },
+  {
+    "site": "0x79c806",
+    "function": "0x79c720",
+    "target": "0x784e50",
+    "tail": "0x0079c7d7 jmp       0x79c937\n0x0079c7dc cmp       eax, 1\n0x0079c7df jne       0x79cab4\n0x0079c7e5 call      0x1e7d40\n0x0079c7ea mov       esi, 0xffffffff\n0x0079c7ef cmp       eax, 0x30\n0x0079c7f2 ja        0x79c801\n0x0079c7f4 movsxd    rax, eax\n0x0079c7f7 lea       rcx, [rip + 0xe33572] ; [0x15cfd70]\n0x0079c7fe mov       esi, dword ptr [rcx + rax*4]\n0x0079c801 mov       edi, 0x19\n0x0079c806 call      0x784e50"
+  },
+  {
+    "site": "0x79c8f1",
+    "function": "0x79c720",
+    "target": "0x784e50",
+    "tail": "0x0079c8bc cmp       byte ptr [rax], 0\n0x0079c8bf je        0x79cacd\n0x0079c8c5 mov       rax, qword ptr [rax + 8]\n0x0079c8c9 mov       qword ptr [r14 + 0x68], rax\n0x0079c8cd jmp       0x79cab4\n0x0079c8d2 call      0x694d0\n0x0079c8d7 sub       rax, qword ptr [r14 + 0x68]\n0x0079c8db cmp       rax, 0x7d1\n0x0079c8e1 jb        0x79cab4\n0x0079c8e7 mov       edi, 0xd\n0x0079c8ec mov       esi, 0xb\n0x0079c8f1 call      0x784e50"
+  },
+  {
+    "site": "0x79c9d2",
+    "function": "0x79c720",
+    "target": "0x783ed0",
+    "tail": "0x0079c99f mov       edi, 2\n0x0079c9a4 call      0x771b10\n0x0079c9a9 jmp       0x79ca10\n0x0079c9ab call      0x5a1430\n0x0079c9b0 test      al, al\n0x0079c9b2 jne       0x79cab4\n0x0079c9b8 lea       rdi, [rip + 0x1eb9439] ; [0x2655df8]\n0x0079c9bf call      0x2a8fa0\n0x0079c9c4 cmp       eax, 3\n0x0079c9c7 jne       0x79cad8\n0x0079c9cd mov       edi, 0x12\n0x0079c9d2 call      0x783ed0"
+  },
+  {
+    "site": "0x79caed",
+    "function": "0x79c720",
+    "target": "0x783ed0",
+    "tail": "0x0079cac9 pop       r14\n0x0079cacb pop       rbp\n0x0079cacc ret       \n0x0079cacd call      0x694d0\n0x0079cad2 mov       qword ptr [r14 + 0x68], rax\n0x0079cad6 jmp       0x79cab4\n0x0079cad8 lea       rdi, [rip + 0x1eb9319] ; [0x2655df8]\n0x0079cadf call      0x2a9080\n0x0079cae4 test      al, al\n0x0079cae6 je        0x79caf4\n0x0079cae8 mov       edi, 0x11\n0x0079caed call      0x783ed0"
+  },
+  {
+    "site": "0x79d024",
+    "function": "0x79cfd0",
+    "target": "0x783ed0",
+    "tail": "0x0079cffc xor       edx, edx\n0x0079cffe xor       ecx, ecx\n0x0079d000 xor       r8d, r8d\n0x0079d003 call      0x78e520\n0x0079d008 call      0x788e50\n0x0079d00d test      al, al\n0x0079d00f je        0x79d0fb\n0x0079d015 mov       eax, dword ptr [r15 + 0x40]\n0x0079d019 cmp       rax, 3\n0x0079d01d jbe       0x79d02e\n0x0079d01f mov       edi, 8\n0x0079d024 call      0x783ed0"
+  },
+  {
+    "site": "0x79d2f5",
+    "function": "0x79d2c0",
+    "target": "0x783ed0",
+    "tail": "0x0079d2c5 sub       rsp, 0x148\n0x0079d2cc mov       rax, qword ptr [rip + 0x1281e2d] ; [0x1a1f100]\n0x0079d2d3 mov       rax, qword ptr [rax]\n0x0079d2d6 mov       qword ptr [rbp - 0x10], rax\n0x0079d2da call      0x5a0610\n0x0079d2df test      al, al\n0x0079d2e1 jne       0x79d37f\n0x0079d2e7 call      0x5a0620\n0x0079d2ec test      al, al\n0x0079d2ee je        0x79d2ff\n0x0079d2f0 mov       edi, 8\n0x0079d2f5 call      0x783ed0"
+  },
+  {
+    "site": "0x79d37a",
+    "function": "0x79d2c0",
+    "target": "0x784e50",
+    "tail": "0x0079d345 call      0x12aa7e0\n0x0079d34a lea       rbx, [rbp - 0x150]\n0x0079d351 lea       rsi, [rip + 0xebe5f8] ; [0x165b950] 'world_controller:state:bootflow_enumerate_content_rights_handler: local entitlement enumeration failed'\n0x0079d358 mov       rdi, rbx\n0x0079d35b xor       al, al\n0x0079d35d call      0x1008290\n0x0079d362 mov       edi, dword ptr [rip + 0x1f32b60] ; [0x26cfec8]\n0x0079d368 mov       rsi, rbx\n0x0079d36b call      0xe4aa0\n0x0079d370 mov       edi, 0x19\n0x0079d375 mov       esi, 0x8e\n0x0079d37a call      0x784e50"
+  },
+  {
+    "site": "0x79d57a",
+    "function": "0x79d540",
+    "target": "0x783ed0",
+    "tail": "0x0079d559 xor       ecx, ecx\n0x0079d55b xor       r8d, r8d\n0x0079d55e call      0x78e520\n0x0079d563 cmp       byte ptr [rbx + 0x38], 0\n0x0079d567 je        0x79d57f\n0x0079d569 cmp       byte ptr [rbx + 0x39], 0\n0x0079d56d je        0x79d586\n0x0079d56f mov       edi, 8\n0x0079d574 add       rsp, 8\n0x0079d578 pop       rbx\n0x0079d579 pop       rbp\n0x0079d57a jmp       0x783ed0"
+  },
+  {
+    "site": "0x79d596",
+    "function": "0x79d540",
+    "target": "0x784e50",
+    "tail": "0x0079d579 pop       rbp\n0x0079d57a jmp       0x783ed0\n0x0079d57f add       rsp, 8\n0x0079d583 pop       rbx\n0x0079d584 pop       rbp\n0x0079d585 ret       \n0x0079d586 mov       edi, 0x19\n0x0079d58b mov       esi, 0xa4\n0x0079d590 add       rsp, 8\n0x0079d594 pop       rbx\n0x0079d595 pop       rbp\n0x0079d596 jmp       0x784e50"
+  },
+  {
+    "site": "0x79d859",
+    "function": "0x79d840",
+    "target": "0x783ed0",
+    "tail": "0x0079d840 push      rbp\n0x0079d841 mov       rbp, rsp\n0x0079d844 cmp       byte ptr [rdi + 0x38], 0\n0x0079d848 je        0x79d85e\n0x0079d84a call      0x788df0\n0x0079d84f test      al, al\n0x0079d851 je        0x79d85e\n0x0079d853 mov       edi, 4\n0x0079d858 pop       rbp\n0x0079d859 jmp       0x783ed0"
+  },
+  {
+    "site": "0x79db0d",
+    "function": "0x79da10",
+    "target": "0x783ed0",
+    "tail": "0x0079dae8 mov       edi, ebx\n0x0079daea call      0x78c370\n0x0079daef test      bl, bl\n0x0079daf1 je        0x79db08\n0x0079daf3 mov       edi, 0x16\n0x0079daf8 jmp       0x79db0d\n0x0079dafa call      0x79db30\n0x0079daff jmp       0x79db12\n0x0079db01 call      0x79dd90\n0x0079db06 jmp       0x79db12\n0x0079db08 mov       edi, 0x15\n0x0079db0d call      0x783ed0"
+  },
+  {
+    "site": "0x79de93",
+    "function": "0x79dd90",
+    "target": "0x784e50",
+    "tail": "0x0079de73 je        0x79de98\n0x0079de75 mov       edi, 0x19\n0x0079de7a mov       esi, 0xb5\n0x0079de7f jmp       0x79de8b\n0x0079de81 mov       edi, 0x19\n0x0079de86 mov       esi, 0xaf\n0x0079de8b pop       rbx\n0x0079de8c pop       r12\n0x0079de8e pop       r14\n0x0079de90 pop       r15\n0x0079de92 pop       rbp\n0x0079de93 jmp       0x784e50"
+  },
+  {
+    "site": "0x79e3d0",
+    "function": "0x79e3a0",
+    "target": "0x783ed0",
+    "tail": "0x0079e3a6 mov       rbx, rdi\n0x0079e3a9 lea       rdi, [rbx + 0x30]\n0x0079e3ad mov       rsi, rbx\n0x0079e3b0 call      0x1053340\n0x0079e3b5 mov       rax, qword ptr [rbx + 0xa8]\n0x0079e3bc cmp       rax, qword ptr [rbx + 0x98]\n0x0079e3c3 jne       0x79e3d5\n0x0079e3c5 mov       edi, 2\n0x0079e3ca add       rsp, 8\n0x0079e3ce pop       rbx\n0x0079e3cf pop       rbp\n0x0079e3d0 jmp       0x783ed0"
+  },
+  {
+    "site": "0x79e72b",
+    "function": "0x79e720",
+    "target": "0x783ed0",
+    "tail": "0x0079e720 cmp       dword ptr [rdi + 0x30], 5\n0x0079e724 jne       0x79e730\n0x0079e726 mov       edi, 0x13\n0x0079e72b jmp       0x783ed0"
+  },
+  {
+    "site": "0x79ef3d",
+    "function": "0x79eec0",
+    "target": "0x783ed0",
+    "tail": "0x0079ef24 mov       eax, dword ptr [rbx + 0x38]\n0x0079ef27 test      eax, eax\n0x0079ef29 je        0x79ef32\n0x0079ef2b add       rsp, 8\n0x0079ef2f pop       rbx\n0x0079ef30 pop       rbp\n0x0079ef31 ret       \n0x0079ef32 mov       edi, 7\n0x0079ef37 add       rsp, 8\n0x0079ef3b pop       rbx\n0x0079ef3c pop       rbp\n0x0079ef3d jmp       0x783ed0"
+  },
+  {
+    "site": "0x79f5fb",
+    "function": "0x79f310",
+    "target": "0x783ed0",
+    "tail": "0x0079f5c9 mov       edx, 1\n0x0079f5ce mov       ecx, 1\n0x0079f5d3 xor       r8d, r8d\n0x0079f5d6 mov       r9d, 1\n0x0079f5dc call      0xb289f0\n0x0079f5e1 mov       rdi, r14\n0x0079f5e4 mov       esi, 1\n0x0079f5e9 call      0x245b10\n0x0079f5ee mov       rdi, r14\n0x0079f5f1 call      0x245b90\n0x0079f5f6 mov       edi, 6\n0x0079f5fb call      0x783ed0"
+  },
+  {
+    "site": "0x79f618",
+    "function": "0x79f310",
+    "target": "0x784e50",
+    "tail": "0x0079f5e9 call      0x245b10\n0x0079f5ee mov       rdi, r14\n0x0079f5f1 call      0x245b90\n0x0079f5f6 mov       edi, 6\n0x0079f5fb call      0x783ed0\n0x0079f600 jmp       0x79f82b\n0x0079f605 call      0x2e4200\n0x0079f60a test      al, al\n0x0079f60c je        0x79f622\n0x0079f60e mov       edi, 0x19\n0x0079f613 mov       esi, 0x90\n0x0079f618 call      0x784e50"
+  },
+  {
+    "site": "0x79f9cb",
+    "function": "0x79f850",
+    "target": "0x784e50",
+    "tail": "0x0079f99b mov       edi, dword ptr [rbp - 0xa4]\n0x0079f9a1 lea       rsi, [rbp - 0xa8]\n0x0079f9a8 call      0x12ab590\n0x0079f9ad test      eax, eax\n0x0079f9af jne       0x79f9c4\n0x0079f9b1 mov       ebx, 0x87\n0x0079f9b6 cmp       dword ptr [rbp - 0xa8], 2\n0x0079f9bd je        0x79f9c4\n0x0079f9bf mov       ebx, 0x86\n0x0079f9c4 mov       edi, 0x19\n0x0079f9c9 mov       esi, ebx\n0x0079f9cb call      0x784e50"
+  },
+  {
+    "site": "0x79fe16",
+    "function": "0x79fde0",
+    "target": "0x783ed0",
+    "tail": "0x0079fdf3 call      0x753a60\n0x0079fdf8 mov       eax, dword ptr [rbx + 0x134]\n0x0079fdfe lea       ecx, [rax - 5]\n0x0079fe01 cmp       ecx, 1\n0x0079fe04 ja        0x79fe29\n0x0079fe06 cmp       eax, 5\n0x0079fe09 jne       0x79fe30\n0x0079fe0b mov       edi, 0x17\n0x0079fe10 add       rsp, 8\n0x0079fe14 pop       rbx\n0x0079fe15 pop       rbp\n0x0079fe16 jmp       0x783ed0"
+  },
+  {
+    "site": "0x79fe40",
+    "function": "0x79fde0",
+    "target": "0x784e50",
+    "tail": "0x0079fe23 pop       rbp\n0x0079fe24 jmp       0x79fe50\n0x0079fe29 add       rsp, 8\n0x0079fe2d pop       rbx\n0x0079fe2e pop       rbp\n0x0079fe2f ret       \n0x0079fe30 mov       edi, 0x19\n0x0079fe35 mov       esi, 0x38\n0x0079fe3a add       rsp, 8\n0x0079fe3e pop       rbx\n0x0079fe3f pop       rbp\n0x0079fe40 jmp       0x784e50"
+  },
+  {
+    "site": "0x7a0216",
+    "function": "0x7a01c0",
+    "target": "0x783ed0",
+    "tail": "0x007a01e9 mov       eax, dword ptr [rbx + 0x38]\n0x007a01ec cmp       rax, 6\n0x007a01f0 jbe       0x7a021d\n0x007a01f2 lea       rdi, [rbp - 0x20]\n0x007a01f6 call      0x244ee0\n0x007a01fb mov       rdi, qword ptr [rbp - 0x20]\n0x007a01ff call      0x57ddd0\n0x007a0204 mov       byte ptr [rax + 0x10], 1\n0x007a0208 mov       rdi, qword ptr [rbp - 0x20]\n0x007a020c call      0x57e090\n0x007a0211 mov       edi, 0x16\n0x007a0216 call      0x783ed0"
+  },
+  {
+    "site": "0x7a05df",
+    "function": "0x7a05b0",
+    "target": "0x784e50",
+    "tail": "0x007a05b4 push      r14\n0x007a05b6 push      rbx\n0x007a05b7 sub       rsp, 0x20\n0x007a05bb mov       rbx, rdi\n0x007a05be mov       r14, qword ptr [rip + 0x127eb3b] ; [0x1a1f100]\n0x007a05c5 mov       rax, qword ptr [r14]\n0x007a05c8 mov       qword ptr [rbp - 0x18], rax\n0x007a05cc cmp       dword ptr [rbx + 0x15c], 0\n0x007a05d3 je        0x7a05e9\n0x007a05d5 mov       edi, 0x19\n0x007a05da mov       esi, 0x79\n0x007a05df call      0x784e50"
+  },
+  {
+    "site": "0x7a0623",
+    "function": "0x7a05b0",
+    "target": "0x783ed0",
+    "tail": "0x007a05f9 mov       edi, dword ptr [rbp - 0x1c]\n0x007a05fc call      0x78e670\n0x007a0601 mov       eax, dword ptr [rbp - 0x1c]\n0x007a0604 cmp       eax, 3\n0x007a0607 jne       0x7a062a\n0x007a0609 lea       rax, [rip + 0x1faba40] ; [0x274c050]\n0x007a0610 mov       eax, dword ptr [rax]\n0x007a0612 mov       dword ptr [rbp - 0x28], eax\n0x007a0615 lea       rdi, [rbp - 0x28]\n0x007a0619 call      0x956a30\n0x007a061e mov       edi, 0x12\n0x007a0623 call      0x783ed0"
+  },
+  {
+    "site": "0x7a0641",
+    "function": "0x7a05b0",
+    "target": "0x784e50",
+    "tail": "0x007a061e mov       edi, 0x12\n0x007a0623 call      0x783ed0\n0x007a0628 jmp       0x7a066f\n0x007a062a cmp       eax, 2\n0x007a062d jne       0x7a066f\n0x007a062f mov       eax, dword ptr [rbp - 0x20]\n0x007a0632 lea       ecx, [rax - 1]\n0x007a0635 cmp       ecx, 2\n0x007a0638 jae       0x7a0648\n0x007a063a mov       edi, 8\n0x007a063f xor       esi, esi\n0x007a0641 call      0x784e50"
+  },
+  {
+    "site": "0x7a0bce",
+    "function": "0x7a0a20",
+    "target": "0x784e50",
+    "tail": "0x007a0bab jmp       0x7a0bda\n0x007a0bad lea       rdi, [rbp - 0x38]\n0x007a0bb1 call      0x244ee0\n0x007a0bb6 test      al, al\n0x007a0bb8 je        0x7a0bda\n0x007a0bba mov       edi, dword ptr [r12]\n0x007a0bbe call      0x244d40\n0x007a0bc3 test      al, al\n0x007a0bc5 je        0x7a0bda\n0x007a0bc7 mov       edi, 5\n0x007a0bcc xor       esi, esi\n0x007a0bce call      0x784e50"
+  },
+  {
+    "site": "0x7a115d",
+    "function": "0x7a0f40",
+    "target": "0x783ed0",
+    "tail": "0x007a111e mov       rax, qword ptr [rip + 0xe2fa0b] ; [0x15d0b30]\n0x007a1125 mov       qword ptr [rsp + 0x28], rax\n0x007a112a mov       rax, qword ptr [rip + 0xe2f9f7] ; [0x15d0b28]\n0x007a1131 mov       qword ptr [rsp + 0x20], rax\n0x007a1136 mov       rax, qword ptr [rip + 0xe2f9e3] ; [0x15d0b20]\n0x007a113d mov       qword ptr [rsp + 0x18], rax\n0x007a1142 lea       rdi, [rip + 0x1eb4caf] ; [0x2655df8]\n0x007a1149 lea       rsi, [rsp + 0x18]\n0x007a114e mov       edx, 1\n0x007a1153 call      0x2a9210\n0x007a1158 mov       edi, 7\n0x007a115d call      0x783ed0"
+  },
+  {
+    "site": "0x7a181e",
+    "function": "0x7a1470",
+    "target": "0x783ed0",
+    "tail": "0x007a17ee test      al, al\n0x007a17f0 je        0x7a1805\n0x007a17f2 movzx     esi, word ptr [r14 + 0x34]\n0x007a17f7 mov       rdi, rbx\n0x007a17fa call      0x26b7f0\n0x007a17ff mov       byte ptr [rbp - 0xac], al\n0x007a1805 call      0x574ef0\n0x007a180a lea       rsi, [rbp - 0xb0]\n0x007a1811 mov       rdi, rax\n0x007a1814 call      0x574dc0\n0x007a1819 mov       edi, 0x19\n0x007a181e call      0x783ed0"
+  },
+  {
+    "site": "0x7a1b98",
+    "function": "0x7a1af0",
+    "target": "0x783ed0",
+    "tail": "0x007a1b61 call      0x78ddc0\n0x007a1b66 cmp       eax, 6\n0x007a1b69 jne       0x7a1cda\n0x007a1b6f mov       dword ptr [r15 + 0x44], 7\n0x007a1b77 lea       rdi, [r15 + 0x48]\n0x007a1b7b call      0x753a60\n0x007a1b80 mov       eax, dword ptr [r15 + 0x148]\n0x007a1b87 add       eax, -5\n0x007a1b8a cmp       eax, 1\n0x007a1b8d ja        0x7a1cda\n0x007a1b93 mov       edi, 0x18\n0x007a1b98 call      0x783ed0"
+  },
+  {
+    "site": "0x7a28ad",
+    "function": "0x7a2810",
+    "target": "0x784e50",
+    "tail": "0x007a2881 mov       rbx, qword ptr [rax + 8]\n0x007a2885 jmp       0x7a288f\n0x007a2887 call      0x694d0\n0x007a288c mov       rbx, rax\n0x007a288f sub       rbx, r12\n0x007a2892 call      0x34e590\n0x007a2897 movsxd    rax, dword ptr [rax + 0x134]\n0x007a289e cmp       rbx, rax\n0x007a28a1 jle       0x7a28bd\n0x007a28a3 mov       edi, 0x19\n0x007a28a8 mov       esi, 0x3f\n0x007a28ad call      0x784e50"
+  },
+  {
+    "site": "0x7a515c",
+    "function": "0x7a50e0",
+    "target": "0x784e50",
+    "tail": "0x007a512a jne       0x7a5134\n0x007a512c mov       rdi, rbx\n0x007a512f call      0x7a52d0\n0x007a5134 lea       rdi, [rbx + 0x38]\n0x007a5138 mov       rsi, rbx\n0x007a513b call      0x10535d0\n0x007a5140 mov       rax, qword ptr [rbx + 0x6b0]\n0x007a5147 cmp       rax, qword ptr [rbx + 0x6a0]\n0x007a514e jne       0x7a516d\n0x007a5150 mov       edi, dword ptr [rbx + 0x6c8]\n0x007a5156 mov       esi, dword ptr [rbx + 0x6cc]\n0x007a515c call      0x784e50"
+  },
+  {
+    "site": "0x7a73a4",
+    "function": "0x7a6c00",
+    "target": "0x784e50",
+    "tail": "0x007a736a mov       edi, dword ptr [rip + 0x1f28e84] ; [0x26d01f4]\n0x007a7370 lea       rsi, [rbp - 0x170]\n0x007a7377 call      0xe4aa0\n0x007a737c mov       dword ptr [rip + 0x1135771], r15d ; [0x18dcaf4]\n0x007a7383 call      0x697a0\n0x007a7388 mov       dword ptr [rip + 0x1f28e62], eax ; [0x26d01f0]\n0x007a738e xor       edi, edi\n0x007a7390 mov       esi, 0x1b\n0x007a7395 call      0x783e50\n0x007a739a mov       edi, 0x19\n0x007a739f mov       esi, 5\n0x007a73a4 call      0x784e50"
+  },
+  {
+    "site": "0x7a7d1c",
+    "function": "0x7a6c00",
+    "target": "0x783ed0",
+    "tail": "0x007a7cee mov       rdx, rbx\n0x007a7cf1 mov       rcx, r14\n0x007a7cf4 mov       r8, r15\n0x007a7cf7 xor       al, al\n0x007a7cf9 call      0x1008290\n0x007a7cfe mov       edi, dword ptr [rip + 0x1f285b0] ; [0x26d02b4]\n0x007a7d04 mov       rsi, r12\n0x007a7d07 call      0xe4aa0\n0x007a7d0c call      0x697a0\n0x007a7d11 mov       dword ptr [rip + 0x1f28599], eax ; [0x26d02b0]\n0x007a7d17 mov       edi, 0x1f\n0x007a7d1c call      0x783ed0"
+  },
+  {
+    "site": "0x7a882c",
+    "function": "0x7a8710",
+    "target": "0x784e50",
+    "tail": "0x007a87fa mov       rdi, rbx\n0x007a87fd mov       rdx, rax\n0x007a8800 xor       al, al\n0x007a8802 call      0x1008290\n0x007a8807 mov       edi, dword ptr [rip + 0x1f27b2f] ; [0x26d033c]\n0x007a880d mov       rsi, rbx\n0x007a8810 call      0xe4aa0\n0x007a8815 call      0x697a0\n0x007a881a mov       dword ptr [rip + 0x1f27b18], eax ; [0x26d0338]\n0x007a8820 mov       esi, dword ptr [r14 + 0x130]\n0x007a8827 mov       edi, 0x1d\n0x007a882c call      0x784e50"
+  },
+  {
+    "site": "0x7a9745",
+    "function": "0x7a95b0",
+    "target": "0x784e50",
+    "tail": "0x007a9712 lea       r14, [rbp - 0x158]\n0x007a9719 lea       rsi, [rip + 0xeb3500] ; [0x165cc20] \"world_controller:state:setup:activity_world_transition: Goal-state has been changed to '%s', returning to orbit.\"\n0x007a9720 mov       rdi, r14\n0x007a9723 mov       rdx, rax\n0x007a9726 xor       al, al\n0x007a9728 call      0x1008290\n0x007a972d mov       edi, dword ptr [rip + 0x1f26c65] ; [0x26d0398]\n0x007a9733 mov       rsi, r14\n0x007a9736 call      0xe4aa0\n0x007a973b mov       edi, 0x19\n0x007a9740 mov       esi, 0xa\n0x007a9745 call      0x784e50"
+  },
+  {
+    "site": "0x7a97e6",
+    "function": "0x7a95b0",
+    "target": "0x783ed0",
+    "tail": "0x007a97b3 jne       0x7a97c3\n0x007a97b5 or        byte ptr [rbx + 0x6c8], 1\n0x007a97bc or        byte ptr [rbx + 0x6d0], 1\n0x007a97c3 mov       rax, qword ptr [rbx + 0x6d0]\n0x007a97ca cmp       rax, qword ptr [rbx + 0x6c0]\n0x007a97d1 jne       0x7a97f7\n0x007a97d3 mov       edi, 5\n0x007a97d8 call      0xac5a30\n0x007a97dd test      al, al\n0x007a97df jne       0x7a9801\n0x007a97e1 mov       edi, 0x22\n0x007a97e6 call      0x783ed0"
+  },
+  {
+    "site": "0x7aa801",
+    "function": "0x7aa6c0",
+    "target": "0x784e50",
+    "tail": "0x007aa7cc call      0x12aa7e0\n0x007aa7d1 lea       rbx, [rbp - 0x160]\n0x007aa7d8 lea       rsi, [rip + 0xeb2dd2] ; [0x165d5b1] 'world_controller:state:matchmaking: Leave fireteam requested.'\n0x007aa7df mov       rdi, rbx\n0x007aa7e2 xor       al, al\n0x007aa7e4 call      0x1008290\n0x007aa7e9 mov       edi, dword ptr [rip + 0x1f25d55] ; [0x26d0544]\n0x007aa7ef mov       rsi, rbx\n0x007aa7f2 call      0xe4aa0\n0x007aa7f7 mov       edi, 0x19\n0x007aa7fc mov       esi, 9\n0x007aa801 call      0x784e50"
+  },
+  {
+    "site": "0x7ab87e",
+    "function": "0x7ab5d0",
+    "target": "0x783ed0",
+    "tail": "0x007ab848 lea       rbx, [rbp - 0x160]\n0x007ab84f lea       rsi, [rip + 0xeb2363] ; [0x165dbb9] 'world_controller:state:matchmaking: Activity-session host has finished matchmaking and is telling us to move on...'\n0x007ab856 mov       rdi, rbx\n0x007ab859 xor       al, al\n0x007ab85b call      0x1008290\n0x007ab860 mov       edi, dword ptr [rip + 0x1f24dee] ; [0x26d0654]\n0x007ab866 mov       rsi, rbx\n0x007ab869 call      0xe4aa0\n0x007ab86e call      0x697a0\n0x007ab873 mov       dword ptr [rip + 0x1f24dd7], eax ; [0x26d0650]\n0x007ab879 mov       edi, 0x1e\n0x007ab87e call      0x783ed0"
+  },
+  {
+    "site": "0x7ab999",
+    "function": "0x7ab5d0",
+    "target": "0x784e50",
+    "tail": "0x007ab96c lea       rsi, [rip + 0xeb21c2] ; [0x165db35] \"world_controller:state:matchmaking: Fireteam is returning to orbit because the host changed the goal-state to '%s' for reason '%s'.\"\n0x007ab973 mov       rdi, r14\n0x007ab976 mov       rdx, rbx\n0x007ab979 mov       rcx, rax\n0x007ab97c xor       al, al\n0x007ab97e call      0x1008290\n0x007ab983 mov       edi, dword ptr [rip + 0x1f24cb7] ; [0x26d0640]\n0x007ab989 mov       rsi, r14\n0x007ab98c call      0xe4aa0\n0x007ab991 mov       edi, 0x19\n0x007ab996 mov       esi, r15d\n0x007ab999 call      0x784e50"
+  },
+  {
+    "site": "0x7aca61",
+    "function": "0x7ac910",
+    "target": "0x784e50",
+    "tail": "0x007aca39 jl        0x7aca66\n0x007aca3b call      0x78c270\n0x007aca40 test      al, al\n0x007aca42 je        0x7aca50\n0x007aca44 mov       edi, 0x19\n0x007aca49 mov       esi, 0x39\n0x007aca4e jmp       0x7aca61\n0x007aca50 cmp       byte ptr [r14 + 0x48], 0\n0x007aca55 je        0x7aca89\n0x007aca57 mov       edi, 0x19\n0x007aca5c mov       esi, 9\n0x007aca61 call      0x784e50"
+  },
+  {
+    "site": "0x7adf4d",
+    "function": "0x7adee0",
+    "target": "0x784e50",
+    "tail": "0x007adf1f call      0x7539b0\n0x007adf24 mov       ebx, 1\n0x007adf29 lea       rdi, [r15 + 0x74]\n0x007adf2d call      0x753a60\n0x007adf32 mov       eax, dword ptr [r15 + 0x174]\n0x007adf39 cmp       eax, 5\n0x007adf3c je        0x7adf5c\n0x007adf3e cmp       eax, 6\n0x007adf41 jne       0x7adf54\n0x007adf43 mov       edi, 0x19\n0x007adf48 mov       esi, 0x38\n0x007adf4d call      0x784e50"
+  },
+  {
+    "site": "0x7ae064",
+    "function": "0x7adfe0",
+    "target": "0x784e50",
+    "tail": "0x007ae042 jne       0x7ae04c\n0x007ae044 or        byte ptr [rbx + 0x60], 1\n0x007ae048 or        byte ptr [rbx + 0x68], 1\n0x007ae04c mov       rax, qword ptr [rbx + 0x68]\n0x007ae050 cmp       rax, qword ptr [rbx + 0x58]\n0x007ae054 jne       0x7ae069\n0x007ae056 mov       esi, dword ptr [rbx + 0x70]\n0x007ae059 mov       edi, 0x1b\n0x007ae05e add       rsp, 8\n0x007ae062 pop       rbx\n0x007ae063 pop       rbp\n0x007ae064 jmp       0x784e50"
+  },
+  {
+    "site": "0x7ae56f",
+    "function": "0x7ae540",
+    "target": "0x783ed0",
+    "tail": "0x007ae54e test      al, al\n0x007ae550 jne       0x7ae569\n0x007ae552 call      0x765c40\n0x007ae557 test      al, al\n0x007ae559 je        0x7ae569\n0x007ae55b call      0x765ee0\n0x007ae560 mov       rdi, rax\n0x007ae563 pop       rbp\n0x007ae564 jmp       0x758c40\n0x007ae569 mov       edi, 0x21\n0x007ae56e pop       rbp\n0x007ae56f jmp       0x783ed0"
+  },
+  {
+    "site": "0x7ae965",
+    "function": "0x7ae740",
+    "target": "0x783ed0",
+    "tail": "0x007ae936 call      0x1008290\n0x007ae93b mov       edi, dword ptr [rip + 0x1f21f53] ; [0x26d0894]\n0x007ae941 mov       rsi, r15\n0x007ae944 call      0xe4aa0\n0x007ae949 call      0x697a0\n0x007ae94e mov       dword ptr [rip + 0x1f21f3c], eax ; [0x26d0890]\n0x007ae954 mov       r15b, bl\n0x007ae957 mov       eax, dword ptr [r14 + 0x30]\n0x007ae95b cmp       eax, 3\n0x007ae95e jne       0x7ae96c\n0x007ae960 mov       edi, 0x20\n0x007ae965 call      0x783ed0"
+  },
+  {
+    "site": "0x7ae97b",
+    "function": "0x7ae740",
+    "target": "0x784e50",
+    "tail": "0x007ae954 mov       r15b, bl\n0x007ae957 mov       eax, dword ptr [r14 + 0x30]\n0x007ae95b cmp       eax, 3\n0x007ae95e jne       0x7ae96c\n0x007ae960 mov       edi, 0x20\n0x007ae965 call      0x783ed0\n0x007ae96a jmp       0x7ae980\n0x007ae96c test      r15b, r15b\n0x007ae96f je        0x7ae980\n0x007ae971 mov       edi, 0x19\n0x007ae976 mov       esi, 0x37\n0x007ae97b call      0x784e50"
+  }
+]

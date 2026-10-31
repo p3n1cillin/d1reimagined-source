@@ -1,0 +1,27 @@
+{
+  "changed_decoded_field": "family0/type1 primary weapon-stat table first pair at+0x8B8/+0x8BC",
+  "candidate": [
+    20,
+    44
+  ],
+  "content_source": "owned Khvostov def+0x50 stat20=44 (56578); not display capacity25",
+  "other_decoded_bytes_unchanged": true,
+  "baseline_wire_identical": true,
+  "native_test": {
+    "run": "weapon25-mag44",
+    "pid": 22408,
+    "base": "0x51d0000",
+    "trigger35_utc": "2026-10-27T22:32:35.672324Z",
+    "trace_chain_verified": true,
+    "hud_magazine": 25,
+    "hud_reserve": 101,
+    "comparison_baseline": [
+      12,
+      114
+    ],
+    "reserve_fixed": false,
+    "damage_not_tested": true,
+    "debugger_detached": "2026-10-27T22:36:23Z; 11 hardware hits, clean detach"
+  },
+  "published": true
+}

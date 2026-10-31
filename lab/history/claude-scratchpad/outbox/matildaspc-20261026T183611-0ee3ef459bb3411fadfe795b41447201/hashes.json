@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "files": {
+    "daily-report.md": {
+      "size": 2427,
+      "sha256": "fddbc204d8bf3da7d0bbaeee0c832c6c764642b8e5c4f46d389ec577f0b5db6c"
+    },
+    "metadata.json": {
+      "size": 2652,
+      "sha256": "7ab42f0f8dd2f5730bd404d5202a97fd0641d34134b5281f60ca9feb26a29932"
+    },
+    "screenshots/01.png": {
+      "size": 1556138,
+      "sha256": "6671ad37981c3c8ab513af073b118d552e059499e13139d9d3fbcd8881cc1bed"
+    },
+    "screenshots/02.png": {
+      "size": 777793,
+      "sha256": "030792381384aab7ed106289f6bae735ddcc60bf42537dca016ea48ceeda3722"
+    }
+  }
+}

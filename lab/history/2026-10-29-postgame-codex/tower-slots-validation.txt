@@ -1,0 +1,2 @@
+PASS: current list parser lifetime sub2, 99 clients, 15 typed squads; schema codec team0, 2184 bytes
+PASS: current list parser lifetime sub2, 99 clients, 15 typed squads; schema codec team-1, 2184 bytes

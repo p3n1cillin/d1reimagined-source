@@ -1,0 +1,93 @@
+0x01166730 push      rbp
+0x01166731 mov       rbp, rsp
+0x01166734 push      r14
+0x01166736 push      rbx
+0x01166737 mov       r14, rsi
+0x0116673a mov       rbx, rdi
+0x0116673d call      0x1171b50
+0x01166742 mov       eax, dword ptr [r14 + 0x4588]
+0x01166749 mov       dword ptr [rbx + 0x4588], eax
+0x0116674f mov       eax, 0x458c
+0x01166754 nop       word ptr cs:[rax + rax]
+0x01166760 mov       cl, byte ptr [r14 + rax]
+0x01166764 mov       byte ptr [rbx + rax], cl
+0x01166767 mov       cl, byte ptr [r14 + rax + 1]
+0x0116676c mov       byte ptr [rbx + rax + 1], cl
+0x01166770 mov       rcx, qword ptr [r14 + rax + 4]
+0x01166775 mov       qword ptr [rbx + rax + 4], rcx
+0x0116677a mov       edx, dword ptr [r14 + rax + 0xc]
+0x0116677f lea       rcx, [rax + 0x14]
+0x01166783 mov       dword ptr [rbx + rax + 0xc], edx
+0x01166787 cmp       rcx, 0x467c
+0x0116678e mov       edx, dword ptr [r14 + rax + 0x10]
+0x01166793 mov       dword ptr [rbx + rax + 0x10], edx
+0x01166797 mov       rax, rcx
+0x0116679a jne       0x1166760
+0x0116679c mov       eax, dword ptr [r14 + 0x467c]
+0x011667a3 mov       dword ptr [rbx + 0x467c], eax
+0x011667a9 mov       eax, 0x4682
+0x011667ae nop       
+0x011667b0 mov       cl, byte ptr [r14 + rax - 2]
+0x011667b5 mov       byte ptr [rbx + rax - 2], cl
+0x011667b9 mov       cl, byte ptr [r14 + rax - 1]
+0x011667be mov       byte ptr [rbx + rax - 1], cl
+0x011667c2 mov       cl, byte ptr [r14 + rax]
+0x011667c6 mov       byte ptr [rbx + rax], cl
+0x011667c9 add       rax, 3
+0x011667cd cmp       rax, 0x46a6
+0x011667d3 jne       0x11667b0
+0x011667d5 lea       rdi, [rbx + 0x46a8]
+0x011667dc lea       rsi, [r14 + 0x46a8]
+0x011667e3 call      0x1171ca0
+0x011667e8 mov       eax, dword ptr [r14 + 0x47c0]
+0x011667ef mov       dword ptr [rbx + 0x47c0], eax
+0x011667f5 mov       eax, dword ptr [r14 + 0x47cc]
+0x011667fc mov       dword ptr [rbx + 0x47cc], eax
+0x01166802 mov       rax, qword ptr [r14 + 0x47c4]
+0x01166809 mov       qword ptr [rbx + 0x47c4], rax
+0x01166810 mov       eax, 0x903
+0x01166815 mov       cl, byte ptr [r14 + 0x47d0]
+0x0116681c mov       byte ptr [rbx + 0x47d0], cl
+0x01166822 mov       cl, byte ptr [r14 + 0x47d1]
+0x01166829 mov       byte ptr [rbx + 0x47d1], cl
+0x0116682f mov       cx, word ptr [r14 + 0x47e2]
+0x01166837 mov       word ptr [rbx + 0x47e2], cx
+0x0116683e mov       rcx, qword ptr [r14 + 0x47d2]
+0x01166845 mov       rdx, qword ptr [r14 + 0x47da]
+0x0116684c mov       qword ptr [rbx + 0x47da], rdx
+0x01166853 mov       qword ptr [rbx + 0x47d2], rcx
+0x0116685a mov       cl, byte ptr [r14 + 0x47ec]
+0x01166861 mov       byte ptr [rbx + 0x47ec], cl
+0x01166867 mov       rcx, qword ptr [r14 + 0x47e4]
+0x0116686e mov       qword ptr [rbx + 0x47e4], rcx
+0x01166875 mov       cx, word ptr [r14 + 0x47ee]
+0x0116687d mov       word ptr [rbx + 0x47ee], cx
+0x01166884 mov       cx, word ptr [r14 + 0x47f0]
+0x0116688c mov       word ptr [rbx + 0x47f0], cx
+0x01166893 mov       cx, word ptr [r14 + 0x4812]
+0x0116689b mov       word ptr [rbx + 0x4812], cx
+0x011668a2 mov       rcx, qword ptr [r14 + 0x480a]
+0x011668a9 mov       qword ptr [rbx + 0x480a], rcx
+0x011668b0 mov       rcx, qword ptr [r14 + 0x4802]
+0x011668b7 mov       qword ptr [rbx + 0x4802], rcx
+0x011668be mov       rcx, qword ptr [r14 + 0x47f2]
+0x011668c5 mov       rdx, qword ptr [r14 + 0x47fa]
+0x011668cc mov       qword ptr [rbx + 0x47fa], rdx
+0x011668d3 mov       qword ptr [rbx + 0x47f2], rcx
+0x011668da mov       ecx, dword ptr [r14 + 0x4814]
+0x011668e1 mov       dword ptr [rbx + 0x4814], ecx
+0x011668e7 nop       word ptr [rax + rax]
+0x011668f0 mov       ecx, dword ptr [r14 + rax*8]
+0x011668f4 mov       dword ptr [rbx + rax*8], ecx
+0x011668f7 mov       ecx, dword ptr [r14 + rax*8 + 4]
+0x011668fc mov       dword ptr [rbx + rax*8 + 4], ecx
+0x01166900 inc       rax
+0x01166903 cmp       rax, 0x923
+0x01166909 jne       0x11668f0
+0x0116690b mov       eax, dword ptr [r14 + 0x4918]
+0x01166912 mov       dword ptr [rbx + 0x4918], eax
+0x01166918 mov       rax, rbx
+0x0116691b pop       rbx
+0x0116691c pop       r14
+0x0116691e pop       rbp
+0x0116691f ret       

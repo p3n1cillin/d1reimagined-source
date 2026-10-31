@@ -1,0 +1,25 @@
+{"t": 1793209156.5035594, "k": 1, "msg": "1: lock 0x37fd458d0 d 21.8 aimed False plates 0 health None"}
+{"t": 1793209158.8464625, "k": 2, "msg": "2: lock 0x37fd458d0 d 16.5 aimed False plates 0 health 0.4583333333333333"}
+{"t": 1793209163.392148, "k": 3, "msg": "3: lock 0x37fd458d0 d 6.9 aimed False plates 0 health 0.9768518518518519"}
+{"t": 1793209167.4665978, "k": 4, "msg": "4: lock 0x37fd458d0 d 3.3 aimed False plates 0 health 0.9004629629629629"}
+{"t": 1793209170.731642, "k": 5, "msg": "5: lock 0x37fd458d0 d 3.7 aimed False plates 0 health 0.6597222222222222"}
+{"t": 1793209174.90692, "k": 6, "msg": "6: lock 0x37fd458d0 d 5.9 aimed False plates 0 health 0.5949074074074074"}
+{"t": 1793209178.058722, "k": 7, "msg": "7: lock 0x37fd458d0 d 1.4 aimed True plates 0 health 0.38657407407407407"}
+{"t": 1793209180.8606744, "k": 8, "msg": "8: lock 0x37fd08ae0 d 29.0 aimed False plates 0 health 0.38657407407407407"}
+{"t": 1793209183.2027342, "k": 9, "msg": "9: lock 0x37fd08ae0 d 15.4 aimed False plates 0 health 0.38657407407407407"}
+{"t": 1793209186.5009222, "k": 10, "msg": "10: lock 0x37fd08ae0 d 7.2 aimed False plates 0 health 0.7291666666666666"}
+{"t": 1793209191.3854766, "k": 11, "msg": "11: lock 0x37fd08ae0 d 2.4 aimed False plates 0 health 1.0"}
+{"t": 1793209196.6363664, "k": 12, "msg": "12: lock 0x37fd08ae0 d 3.3 aimed False plates 0 health 0.7476851851851852"}
+{"t": 1793209203.2425904, "k": 13, "msg": "13: lock 0x37fd08ae0 d 1.0 aimed False plates 0 health 0.49537037037037035"}
+{"t": 1793209213.4911048, "k": 15, "msg": "15: lock 0x37fd08ae0 d 4.5 aimed False plates 0 health None"}
+{"t": 1793209234.0750875, "k": 19, "msg": "19: lock 0x37fd08ae0 d 12.0 aimed False plates 0 health None"}
+{"t": 1793209236.3373334, "k": 20, "msg": "20: lock 0x37fd08ae0 d 12.2 aimed False plates 0 health None"}
+{"t": 1793209238.5423963, "k": 21, "msg": "21: lock 0x37fd08ae0 d 12.5 aimed False plates 0 health None"}
+{"t": 1793209240.7117457, "k": 22, "msg": "22: lock 0x37fd08ae0 d 12.5 aimed False plates 0 health None"}
+{"t": 1793209242.9803143, "k": 23, "msg": "23: lock 0x37fd08ae0 d 12.5 aimed False plates 0 health None"}
+{"t": 1793209245.3207378, "k": 24, "msg": "24: lock 0x37fd08ae0 d 54.4 aimed False plates 0 health None"}
+{"t": 1793209247.4164474, "k": 25, "msg": "25: lock 0x37fd08ae0 d 54.3 aimed True plates 0 health 0.49537037037037035"}
+{"t": 1793209249.5945625, "k": 26, "msg": "26: lock 0x37fd08ae0 d 54.4 aimed False plates 0 health 0.9560185185185185"}
+{"t": 1793209251.6721246, "k": 27, "msg": "27: lock 0x37fd08ae0 d 54.3 aimed True plates 0 health 1.0"}
+{"t": 1793209253.2269447, "k": 28, "msg": "28: no live enemy within 35 m; sweep"}
+{"t": 1793209254.7759857, "k": 29, "msg": "29: no live enemy within 35 m; sweep"}

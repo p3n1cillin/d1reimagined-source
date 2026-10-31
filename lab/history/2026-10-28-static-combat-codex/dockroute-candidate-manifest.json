@@ -1,0 +1,66 @@
+{
+  "status": "content-derived untested route candidate; no collision sweep or live navigation by Codex",
+  "native_player_start_utc": "2026-10-28T14:09:46.727306Z",
+  "nux_prop": [
+    105.6712417602539,
+    -537.77294921875,
+    4.943708896636963
+  ],
+  "nux_yaw_degrees": -45,
+  "guardian_height_note": "6.6/6.7 for approach based on actual read; later bay z is provisional. FA floor bounds are not measured standing heights.",
+  "route_files": [
+    "dock13-entry-to-nux-approach-candidate.json",
+    "dock13-nux-to-trigger41-shiproom-candidate.json"
+  ],
+  "trigger41_volume": {
+    "name": "0x992bb471/0x3a/61",
+    "trigger": "0x992bb471/0x1d/41",
+    "definition": "0x80cb9120",
+    "record": "0x12b0",
+    "low": [
+      67.40904235839844,
+      -564.4797973632812,
+      4.601207733154297
+    ],
+    "high": [
+      107.65226745605469,
+      -523.7432250976562,
+      10.601211547851562
+    ],
+    "height": 6.0,
+    "vertices": [
+      [
+        87.34519958496094,
+        -523.7432250976562,
+        4.601207733154297
+      ],
+      [
+        67.40904235839844,
+        -546.8192138671875,
+        4.601207733154297
+      ],
+      [
+        98.89605712890625,
+        -564.4797973632812,
+        4.601207733154297
+      ],
+      [
+        107.65226745605469,
+        -548.5047607421875,
+        4.6012115478515625
+      ],
+      [
+        101.00664520263672,
+        -541.3307495117188,
+        4.6012115478515625
+      ],
+      [
+        103.03723907470703,
+        -539.3322143554688,
+        4.6012115478515625
+      ]
+    ],
+    "native_verified": true
+  },
+  "no_input": true
+}

@@ -1,0 +1,147 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.69s
+     Running unittests src\lib.rs (target\debug\deps\d1_activity_host-ebe0acd55adda004.exe)
+
+running 79 tests
+test codec::tests::the_raw_codec_is_labelled_an_experiment_and_records_that_it_was_falsified ... ok
+test entity::tests::the_allocator_grants_only_what_is_new_and_returns_it ... ok
+test codec::tests::the_raw_codec_still_refuses_an_unsendable_id ... ok
+test listener::tests::a_sealed_frame_before_the_channel_exists_is_a_named_gate ... ok
+test entity::tests::twelve_thousand_two_hundred_and_eighty_eight_indices_in_a_1536_byte_mask ... ok
+test entity::tests::union_is_what_the_client_does_on_apply ... ok
+test entity::tests::struct_bytes_round_trip_and_bit_zero_is_word_zero_bit_zero ... ok
+test entity::tests::from_struct_bytes_refuses_a_wrong_size ... ok
+test entity::tests::the_offline_seam_is_a_memset_of_0xff ... ok
+test entity::tests::the_allocator_grants_short_rather_than_lying_when_the_pool_runs_out ... ok
+test listener::tests::client_update_capture_is_opt_in_and_preserves_incidents ... ok
+test listener::tests::client_update_capture_zero_disables_the_extra_diagnostics ... ok
+test listener::tests::client_update_capture_tracks_both_types_without_repeating_unchanged_data ... ok
+test listener::tests::client_update_capture_waits_for_the_requested_window ... ok
+test listener::tests::message_eight_body_starts_at_fourteen_not_six ... ok
+test listener::tests::message_eight_creates_no_in_flight_entry ... ok
+test messages::tests::a_session_id_that_would_run_past_the_field_is_refused_not_truncated ... ok
+test listener::tests::the_ah_connection_answers_the_two_plaintext_handshake_messages ... ok
+test listener::tests::client_update_capture_bounds_storage_and_labels_oversized_payloads ... ok
+test listener::tests::client_update_capture_budget_is_shared_and_hard_capped ... ok
+test messages::tests::advance_replication_epoch_is_two_bytes ... ok
+test messages::tests::allocate_entity_indices_refuses_a_short_struct ... ok
+test messages::tests::an_unmodelled_but_legal_client_message_is_logged_not_fatal ... ok
+test messages::tests::client_messages_decode_the_two_shapes_the_state_machine_needs ... ok
+test messages::tests::join_result_lands_every_field_on_the_offset_the_client_reads ... ok
+test messages::tests::start_activity_host_response_is_exactly_bap_message_sevens_payload ... ok
+test messages::tests::the_join_nonce_is_echoed_as_bytes_not_reinterpreted ... ok
+test protocol::tests::direction_refuses_ids_outside_the_table ... ok
+test protocol::tests::every_id_is_classified_and_the_unwired_ones_are_exactly_the_expected_four ... ok
+test protocol::tests::ids_thirty_and_thirty_one_are_not_what_the_contract_doc_says ... ok
+test protocol::tests::the_four_bap_connection_slots_are_named_from_the_eboot ... ok
+test protocol::tests::the_id_space_is_forty_nine_entries ... ok
+test protocol::tests::the_receive_dispatch_table_has_seventeen_entries_and_they_are_disjoint_but_for_incident ... ok
+test protocol::tests::udt_eight_and_ten_tie_the_bap_manager_pair_to_this_table ... ok
+test protocol::tests::udt_sixteen_the_keepalive_response_is_refused_as_unsendable ... ok
+test push::tests::a_message_the_client_cannot_receive_is_refused_before_framing ... ok
+test push::tests::a_push_goes_out_as_message_9_and_message_100_is_the_kept_negative ... ok
+test push::tests::exactly_one_class_six_field_is_not_byte_swapped ... ok
+test push::tests::message_102_is_refused_without_even_asking_bap ... ok
+test push::tests::the_body_is_built_by_d1_bap_and_carries_the_udt ... ok
+test push::tests::the_class_six_field_map_tiles_thirty_two_bytes_with_no_gap_and_no_overlap ... ok
+test push::tests::the_default_push_id_is_nine ... ok
+test registry::tests::ids_are_unique_and_each_gets_its_own_session_id ... ok
+test registry::tests::an_allocated_activity_host_id_is_never_zero ... ok
+test registry::tests::proxy_id_zero_means_the_proxy_itself_and_is_answered ... ok
+test registry::tests::the_falsifier_starts_unfired_and_fires_only_on_a_proxy_request ... ok
+test registry::tests::the_manager_response_carries_the_session_id_not_an_endpoint ... ok
+test registry::tests::the_proxy_response_echoes_the_requested_id_verbatim ... ok
+test registry::tests::the_launch_command_line_is_parsed_for_the_run_log ... ok
+test state::tests::a_connectivity_failure_evicts_with_the_clients_own_reason_name ... ok
+test state::tests::a_join_pushes_all_four_of_the_messages_establish_client_waits_on_in_ladder_order ... ok
+test state::tests::a_join_request_too_short_to_carry_an_identity_loses_the_membership_push_not_fakes_it ... ok
+test state::tests::a_keepalive_produces_no_reply_at_all ... ok
+test state::tests::a_keepalive_renews_the_lease ... ok
+test state::tests::a_state_refresh_re_grants_no_entity_indices ... ok
+test state::tests::a_teleport_step_runs_the_slice_request_handshake ... ok
+test state::tests::a_world_with_a_start_region_publishes_it ... ok
+test state::tests::allocating_entity_indices_grants_exactly_the_requested_count_in_a_0x600_mask ... ok
+test state::tests::an_incident_step_fires_on_the_report_or_the_timeout ... ok
+test state::tests::an_unconnected_instance_is_never_evicted_for_silence ... ok
+test state::tests::mission_steps_switch_the_served_state_and_region ... ok
+test state::tests::the_activity_state_is_published_exactly_once_and_it_is_1712_bytes ... ok
+test state::tests::the_join_result_echoes_the_requests_nonce_byte_for_byte ... ok
+test state::tests::the_join_result_never_advertises_a_zero_keepalive_interval ... ok
+test state::tests::the_lease_lapses_after_five_intervals_of_silence_and_only_reports_once ... ok
+test state::tests::the_membership_echoes_the_clients_identity_verbatim ... ok
+test state::tests::the_replication_epoch_is_a_u8_and_the_push_is_two_bytes ... ok
+test state::tests::the_unsolicited_grant_is_the_whole_pool_and_leaves_nothing_to_allocate ... ok
+test state::tests::a_join_publishes_the_launched_activity_when_following ... ok
+test listener::tests::with_the_experimental_codec_the_state_machine_runs_and_both_pushes_are_framed ... ok
+test codec::tests::the_pinned_tags_equal_the_derived_ones ... FAILED
+test codec::tests::the_default_codec_round_trips_the_captured_live_join_request ... FAILED
+test push::tests::the_default_codec_now_produces_a_schema_body_that_is_not_the_struct ... FAILED
+test codec::tests::an_unpinned_user_defined_type_still_refuses_and_says_so ... FAILED
+test codec::tests::a_join_result_encodes_to_schema_bytes_that_are_not_the_struct_image ... FAILED
+test listener::tests::the_captured_live_join_request_decodes_and_both_pushes_are_framed ... FAILED
+test controls::tests::every_control_passes ... FAILED
+test messages::tests::global_activity_state_is_exactly_1712_bytes_and_not_8_more ... FAILED
+test controls::tests::there_are_enough_controls_to_be_worth_running ... FAILED
+
+failures:
+
+---- codec::tests::the_pinned_tags_equal_the_derived_ones stdout ----
+
+thread 'codec::tests::the_pinned_tags_equal_the_derived_ones' (2556) panicked at crates\d1-activity-host\src\codec.rs:498:61:
+called `Result::unwrap()` on an `Err` value: Eboot("The system cannot find the path specified. (os error 3)")
+
+---- codec::tests::the_default_codec_round_trips_the_captured_live_join_request stdout ----
+
+thread 'codec::tests::the_default_codec_round_trips_the_captured_live_join_request' (8964) panicked at crates\d1-oracle\src\activity_host.rs:271:49:
+eboot: The system cannot find the path specified. (os error 3)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- push::tests::the_default_codec_now_produces_a_schema_body_that_is_not_the_struct stdout ----
+
+thread 'push::tests::the_default_codec_now_produces_a_schema_body_that_is_not_the_struct' (23516) panicked at crates\d1-activity-host\src\push.rs:389:55:
+called `Result::unwrap()` on an `Err` value: Ah(SchemaCodec { user_defined_type: 4, detail: "eboot: The system cannot find the path specified. (os error 3)" })
+
+---- codec::tests::an_unpinned_user_defined_type_still_refuses_and_says_so stdout ----
+
+thread 'codec::tests::an_unpinned_user_defined_type_still_refuses_and_says_so' (24028) panicked at crates\d1-activity-host\src\codec.rs:465:9:
+udt 42 (advance_replication_epoch): the client's own schema codec (FUN_002A4090 / FUN_002A4140) could not be run: eboot: The system cannot find the path specified. (os error 3)
+
+---- codec::tests::a_join_result_encodes_to_schema_bytes_that_are_not_the_struct_image stdout ----
+
+thread 'codec::tests::a_join_result_encodes_to_schema_bytes_that_are_not_the_struct_image' (23740) panicked at crates\d1-activity-host\src\codec.rs:447:45:
+join_result must encode: SchemaCodec { user_defined_type: 4, detail: "eboot: The system cannot find the path specified. (os error 3)" }
+
+---- listener::tests::the_captured_live_join_request_decodes_and_both_pushes_are_framed stdout ----
+
+thread 'listener::tests::the_captured_live_join_request_decodes_and_both_pushes_are_framed' (14380) panicked at crates\d1-oracle\src\activity_host.rs:271:49:
+eboot: The system cannot find the path specified. (os error 3)
+
+---- controls::tests::every_control_passes stdout ----
+
+thread 'controls::tests::every_control_passes' (23488) panicked at crates\d1-oracle\src\activity_host.rs:271:49:
+eboot: The system cannot find the path specified. (os error 3)
+
+---- messages::tests::global_activity_state_is_exactly_1712_bytes_and_not_8_more stdout ----
+
+thread 'messages::tests::global_activity_state_is_exactly_1712_bytes_and_not_8_more' (24020) panicked at crates\d1-activity-host\src\messages.rs:1126:69:
+called `Result::unwrap()` on an `Err` value: Eboot("The system cannot find the path specified. (os error 3)")
+
+---- controls::tests::there_are_enough_controls_to_be_worth_running stdout ----
+
+thread 'controls::tests::there_are_enough_controls_to_be_worth_running' (20008) panicked at crates\d1-oracle\src\activity_host.rs:271:49:
+eboot: The system cannot find the path specified. (os error 3)
+
+
+failures:
+    codec::tests::a_join_result_encodes_to_schema_bytes_that_are_not_the_struct_image
+    codec::tests::an_unpinned_user_defined_type_still_refuses_and_says_so
+    codec::tests::the_default_codec_round_trips_the_captured_live_join_request
+    codec::tests::the_pinned_tags_equal_the_derived_ones
+    controls::tests::every_control_passes
+    controls::tests::there_are_enough_controls_to_be_worth_running
+    listener::tests::the_captured_live_join_request_decodes_and_both_pushes_are_framed
+    messages::tests::global_activity_state_is_exactly_1712_bytes_and_not_8_more
+    push::tests::the_default_codec_now_produces_a_schema_body_that_is_not_the_struct
+
+test result: FAILED. 70 passed; 9 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+error: test failed, to rerun pass `-p d1-activity-host --lib`

@@ -1,0 +1,47 @@
+[
+  {
+    "fn": "0x136e40",
+    "size": 112,
+    "hits": [
+      "0x00136e7d movsx     r8, byte ptr [rsi + r8 + 0x20a]"
+    ]
+  },
+  {
+    "fn": "0x13bec0",
+    "size": 1536,
+    "hits": [
+      "0x0013c3ab mov       byte ptr [r15 + rbx + 0x20a], dil",
+      "0x0013c3b3 mov       byte ptr [r15 + rbx + 0x20b], r8b",
+      "0x0013c3bb mov       byte ptr [r15 + rbx + 0x20c], sil"
+    ]
+  },
+  {
+    "fn": "0x1c4640",
+    "size": 144,
+    "hits": [
+      "0x001c4680 movsx     r15d, byte ptr [rax + rcx + 0x20a]"
+    ]
+  },
+  {
+    "fn": "0x1c46d0",
+    "size": 48,
+    "hits": [
+      "0x001c46e5 movsx     eax, byte ptr [rdi + rax + 0x20a]"
+    ]
+  },
+  {
+    "fn": "0x425df0",
+    "size": 1040,
+    "hits": [
+      "0x00425e8c movsx     rsi, byte ptr [rbx + r8 + 0x20b]",
+      "0x0042616a movzx     esi, byte ptr [rax + rcx + 0x20c]"
+    ]
+  },
+  {
+    "fn": "0x42e5c0",
+    "size": 2192,
+    "hits": [
+      "0x0042e71f mov       word ptr [rsp + 0x20c], 0xffff"
+    ]
+  }
+]

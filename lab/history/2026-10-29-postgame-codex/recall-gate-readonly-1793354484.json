@@ -1,0 +1,19 @@
+{
+  "time": 1793354484.4800892,
+  "base": "0x50d0000",
+  "unlock_index": 2838,
+  "profile": "0x37f909140",
+  "profile_completion673": 1,
+  "plane": "0x37f8bd3c8",
+  "plane_state": 1,
+  "plane_valid": 1,
+  "leader628": 33,
+  "leader62c": 0,
+  "leader632c": 0,
+  "selection_type": 1,
+  "selection_activity": 165,
+  "world_state": 36,
+  "leader_predicate": true,
+  "mode_predicate": false,
+  "ordinary_branch_predicted": true
+}

@@ -1,0 +1,30 @@
+{
+  "CONTENT_NAS_PATH": "\\\\<lan>\\share",
+  "DEVELOPMENT_MACHINE_ID": "<lab-pc>",
+  "CONTENT_LOCAL_PATH": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture",
+  "CONTENT_CAPTURE_ENABLED": true,
+  "CURRENT_SESSION": "daily-engineering-handoff-2026-10-13",
+  "CURRENT_DEVBLOG": null,
+  "CURRENT_GAME_BUILD": "PS4 CUSA00219 owned build 56578.17.04.12.1251.evil; package metadata 01.33; synthetic lab interventions",
+  "CURRENT_FEATURE": "served-world-content-and-player-spawn",
+  "FFMPEG_PATH": "F:\\d1\\<pc>-import\\d1xenia\\local\\DEVLOGS\\tools\\imageio_ffmpeg\\binaries\\ffmpeg-win-x86_64-v7.1.exe",
+  "RUN_MANIFEST_DIRECTORY": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs",
+  "BUFFER_SECONDS": 180,
+  "BUFFER_MAX_BYTES": 2147483648,
+  "PRE_EVENT_BUFFER": 60,
+  "POST_EVENT_BUFFER": 30,
+  "SEGMENT_SECONDS": 30,
+  "SUBMITTED_RETENTION_DAYS": 30,
+  "RETRY_INITIAL_SECONDS": 30,
+  "RETRY_MAX_SECONDS": 3600,
+  "KNOWN_CAPABILITIES": {
+    "world-entry": "OBSERVED",
+    "live-fragment-validation": "FAILED",
+    "service-104-stub": "PARTIAL",
+    "service-205-stub": "PARTIAL",
+    "service-702-stub": "PARTIAL",
+    "service-105-stub": "PARTIAL",
+    "service-505-stub": "PARTIAL",
+    "service-701-stub": "PARTIAL"
+  }
+}

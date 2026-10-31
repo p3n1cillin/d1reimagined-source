@@ -1,0 +1,6 @@
+INVENTORY: 1367 bits, 171 bytes, verified by inventory::build; instance 0xd1000000000003f1
+PROFILE arcadia-profile-xp0-owned: 166685 bits, 20836 bytes, round trip identical, 5 changed bytes
+PROFILE arcadia-profile-xp0-equipped: 166685 bits, 20836 bytes, round trip identical, 8 changed bytes
+PROFILE arcadia-profile-xp900-owned: 166685 bits, 20836 bytes, round trip identical, 5 changed bytes
+PROFILE arcadia-profile-xp900-equipped: 166685 bits, 20836 bytes, round trip identical, 8 changed bytes
+SCOREBOARD REWARD: 2388 bits, 299 bytes, typed inventory item round trip identical

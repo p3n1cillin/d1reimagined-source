@@ -1,0 +1,30 @@
+0x0052a040 push      rbp
+0x0052a041 mov       rbp, rsp
+0x0052a044 push      r15
+0x0052a046 push      r14
+0x0052a048 push      r12
+0x0052a04a push      rbx
+0x0052a04b sub       rsp, 0x10
+0x0052a04f mov       r12d, ecx
+0x0052a052 mov       r15, rdx
+0x0052a055 mov       rbx, rsi
+0x0052a058 mov       r14d, edi
+0x0052a05b mov       rdi, rbx
+0x0052a05e call      0x511250
+0x0052a063 movsx     r8d, byte ptr [r15 + 0x22]
+0x0052a068 movsx     edx, byte ptr [rbx + 0x22]
+0x0052a06c movzx     ecx, r12b
+0x0052a070 mov       dword ptr [rsp], ecx
+0x0052a073 lea       rcx, [rbx + 0x10]
+0x0052a077 lea       r9, [r15 + 0x10]
+0x0052a07b mov       edi, r14d
+0x0052a07e mov       esi, eax
+0x0052a080 call      0x529c40
+0x0052a085 add       rsp, 0x10
+0x0052a089 pop       rbx
+0x0052a08a pop       r12
+0x0052a08c pop       r14
+0x0052a08e pop       r15
+0x0052a090 pop       rbp
+0x0052a091 ret       
+0x0052a092 nop       word ptr cs:[rax + rax]

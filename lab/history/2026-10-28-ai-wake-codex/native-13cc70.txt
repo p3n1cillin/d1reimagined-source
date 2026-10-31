@@ -1,0 +1,10 @@
+0x0013cc70 mov       eax, dword ptr [rdi + 0xa88]
+0x0013cc76 cmp       eax, -1
+0x0013cc79 je        0x13cc95
+0x0013cc7b and       eax, 0x1fff
+0x0013cc80 lea       rcx, [rip + 0x249ad19] ; [0x25d79a0]
+0x0013cc87 imul      eax, dword ptr [rcx + 0x10]
+0x0013cc8b mov       rcx, qword ptr [rcx + 8]
+0x0013cc8f or        word ptr [rcx + rax], 0x1000
+0x0013cc95 ret       
+0x0013cc96 nop       word ptr cs:[rax + rax]

@@ -1,0 +1,2 @@
+d1-eboot: vaddr 0x105600 is not a `55 48 89 e5` prologue - refusing to disassemble from a guessed start (ATLAS §4.5: twice this project produced authoritative-looking garbage)
+  (a start that is not `55 48 89 e5` is refused - ATLAS §4.5. Use --snap to anchor on the enclosing prologue, or --force if you know it is not a function start.)

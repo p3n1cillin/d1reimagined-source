@@ -1,0 +1,105 @@
+{
+  "recorded_at": "2026-10-14T18:15:08.994829+00:00",
+  "reporting_date": "2026-10-14",
+  "reporting_timezone": "Europe/London",
+  "reporting_interval_start": "2026-10-13T18:00:00Z",
+  "reporting_interval_end": "2026-10-14T18:00:00Z",
+  "daily_update_id": "destiny1-2026-10-14",
+  "development_session": "served-director-armed-story-world",
+  "topic": "served-activity-entry-and-reproduced-teardown-repair",
+  "feature": "activity-launch-and-pve-world-entry",
+  "event_type": "GENERAL_PROGRESS",
+  "importance": "USEFUL",
+  "description": "Private daily evidence: served Director and armed world entry, corrected entity-refresh delta, three inspected original screenshots. Mission encounters and full gameplay remain unfinished.",
+  "previous_state": "Forced scene/spawn and teardown crash; natural launch and weapons unresolved.",
+  "current_state": "Normal UI/served-data launch can create an armed character in configured worlds; reproduced refresh/teardown case repaired. Lab client patches remain.",
+  "remaining_issue": "Mission encounters, objectives, progression, public-region connection, map routing and broader stability.",
+  "referenced_package_ids": [
+    "<lab-pc>-20261013T181812-ae94e24c41d043fda43b6500d0e35f5c"
+  ],
+  "new_media_included": true,
+  "new_screenshot_count": 3,
+  "new_video_count": 0,
+  "media_decode": "PNG image decode PASS; no video/audio decode claimed",
+  "publication_review_required": true,
+  "native_boot_accepted": false,
+  "retained_lab_patch_synthetic": true,
+  "tested_source_commit": "575358ba33b96acf5e666b8d60c1edb54dfc3d09",
+  "tested_source_branch": "master",
+  "tested_worktree_clean": false,
+  "dirty_build_description": "Pre-existing untracked file 3 excluded; report PNG compatibility changes are local and tested separately. Runtime uses separately built patched emulator and private generated fixtures.",
+  "handoff_tool_source_sha256": {
+    "tools/content_capture/capture.py": "e7205cd538ced672a5cb6ce1bb28868de9b0097983e8f86f46e87fb781bd9136",
+    "tools/content_capture/test_capture.py": "557e8fc38e548abb284ee1fa6b66814d6c137218649489b9ab86652d67ee0b50",
+    "tools/content_capture/README.md": "08acad44f8d334cc83bf46d30970fa7d7776b6c6916198e5dc03a46dfe517df6"
+  },
+  "native_emulator_sha256": "4a3fb663b897a9f80b272820ed7a8d53fa27fd177c3d209992762eaa77288f67",
+  "client_patch_sha256": "dd3ed7495b0601b63bbb09a18314a99a8b948ebc3b241e91c26c75c298526bb5",
+  "native_receipt_reference": "cfw-staging/contained-boot/20261014-175212-2026-10-14-dw-highway2/receipt.json",
+  "late_delivery": true,
+  "post_cutoff_evidence_excluded": [
+    "automatic spawn-team follow-up",
+    "subsequent world-table investigation"
+  ],
+  "screenshot_evidence": [
+    {
+      "file": "screenshots/01.png",
+      "source_modified_at_utc": "2026-10-14T08:18:53.914971+00:00",
+      "source_sha256": "ce4d02159eeaddaae3ee33a45e0bf7276bb4cc55524ce9ab433b7327a2c4092c",
+      "bytes": 1216088,
+      "visual_review": "inspected for private handoff only",
+      "claim": "Armed first-person Moon scene; HUD shows one round remaining. The source record reports two shots from three. A still alone does not prove recoil or damage.",
+      "dimensions": [
+        1296,
+        759
+      ],
+      "suggested_production_crop": {
+        "x": 8,
+        "y": 31,
+        "width": 1280,
+        "height": 720
+      },
+      "publication_approved": false
+    },
+    {
+      "file": "screenshots/02.png",
+      "source_modified_at_utc": "2026-10-14T15:37:17.464414+00:00",
+      "source_sha256": "bbdeb36670342661199b09aeca9b37ab03518a2001c13e882f35ee479802d365",
+      "bytes": 1789949,
+      "visual_review": "inspected for private handoff only",
+      "claim": "Earth map with The Dark Within focused, story description and Resume/Restart options. This is UI availability, not mission completion.",
+      "dimensions": [
+        1296,
+        759
+      ],
+      "suggested_production_crop": {
+        "x": 8,
+        "y": 31,
+        "width": 1280,
+        "height": 720
+      },
+      "publication_approved": false
+    },
+    {
+      "file": "screenshots/03.png",
+      "source_modified_at_utc": "2026-10-14T17:56:40.762145+00:00",
+      "source_sha256": "ef14e90e5ba50292c07001573a42cfae5ae7c4242422f24152570584d736478b",
+      "bytes": 1584258,
+      "visual_review": "inspected for private handoff only",
+      "claim": "Armed first-person Cosmodrome scene from the story-launch run. Still image only; continuous traversal, encounter logic and completion are unproved.",
+      "dimensions": [
+        1296,
+        759
+      ],
+      "suggested_production_crop": {
+        "x": 8,
+        "y": 31,
+        "width": 1280,
+        "height": 720
+      },
+      "publication_approved": false
+    }
+  ],
+  "native_safe_checkpoint_observed_at": "2026-10-14T19:33:05.085023+00:00",
+  "safe_checkpoint_basis": "Read-only native process inventory is empty; no emulator or server was stopped by this handoff."
+}

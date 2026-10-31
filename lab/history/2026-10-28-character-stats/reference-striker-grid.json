@@ -1,0 +1,1598 @@
+{
+  "gridHash": 4027063972,
+  "maxGridLevel": 0,
+  "gridLevelPerColumn": 0,
+  "progressionHash": 1235322459,
+  "nodes": [
+    {
+      "nodeIndex": 0,
+      "nodeHash": 0,
+      "row": 0,
+      "column": 2,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 2755008362,
+          "nodeStepName": "Lift",
+          "nodeStepDescription": "Jump and then press  again while in the air to activate Lift.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/47de1d7539eb3fc54172560e911bd095.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 3,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 900,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 1,
+      "nodeHash": 1,
+      "row": 2,
+      "column": 1,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 3811945819,
+          "nodeStepName": "Lightning Grenade",
+          "nodeStepDescription": "A grenade that sticks to any surface, periodically emitting bolts of lightning.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/5c46f71886e3f9bca9c7ea008bb5f282.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 18,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 112000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        15,
+        16
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 2,
+      "nodeHash": 2,
+      "row": 3,
+      "column": 4,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 2239884867,
+          "nodeStepName": "Amplify",
+          "nodeStepDescription": "Kills with Storm Fist significantly reduce the cooldown of Fist of Havoc.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/fa018453bf1121201fa7561046d1121e.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 25,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [
+            3621510378
+          ],
+          "startProgressionBarAtProgress": 310000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        11,
+        23
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 3,
+      "nodeHash": 3,
+      "row": 2,
+      "column": 3,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 739644456,
+          "nodeStepName": "Death from Above",
+          "nodeStepDescription": "After jumping, Fist of Havoc can be aimed at enemies below.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/4a2567389daea5fa1adfd0ae5f20b4d3.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 20,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 145000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        17,
+        18
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 4,
+      "nodeHash": 4,
+      "row": 1,
+      "column": 8,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 4161884601,
+          "nodeStepName": "Shoulder Charge",
+          "nodeStepDescription": "After sprinting for a short time, press  to unleash a devastating melee attack.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/86155fbbe5e4403a74ce81ce06e8af4a.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 17,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 103000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        5,
+        6
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 5,
+      "nodeHash": 5,
+      "row": 0,
+      "column": 8,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 2399787380,
+          "nodeStepName": "Unstoppable",
+          "nodeStepDescription": "You are harder to kill while using Fist of Havoc.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/29d9ef384e23964303cdcf0169acd8b1.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 13,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [
+            4039448489
+          ],
+          "startProgressionBarAtProgress": 67000,
+          "statHashes": [
+            392767087
+          ],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        4,
+        6
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 6,
+      "nodeHash": 6,
+      "row": 2,
+      "column": 8,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 162969499,
+          "nodeStepName": "Juggernaut",
+          "nodeStepDescription": "After sprinting for a short time, gain a protective shield.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/4e2bbd3eb46fa940967f07b03ab5a87a.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 28,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [
+            4039448491,
+            483754795
+          ],
+          "startProgressionBarAtProgress": 445000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        4,
+        5
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 7,
+      "nodeHash": 7,
+      "row": 2,
+      "column": 6,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 679801967,
+          "nodeStepName": "Transfusion",
+          "nodeStepDescription": "Kills with Storm Fist or Shoulder Charge immediately trigger health regeneration.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/0e5bd78e1d338a71d5aaa0060a94627f.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 26,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [
+            2711909101
+          ],
+          "startProgressionBarAtProgress": 355000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        8,
+        22
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 8,
+      "nodeHash": 8,
+      "row": 0,
+      "column": 6,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 2777454294,
+          "nodeStepName": "Headstrong",
+          "nodeStepDescription": "Sprint faster, and sprinting increases the leap distance of Fist of Havoc.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/3fdd2cd972a6e486fe54d999e3057b1e.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 11,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 49000,
+          "statHashes": [
+            2996146975
+          ],
+          "affectsQuality": false,
+          "stepGroups": {
+            "weaponPerformance": 0,
+            "impactEffects": 0,
+            "guardianAttributes": 1,
+            "lightAbilities": 0,
+            "damageTypes": 0
+          },
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        7,
+        22
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 9,
+      "nodeHash": 9,
+      "row": 0,
+      "column": -1,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": true,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 1500142397,
+          "nodeStepName": "Punch",
+          "nodeStepDescription": "Deliver a shattering blow with your most reliable sidearm: your right fist.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/e9cf18c9d0883129ff3d3c1410944792.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 0,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 0,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 10,
+      "nodeHash": 10,
+      "row": 0,
+      "column": 4,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 1069690594,
+          "nodeStepName": "Storm Fist",
+          "nodeStepDescription": "A punishing melee attack that deals bonus damage.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/e9cf18c9d0883129ff3d3c1410944792.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 5,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 10000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 11,
+      "nodeHash": 11,
+      "row": 1,
+      "column": 4,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 618747093,
+          "nodeStepName": "Overload",
+          "nodeStepDescription": "Reduced Storm Fist cooldown. Hits with Storm Fist have a chance to immediately reset its cooldown.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/852c5ccda14cdea345372b1e5c490669.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 10,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [
+            3621510377
+          ],
+          "startProgressionBarAtProgress": 40000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        2,
+        23
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 12,
+      "nodeHash": 12,
+      "row": 1,
+      "column": -1,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": true,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 1709114255,
+          "nodeStepName": "Sprint",
+          "nodeStepDescription": "Run faster.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/a07387108c18d12231b5f84c23368f69.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 0,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 0,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 13,
+      "nodeHash": 13,
+      "row": 1,
+      "column": 2,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 3122403418,
+          "nodeStepName": "Increased Height",
+          "nodeStepDescription": "Upgrades Lift to travel to greater heights.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/d8a945a0a43c441b542258895147d577.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 8,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 23000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        14,
+        21
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 14,
+      "nodeHash": 14,
+      "row": 3,
+      "column": 2,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 3515582023,
+          "nodeStepName": "Catapult",
+          "nodeStepDescription": "Upgrades Lift to provide a strong initial burst of momentum.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/cba374b57e62232c864c5945859fd833.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 23,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 220000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        13,
+        21
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 15,
+      "nodeHash": 15,
+      "row": 0,
+      "column": 1,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 3844755601,
+          "nodeStepName": "Flashbang Grenade",
+          "nodeStepDescription": "An explosive grenade that disorients the enemies it damages.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/6cd15f0c2d84226e5826d4615c6c87b0.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 2,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [
+            2015769915
+          ],
+          "startProgressionBarAtProgress": 0,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        1,
+        16
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 16,
+      "nodeHash": 16,
+      "row": 1,
+      "column": 1,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 79448980,
+          "nodeStepName": "Pulse Grenade",
+          "nodeStepDescription": "A grenade that periodically damages enemies inside its explosion radius.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/bf5283522235d62cf547266d7dee0a14.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 7,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 16000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        1,
+        15
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 17,
+      "nodeHash": 17,
+      "row": 3,
+      "column": 3,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 441640956,
+          "nodeStepName": "Shockwave",
+          "nodeStepDescription": "Fist of Havoc unleashes a wave of devastating energy which travels along the ground.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/eb83f173d69faead9d2b79c5a1938544.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 24,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 265000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        3,
+        18
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 18,
+      "nodeHash": 18,
+      "row": 1,
+      "column": 3,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 2707746729,
+          "nodeStepName": "Aftermath",
+          "nodeStepDescription": "Fist of Havoc leaves a damage-dealing field in its wake.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/72323c1ed7db09258e453e89d5cb9e02.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 9,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 31000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        3,
+        17
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 19,
+      "nodeHash": 19,
+      "row": 2,
+      "column": 5,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 2112676335,
+          "nodeStepName": "Titan Codex III",
+          "nodeStepDescription": "Training focused on battle recovery and speed.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/c30391a64b12dd1f0d4f257f46a5ac48.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 22,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 190000,
+          "statHashes": [
+            2996146975,
+            1943323491
+          ],
+          "affectsQuality": false,
+          "stepGroups": {
+            "weaponPerformance": 0,
+            "impactEffects": 0,
+            "guardianAttributes": 1,
+            "lightAbilities": 0,
+            "damageTypes": 0
+          },
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        25,
+        27
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 20,
+      "nodeHash": 20,
+      "row": 0,
+      "column": 3,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 1677053359,
+          "nodeStepName": "Fist of Havoc",
+          "nodeStepDescription": "Smash the ground and dissolve nearby enemies in a maelstrom of Arc Light.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/9a08b45efda45adf85c56c0691868aac.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 4,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [
+            4087094734
+          ],
+          "startProgressionBarAtProgress": 5000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 21,
+      "nodeHash": 21,
+      "row": 2,
+      "column": 2,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 893232146,
+          "nodeStepName": "Increased Control",
+          "nodeStepDescription": "Upgrades Lift for better directional control while in the air.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/be093b268db724611c841f2fbec58a09.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 19,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 127000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        13,
+        14
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 22,
+      "nodeHash": 22,
+      "row": 1,
+      "column": 6,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 2803404526,
+          "nodeStepName": "Aftershocks",
+          "nodeStepDescription": "Increases the duration of Pulse Grenade, Lightning Grenade, and Aftermath.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/c2d9c67420475d1070a8469303beed9d.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 15,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 85000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        7,
+        8
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 23,
+      "nodeHash": 23,
+      "row": 2,
+      "column": 4,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 141946841,
+          "nodeStepName": "Discharge",
+          "nodeStepDescription": "Hits with Storm Fist deal area of effect damage around the target.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/8c0df681fda6eb5a74306153317a2e12.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 21,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 166000,
+          "statHashes": [],
+          "affectsQuality": false,
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        2,
+        11
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 24,
+      "nodeHash": 24,
+      "row": 2,
+      "column": -1,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": true,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 0,
+          "icon": "/img/misc/missing_icon.png",
+          "damageType": 2,
+          "damageTypeHash": 2303181850,
+          "activationRequirement": {
+            "gridLevel": 0,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [
+            2928341343,
+            2928341342,
+            2928341341,
+            2692862668
+          ],
+          "startProgressionBarAtProgress": 0,
+          "statHashes": [
+            2996146975,
+            392767087,
+            1943323491
+          ],
+          "affectsQuality": false,
+          "stepGroups": {
+            "weaponPerformance": 0,
+            "impactEffects": 0,
+            "guardianAttributes": 1,
+            "lightAbilities": 0,
+            "damageTypes": 0
+          },
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 25,
+      "nodeHash": 25,
+      "row": 0,
+      "column": 5,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 1091666023,
+          "nodeStepName": "Titan Codex I",
+          "nodeStepDescription": "Training focused on battle recovery and toughness.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/c30391a64b12dd1f0d4f257f46a5ac48.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 6,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 16000,
+          "statHashes": [
+            392767087,
+            1943323491
+          ],
+          "affectsQuality": false,
+          "stepGroups": {
+            "weaponPerformance": 0,
+            "impactEffects": 0,
+            "guardianAttributes": 1,
+            "lightAbilities": 0,
+            "damageTypes": 0
+          },
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        19,
+        27
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 26,
+      "nodeHash": 26,
+      "row": 1,
+      "column": 7,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 1729362640,
+          "nodeStepName": "Titan Codex V",
+          "nodeStepDescription": "Training focused on maximum battle recovery.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/4636220c20fb9b1065efd37de886043f.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 16,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 94000,
+          "statHashes": [
+            1943323491
+          ],
+          "affectsQuality": false,
+          "stepGroups": {
+            "weaponPerformance": 0,
+            "impactEffects": 0,
+            "guardianAttributes": 1,
+            "lightAbilities": 0,
+            "damageTypes": 0
+          },
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        28,
+        29
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 27,
+      "nodeHash": 27,
+      "row": 1,
+      "column": 5,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 3684663006,
+          "nodeStepName": "Titan Codex II",
+          "nodeStepDescription": "Training focused on speed and toughness.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/c30391a64b12dd1f0d4f257f46a5ac48.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 14,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 76000,
+          "statHashes": [
+            2996146975,
+            392767087
+          ],
+          "affectsQuality": false,
+          "stepGroups": {
+            "weaponPerformance": 0,
+            "impactEffects": 0,
+            "guardianAttributes": 1,
+            "lightAbilities": 0,
+            "damageTypes": 0
+          },
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        19,
+        25
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 28,
+      "nodeHash": 28,
+      "row": 2,
+      "column": 7,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 2010165953,
+          "nodeStepName": "Titan Codex VI",
+          "nodeStepDescription": "Training focused on raw speed.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/4636220c20fb9b1065efd37de886043f.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 27,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 400000,
+          "statHashes": [
+            2996146975,
+            392767087
+          ],
+          "affectsQuality": false,
+          "stepGroups": {
+            "weaponPerformance": 0,
+            "impactEffects": 0,
+            "guardianAttributes": 1,
+            "lightAbilities": 0,
+            "damageTypes": 0
+          },
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        26,
+        29
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    },
+    {
+      "nodeIndex": 29,
+      "nodeHash": 29,
+      "row": 0,
+      "column": 7,
+      "prerequisiteNodeIndexes": [],
+      "binaryPairNodeIndex": -1,
+      "autoUnlocks": false,
+      "lastStepRepeats": false,
+      "isRandom": false,
+      "isRandomRepurchasable": false,
+      "steps": [
+        {
+          "stepIndex": 0,
+          "nodeStepHash": 1302785561,
+          "nodeStepName": "Titan Codex IV",
+          "nodeStepDescription": "Training focused on all attributes.",
+          "interactionDescription": "Upgrade",
+          "icon": "/common/destiny_content/icons/4636220c20fb9b1065efd37de886043f.png",
+          "damageType": 0,
+          "damageTypeHash": 0,
+          "activationRequirement": {
+            "gridLevel": 12,
+            "materialRequirementHashes": [],
+            "exclusiveSetRequiredHash": 0
+          },
+          "canActivateNextStep": false,
+          "nextStepIndex": -1,
+          "isNextStepRandom": false,
+          "perkHashes": [],
+          "startProgressionBarAtProgress": 58000,
+          "statHashes": [
+            392767087,
+            1943323491,
+            2996146975
+          ],
+          "affectsQuality": false,
+          "stepGroups": {
+            "weaponPerformance": 0,
+            "impactEffects": 0,
+            "guardianAttributes": 1,
+            "lightAbilities": 0,
+            "damageTypes": 0
+          },
+          "trueStepIndex": 0,
+          "truePropertyIndex": 0,
+          "affectsLevel": false
+        }
+      ],
+      "exlusiveWithNodes": [
+        26,
+        28
+      ],
+      "randomStartProgressionBarAtProgression": 0,
+      "originalNodeHash": 0,
+      "talentNodeTypes": 0,
+      "exclusiveSetHash": 0,
+      "isRealStepSelectionRandom": false
+    }
+  ],
+  "calcMaxGridLevel": 0,
+  "calcProgressToMaxLevel": 0,
+  "exclusiveSets": [
+    {
+      "nodeIndexes": [
+        1,
+        15,
+        16
+      ]
+    },
+    {
+      "nodeIndexes": [
+        2,
+        11,
+        23
+      ]
+    },
+    {
+      "nodeIndexes": [
+        3,
+        17,
+        18
+      ]
+    },
+    {
+      "nodeIndexes": [
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "nodeIndexes": [
+        7,
+        8,
+        22
+      ]
+    },
+    {
+      "nodeIndexes": [
+        13,
+        14,
+        21
+      ]
+    },
+    {
+      "nodeIndexes": [
+        19,
+        25,
+        27
+      ]
+    },
+    {
+      "nodeIndexes": [
+        26,
+        28,
+        29
+      ]
+    }
+  ],
+  "independentNodeIndexes": [
+    0,
+    10,
+    20
+  ],
+  "maximumRandomMaterialRequirements": 0,
+  "hash": 4027063972,
+  "index": 0,
+  "redacted": false
+}

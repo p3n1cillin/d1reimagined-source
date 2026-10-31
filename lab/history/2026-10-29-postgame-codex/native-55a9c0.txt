@@ -1,0 +1,35 @@
+0x0055a9c0 push      rbp
+0x0055a9c1 mov       rbp, rsp
+0x0055a9c4 push      r14
+0x0055a9c6 push      rbx
+0x0055a9c7 lea       r14, [rip + 0x215ef9a] ; [0x26b9968]
+0x0055a9ce mov       rax, qword ptr [r14]
+0x0055a9d1 mov       edi, dword ptr [rax + 8]
+0x0055a9d4 xor       bl, bl
+0x0055a9d6 cmp       edi, -1
+0x0055a9d9 je        0x55aa19
+0x0055a9db call      0xb333a0
+0x0055a9e0 test      rax, rax
+0x0055a9e3 je        0x55aa19
+0x0055a9e5 mov       rdi, rax
+0x0055a9e8 call      0xb2e840
+0x0055a9ed test      al, al
+0x0055a9ef je        0x55aa19
+0x0055a9f1 mov       rax, qword ptr [r14]
+0x0055a9f4 mov       ecx, dword ptr [rax + 8]
+0x0055a9f7 cmp       ecx, -1
+0x0055a9fa je        0x55aa02
+0x0055a9fc add       rax, 8
+0x0055aa00 jmp       0x55aa04
+0x0055aa02 xor       eax, eax
+0x0055aa04 mov       edi, dword ptr [rax + 8]
+0x0055aa07 call      0x56a830
+0x0055aa0c mov       rdi, rax
+0x0055aa0f call      0x567530
+0x0055aa14 test      eax, eax
+0x0055aa16 setg      bl
+0x0055aa19 mov       al, bl
+0x0055aa1b pop       rbx
+0x0055aa1c pop       r14
+0x0055aa1e pop       rbp
+0x0055aa1f ret       

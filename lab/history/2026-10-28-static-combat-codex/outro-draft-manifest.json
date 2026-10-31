@@ -1,0 +1,32 @@
+{
+  "utc": "2026-10-28T13:38:30.284910+00:00",
+  "source": "F:\\d1\\d1preservation-main\\cfw-staging\\agr-dock13-obj26-m52.txt",
+  "source_sha256": "a0be942f8ab95565e9e59ea9162e3d7b0d4673d2324db08a3a76c0634b03b991",
+  "identity": "d100000000000201",
+  "cast_image_offset": "0xa0",
+  "cast_native_instructions": [
+    "0x4037e7 count component+0x248",
+    "0x40380f load component+0x24c",
+    "0x40316a image at component+0x1ac"
+  ],
+  "files": [
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\agr-outro104-clear26-request105.draft.txt",
+      "sha256": "a7eebc1da99e45e7c1ed3b78f77617f761ea2b67640daa94412b04d7c257bda9"
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\agr-outro105-register.draft.txt",
+      "sha256": "7c78baeb08bbed56e8b7cb180fcc3949e556a277ced43dc58db8739eea32c0f8"
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\agr-outro105-play.draft.txt",
+      "sha256": "28787b721874f12bac364fdd00746eb11156c0148e57713bd2421567aa4158f5"
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\agr-outro105-stop.draft.txt",
+      "sha256": "a724bd3d204eff38b70a815913970dbc7acfeb905f88e3ebd5fbd7e034972d51"
+    }
+  ],
+  "predicted_slice105_clients": 22,
+  "published": false
+}

@@ -1,0 +1,10 @@
+[package]
+name = "private-d1-stat-probe"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+d1-oracle = { path = "F:/d1/public-work/d1reimagined-stats/ps4/d1-server/crates/d1-oracle" }
+anyhow = "1"
+unicorn-engine = "2.1.5"

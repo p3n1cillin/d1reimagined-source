@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "source_machine": "<lab-pc>",
+  "clip_id": "<lab-pc>-20261029T222115-eb704b9c304743fe8fc84c5f60c9c776",
+  "project": "destiny1-preservation",
+  "recorded_at": "2026-10-29T22:21:15.717390+00:00",
+  "devblog": null,
+  "contains_voice": false,
+  "contains_microphone_audio": false,
+  "importance": "MAJOR",
+  "clips": [
+    {
+      "file": "clips/clip.mp4",
+      "duration_seconds": 60.0,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.71,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    }
+  ],
+  "new_video_count": 1,
+  "new_screenshot_count": 4,
+  "package_kind": "engineering-report",
+  "reporting_date": "2026-10-29",
+  "reporting_timezone": "Europe/London",
+  "topic": "Tower North is populated",
+  "feature": "Tower North characters",
+  "event_type": "milestone",
+  "description": "After the opening mission, the Guardian arrives in a Tower North with its civilians, a research-assistant Frame and Xûr in their authored places.",
+  "previous_state": "The Tower loaded empty.",
+  "current_state": "All 20 authored Tower North characters appear and the Guardian can walk among them.",
+  "remaining_issue": "Character counts are a reconstruction; vendor menus do not open; other Tower areas still empty; the story cinematic before the Tower is skipped.",
+  "next_task": "Open vendor menus; populate the other Tower areas.",
+  "game_build": "PS4 56578",
+  "contains_sensitive_information": false,
+  "requires_manual_review": true,
+  "audio": "game audio only, one emulator port; music may be present",
+  "git_commit": "0716266511511ee85ab9a9739bb47469216a1d16"
+}

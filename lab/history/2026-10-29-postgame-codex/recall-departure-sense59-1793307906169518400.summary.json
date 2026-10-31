@@ -1,0 +1,157 @@
+{
+  "run": "sense59",
+  "pid": 26208,
+  "base": "0x5120000",
+  "started_utc": "2026-10-29T21:05:06.300209+00:00",
+  "seconds_requested": 180.0,
+  "log_dir": "F:\\d1\\d1preservation-main\\cfw-staging\\contained-boot\\20261029-202339-sense59",
+  "follow_file": "F:\\d1\\d1preservation-main\\cfw-staging\\sense59-launched-activity.txt",
+  "events": "lab/history\\2026-10-29-postgame-codex\\recall-departure-sense59-1793307906169518400.jsonl",
+  "milestones_after_start": {
+    "native_countdown_active": {
+      "utc": "2026-10-29T21:05:10.946166+00:00",
+      "elapsed_s": 4.646
+    },
+    "native_handler31": {
+      "utc": "2026-10-29T21:05:14.057341+00:00",
+      "elapsed_s": 7.757
+    },
+    "native_goal27": {
+      "utc": "2026-10-29T21:05:14.057348+00:00",
+      "elapsed_s": 7.757
+    },
+    "native_desired165": {
+      "utc": "2026-10-29T21:05:17.091911+00:00",
+      "elapsed_s": 10.792
+    },
+    "bap42_kind4_after_start": {
+      "utc": "2026-10-29T21:05:17.199683+00:00",
+      "elapsed_s": 10.899
+    },
+    "bap42_kind4_hash165_after_start": {
+      "utc": "2026-10-29T21:05:17.199689+00:00",
+      "elapsed_s": 10.899
+    },
+    "follow_file165_seen": {
+      "utc": "2026-10-29T21:05:17.393302+00:00",
+      "elapsed_s": 11.093
+    },
+    "ah_publish165_after_start": {
+      "utc": "2026-10-29T21:05:19.024185+00:00",
+      "elapsed_s": 12.724
+    },
+    "ah_world_row165_after_start": {
+      "utc": "2026-10-29T21:05:19.024227+00:00",
+      "elapsed_s": 12.724
+    },
+    "ah_join_after_start": {
+      "utc": "2026-10-29T21:05:19.024293+00:00",
+      "elapsed_s": 12.724
+    }
+  },
+  "limits": [
+    "50ms memory samples can miss same-frame flags",
+    "world record indicates loaded scenario, not successful player spawn",
+    "log observations are timestamped when read; log timestamps remain in each line",
+    "startup log history is labelled baseline and never counts as new traffic",
+    "no reattachment or input if the process exits"
+  ],
+  "stop_reason": "duration_elapsed",
+  "ended_utc": "2026-10-29T21:08:06.345375+00:00",
+  "elapsed_s": 180.045,
+  "event_count_before_summary": 131,
+  "last_observed": {
+    "native_fast": {
+      "selection": {
+        "type": 1,
+        "activity": 165
+      },
+      "world_controller": {
+        "state": 34,
+        "cleanup_reason6c4": 0,
+        "cleanup_field6c8": 0
+      },
+      "session0": {
+        "state": 6,
+        "leader": true,
+        "goal_valid": true,
+        "goal": 36,
+        "goal_reason": 0,
+        "recall_valid": true,
+        "recall_active_fc": 0,
+        "recall_seconds_e8": 0,
+        "recall_api_active": false,
+        "desired_valid": true,
+        "desired_type": 1,
+        "desired_activity": 165
+      },
+      "session1": {
+        "state": 6,
+        "leader": true,
+        "goal_valid": true,
+        "goal": 36,
+        "goal_reason": 0,
+        "recall_valid": false,
+        "recall_active_fc": 0,
+        "recall_seconds_e8": 0,
+        "recall_api_active": false,
+        "desired_valid": true,
+        "desired_type": 1,
+        "desired_activity": 165
+      },
+      "input": {
+        "controller": 0,
+        "held106": 0,
+        "consumed108": 0,
+        "route110": 0,
+        "route114": 37,
+        "hold_elapsed5c": 0,
+        "ordinary64": 0,
+        "alternate65": 0,
+        "reward66": 0,
+        "rewardhold67": 0,
+        "edge68": 0,
+        "screen_gate11b": 0,
+        "ui_context_state": 19
+      },
+      "departure": {
+        "handler31": 1,
+        "handler32": 0
+      }
+    },
+    "native_slow": {
+      "recall_gate": {
+        "completion673": 1,
+        "plane2838": 1,
+        "plane_valid": 1
+      },
+      "collector": {
+        "state": 4,
+        "target": 4,
+        "activity": 164,
+        "xp": [
+          0,
+          900,
+          900
+        ]
+      },
+      "world": {
+        "scenario_tag": "0x80cb802b",
+        "world_name": "act_cosmo_m0_5_hangar",
+        "world_name_hash": "0x1200a031",
+        "private_checksum": "0x31429b32",
+        "public_checksum": "0xe354f1ea",
+        "bubble_count": 22
+      },
+      "lifetime": {
+        "content_index": 182,
+        "phases": []
+      }
+    },
+    "follow_file": {
+      "text": "1856964953",
+      "hash": "0x6eaf0959",
+      "index": 165
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "machine": "<lab-pc>",
+  "report": "daily-report.md",
+  "events": "events.json",
+  "clips": [
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/cap/out/breach-arrival.mp4",
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/cap/out/rifle.mp4",
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/cap/out/fallen.mp4"
+  ],
+  "screenshots": [
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/cap/out/breach-title.png",
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/cap/out/rifle-pickup.png",
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/cap/out/guardian-down.png"
+  ],
+  "metadata": {
+    "reporting_date": "2026-10-26",
+    "reporting_timezone": "Europe/London",
+    "daily_update_id": "destiny1-2026-10-26",
+    "package_kind": "milestone-video",
+    "game_build": "PS4 Destiny 56578 (01.33), A Guardian Rises, own servers, emulator with project fixes",
+    "build": "PS4 Destiny 56578 (01.33), A Guardian Rises, own servers, emulator with project fixes",
+    "git_commit": "a179bd2288b60035c96a59a06b30cfb81c10604a",
+    "repository": "https://github.com/p3n1cillin/d1reimagined-source",
+    "git_branch": "main",
+    "topic": "a-guardian-rises-the-breach",
+    "feature": "breach-rifle-and-first-fallen-attack",
+    "event_type": "MILESTONE",
+    "importance": "HIGH",
+    "description": "First footage of A Guardian Rises past the Wall: entering The Breach, finding and picking up the starter rifle, Fight Through the Wall starting, and the first Fallen attack ending in Guardian Down and a respawn. Game audio only; scripted controller input.",
+    "previous_state": "Until today The Breach stayed dark with its barrier closed, no rifle dropped, the Guardian started with a hand cannon, and no enemies spawned.",
+    "current_state": "The Breach lights and opens, the rifle drops and is picked up as the first weapon, the objective moves to Fight Through the Wall, and Fallen spawn and attack.",
+    "remaining_issue": "The rifle arrives without ammunition; firing is not shown in these clips; the route and objectives past The Breach are not served yet; menu icons stay loading spinners; this run rendered at 1280x720 internally (clips are upscaled to 1080p).",
+    "next_task": "Map the route from The Breach to the graveyard and serve the next objectives with their Fallen encounters; load the rifle on pickup and record it firing.",
+    "recording_notes": "Window capture of the game image only (no title bar, cursor or desktop); audio from the emulator output, no microphone. Clips are stream-copied from the original recording, not re-encoded. Internal display setting 1280x720 for this run.",
+    "contains_sensitive_information": false,
+    "requires_manual_review": true,
+    "publication_review_required": true,
+    "recorded_window_utc": {
+      "start": "2026-10-26T17:47:26+00:00",
+      "end": "2026-10-26T17:54:48+00:00"
+    },
+    "emulator_repository": "https://github.com/p3n1cillin/d1reimagined-shadps4",
+    "emulator_commit": "05caefb88ba7a0c33f001fdb496d72b98db443f0"
+  }
+}

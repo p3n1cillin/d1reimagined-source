@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "files": {
+    "clips/clip.mp4": {
+      "size": 50951886,
+      "sha256": "05f646d88e6fabc972e2e984dbaae75a2d3df9a5ca9a0c4168da4e75e12e03ca"
+    },
+    "daily-report.md": {
+      "size": 5415,
+      "sha256": "aa3cb29ba04390e8f8683317e3991a01f00684a43cb9f4bfcd077d680b58f916"
+    },
+    "events.json": {
+      "size": 879,
+      "sha256": "360eb7ff1332936bc41191136dfae817a8288a790de7fd6f4fc6dbbc53e677af"
+    },
+    "metadata.json": {
+      "size": 1828,
+      "sha256": "a8c28911bb3a4fac4c5828178f9a5cc1fe0940197a6c7f83d7865d9da7cb0909"
+    },
+    "screenshots/01.png": {
+      "size": 1747552,
+      "sha256": "063fae1060e9e4619bd47d33516318315cdd971f676745aac05c4e1469997fd2"
+    },
+    "screenshots/02.png": {
+      "size": 1737970,
+      "sha256": "38123df51107203290828e20b9cdfc142bdb96e1b4d392940013fc1182154671"
+    }
+  }
+}

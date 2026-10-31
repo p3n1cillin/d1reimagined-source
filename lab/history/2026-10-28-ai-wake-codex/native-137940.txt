@@ -1,0 +1,15 @@
+0x00137940 mov       rax, qword ptr [rsi + 0xc8]
+0x00137947 mov       rcx, qword ptr [rsi + 0xd0]
+0x0013794e mov       qword ptr [rdi + 0x28], rcx
+0x00137952 mov       qword ptr [rdi + 0x20], rax
+0x00137956 mov       rax, qword ptr [rsi + 0xc0]
+0x0013795d mov       qword ptr [rdi + 0x18], rax
+0x00137961 mov       rax, qword ptr [rsi + 0xb8]
+0x00137968 mov       qword ptr [rdi + 0x10], rax
+0x0013796c mov       rax, qword ptr [rsi + 0xa8]
+0x00137973 mov       rcx, qword ptr [rsi + 0xb0]
+0x0013797a mov       qword ptr [rdi + 8], rcx
+0x0013797e mov       qword ptr [rdi], rax
+0x00137981 mov       rax, rdi
+0x00137984 ret       
+0x00137985 nop       word ptr cs:[rax + rax]

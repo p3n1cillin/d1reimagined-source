@@ -1,0 +1,2 @@
+0x00510e40 ret       
+0x00510e41 nop       word ptr cs:[rax + rax]

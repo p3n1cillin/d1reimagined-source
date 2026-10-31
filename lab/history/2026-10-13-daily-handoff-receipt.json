@@ -1,0 +1,50 @@
+{
+  "verified_at": "2026-10-13T18:19:40.050191+00:00",
+  "reporting_date": "2026-10-13",
+  "daily_report": "<lab-pc>-20261013T181812-ae94e24c41d043fda43b6500d0e35f5c",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\13\\<lab-pc>-20261013T181812-ae94e24c41d043fda43b6500d0e35f5c.ready",
+  "ready_verified": true,
+  "manifest_bytes_match": true,
+  "payloads": [
+    {
+      "file": "daily-report.md",
+      "size": 11121,
+      "sha256": "e7f4e6dcb4bc73b6c0e042b97b9753e6c028b307e007c343350c25145fabdcd9",
+      "matches": true
+    },
+    {
+      "file": "events.json",
+      "size": 3028,
+      "sha256": "479c904c451347b20793d5ec622b367740c161bda9e2b6dd7cd9adcba19439a0",
+      "matches": true
+    },
+    {
+      "file": "metadata.json",
+      "size": 2859,
+      "sha256": "2cdb66d8e1eca3ad80c6e0a7bcb5a098dbabf5eed0f2425cfad2e9b5d89556fe",
+      "matches": true
+    }
+  ],
+  "transfer_started_at": "2026-10-13T18:18:12.582994+00:00",
+  "submitted_at": "2026-10-13T18:18:13.594424+00:00",
+  "new_clips": 0,
+  "new_screenshots": 0,
+  "media_decode": "NOT APPLICABLE: text-only",
+  "earlier_media_resent": false,
+  "referenced_package_ids": [
+    "<lab-pc>-20261012T201422-024b4f583aaa4b579f3e1357e1528b9d"
+  ],
+  "pending_outbox": [],
+  "source_checkpoint": "67055ec47ad05e54787de8d78837ca66531dbc7a",
+  "native_safe_checkpoint_utc": "2026-10-13T18:03:32.9946970Z",
+  "late_delivery": true,
+  "publication_review_required": true,
+  "handoff_complete": true,
+  "note": "Existing transfer worker submitted the durable package; concurrent explicit sync saw recoverable lock contention. No duplicate package was created.",
+  "terminal_superseded_not_queued": [
+    {
+      "id": "<lab-pc>-20261006T082350-35a26ff986fc4d87a5428cdef765c812",
+      "status": "SUPERSEDED"
+    }
+  ]
+}

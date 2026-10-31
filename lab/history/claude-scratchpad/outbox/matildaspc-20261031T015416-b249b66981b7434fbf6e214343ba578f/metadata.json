@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "source_machine": "<lab-pc>",
+  "clip_id": "<lab-pc>-20261031T015416-b249b66981b7434fbf6e214343ba578f",
+  "project": "destiny1-preservation",
+  "recorded_at": "2026-10-31T01:54:16.412321+00:00",
+  "devblog": null,
+  "contains_voice": false,
+  "contains_microphone_audio": false,
+  "importance": "USEFUL",
+  "clips": [
+    {
+      "file": "clips/clip01.mp4",
+      "duration_seconds": 48.15,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.88,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip02.mp4",
+      "duration_seconds": 46.117,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.88,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip03.mp4",
+      "duration_seconds": 28.133,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 36.67,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip04.mp4",
+      "duration_seconds": 31.564,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 36.85,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip05.mp4",
+      "duration_seconds": 15.496,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 34.17,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    }
+  ],
+  "new_video_count": 5,
+  "new_screenshot_count": 7,
+  "package_kind": "engineering-report",
+  "reporting_date": "2026-10-31",
+  "reporting_timezone": "Europe/London",
+  "topic": "Buying from a vendor; PC mouse and keyboard; 60 fps at full speed",
+  "feature": "Vendors",
+  "event_type": "milestone",
+  "description": "An emblem is bought from Eva Levante with Glimmer: the Glimmer is spent and the emblem arrives as owned.",
+  "previous_state": "Vendor screens opened with their stock, but every price read 0 Glimmer and nothing could be bought.",
+  "current_state": "Glimmer reaches the game, the purchase is sent, and the server's answer spends the Glimmer and delivers the item.",
+  "remaining_issue": "Purchases priced in character-held currencies, selling, and the other vendors are untested; the Guardian still renders without a head in third person.",
+  "next_task": "Selling, other vendors and reputation; the game's own PC key bindings; the Guardian's missing head.",
+  "game_build": "PS4 56578",
+  "contains_sensitive_information": false,
+  "requires_manual_review": true,
+  "audio": "game audio only, one emulator port; music may be present",
+  "git_commit": "689024a8635b7c9d0f4166a4962435d28b462f1c"
+}

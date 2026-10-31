@@ -1,0 +1,193 @@
+0x00103320 push      rbp
+0x00103321 mov       rbp, rsp
+0x00103324 push      r15
+0x00103326 push      r14
+0x00103328 push      r13
+0x0010332a push      r12
+0x0010332c push      rbx
+0x0010332d sub       rsp, 0x178
+0x00103334 mov       r15, rdi
+0x00103337 mov       rax, qword ptr [rip + 0x191bdc2] ; [0x1a1f100]
+0x0010333e mov       rax, qword ptr [rax]
+0x00103341 mov       qword ptr [rbp - 0x30], rax
+0x00103345 mov       edx, dword ptr [r15]
+0x00103348 mov       eax, edx
+0x0010334a sar       eax, 0xd
+0x0010334d mov       edi, eax
+0x0010334f shr       edi, 0x12
+0x00103352 or        edi, 0x3ff
+0x00103358 lea       rcx, [rip + 0x1920541] ; [0x1a238a0]
+0x0010335f and       edi, eax
+0x00103361 shl       rdi, 6
+0x00103365 mov       rax, qword ptr [rcx]
+0x00103368 mov       rax, qword ptr [rax]
+0x0010336b mov       rcx, qword ptr [r15 + 8]
+0x0010336f mov       rsi, qword ptr [rax + rdi + 0x10]
+0x00103374 movsxd    rbx, dword ptr [rax + rdi + 0x34]
+0x00103379 and       edx, 0x1fff
+0x0010337f imul      edx, dword ptr [rax + rdi + 0x30]
+0x00103384 and       rbx, qword ptr [rsi + rdx + 8]
+0x00103389 add       rsi, rdx
+0x0010338c sub       rsi, rbx
+0x0010338f mov       edx, dword ptr [rcx + rsi + 0x68]
+0x00103393 mov       ebx, edx
+0x00103395 sar       ebx, 0xd
+0x00103398 mov       edi, ebx
+0x0010339a shr       edi, 0x12
+0x0010339d or        edi, 0x3ff
+0x001033a3 and       edi, ebx
+0x001033a5 shl       rdi, 6
+0x001033a9 mov       rcx, qword ptr [rcx + rsi + 0x70]
+0x001033ae mov       rsi, qword ptr [rax + rdi + 0x10]
+0x001033b3 movsxd    rbx, dword ptr [rax + rdi + 0x34]
+0x001033b8 and       edx, 0x1fff
+0x001033be imul      edx, dword ptr [rax + rdi + 0x30]
+0x001033c3 and       rbx, qword ptr [rsi + rdx + 8]
+0x001033c8 add       rsi, rdx
+0x001033cb sub       rsi, rbx
+0x001033ce test      byte ptr [rcx + rsi + 0x14], 4
+0x001033d3 je        0x1035f9
+0x001033d9 vmovss    xmm0, dword ptr [rip + 0x1513edf] ; [0x16172c0]
+0x001033e1 call      0x2411a0
+0x001033e6 mov       ebx, eax
+0x001033e8 call      0x241180
+0x001033ed mov       dword ptr [rbp - 0x18c], eax
+0x001033f3 sub       eax, dword ptr [r15 + 0x40c]
+0x001033fa cmp       eax, ebx
+0x001033fc jl        0x1035f9
+0x00103402 mov       eax, dword ptr [r15 + 0x410]
+0x00103409 cmp       eax, -1
+0x0010340c je        0x10341e
+0x0010340e mov       ecx, dword ptr [rbp - 0x18c]
+0x00103414 sub       ecx, eax
+0x00103416 cmp       ecx, ebx
+0x00103418 jl        0x1035f9
+0x0010341e mov       rdi, r15
+0x00103421 call      0x107ed0
+0x00103426 mov       edx, eax
+0x00103428 sar       edx, 0xd
+0x0010342b mov       ecx, edx
+0x0010342d shr       ecx, 0x12
+0x00103430 or        ecx, 0x3ff
+0x00103436 and       ecx, edx
+0x00103438 lea       rdx, [rip + 0x1920461] ; [0x1a238a0]
+0x0010343f mov       rdx, qword ptr [rdx]
+0x00103442 mov       rsi, qword ptr [rdx]
+0x00103445 shl       rcx, 6
+0x00103449 mov       rdi, qword ptr [rsi + rcx + 0x10]
+0x0010344e movsxd    rdx, dword ptr [rsi + rcx + 0x34]
+0x00103453 and       eax, 0x1fff
+0x00103458 imul      eax, dword ptr [rsi + rcx + 0x30]
+0x0010345d and       rdx, qword ptr [rdi + rax + 8]
+0x00103462 add       rdi, rax
+0x00103465 sub       rdi, rdx
+0x00103468 mov       esi, 0x7c
+0x0010346d call      0x2cfcd0
+0x00103472 mov       ecx, dword ptr [rax + 0x2c]
+0x00103475 test      ecx, ecx
+0x00103477 jle       0x1035ec
+0x0010347d xor       ebx, ebx
+0x0010347f xor       edx, edx
+0x00103481 nop       word ptr cs:[rax + rax]
+0x00103490 movsx     esi, word ptr [rax + rdx*2 + 0x30]
+0x00103495 add       ebx, esi
+0x00103497 inc       rdx
+0x0010349a cmp       edx, ecx
+0x0010349c jl        0x103490
+0x0010349e test      ebx, ebx
+0x001034a0 je        0x1035ec
+0x001034a6 mov       eax, dword ptr [r15]
+0x001034a9 mov       ecx, eax
+0x001034ab sar       ecx, 0xd
+0x001034ae mov       edx, ecx
+0x001034b0 shr       edx, 0x12
+0x001034b3 or        edx, 0x3ff
+0x001034b9 and       edx, ecx
+0x001034bb lea       rcx, [rip + 0x19203de] ; [0x1a238a0]
+0x001034c2 shl       rdx, 6
+0x001034c6 mov       rcx, qword ptr [rcx]
+0x001034c9 mov       rcx, qword ptr [rcx]
+0x001034cc mov       r8, qword ptr [r15 + 8]
+0x001034d0 mov       rsi, qword ptr [rcx + rdx + 0x10]
+0x001034d5 movsxd    rdi, dword ptr [rcx + rdx + 0x34]
+0x001034da and       eax, 0x1fff
+0x001034df imul      eax, dword ptr [rcx + rdx + 0x30]
+0x001034e4 and       rdi, qword ptr [rsi + rax + 8]
+0x001034e9 add       rsi, rax
+0x001034ec sub       rsi, rdi
+0x001034ef mov       eax, dword ptr [r8 + rsi + 0x40]
+0x001034f4 mov       dword ptr [rbp - 0x190], eax
+0x001034fa mov       rcx, qword ptr [r8 + rsi + 0x60]
+0x001034ff test      rcx, rcx
+0x00103502 je        0x10350e
+0x00103504 lea       rax, [r8 + rsi + 0x60]
+0x00103509 add       rax, rcx
+0x0010350c jmp       0x103510
+0x0010350e xor       eax, eax
+0x00103510 lea       r13, [rip + 0x11a9b21] ; [0x12ad038]
+0x00103517 test      rax, rax
+0x0010351a cmovne    r13, rax
+0x0010351e mov       al, byte ptr [rip + 0x24d3acc] ; [0x25d6ff0]
+0x00103524 test      al, al
+0x00103526 jne       0x103556
+0x00103528 lea       rdi, [rip + 0x24d3ac1] ; [0x25d6ff0]
+0x0010352f call      0x12aa7d0
+0x00103534 test      eax, eax
+0x00103536 je        0x103556
+0x00103538 lea       rdi, [rip + 0x1513d91] ; [0x16172d0] "activities:client:squad: critical squad '0x%x.%s' alive count client:'%d alive count auth:'%d' unchanged for '%d' game ticks"
+0x0010353f call      0xe4a10
+0x00103544 mov       dword ptr [rip + 0x24d3a9e], eax ; [0x25d6fe8]
+0x0010354a lea       rdi, [rip + 0x24d3a9f] ; [0x25d6ff0]
+0x00103551 call      0x12aa7e0
+0x00103556 mov       dword ptr [rbp - 0x188], 0xf
+0x00103560 lea       r14, [rbp - 0x180]
+0x00103567 lea       rdx, [rbp - 0x188]
+0x0010356e mov       rdi, r14
+0x00103571 mov       rsi, r15
+0x00103574 call      0x17b380
+0x00103579 mov       rdi, r14
+0x0010357c call      0x17a580
+0x00103581 xor       r12d, r12d
+0x00103584 test      al, al
+0x00103586 je        0x1035a7
+0x00103588 lea       r14, [rbp - 0x180]
+0x0010358f nop       
+0x00103590 mov       rdi, r14
+0x00103593 call      0x17a5b0
+0x00103598 inc       r12d
+0x0010359b mov       rdi, r14
+0x0010359e call      0x17a580
+0x001035a3 test      al, al
+0x001035a5 jne       0x103590
+0x001035a7 mov       eax, dword ptr [rbp - 0x18c]
+0x001035ad sub       eax, dword ptr [r15 + 0x40c]
+0x001035b4 mov       dword ptr [rsp], eax
+0x001035b7 lea       r14, [rbp - 0x170]
+0x001035be lea       rsi, [rip + 0x1513d0b] ; [0x16172d0] "activities:client:squad: critical squad '0x%x.%s' alive count client:'%d alive count auth:'%d' unchanged for '%d' game ticks"
+0x001035c5 mov       rdi, r14
+0x001035c8 mov       edx, dword ptr [rbp - 0x190]
+0x001035ce mov       rcx, r13
+0x001035d1 mov       r8d, r12d
+0x001035d4 mov       r9d, ebx
+0x001035d7 xor       al, al
+0x001035d9 call      0x1008290
+0x001035de mov       edi, dword ptr [rip + 0x24d3a04] ; [0x25d6fe8]
+0x001035e4 mov       rsi, r14
+0x001035e7 call      0xe4aa0
+0x001035ec mov       eax, dword ptr [rbp - 0x18c]
+0x001035f2 mov       dword ptr [r15 + 0x410], eax
+0x001035f9 mov       rax, qword ptr [rip + 0x191bb00] ; [0x1a1f100]
+0x00103600 mov       rax, qword ptr [rax]
+0x00103603 cmp       rax, qword ptr [rbp - 0x30]
+0x00103607 jne       0x10361b
+0x00103609 add       rsp, 0x178
+0x00103610 pop       rbx
+0x00103611 pop       r12
+0x00103613 pop       r13
+0x00103615 pop       r14
+0x00103617 pop       r15
+0x00103619 pop       rbp
+0x0010361a ret       
+0x0010361b call      0x12aa7f0
+0x00103620 nop       
+0x00103621 nop       word ptr cs:[rax + rax]

@@ -1,0 +1,49 @@
+{
+  "verified_at": "2026-10-11T18:00:46.0284665Z",
+  "reporting_date": "2026-10-11",
+  "daily_report": "<lab-pc>-20261011T180004-97360ed7f23d442a9d5844dc380fed32",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\11\\<lab-pc>-20261011T180004-97360ed7f23d442a9d5844dc380fed32.ready",
+  "transfer_started_at": "2026-10-11T19:00:06.593194+01:00",
+  "submitted_at": "2026-10-11T19:00:06.868279+01:00",
+  "ready_verified": true,
+  "manifest_bytes_match": true,
+  "payloads": [
+    {
+      "file": "daily-report.md",
+      "size": 11809,
+      "sha256": "fb1576985fe603be7f947a0bcc34db883e3371e1a18c6e81fba2f14b8aa5c085",
+      "matches": true
+    },
+    {
+      "file": "events.json",
+      "size": 5509,
+      "sha256": "c6784da7b3fcae063cf246920669c7323c811792ef160e3de742e0139a0ef99d",
+      "matches": true
+    },
+    {
+      "file": "metadata.json",
+      "size": 2729,
+      "sha256": "0bc94a02b9697c22b17edd7eaeae2418dd86c8ba955a58a2833b3edae64f682f",
+      "matches": true
+    }
+  ],
+  "new_clips": 0,
+  "new_screenshots": 0,
+  "media_decode": "NOT APPLICABLE: text-only",
+  "earlier_media_resent": false,
+  "referenced_package_ids": [
+    "<lab-pc>-20261010T181054-bbc9e7edfce14abfb991cee8485b098c",
+    "<lab-pc>-20261010T180802-6a22199448334c9d9b7c118ae9ddbfb6",
+    "<lab-pc>-20261010T180808-5edaf0838d814fb9b5895bd5a98f1515"
+  ],
+  "pending_outbox": [],
+  "nas_free_bytes": 527251931136,
+  "source_head": "12467f31286da4e4a34dcf0610c9fad48f9b318d",
+  "source_clean_at_preparation": true,
+  "publication_review_required": true,
+  "native_boot_accepted": false,
+  "windows_transport_validated": false,
+  "handoff_complete": true,
+  "transfer_started_utc": "2026-11-10T19:00:06.0000000Z",
+  "submitted_utc": "2026-11-10T19:00:06.0000000Z"
+}

@@ -1,0 +1,85 @@
+{
+  "table_pairs": [
+    [
+      11,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      28,
+      15
+    ],
+    [
+      12,
+      20
+    ],
+    [
+      13,
+      80
+    ],
+    [
+      14,
+      21
+    ],
+    [
+      18,
+      34
+    ],
+    [
+      20,
+      44
+    ],
+    [
+      23,
+      32
+    ],
+    [
+      21,
+      32
+    ],
+    [
+      22,
+      32
+    ],
+    [
+      26,
+      48
+    ],
+    [
+      27,
+      70
+    ],
+    [
+      -1,
+      0
+    ],
+    [
+      -1,
+      0
+    ],
+    [
+      -1,
+      0
+    ]
+  ],
+  "only_primary_table_changed": true,
+  "native": {
+    "run": "weapon26-base-stats",
+    "trigger35_utc": "2026-10-27T22:49:56.867705Z",
+    "raw_stat20": 44,
+    "raw_stat13": 80,
+    "raw_stat28": 15,
+    "HUD": [
+      25,
+      134
+    ],
+    "reserve_matches_reference": false,
+    "damage_unverified": true,
+    "debugger_cleanly_detached": true
+  },
+  "generated_by": "Rust character weapon-stats",
+  "sha256": "2186d2c6c07b44583c3dacd8b2a06d24d935dceb1651865992002aa3e2ecb157"
+}

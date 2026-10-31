@@ -1,0 +1,14 @@
+0x003b6750 push      rbp
+0x003b6751 mov       rbp, rsp
+0x003b6754 lea       rdi, [rip + 0x22f69b5] ; [0x26ad110]
+0x003b675b call      0x6e0a0
+0x003b6760 lea       rax, [rip + 0x22f6a29] ; [0x26ad190]
+0x003b6767 mov       rax, qword ptr [rax]
+0x003b676a test      al, 3
+0x003b676c mov       qword ptr [rax + 0x18], 0
+0x003b6774 mov       qword ptr [rax + 0x10], 0
+0x003b677c mov       qword ptr [rax + 8], 0
+0x003b6784 mov       qword ptr [rax], 0
+0x003b678b pop       rbp
+0x003b678c ret       
+0x003b678d nop       dword ptr [rax]

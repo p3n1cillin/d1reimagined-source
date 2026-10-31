@@ -1,0 +1,44 @@
+shadPS4 pid 24228  eboot base 0x51f0000  control vtable[0]=0x5944410 PASS
+start (489.097412109375, -822.189208984375, 17.469356536865234) goal [620.0, -822.0]
+at (508.4, -822.2, 18.0) dist 111.6 best 111.6 cells 4 blocked 0
+at (519.6, -826.7, 19.1) dist 100.5 best 101.4 cells 10 blocked 1
+at (523.3, -826.7, 17.6) dist 96.8 best 96.8 cells 11 blocked 1
+at (536.0, -825.1, 17.5) dist 84.1 best 84.1 cells 15 blocked 1
+at (515.4, -822.9, 18.6) dist 104.6 best 70.5 cells 22 blocked 4
+at (522.7, -827.4, 17.6) dist 97.4 best 70.5 cells 27 blocked 6
+at (540.6, -828.1, 17.4) dist 79.7 best 70.5 cells 32 blocked 6
+retracked (no movement): 50 copies at (423.8168029785156, -813.3777465820312, 18.475492477416992)
+at (423.5, -815.2, 18.6) dist 196.6 best 70.5 cells 38 blocked 13
+at (440.9, -814.0, 18.8) dist 179.2 best 70.5 cells 43 blocked 13
+at (459.1, -815.2, 18.5) dist 161.0 best 70.5 cells 48 blocked 13
+at (462.5, -815.8, 18.2) dist 157.6 best 70.5 cells 53 blocked 14
+at (468.7, -814.0, 18.7) dist 151.5 best 70.5 cells 55 blocked 15
+at (465.2, -814.9, 18.2) dist 154.9 best 70.5 cells 57 blocked 16
+at (468.2, -813.0, 18.4) dist 152.1 best 70.5 cells 57 blocked 16
+at (468.6, -814.9, 18.9) dist 151.5 best 70.5 cells 57 blocked 17
+at (468.6, -811.8, 18.6) dist 151.8 best 70.5 cells 57 blocked 17
+at (468.6, -813.6, 18.6) dist 151.6 best 70.5 cells 57 blocked 18
+at (467.3, -813.0, 18.4) dist 152.9 best 70.5 cells 57 blocked 18
+at (468.6, -816.1, 19.0) dist 151.5 best 70.5 cells 57 blocked 18
+at (465.6, -816.1, 18.5) dist 154.5 best 70.5 cells 57 blocked 18
+at (468.6, -813.3, 18.5) dist 151.6 best 70.5 cells 57 blocked 18
+at (467.7, -816.1, 19.0) dist 152.4 best 70.5 cells 57 blocked 18
+at (467.2, -815.9, 18.8) dist 152.9 best 70.5 cells 57 blocked 18
+at (467.7, -811.9, 18.5) dist 152.6 best 70.5 cells 58 blocked 19
+at (465.1, -813.3, 18.3) dist 155.1 best 70.5 cells 58 blocked 19
+at (468.6, -816.1, 19.2) dist 151.5 best 70.5 cells 58 blocked 20
+at (465.8, -816.1, 18.4) dist 154.3 best 70.5 cells 58 blocked 20
+at (468.6, -812.5, 18.7) dist 151.7 best 70.5 cells 60 blocked 22
+at (456.1, -811.3, 18.6) dist 164.3 best 70.5 cells 62 blocked 22
+at (464.1, -813.4, 18.5) dist 156.1 best 70.5 cells 66 blocked 22
+at (467.9, -812.8, 18.4) dist 152.4 best 70.5 cells 68 blocked 22
+at (468.6, -812.1, 18.7) dist 151.7 best 70.5 cells 68 blocked 23
+at (461.8, -809.7, 18.7) dist 158.7 best 70.5 cells 68 blocked 23
+at (464.1, -811.7, 18.4) dist 156.2 best 70.5 cells 69 blocked 24
+at (457.4, -815.0, 18.6) dist 162.8 best 70.5 cells 71 blocked 24
+at (458.6, -810.3, 18.5) dist 161.9 best 70.5 cells 72 blocked 24
+at (468.7, -816.1, 19.2) dist 151.5 best 70.5 cells 72 blocked 24
+at (467.0, -809.1, 18.4) dist 153.6 best 70.5 cells 72 blocked 24
+at (468.6, -815.2, 19.0) dist 151.5 best 70.5 cells 74 blocked 24
+at (466.5, -814.8, 18.3) dist 153.7 best 70.5 cells 74 blocked 25
+stopped (468.6497802734375, -816.16259765625, 19.2062349319458) dist 151.5 route 31 points -> route-e-r4.json

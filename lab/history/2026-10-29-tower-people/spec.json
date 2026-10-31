@@ -1,0 +1,34 @@
+{
+ "machine": "<lab-pc>",
+ "report": "daily-report.md",
+ "events": "events.json",
+ "clips": [
+  "clips/01-tower-north-people.mp4"
+ ],
+ "screenshots": [
+  "screenshots/01-civilian-railing.png",
+  "screenshots/02-civilian-walkway.png",
+  "screenshots/03-patches-research-assistant.png",
+  "screenshots/04-xur-agent-of-the-nine.png"
+ ],
+ "metadata": {
+  "package_kind": "engineering-report",
+  "reporting_date": "2026-10-29",
+  "reporting_timezone": "Europe/London",
+  "topic": "Tower North is populated",
+  "feature": "Tower North characters",
+  "event_type": "milestone",
+  "importance": "MAJOR",
+  "description": "After the opening mission, the Guardian arrives in a Tower North with its civilians, a research-assistant Frame and X\u00fbr in their authored places.",
+  "previous_state": "The Tower loaded empty.",
+  "current_state": "All 20 authored Tower North characters appear and the Guardian can walk among them.",
+  "remaining_issue": "Character counts are a reconstruction; vendor menus do not open; other Tower areas still empty; the story cinematic before the Tower is skipped.",
+  "next_task": "Open vendor menus; populate the other Tower areas.",
+  "game_build": "PS4 56578",
+  "contains_sensitive_information": false,
+  "requires_manual_review": true,
+  "contains_voice": false,
+  "audio": "game audio only, one emulator port; music may be present",
+  "git_commit": "0716266511511ee85ab9a9739bb47469216a1d16"
+ }
+}

@@ -1,0 +1,33 @@
+{
+  "recorded_at": "2026-10-07T17:48:59.516449+00:00",
+  "reporting_date": "2026-10-07",
+  "reporting_timezone": "Europe/London",
+  "daily_update_id": "destiny1-2026-10-07",
+  "reporting_interval_start": "2026-10-06T17:52:00+00:00",
+  "reporting_interval_end": "2026-10-07T17:48:59.516449+00:00",
+  "topic": "opening-mission-and-diagnostic-stability",
+  "feature": "native-session-transition-probe-and-capture-replay",
+  "development_session": "renderer-and-inventory-restoration",
+  "event_type": "GENERAL_PROGRESS",
+  "importance": "USEFUL",
+  "description": "One consolidated private daily engineering handoff: bounded UI replay and short-join repair verified; corrected session probe captures the failed113-to112 handoff. No sustained graphics or mission completion claimed.",
+  "previous_state": "Native replay fails or presents black output; short-join observer cancellation closes the kept stack; session context field is misread.",
+  "current_state": "One UI control replays with exact RGB output; native profile handoff retains owned client; corrected reader samples active context before failed transition.",
+  "remaining_issue": "Type21 wire delivery, native loading/stall, character/world distortion, mission arrival/control/combat and complete-game coverage remain incomplete.",
+  "referenced_package_ids": [
+    "<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56",
+    "<lab-pc>-20261006T065220-7641e8704d0841978e0c575aad433c87",
+    "<lab-pc>-20261006T082554-05a38c92bf8d4457a36e9cf2b57d4324",
+    "<lab-pc>-20261006T132502-7aa19388507d4333a577cfb19994ea20"
+  ],
+  "tested_runtime_build_sha256": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "companion_data_commit": "f6082456f966e10b4d91ea5bac8a6518be12127e",
+  "tested_uncommitted_changes": [
+    "Private RPCS3 tree retains earlier unrelated renderer modifications and two scoped replay repairs; executable is distinct from the public project commit.",
+    "The latest clock field was added after the171 reader loaded; native clock evidence is from separate read-only samples."
+  ],
+  "publication_review_required": true,
+  "native_pending_at_cutoff": [],
+  "new_media_sent": false,
+  "maturity": "Experimental overall; explicitly bounded isolated successes"
+}

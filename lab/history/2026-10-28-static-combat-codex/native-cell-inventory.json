@@ -1,0 +1,26 @@
+[
+  {
+    "tag": "0x80800463",
+    "cell": "0x269d6e0",
+    "descriptor": "0x1366ff8",
+    "slots": [
+      "0x191a7b8",
+      "0x1929640"
+    ]
+  },
+  {
+    "tag": "0x80802ba7",
+    "cell": "0x28e0068",
+    "descriptor": "0x15e6370",
+    "slots": []
+  },
+  {
+    "tag": "0x80802ba7",
+    "cell": "0x28f9e60",
+    "descriptor": "0x12ef900",
+    "slots": [
+      "0x19b3058",
+      "0x19cdf50"
+    ]
+  }
+]

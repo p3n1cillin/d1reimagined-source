@@ -1,0 +1,6 @@
+shadPS4 pid 24228  eboot base 0x51f0000  control vtable[0]=0x5944410 PASS
+start (544.0223388671875, -805.3684692382812, 17.30460834503174) goal [530.0, -950.0]
+at (544.9, -818.7, 17.2) dist 132.2 best 132.2 cells 5 blocked 5
+retracked (jump): 30 copies at (488.2943420410156, -820.5791625976562, 18.140810012817383)
+jumped 57 units (respawn?): cell (272, -415) direction 11 marked lethal; trail restarts at (488.2943420410156, -820.5791625976562, 18.140810012817383)
+stopped (488.2943420410156, -820.5791625976562, 18.140810012817383) dist 136.0 route 8 points -> route-fr1.json

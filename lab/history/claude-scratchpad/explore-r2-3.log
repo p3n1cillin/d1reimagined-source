@@ -1,0 +1,11 @@
+shadPS4 pid 24364  eboot base 0x5100000  control vtable[0]=0x5854410 PASS
+start (403.4063720703125, -686.4891967773438, 10.096357345581055) goal [300.0, -640.0]
+at (411.3, -689.5, 8.4) dist 121.8 best 113.4 cells 5 blocked 12
+at (400.9, -687.3, 9.8) dist 111.5 best 111.5 cells 9 blocked 12
+at (399.1, -686.5, 11.0) dist 109.5 best 108.8 cells 13 blocked 17
+at (398.3, -686.5, 11.0) dist 108.8 best 108.8 cells 14 blocked 17
+at (401.6, -688.1, 10.9) dist 112.4 best 108.8 cells 14 blocked 17
+at (404.7, -687.5, 9.7) dist 114.9 best 108.8 cells 18 blocked 17
+at (398.3, -690.4, 10.3) dist 110.5 best 108.8 cells 19 blocked 17
+at (398.2, -688.2, 9.9) dist 109.4 best 108.8 cells 21 blocked 18
+at (400.7, -686.6, 10.9) dist 111.0 best 108.8 cells 22 blocked 18

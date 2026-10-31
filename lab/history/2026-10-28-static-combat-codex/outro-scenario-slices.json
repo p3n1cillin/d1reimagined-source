@@ -1,0 +1,122 @@
+[
+  {
+    "slice": 104,
+    "bubble": 13,
+    "bubble_hash": "0x82ae25b4",
+    "offset": "0x6bc",
+    "name_hash": "0x194d9275",
+    "flags": [
+      0,
+      0,
+      0
+    ],
+    "set_tag": "0x80cb801b",
+    "raw_words": [
+      "0x0",
+      "0x1",
+      "0x194d9275",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x1d",
+      "0xe8000000",
+      "0x400000",
+      "0x80",
+      "0x0",
+      "0x82ae25b4",
+      "0x80cb801b"
+    ]
+  },
+  {
+    "slice": 105,
+    "bubble": 13,
+    "bubble_hash": "0x82ae25b4",
+    "offset": "0x6f8",
+    "name_hash": "0x439d9d22",
+    "flags": [
+      1,
+      1,
+      1
+    ],
+    "set_tag": "0x80cb801c",
+    "raw_words": [
+      "0x1",
+      "0x1",
+      "0x439d9d22",
+      "0x0",
+      "0x0",
+      "0x1",
+      "0x1",
+      "0x1",
+      "0x1d",
+      "0xe8000000",
+      "0x400000",
+      "0x80",
+      "0x0",
+      "0x82ae25b4",
+      "0x80cb801c"
+    ]
+  },
+  {
+    "slice": 112,
+    "bubble": 14,
+    "bubble_hash": "0xd6ad210e",
+    "offset": "0x74c",
+    "name_hash": "0xda43c5ad",
+    "flags": [
+      0,
+      0,
+      0
+    ],
+    "set_tag": "0x80cb801d",
+    "raw_words": [
+      "0x0",
+      "0x1",
+      "0xda43c5ad",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x20",
+      "0x0",
+      "0x10003",
+      "0x10082",
+      "0x0",
+      "0xd6ad210e",
+      "0x80cb801d"
+    ]
+  },
+  {
+    "slice": 113,
+    "bubble": 14,
+    "bubble_hash": "0xd6ad210e",
+    "offset": "0x788",
+    "name_hash": "0xbc0bb1",
+    "flags": [
+      1,
+      1,
+      1
+    ],
+    "set_tag": "0x80cb801e",
+    "raw_words": [
+      "0x1",
+      "0x1",
+      "0xbc0bb1",
+      "0x0",
+      "0x0",
+      "0x1",
+      "0x1",
+      "0x1",
+      "0x20",
+      "0x0",
+      "0x10003",
+      "0x10082",
+      "0x0",
+      "0xd6ad210e",
+      "0x80cb801e"
+    ]
+  }
+]

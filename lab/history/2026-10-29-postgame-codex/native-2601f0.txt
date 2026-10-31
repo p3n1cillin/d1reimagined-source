@@ -1,0 +1,48 @@
+0x002601f0 push      rbp
+0x002601f1 mov       rbp, rsp
+0x002601f4 push      r14
+0x002601f6 push      rbx
+0x002601f7 mov       rbx, rdi
+0x002601fa mov       rax, qword ptr [rbx]
+0x002601fd call      qword ptr [rax + 0xc0]
+0x00260203 mov       r14, rax
+0x00260206 cmp       byte ptr [r14], 0
+0x0026020a je        0x260260
+0x0026020c cmp       byte ptr [r14 + 2], 0
+0x00260211 je        0x260236
+0x00260213 mov       rax, qword ptr [rbx]
+0x00260216 mov       rdi, rbx
+0x00260219 call      qword ptr [rax]
+0x0026021b test      al, al
+0x0026021d je        0x260236
+0x0026021f mov       rax, qword ptr [rbx]
+0x00260222 mov       rdi, rbx
+0x00260225 call      qword ptr [rax + 0xc8]
+0x0026022b mov       rdi, rbx
+0x0026022e mov       rsi, rax
+0x00260231 call      0x260280
+0x00260236 cmp       byte ptr [r14], 0
+0x0026023a je        0x260260
+0x0026023c mov       rax, qword ptr [rbx]
+0x0026023f mov       rdi, rbx
+0x00260242 call      qword ptr [rax + 0xd8]
+0x00260248 test      al, al
+0x0026024a je        0x260258
+0x0026024c mov       rax, qword ptr [rbx]
+0x0026024f mov       rdi, rbx
+0x00260252 call      qword ptr [rax + 0xe0]
+0x00260258 mov       rax, r14
+0x0026025b pop       rbx
+0x0026025c pop       r14
+0x0026025e pop       rbp
+0x0026025f ret       
+0x00260260 mov       rax, qword ptr [rbx]
+0x00260263 mov       rdi, rbx
+0x00260266 call      qword ptr [rax + 0x80]
+0x0026026c mov       rax, qword ptr [rbx]
+0x0026026f mov       rdi, rbx
+0x00260272 pop       rbx
+0x00260273 pop       r14
+0x00260275 pop       rbp
+0x00260276 jmp       qword ptr [rax + 0xc0]
+0x0026027c nop       dword ptr [rax]

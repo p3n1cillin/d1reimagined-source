@@ -1,0 +1,76 @@
+0x00103f70 push      rbp
+0x00103f71 mov       rbp, rsp
+0x00103f74 push      r15
+0x00103f76 push      r14
+0x00103f78 push      r13
+0x00103f7a push      r12
+0x00103f7c push      rbx
+0x00103f7d sub       rsp, 0x28
+0x00103f81 mov       r14, rsi
+0x00103f84 mov       rax, rdi
+0x00103f87 mov       r12, qword ptr [rip + 0x191b172] ; [0x1a1f100]
+0x00103f8e mov       rcx, qword ptr [r12]
+0x00103f92 mov       qword ptr [rbp - 0x30], rcx
+0x00103f96 mov       qword ptr [r14 + 8], 0
+0x00103f9e mov       qword ptr [r14], 0
+0x00103fa5 mov       dword ptr [rbp - 0x48], 1
+0x00103fac lea       rbx, [rbp - 0x40]
+0x00103fb0 lea       rdx, [rbp - 0x48]
+0x00103fb4 mov       rdi, rbx
+0x00103fb7 mov       rsi, rax
+0x00103fba call      0x17b380
+0x00103fbf mov       rdi, rbx
+0x00103fc2 call      0x17a580
+0x00103fc7 test      al, al
+0x00103fc9 je        0x104025
+0x00103fcb lea       r15, [rbp - 0x40]
+0x00103fcf lea       r13, [rip + 0x24d39ca] ; [0x25d79a0]
+0x00103fd6 nop       word ptr cs:[rax + rax]
+0x00103fe0 mov       rdi, r15
+0x00103fe3 call      0x17a5a0
+0x00103fe8 mov       ebx, eax
+0x00103fea mov       edi, ebx
+0x00103fec call      0x1390b0
+0x00103ff1 and       ebx, 0x1fff
+0x00103ff7 imul      ebx, dword ptr [r13 + 0x10]
+0x00103ffc mov       rcx, qword ptr [r13 + 8]
+0x00104000 mov       ecx, dword ptr [rbx + rcx + 0x50]
+0x00104004 cmp       ecx, -1
+0x00104007 jne       0x104011
+0x00104009 movsxd    rax, eax
+0x0010400c inc       word ptr [r14 + rax*2]
+0x00104011 mov       rdi, r15
+0x00104014 call      0x17a5b0
+0x00104019 mov       rdi, r15
+0x0010401c call      0x17a580
+0x00104021 test      al, al
+0x00104023 jne       0x103fe0
+0x00104025 mov       rax, qword ptr [r12]
+0x00104029 cmp       rax, qword ptr [rbp - 0x30]
+0x0010402d jne       0x10403e
+0x0010402f add       rsp, 0x28
+0x00104033 pop       rbx
+0x00104034 pop       r12
+0x00104036 pop       r13
+0x00104038 pop       r14
+0x0010403a pop       r15
+0x0010403c pop       rbp
+0x0010403d ret       
+0x0010403e call      0x12aa7f0
+0x00104043 nop       
+0x00104044 nop       word ptr cs:[rax + rax]
+0x00104050 xchg      esp, eax
+0x00104051 xor       byte ptr [r8 + r8], r8b
+0x00104055 add       byte ptr [rcx], dh
+0x00104057 leave     
+0x00104058 sub       eax, edx
+0x0010405a cmovs     eax, ecx
+0x0010405d ret       
+0x0010405e nop       
+0x00104060 add       byte ptr [rax], al
+0x00104062 movsx     edx, word ptr [rsi + rcx*2]
+0x00104066 xor       ecx, ecx
+0x00104068 sub       eax, edx
+0x0010406a cmovs     eax, ecx
+0x0010406d ret       
+0x0010406e nop       

@@ -1,0 +1,2123 @@
+﻿2026-10-29T23:59:59.3612450Z Current runner version: '2.338.0'
+2026-10-29T23:59:59.3638165Z ##[group]Runner Image Provisioner
+2026-10-29T23:59:59.3639045Z Hosted Compute Agent
+2026-10-29T23:59:59.3639674Z Version: 20261021.618
+2026-10-29T23:59:59.3640932Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-29T23:59:59.3641728Z Build Date: 2026-10-21T00:45:21Z
+2026-10-29T23:59:59.3642489Z Worker ID: {8e36f4e2-945e-4240-9da9-96a44d3f00b3}
+2026-10-29T23:59:59.3643215Z Region: westus2
+2026-10-29T23:59:59.3643785Z Cloud: Azure
+2026-10-29T23:59:59.3644394Z ##[endgroup]
+2026-10-29T23:59:59.3645942Z ##[group]Operating System
+2026-10-29T23:59:59.3646646Z Ubuntu
+2026-10-29T23:59:59.3647186Z 24.04.5
+2026-10-29T23:59:59.3647739Z LTS
+2026-10-29T23:59:59.3648299Z ##[endgroup]
+2026-10-29T23:59:59.3648853Z ##[group]Runner Image
+2026-10-29T23:59:59.3649536Z Image: ubuntu-24.04
+2026-10-29T23:59:59.3650467Z Version: 20261025.353.1
+2026-10-29T23:59:59.3651938Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-29T23:59:59.3653548Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-10-29T23:59:59.3654573Z ##[endgroup]
+2026-10-29T23:59:59.3655709Z ##[group]GITHUB_TOKEN Permissions
+2026-10-29T23:59:59.3657719Z Contents: read
+2026-10-29T23:59:59.3658370Z Metadata: read
+2026-10-29T23:59:59.3658948Z ##[endgroup]
+2026-10-29T23:59:59.3661523Z Secret source: Actions
+2026-10-29T23:59:59.3662545Z Cache mode: write
+2026-10-29T23:59:59.3663338Z Prepare workflow directory
+2026-10-29T23:59:59.4040555Z Prepare all required actions
+2026-10-29T23:59:59.4103120Z Getting action download info
+2026-10-29T23:59:59.7795390Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-29T23:59:59.9071636Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+2026-10-30T00:00:00.1014185Z Complete job name: rust-workspace
+2026-10-30T00:00:00.2084654Z ##[group]Run actions/checkout@v7
+2026-10-30T00:00:00.2085548Z with:
+2026-10-30T00:00:00.2086041Z   repository: p3n1cillin/d1reimagined-source
+2026-10-30T00:00:00.2089792Z   token: ***
+2026-10-30T00:00:00.2090584Z   ssh-strict: true
+2026-10-30T00:00:00.2091045Z   ssh-user: git
+2026-10-30T00:00:00.2091498Z   persist-credentials: true
+2026-10-30T00:00:00.2091998Z   clean: true
+2026-10-30T00:00:00.2092452Z   sparse-checkout-cone-mode: true
+2026-10-30T00:00:00.2092978Z   fetch-depth: 1
+2026-10-30T00:00:00.2093404Z   fetch-tags: false
+2026-10-30T00:00:00.2093845Z   show-progress: true
+2026-10-30T00:00:00.2094295Z   lfs: false
+2026-10-30T00:00:00.2094699Z   submodules: false
+2026-10-30T00:00:00.2095151Z   set-safe-directory: true
+2026-10-30T00:00:00.2095652Z   allow-unsafe-pr-checkout: false
+2026-10-30T00:00:00.2096455Z ##[endgroup]
+2026-10-30T00:00:00.5194422Z Syncing repository: p3n1cillin/d1reimagined-source
+2026-10-30T00:00:00.5197262Z ##[group]Getting Git version info
+2026-10-30T00:00:00.5198339Z Working directory is '/home/runner/work/d1reimagined-source/d1reimagined-source'
+2026-10-30T00:00:00.5199607Z [command]/usr/bin/git version
+2026-10-30T00:00:00.5292740Z git version 2.56.0
+2026-10-30T00:00:00.5317335Z ##[endgroup]
+2026-10-30T00:00:00.5329655Z Temporarily overriding HOME='/home/runner/work/_temp/343ec0f4-23fa-4204-b6e6-e37fdece7607' before making global git config changes
+2026-10-30T00:00:00.5332213Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-30T00:00:00.5337778Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/d1reimagined-source/d1reimagined-source
+2026-10-30T00:00:00.5393876Z Deleting the contents of '/home/runner/work/d1reimagined-source/d1reimagined-source'
+2026-10-30T00:00:00.5398254Z ##[group]Determining repository object format
+2026-10-30T00:00:00.5400497Z ##[endgroup]
+2026-10-30T00:00:00.5401736Z ##[group]Initializing the repository
+2026-10-30T00:00:00.5406984Z [command]/usr/bin/git init /home/runner/work/d1reimagined-source/d1reimagined-source
+2026-10-30T00:00:00.5538639Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-30T00:00:00.5540707Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-30T00:00:00.5542317Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-30T00:00:00.5543522Z hint: call:
+2026-10-30T00:00:00.5544157Z hint:
+2026-10-30T00:00:00.5544993Z hint: 	git config --global init.defaultBranch <name>
+2026-10-30T00:00:00.5546054Z hint:
+2026-10-30T00:00:00.5546984Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-30T00:00:00.5548494Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-30T00:00:00.5549739Z hint:
+2026-10-30T00:00:00.5550683Z hint: 	git branch -m <name>
+2026-10-30T00:00:00.5551439Z hint:
+2026-10-30T00:00:00.5552437Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-30T00:00:00.5568256Z Initialized empty Git repository in /home/runner/work/d1reimagined-source/d1reimagined-source/.git/
+2026-10-30T00:00:00.5579489Z [command]/usr/bin/git remote add origin https://github.com/p3n1cillin/d1reimagined-source
+2026-10-30T00:00:00.5635693Z ##[endgroup]
+2026-10-30T00:00:00.5637002Z ##[group]Disabling automatic garbage collection
+2026-10-30T00:00:00.5639039Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-30T00:00:00.5678986Z ##[endgroup]
+2026-10-30T00:00:00.5681099Z ##[group]Setting up auth
+2026-10-30T00:00:00.5682064Z Removing SSH command configuration
+2026-10-30T00:00:00.5686815Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-30T00:00:00.5730513Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-30T00:00:00.6182818Z Removing HTTP extra header
+2026-10-30T00:00:00.6189311Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-30T00:00:00.6239302Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-30T00:00:00.6485991Z Removing includeIf entries pointing to credentials config files
+2026-10-30T00:00:00.6492477Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-30T00:00:00.6539991Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-30T00:00:00.6806397Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-30T00:00:00.6861262Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git.path /home/runner/work/_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config
+2026-10-30T00:00:00.6905637Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config
+2026-10-30T00:00:00.6949754Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config
+2026-10-30T00:00:00.6995022Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config
+2026-10-30T00:00:00.7037637Z ##[endgroup]
+2026-10-30T00:00:00.7038376Z ##[group]Fetching the repository
+2026-10-30T00:00:00.7045356Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ebae276edbdc229b1679a5fc00e9e2e650cd5a2a:refs/remotes/pull/92/merge
+2026-10-30T00:00:02.5916705Z From https://github.com/p3n1cillin/d1reimagined-source
+2026-10-30T00:00:02.5919801Z  * [new ref]         ebae276edbdc229b1679a5fc00e9e2e650cd5a2a -> pull/92/merge
+2026-10-30T00:00:02.5927373Z ##[endgroup]
+2026-10-30T00:00:02.5929570Z ##[group]Determining the checkout info
+2026-10-30T00:00:02.5932406Z ##[endgroup]
+2026-10-30T00:00:02.5933744Z [command]/usr/bin/git sparse-checkout disable
+2026-10-30T00:00:02.6001110Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-30T00:00:02.6048294Z ##[group]Checking out the ref
+2026-10-30T00:00:02.6053975Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/92/merge
+2026-10-30T00:00:03.2188255Z Note: switching to 'refs/remotes/pull/92/merge'.
+2026-10-30T00:00:03.2188856Z 
+2026-10-30T00:00:03.2189261Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-30T00:00:03.2190551Z changes and commit them, and you can discard any commits you make in this
+2026-10-30T00:00:03.2191445Z state without impacting any branches by switching back to a branch.
+2026-10-30T00:00:03.2191957Z 
+2026-10-30T00:00:03.2192330Z If you want to create a new branch to retain commits you create, you may
+2026-10-30T00:00:03.2193148Z do so (now or later) by using -c with the switch command. Example:
+2026-10-30T00:00:03.2193604Z 
+2026-10-30T00:00:03.2193813Z   git switch -c <new-branch-name>
+2026-10-30T00:00:03.2194152Z 
+2026-10-30T00:00:03.2194387Z Or undo this operation with:
+2026-10-30T00:00:03.2194682Z 
+2026-10-30T00:00:03.2194858Z   git switch -
+2026-10-30T00:00:03.2195110Z 
+2026-10-30T00:00:03.2195504Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-30T00:00:03.2196038Z 
+2026-10-30T00:00:03.2196665Z HEAD is now at ebae276 Merge 744b28c88b4eb0cda08ecc2c21fe46c7d95c6d93 into 197aa82f380e3b6e0937e962f9dc3a3377c74336
+2026-10-30T00:00:03.2241186Z ##[endgroup]
+2026-10-30T00:00:03.2299650Z [command]/usr/bin/git log -1 --format=%H
+2026-10-30T00:00:03.2338662Z ebae276edbdc229b1679a5fc00e9e2e650cd5a2a
+2026-10-30T00:00:03.3329922Z ##[group]Run actions/cache@v4
+2026-10-30T00:00:03.3330698Z with:
+2026-10-30T00:00:03.3331065Z   path: ~/.cargo/registry
+~/.cargo/git
+ps4/d1-server/target
+
+2026-10-30T00:00:03.3331666Z   key: rust-workspace-00b35fd81a6f68c454283daabf36c1689c27b67af6bbcd55f3c74594efade264
+2026-10-30T00:00:03.3332224Z   restore-keys: rust-workspace-
+2026-10-30T00:00:03.3332553Z   enableCrossOsArchive: false
+2026-10-30T00:00:03.3332868Z   fail-on-cache-miss: false
+2026-10-30T00:00:03.3333183Z   lookup-only: false
+2026-10-30T00:00:03.3333452Z   save-always: false
+2026-10-30T00:00:03.3333710Z ##[endgroup]
+2026-10-30T00:00:03.4465123Z (node:2631) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-30T00:00:03.4466558Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-30T00:00:03.6874237Z Cache not found for input keys: rust-workspace-00b35fd81a6f68c454283daabf36c1689c27b67af6bbcd55f3c74594efade264, rust-workspace-
+2026-10-30T00:00:03.6998672Z ##[group]Run sudo apt-get update -q && sudo apt-get install -y -q protobuf-compiler
+2026-10-30T00:00:03.6999391Z [36;1msudo apt-get update -q && sudo apt-get install -y -q protobuf-compiler[0m
+2026-10-30T00:00:03.7024081Z shell: /usr/bin/bash -e {0}
+2026-10-30T00:00:03.7024396Z ##[endgroup]
+2026-10-30T00:00:03.7843940Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-30T00:00:03.8227346Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-10-30T00:00:03.8231620Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-10-30T00:00:03.8245628Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-10-30T00:00:03.8301302Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-10-30T00:00:03.8325645Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-10-30T00:00:03.9714133Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [682 kB]
+2026-10-30T00:00:03.9875784Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [617 kB]
+2026-10-30T00:00:04.0233384Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1406 kB]
+2026-10-30T00:00:04.0317327Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [310 kB]
+2026-10-30T00:00:04.0345592Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1707 kB]
+2026-10-30T00:00:04.0463036Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [343 kB]
+2026-10-30T00:00:04.0494828Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1809 kB]
+2026-10-30T00:00:04.0598301Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [411 kB]
+2026-10-30T00:00:04.0629235Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.3 kB]
+2026-10-30T00:00:04.1369717Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1146 kB]
+2026-10-30T00:00:04.1436575Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [231 kB]
+2026-10-30T00:00:04.1460955Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1223 kB]
+2026-10-30T00:00:04.1973816Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [246 kB]
+2026-10-30T00:00:07.1845089Z Fetched 10.5 MB in 1s (9667 kB/s)
+2026-10-30T00:00:08.2509477Z Reading package lists...
+2026-10-30T00:00:08.2905134Z Reading package lists...
+2026-10-30T00:00:08.4985486Z Building dependency tree...
+2026-10-30T00:00:08.4993085Z Reading state information...
+2026-10-30T00:00:08.6395631Z The following additional packages will be installed:
+2026-10-30T00:00:08.6398872Z   libprotobuf-dev libprotobuf32t64 libprotoc32t64
+2026-10-30T00:00:08.6403764Z Suggested packages:
+2026-10-30T00:00:08.6404347Z   protobuf-mode-el
+2026-10-30T00:00:08.6613471Z The following NEW packages will be installed:
+2026-10-30T00:00:08.6617128Z   libprotobuf-dev libprotobuf32t64 libprotoc32t64 protobuf-compiler
+2026-10-30T00:00:08.6815171Z 0 upgraded, 4 newly installed, 0 to remove and 6 not upgraded.
+2026-10-30T00:00:08.6815886Z Need to get 3048 kB of archives.
+2026-10-30T00:00:08.6819098Z After this operation, 17.8 MB of additional disk space will be used.
+2026-10-30T00:00:08.6819791Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-30T00:00:08.8383922Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf32t64 amd64 3.21.12-8.2ubuntu0.4 [923 kB]
+2026-10-30T00:00:09.4022965Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotoc32t64 amd64 3.21.12-8.2ubuntu0.4 [683 kB]
+2026-10-30T00:00:09.5210286Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf-dev amd64 3.21.12-8.2ubuntu0.4 [1413 kB]
+2026-10-30T00:00:09.6756838Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 protobuf-compiler amd64 3.21.12-8.2ubuntu0.4 [29.0 kB]
+2026-10-30T00:00:09.9418671Z Fetched 3048 kB in 1s (3028 kB/s)
+2026-10-30T00:00:09.9707301Z Selecting previously unselected package libprotobuf32t64:amd64.
+2026-10-30T00:00:09.9988534Z (Reading database ... 
+2026-10-30T00:00:09.9989351Z (Reading database ... 5%
+2026-10-30T00:00:09.9989994Z (Reading database ... 10%
+2026-10-30T00:00:09.9990949Z (Reading database ... 15%
+2026-10-30T00:00:09.9991684Z (Reading database ... 20%
+2026-10-30T00:00:09.9992465Z (Reading database ... 25%
+2026-10-30T00:00:09.9993104Z (Reading database ... 30%
+2026-10-30T00:00:09.9993840Z (Reading database ... 35%
+2026-10-30T00:00:09.9994250Z (Reading database ... 40%
+2026-10-30T00:00:09.9994638Z (Reading database ... 45%
+2026-10-30T00:00:09.9995026Z (Reading database ... 50%
+2026-10-30T00:00:10.0042334Z (Reading database ... 55%
+2026-10-30T00:00:10.1395956Z (Reading database ... 60%
+2026-10-30T00:00:10.3434567Z (Reading database ... 65%
+2026-10-30T00:00:10.5361899Z (Reading database ... 70%
+2026-10-30T00:00:10.7467138Z (Reading database ... 75%
+2026-10-30T00:00:10.8796298Z (Reading database ... 80%
+2026-10-30T00:00:10.9477440Z (Reading database ... 85%
+2026-10-30T00:00:11.0510630Z (Reading database ... 90%
+2026-10-30T00:00:11.1884448Z (Reading database ... 95%
+2026-10-30T00:00:11.1884839Z (Reading database ... 100%
+2026-10-30T00:00:11.1885286Z (Reading database ... 215504 files and directories currently installed.)
+2026-10-30T00:00:11.1928034Z Preparing to unpack .../libprotobuf32t64_3.21.12-8.2ubuntu0.4_amd64.deb ...
+2026-10-30T00:00:11.1984041Z Unpacking libprotobuf32t64:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-10-30T00:00:11.2375381Z Selecting previously unselected package libprotoc32t64:amd64.
+2026-10-30T00:00:11.2516819Z Preparing to unpack .../libprotoc32t64_3.21.12-8.2ubuntu0.4_amd64.deb ...
+2026-10-30T00:00:11.2525509Z Unpacking libprotoc32t64:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-10-30T00:00:11.2847664Z Selecting previously unselected package libprotobuf-dev:amd64.
+2026-10-30T00:00:11.2988622Z Preparing to unpack .../libprotobuf-dev_3.21.12-8.2ubuntu0.4_amd64.deb ...
+2026-10-30T00:00:11.2997227Z Unpacking libprotobuf-dev:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-10-30T00:00:11.3742292Z Selecting previously unselected package protobuf-compiler.
+2026-10-30T00:00:11.3887577Z Preparing to unpack .../protobuf-compiler_3.21.12-8.2ubuntu0.4_amd64.deb ...
+2026-10-30T00:00:11.3894678Z Unpacking protobuf-compiler (3.21.12-8.2ubuntu0.4) ...
+2026-10-30T00:00:11.4361056Z Setting up libprotobuf32t64:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-10-30T00:00:11.4385125Z Setting up libprotobuf-dev:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-10-30T00:00:11.4405837Z Setting up libprotoc32t64:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-10-30T00:00:11.4426331Z Setting up protobuf-compiler (3.21.12-8.2ubuntu0.4) ...
+2026-10-30T00:00:11.4451281Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-10-30T00:00:11.4488668Z Not building database; man-db/auto-update is not 'true'.
+2026-10-30T00:00:11.4504677Z Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+2026-10-30T00:00:12.1772178Z 
+2026-10-30T00:00:12.1772840Z Running kernel seems to be up-to-date.
+2026-10-30T00:00:12.1773181Z 
+2026-10-30T00:00:12.1773312Z No services need to be restarted.
+2026-10-30T00:00:12.1773557Z 
+2026-10-30T00:00:12.1773686Z No containers need to be restarted.
+2026-10-30T00:00:12.1773919Z 
+2026-10-30T00:00:12.1774071Z No user sessions are running outdated binaries.
+2026-10-30T00:00:12.1774351Z 
+2026-10-30T00:00:12.1774607Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-10-30T00:00:13.1093880Z ##[group]Run cargo test --locked --no-fail-fast --workspace --exclude d1-oracle --exclude d1-activity-host --exclude d1-pkg
+2026-10-30T00:00:13.1094822Z [36;1mcargo test --locked --no-fail-fast --workspace --exclude d1-oracle --exclude d1-activity-host --exclude d1-pkg[0m
+2026-10-30T00:00:13.1116424Z shell: /usr/bin/bash -e {0}
+2026-10-30T00:00:13.1116690Z ##[endgroup]
+2026-10-30T00:00:13.4170954Z     Updating crates.io index
+2026-10-30T00:00:14.2895610Z  Downloading crates ...
+2026-10-30T00:00:14.3697570Z   Downloaded accesskit_atspi_common v0.18.1
+2026-10-30T00:00:14.3722630Z   Downloaded ab_glyph v0.2.32
+2026-10-30T00:00:14.3738973Z   Downloaded accesskit v0.24.1
+2026-10-30T00:00:14.3752017Z   Downloaded accesskit_consumer v0.35.0
+2026-10-30T00:00:14.3772070Z   Downloaded ab_glyph_rasterizer v0.1.10
+2026-10-30T00:00:14.3783076Z   Downloaded arrayvec v0.7.8
+2026-10-30T00:00:14.3806198Z   Downloaded ctr v0.9.2
+2026-10-30T00:00:14.3827837Z   Downloaded matchers v0.2.0
+2026-10-30T00:00:14.3842147Z   Downloaded ahash v0.8.12
+2026-10-30T00:00:14.3868945Z   Downloaded anstream v1.0.0
+2026-10-30T00:00:14.3900693Z   Downloaded async-channel v2.5.0
+2026-10-30T00:00:14.3931270Z   Downloaded async-process v2.5.0
+2026-10-30T00:00:14.3939081Z   Downloaded crc32fast v1.5.0
+2026-10-30T00:00:14.3965086Z   Downloaded digest v0.10.7
+2026-10-30T00:00:14.3990037Z   Downloaded anstyle-query v1.1.5
+2026-10-30T00:00:14.4005867Z   Downloaded async-lock v3.4.2
+2026-10-30T00:00:14.4036321Z   Downloaded async-task v4.7.1
+2026-10-30T00:00:14.4072087Z   Downloaded matchit v0.8.4
+2026-10-30T00:00:14.4103073Z   Downloaded arc-swap v1.9.2
+2026-10-30T00:00:14.4154976Z   Downloaded egui-wgpu v0.36.1
+2026-10-30T00:00:14.4176027Z   Downloaded as-raw-xcb-connection v1.0.1
+2026-10-30T00:00:14.4184306Z   Downloaded async-broadcast v0.7.2
+2026-10-30T00:00:14.4200661Z   Downloaded codespan-reporting v0.13.1
+2026-10-30T00:00:14.4272405Z   Downloaded either v1.17.0
+2026-10-30T00:00:14.4286940Z   Downloaded log v0.4.33
+2026-10-30T00:00:14.4310575Z   Downloaded anyhow v1.0.104
+2026-10-30T00:00:14.4350526Z   Downloaded colorchoice v1.0.5
+2026-10-30T00:00:14.4359700Z   Downloaded arboard v3.6.1
+2026-10-30T00:00:14.4386754Z   Downloaded async-executor v1.14.0
+2026-10-30T00:00:14.4405596Z   Downloaded egui_glow v0.36.1
+2026-10-30T00:00:14.4438983Z   Downloaded num-conv v0.2.2
+2026-10-30T00:00:14.4444594Z   Downloaded phf v0.11.3
+2026-10-30T00:00:14.4457457Z   Downloaded accesskit_consumer v0.36.0
+2026-10-30T00:00:14.4473327Z   Downloaded rustversion v1.0.23
+2026-10-30T00:00:14.4502649Z   Downloaded self_cell v1.3.0
+2026-10-30T00:00:14.4512804Z   Downloaded sharded-slab v0.1.7
+2026-10-30T00:00:14.4546106Z   Downloaded calloop-wayland-source v0.4.1
+2026-10-30T00:00:14.4557613Z   Downloaded memchr v2.8.3
+2026-10-30T00:00:14.4609508Z   Downloaded miniz_oxide v0.8.9
+2026-10-30T00:00:14.4633047Z   Downloaded once_cell v1.21.4
+2026-10-30T00:00:14.4656578Z   Downloaded opaque-debug v0.3.1
+2026-10-30T00:00:14.4665441Z   Downloaded parking v2.2.1
+2026-10-30T00:00:14.4675768Z   Downloaded parking_lot_core v0.9.12
+2026-10-30T00:00:14.4696383Z   Downloaded peniko v0.6.1
+2026-10-30T00:00:14.4709252Z   Downloaded rand v0.8.7
+2026-10-30T00:00:14.4750538Z   Downloaded serde_urlencoded v0.7.1
+2026-10-30T00:00:14.4771148Z   Downloaded arrayref v0.3.9
+2026-10-30T00:00:14.4786847Z   Downloaded async-io v2.6.0
+2026-10-30T00:00:14.4827334Z   Downloaded cexpr v0.6.0
+2026-10-30T00:00:14.4853543Z   Downloaded cipher v0.4.4
+2026-10-30T00:00:14.4870873Z   Downloaded cpufeatures v0.2.17
+2026-10-30T00:00:14.4884047Z   Downloaded crypto-common v0.1.7
+2026-10-30T00:00:14.4894807Z   Downloaded cursor-icon v1.2.0
+2026-10-30T00:00:14.4909380Z   Downloaded mime v0.3.17
+2026-10-30T00:00:14.4924047Z   Downloaded mime_guess2 v2.3.1
+2026-10-30T00:00:14.4939590Z   Downloaded naga-types v30.0.0
+2026-10-30T00:00:14.4951598Z   Downloaded phf_generator v0.11.3
+2026-10-30T00:00:14.4963244Z   Downloaded regex-syntax v0.8.11
+2026-10-30T00:00:14.5037980Z   Downloaded rustix v0.38.44
+2026-10-30T00:00:14.5381309Z   Downloaded adler2 v2.0.1
+2026-10-30T00:00:14.5396720Z   Downloaded aead v0.5.2
+2026-10-30T00:00:14.5411068Z   Downloaded aes v0.8.4
+2026-10-30T00:00:14.5455425Z   Downloaded atomic-waker v1.1.2
+2026-10-30T00:00:14.5469242Z   Downloaded atspi v0.29.0
+2026-10-30T00:00:14.5482161Z   Downloaded axum-server v0.7.3
+2026-10-30T00:00:14.5516367Z   Downloaded bindgen v0.71.1
+2026-10-30T00:00:14.5604521Z   Downloaded block-buffer v0.10.4
+2026-10-30T00:00:14.5614823Z   Downloaded cc v1.4.0
+2026-10-30T00:00:14.5650686Z   Downloaded color v0.3.3
+2026-10-30T00:00:14.5689439Z   Downloaded egui-winit v0.36.1
+2026-10-30T00:00:14.5711124Z   Downloaded egui_kittest v0.36.1
+2026-10-30T00:00:14.5764578Z   Downloaded half v2.7.1
+2026-10-30T00:00:14.5799953Z   Downloaded minimal-lexical v0.2.1
+2026-10-30T00:00:14.5874591Z   Downloaded mio v1.2.2
+2026-10-30T00:00:14.5942909Z   Downloaded moxcms v0.8.1
+2026-10-30T00:00:14.6051192Z   Downloaded multimap v0.10.1
+2026-10-30T00:00:14.6070959Z   Downloaded nom v7.1.3
+2026-10-30T00:00:14.6119421Z   Downloaded num-traits v0.2.19
+2026-10-30T00:00:14.6152853Z   Downloaded ordered-float v5.3.0
+2026-10-30T00:00:14.6174855Z   Downloaded percent-encoding v2.3.2
+2026-10-30T00:00:14.6183443Z   Downloaded phf_macros v0.11.3
+2026-10-30T00:00:14.6194775Z   Downloaded proc-macro-crate v3.5.0
+2026-10-30T00:00:14.6209076Z   Downloaded rustls-pemfile v2.2.0
+2026-10-30T00:00:14.6238083Z   Downloaded async-recursion v1.1.1
+2026-10-30T00:00:14.6282082Z   Downloaded autocfg v1.5.1
+2026-10-30T00:00:14.6310859Z   Downloaded axum-core v0.5.6
+2026-10-30T00:00:14.6337864Z   Downloaded bit-set v0.10.0
+2026-10-30T00:00:14.6352114Z   Downloaded bytemuck v1.25.2
+2026-10-30T00:00:14.6382324Z   Downloaded bytemuck_derive v1.12.0
+2026-10-30T00:00:14.6396628Z   Downloaded calloop-wayland-source v0.3.0
+2026-10-30T00:00:14.6408426Z   Downloaded cbc v0.1.2
+2026-10-30T00:00:14.6423020Z   Downloaded cfg-if v1.0.4
+2026-10-30T00:00:14.6435741Z   Downloaded downcast-rs v1.2.1
+2026-10-30T00:00:14.6448609Z   Downloaded dunce v1.0.5
+2026-10-30T00:00:14.6457205Z   Downloaded nohash-hasher v0.2.0
+2026-10-30T00:00:14.6466072Z   Downloaded owned_ttf_parser v0.25.1
+2026-10-30T00:00:14.6475038Z   Downloaded prost-build v0.13.5
+2026-10-30T00:00:14.6507800Z   Downloaded rustc-hash v2.1.3
+2026-10-30T00:00:14.6520594Z   Downloaded scopeguard v1.2.0
+2026-10-30T00:00:14.6532287Z   Downloaded serde_derive v1.0.229
+2026-10-30T00:00:14.6561110Z   Downloaded shlex v1.3.0
+2026-10-30T00:00:14.6573987Z   Downloaded synstructure v0.13.2
+2026-10-30T00:00:14.6583634Z   Downloaded aes-gcm v0.10.3
+2026-10-30T00:00:14.6612531Z   Downloaded cfg_aliases v0.2.2
+2026-10-30T00:00:14.6621830Z   Downloaded clap v4.6.6
+2026-10-30T00:00:14.6713240Z   Downloaded clap_builder v4.6.6
+2026-10-30T00:00:14.6773641Z   Downloaded clap_derive v4.6.4
+2026-10-30T00:00:14.6794184Z   Downloaded displaydoc v0.2.7
+2026-10-30T00:00:14.6813538Z   Downloaded document-features v0.2.12
+2026-10-30T00:00:14.6825576Z   Downloaded memmap2 v0.9.11
+2026-10-30T00:00:14.6842049Z   Downloaded nu-ansi-term v0.50.3
+2026-10-30T00:00:14.6865275Z   Downloaded ordered-stream v0.2.0
+2026-10-30T00:00:14.6876348Z   Downloaded phf_shared v0.11.3
+2026-10-30T00:00:14.6885291Z   Downloaded pin-project-lite v0.2.17
+2026-10-30T00:00:14.6939685Z   Downloaded polling v3.11.0
+2026-10-30T00:00:14.6969353Z   Downloaded clap_lex v1.1.0
+2026-10-30T00:00:14.6980259Z   Downloaded scoped-tls v1.0.1
+2026-10-30T00:00:14.6989866Z   Downloaded serde_spanned v1.1.1
+2026-10-30T00:00:14.7000738Z   Downloaded zmij v1.0.23
+2026-10-30T00:00:14.7020669Z   Downloaded dpi v0.1.2
+2026-10-30T00:00:14.7033245Z   Downloaded pollster v1.0.1
+2026-10-30T00:00:14.7049721Z   Downloaded strsim v0.11.1
+2026-10-30T00:00:14.7062483Z   Downloaded zerotrie v0.2.4
+2026-10-30T00:00:14.7101149Z   Downloaded async-signal v0.2.14
+2026-10-30T00:00:14.7115335Z   Downloaded block-padding v0.3.3
+2026-10-30T00:00:14.7123892Z   Downloaded dlib v0.5.3
+2026-10-30T00:00:14.7134271Z   Downloaded futures-core v0.3.33
+2026-10-30T00:00:14.7147580Z   Downloaded async-trait v0.1.92
+2026-10-30T00:00:14.7182455Z   Downloaded calloop v0.14.4
+2026-10-30T00:00:14.7217235Z   Downloaded concurrent-queue v2.5.0
+2026-10-30T00:00:14.7233760Z   Downloaded accesskit_winit v0.32.2
+2026-10-30T00:00:14.7251817Z   Downloaded calloop v0.13.0
+2026-10-30T00:00:14.7283731Z   Downloaded polycool v0.4.0
+2026-10-30T00:00:14.7299449Z   Downloaded polyval v0.6.2
+2026-10-30T00:00:14.7315549Z   Downloaded anstyle-parse v1.0.0
+2026-10-30T00:00:14.7331656Z   Downloaded cmake v0.1.58
+2026-10-30T00:00:14.7345183Z   Downloaded deranged v0.5.8
+2026-10-30T00:00:14.7359102Z   Downloaded futures-io v0.3.33
+2026-10-30T00:00:14.7367777Z   Downloaded endi v1.1.1
+2026-10-30T00:00:14.7378486Z   Downloaded bit-vec v0.9.1
+2026-10-30T00:00:14.7394446Z   Downloaded anstyle v1.0.14
+2026-10-30T00:00:14.7408886Z   Downloaded ecolor v0.36.1
+2026-10-30T00:00:14.7424788Z   Downloaded heck v0.5.0
+2026-10-30T00:00:14.7437175Z   Downloaded bytes v1.12.1
+2026-10-30T00:00:14.7470540Z   Downloaded tower-service v0.3.3
+2026-10-30T00:00:14.7478360Z   Downloaded zbus_macros v5.18.0
+2026-10-30T00:00:14.7493961Z   Downloaded allocator-api2 v0.2.21
+2026-10-30T00:00:14.7518619Z   Downloaded byteorder-lite v0.1.0
+2026-10-30T00:00:14.7528823Z   Downloaded clang-sys v1.9.1
+2026-10-30T00:00:14.7551517Z   Downloaded crossbeam-utils v0.8.22
+2026-10-30T00:00:14.7578026Z   Downloaded egui_extras v0.36.1
+2026-10-30T00:00:14.7604460Z   Downloaded enum-map v2.7.3
+2026-10-30T00:00:14.7619908Z   Downloaded xkeysym v0.2.1
+2026-10-30T00:00:14.7646529Z   Downloaded aho-corasick v1.1.5
+2026-10-30T00:00:14.7696868Z   Downloaded atspi-common v0.13.0
+2026-10-30T00:00:14.7743898Z   Downloaded bitflags v2.13.1
+2026-10-30T00:00:14.7786131Z   Downloaded eframe v0.36.1
+2026-10-30T00:00:14.7830238Z   Downloaded glow v0.17.0
+2026-10-30T00:00:14.7875553Z   Downloaded pkg-config v0.3.33
+2026-10-30T00:00:14.7890693Z   Downloaded profiling v1.0.18
+2026-10-30T00:00:14.7902139Z   Downloaded sha1 v0.10.7
+2026-10-30T00:00:14.7917167Z   Downloaded sync_wrapper v1.0.2
+2026-10-30T00:00:14.7925411Z   Downloaded egui v0.36.1
+2026-10-30T00:00:14.8046378Z   Downloaded ash v0.38.0+1.3.281
+2026-10-30T00:00:14.8194929Z   Downloaded hashbrown v0.16.1
+2026-10-30T00:00:14.8243202Z   Downloaded accesskit_unix v0.21.1
+2026-10-30T00:00:14.8263200Z   Downloaded enumflags2_derive v0.7.12
+2026-10-30T00:00:14.8270914Z   Downloaded atspi-proxies v0.13.0
+2026-10-30T00:00:14.8292740Z   Downloaded futures-util v0.3.33
+2026-10-30T00:00:14.8416267Z   Downloaded equivalent v1.0.2
+2026-10-30T00:00:14.8426583Z   Downloaded is_terminal_polyfill v1.70.2
+2026-10-30T00:00:14.8436038Z   Downloaded stable_deref_trait v1.2.1
+2026-10-30T00:00:14.8445069Z   Downloaded yoke-derive v0.8.2
+2026-10-30T00:00:14.8456094Z   Downloaded prost-types v0.13.5
+2026-10-30T00:00:14.8472884Z   Downloaded enum-map-derive v0.17.0
+2026-10-30T00:00:14.8483297Z   Downloaded writeable v0.6.3
+2026-10-30T00:00:14.8502285Z   Downloaded xkbcommon-dl v0.4.2
+2026-10-30T00:00:14.8513201Z   Downloaded glutin_glx_sys v0.6.1
+2026-10-30T00:00:14.8520674Z   Downloaded idna_adapter v1.2.2
+2026-10-30T00:00:14.8529361Z   Downloaded blocking v1.6.2
+2026-10-30T00:00:14.8542404Z   Downloaded enumflags2 v0.7.12
+2026-10-30T00:00:14.8560563Z   Downloaded fallible-iterator v0.3.0
+2026-10-30T00:00:14.8572838Z   Downloaded glob v0.3.4
+2026-10-30T00:00:14.8586593Z   Downloaded fdeflate v0.3.7
+2026-10-30T00:00:14.8602079Z   Downloaded fnv v1.0.7
+2026-10-30T00:00:14.8609882Z   Downloaded xcursor v0.3.11
+2026-10-30T00:00:14.8617846Z   Downloaded zbus-lockstep-macros v0.5.2
+2026-10-30T00:00:14.8625615Z   Downloaded thiserror v2.0.20
+2026-10-30T00:00:14.8686090Z   Downloaded tokio-macros v2.7.2
+2026-10-30T00:00:14.8697028Z   Downloaded fallible-streaming-iterator v0.1.9
+2026-10-30T00:00:14.8705714Z   Downloaded icu_properties v2.2.0
+2026-10-30T00:00:14.8728243Z   Downloaded tracing-log v0.2.0
+2026-10-30T00:00:14.8741196Z   Downloaded type-map v0.5.1
+2026-10-30T00:00:14.8748974Z   Downloaded wayland-protocols-experimental v20250721.0.1
+2026-10-30T00:00:14.8765195Z   Downloaded x11-dl v2.21.0
+2026-10-30T00:00:14.8794810Z   Downloaded emath v0.36.1
+2026-10-30T00:00:14.8816366Z   Downloaded fastrand v2.5.0
+2026-10-30T00:00:14.8829586Z   Downloaded fax v0.2.7
+2026-10-30T00:00:14.8848431Z   Downloaded fearless_simd v0.4.1
+2026-10-30T00:00:14.8914119Z   Downloaded form_urlencoded v1.2.2
+2026-10-30T00:00:14.8922009Z   Downloaded libloading v0.8.9
+2026-10-30T00:00:14.8943669Z   Downloaded tracing-attributes v0.1.31
+2026-10-30T00:00:14.8969413Z   Downloaded uuid v1.24.0
+2026-10-30T00:00:14.8997586Z   Downloaded aws-lc-rs v1.17.3
+2026-10-30T00:00:14.9098871Z   Downloaded base64 v0.22.1
+2026-10-30T00:00:14.9134676Z   Downloaded fixedbitset v0.5.7
+2026-10-30T00:00:14.9152472Z   Downloaded tracing-core v0.1.36
+2026-10-30T00:00:14.9177352Z   Downloaded event-listener v5.4.2
+2026-10-30T00:00:14.9194290Z   Downloaded version_check v0.9.5
+2026-10-30T00:00:14.9206393Z   Downloaded kurbo v0.13.1
+2026-10-30T00:00:14.9255417Z   Downloaded zerofrom-derive v0.1.7
+2026-10-30T00:00:14.9265461Z   Downloaded phf_generator v0.13.1
+2026-10-30T00:00:14.9276143Z   Downloaded quick-error v2.0.1
+2026-10-30T00:00:14.9287825Z   Downloaded rustls v0.23.43
+2026-10-30T00:00:14.9399627Z   Downloaded signal-hook-registry v1.4.8
+2026-10-30T00:00:14.9411155Z   Downloaded potential_utf v0.1.5
+2026-10-30T00:00:14.9421531Z   Downloaded powerfmt v0.2.0
+2026-10-30T00:00:14.9432261Z   Downloaded renderdoc-sys v1.1.0
+2026-10-30T00:00:14.9440705Z   Downloaded siphasher v1.0.3
+2026-10-30T00:00:14.9453485Z   Downloaded wgpu-naga-bridge v30.0.0
+2026-10-30T00:00:14.9460827Z   Downloaded xml-rs v0.8.29
+2026-10-30T00:00:14.9488302Z   Downloaded phf_shared v0.13.1
+2026-10-30T00:00:14.9497280Z   Downloaded rustc-hash v1.1.0
+2026-10-30T00:00:14.9505873Z   Downloaded serde_repr v0.1.21
+2026-10-30T00:00:14.9526206Z   Downloaded flate2 v1.1.9
+2026-10-30T00:00:14.9594967Z   Downloaded phf v0.13.1
+2026-10-30T00:00:14.9606926Z   Downloaded rand_core v0.6.4
+2026-10-30T00:00:14.9619535Z   Downloaded ghash v0.5.1
+2026-10-30T00:00:14.9630261Z   Downloaded itertools v0.13.0
+2026-10-30T00:00:14.9695442Z   Downloaded thiserror-impl v2.0.20
+2026-10-30T00:00:14.9709389Z   Downloaded wayland-csd-frame v0.3.0
+2026-10-30T00:00:14.9718881Z   Downloaded wgpu-core-deps-windows-linux-android v30.0.0
+2026-10-30T00:00:14.9727361Z   Downloaded wgpu-types v30.0.0
+2026-10-30T00:00:14.9766232Z   Downloaded smol_str v0.2.2
+2026-10-30T00:00:14.9779625Z   Downloaded subtle v2.6.1
+2026-10-30T00:00:14.9790752Z   Downloaded zerofrom v0.1.8
+2026-10-30T00:00:14.9799576Z   Downloaded strict-num v0.1.1
+2026-10-30T00:00:14.9809978Z   Downloaded wayland-protocols-misc v0.3.12
+2026-10-30T00:00:14.9821752Z   Downloaded zbus-lockstep v0.5.2
+2026-10-30T00:00:14.9831103Z   Downloaded epaint v0.36.1
+2026-10-30T00:00:14.9875641Z   Downloaded presser v0.3.1
+2026-10-30T00:00:14.9891964Z   Downloaded serde_path_to_error v0.1.20
+2026-10-30T00:00:14.9907184Z   Downloaded static_assertions v1.1.0
+2026-10-30T00:00:14.9921101Z   Downloaded itertools v0.14.0
+2026-10-30T00:00:14.9986731Z   Downloaded prost-derive v0.13.5
+2026-10-30T00:00:14.9999319Z   Downloaded shlex v2.0.1
+2026-10-30T00:00:15.0011349Z   Downloaded simd-adler32 v0.3.10
+2026-10-30T00:00:15.0028471Z   Downloaded wayland-sys v0.31.11
+2026-10-30T00:00:15.0039744Z   Downloaded zbus_names v4.3.4
+2026-10-30T00:00:15.0054595Z   Downloaded lazy_static v1.5.0
+2026-10-30T00:00:15.0071489Z   Downloaded phf_macros v0.13.1
+2026-10-30T00:00:15.0080568Z   Downloaded itoa v1.0.18
+2026-10-30T00:00:15.0094309Z   Downloaded litemap v0.8.2
+2026-10-30T00:00:15.0116084Z   Downloaded thiserror v1.0.69
+2026-10-30T00:00:15.0169242Z   Downloaded unicase v2.9.0
+2026-10-30T00:00:15.0182815Z   Downloaded sha2 v0.10.9
+2026-10-30T00:00:15.0206198Z   Downloaded ureq-proto v0.6.0
+2026-10-30T00:00:15.0245722Z   Downloaded smithay-clipboard v0.7.3
+2026-10-30T00:00:15.0260483Z   Downloaded termcolor v1.4.1
+2026-10-30T00:00:15.0272301Z   Downloaded zbus v5.18.0
+2026-10-30T00:00:15.0362137Z   Downloaded zune-core v0.5.3
+2026-10-30T00:00:15.0383883Z   Downloaded zvariant_derive v5.13.1
+2026-10-30T00:00:15.0396640Z   Downloaded zvariant_utils v3.5.0
+2026-10-30T00:00:15.0410182Z   Downloaded axum v0.8.9
+2026-10-30T00:00:15.0487866Z   Downloaded find-msvc-tools v0.1.9
+2026-10-30T00:00:15.0502981Z   Downloaded futures-sink v0.3.33
+2026-10-30T00:00:15.0510668Z   Downloaded hyper v1.11.0
+2026-10-30T00:00:15.0576761Z   Downloaded icu_properties_data v2.2.0
+2026-10-30T00:00:15.0679891Z   Downloaded indexmap v2.14.0
+2026-10-30T00:00:15.0719648Z   Downloaded parking_lot v0.12.5
+2026-10-30T00:00:15.0743286Z   Downloaded prost v0.13.5
+2026-10-30T00:00:15.0758756Z   Downloaded quote v1.0.47
+2026-10-30T00:00:15.0784236Z   Downloaded raw-window-handle v0.6.2
+2026-10-30T00:00:15.0801092Z   Downloaded rustls-pki-types v1.15.1
+2026-10-30T00:00:15.0824934Z   Downloaded ryu v1.0.23
+2026-10-30T00:00:15.0855770Z   Downloaded sctk-adwaita v0.10.1
+2026-10-30T00:00:15.0879131Z   Downloaded serde_core v1.0.229
+2026-10-30T00:00:15.0905022Z   Downloaded slab v0.4.12
+2026-10-30T00:00:15.0917369Z   Downloaded smallvec v1.15.2
+2026-10-30T00:00:15.0931145Z   Downloaded spirv v0.4.0+sdk-1.4.341.0
+2026-10-30T00:00:15.0942975Z   Downloaded tempfile v3.27.0
+2026-10-30T00:00:15.0966771Z   Downloaded tiff v0.11.3
+2026-10-30T00:00:15.1008901Z   Downloaded tokio-rustls v0.26.4
+2026-10-30T00:00:15.1028559Z   Downloaded toml_datetime v1.1.1+spec-1.1.0
+2026-10-30T00:00:15.1041079Z   Downloaded tracing v0.1.44
+2026-10-30T00:00:15.1192458Z   Downloaded tracing-subscriber v0.3.23
+2026-10-30T00:00:15.1271821Z   Downloaded ttf-parser v0.25.1
+2026-10-30T00:00:15.1362391Z   Downloaded unicode-general-category v1.1.0
+2026-10-30T00:00:15.1377036Z   Downloaded unicode-ident v1.0.24
+2026-10-30T00:00:15.1403712Z   Downloaded ureq v3.3.0
+2026-10-30T00:00:15.1455922Z   Downloaded vello_cpu v0.1.0
+2026-10-30T00:00:15.1503618Z   Downloaded webbrowser v1.2.4
+2026-10-30T00:00:15.1540235Z   Downloaded weezl v0.1.12
+2026-10-30T00:00:15.1564223Z   Downloaded x11rb v0.13.2
+2026-10-30T00:00:15.1642672Z   Downloaded zbus_xml v5.2.1
+2026-10-30T00:00:15.1669343Z   Downloaded zeroize v1.9.0
+2026-10-30T00:00:15.1684113Z   Downloaded zerovec-derive v0.11.3
+2026-10-30T00:00:15.1698741Z   Downloaded zlib-rs v0.6.7
+2026-10-30T00:00:15.1751259Z   Downloaded euclid v0.22.14
+2026-10-30T00:00:15.1782272Z   Downloaded event-listener-strategy v0.5.4
+2026-10-30T00:00:15.1792991Z   Downloaded futures-lite v2.6.1
+2026-10-30T00:00:15.1831034Z   Downloaded icu_collections v2.2.0
+2026-10-30T00:00:15.1868968Z   Downloaded piper v0.2.5
+2026-10-30T00:00:15.1885193Z   Downloaded png v0.18.1
+2026-10-30T00:00:15.1924629Z   Downloaded prettyplease v0.2.37
+2026-10-30T00:00:15.1958246Z   Downloaded proc-macro2 v1.0.107
+2026-10-30T00:00:15.1986174Z   Downloaded rustls-webpki v0.103.13
+2026-10-30T00:00:15.2015389Z   Downloaded socket2 v0.6.5
+2026-10-30T00:00:15.2034653Z   Downloaded toml v1.1.4+spec-1.1.0
+2026-10-30T00:00:15.2095812Z   Downloaded wayland-backend v0.3.16
+2026-10-30T00:00:15.2142628Z   Downloaded wayland-client v0.31.15
+2026-10-30T00:00:15.2162959Z   Downloaded futures-macro v0.3.33
+2026-10-30T00:00:15.2173564Z   Downloaded hyper-util v0.1.20
+2026-10-30T00:00:15.2232040Z   Downloaded serde v1.0.229
+2026-10-30T00:00:15.2265192Z   Downloaded typed-path v0.12.3
+2026-10-30T00:00:15.2329218Z   Downloaded typenum v1.20.1
+2026-10-30T00:00:15.2363613Z   Downloaded unicode-segmentation v1.13.3
+2026-10-30T00:00:15.2392091Z   Downloaded winnow v1.0.4
+2026-10-30T00:00:15.2483820Z   Downloaded yoke v0.8.3
+2026-10-30T00:00:15.2501278Z   Downloaded zerocopy-derive v0.8.56
+2026-10-30T00:00:15.2589124Z   Downloaded harfrust v0.12.0
+2026-10-30T00:00:15.2671387Z   Downloaded regex v1.13.1
+2026-10-30T00:00:15.2722063Z   Downloaded smithay-client-toolkit v0.19.2
+2026-10-30T00:00:15.2783029Z   Downloaded tokio-util v0.7.19
+2026-10-30T00:00:15.2857708Z   Downloaded wayland-scanner v0.31.11
+2026-10-30T00:00:15.2878011Z   Downloaded zerovec v0.11.6
+2026-10-30T00:00:15.2935592Z   Downloaded zip v8.6.0
+2026-10-30T00:00:15.2982253Z   Downloaded errno v0.3.14
+2026-10-30T00:00:15.2997166Z   Downloaded fs-err v3.3.1
+2026-10-30T00:00:15.3015805Z   Downloaded fs_extra v1.3.0
+2026-10-30T00:00:15.3031940Z   Downloaded serde_json v1.0.151
+2026-10-30T00:00:15.3100742Z   Downloaded smithay-client-toolkit v0.20.0
+2026-10-30T00:00:15.3165508Z   Downloaded toml_edit v0.25.13+spec-1.1.0
+2026-10-30T00:00:15.3203213Z   Downloaded glifo v0.2.0
+2026-10-30T00:00:15.3223584Z   Downloaded glutin v0.32.3
+2026-10-30T00:00:15.3259874Z   Downloaded hashbrown v0.17.1
+2026-10-30T00:00:15.3310393Z   Downloaded rusqlite v0.40.1
+2026-10-30T00:00:15.3375618Z   Downloaded unicorn-engine v2.1.5
+2026-10-30T00:00:15.3394355Z   Downloaded glutin-winit v0.5.0
+2026-10-30T00:00:15.3404111Z   Downloaded http-body v1.1.0
+2026-10-30T00:00:15.3414307Z   Downloaded icu_normalizer v2.2.0
+2026-10-30T00:00:15.3449393Z   Downloaded quick-xml v0.41.0
+2026-10-30T00:00:15.3506158Z   Downloaded thiserror-impl v1.0.69
+2026-10-30T00:00:15.3519185Z   Downloaded tower-layer v0.3.3
+2026-10-30T00:00:15.3528514Z   Downloaded wgpu v30.0.0
+2026-10-30T00:00:15.3668566Z   Downloaded skrifa v0.44.0
+2026-10-30T00:00:15.3758302Z   Downloaded time-core v0.1.9
+2026-10-30T00:00:15.3769738Z   Downloaded zerocopy v0.8.56
+2026-10-30T00:00:15.3970596Z   Downloaded syn v2.0.119
+2026-10-30T00:00:15.4070374Z   Downloaded syn v3.0.3
+2026-10-30T00:00:15.4171984Z   Downloaded toml_parser v1.1.3+spec-1.1.0
+2026-10-30T00:00:15.4194134Z   Downloaded utf8_iter v1.0.4
+2026-10-30T00:00:15.4204742Z   Downloaded icu_provider v2.2.0
+2026-10-30T00:00:15.4229933Z   Downloaded inout v0.1.4
+2026-10-30T00:00:15.4240767Z   Downloaded guillotiere v0.7.0
+2026-10-30T00:00:15.4253144Z   Downloaded time v0.3.55
+2026-10-30T00:00:15.4390111Z   Downloaded wayland-cursor v0.31.14
+2026-10-30T00:00:15.4398821Z   Downloaded khronos-egl v6.0.0
+2026-10-30T00:00:15.4417447Z   Downloaded web-time v1.1.0
+2026-10-30T00:00:15.4434184Z   Downloaded icu_normalizer_data v2.2.0
+2026-10-30T00:00:15.4454874Z   Downloaded tinystr v0.8.3
+2026-10-30T00:00:15.4474960Z   Downloaded untrusted v0.9.0
+2026-10-30T00:00:15.4491177Z   Downloaded wgpu-core v30.0.0
+2026-10-30T00:00:15.4588565Z   Downloaded gpu-allocator v0.28.0
+2026-10-30T00:00:15.4616240Z   Downloaded rustix v1.1.4
+2026-10-30T00:00:15.4872490Z   Downloaded zune-jpeg v0.5.15
+2026-10-30T00:00:15.4905098Z   Downloaded wgpu-hal v30.0.0
+2026-10-30T00:00:15.5016439Z   Downloaded zvariant v5.13.1
+2026-10-30T00:00:15.5082501Z   Downloaded tower v0.5.3
+2026-10-30T00:00:15.5178879Z   Downloaded foldhash v0.2.0
+2026-10-30T00:00:15.5191640Z   Downloaded read-fonts v0.41.0
+2026-10-30T00:00:15.5372235Z   Downloaded h2 v0.4.15
+2026-10-30T00:00:15.5433421Z   Downloaded webpki-roots v1.0.9
+2026-10-30T00:00:15.5463779Z   Downloaded futures-task v0.3.33
+2026-10-30T00:00:15.5475019Z   Downloaded generic-array v0.14.7
+2026-10-30T00:00:15.5488114Z   Downloaded glutin_egl_sys v0.7.1
+2026-10-30T00:00:15.5496360Z   Downloaded kittest v0.4.0
+2026-10-30T00:00:15.5509298Z   Downloaded jobserver v0.1.35
+2026-10-30T00:00:15.5527575Z   Downloaded regex-automata v0.4.18
+2026-10-30T00:00:15.5662178Z   Downloaded time-macros v0.2.32
+2026-10-30T00:00:15.5686641Z   Downloaded utf8-zero v0.8.1
+2026-10-30T00:00:15.5699932Z   Downloaded getrandom v0.3.4
+2026-10-30T00:00:15.5732325Z   Downloaded winit v0.30.13
+2026-10-30T00:00:15.5931370Z   Downloaded http v1.5.0
+2026-10-30T00:00:15.5966783Z   Downloaded http-body-util v0.1.4
+2026-10-30T00:00:15.5985447Z   Downloaded hashlink v0.12.1
+2026-10-30T00:00:15.6003672Z   Downloaded lock_api v0.4.14
+2026-10-30T00:00:15.6015616Z   Downloaded litrs v1.0.0
+2026-10-30T00:00:15.6043626Z   Downloaded petgraph v0.7.1
+2026-10-30T00:00:15.6221195Z   Downloaded unicode-width v0.2.2
+2026-10-30T00:00:15.6283907Z   Downloaded naga v30.0.0
+2026-10-30T00:00:15.6485462Z   Downloaded pxfm v0.1.30
+2026-10-30T00:00:15.6720326Z   Downloaded libc v0.2.189
+2026-10-30T00:00:15.7168410Z   Downloaded tiny-skia v0.11.4
+2026-10-30T00:00:15.7302487Z   Downloaded getrandom v0.4.3
+2026-10-30T00:00:15.7338101Z   Downloaded wayland-protocols v0.32.13
+2026-10-30T00:00:15.7419856Z   Downloaded epaint_default_fonts v0.36.1
+2026-10-30T00:00:15.7498134Z   Downloaded font-types v0.12.2
+2026-10-30T00:00:15.7515895Z   Downloaded thread_local v1.1.10
+2026-10-30T00:00:15.7528884Z   Downloaded x11rb-protocol v0.13.2
+2026-10-30T00:00:15.7648820Z   Downloaded tokio v1.53.1
+2026-10-30T00:00:15.8075405Z   Downloaded image v0.25.10
+2026-10-30T00:00:15.8163371Z   Downloaded wayland-protocols-wlr v0.3.12
+2026-10-30T00:00:15.8184167Z   Downloaded itertools v0.15.0
+2026-10-30T00:00:15.8253203Z   Downloaded ring v0.17.14
+2026-10-30T00:00:15.8650977Z   Downloaded khronos_api v3.1.0
+2026-10-30T00:00:15.8827826Z   Downloaded vello_common v0.1.0
+2026-10-30T00:00:15.8866712Z   Downloaded tiny-skia-path v0.11.4
+2026-10-30T00:00:15.8884418Z   Downloaded iced-x86 v1.21.0
+2026-10-30T00:00:15.9171963Z   Downloaded hex v0.4.3
+2026-10-30T00:00:15.9187269Z   Downloaded linux-raw-sys v0.4.15
+2026-10-30T00:00:15.9618218Z   Downloaded futures-channel v0.3.33
+2026-10-30T00:00:15.9636818Z   Downloaded gl_generator v0.14.0
+2026-10-30T00:00:15.9652842Z   Downloaded linux-raw-sys v0.12.1
+2026-10-30T00:00:16.0278824Z   Downloaded wayland-protocols-plasma v0.3.12
+2026-10-30T00:00:16.0321780Z   Downloaded icu_locale_core v2.2.0
+2026-10-30T00:00:16.0387564Z   Downloaded unicorn-engine-sys v2.1.5
+2026-10-30T00:00:16.1057197Z   Downloaded linebender_resource_handle v0.1.1
+2026-10-30T00:00:16.1068354Z   Downloaded getrandom v0.2.17
+2026-10-30T00:00:16.1097467Z   Downloaded universal-hash v0.5.1
+2026-10-30T00:00:16.1106178Z   Downloaded utf8parse v0.2.2
+2026-10-30T00:00:16.1115787Z   Downloaded libsqlite3-sys v0.38.1
+2026-10-30T00:00:16.1729229Z   Downloaded url v2.5.8
+2026-10-30T00:00:16.1754227Z   Downloaded httpdate v1.0.3
+2026-10-30T00:00:16.1766093Z   Downloaded vcpkg v0.2.15
+2026-10-30T00:00:16.2265194Z   Downloaded idna v1.1.0
+2026-10-30T00:00:16.2298708Z   Downloaded libm v0.2.16
+2026-10-30T00:00:16.2401718Z   Downloaded gethostname v1.1.0
+2026-10-30T00:00:16.2412092Z   Downloaded hmac v0.12.1
+2026-10-30T00:00:16.2430552Z   Downloaded httparse v1.10.1
+2026-10-30T00:00:16.2454930Z   Downloaded aws-lc-sys v0.43.0
+2026-10-30T00:00:16.6264950Z    Compiling proc-macro2 v1.0.107
+2026-10-30T00:00:16.6265675Z    Compiling unicode-ident v1.0.24
+2026-10-30T00:00:16.6266379Z    Compiling quote v1.0.47
+2026-10-30T00:00:16.6267420Z    Compiling libc v0.2.189
+2026-10-30T00:00:16.9351650Z    Compiling cfg-if v1.0.4
+2026-10-30T00:00:16.9786833Z    Compiling bitflags v2.13.1
+2026-10-30T00:00:17.1670121Z    Compiling serde_core v1.0.229
+2026-10-30T00:00:17.1771026Z    Compiling serde v1.0.229
+2026-10-30T00:00:17.3741327Z    Compiling once_cell v1.21.4
+2026-10-30T00:00:17.5551124Z    Compiling memchr v2.8.3
+2026-10-30T00:00:18.3080533Z    Compiling syn v3.0.3
+2026-10-30T00:00:18.3081388Z    Compiling syn v2.0.119
+2026-10-30T00:00:18.3661873Z    Compiling version_check v0.9.5
+2026-10-30T00:00:18.5911144Z    Compiling log v0.4.33
+2026-10-30T00:00:18.7531132Z    Compiling equivalent v1.0.2
+2026-10-30T00:00:18.8031257Z    Compiling getrandom v0.2.17
+2026-10-30T00:00:18.9511491Z    Compiling pkg-config v0.3.33
+2026-10-30T00:00:19.4671377Z    Compiling anyhow v1.0.104
+2026-10-30T00:00:19.7407530Z    Compiling itoa v1.0.18
+2026-10-30T00:00:19.8361694Z    Compiling smallvec v1.15.2
+2026-10-30T00:00:20.0151199Z    Compiling generic-array v0.14.7
+2026-10-30T00:00:20.1246386Z    Compiling jobserver v0.1.35
+2026-10-30T00:00:20.2701210Z    Compiling heck v0.5.0
+2026-10-30T00:00:20.4251963Z    Compiling shlex v2.0.1
+2026-10-30T00:00:20.4342591Z    Compiling find-msvc-tools v0.1.9
+2026-10-30T00:00:20.5681360Z    Compiling cc v1.4.0
+2026-10-30T00:00:20.6611189Z    Compiling typenum v1.20.1
+2026-10-30T00:00:22.0604973Z    Compiling pin-project-lite v0.2.17
+2026-10-30T00:00:22.1201375Z    Compiling rand_core v0.6.4
+2026-10-30T00:00:22.1691293Z    Compiling subtle v2.6.1
+2026-10-30T00:00:22.2501586Z    Compiling crypto-common v0.1.7
+2026-10-30T00:00:22.2981362Z    Compiling zmij v1.0.23
+2026-10-30T00:00:22.3312337Z    Compiling utf8parse v0.2.2
+2026-10-30T00:00:22.3895969Z    Compiling anstyle-parse v1.0.0
+2026-10-30T00:00:22.4187696Z    Compiling serde_derive v1.0.229
+2026-10-30T00:00:22.5071644Z    Compiling is_terminal_polyfill v1.70.2
+2026-10-30T00:00:22.5321211Z    Compiling anstyle v1.0.14
+2026-10-30T00:00:22.5611890Z    Compiling serde_json v1.0.151
+2026-10-30T00:00:22.7110797Z    Compiling colorchoice v1.0.5
+2026-10-30T00:00:22.7326775Z    Compiling anstyle-query v1.1.5
+2026-10-30T00:00:22.7768075Z    Compiling anstream v1.0.0
+2026-10-30T00:00:23.0391486Z    Compiling strsim v0.11.1
+2026-10-30T00:00:23.1621108Z    Compiling clap_lex v1.1.0
+2026-10-30T00:00:23.3471832Z    Compiling clap_builder v4.6.6
+2026-10-30T00:00:23.7351658Z    Compiling clap_derive v4.6.4
+2026-10-30T00:00:24.8571754Z    Compiling libloading v0.8.9
+2026-10-30T00:00:25.0172737Z    Compiling cpufeatures v0.2.17
+2026-10-30T00:00:25.0681303Z    Compiling block-buffer v0.10.4
+2026-10-30T00:00:25.1677376Z    Compiling autocfg v1.5.1
+2026-10-30T00:00:25.4801630Z    Compiling clap v4.6.6
+2026-10-30T00:00:25.4876399Z    Compiling digest v0.10.7
+2026-10-30T00:00:25.5251133Z    Compiling lazy_static v1.5.0
+2026-10-30T00:00:25.5821280Z    Compiling foldhash v0.2.0
+2026-10-30T00:00:25.6581351Z    Compiling either v1.17.0
+2026-10-30T00:00:25.7171147Z    Compiling sha2 v0.10.9
+2026-10-30T00:00:25.8401408Z    Compiling rustix v1.1.4
+2026-10-30T00:00:26.0956792Z    Compiling hashbrown v0.17.1
+2026-10-30T00:00:26.1411274Z    Compiling linux-raw-sys v0.12.1
+2026-10-30T00:00:26.1811754Z    Compiling d1-build v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-build)
+2026-10-30T00:00:26.6371855Z    Compiling errno v0.3.14
+2026-10-30T00:00:26.6741623Z    Compiling indexmap v2.14.0
+2026-10-30T00:00:26.7401335Z    Compiling tracing-core v0.1.36
+2026-10-30T00:00:27.3589706Z    Compiling base64 v0.22.1
+2026-10-30T00:00:27.3688016Z    Compiling signal-hook-registry v1.4.8
+2026-10-30T00:00:27.6231460Z    Compiling tracing-attributes v0.1.31
+2026-10-30T00:00:27.6771159Z    Compiling slab v0.4.12
+2026-10-30T00:00:27.7711265Z    Compiling fastrand v2.5.0
+2026-10-30T00:00:27.9851332Z    Compiling iced-x86 v1.21.0
+2026-10-30T00:00:28.4351690Z    Compiling bytemuck_derive v1.12.0
+2026-10-30T00:00:28.7911621Z    Compiling tracing v0.1.44
+2026-10-30T00:00:29.0421595Z    Compiling bytes v1.12.1
+2026-10-30T00:00:29.5635486Z    Compiling futures-core v0.3.33
+2026-10-30T00:00:29.6631528Z    Compiling bytemuck v1.25.2
+2026-10-30T00:00:29.7398935Z    Compiling sha1 v0.10.7
+2026-10-30T00:00:29.9281317Z    Compiling winnow v1.0.4
+2026-10-30T00:00:29.9711212Z    Compiling dlib v0.5.3
+2026-10-30T00:00:30.0496193Z    Compiling wayland-sys v0.31.11
+2026-10-30T00:00:30.1961258Z    Compiling prettyplease v0.2.37
+2026-10-30T00:00:30.3128896Z    Compiling libm v0.2.16
+2026-10-30T00:00:31.1510288Z    Compiling num-traits v0.2.19
+2026-10-30T00:00:31.1621383Z    Compiling regex-syntax v0.8.11
+2026-10-30T00:00:32.6661747Z    Compiling d1-eboot v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-eboot)
+2026-10-30T00:00:32.8611420Z    Compiling regex-automata v0.4.18
+2026-10-30T00:00:35.0511110Z    Compiling regex v1.13.1
+2026-10-30T00:00:35.1221164Z    Compiling polling v3.11.0
+2026-10-30T00:00:35.3682112Z    Compiling toml_parser v1.1.3+spec-1.1.0
+2026-10-30T00:00:36.2781604Z    Compiling cmake v0.1.58
+2026-10-30T00:00:36.6311517Z    Compiling toml_datetime v1.1.1+spec-1.1.0
+2026-10-30T00:00:36.6611694Z    Compiling arrayvec v0.7.8
+2026-10-30T00:00:36.7441283Z    Compiling thiserror v2.0.20
+2026-10-30T00:00:36.8161499Z    Compiling toml_edit v0.25.13+spec-1.1.0
+2026-10-30T00:00:36.8352943Z    Compiling enumflags2_derive v0.7.12
+2026-10-30T00:00:37.0491149Z    Compiling thiserror-impl v2.0.20
+2026-10-30T00:00:37.2841324Z    Compiling wayland-backend v0.3.16
+2026-10-30T00:00:37.4361306Z    Compiling cfg_aliases v0.2.2
+2026-10-30T00:00:37.4861297Z    Compiling proc-macro-crate v3.5.0
+2026-10-30T00:00:37.8765634Z    Compiling zvariant_utils v3.5.0
+2026-10-30T00:00:37.9281659Z    Compiling tokio-macros v2.7.2
+2026-10-30T00:00:38.2251240Z    Compiling socket2 v0.6.5
+2026-10-30T00:00:38.2781372Z    Compiling mio v1.2.2
+2026-10-30T00:00:38.3591810Z    Compiling parking v2.2.1
+2026-10-30T00:00:38.4631221Z    Compiling downcast-rs v1.2.1
+2026-10-30T00:00:38.4841251Z    Compiling scoped-tls v1.0.1
+2026-10-30T00:00:38.5182913Z    Compiling zvariant_derive v5.13.1
+2026-10-30T00:00:38.7261321Z    Compiling tokio v1.53.1
+2026-10-30T00:00:38.8111221Z    Compiling synstructure v0.13.2
+2026-10-30T00:00:39.3801951Z    Compiling quick-xml v0.41.0
+2026-10-30T00:00:39.4531950Z    Compiling wayland-client v0.31.15
+2026-10-30T00:00:39.5661015Z    Compiling zerocopy v0.8.56
+2026-10-30T00:00:39.8311248Z    Compiling endi v1.1.1
+2026-10-30T00:00:39.9961410Z    Compiling itertools v0.14.0
+2026-10-30T00:00:40.0822145Z    Compiling zerocopy-derive v0.8.56
+2026-10-30T00:00:40.4011159Z    Compiling wayland-scanner v0.31.11
+2026-10-30T00:00:41.4761204Z    Compiling crossbeam-utils v0.8.22
+2026-10-30T00:00:41.6002318Z    Compiling atomic-waker v1.1.2
+2026-10-30T00:00:41.7001357Z    Compiling prost-derive v0.13.5
+2026-10-30T00:00:43.1501782Z    Compiling zerofrom-derive v0.1.7
+2026-10-30T00:00:44.1920438Z    Compiling uuid v1.24.0
+2026-10-30T00:00:44.2662778Z    Compiling zerofrom v0.1.8
+2026-10-30T00:00:44.5951217Z    Compiling yoke-derive v0.8.2
+2026-10-30T00:00:44.6701730Z    Compiling stable_deref_trait v1.2.1
+2026-10-30T00:00:44.7191288Z    Compiling futures-io v0.3.33
+2026-10-30T00:00:44.8351301Z    Compiling siphasher v1.0.3
+2026-10-30T00:00:44.9959305Z    Compiling allocator-api2 v0.2.21
+2026-10-30T00:00:45.3131138Z    Compiling hashbrown v0.16.1
+2026-10-30T00:00:45.5389859Z    Compiling concurrent-queue v2.5.0
+2026-10-30T00:00:45.6181313Z    Compiling yoke v0.8.3
+2026-10-30T00:00:45.6960728Z    Compiling event-listener v5.4.2
+2026-10-30T00:00:45.7771418Z    Compiling enumflags2 v0.7.12
+2026-10-30T00:00:45.9201381Z    Compiling block-padding v0.3.3
+2026-10-30T00:00:45.9272377Z    Compiling static_assertions v1.1.0
+2026-10-30T00:00:45.9581426Z    Compiling parking_lot_core v0.9.12
+2026-10-30T00:00:45.9841260Z    Compiling zvariant v5.13.1
+2026-10-30T00:00:46.0031379Z    Compiling inout v0.1.4
+2026-10-30T00:00:46.0924724Z    Compiling event-listener-strategy v0.5.4
+2026-10-30T00:00:46.1283711Z    Compiling futures-lite v2.6.1
+2026-10-30T00:00:46.1431327Z    Compiling zerovec-derive v0.11.3
+2026-10-30T00:00:46.9160459Z    Compiling simd-adler32 v0.3.10
+2026-10-30T00:00:47.1072170Z    Compiling glob v0.3.4
+2026-10-30T00:00:47.1860404Z    Compiling crc32fast v1.5.0
+2026-10-30T00:00:47.4240882Z    Compiling getrandom v0.4.3
+2026-10-30T00:00:47.5781181Z    Compiling rustc-hash v2.1.3
+2026-10-30T00:00:47.6039314Z    Compiling scopeguard v1.2.0
+2026-10-30T00:00:47.6621724Z    Compiling percent-encoding v2.3.2
+2026-10-30T00:00:47.6741008Z    Compiling lock_api v0.4.14
+2026-10-30T00:00:47.9132654Z    Compiling clang-sys v1.9.1
+2026-10-30T00:00:47.9591257Z    Compiling zerovec v0.11.6
+2026-10-30T00:00:48.3754447Z    Compiling zbus_names v4.3.4
+2026-10-30T00:00:48.5521863Z    Compiling cipher v0.4.4
+2026-10-30T00:00:48.7561349Z    Compiling wayland-protocols v0.32.13
+2026-10-30T00:00:49.0311441Z    Compiling async-io v2.6.0
+2026-10-30T00:00:49.0781662Z    Compiling displaydoc v0.2.7
+2026-10-30T00:00:49.1563537Z    Compiling adler2 v2.0.1
+2026-10-30T00:00:52.2451178Z    Compiling prost v0.13.5
+2026-10-30T00:00:52.2611217Z    Compiling miniz_oxide v0.8.9
+2026-10-30T00:00:52.6481269Z    Compiling parking_lot v0.12.5
+2026-10-30T00:00:53.1431244Z    Compiling accesskit v0.24.1
+2026-10-30T00:00:53.1863874Z    Compiling http v1.5.0
+2026-10-30T00:00:53.1977463Z    Compiling universal-hash v0.5.1
+2026-10-30T00:00:53.2781543Z    Compiling fs_extra v1.3.0
+2026-10-30T00:00:53.5251344Z    Compiling minimal-lexical v0.2.1
+2026-10-30T00:00:53.6282632Z    Compiling fixedbitset v0.5.7
+2026-10-30T00:00:53.7491308Z    Compiling async-task v4.7.1
+2026-10-30T00:00:53.8631262Z    Compiling opaque-debug v0.3.1
+2026-10-30T00:00:53.9076428Z    Compiling getrandom v0.3.4
+2026-10-30T00:00:53.9281382Z    Compiling zlib-rs v0.6.7
+2026-10-30T00:00:54.1131785Z    Compiling dunce v1.0.5
+2026-10-30T00:00:54.1821315Z    Compiling aws-lc-sys v0.43.0
+2026-10-30T00:00:54.3651385Z    Compiling polyval v0.6.2
+2026-10-30T00:00:54.5294322Z    Compiling petgraph v0.7.1
+2026-10-30T00:00:55.3151327Z    Compiling nom v7.1.3
+2026-10-30T00:00:55.9242669Z    Compiling tempfile v3.27.0
+2026-10-30T00:00:56.9441240Z    Compiling prost-types v0.13.5
+2026-10-30T00:00:57.2804585Z    Compiling async-channel v2.5.0
+2026-10-30T00:00:57.6691144Z    Compiling polycool v0.4.0
+2026-10-30T00:00:57.8320916Z    Compiling ahash v0.8.12
+2026-10-30T00:00:57.9691176Z    Compiling rustix v0.38.44
+2026-10-30T00:00:58.0211265Z    Compiling bindgen v0.71.1
+2026-10-30T00:00:58.1503281Z    Compiling multimap v0.10.1
+2026-10-30T00:00:58.1831427Z    Compiling profiling v1.0.18
+2026-10-30T00:00:58.2061907Z    Compiling thiserror v1.0.69
+2026-10-30T00:00:58.2293332Z    Compiling raw-window-handle v0.6.2
+2026-10-30T00:00:58.2632023Z    Compiling prost-build v0.13.5
+2026-10-30T00:00:58.4711342Z    Compiling kurbo v0.13.1
+2026-10-30T00:00:58.4961377Z    Compiling flate2 v1.1.9
+2026-10-30T00:00:58.9361118Z    Compiling cexpr v0.6.0
+2026-10-30T00:00:59.0281275Z    Compiling async-signal v0.2.14
+2026-10-30T00:00:59.3645832Z    Compiling ghash v0.5.1
+2026-10-30T00:00:59.5929818Z    Compiling tinystr v0.8.3
+2026-10-30T00:00:59.7397367Z    Compiling zbus_xml v5.2.1
+2026-10-30T00:01:00.0345094Z    Compiling aes v0.8.4
+2026-10-30T00:01:00.6310468Z    Compiling ctr v0.9.2
+2026-10-30T00:01:00.7327860Z    Compiling async-lock v3.4.2
+2026-10-30T00:01:00.7601297Z    Compiling piper v0.2.5
+2026-10-30T00:01:00.9291348Z    Compiling euclid v0.22.14
+2026-10-30T00:01:01.2681703Z    Compiling d1-live v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-live)
+2026-10-30T00:01:01.5731406Z    Compiling color v0.3.3
+2026-10-30T00:01:02.2740808Z    Compiling font-types v0.12.2
+2026-10-30T00:01:02.6447487Z    Compiling itertools v0.13.0
+2026-10-30T00:01:02.7642184Z    Compiling thiserror-impl v1.0.69
+2026-10-30T00:01:03.5854957Z    Compiling aead v0.5.2
+2026-10-30T00:01:03.6891387Z    Compiling rustc-hash v1.1.0
+2026-10-30T00:01:03.6993636Z    Compiling cursor-icon v1.2.0
+2026-10-30T00:01:03.7426944Z    Compiling xkeysym v0.2.1
+2026-10-30T00:01:03.7682041Z    Compiling shlex v1.3.0
+2026-10-30T00:01:03.9051252Z    Compiling zeroize v1.9.0
+2026-10-30T00:01:04.0381195Z    Compiling xcursor v0.3.11
+2026-10-30T00:01:04.1541897Z    Compiling httparse v1.10.1
+2026-10-30T00:01:04.3617473Z    Compiling linux-raw-sys v0.4.15
+2026-10-30T00:01:04.3761548Z    Compiling linebender_resource_handle v0.1.1
+2026-10-30T00:01:04.3926032Z    Compiling writeable v0.6.3
+2026-10-30T00:01:04.4421598Z    Compiling litemap v0.8.2
+2026-10-30T00:01:04.5545592Z    Compiling icu_locale_core v2.2.0
+2026-10-30T00:01:04.5638877Z    Compiling peniko v0.6.1
+2026-10-30T00:01:04.8704907Z    Compiling wayland-cursor v0.31.14
+2026-10-30T00:01:05.6252098Z    Compiling wayland-csd-frame v0.3.0
+2026-10-30T00:01:05.7729965Z    Compiling naga-types v30.0.0
+2026-10-30T00:01:05.9383352Z    Compiling aes-gcm v0.10.3
+2026-10-30T00:01:06.0554942Z    Compiling read-fonts v0.41.0
+2026-10-30T00:01:08.6538308Z    Compiling guillotiere v0.7.0
+2026-10-30T00:01:08.9001449Z    Compiling async-process v2.5.0
+2026-10-30T00:01:09.6441241Z    Compiling blocking v1.6.2
+2026-10-30T00:01:09.8681495Z    Compiling zbus-lockstep v0.5.2
+2026-10-30T00:01:10.1593357Z    Compiling shadnet-proto v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/shadnet-proto)
+2026-10-30T00:01:10.5361878Z    Compiling wayland-protocols-wlr v0.3.12
+2026-10-30T00:01:11.6801310Z    Compiling async-executor v1.14.0
+2026-10-30T00:01:11.9331147Z    Compiling zerotrie v0.2.4
+2026-10-30T00:01:12.0181595Z    Compiling zbus_macros v5.18.0
+2026-10-30T00:01:12.2071292Z    Compiling cbc v0.1.2
+2026-10-30T00:01:12.2963495Z    Compiling potential_utf v0.1.5
+2026-10-30T00:01:12.4006101Z    Compiling async-broadcast v0.7.2
+2026-10-30T00:01:12.5884170Z    Compiling naga v30.0.0
+2026-10-30T00:01:12.7811801Z    Compiling ordered-stream v0.2.0
+2026-10-30T00:01:13.0446172Z    Compiling hmac v0.12.1
+2026-10-30T00:01:13.1295703Z    Compiling futures-macro v0.3.33
+2026-10-30T00:01:13.7241318Z    Compiling async-recursion v1.1.1
+2026-10-30T00:01:14.1461176Z    Compiling serde_repr v0.1.21
+2026-10-30T00:01:14.4141372Z    Compiling async-trait v0.1.92
+2026-10-30T00:01:14.4711078Z    Compiling ring v0.17.14
+2026-10-30T00:01:14.8384714Z    Compiling memmap2 v0.9.11
+2026-10-30T00:01:15.0241170Z    Compiling futures-task v0.3.33
+2026-10-30T00:01:15.1461212Z    Compiling bit-vec v0.9.1
+2026-10-30T00:01:15.1722108Z    Compiling vcpkg v0.2.15
+2026-10-30T00:01:15.3234920Z    Compiling unicode-width v0.2.2
+2026-10-30T00:01:15.5202965Z    Compiling utf8_iter v1.0.4
+2026-10-30T00:01:15.6241856Z    Compiling fearless_simd v0.4.1
+2026-10-30T00:01:15.6740344Z    Compiling icu_normalizer_data v2.2.0
+2026-10-30T00:01:17.0396266Z    Compiling aws-lc-rs v1.17.3
+2026-10-30T00:01:17.1755512Z    Compiling ash v0.38.0+1.3.281
+2026-10-30T00:01:17.2585931Z    Compiling unicode-general-category v1.1.0
+2026-10-30T00:01:17.5546413Z    Compiling icu_properties_data v2.2.0
+2026-10-30T00:01:17.6628253Z    Compiling hex v0.4.3
+2026-10-30T00:01:17.9044631Z    Compiling zbus v5.18.0
+2026-10-30T00:01:19.5391158Z    Compiling vello_common v0.1.0
+2026-10-30T00:01:22.0201339Z    Compiling libsqlite3-sys v0.38.1
+2026-10-30T00:01:22.1405699Z    Compiling icu_collections v2.2.0
+2026-10-30T00:01:22.2319430Z    Compiling codespan-reporting v0.13.1
+2026-10-30T00:01:22.5859349Z    Compiling bit-set v0.10.0
+2026-10-30T00:01:22.6853853Z    Compiling futures-util v0.3.33
+2026-10-30T00:01:24.3654678Z    Compiling icu_provider v2.2.0
+2026-10-30T00:01:24.8749246Z    Compiling unicorn-engine-sys v2.1.5
+2026-10-30T00:01:25.1901326Z    Compiling zbus-lockstep-macros v0.5.2
+2026-10-30T00:01:25.4903822Z    Compiling calloop v0.13.0
+2026-10-30T00:01:26.1838362Z    Compiling rustls-pki-types v1.15.1
+2026-10-30T00:01:26.6251222Z    Compiling form_urlencoded v1.2.2
+2026-10-30T00:01:26.7510408Z    Compiling half v2.7.1
+2026-10-30T00:01:27.2711802Z    Compiling phf_shared v0.13.1
+2026-10-30T00:01:27.4431524Z    Compiling emath v0.36.1
+2026-10-30T00:01:27.4778197Z    Compiling spirv v0.4.0+sdk-1.4.341.0
+2026-10-30T00:01:27.8421379Z    Compiling powerfmt v0.2.0
+2026-10-30T00:01:27.8732718Z    Compiling num-conv v0.2.2
+2026-10-30T00:01:28.0117498Z    Compiling arrayref v0.3.9
+2026-10-30T00:01:28.0231273Z    Compiling strict-num v0.1.1
+2026-10-30T00:01:28.0615473Z    Compiling khronos-egl v6.0.0
+2026-10-30T00:01:28.1352642Z    Compiling smithay-client-toolkit v0.19.2
+2026-10-30T00:01:28.1801386Z    Compiling time-core v0.1.9
+2026-10-30T00:01:28.2537331Z    Compiling ttf-parser v0.25.1
+2026-10-30T00:01:28.3661218Z    Compiling deranged v0.5.8
+2026-10-30T00:01:29.5561317Z    Compiling time v0.3.55
+2026-10-30T00:01:31.2130486Z    Compiling owned_ttf_parser v0.25.1
+2026-10-30T00:01:31.3082010Z    Compiling tiny-skia-path v0.11.4
+2026-10-30T00:01:31.3537441Z    Compiling ecolor v0.36.1
+2026-10-30T00:01:31.6293846Z    Compiling phf_generator v0.13.1
+2026-10-30T00:01:31.7685151Z    Compiling calloop-wayland-source v0.3.0
+2026-10-30T00:01:31.8491412Z    Compiling atspi-common v0.13.0
+2026-10-30T00:01:48.0600903Z    Compiling vello_cpu v0.1.0
+2026-10-30T00:01:48.1238287Z    Compiling matchers v0.2.0
+2026-10-30T00:01:48.7600949Z    Compiling d1-bap v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-bap)
+2026-10-30T00:01:50.6360516Z    Compiling harfrust v0.12.0
+2026-10-30T00:01:55.7832912Z    Compiling skrifa v0.44.0
+2026-10-30T00:01:58.9471662Z    Compiling wgpu-types v30.0.0
+2026-10-30T00:02:00.7989881Z    Compiling http-body v1.1.0
+2026-10-30T00:02:00.8241220Z    Compiling wgpu-hal v30.0.0
+2026-10-30T00:02:00.9051173Z    Compiling gethostname v1.1.0
+2026-10-30T00:02:00.9757760Z    Compiling tracing-log v0.2.0
+2026-10-30T00:02:01.0541690Z    Compiling sharded-slab v0.1.7
+2026-10-30T00:02:01.1565143Z    Compiling x11-dl v2.21.0
+2026-10-30T00:02:01.2763344Z    Compiling thread_local v1.1.10
+2026-10-30T00:02:01.4711242Z    Compiling untrusted v0.9.0
+2026-10-30T00:02:01.5245121Z    Compiling nohash-hasher v0.2.0
+2026-10-30T00:02:01.5442715Z    Compiling nu-ansi-term v0.50.3
+2026-10-30T00:02:01.5519023Z    Compiling unicode-segmentation v1.13.3
+2026-10-30T00:02:01.5841987Z    Compiling epaint_default_fonts v0.36.1
+2026-10-30T00:02:01.6920854Z    Compiling self_cell v1.3.0
+2026-10-30T00:02:01.7711445Z    Compiling futures-sink v0.3.33
+2026-10-30T00:02:01.8262428Z    Compiling x11rb-protocol v0.13.2
+2026-10-30T00:02:01.8356236Z    Compiling as-raw-xcb-connection v1.0.1
+2026-10-30T00:02:01.8908420Z    Compiling presser v0.3.1
+2026-10-30T00:02:01.9192612Z    Compiling ab_glyph_rasterizer v0.1.10
+2026-10-30T00:02:01.9791762Z    Compiling gpu-allocator v0.28.0
+2026-10-30T00:02:02.0571388Z    Compiling ab_glyph v0.2.32
+2026-10-30T00:02:02.5328410Z    Compiling epaint v0.36.1
+2026-10-30T00:02:02.5439475Z    Compiling tokio-util v0.7.19
+2026-10-30T00:02:03.1397247Z    Compiling tracing-subscriber v0.3.23
+2026-10-30T00:02:05.9198049Z    Compiling wgpu-naga-bridge v30.0.0
+2026-10-30T00:02:06.0051266Z    Compiling icu_properties v2.2.0
+2026-10-30T00:02:07.4816263Z    Compiling icu_normalizer v2.2.0
+2026-10-30T00:02:08.3658551Z    Compiling phf_macros v0.13.1
+2026-10-30T00:02:08.8273332Z    Compiling tiny-skia v0.11.4
+2026-10-30T00:02:10.4235184Z    Compiling shadnet-wire v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/shadnet-wire)
+2026-10-30T00:02:10.7421803Z    Compiling winit v0.30.13
+2026-10-30T00:02:10.7534879Z    Compiling ordered-float v5.3.0
+2026-10-30T00:02:10.9534831Z    Compiling hashlink v0.12.1
+2026-10-30T00:02:10.9883128Z    Compiling itertools v0.15.0
+2026-10-30T00:02:11.2261642Z    Compiling unicase v2.9.0
+2026-10-30T00:02:11.3868587Z    Compiling glow v0.17.0
+2026-10-30T00:02:12.2232748Z    Compiling x11rb v0.13.2
+2026-10-30T00:02:13.3545525Z    Compiling tower-service v0.3.3
+2026-10-30T00:02:13.4141284Z    Compiling fnv v1.0.7
+2026-10-30T00:02:13.4701925Z    Compiling mime v0.3.17
+2026-10-30T00:02:13.7071084Z    Compiling rustls v0.23.43
+2026-10-30T00:02:13.8171459Z    Compiling fallible-streaming-iterator v0.1.9
+2026-10-30T00:02:13.9174490Z    Compiling renderdoc-sys v1.1.0
+2026-10-30T00:02:13.9281098Z    Compiling typed-path v0.12.3
+2026-10-30T00:02:14.0008872Z    Compiling fallible-iterator v0.3.0
+2026-10-30T00:02:14.2698954Z    Compiling rusqlite v0.40.1
+2026-10-30T00:02:15.2582194Z    Compiling zip v8.6.0
+2026-10-30T00:02:16.5451407Z    Compiling h2 v0.4.15
+2026-10-30T00:02:18.7291179Z    Compiling egui v0.36.1
+2026-10-30T00:02:22.0563828Z    Compiling rustls-webpki v0.103.13
+2026-10-30T00:02:22.0931330Z    Compiling phf_shared v0.11.3
+2026-10-30T00:02:22.2779896Z    Compiling phf v0.13.1
+2026-10-30T00:02:22.4041645Z    Compiling sctk-adwaita v0.10.1
+2026-10-30T00:02:23.1467801Z    Compiling unicorn-engine v2.1.5
+2026-10-30T00:02:23.2232421Z    Compiling idna_adapter v1.2.2
+2026-10-30T00:02:23.4361629Z    Compiling atspi-proxies v0.13.0
+2026-10-30T00:02:23.5451422Z    Compiling xkbcommon-dl v0.4.2
+2026-10-30T00:02:24.1471255Z    Compiling wayland-protocols-plasma v0.3.12
+2026-10-30T00:02:25.2941075Z    Compiling accesskit_consumer v0.36.0
+2026-10-30T00:02:26.4572264Z    Compiling fdeflate v0.3.7
+2026-10-30T00:02:26.8941734Z    Compiling wgpu-core v30.0.0
+2026-10-30T00:02:27.0652217Z    Compiling calloop v0.14.4
+2026-10-30T00:02:27.1911261Z    Compiling futures-channel v0.3.33
+2026-10-30T00:02:27.3821323Z    Compiling smol_str v0.2.2
+2026-10-30T00:02:27.5714823Z    Compiling pxfm v0.1.30
+2026-10-30T00:02:27.8851740Z    Compiling httpdate v1.0.3
+2026-10-30T00:02:28.0331278Z    Compiling litrs v1.0.0
+2026-10-30T00:02:28.0841784Z    Compiling smithay-client-toolkit v0.20.0
+2026-10-30T00:02:28.2081252Z    Compiling dpi v0.1.2
+2026-10-30T00:02:28.5338819Z    Compiling document-features v0.2.12
+2026-10-30T00:02:28.9782064Z    Compiling hyper v1.11.0
+2026-10-30T00:02:29.6232857Z    Compiling calloop-wayland-source v0.4.1
+2026-10-30T00:02:29.7341306Z    Compiling png v0.18.1
+2026-10-30T00:02:30.5771249Z    Compiling moxcms v0.8.1
+2026-10-30T00:02:31.1662185Z    Compiling accesskit_atspi_common v0.18.1
+2026-10-30T00:02:31.4111430Z    Compiling atspi v0.29.0
+2026-10-30T00:02:31.4741197Z    Compiling idna v1.1.0
+2026-10-30T00:02:32.2941209Z    Compiling phf v0.11.3
+2026-10-30T00:02:32.4191465Z    Compiling wgpu-core-deps-windows-linux-android v30.0.0
+2026-10-30T00:02:32.4711503Z    Compiling wayland-protocols-experimental v20250721.0.1
+2026-10-30T00:02:33.0931408Z    Compiling wayland-protocols-misc v0.3.12
+2026-10-30T00:02:33.7881212Z    Compiling wgpu v30.0.0
+2026-10-30T00:02:34.2421292Z    Compiling byteorder-lite v0.1.0
+2026-10-30T00:02:34.4843716Z    Compiling tower-layer v0.3.3
+2026-10-30T00:02:34.6239140Z    Compiling rustversion v1.0.23
+2026-10-30T00:02:34.8602435Z    Compiling sync_wrapper v1.0.2
+2026-10-30T00:02:34.9532467Z    Compiling image v0.25.10
+2026-10-30T00:02:40.1451575Z    Compiling mime_guess2 v2.3.1
+2026-10-30T00:02:40.3369303Z    Compiling url v2.5.8
+2026-10-30T00:02:40.4061669Z    Compiling accesskit_unix v0.21.1
+2026-10-30T00:02:40.4216922Z    Compiling hyper-util v0.1.20
+2026-10-30T00:02:40.7321666Z    Compiling d1-replay v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-replay)
+2026-10-30T00:02:41.2262024Z    Compiling d1-loadout v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-loadout)
+2026-10-30T00:02:43.3241922Z    Compiling shadnet-server v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/shadnet-server)
+2026-10-30T00:02:44.8381503Z    Compiling http-body-util v0.1.4
+2026-10-30T00:02:45.0703473Z    Compiling d1-harness v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-harness)
+2026-10-30T00:02:46.2941231Z    Compiling fs-err v3.3.1
+2026-10-30T00:02:46.4161535Z    Compiling web-time v1.1.0
+2026-10-30T00:02:46.4752084Z    Compiling ryu v1.0.23
+2026-10-30T00:02:46.6351256Z    Compiling serde_urlencoded v0.7.1
+2026-10-30T00:02:46.8571044Z    Compiling axum-core v0.5.6
+2026-10-30T00:02:48.5031255Z    Compiling accesskit_winit v0.32.2
+2026-10-30T00:02:48.7681174Z    Compiling webbrowser v1.2.4
+2026-10-30T00:02:49.0921120Z    Compiling smithay-clipboard v0.7.3
+2026-10-30T00:02:49.4071184Z    Compiling arboard v3.6.1
+2026-10-30T00:02:50.8301366Z    Compiling tower v0.5.3
+2026-10-30T00:02:51.1058186Z    Compiling accesskit_consumer v0.35.0
+2026-10-30T00:02:51.2411177Z    Compiling type-map v0.5.1
+2026-10-30T00:02:51.7082024Z    Compiling d1-run v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-run)
+2026-10-30T00:02:52.2001296Z    Compiling enum-map-derive v0.17.0
+2026-10-30T00:02:52.2361290Z    Compiling serde_path_to_error v0.1.20
+2026-10-30T00:02:52.6191334Z    Compiling serde_spanned v1.1.1
+2026-10-30T00:02:52.7151580Z    Compiling matchit v0.8.4
+2026-10-30T00:02:52.8072314Z    Compiling toml v1.1.4+spec-1.1.0
+2026-10-30T00:02:53.0581565Z    Compiling axum v0.8.9
+2026-10-30T00:02:53.1581370Z    Compiling enum-map v2.7.3
+2026-10-30T00:02:53.2021310Z    Compiling kittest v0.4.0
+2026-10-30T00:02:53.2828862Z    Compiling egui-wgpu v0.36.1
+2026-10-30T00:02:53.4171294Z    Compiling arc-swap v1.9.2
+2026-10-30T00:02:53.6551318Z    Compiling egui-winit v0.36.1
+2026-10-30T00:02:54.8631664Z    Compiling tokio-rustls v0.26.4
+2026-10-30T00:02:55.0961621Z    Compiling webpki-roots v1.0.9
+2026-10-30T00:02:55.1911848Z    Compiling rustls-pemfile v2.2.0
+2026-10-30T00:02:55.2403637Z    Compiling ureq-proto v0.6.0
+2026-10-30T00:02:55.3030976Z    Compiling utf8-zero v0.8.1
+2026-10-30T00:02:55.3531416Z    Compiling pollster v1.0.1
+2026-10-30T00:02:55.4211341Z    Compiling eframe v0.36.1
+2026-10-30T00:02:55.4391272Z    Compiling axum-server v0.7.3
+2026-10-30T00:02:56.0121477Z    Compiling ureq v3.3.0
+2026-10-30T00:02:56.0325880Z    Compiling egui_extras v0.36.1
+2026-10-30T00:02:57.1211577Z    Compiling egui_kittest v0.36.1
+2026-10-30T00:02:57.3611999Z    Compiling d1-trace v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-trace)
+2026-10-30T00:02:57.4281987Z    Compiling d1-responder v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-responder)
+2026-10-30T00:03:00.7861859Z    Compiling d1-forge v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1-forge)
+2026-10-30T00:03:01.4591574Z    Compiling d1 v0.1.0 (/home/runner/work/d1reimagined-source/d1reimagined-source/ps4/d1-server/crates/d1)
+2026-10-30T00:03:13.5230909Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 3m 00s
+2026-10-30T00:03:13.6390271Z      Running unittests src/main.rs (target/debug/deps/d1-96170c26344a9a1b)
+2026-10-30T00:03:13.6411481Z 
+2026-10-30T00:03:13.6411827Z running 10 tests
+2026-10-30T00:03:13.6430943Z test crash::tests::c_crash_eboot_guard ... ok
+2026-10-30T00:03:13.6431890Z test crash::tests::c_crash_extent_notes ... ok
+2026-10-30T00:03:13.6434030Z test crash::tests::c_crash_format_parity ... ok
+2026-10-30T00:03:13.6434941Z test crash::tests::c_crash_pinned_real ... FAILED
+2026-10-30T00:03:13.6435846Z test crash::tests::harvest_output_shape ... ok
+2026-10-30T00:03:13.6436930Z test native_decoder_tests::pinned_double_matches_the_native_decoder ... ok
+2026-10-30T00:03:13.6438257Z test resolve_tests::timestamp_names_beat_scratch_names_for_newest ... ok
+2026-10-30T00:03:13.6453064Z test crash::tests::c_crash_synthetic_anchor ... ok
+2026-10-30T00:03:13.6461139Z test crash::tests::c_crash_perturbation_changes_output ... ok
+2026-10-30T00:03:13.6462092Z test native_decoder_tests::gate_controls_pass_with_the_native_decoder ... ok
+2026-10-30T00:03:13.6462650Z 
+2026-10-30T00:03:13.6462783Z failures:
+2026-10-30T00:03:13.6462970Z 
+2026-10-30T00:03:13.6463181Z ---- crash::tests::c_crash_pinned_real stdout ----
+2026-10-30T00:03:13.6463653Z 
+2026-10-30T00:03:13.6464100Z thread 'crash::tests::c_crash_pinned_real' (11732) panicked at crates/d1/src/crash.rs:648:41:
+2026-10-30T00:03:13.6465385Z called `Result::unwrap()` on an `Err` value: "could not locate the repository root (a directory holding both capture-rig/ and runs/); set D1_REPO"
+2026-10-30T00:03:13.6466186Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-30T00:03:13.6466495Z 
+2026-10-30T00:03:13.6466499Z 
+2026-10-30T00:03:13.6466589Z failures:
+2026-10-30T00:03:13.6466803Z     crash::tests::c_crash_pinned_real
+2026-10-30T00:03:13.6466998Z 
+2026-10-30T00:03:13.6467261Z test result: FAILED. 9 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+2026-10-30T00:03:13.6467624Z 
+2026-10-30T00:03:13.6470374Z error: test failed, to rerun pass `-p d1 --bin d1`
+2026-10-30T00:03:13.6470956Z      Running unittests src/lib.rs (target/debug/deps/d1_bap-59d0c8c08eb49833)
+2026-10-30T00:03:13.6520462Z 
+2026-10-30T00:03:13.6521069Z running 169 tests
+2026-10-30T00:03:13.6525224Z test account_id_translation_tests::answers_the_captured_request_with_our_account_soid ... ok
+2026-10-30T00:03:13.6526324Z test account_id_translation_tests::parses_the_real_captured_request ... ok
+2026-10-30T00:03:13.6527391Z test account_id_translation_tests::rejects_discriminators_the_client_would_reject ... ok
+2026-10-30T00:03:13.6528723Z test account_id_translation_tests::reply_carries_both_lists_not_a_bare_soid_array ... ok
+2026-10-30T00:03:13.6529977Z test activity_host::proxy_order_tests::client_order_is_little_endian_for_ip_and_port ... ok
+2026-10-30T00:03:13.6531243Z test activity_host::tests::activity_host_id_zero_is_legal ... ok
+2026-10-30T00:03:13.6532074Z test activity_host::tests::log_notification_is_a_fixed_256_byte_pascal_string ... ok
+2026-10-30T00:03:13.6533058Z test account_id_translation_tests::reply_echoes_the_requests_sequence ... ok
+2026-10-30T00:03:13.6534014Z test activity_host::tests::activity_host_to_client_notification_round_trips ... ok
+2026-10-30T00:03:13.6535234Z test activity_host::tests::client_to_activity_host_notification_round_trips_both_inner_types ... ok
+2026-10-30T00:03:13.6535982Z test activity_host::tests::manager_request_rejects_unhandled_inner_types_and_wrong_sizes ... ok
+2026-10-30T00:03:13.6537030Z test activity_host::tests::manager_request_type1_round_trips ... ok
+2026-10-30T00:03:13.6538024Z test activity_host::tests::manager_request_type3_shifts_every_field_back_by_0x202 ... ok
+2026-10-30T00:03:13.6538746Z test activity_host::tests::manager_response_is_137_bytes_with_inner_type_2 ... ok
+2026-10-30T00:03:13.6539851Z test activity_host::tests::manager_request_type1_length_fields_sit_where_the_decoder_byteswaps ... ok
+2026-10-30T00:03:13.6541289Z test activity_host::tests::message_100_is_class_6_and_message_102_is_not_pushable ... ok
+2026-10-30T00:03:13.6542268Z test activity_host::tests::proxy_request_round_trips_and_rejects_every_other_length ... ok
+2026-10-30T00:03:13.6543237Z test activity_host::tests::manager_response_rejects_any_inner_type_but_2 ... ok
+2026-10-30T00:03:13.6544189Z test activity_host::tests::notification_payload_ceiling_is_enforced ... ok
+2026-10-30T00:03:13.6545102Z test activity_host::tests::proxy_response_rejects_every_other_length ... ok
+2026-10-30T00:03:13.6545987Z test activity_host::tests::proxy_response_echoes_the_requested_id_and_lays_out_the_address ... ok
+2026-10-30T00:03:13.6546966Z test channel_tests::direction_counters_are_independent ... ok
+2026-10-30T00:03:13.6547850Z test activity_host::tests::the_captured_message_9_frame_decodes_at_offset_six_as_a_message_100_body ... ok
+2026-10-30T00:03:13.6548928Z test channel_tests::captured_mode1_packet_authenticates_and_decodes ... ok
+2026-10-30T00:03:13.6549903Z test channel_tests::client_to_bap_subscription_response_is_header_only_and_echoes_the_sequence ... ok
+2026-10-30T00:03:13.6551077Z test channel_tests::investment_504_response_body_matches_the_native_encoder ... ok
+2026-10-30T00:03:13.6551744Z test channel_tests::investment_and_echo_replies_have_the_right_shape ... ok
+2026-10-30T00:03:13.6552542Z test channel_tests::relay_client_response_is_header_only ... ok
+2026-10-30T00:03:13.6553267Z test channel_tests::register_subscriber_response_round_trips ... ok
+2026-10-30T00:03:13.6553831Z test channel_tests::nonce_derivation_and_increment_match_the_client ... ok
+2026-10-30T00:03:13.6554437Z test channel_tests::wrong_nonce_or_key_fails_authentication ... ok
+2026-10-30T00:03:13.6555168Z test character_lifecycle::tests::a_short_request_is_refused ... ok
+2026-10-30T00:03:13.6555995Z test character_lifecycle::tests::an_empty_character_list_encodes_count_zero ... ok
+2026-10-30T00:03:13.6556819Z test channel_tests::the_in_flight_queue_replies_are_pinned ... ok
+2026-10-30T00:03:13.6557563Z test character_lifecycle::tests::decoder_rejects_a_wrong_bias ... ok
+2026-10-30T00:03:13.6558384Z test character_lifecycle::tests::create_response_matches_the_native_encoder ... ok
+2026-10-30T00:03:13.6559356Z test character_lifecycle::tests::the_four_ids_come_from_fnv1_name_hashes ... ok
+2026-10-30T00:03:13.6561260Z test character_lifecycle::tests::decoder_reproduces_every_codec_vector ... ok
+2026-10-30T00:03:13.6562247Z test character_lifecycle::tests::the_result_only_responses_match_the_native_encoder ... ok
+2026-10-30T00:03:13.6562997Z test character_lifecycle::tests::the_soid_argument_is_raw_big_endian ... ok
+2026-10-30T00:03:13.6563944Z test client_config_tests::body_carries_both_required_fields ... ok
+2026-10-30T00:03:13.6564837Z test character_lifecycle::tests::the_transcript_contains_the_raw_bytes ... ok
+2026-10-30T00:03:13.6565660Z test client_config_tests::body_omits_the_callback_field ... ok
+2026-10-30T00:03:13.6566465Z test client_config_tests::cookie_is_leb128_not_fixed_width ... ok
+2026-10-30T00:03:13.6567383Z test client_config_tests::reply_has_a_class_2_header_echoing_the_sequence ... ok
+2026-10-30T00:03:13.6568347Z test conversation::tests::a_fire_and_forget_message_yields_no_ticket ... ok
+2026-10-30T00:03:13.6569204Z test conversation::tests::a_prompt_reply_keeps_status_200 ... ok
+2026-10-30T00:03:13.6570543Z test conversation::tests::a_repeated_sequence_is_reported_not_queued_twice ... ok
+2026-10-30T00:03:13.6571605Z test conversation::tests::a_response_for_an_unknown_sequence_is_refused ... ok
+2026-10-30T00:03:13.6572472Z test conversation::tests::a_ticket_cannot_be_forged_or_reused ... ok
+2026-10-30T00:03:13.6573319Z test conversation::tests::a_ticket_from_another_conversation_is_refused ... ok
+2026-10-30T00:03:13.6574253Z test conversation::tests::a_wrong_response_type_is_caught_before_the_socket ... ok
+2026-10-30T00:03:13.6575226Z test conversation::tests::an_aged_head_is_answered_rather_than_left_to_rot ... ok
+2026-10-30T00:03:13.6576106Z test conversation::tests::an_unknown_message_id_is_not_guessed ... ok
+2026-10-30T00:03:13.6577032Z test conversation::tests::header_class_3_reproduces_the_live_message_8_header ... ok
+2026-10-30T00:03:13.6577978Z test conversation::tests::an_unknown_message_id_is_refused_not_guessed ... ok
+2026-10-30T00:03:13.6579081Z test conversation::tests::header_class_5_is_24_bytes_and_swaps_the_field_that_class_6_does_not ... ok
+2026-10-30T00:03:13.6581096Z test conversation::tests::header_class_6_is_32_bytes_and_round_trips_through_the_clients_offsets ... ok
+2026-10-30T00:03:13.6582306Z test conversation::tests::header_shapes_match_the_two_live_controls ... ok
+2026-10-30T00:03:13.6583239Z test conversation::tests::message_100_goes_out_with_a_32_byte_class_6_header ... ok
+2026-10-30T00:03:13.6584299Z test conversation::tests::outstanding_names_the_head_the_client_is_blocked_on ... ok
+2026-10-30T00:03:13.6585574Z test conversation::tests::message_100_carries_the_activity_host_id_at_offset_0x18 ... ok
+2026-10-30T00:03:13.6586555Z test conversation::tests::only_classes_2_and_7_carry_a_status ... ok
+2026-10-30T00:03:13.6587376Z test conversation::tests::only_whitelisted_ids_may_be_pushed ... ok
+2026-10-30T00:03:13.6588408Z test conversation::tests::replies_leave_in_arrival_order_even_when_handlers_finish_out_of_order ... ok
+2026-10-30T00:03:13.6589513Z test conversation::tests::the_queuez_push_reproduces_the_shape_that_reached_orbit ... ok
+2026-10-30T00:03:13.6590735Z test derive::tests::all_controls_pass_against_the_pinned_artifacts ... ok
+2026-10-30T00:03:13.6591622Z test derive::tests::definition_rows_read_the_documented_columns ... ok
+2026-10-30T00:03:13.6592302Z test conversation::tests::the_reply_echoes_the_clients_sequence_verbatim ... ok
+2026-10-30T00:03:13.6592965Z test derive::tests::count_u32_finds_planted_and_overlapping_patterns ... ok
+2026-10-30T00:03:13.6593772Z test derive::tests::definition_parse_refuses_a_bad_stride ... ok
+2026-10-30T00:03:13.6594655Z test derive::tests::defs_absent_is_a_failing_control_and_the_eboot_set_is_the_rest ... ok
+2026-10-30T00:03:13.6595670Z test derive::tests::derived_policies_match_policy_consts ... ok
+2026-10-30T00:03:13.6596456Z test derive::tests::derived_push_set_matches_push_accept_consts ... ok
+2026-10-30T00:03:13.6597210Z test derive::tests::derived_registry_matches_message_class_consts ... ok
+2026-10-30T00:03:13.6598205Z test derive::tests::message_table_tsv_matches_the_python_artifact_byte_for_byte ... ok
+2026-10-30T00:03:13.6599143Z test derive::tests::derived_header_lengths_match_header_len_consts ... ok
+2026-10-30T00:03:13.6599935Z test derive::tests::perturbed_image_fails_the_drift_check ... ok
+2026-10-30T00:03:13.6600994Z test derive::tests::perturbed_definitions_fail_the_row_control ... ok
+2026-10-30T00:03:13.6601819Z test derive::tests::the_three_blank_category_rows_are_xor_zero_thunks ... ok
+2026-10-30T00:03:13.6602574Z test investment_104_tests::body_is_never_empty ... ok
+2026-10-30T00:03:13.6603347Z test investment_104_tests::body_matches_the_oracle_and_the_shared_composite ... ok
+2026-10-30T00:03:13.6604335Z test investment_205_tests::family5_root_tail_matches_503 ... ok
+2026-10-30T00:03:13.6605266Z test investment_205_tests::rejects_the_zero_rooted_body_that_caused_family_record_not_found ... ok
+2026-10-30T00:03:13.6606331Z test investment_205_tests::account_soid_splices_into_the_ten_flag_503_body ... ok
+2026-10-30T00:03:13.6607502Z test investment_205_tests::served_bodies_decode_to_the_ten_flags_at_value_two ... ok
+2026-10-30T00:03:13.6608593Z test investment_205_tests::the_56578_bodies_carry_the_56578_ordinals_and_agree ... ok
+2026-10-30T00:03:13.6609557Z test investment_205_tests::unlock_bodies_match_the_pinned_oracle_output ... ok
+2026-10-30T00:03:13.6610711Z test investment_205_tests::unlock_pair_shares_the_same_0x80801941_tail ... ok
+2026-10-30T00:03:13.6611660Z test investment_205_tests::unlock_control_goes_red_when_an_index_is_dropped ... ok
+2026-10-30T00:03:13.6612784Z test investment_205_tests::unlock_pair_actually_carries_flags_and_keeps_the_family5_root ... ok
+2026-10-30T00:03:13.6613681Z test loot::tests::a_short_body_is_refused ... ok
+2026-10-30T00:03:13.6614332Z test loot::tests::the_grant_delta_is_one_inventory_object ... ok
+2026-10-30T00:03:13.6615055Z test loot::tests::the_grant_delta_can_carry_the_profile ... ok
+2026-10-30T00:03:13.6615790Z test loot::tests::the_join223_claim_decodes ... ok
+2026-10-30T00:03:13.6616465Z test loot::tests::the_profile_delta_is_one_profile_object ... ok
+2026-10-30T00:03:13.6617181Z test loot::tests::the_response_matches_the_client_encoder ... ok
+2026-10-30T00:03:13.6617939Z test matchmaking::tests::an_absent_skill_bucket_stays_absent ... ok
+2026-10-30T00:03:13.6618937Z test matchmaking::tests::forty_two_pairs_with_forty_three_not_thirty_four_with_thirty_five ... ok
+2026-10-30T00:03:13.6619693Z test loot::tests::the_starter_rifle_nonce_round_trips ... ok
+2026-10-30T00:03:13.6620920Z test matchmaking::tests::the_minimal_response_carries_the_four_load_bearing_bytes ... ok
+2026-10-30T00:03:13.6621543Z test matchmaking::tests::the_response_echoes_the_requests_kind_and_nonce ... ok
+2026-10-30T00:03:13.6622140Z test matchmaking::tests::request_round_trips ... ok
+2026-10-30T00:03:13.6622874Z test orbit_destination_tests::destination_profile_has_the_predicted_bit_budget ... ok
+2026-10-30T00:03:13.6623802Z test orbit_destination_tests::destination_lands_at_the_predicted_bit_offset ... ok
+2026-10-30T00:03:13.6624549Z test orbit_destination_tests::plain_profile_is_unchanged ... ok
+2026-10-30T00:03:13.6624996Z test orbit_destination_tests::we_never_send_the_unset_sentinel ... ok
+2026-10-30T00:03:13.6625628Z test queuez_tests::a_push_is_not_a_reply_and_carries_no_status ... ok
+2026-10-30T00:03:13.6626231Z test queuez_tests::account_field_3_carries_the_profile_soid_that_the_baseline_also_sends ... ok
+2026-10-30T00:03:13.6626835Z test queuez_tests::account_payload_is_long_enough_for_every_field_the_client_reads ... ok
+2026-10-30T00:03:13.6627882Z test queuez_tests::character_rsat_reproduces_the_serializer_oracle_vector ... ok
+2026-10-30T00:03:13.6628479Z test queuez_tests::family3_baseline_carries_two_objects_and_parses_by_its_own_length_fields ... ok
+2026-10-30T00:03:13.6629048Z test queuez_tests::family4_account_only_body_emits_no_profile_object ... ok
+2026-10-30T00:03:13.6629533Z test queuez_tests::character_list_rsat_matches_both_oracle_vectors ... ok
+2026-10-30T00:03:13.6630315Z test queuez_tests::account_rsat_no_profile_omits_field_three_rather_than_zeroing_it ... ok
+2026-10-30T00:03:13.6630909Z test queuez_tests::family4_baseline_carries_account_then_profile ... ok
+2026-10-30T00:03:13.6631377Z test queuez_tests::platform_identifier_is_36_bytes_nul_padded ... ok
+2026-10-30T00:03:13.6631896Z      Running unittests src/main.rs (target/debug/deps/d1_bap-047eaeaf55cb1c26)
+2026-10-30T00:03:13.6632391Z test queuez_tests::fetch_family_request_unbiases_the_four_bit_leaf ... ok
+2026-10-30T00:03:13.6632871Z test queuez_tests::investment_503_body_is_a_presence_bit_plus_u64 ... ok
+2026-10-30T00:03:13.6633417Z test queuez_tests::platform_to_investment_response_keeps_lists_parallel_not_interleaved ... ok
+2026-10-30T00:03:13.6634407Z test queuez_tests::platform_to_investment_response_matches_the_decoder_grammar ... ok
+2026-10-30T00:03:13.6635157Z test queuez_tests::profile_rsat_matches_the_oracle_vector ... ok
+2026-10-30T00:03:13.6635996Z test queuez_tests::fetch_family_response_envelope_matches_the_native_encoder ... ok
+2026-10-30T00:03:13.6637096Z test queuez_tests::substituting_a_soid_changes_only_the_soid_fields ... ok
+2026-10-30T00:03:13.6637697Z test queuez_tests::queuez_body_matches_the_reference_54_byte_frame ... ok
+2026-10-30T00:03:13.6638266Z test session_params::tests::a_zero_activity_host_id_means_no_activity_host ... ok
+2026-10-30T00:03:13.6639014Z test session_params::tests::the_activity_host_parameter_round_trips_its_memory_form ... ok
+2026-10-30T00:03:13.6639596Z test session_params::tests::the_peer_mask_gate_reads_the_low_five_bits_of_the_slot ... ok
+2026-10-30T00:03:13.6640393Z test session_params::tests::the_two_unknown_fields_default_to_zero ... ok
+2026-10-30T00:03:13.6640902Z test tables::tests::everything_ours_to_push_is_on_the_clients_whitelist ... ok
+2026-10-30T00:03:13.6641403Z test tables::tests::every_message_class_row_indexes_a_real_header_class ... ok
+2026-10-30T00:03:13.6641936Z test tables::tests::every_paired_response_has_a_header_class_except_the_known_gap ... ok
+2026-10-30T00:03:13.6642480Z test tables::tests::header_class_controls_from_runs_that_already_work ... ok
+2026-10-30T00:03:13.6642909Z test tables::tests::message_102_is_not_pushable ... ok
+2026-10-30T00:03:13.6643368Z test tables::tests::policy_table_contradicts_the_plans_asserted_control_for_0x0020 ... ok
+2026-10-30T00:03:13.6643893Z test tables::tests::policy_table_reproduces_the_six_named_controls ... ok
+2026-10-30T00:03:13.6644382Z test tables::tests::push_accept_set_is_the_thirteen_entries_at_0x1925a90 ... ok
+2026-10-30T00:03:13.6645072Z test tables::tests::status_bearing_classes_are_exactly_the_eight_byte_classes ... ok
+2026-10-30T00:03:13.6645531Z test tables::tests::responses_are_never_pushable ... ok
+2026-10-30T00:03:13.6645954Z test tables::tests::the_two_world_server_policies_agree_on_the_wire_pair ... ok
+2026-10-30T00:03:13.6646594Z test tables::tests::the_five_ids_outside_the_registry_return_none_not_zero ... ok
+2026-10-30T00:03:13.6647321Z test tables::tests::xetrov_is_fire_and_forget ... ok
+2026-10-30T00:03:13.6647858Z test tests::channel_startup_response_echoes_the_sequence ... ok
+2026-10-30T00:03:13.6648581Z test tables::tests::unknown_ids_are_unknown_not_guessed ... ok
+2026-10-30T00:03:13.6649325Z test tests::channel_startup_response_has_an_eight_byte_header_and_128_byte_payload ... ok
+2026-10-30T00:03:13.6650494Z test tests::parses_the_real_captured_channel_startup_request ... ok
+2026-10-30T00:03:13.6651204Z test tests::rejects_wrong_version_and_mode ... ok
+2026-10-30T00:03:13.6651786Z test tests::output_is_deterministic ... ok
+2026-10-30T00:03:13.6652342Z test tests::mac_depends_on_the_signon_blob ... ok
+2026-10-30T00:03:13.6653073Z test tests::sealed_body_round_trips_and_carries_the_session_material ... ok
+2026-10-30T00:03:13.6653993Z test tests::secure_hello_response_satisfies_the_decoder_size_constraints ... ok
+2026-10-30T00:03:13.6654673Z test unlocks_object_tests::account_serial_is_what_routes_the_second_delivery_to_the_update_announcer ... ok
+2026-10-30T00:03:13.6655526Z test tests::tampering_is_detected ... ok
+2026-10-30T00:03:13.6656143Z test unlocks_object_tests::family42_and_inventory_checksums_are_distinct ... ok
+2026-10-30T00:03:13.6656649Z test unlocks_object_tests::family42_payload_is_the_oracle_vector ... ok
+2026-10-30T00:03:13.6657318Z test unlocks_object_tests::family42_appends_as_a_fourth_object ... ok
+2026-10-30T00:03:13.6658091Z test unlocks_object_tests::family4_delta_is_a_verbatim_restamp_of_the_baseline ... ok
+2026-10-30T00:03:13.6658642Z test unlocks_object_tests::family4_delta_ping_is_a_zero_object_delta ... ok
+2026-10-30T00:03:13.6659179Z test unlocks_object_tests::header_offsets_are_what_the_other_tests_assume ... ok
+2026-10-30T00:03:13.6659663Z test unlocks_object_tests::family_root_stays_the_account_soid ... ok
+2026-10-30T00:03:13.6660413Z test unlocks_object_tests::key_is_not_the_account_soid_nor_the_family5_root ... ok
+2026-10-30T00:03:13.6660998Z test unlocks_object_tests::instance_checksum_sits_alongside_the_four_known_good_ones ... ok
+2026-10-30T00:03:13.6661792Z test unlocks_object_tests::third_object_is_appended_not_substituted ... ok
+2026-10-30T00:03:13.6662321Z test unlocks_object_tests::none_is_byte_identical_to_the_two_object_baseline ... ok
+2026-10-30T00:03:13.6662820Z test unlocks_object_tests::key_only_payload_is_the_pinned_vector ... ok
+2026-10-30T00:03:13.6663347Z test unlocks_object_tests::versioned_header_at_version_0_baseline_is_the_old_header ... ok
+2026-10-30T00:03:13.6663884Z test xetrov_tests::investment_206_response_matches_the_native_oracle ... ok
+2026-10-30T00:03:13.6664325Z test xetrov_tests::parses_the_real_xetrov_request ... ok
+2026-10-30T00:03:13.6664739Z test xetrov_tests::xetrov_parser_rejects_missing_required_layers ... ok
+2026-10-30T00:03:13.6665026Z 
+2026-10-30T00:03:13.6665269Z test result: ok. 169 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+2026-10-30T00:03:13.6665620Z 
+2026-10-30T00:03:13.6665854Z      Running unittests src/lib.rs (target/debug/deps/d1_build-ee19c41b9cffab30)
+2026-10-30T00:03:13.6666371Z      Running unittests src/lib.rs (target/debug/deps/d1_eboot-b4b6ae5cc26d2994)
+2026-10-30T00:03:13.6666673Z 
+2026-10-30T00:03:13.6666762Z running 0 tests
+2026-10-30T00:03:13.6666879Z 
+2026-10-30T00:03:13.6667121Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.6667456Z 
+2026-10-30T00:03:13.6667459Z 
+2026-10-30T00:03:13.6667543Z running 3 tests
+2026-10-30T00:03:13.6667862Z test tests::the_checked_in_registry_parses_and_keeps_the_reference_pin ... ok
+2026-10-30T00:03:13.6668631Z test tests::default_selection_reference_and_root_relative_paths ... ok
+2026-10-30T00:03:13.6669375Z test tests::explicit_selection_and_unknown_build_is_refused ... ok
+2026-10-30T00:03:13.6669694Z 
+2026-10-30T00:03:13.6670564Z test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.6671198Z 
+2026-10-30T00:03:13.6671216Z 
+2026-10-30T00:03:13.6671408Z running 8 tests
+2026-10-30T00:03:13.6673731Z test ladder::tests::edi_imm_matches_the_prototype_regex ... ok
+2026-10-30T00:03:13.6674557Z test ladder::tests::rax_disp_matches_the_prototype_regex ... ok
+2026-10-30T00:03:13.6675240Z test ladder::tests::unquote_matches_csv_dictreader ... ok
+2026-10-30T00:03:13.6675897Z test ladder::tests::states_and_class_map_are_the_prototype_tables ... ok
+2026-10-30T00:03:13.6676744Z test nametab::tests::reproduces_the_hand_decoded_bootflow_table ... ok
+2026-10-30T00:03:13.6677567Z test strings::tests::fnv1_reproduces_the_compiled_bootflow_table ... ok
+2026-10-30T00:03:13.6678362Z test rtti::tests::demangles_the_forms_this_image_actually_uses ... ok
+2026-10-30T00:03:13.6679254Z test strings::tests::fnv1a_is_a_different_function ... ok
+2026-10-30T00:03:13.6679685Z 
+2026-10-30T00:03:13.6680313Z test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.6680916Z 
+2026-10-30T00:03:13.6681261Z      Running unittests src/main.rs (target/debug/deps/d1_eboot-0fefba2a55f56449)
+2026-10-30T00:03:13.6691194Z 
+2026-10-30T00:03:13.6691631Z running 0 tests
+2026-10-30T00:03:13.6691818Z 
+2026-10-30T00:03:13.6692085Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.6692592Z 
+2026-10-30T00:03:13.6693470Z      Running tests/catalogue.rs (target/debug/deps/catalogue-c58267bb71f46c5e)
+2026-10-30T00:03:13.6703515Z 
+2026-10-30T00:03:13.6703695Z running 0 tests
+2026-10-30T00:03:13.6703911Z 
+2026-10-30T00:03:13.6704334Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.6704878Z 
+2026-10-30T00:03:13.6706347Z      Running tests/controls.rs (target/debug/deps/controls-9a85eb0dd810ad03)
+2026-10-30T00:03:13.6718227Z 
+2026-10-30T00:03:13.6718402Z running 33 tests
+2026-10-30T00:03:13.6722587Z test a_scan_without_a_control_is_not_evidence ... ok
+2026-10-30T00:03:13.6723377Z test absolute_xref_is_blind_to_the_access_field_xref_finds ... ok
+2026-10-30T00:03:13.6724509Z test accessor_attribution_survives_a_function_with_no_prologue ... ok
+2026-10-30T00:03:13.6725585Z test account_schema_field_3_is_the_profile_soid_at_0x68 ... ok
+2026-10-30T00:03:13.6726188Z test address_bias_is_per_segment ... ok
+2026-10-30T00:03:13.6726721Z test aim_check_catches_a_string_interior_target ... ok
+2026-10-30T00:03:13.6727300Z test atlas_and_xref_agree_on_the_containing_function ... ok
+2026-10-30T00:03:13.6727886Z test bits_column_is_leaf_only ... ok
+2026-10-30T00:03:13.6728347Z test bss_is_refused_not_guessed ... ok
+2026-10-30T00:03:13.6728867Z test build_identity_is_the_pinned_0129_eboot ... ok
+2026-10-30T00:03:13.6729523Z test defect_1_c_object_offset_is_at_marker_minus_8 ... ok
+2026-10-30T00:03:13.6730515Z test call_control_the_python_docstring_advertised_is_wrong ... ok
+2026-10-30T00:03:13.6731190Z test character_schema_reference_vector ... ok
+2026-10-30T00:03:13.6731810Z test defect_2_header_is_anchor_relative_not_fixed_offset ... ok
+2026-10-30T00:03:13.6732514Z test descriptor_index_count_and_presence_absence_controls ... ok
+2026-10-30T00:03:13.6733215Z test defect_3_sentinel_is_the_high_word_only ... ok
+2026-10-30T00:03:13.6733887Z test field_xref_discriminates_a_field_the_object_does_not_have ... ok
+2026-10-30T00:03:13.6734548Z test disassembly_refuses_a_guessed_start ... ok
+2026-10-30T00:03:13.6735153Z test every_anchor_hit_is_in_the_text_load_segment ... ok
+2026-10-30T00:03:13.6735763Z test field_xref_pinned_controls_pass ... ok
+2026-10-30T00:03:13.6736506Z test field_xref_reports_the_address_escaping_into_the_initialiser ... ok
+2026-10-30T00:03:13.6737523Z test field_xref_sees_an_offset_folded_into_the_base_register ... ok
+2026-10-30T00:03:13.6738021Z test function_attribution_says_nothing_rather_than_name_a_neighbour ... ok
+2026-10-30T00:03:13.6738481Z test msg_0x8080194d_is_the_same_shape_as_0x80801845 ... ok
+2026-10-30T00:03:13.6738915Z test function_attribution_still_names_a_prologue_anchored_function ... ok
+2026-10-30T00:03:13.6739419Z test prologue_anchored_confirmation_resolves_the_call_and_its_target ... ok
+2026-10-30T00:03:13.6739949Z test rela_tables_are_derived_and_match_the_historical_constants ... ok
+2026-10-30T00:03:13.6741354Z test reloc_addend_lookup_reproduces_python ... ok
+2026-10-30T00:03:13.6741935Z test riprel_scan_reproduces_global_xref_py ... ok
+2026-10-30T00:03:13.6742579Z test xref_fn_column_attributes_an_fpo_body_to_its_own_function ... ok
+2026-10-30T00:03:13.6743049Z test tail_call_control_0x560d27_to_0x56ffb0 ... ok
+2026-10-30T00:03:13.6743442Z test truncation_is_reported_only_when_it_really_happened ... ok
+2026-10-30T00:03:13.6743885Z test walk_render_matches_the_python_golden_output ... ok
+2026-10-30T00:03:13.6744115Z 
+2026-10-30T00:03:13.6744367Z test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.6744710Z 
+2026-10-30T00:03:13.6744918Z      Running tests/ladder.rs (target/debug/deps/ladder-dcedfb5279dc6398)
+2026-10-30T00:03:13.6751948Z 
+2026-10-30T00:03:13.6752112Z running 0 tests
+2026-10-30T00:03:13.6752327Z 
+2026-10-30T00:03:13.6752738Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.6753296Z 
+2026-10-30T00:03:13.6754858Z      Running unittests src/main.rs (target/debug/deps/d1_forge-7d34b8bdd278810f)
+2026-10-30T00:03:13.6772646Z 
+2026-10-30T00:03:13.6772814Z running 9 tests
+2026-10-30T00:03:13.6777244Z test app::tests::equipping_from_the_catalogue_produces_a_valid_loadout ... ok
+2026-10-30T00:03:13.6778001Z test app::tests::filters_narrow_the_result_set ... ok
+2026-10-30T00:03:13.6779198Z test app::tests::renders_and_shows_the_era_mismatch ... ok
+2026-10-30T00:03:13.6779878Z test app::tests::the_shipped_loadouts_load_and_validate ... ok
+2026-10-30T00:03:13.6780890Z test control::tests::an_accepted_response_is_the_only_success ... ok
+2026-10-30T00:03:13.6784545Z test control::tests::headlines_distinguish_the_four_failure_modes ... ok
+2026-10-30T00:03:13.6786728Z test control::tests::request_ids_are_distinct ... ok
+2026-10-30T00:03:13.6787404Z test control::tests::unreachable_when_nothing_is_listening ... ok
+2026-10-30T00:03:13.8438237Z test app::tests::a_missing_catalogue_says_so_instead_of_rendering_an_empty_table ... ok
+2026-10-30T00:03:13.8439340Z 
+2026-10-30T00:03:13.8440309Z test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+2026-10-30T00:03:13.8441288Z 
+2026-10-30T00:03:13.8447167Z      Running unittests src/lib.rs (target/debug/deps/d1_harness-685bd53fd63568af)
+2026-10-30T00:03:13.8459579Z 
+2026-10-30T00:03:13.8459730Z running 13 tests
+2026-10-30T00:03:13.8463710Z test controls::tests::the_shell_parser_reads_a_default_and_ignores_a_plain_assignment ... ok
+2026-10-30T00:03:13.8470657Z test layout::ten_flag_template_tests::template_is_the_body_the_responder_actually_serves ... ok
+2026-10-30T00:03:13.8476747Z test pad::tests::a_name_longer_than_79_bytes_truncates_like_the_python ... ok
+2026-10-30T00:03:13.8477744Z test pad::tests::alias_resolution_reaches_the_same_keycodes ... ok
+2026-10-30T00:03:13.8478674Z test pad::tests::device_controls_pass_where_uinput_is_available ... ok
+2026-10-30T00:03:13.8479602Z test pad::tests::payload_matches_the_python_struct_pack ... ok
+2026-10-30T00:03:13.8480979Z test pad::tests::kernel_bitmap_format_matches_the_probe ... ok
+2026-10-30T00:03:13.8493800Z test pad::tests::pure_pad_controls_pass ... ok
+2026-10-30T00:03:13.8495162Z test procs::tests::our_own_starttime_reads_and_is_stable ... ok
+2026-10-30T00:03:13.8496193Z test procs::tests::starttime_survives_a_comm_containing_spaces_and_parens ... ok
+2026-10-30T00:03:13.8498483Z test pad::tests::the_python_table_parser_reads_the_real_source_or_is_absent ... ok
+2026-10-30T00:03:13.8614103Z test controls::tests::every_control_passes ... ok
+2026-10-30T00:03:13.8614950Z test controls::tests::there_are_enough_controls_to_be_worth_running ... ok
+2026-10-30T00:03:13.8615476Z 
+2026-10-30T00:03:13.8615900Z test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+2026-10-30T00:03:13.8616555Z 
+2026-10-30T00:03:13.8618883Z      Running unittests src/main.rs (target/debug/deps/d1_harness-ec3d7397d4eab319)
+2026-10-30T00:03:13.8629221Z 
+2026-10-30T00:03:13.8629555Z running 0 tests
+2026-10-30T00:03:13.8629841Z 
+2026-10-30T00:03:13.8630563Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.8631219Z 
+2026-10-30T00:03:13.8632212Z      Running tests/cli.rs (target/debug/deps/cli-1e5875dbba617dd2)
+2026-10-30T00:03:13.8642735Z 
+2026-10-30T00:03:13.8643049Z running 13 tests
+2026-10-30T00:03:13.8681361Z test env_refuses_a_slot_that_does_not_exist ... ok
+2026-10-30T00:03:13.8721221Z test env_emits_quoted_exports_for_one_participant_only ... ok
+2026-10-30T00:03:13.8731288Z test layout_creates_nothing ... ok
+2026-10-30T00:03:13.8768178Z test a_second_seed_moves_the_run_id_and_participant_b ... ok
+2026-10-30T00:03:13.8791321Z test pad_print_ignore_exits_zero_and_emits_only_vid_pid_pairs ... ok
+2026-10-30T00:03:13.8814116Z test layout_is_valid_json_and_byte_identical_across_invocations ... ok
+2026-10-30T00:03:13.8817702Z test controls_exit_zero ... ok
+2026-10-30T00:03:13.8838209Z test pad_run_refuses_a_malformed_usb_id_before_touching_anything ... ok
+2026-10-30T00:03:13.8859030Z test preflight_at_arm_stage_still_refuses_on_this_machine ... ok
+2026-10-30T00:03:13.8861060Z test preflight_refuses_by_default_and_exits_3 ... ok
+2026-10-30T00:03:13.8878955Z test the_pid_ledger_refuses_a_directory_it_would_have_to_create ... ok
+2026-10-30T00:03:13.8901708Z test shutdown_is_a_dry_run_by_default_and_refuses_an_arbitrary_signal ... ok
+2026-10-30T00:03:13.9110095Z test pad_controls_never_fail_here ... ok
+2026-10-30T00:03:13.9110862Z 
+2026-10-30T00:03:13.9111462Z test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+2026-10-30T00:03:13.9112422Z 
+2026-10-30T00:03:13.9114817Z      Running unittests src/lib.rs (target/debug/deps/d1_live-91cd151595d15e29)
+2026-10-30T00:03:13.9125992Z 
+2026-10-30T00:03:13.9126194Z running 19 tests
+2026-10-30T00:03:13.9130635Z test addr::tests::bare_number_in_a_VALUE_position_is_a_literal ... FAILED
+2026-10-30T00:03:13.9131740Z test addr::tests::abs_and_vaddr_are_not_interchangeable ... FAILED
+2026-10-30T00:03:13.9133345Z test addr::tests::bare_number_in_an_ADDRESS_position_is_an_eboot_vaddr ... FAILED
+2026-10-30T00:03:13.9134798Z test addr::tests::symbols_resolve_through_the_project_address_book ... FAILED
+2026-10-30T00:03:13.9136185Z test addr::tests::deref_then_offset_does_not_add_base_twice ... FAILED
+2026-10-30T00:03:13.9137280Z test format::tests::hexdump_is_byte_identical_to_the_python ... ok
+2026-10-30T00:03:13.9138299Z test format::tests::hexdump_changes_when_the_bytes_change ... ok
+2026-10-30T00:03:13.9139514Z test format::tests::ptr_view_annotates_only_inside_the_image_window ... ok
+2026-10-30T00:03:13.9140853Z test format::tests::signed_fields_print_the_way_python_prints_them ... ok
+2026-10-30T00:03:13.9141861Z test format::tests::hexdump_labelled_form_replaces_the_address_column ... ok
+2026-10-30T00:03:13.9142859Z test format::tests::struct_fields_render_like_the_python_including_the_overrun_note ... ok
+2026-10-30T00:03:13.9144033Z test registry::tests::region_of_separates_file_from_bss ... ok
+2026-10-30T00:03:13.9144900Z test registry::tests::tag_slot_discriminates ... ok
+2026-10-30T00:03:13.9145660Z test watch::tests::len_encoding_is_the_sdm_one_not_the_intuitive_one ... ok
+2026-10-30T00:03:13.9146378Z test watch::tests::dr7_encodes_slot_rw_and_len ... ok
+2026-10-30T00:03:13.9146990Z error: test failed, to rerun pass `-p d1-live --lib`
+2026-10-30T00:03:13.9147989Z      Running unittests src/main.rs (target/debug/deps/d1_live-3c407e4fe2d4f7a2)
+2026-10-30T00:03:13.9148790Z test registry::tests::tag_slot_matches_the_python_oracle ... ok
+2026-10-30T00:03:13.9149426Z test watch::tests::unaligned_data_watch_is_refused ... ok
+2026-10-30T00:03:13.9150364Z test watch::tests::regs_map_is_complete_and_correctly_keyed ... ok
+2026-10-30T00:03:13.9151302Z test watch::tests::only_exec_breakpoints_report_the_instruction_in_rip ... ok
+2026-10-30T00:03:13.9151839Z 
+2026-10-30T00:03:13.9151995Z failures:
+2026-10-30T00:03:13.9152176Z 
+2026-10-30T00:03:13.9152515Z ---- addr::tests::bare_number_in_a_VALUE_position_is_a_literal stdout ----
+2026-10-30T00:03:13.9153022Z 
+2026-10-30T00:03:13.9153625Z thread 'addr::tests::bare_number_in_a_VALUE_position_is_a_literal' (12022) panicked at crates/d1-live/src/addr.rs:324:41:
+2026-10-30T00:03:13.9155251Z called `Result::unwrap()` on an `Err` value: reading the guest symbol file /home/runner/work/d1reimagined-source/d1reimagined-source/ps4/capture-rig/guest-symbols.json
+2026-10-30T00:03:13.9156323Z 
+2026-10-30T00:03:13.9156472Z Caused by:
+2026-10-30T00:03:13.9156844Z     No such file or directory (os error 2)
+2026-10-30T00:03:13.9157193Z 
+2026-10-30T00:03:13.9157512Z ---- addr::tests::abs_and_vaddr_are_not_interchangeable stdout ----
+2026-10-30T00:03:13.9157982Z 
+2026-10-30T00:03:13.9158555Z thread 'addr::tests::abs_and_vaddr_are_not_interchangeable' (12021) panicked at crates/d1-live/src/addr.rs:354:41:
+2026-10-30T00:03:13.9160583Z called `Result::unwrap()` on an `Err` value: reading the guest symbol file /home/runner/work/d1reimagined-source/d1reimagined-source/ps4/capture-rig/guest-symbols.json
+2026-10-30T00:03:13.9161687Z 
+2026-10-30T00:03:13.9161826Z Caused by:
+2026-10-30T00:03:13.9162179Z     No such file or directory (os error 2)
+2026-10-30T00:03:13.9162858Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-30T00:03:13.9163387Z 
+2026-10-30T00:03:13.9163803Z ---- addr::tests::bare_number_in_an_ADDRESS_position_is_an_eboot_vaddr stdout ----
+2026-10-30T00:03:13.9164349Z 
+2026-10-30T00:03:13.9165000Z thread 'addr::tests::bare_number_in_an_ADDRESS_position_is_an_eboot_vaddr' (12023) panicked at crates/d1-live/src/addr.rs:314:41:
+2026-10-30T00:03:13.9166737Z called `Result::unwrap()` on an `Err` value: reading the guest symbol file /home/runner/work/d1reimagined-source/d1reimagined-source/ps4/capture-rig/guest-symbols.json
+2026-10-30T00:03:13.9167807Z 
+2026-10-30T00:03:13.9167943Z Caused by:
+2026-10-30T00:03:13.9168559Z     No such file or directory (os error 2)
+2026-10-30T00:03:13.9168909Z 
+2026-10-30T00:03:13.9169284Z ---- addr::tests::symbols_resolve_through_the_project_address_book stdout ----
+2026-10-30T00:03:13.9169830Z 
+2026-10-30T00:03:13.9170734Z thread 'addr::tests::symbols_resolve_through_the_project_address_book' (12025) panicked at crates/d1-live/src/addr.rs:343:41:
+2026-10-30T00:03:13.9172259Z called `Result::unwrap()` on an `Err` value: reading the guest symbol file /home/runner/work/d1reimagined-source/d1reimagined-source/ps4/capture-rig/guest-symbols.json
+2026-10-30T00:03:13.9173256Z 
+2026-10-30T00:03:13.9173388Z Caused by:
+2026-10-30T00:03:13.9173693Z     No such file or directory (os error 2)
+2026-10-30T00:03:13.9173890Z 
+2026-10-30T00:03:13.9174077Z ---- addr::tests::deref_then_offset_does_not_add_base_twice stdout ----
+2026-10-30T00:03:13.9174367Z 
+2026-10-30T00:03:13.9174715Z thread 'addr::tests::deref_then_offset_does_not_add_base_twice' (12024) panicked at crates/d1-live/src/addr.rs:335:41:
+2026-10-30T00:03:13.9175672Z called `Result::unwrap()` on an `Err` value: reading the guest symbol file /home/runner/work/d1reimagined-source/d1reimagined-source/ps4/capture-rig/guest-symbols.json
+2026-10-30T00:03:13.9176283Z 
+2026-10-30T00:03:13.9176370Z Caused by:
+2026-10-30T00:03:13.9176573Z     No such file or directory (os error 2)
+2026-10-30T00:03:13.9176757Z 
+2026-10-30T00:03:13.9176761Z 
+2026-10-30T00:03:13.9176842Z failures:
+2026-10-30T00:03:13.9177433Z     addr::tests::abs_and_vaddr_are_not_interchangeable
+2026-10-30T00:03:13.9178082Z     addr::tests::bare_number_in_a_VALUE_position_is_a_literal
+2026-10-30T00:03:13.9178709Z     addr::tests::bare_number_in_an_ADDRESS_position_is_an_eboot_vaddr
+2026-10-30T00:03:13.9179123Z     addr::tests::deref_then_offset_does_not_add_base_twice
+2026-10-30T00:03:13.9179514Z     addr::tests::symbols_resolve_through_the_project_address_book
+2026-10-30T00:03:13.9179766Z 
+2026-10-30T00:03:13.9180273Z test result: FAILED. 14 passed; 5 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.9180911Z 
+2026-10-30T00:03:13.9181288Z      Running tests/readside.rs (target/debug/deps/readside-14014b458497d1e9)
+2026-10-30T00:03:13.9181813Z 
+2026-10-30T00:03:13.9181930Z running 0 tests
+2026-10-30T00:03:13.9182059Z 
+2026-10-30T00:03:13.9182298Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:13.9182637Z 
+2026-10-30T00:03:13.9182652Z 
+2026-10-30T00:03:13.9182734Z running 9 tests
+2026-10-30T00:03:13.9461268Z test a_registry_that_disagrees_with_itself_yields_no_address ... FAILED
+2026-10-30T00:03:13.9650674Z test a_drifted_image_fails_base_control_two ... FAILED
+2026-10-30T00:03:13.9661317Z test a_tag_resolves_through_the_signed_back_offset ... FAILED
+2026-10-30T00:03:13.9663560Z test a_read_after_death_is_an_error_not_a_zero ... FAILED
+2026-10-30T00:03:13.9831944Z test base_is_recovered_and_reads_land_where_the_arithmetic_says ... FAILED
+2026-10-30T00:03:14.0010866Z test descriptors_decode_and_free_rows_are_filtered ... FAILED
+2026-10-30T00:03:14.0021424Z test garbage_input_is_refused_and_never_answered ... FAILED
+2026-10-30T00:03:14.0022176Z test the_fixture_publishes_the_addresses_its_controls_need ... FAILED
+2026-10-30T00:03:14.0115378Z test two_candidate_bases_are_refused ... FAILED
+2026-10-30T00:03:14.0115776Z 
+2026-10-30T00:03:14.0115910Z failures:
+2026-10-30T00:03:14.0116115Z 
+2026-10-30T00:03:14.0116450Z ---- a_registry_that_disagrees_with_itself_yields_no_address stdout ----
+2026-10-30T00:03:14.0116857Z 
+2026-10-30T00:03:14.0117260Z thread 'a_registry_that_disagrees_with_itself_yields_no_address' (12044) panicked at crates/d1-live/tests/readside.rs:65:56:
+2026-10-30T00:03:14.0118256Z family-stride inversion: No such file or directory (os error 2)
+2026-10-30T00:03:14.0118989Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-30T00:03:14.0119434Z 
+2026-10-30T00:03:14.0119637Z ---- a_drifted_image_fails_base_control_two stdout ----
+2026-10-30T00:03:14.0120245Z 
+2026-10-30T00:03:14.0121135Z thread 'a_drifted_image_fails_base_control_two' (12042) panicked at crates/d1-live/tests/readside.rs:47:56:
+2026-10-30T00:03:14.0122046Z verify-window inversion: the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:14.0122476Z 
+2026-10-30T00:03:14.0122755Z ---- a_tag_resolves_through_the_signed_back_offset stdout ----
+2026-10-30T00:03:14.0123204Z 
+2026-10-30T00:03:14.0123575Z thread 'a_tag_resolves_through_the_signed_back_offset' (12047) panicked at crates/d1-live/tests/readside.rs:73:43:
+2026-10-30T00:03:14.0124330Z package tag control: the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:14.0124720Z 
+2026-10-30T00:03:14.0124871Z ---- a_read_after_death_is_an_error_not_a_zero stdout ----
+2026-10-30T00:03:14.0125111Z 
+2026-10-30T00:03:14.0125427Z thread 'a_read_after_death_is_an_error_not_a_zero' (12043) panicked at crates/d1-live/tests/readside.rs:91:44:
+2026-10-30T00:03:14.0126133Z dead-client control: the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:14.0126528Z 
+2026-10-30T00:03:14.0126738Z ---- base_is_recovered_and_reads_land_where_the_arithmetic_says stdout ----
+2026-10-30T00:03:14.0127050Z 
+2026-10-30T00:03:14.0127430Z thread 'base_is_recovered_and_reads_land_where_the_arithmetic_says' (12053) panicked at crates/d1-live/tests/readside.rs:36:41:
+2026-10-30T00:03:14.0128176Z read-side base and read: the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:14.0128745Z 
+2026-10-30T00:03:14.0128916Z ---- descriptors_decode_and_free_rows_are_filtered stdout ----
+2026-10-30T00:03:14.0129167Z 
+2026-10-30T00:03:14.0129490Z thread 'descriptors_decode_and_free_rows_are_filtered' (12060) panicked at crates/d1-live/tests/readside.rs:81:46:
+2026-10-30T00:03:14.0130447Z descriptor control: the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:14.0130826Z 
+2026-10-30T00:03:14.0130984Z ---- garbage_input_is_refused_and_never_answered stdout ----
+2026-10-30T00:03:14.0131229Z 
+2026-10-30T00:03:14.0131544Z thread 'garbage_input_is_refused_and_never_answered' (12062) panicked at crates/d1-live/tests/readside.rs:107:46:
+2026-10-30T00:03:14.0132252Z garbage-in inversions: the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:14.0132625Z 
+2026-10-30T00:03:14.0132809Z ---- the_fixture_publishes_the_addresses_its_controls_need stdout ----
+2026-10-30T00:03:14.0133084Z 
+2026-10-30T00:03:14.0133440Z thread 'the_fixture_publishes_the_addresses_its_controls_need' (12064) panicked at crates/d1-live/tests/readside.rs:123:63:
+2026-10-30T00:03:14.0134198Z fixture: the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:14.0134759Z 
+2026-10-30T00:03:14.0134950Z ---- two_candidate_bases_are_refused stdout ----
+2026-10-30T00:03:14.0135316Z 
+2026-10-30T00:03:14.0135804Z thread 'two_candidate_bases_are_refused' (12067) panicked at crates/d1-live/tests/readside.rs:56:44:
+2026-10-30T00:03:14.0136973Z duplicate-anchor inversion: the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:14.0137589Z 
+2026-10-30T00:03:14.0137593Z 
+2026-10-30T00:03:14.0137681Z failures:
+2026-10-30T00:03:14.0137895Z     a_drifted_image_fails_base_control_two
+2026-10-30T00:03:14.0138191Z     a_read_after_death_is_an_error_not_a_zero
+2026-10-30T00:03:14.0138540Z     a_registry_that_disagrees_with_itself_yields_no_address
+2026-10-30T00:03:14.0138888Z     a_tag_resolves_through_the_signed_back_offset
+2026-10-30T00:03:14.0139246Z     base_is_recovered_and_reads_land_where_the_arithmetic_says
+2026-10-30T00:03:14.0139605Z     descriptors_decode_and_free_rows_are_filtered
+2026-10-30T00:03:14.0139927Z     garbage_input_is_refused_and_never_answered
+2026-10-30T00:03:14.0140531Z     the_fixture_publishes_the_addresses_its_controls_need
+2026-10-30T00:03:14.0140863Z     two_candidate_bases_are_refused
+2026-10-30T00:03:14.0141029Z 
+2026-10-30T00:03:14.0141460Z test result: FAILED. 0 passed; 9 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+2026-10-30T00:03:14.0141829Z 
+2026-10-30T00:03:14.0142013Z error: test failed, to rerun pass `-p d1-live --test readside`
+2026-10-30T00:03:14.0142487Z      Running tests/watchpoint.rs (target/debug/deps/watchpoint-08bbf2f244243dd4)
+2026-10-30T00:03:14.0142816Z 
+2026-10-30T00:03:14.0142897Z running 11 tests
+2026-10-30T00:03:14.0159976Z test a_missing_target_is_an_error_not_an_empty_result ... ok
+2026-10-30T00:03:14.0260060Z d1-live: ptrace(request 0x4206, pid 12084, addr 0x0) failed: Operation not permitted (os error 1)
+2026-10-30T00:03:14.0267375Z test a_panic_during_the_capture_leaves_the_child_alive_and_unarmed ... FAILED
+2026-10-30T00:03:14.0309137Z test an_unaligned_watch_is_refused_by_the_cli ... FAILED
+2026-10-30T00:03:14.0331720Z test snapshot_on_hit_is_refused_by_name_not_by_the_parser ... ok
+2026-10-30T00:03:17.0692156Z test controls_subcommand_exits_zero_when_it_passes ... FAILED
+2026-10-30T00:03:17.0723134Z test debugreg_offset_is_measured_and_bounded ... ok
+2026-10-30T00:03:17.0789426Z d1-live: ptrace(request 0x4206, pid 12134, addr 0x0) failed: Operation not permitted (os error 1)
+2026-10-30T00:03:17.0796762Z test dropping_the_watcher_disarms_and_the_target_survives ... FAILED
+2026-10-30T00:03:18.5997092Z test the_capture_window_runs_with_no_debug_register_set ... ok
+2026-10-30T00:03:19.1205247Z d1-live: ptrace(request 0x4206, pid 12144, addr 0x0) failed: Operation not permitted (os error 1)
+2026-10-30T00:03:20.6397256Z d1-live: ptrace(request 0x4206, pid 12148, addr 0x0) failed: Operation not permitted (os error 1)
+2026-10-30T00:03:20.6439485Z d1-live: opening /proc/12150/mem (need ptrace permission): Permission denied (os error 13)
+2026-10-30T00:03:20.6480812Z d1-live: ptrace(request 0x4206, pid 12152, addr 0x0) failed: Operation not permitted (os error 1)
+2026-10-30T00:03:21.6360591Z test the_controls_subcommand_passes_as_a_whole ... FAILED
+2026-10-30T00:03:21.6430634Z test watchpoint_catches_the_exact_writer_instruction ... ok
+2026-10-30T00:03:22.1523600Z test watchpoint_is_address_specific_and_the_silence_is_meaningful ... ok
+2026-10-30T00:03:22.1524490Z 
+2026-10-30T00:03:22.1524691Z failures:
+2026-10-30T00:03:22.1524948Z 
+2026-10-30T00:03:22.1525461Z ---- a_panic_during_the_capture_leaves_the_child_alive_and_unarmed stdout ----
+2026-10-30T00:03:22.1526332Z 
+2026-10-30T00:03:22.1527363Z thread 'a_panic_during_the_capture_leaves_the_child_alive_and_unarmed' (12078) panicked at crates/d1-live/tests/watchpoint.rs:109:69:
+2026-10-30T00:03:22.1529766Z panic-during-capture: the arm-and-die helper failed (exit status: 1) - the inversion was never asked
+2026-10-30T00:03:22.1531165Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-30T00:03:22.1531648Z 
+2026-10-30T00:03:22.1531873Z ---- an_unaligned_watch_is_refused_by_the_cli stdout ----
+2026-10-30T00:03:22.1532236Z 
+2026-10-30T00:03:22.1532752Z thread 'an_unaligned_watch_is_refused_by_the_cli' (12079) panicked at crates/d1-live/tests/watchpoint.rs:237:5:
+2026-10-30T00:03:22.1533811Z d1-live: opening /proc/12087/mem (need ptrace permission): Permission denied (os error 13)
+2026-10-30T00:03:22.1534385Z 
+2026-10-30T00:03:22.1534389Z 
+2026-10-30T00:03:22.1534648Z ---- controls_subcommand_exits_zero_when_it_passes stdout ----
+2026-10-30T00:03:22.1535065Z 
+2026-10-30T00:03:22.1535608Z thread 'controls_subcommand_exits_zero_when_it_passes' (12081) panicked at crates/d1-live/tests/watchpoint.rs:197:5:
+2026-10-30T00:03:22.1536634Z assertion `left == right` failed: d1-live controls: FAIL (6/18 pass)
+2026-10-30T00:03:22.1537203Z   PASS  debugreg-offset
+2026-10-30T00:03:22.1538018Z         axis: offsetof(struct user, u_debugreg) is measured, not transcribed; the words on either side of the array must be REJECTED
+2026-10-30T00:03:22.1539561Z         u_debugreg[0] at 0x350 - POKEUSER rejects 0x348; accepts DR0..DR3 at 0x350..=0x368; rejects the DR4/DR5 hole at 0x370,0x378; accepts DR6,DR7 at 0x380,0x388; rejects 0x390
+2026-10-30T00:03:22.1541581Z   PASS  catches-the-writer
+2026-10-30T00:03:22.1542502Z         axis: a write watchpoint catches the EXACT instruction that wrote the chosen address (the child reports its own store address from inline asm; RIP must be store + insn_len)
+2026-10-30T00:03:22.1544312Z         child pid 12094 store 0x563b841135f8 `mov [rdi],rsi` (confidence longest of several memory-writing decodes - confirm with d1-eboot disasm), trap RIP 0x563b841135fb == store+3 ✓, 1 thread(s) armed, hit in 3 ms
+2026-10-30T00:03:22.1545265Z   PASS  address-specific
+2026-10-30T00:03:22.1545980Z         axis: the watchpoint is about the ADDRESS, not 'traps always fire': a decoy 16 bytes away must stay silent while the same, still-running child trips the real target
+2026-10-30T00:03:22.1547102Z         decoy 0x55ba5a1aaf40: 0 hits in 0.50s with 1 thread(s) armed; target 0x55ba5a1aaf30 (16 bytes away, same child, immediately after): 1 hit in 0 ms
+2026-10-30T00:03:22.1547959Z   PASS  registers-at-the-hit
+2026-10-30T00:03:22.1549547Z         axis: the register map on a Hit is the trapping thread's LIVE integer register file: complete, keyed by name, anchored to an address the child itself reported, and holding the store's own pointer operand - a zeroed or fabricated map fails
+2026-10-30T00:03:22.1552483Z         child pid 12096: 27 registers captured, regs["rip"] == RIP 0x55bb0e5c75fb == the child's own NEXT label ✓, the store's pointer 0x55bb2c260f30 is live in rdi (10 distinct GP values), fs_base=0x7f0ed8804cc0; the never-stored decoy 0x55bb2c260f40 appears in NO register ✓
+2026-10-30T00:03:22.1554554Z   FAIL  disarm-is-load-bearing
+2026-10-30T00:03:22.1555469Z         axis: Watcher's disarm path really removes the breakpoint - inverted by a helper that arms and abandons the target, which is what tells us whether disarming matters at all
+2026-10-30T00:03:22.1556924Z         the arm-and-die helper failed (exit status: 1) - the question was never asked
+2026-10-30T00:03:22.1557580Z   PASS  capture-runs-unarmed
+2026-10-30T00:03:22.1558897Z         axis: the capture window runs with NOTHING armed: the child's own DR7, read inside the window, is 0 with the disarm step and the ARMED value without it - a find-nothing paired with a find-something, so the zero cannot mean 'never armed'
+2026-10-30T00:03:22.1561407Z         inside the capture window the child's own DR7 reads 0x0 with the disarm step (1 thread(s) proven clear) and 0x90303 without it - the same read, the same instrument, one step apart. The zero means CLEARED, not never-armed.
+2026-10-30T00:03:22.1562786Z   FAIL  panic-during-capture-is-survivable
+2026-10-30T00:03:22.1564264Z         axis: a crash DURING the capture cannot strand an armed tracer: a helper panics mid-capture with the debug registers already cleared and the child must be alive, unarmed and still storing - inverted by the ARMED abandon, which kills
+2026-10-30T00:03:22.1565319Z         the arm-and-die helper failed (exit status: 1) - the inversion was never asked
+2026-10-30T00:03:22.1565740Z   FAIL  fatal-signals-disarm
+2026-10-30T00:03:22.1566631Z         axis: ANY catchable terminating signal leaves through a verified disarm, not just SIGINT and SIGTERM: SIGHUP to a handler-less tracer KILLS the child (the inversion), and the same signal to a handled one leaves it alive with DR7 == 0
+2026-10-30T00:03:22.1567898Z         the hold-armed tracer never armed (banner "") - the question was not asked
+2026-10-30T00:03:22.1568655Z   FAIL  a-failed-arm-is-still-disarmed
+2026-10-30T00:03:22.1570014Z         axis: an arm that fails AFTER its pokes landed stays on the disarm list: an injected read-back failure must make attach REFUSE and must still leave the child alive with DR7 == 0 - inverted by the arm-and-abandon, which kills
+2026-10-30T00:03:22.1571446Z         the arm-and-die helper failed (exit status: 1) - the axis was never established
+2026-10-30T00:03:22.1571873Z   FAIL  read-side-base-and-read
+2026-10-30T00:03:22.1573444Z         axis: the base is recovered against the REAL eboot and reads land where the arithmetic says - inverted by a one-byte shift that must differ and by an UNMAPPED address that must ERROR rather than return zeros
+2026-10-30T00:03:22.1574526Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1574958Z   FAIL  wrong-image-fails-the-verify
+2026-10-30T00:03:22.1576477Z         axis: base control 2 compares a third, independent address against the file BY DIRECT READ - inverted by flipping one byte inside that window, which must fail it even though the anchors still agree, and must make Session::open refuse with exit 2
+2026-10-30T00:03:22.1578417Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1579281Z   FAIL  two-anchors-need-exactly-one-base
+2026-10-30T00:03:22.1580972Z         axis: the anchors must agree on EXACTLY ONE base - inverted by a second copy of both anchors at another base, which must produce a refusal rather than a choice
+2026-10-30T00:03:22.1582341Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1583080Z   FAIL  registry-cross-check-refuses
+2026-10-30T00:03:22.1584547Z         axis: an element address is derived TWICE, from the runtime entry table and from the static family/slot mapper - inverted by one bit of stride, which must WITHDRAW the address and drop the liveness ladder, not annotate it
+2026-10-30T00:03:22.1586120Z         No such file or directory (os error 2)
+2026-10-30T00:03:22.1586936Z   FAIL  tag-resolves-through-the-back-offset
+2026-10-30T00:03:22.1588548Z         axis: a 0x8080xxxx tag resolves through the package registry's SIGNED `entry - (mask & loc)` subtraction - inverted by the neighbouring tag, which must not land on the same object, and by an empty slot, which must refuse with a reason
+2026-10-30T00:03:22.1590525Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1591227Z   FAIL  descriptors-decode
+2026-10-30T00:03:22.1592056Z         axis: class/key/state/err/version decode at their offsets and the accepts-versus-REFUSES distinction survives - inverted by the 255 free rows, which must be filtered out
+2026-10-30T00:03:22.1593386Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1593843Z   FAIL  read-after-death-is-an-error
+2026-10-30T00:03:22.1594673Z         axis: a read after the client dies is an ERROR that asks for exit 3, never a buffer of zeros - paired with the SAME read against the SAME address while it was alive, so the failure cannot be explained by a bad address
+2026-10-30T00:03:22.1595646Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1596062Z   FAIL  garbage-in-refuses-loudly
+2026-10-30T00:03:22.1597082Z         axis: an input the golden diff cannot generate must be REFUSED, never answered - a family index that wraps onto another family's entry, a deleted registry_layout key, and a package field offset past the end of its record; each paired with the positive read it perturbs
+2026-10-30T00:03:22.1598225Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1598657Z   PASS  disarm-is-bounded-and-multithreaded
+2026-10-30T00:03:22.1599676Z         axis: the capture-time disarm is BOUNDED and is exercised across FOUR threads, not one: inside the bound every thread is proven clear and the capture runs; with the bound set to ZERO catch_one REFUSES the capture and the child still ends up alive with DR7 == 0
+2026-10-30T00:03:22.1605212Z         ⭐ MULTI-THREAD: 4 thread(s) armed on one child, all 4 proven clear in 1.367 ms against a 1500 ms bound, and the capture closure ran (true). ⛔ INVERTED with the deadline at ZERO: catch_one REFUSED the capture instead of running it with threads unproven, and the refusal is SAFE - child 12126 is alive and its DR7 reads 0 after the fallback unbounded disarm.
+2026-10-30T00:03:22.1607258Z 
+2026-10-30T00:03:22.1607403Z   left: Some(2)
+2026-10-30T00:03:22.1608001Z  right: Some(0)
+2026-10-30T00:03:22.1608206Z 
+2026-10-30T00:03:22.1608533Z ---- dropping_the_watcher_disarms_and_the_target_survives stdout ----
+2026-10-30T00:03:22.1608986Z 
+2026-10-30T00:03:22.1609627Z thread 'dropping_the_watcher_disarms_and_the_target_survives' (12086) panicked at crates/d1-live/tests/watchpoint.rs:83:66:
+2026-10-30T00:03:22.1611179Z disarm control: the arm-and-die helper failed (exit status: 1) - the question was never asked
+2026-10-30T00:03:22.1611811Z 
+2026-10-30T00:03:22.1612065Z ---- the_controls_subcommand_passes_as_a_whole stdout ----
+2026-10-30T00:03:22.1612484Z 
+2026-10-30T00:03:22.1613022Z thread 'the_controls_subcommand_passes_as_a_whole' (12130) panicked at crates/d1-live/tests/watchpoint.rs:125:5:
+2026-10-30T00:03:22.1613873Z d1-live controls: FAIL (6/18 pass)
+2026-10-30T00:03:22.1614309Z   PASS  debugreg-offset
+2026-10-30T00:03:22.1615214Z         axis: offsetof(struct user, u_debugreg) is measured, not transcribed; the words on either side of the array must be REJECTED
+2026-10-30T00:03:22.1616869Z         u_debugreg[0] at 0x350 - POKEUSER rejects 0x348; accepts DR0..DR3 at 0x350..=0x368; rejects the DR4/DR5 hole at 0x370,0x378; accepts DR6,DR7 at 0x380,0x388; rejects 0x390
+2026-10-30T00:03:22.1618063Z   PASS  catches-the-writer
+2026-10-30T00:03:22.1619255Z         axis: a write watchpoint catches the EXACT instruction that wrote the chosen address (the child reports its own store address from inline asm; RIP must be store + insn_len)
+2026-10-30T00:03:22.1622524Z         child pid 12141 store 0x560d45aeb5f8 `mov [rdi],rsi` (confidence longest of several memory-writing decodes - confirm with d1-eboot disasm), trap RIP 0x560d45aeb5fb == store+3 ✓, 1 thread(s) armed, hit in 0 ms
+2026-10-30T00:03:22.1624027Z   PASS  address-specific
+2026-10-30T00:03:22.1625151Z         axis: the watchpoint is about the ADDRESS, not 'traps always fire': a decoy 16 bytes away must stay silent while the same, still-running child trips the real target
+2026-10-30T00:03:22.1626940Z         decoy 0x55d6fb8e5f40: 0 hits in 0.50s with 1 thread(s) armed; target 0x55d6fb8e5f30 (16 bytes away, same child, immediately after): 1 hit in 0 ms
+2026-10-30T00:03:22.1627996Z   PASS  registers-at-the-hit
+2026-10-30T00:03:22.1629453Z         axis: the register map on a Hit is the trapping thread's LIVE integer register file: complete, keyed by name, anchored to an address the child itself reported, and holding the store's own pointer operand - a zeroed or fabricated map fails
+2026-10-30T00:03:22.1632325Z         child pid 12143: 27 registers captured, regs["rip"] == RIP 0x561b9fda35fb == the child's own NEXT label ✓, the store's pointer 0x561bd5b06f30 is live in rdi (11 distinct GP values), fs_base=0x7fe4423e8cc0; the never-stored decoy 0x561bd5b06f40 appears in NO register ✓
+2026-10-30T00:03:22.1633359Z   FAIL  disarm-is-load-bearing
+2026-10-30T00:03:22.1634070Z         axis: Watcher's disarm path really removes the breakpoint - inverted by a helper that arms and abandons the target, which is what tells us whether disarming matters at all
+2026-10-30T00:03:22.1635259Z         the arm-and-die helper failed (exit status: 1) - the question was never asked
+2026-10-30T00:03:22.1635926Z   PASS  capture-runs-unarmed
+2026-10-30T00:03:22.1648168Z         axis: the capture window runs with NOTHING armed: the child's own DR7, read inside the window, is 0 with the disarm step and the ARMED value without it - a find-nothing paired with a find-something, so the zero cannot mean 'never armed'
+2026-10-30T00:03:22.1650901Z         inside the capture window the child's own DR7 reads 0x0 with the disarm step (1 thread(s) proven clear) and 0x90303 without it - the same read, the same instrument, one step apart. The zero means CLEARED, not never-armed.
+2026-10-30T00:03:22.1652375Z   FAIL  panic-during-capture-is-survivable
+2026-10-30T00:03:22.1653606Z         axis: a crash DURING the capture cannot strand an armed tracer: a helper panics mid-capture with the debug registers already cleared and the child must be alive, unarmed and still storing - inverted by the ARMED abandon, which kills
+2026-10-30T00:03:22.1654666Z         the arm-and-die helper failed (exit status: 1) - the inversion was never asked
+2026-10-30T00:03:22.1655086Z   FAIL  fatal-signals-disarm
+2026-10-30T00:03:22.1655971Z         axis: ANY catchable terminating signal leaves through a verified disarm, not just SIGINT and SIGTERM: SIGHUP to a handler-less tracer KILLS the child (the inversion), and the same signal to a handled one leaves it alive with DR7 == 0
+2026-10-30T00:03:22.1656990Z         the hold-armed tracer never armed (banner "") - the question was not asked
+2026-10-30T00:03:22.1657402Z   FAIL  a-failed-arm-is-still-disarmed
+2026-10-30T00:03:22.1658272Z         axis: an arm that fails AFTER its pokes landed stays on the disarm list: an injected read-back failure must make attach REFUSE and must still leave the child alive with DR7 == 0 - inverted by the arm-and-abandon, which kills
+2026-10-30T00:03:22.1659257Z         the arm-and-die helper failed (exit status: 1) - the axis was never established
+2026-10-30T00:03:22.1659679Z   FAIL  read-side-base-and-read
+2026-10-30T00:03:22.1660931Z         axis: the base is recovered against the REAL eboot and reads land where the arithmetic says - inverted by a one-byte shift that must differ and by an UNMAPPED address that must ERROR rather than return zeros
+2026-10-30T00:03:22.1662325Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1663246Z   FAIL  wrong-image-fails-the-verify
+2026-10-30T00:03:22.1664905Z         axis: base control 2 compares a third, independent address against the file BY DIRECT READ - inverted by flipping one byte inside that window, which must fail it even though the anchors still agree, and must make Session::open refuse with exit 2
+2026-10-30T00:03:22.1666861Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1667702Z   FAIL  two-anchors-need-exactly-one-base
+2026-10-30T00:03:22.1668881Z         axis: the anchors must agree on EXACTLY ONE base - inverted by a second copy of both anchors at another base, which must produce a refusal rather than a choice
+2026-10-30T00:03:22.1670480Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1671234Z   FAIL  registry-cross-check-refuses
+2026-10-30T00:03:22.1672755Z         axis: an element address is derived TWICE, from the runtime entry table and from the static family/slot mapper - inverted by one bit of stride, which must WITHDRAW the address and drop the liveness ladder, not annotate it
+2026-10-30T00:03:22.1674317Z         No such file or directory (os error 2)
+2026-10-30T00:03:22.1674865Z   FAIL  tag-resolves-through-the-back-offset
+2026-10-30T00:03:22.1676472Z         axis: a 0x8080xxxx tag resolves through the package registry's SIGNED `entry - (mask & loc)` subtraction - inverted by the neighbouring tag, which must not land on the same object, and by an empty slot, which must refuse with a reason
+2026-10-30T00:03:22.1678373Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1679091Z   FAIL  descriptors-decode
+2026-10-30T00:03:22.1680538Z         axis: class/key/state/err/version decode at their offsets and the accepts-versus-REFUSES distinction survives - inverted by the 255 free rows, which must be filtered out
+2026-10-30T00:03:22.1681997Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1682728Z   FAIL  read-after-death-is-an-error
+2026-10-30T00:03:22.1684150Z         axis: a read after the client dies is an ERROR that asks for exit 3, never a buffer of zeros - paired with the SAME read against the SAME address while it was alive, so the failure cannot be explained by a bad address
+2026-10-30T00:03:22.1685803Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1686544Z   FAIL  garbage-in-refuses-loudly
+2026-10-30T00:03:22.1688460Z         axis: an input the golden diff cannot generate must be REFUSED, never answered - a family index that wraps onto another family's entry, a deleted registry_layout key, and a package field offset past the end of its record; each paired with the positive read it perturbs
+2026-10-30T00:03:22.1690744Z         the fixture printed no banner: d1-live: No such file or directory (os error 2)
+2026-10-30T00:03:22.1691342Z   PASS  disarm-is-bounded-and-multithreaded
+2026-10-30T00:03:22.1692363Z         axis: the capture-time disarm is BOUNDED and is exercised across FOUR threads, not one: inside the bound every thread is proven clear and the capture runs; with the bound set to ZERO catch_one REFUSES the capture and the child still ends up alive with DR7 == 0
+2026-10-30T00:03:22.1694661Z         ⭐ MULTI-THREAD: 4 thread(s) armed on one child, all 4 proven clear in 1.362 ms against a 1500 ms bound, and the capture closure ran (true). ⛔ INVERTED with the deadline at ZERO: catch_one REFUSED the capture instead of running it with threads unproven, and the refusal is SAFE - child 12173 is alive and its DR7 reads 0 after the fallback unbounded disarm.
+2026-10-30T00:03:22.1695855Z 
+2026-10-30T00:03:22.1695859Z 
+2026-10-30T00:03:22.1695937Z failures:
+2026-10-30T00:03:22.1696210Z     a_panic_during_the_capture_leaves_the_child_alive_and_unarmed
+2026-10-30T00:03:22.1696581Z     an_unaligned_watch_is_refused_by_the_cli
+2026-10-30T00:03:22.1697083Z     controls_subcommand_exits_zero_when_it_passes
+2026-10-30T00:03:22.1697428Z     dropping_the_watcher_disarms_and_the_target_survives
+2026-10-30T00:03:22.1697762Z     the_controls_subcommand_passes_as_a_whole
+2026-10-30T00:03:22.1697958Z 
+2026-10-30T00:03:22.1698223Z test result: FAILED. 6 passed; 5 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.14s
+2026-10-30T00:03:22.1698587Z 
+2026-10-30T00:03:22.1698791Z error: test failed, to rerun pass `-p d1-live --test watchpoint`
+2026-10-30T00:03:22.1699270Z      Running unittests src/lib.rs (target/debug/deps/d1_loadout-f564154591eba01c)
+2026-10-30T00:03:22.1699830Z      Running unittests src/bin/d1-loadout.rs (target/debug/deps/d1_loadout-5f1a7ce6c45b2d27)
+2026-10-30T00:03:22.1700790Z      Running unittests src/lib.rs (target/debug/deps/d1_replay-dbfae45ba0c33dc6)
+2026-10-30T00:03:22.1701306Z      Running unittests src/main.rs (target/debug/deps/d1_replay-4523e00bedaad649)
+2026-10-30T00:03:22.1701784Z      Running tests/onhit.rs (target/debug/deps/onhit-f26beff210568e4e)
+2026-10-30T00:03:22.1702068Z 
+2026-10-30T00:03:22.1702151Z running 25 tests
+2026-10-30T00:03:22.1702431Z test apply::tests::response_defaults_are_a_refusal ... ok
+2026-10-30T00:03:22.1702856Z test apply::tests::request_round_trips_and_tolerates_extra_fields ... ok
+2026-10-30T00:03:22.1703325Z test catalogue::tests::catalogue_extraction_finds_known_items ... ok
+2026-10-30T00:03:22.1703737Z test catalogue::tests::catalogue_json_round_trips ... ok
+2026-10-30T00:03:22.1704165Z test catalogue::tests::search_filters_narrow_and_still_find_something ... ok
+2026-10-30T00:03:22.1704624Z test catalogue::tests::era_classifier_has_both_controls ... ok
+2026-10-30T00:03:22.1705042Z test catalogue::tests::identity_tables_match_the_constants ... ok
+2026-10-30T00:03:22.1705503Z test catalogue::tests::manifest_is_present_and_has_the_expected_shape ... ok
+2026-10-30T00:03:22.1705976Z test catalogue::tests::the_same_name_resolves_to_several_hashes ... ok
+2026-10-30T00:03:22.1706423Z test catalogue::tests::slot_constants_match_the_bucket_table ... ok
+2026-10-30T00:03:22.1706844Z test era::tests::classify_covers_all_four_verdicts ... ok
+2026-10-30T00:03:22.1707247Z test catalogue::tests::to_ref_produces_a_loadout_that_validates ... ok
+2026-10-30T00:03:22.1707678Z test catalogue::tests::year_one_marker_has_both_controls ... ok
+2026-10-30T00:03:22.1708114Z test era::tests::unrecognised_sources_are_reported_not_swallowed ... ok
+2026-10-30T00:03:22.1708530Z test era::tests::timing_table_is_sorted_and_unique ... ok
+2026-10-30T00:03:22.1708874Z test model::tests::detects_wrong_bucket ... ok
+2026-10-30T00:03:22.1709412Z test model::tests::detects_class_restricted_armor_on_the_wrong_class ... ok
+2026-10-30T00:03:22.1709840Z test model::tests::detects_two_items_in_one_bucket ... ok
+2026-10-30T00:03:22.1710709Z test model::tests::identity_hashes_match_the_manifest ... ok
+2026-10-30T00:03:22.1711399Z test model::tests::set_replaces_rather_than_appends ... ok
+2026-10-30T00:03:22.1712097Z test model::tests::exotic_limit_is_a_warning_not_an_error ... ok
+2026-10-30T00:03:22.1712780Z test model::tests::json_round_trip_is_stable ... ok
+2026-10-30T00:03:22.1713424Z test model::tests::refuses_a_document_from_the_future ... ok
+2026-10-30T00:03:22.1714088Z test model::tests::slot_bucket_hashes_round_trip ... ok
+2026-10-30T00:03:22.1714801Z test model::tests::tolerates_unknown_fields_and_missing_fields ... ok
+2026-10-30T00:03:22.1715309Z 
+2026-10-30T00:03:22.1715731Z test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:22.1716345Z 
+2026-10-30T00:03:22.1716363Z 
+2026-10-30T00:03:22.1716524Z running 0 tests
+2026-10-30T00:03:22.1716724Z 
+2026-10-30T00:03:22.1717141Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:22.1717731Z 
+2026-10-30T00:03:22.1717737Z 
+2026-10-30T00:03:22.1717885Z running 26 tests
+2026-10-30T00:03:22.1718472Z test machine::tests::altered_and_landed_read_the_observation_not_the_plan ... ok
+2026-10-30T00:03:22.1719665Z test machine::tests::a_search_knob_takes_a_register_out_of_the_seeded_list ... ok
+2026-10-30T00:03:22.1720911Z test machine::tests::an_explicit_rsp_takes_the_frame_and_says_what_that_means ... ok
+2026-10-30T00:03:22.1721934Z test machine::tests::canary_slot_is_disjoint_from_scratch_stack_and_trampoline ... ok
+2026-10-30T00:03:22.1722704Z test machine::tests::explicit_flags_override_the_capture_and_are_named ... ok
+2026-10-30T00:03:22.1723249Z test machine::tests::captured_mode_seeds_the_gprs_and_never_rip_rsp_or_rbp ... ok
+2026-10-30T00:03:22.1723754Z test machine::tests::eflags_is_masked_and_the_mask_is_reported ... ok
+2026-10-30T00:03:22.1724204Z test machine::tests::stack_canary_parse_covers_every_spelling ... ok
+2026-10-30T00:03:22.1724688Z test machine::tests::the_two_modes_render_differently_and_each_names_itself ... ok
+2026-10-30T00:03:22.1725205Z test machine::tests::without_a_trap_the_invented_block_says_not_attempted ... ok
+2026-10-30T00:03:22.1725628Z test onhit::tests::scopes_parse_or_refuse ... ok
+2026-10-30T00:03:22.1726017Z test onhit::tests::the_hard_cap_refuses_and_the_budget_only_warns ... ok
+2026-10-30T00:03:22.1726471Z test preset::tests::object_plausible_is_not_a_rubber_stamp ... ok
+2026-10-30T00:03:22.1726877Z test onhit::tests::the_phase_split_is_its_own_pair ... ok
+2026-10-30T00:03:22.1727249Z test preset::tests::merge_joins_and_keeps_reasons ... ok
+2026-10-30T00:03:22.1727641Z test preset::tests::object_addr_uses_the_clients_signedness ... ok
+2026-10-30T00:03:22.1728124Z test preset::tests::object_plausible_rejects_what_an_empty_entry_resolves_to ... ok
+2026-10-30T00:03:22.1728584Z test preset::tests::page_out_rounds_outward_only ... ok
+2026-10-30T00:03:22.1728965Z test preset::tests::parse_arena_reads_name_base_and_size ... ok
+2026-10-30T00:03:22.1729394Z test rederive::tests::a_missing_range_is_not_captured_not_zero ... ok
+2026-10-30T00:03:22.1729856Z test rederive::tests::perturbing_the_phase_byte_changes_the_output ... ok
+2026-10-30T00:03:22.1730628Z test rederive::tests::render_matches_the_prototype_format ... ok
+2026-10-30T00:03:22.1731123Z test rederive::tests::resolve_applies_the_signed_mask_to_the_element_header ... ok
+2026-10-30T00:03:22.1731616Z test snapshot::tests::merge_leaves_a_disjoint_ascending_table ... ok
+2026-10-30T00:03:22.1732035Z test search::tests::candidate_value_lists_and_ranges ... ok
+2026-10-30T00:03:22.1732470Z test snapshot::tests::an_earlier_phase_is_subtracted_from_a_later_one ... ok
+2026-10-30T00:03:22.1732773Z 
+2026-10-30T00:03:22.1733193Z test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:22.1733560Z 
+2026-10-30T00:03:22.1733564Z 
+2026-10-30T00:03:22.1733647Z running 0 tests
+2026-10-30T00:03:22.1733772Z 
+2026-10-30T00:03:22.1734004Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:22.1734340Z 
+2026-10-30T00:03:22.1734343Z 
+2026-10-30T00:03:22.1734425Z running 3 tests
+2026-10-30T00:03:22.3202626Z test the_rehearsal_reads_what_the_stop_will_read ... ok
+2026-10-30T00:03:22.3203846Z test the_in_stop_deadline_fires_and_names_every_dropped_region ... ok
+2026-10-30T00:03:22.3244630Z test the_in_stop_reader_puts_the_right_bytes_at_the_right_offsets ... ok
+2026-10-30T00:03:22.3245185Z 
+2026-10-30T00:03:22.3245645Z test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+2026-10-30T00:03:22.3246354Z 
+2026-10-30T00:03:22.3250983Z      Running unittests src/main.rs (target/debug/deps/d1_responder-8dfb81ca4bb23872)
+2026-10-30T00:03:22.3264074Z 
+2026-10-30T00:03:22.3264290Z running 13 tests
+2026-10-30T00:03:22.3270856Z test character_lifecycle_dispatch_tests::a_created_character_soid_wins ... ok
+2026-10-30T00:03:22.3272653Z test character_lifecycle_dispatch_tests::a_pinned_character_soid_is_never_reported_as_zero_characters ... ok
+2026-10-30T00:03:22.3273620Z test character_lifecycle_dispatch_tests::the_lifecycle_dispatch_never_claims_504_or_anything_else ... ok
+2026-10-30T00:03:22.3274323Z test tests::a_frame_that_does_not_match_its_ticket_is_refused ... ok
+2026-10-30T00:03:22.3275156Z test tests::bap_ip_and_client_ip_use_opposite_byte_orders ... ok
+2026-10-30T00:03:22.3275633Z test tests::client_config_delta_is_fixed32_framed ... ok
+2026-10-30T00:03:22.3276081Z test tests::message_8_body_does_not_start_at_plus_six ... ok
+2026-10-30T00:03:22.3276718Z test tests::success_response_carries_all_seven_required_subfields ... ok
+2026-10-30T00:03:22.3277369Z test tests::shared_struct_guard_discriminates_a_205_503_disagreement ... ok
+2026-10-30T00:03:22.3277944Z test tests::the_body_survives_the_header_strip ... ok
+2026-10-30T00:03:22.3278445Z test tests::tls12_is_compiled_in_and_tls13_is_the_control ... ok
+2026-10-30T00:03:22.3279016Z test tests::the_served_default_bodies_carry_the_ten_unlock_flags ... ok
+2026-10-30T00:03:22.3282687Z test tests::every_knob_the_source_reads_is_printed_at_startup ... ok
+2026-10-30T00:03:22.3283034Z 
+2026-10-30T00:03:22.3283605Z test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:22.3284212Z 
+2026-10-30T00:03:22.3285345Z      Running unittests src/lib.rs (target/debug/deps/d1_run-68e3787e72b83c79)
+2026-10-30T00:03:22.3296520Z 
+2026-10-30T00:03:22.3296707Z running 18 tests
+2026-10-30T00:03:22.3309578Z test gate::tests::c_gate_503_inversion ... ok
+2026-10-30T00:03:22.3310893Z test gate::tests::c_gate_containment_and ... ok
+2026-10-30T00:03:22.3320429Z test gate::tests::c_gate_all_pass ... ok
+2026-10-30T00:03:22.3320985Z test gate::tests::c_gate_alive_connection ... ok
+2026-10-30T00:03:22.3321622Z test gate::tests::pinned_decoder_refuses_perturbed_input ... ok
+2026-10-30T00:03:22.3322062Z test gate::tests::c_gate_stub_manifest ... ok
+2026-10-30T00:03:22.3322381Z test gate::tests::c_gate_crash_either_side ... ok
+2026-10-30T00:03:22.3322734Z test gate::tests::render_matches_prototype_shapes ... ok
+2026-10-30T00:03:22.3323148Z test ladder_tests::conditional_states_do_not_define_depth ... ok
+2026-10-30T00:03:22.3323566Z test ladder_tests::depth_is_furthest_not_latest ... ok
+2026-10-30T00:03:22.3323966Z test ladder_tests::guest_halt_is_parsed_from_crash_report ... ok
+2026-10-30T00:03:22.3324394Z test tests::extracts_the_attempt_ledger_from_an_emulator_log ... ok
+2026-10-30T00:03:22.3327138Z test tests::host_conditions_gate_the_evidence_class ... ok
+2026-10-30T00:03:22.3327635Z test tests::diff_reports_the_gate_opening ... ok
+2026-10-30T00:03:22.3328047Z test gate::tests::c_gate_truncated_trace ... ok
+2026-10-30T00:03:22.3328511Z test tests::quietness_is_a_predicate_against_predeclared_thresholds ... ok
+2026-10-30T00:03:22.3329425Z test tests::shadnet_command_is_unserved_if_ever_refused ... ok
+2026-10-30T00:03:22.3330454Z test tests::summaries_are_deterministic ... ok
+2026-10-30T00:03:22.3330902Z 
+2026-10-30T00:03:22.3331488Z test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:22.3332128Z 
+2026-10-30T00:03:22.3333231Z      Running unittests src/lib.rs (target/debug/deps/shadnet_proto-ed3f6ddea726e0ec)
+2026-10-30T00:03:22.3344063Z 
+2026-10-30T00:03:22.3344234Z running 0 tests
+2026-10-30T00:03:22.3344458Z 
+2026-10-30T00:03:22.3344972Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:22.3345553Z 
+2026-10-30T00:03:22.3346724Z      Running unittests src/lib.rs (target/debug/deps/shadnet_server-6d3b141e7273a88d)
+2026-10-30T00:03:22.3357712Z 
+2026-10-30T00:03:22.3357885Z running 62 tests
+2026-10-30T00:03:22.3364971Z test controls::tests::the_cpp_comparison_can_detect_a_drifted_discriminant ... ok
+2026-10-30T00:03:22.3381581Z test controls::tests::the_proto_parser_can_detect_a_missing_field ... ok
+2026-10-30T00:03:22.3382705Z test controls::tests::sha256_of_the_vendored_proto_is_stable ... ok
+2026-10-30T00:03:22.3384600Z test gates::tests::first_sight_is_reported_once ... ok
+2026-10-30T00:03:22.3385552Z test gates::tests::summary_is_deterministic ... ok
+2026-10-30T00:03:22.3387933Z test identity::tests::identity_mode_default_is_the_one_that_does_not_change_live_runs ... ok
+2026-10-30T00:03:22.3389563Z test matching::tests::a_member_without_an_endpoint_is_refused_at_the_emitter_too ... ok
+2026-10-30T00:03:22.3391340Z test matching::tests::a_notification_without_the_recipients_ctx_id_is_refused ... ok
+2026-10-30T00:03:22.3392640Z test matching::tests::a_room_event_the_client_drops_is_refused_before_it_is_sent ... ok
+2026-10-30T00:03:22.3393882Z test matching::tests::an_all_default_notification_encodes_to_zero_bytes_and_is_refused ... ok
+2026-10-30T00:03:22.3395145Z test matching::tests::every_reply_we_build_carries_details ... ok
+2026-10-30T00:03:22.3396210Z test matching::tests::group_ids_are_one_based_and_positional ... ok
+2026-10-30T00:03:22.3397333Z test matching::tests::member_joined_carries_the_fields_the_client_reads ... ok
+2026-10-30T00:03:22.3398500Z test matching::tests::room_data_internal_reports_slots_honestly ... ok
+2026-10-30T00:03:22.3399680Z test matching::tests::search_reply_reports_the_window_and_the_total_separately ... ok
+2026-10-30T00:03:22.3401255Z test matching::tests::signaling_reply_refuses_an_unusable_endpoint ... ok
+2026-10-30T00:03:22.3402473Z test matching::tests::the_emitter_refuses_details_none_and_accepts_details_some ... ok
+2026-10-30T00:03:22.3403799Z test registry::tests::a_reconnect_after_disconnect_reclaims_the_npid_and_its_user_id ... ok
+2026-10-30T00:03:22.3405093Z test registry::tests::a_second_distinct_participant_gets_a_distinct_user_id ... ok
+2026-10-30T00:03:22.3406233Z test registry::tests::a_second_login_for_a_live_npid_is_refused ... ok
+2026-10-30T00:03:22.3407237Z test registry::tests::ctx_id_is_per_connection ... ok
+2026-10-30T00:03:22.3408309Z test registry::tests::disconnect_removes_the_session_and_releases_the_npid ... ok
+2026-10-30T00:03:22.3409479Z test registry::tests::endpoint_for_unmaps_ipv4_and_refuses_real_ipv6 ... ok
+2026-10-30T00:03:22.3411102Z test registry::tests::login_with_an_empty_npid_falls_back_to_the_configured_one ... ok
+2026-10-30T00:03:22.3412391Z test registry::tests::per_client_mode_hands_each_participant_its_own_npid_and_token ... ok
+2026-10-30T00:03:22.3413642Z test registry::tests::signaling_answers_from_room_membership_first ... ok
+2026-10-30T00:03:22.3414795Z test registry::tests::signaling_refuses_rather_than_fabricating_a_port ... ok
+2026-10-30T00:03:22.3416053Z test registry::tests::the_first_participant_gets_the_configured_identity_verbatim ... ok
+2026-10-30T00:03:22.3417288Z test rooms::tests::a_dropped_connection_leaves_with_member_disappeared ... ok
+2026-10-30T00:03:22.3418351Z test rooms::tests::a_full_room_refuses_with_room_full ... ok
+2026-10-30T00:03:22.3419593Z test rooms::tests::a_member_with_no_endpoint_cannot_be_admitted ... ok
+2026-10-30T00:03:22.3420976Z test rooms::tests::a_non_member_cannot_change_room_data ... ok
+2026-10-30T00:03:22.3422090Z test rooms::tests::a_private_room_refuses_a_joiner_that_presents_no_password ... ok
+2026-10-30T00:03:22.3423275Z test rooms::tests::a_second_join_from_the_same_connection_is_refused ... ok
+2026-10-30T00:03:22.3424413Z test rooms::tests::a_public_room_does_not_care_about_the_password_flag ... ok
+2026-10-30T00:03:22.3425582Z test rooms::tests::an_endpoint_without_a_usable_address_or_port_is_refused ... ok
+2026-10-30T00:03:22.3426704Z test rooms::tests::an_unknown_room_is_room_missing ... ok
+2026-10-30T00:03:22.3427670Z test rooms::tests::bin_attrs_upsert_rather_than_accumulate ... ok
+2026-10-30T00:03:22.3428793Z test rooms::tests::every_event_we_emit_is_one_shadps4_actually_handles ... ok
+2026-10-30T00:03:22.3429917Z test rooms::tests::ip_string_to_addr_matches_the_clients_sscanf ... ok
+2026-10-30T00:03:22.3431295Z test rooms::tests::joined_slot_mask_tracks_member_ids ... ok
+2026-10-30T00:03:22.3432309Z test rooms::tests::joining_tells_everyone_else_and_never_the_joiner ... ok
+2026-10-30T00:03:22.3433362Z test rooms::tests::leaving_tells_the_remaining_members_with_leave_action ... ok
+2026-10-30T00:03:22.3434502Z test rooms::tests::member_ids_are_unique_within_a_room_and_survive_churn ... ok
+2026-10-30T00:03:22.3435592Z test rooms::tests::only_the_owner_kicks_and_the_target_hears_kickedout ... ok
+2026-10-30T00:03:22.3436239Z      Running unittests src/main.rs (target/debug/deps/shadnet_server-5c273b242caaf99e)
+2026-10-30T00:03:22.3436984Z test rooms::tests::passwd_slot_mask_is_stored_and_republished_but_never_interpreted ... ok
+2026-10-30T00:03:22.3437723Z test rooms::tests::password_mismatch_is_never_returned_because_it_cannot_be_checked ... ok
+2026-10-30T00:03:22.3438388Z test rooms::tests::room_ids_and_member_ids_are_never_zero ... ok
+2026-10-30T00:03:22.3438961Z test rooms::tests::search_filters_on_world_flags_and_attributes ... ok
+2026-10-30T00:03:22.3439507Z test rooms::tests::search_paging_is_one_based ... ok
+2026-10-30T00:03:22.3440562Z test rooms::tests::set_room_data_internal_is_a_masked_read_modify_write ... ok
+2026-10-30T00:03:22.3441469Z test controls::tests::every_control_passes ... ok
+2026-10-30T00:03:22.3442121Z test rooms::tests::team_id_is_copied_verbatim_and_never_assigned ... ok
+2026-10-30T00:03:22.3442705Z test rooms::tests::the_last_member_out_destroys_the_room_and_emits_nothing ... ok
+2026-10-30T00:03:22.3443212Z test controls::tests::there_are_enough_controls_to_be_worth_running ... ok
+2026-10-30T00:03:22.3443736Z test rooms::tests::two_connections_sharing_an_npid_are_two_distinct_members ... ok
+2026-10-30T00:03:22.3444320Z test rooms::tests::updated_room_data_internal_reaches_every_member_including_the_requester ... ok
+2026-10-30T00:03:22.3444905Z test session::tests::the_room_command_range_is_exactly_the_matchmaking_block ... ok
+2026-10-30T00:03:22.3445478Z test signaling::tests::a_sixteen_character_id_uses_the_whole_field_with_no_terminator ... ok
+2026-10-30T00:03:22.3446224Z test signaling::tests::anything_that_is_not_this_struct_is_ignored_rather_than_guessed_at ... ok
+2026-10-30T00:03:22.3446919Z test signaling::tests::the_struct_is_twenty_one_bytes_and_the_id_is_sixteen ... ok
+2026-10-30T00:03:22.3447366Z test signaling::tests::a_well_formed_ping_parses ... ok
+2026-10-30T00:03:22.3447600Z 
+2026-10-30T00:03:22.3447845Z test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+2026-10-30T00:03:22.3448189Z 
+2026-10-30T00:03:22.3448344Z 
+2026-10-30T00:03:22.3448641Z running 0 tests
+2026-10-30T00:03:22.3449287Z      Running tests/two_participants.rs (target/debug/deps/two_participants-d9e5be9ecb3c8ee6)
+2026-10-30T00:03:22.3449842Z 
+2026-10-30T00:03:22.3450334Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:22.3450928Z 
+2026-10-30T00:03:22.3461390Z 
+2026-10-30T00:03:22.3461797Z running 9 tests
+2026-10-30T00:03:22.3484603Z test a_room_command_before_login_is_refused ... ok
+2026-10-30T00:03:22.3485344Z test a_dropped_socket_tells_the_remaining_member ... ok
+2026-10-30T00:03:22.3501052Z test a_second_context_start_with_a_different_id_is_refused ... ok
+2026-10-30T00:03:22.3502239Z test a_room_message_is_relayed_to_the_other_member_only ... ok
+2026-10-30T00:03:22.3503290Z test signaling_answers_for_a_room_member_and_refuses_for_a_stranger ... ok
+2026-10-30T00:03:22.3504433Z test kickout_reaches_the_target_and_the_rest_separately ... ok
+2026-10-30T00:03:22.3505722Z test a_second_participant_claiming_the_same_npid_is_refused ... ok
+2026-10-30T00:03:22.3507228Z test with_rooms_off_every_room_command_is_still_answered_unsupported ... ok
+2026-10-30T00:03:22.3517255Z test two_participants_share_one_room_and_each_hears_about_the_other ... ok
+2026-10-30T00:03:22.3517788Z 
+2026-10-30T00:03:22.3518207Z test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+2026-10-30T00:03:22.3518845Z 
+2026-10-30T00:03:22.3521933Z      Running unittests src/lib.rs (target/debug/deps/shadnet_wire-603a250be1587ac9)
+2026-10-30T00:03:22.3531442Z 
+2026-10-30T00:03:22.3531576Z running 5 tests
+2026-10-30T00:03:22.3535563Z test tests::command_names_round_trip ... ok
+2026-10-30T00:03:22.3536297Z test tests::extract_blob_rejects_short_frames ... ok
+2026-10-30T00:03:22.3537094Z test tests::reply_layout_matches_client_expectations ... ok
+2026-10-30T00:03:22.3537992Z test tests::server_info_is_a_bare_u32_version ... ok
+2026-10-30T00:03:22.3538686Z test tests::header_is_fifteen_bytes ... ok
+2026-10-30T00:03:22.3539196Z    Doc-tests d1_bap
+2026-10-30T00:03:22.3539397Z 
+2026-10-30T00:03:22.3539814Z test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:22.3540905Z 
+2026-10-30T00:03:23.0180186Z 
+2026-10-30T00:03:23.0180715Z running 0 tests
+2026-10-30T00:03:23.0181260Z 
+2026-10-30T00:03:23.0182039Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.0182901Z 
+2026-10-30T00:03:23.0258895Z    Doc-tests d1_build
+2026-10-30T00:03:23.0550842Z 
+2026-10-30T00:03:23.0551313Z running 0 tests
+2026-10-30T00:03:23.0551603Z 
+2026-10-30T00:03:23.0551890Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.0552275Z 
+2026-10-30T00:03:23.0584522Z    Doc-tests d1_eboot
+2026-10-30T00:03:23.1721958Z 
+2026-10-30T00:03:23.1722507Z running 0 tests
+2026-10-30T00:03:23.1722705Z 
+2026-10-30T00:03:23.1723015Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.1723409Z 
+2026-10-30T00:03:23.1757415Z    Doc-tests d1_harness
+2026-10-30T00:03:23.2945922Z 
+2026-10-30T00:03:23.2946497Z running 0 tests
+2026-10-30T00:03:23.2946844Z 
+2026-10-30T00:03:23.2947410Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.2948230Z 
+2026-10-30T00:03:23.2982646Z    Doc-tests d1_live
+2026-10-30T00:03:23.3977932Z 
+2026-10-30T00:03:23.3978414Z running 0 tests
+2026-10-30T00:03:23.3978755Z 
+2026-10-30T00:03:23.3979347Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.3980413Z 
+2026-10-30T00:03:23.4011812Z    Doc-tests d1_loadout
+2026-10-30T00:03:23.4916505Z 
+2026-10-30T00:03:23.4917057Z running 0 tests
+2026-10-30T00:03:23.4917407Z 
+2026-10-30T00:03:23.4917698Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.4918093Z 
+2026-10-30T00:03:23.4950482Z    Doc-tests d1_replay
+2026-10-30T00:03:23.6342685Z 
+2026-10-30T00:03:23.6343385Z running 0 tests
+2026-10-30T00:03:23.6343706Z 
+2026-10-30T00:03:23.6344266Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.6345019Z 
+2026-10-30T00:03:23.6379127Z    Doc-tests d1_run
+2026-10-30T00:03:23.7055368Z 
+2026-10-30T00:03:23.7056311Z running 0 tests
+2026-10-30T00:03:23.7056523Z 
+2026-10-30T00:03:23.7056824Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.7057198Z 
+2026-10-30T00:03:23.7086031Z    Doc-tests shadnet_proto
+2026-10-30T00:03:23.8442075Z 
+2026-10-30T00:03:23.8442742Z running 0 tests
+2026-10-30T00:03:23.8443094Z 
+2026-10-30T00:03:23.8443660Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.8444522Z 
+2026-10-30T00:03:23.8473632Z    Doc-tests shadnet_server
+2026-10-30T00:03:23.9779927Z 
+2026-10-30T00:03:23.9780741Z running 0 tests
+2026-10-30T00:03:23.9781009Z 
+2026-10-30T00:03:23.9781316Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:23.9781718Z 
+2026-10-30T00:03:23.9815033Z    Doc-tests shadnet_wire
+2026-10-30T00:03:24.0077651Z 
+2026-10-30T00:03:24.0078115Z running 0 tests
+2026-10-30T00:03:24.0078306Z 
+2026-10-30T00:03:24.0078628Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-30T00:03:24.0078990Z 
+2026-10-30T00:03:24.0116770Z error: 4 targets failed:
+2026-10-30T00:03:24.0117193Z     `-p d1 --bin d1`
+2026-10-30T00:03:24.0117546Z     `-p d1-live --lib`
+2026-10-30T00:03:24.0117914Z     `-p d1-live --test readside`
+2026-10-30T00:03:24.0118330Z     `-p d1-live --test watchpoint`
+2026-10-30T00:03:24.0390849Z ##[error]Process completed with exit code 101.
+2026-10-30T00:03:24.0537668Z Post job cleanup.
+2026-10-30T00:03:24.1472779Z [command]/usr/bin/git version
+2026-10-30T00:03:24.1524702Z git version 2.56.0
+2026-10-30T00:03:24.1564421Z Temporarily overriding HOME='/home/runner/work/_temp/7a2a2405-9493-407d-a6e8-a50def98e879' before making global git config changes
+2026-10-30T00:03:24.1565936Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-30T00:03:24.1569564Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/d1reimagined-source/d1reimagined-source
+2026-10-30T00:03:24.1607070Z Removing SSH command configuration
+2026-10-30T00:03:24.1614242Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-30T00:03:24.1655491Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-30T00:03:24.1939074Z Removing HTTP extra header
+2026-10-30T00:03:24.1946204Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-30T00:03:24.1986448Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-30T00:03:24.2248843Z Removing includeIf entries pointing to credentials config files
+2026-10-30T00:03:24.2257076Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-30T00:03:24.2296328Z includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git.path
+2026-10-30T00:03:24.2297658Z includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path
+2026-10-30T00:03:24.2298984Z includeif.gitdir:/github/workspace/.git.path
+2026-10-30T00:03:24.2299875Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-30T00:03:24.2307176Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git.path
+2026-10-30T00:03:24.2343361Z /home/runner/work/_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config
+2026-10-30T00:03:24.2354530Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-3f19ab1e\-43da\-4906\-94a6\-cd20985879ff\.config
+2026-10-30T00:03:24.2422168Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path
+2026-10-30T00:03:24.2451121Z /home/runner/work/_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config
+2026-10-30T00:03:24.2522739Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/d1reimagined-source/d1reimagined-source/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-3f19ab1e\-43da\-4906\-94a6\-cd20985879ff\.config
+2026-10-30T00:03:24.2551648Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-30T00:03:24.2587925Z /github/runner_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config
+2026-10-30T00:03:24.2590848Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-3f19ab1e\-43da\-4906\-94a6\-cd20985879ff\.config
+2026-10-30T00:03:24.2661921Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-30T00:03:24.2691465Z /github/runner_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config
+2026-10-30T00:03:24.2694000Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-3f19ab1e\-43da\-4906\-94a6\-cd20985879ff\.config
+2026-10-30T00:03:24.2743177Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-30T00:03:24.3009736Z Removing credentials config '/home/runner/work/_temp/git-credentials-3f19ab1e-43da-4906-94a6-cd20985879ff.config'
+2026-10-30T00:03:24.3165707Z Cleaning up orphan processes
+2026-10-30T00:03:24.3542820Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

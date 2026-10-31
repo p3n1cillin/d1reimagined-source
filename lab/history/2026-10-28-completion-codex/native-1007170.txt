@@ -1,0 +1,12 @@
+0x01007170 jmp       0x12aaa40
+0x01007175 nop       
+0x01007176 nop       
+0x01007177 nop       
+0x01007178 nop       
+0x01007179 nop       
+0x0100717a nop       
+0x0100717b nop       
+0x0100717c nop       
+0x0100717d nop       
+0x0100717e nop       
+0x0100717f nop       

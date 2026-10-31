@@ -1,0 +1,1 @@
+d1-eboot: no RTTI class named "c_squad_member" - `d1-eboot rtti --name c_squad_member` lists the near misses

@@ -1,0 +1,1 @@
+PASS: actual list parser and frame encoder, phase 3, 20 non-lifetime clients, 321 bytes

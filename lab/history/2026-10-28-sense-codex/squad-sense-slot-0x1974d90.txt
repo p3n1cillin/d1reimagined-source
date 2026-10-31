@@ -1,0 +1,57 @@
+target 0x1974d90: 2 confirmed reference(s) over 2 candidate window(s) [kinds: riprel]
+   riprel  fn 0x0105230  0x01052bb  lea     rdx, [rip+0x186face]
+   riprel  fn 0x01c39e0  0x01c39f1  lea     rax, [rip+0x17b1398]
+
+POSITIVE CONTROL: none supplied - 'not found' from this run is NOT evidence of absence
+
+=== fn 0x0105230 around 0x01052bb ===
+0x01052a1  mov      rdi, rbx
+0x01052a4  call     0x108cb0
+0x01052a9  mov      edx, eax
+0x01052ab  sar      edx, 0xd
+0x01052ae  mov      ecx, edx
+0x01052b0  shr      ecx, 0x12
+0x01052b3  or       ecx, 0x3ff
+0x01052b9  and      ecx, edx
+0x01052bb  lea      rdx, [rip+0x186face] <<<
+0x01052c2  mov      rsi, [rdx]
+0x01052c5  mov      edx, eax
+0x01052c7  and      edx, 0x1fff
+0x01052cd  lea      rdi, [rip+0x191e5cc]
+0x01052d4  mov      rdi, [rdi]
+0x01052d7  mov      rbx, [rdi]
+0x01052da  shl      rcx, 6
+0x01052de  imul     edx, [rbx+rcx+0x30]
+0x01052e3  mov      esi, [rsi]
+0x01052e5  mov      rdi, [rbx+rcx+0x10]
+0x01052ea  movsxd   rcx, [rbx+rcx+0x34]
+0x01052ef  and      rcx, [rdi+rdx+8]
+0x01052f4  add      rcx, r15
+0x01052f7  add      rdi, rdx
+0x01052fa  sub      rcx, rdi
+
+=== fn 0x01c39e0 around 0x01c39f1 ===
+0x01c39e4  push     r15
+0x01c39e6  push     r14
+0x01c39e8  push     r12
+0x01c39ea  push     rbx
+0x01c39eb  mov      r14d, esi
+0x01c39ee  mov      r12, rdi
+0x01c39f1  lea      rax, [rip+0x17b1398] <<<
+0x01c39f8  mov      rax, [rax]
+0x01c39fb  mov      r15, [rax+8]
+0x01c39ff  mov      rdi, r15
+0x01c3a02  xor      esi, esi
+0x01c3a04  mov      edx, 0xffffffff
+0x01c3a09  call     0xe8680
+0x01c3a0e  mov      rdi, r12
+0x01c3a11  xor      esi, esi
+0x01c3a13  mov      rdx, rax
+0x01c3a16  call     0x12aa980
+0x01c3a1b  mov      ax, [r15+0x1c]
+0x01c3a20  mov      dx, ax
+0x01c3a23  and      dx, 0x78
+0x01c3a27  setne    cl
+0x01c3a2a  test     dx, dx
+0x01c3a2d  jne      short 0x1c3a67
+0x01c3a2f  mov      ebx, [r15+0x20]

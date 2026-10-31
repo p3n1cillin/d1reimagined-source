@@ -1,0 +1,11 @@
+0x00353610 mov       rax, qword ptr [rdi]
+0x00353613 mov       rdi, qword ptr [rdi + 8]
+0x00353617 mov       rcx, qword ptr [rax + 0x18]
+0x0035361b add       rdi, qword ptr [rax + rcx + 0x38]
+0x00353620 mov       rax, qword ptr [rax + rcx + 0x30]
+0x00353625 test      al, 1
+0x00353627 je        0x353631
+0x00353629 mov       rcx, qword ptr [rdi]
+0x0035362c mov       rax, qword ptr [rax + rcx - 1]
+0x00353631 jmp       rax
+0x00353633 nop       word ptr cs:[rax + rax]

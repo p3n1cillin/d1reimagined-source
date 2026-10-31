@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-07T23:58:45.2822948Z",
+  "prior_goal_turn": "PROGRESS",
+  "current_goal_turn": "PROGRESS",
+  "goal_status": "ACTIVE",
+  "source_head": "d7944d26b7a13cb83ca472e698924aeacb38190e",
+  "data_head": "827cf0c2839c37ebad82b72b6ddee581a5d92922",
+  "critical_native_closed": true,
+  "overall_acceptance": "INCOMPLETE",
+  "next_task": "Resolve client-directed slice streaming without the manual teleport respawn; retain native player lifetime and require idle24 plus controls.",
+  "handoff": "Oct7 immutable NAS package reverified; late175-179 retained for next eligible edition."
+}

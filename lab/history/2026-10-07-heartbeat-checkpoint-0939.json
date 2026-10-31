@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-10-07T09:39:07.5415712Z",
+  "automation_id": "daily-engineering-handoff",
+  "reporting_date": "2026-10-06",
+  "existing_clip_id": "<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56",
+  "existing_ready_package_verified": true,
+  "payload_sizes_and_hashes_verified": 3,
+  "handoff_complete": true,
+  "new_package_created": false,
+  "media_resent": false,
+  "outbox_count": 0,
+  "native_test": "FINAL124_JOIN164",
+  "critical_native_test_active": true,
+  "interrupted_test": false,
+  "late_evidence_rule": "Late evidence retains actual event dates for the next eligible consolidated daily edition.",
+  "next_action": "Continue the active engineering test; prepare October 7 handoff near 19:00 Europe/London at a safe checkpoint."
+}

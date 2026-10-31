@@ -1,0 +1,77 @@
+[
+  {
+    "fn": "0x105670",
+    "size": 240,
+    "hits": [
+      "0x00105718 mov       al, byte ptr [rax + rcx + 0x208]"
+    ]
+  },
+  {
+    "fn": "0x1391b0",
+    "size": 48,
+    "hits": [
+      "0x001391c5 mov       al, byte ptr [rdi + rax + 0x209]"
+    ]
+  },
+  {
+    "fn": "0x13a5b0",
+    "size": 624,
+    "hits": [
+      "0x0013a6a9 cmp       byte ptr [r13 + rbx + 0x208], 2"
+    ]
+  },
+  {
+    "fn": "0x146e00",
+    "size": 5904,
+    "hits": [
+      "0x0014797b mov       bl, byte ptr [r13 + r12 + 0x2342]",
+      "0x00147cd1 mov       al, byte ptr [rcx + rsi + 0x2342]",
+      "0x00147ce8 mov       byte ptr [rcx + rsi + 0x2342], 0",
+      "0x00148277 mov       byte ptr [rcx + rax + 0x2342], dl",
+      "0x001483c1 mov       al, byte ptr [r13 + r12 + 0x2342]"
+    ]
+  },
+  {
+    "fn": "0x15a3f0",
+    "size": 128,
+    "hits": [
+      "0x0015a40c movsx     eax, byte ptr [rdi + rax + 0x2342]"
+    ]
+  },
+  {
+    "fn": "0x15e6d0",
+    "size": 224,
+    "hits": [
+      "0x0015e6f7 movsx     ecx, byte ptr [rdi + rax + 0x208]"
+    ]
+  },
+  {
+    "fn": "0x17add0",
+    "size": 1280,
+    "hits": [
+      "0x0017af09 test      byte ptr [rbx + r15 + 0x22cc], 1",
+      "0x0017af14 mov       al, byte ptr [rbx + r15 + 0x2342]"
+    ]
+  },
+  {
+    "fn": "0x19e770",
+    "size": 13456,
+    "hits": [
+      "0x001a02bd movsx     esi, byte ptr [rsi + rcx + 0x2342]"
+    ]
+  },
+  {
+    "fn": "0x1a70e0",
+    "size": 4240,
+    "hits": [
+      "0x001a775e cmp       byte ptr [r12 + rax + 0x209], 1"
+    ]
+  },
+  {
+    "fn": "0x42e5c0",
+    "size": 2192,
+    "hits": [
+      "0x0042e714 mov       dword ptr [rsp + 0x208], 0"
+    ]
+  }
+]

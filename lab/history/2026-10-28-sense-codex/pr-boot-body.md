@@ -1,0 +1,5 @@
+On a cold launch the client can leave the title screen before the activity host has finished codec setup. In sense34 that produced Currant; once the host was listening, a supervised retry reached the world. Separately, the old 200-second world wait could expire before native loading finished, leaving revival skips unsent and the replay waiting for gameplay.
+
+Wait for port 4110 under this run's owned activity-host executable before the title input. Give the native world milestone a configurable 900-second default and exit with code 2 if world entry or completed teleportation is missing. Cinematic skip retries now include the required left-stick nudge.
+
+Validation: PowerShell syntax parse; readiness predicate accepted the current contained host and rejected it as stale against a later run timestamp. A private launcher copy with the longer world wait reached completed teleportation and started the canonical route after the supervised Currant recovery. The readiness gate still needs a fresh full cold-boot test; it does not claim to repair arbitrary connection errors. No host rebuild or protocol change.

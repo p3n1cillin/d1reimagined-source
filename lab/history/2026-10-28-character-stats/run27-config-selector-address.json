@@ -1,0 +1,8 @@
+{
+  "base": "0x51d0000",
+  "record": "0x3808b0ab8",
+  "selectors_13f_147": "0200020304ff010c14",
+  "selectors_15c_15e": "050607",
+  "watch_aligned": "0x3808b0bf8",
+  "supersedes": "run27-selector-address.json watched the globals root, not its config record"
+}

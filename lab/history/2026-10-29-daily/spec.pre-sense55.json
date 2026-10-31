@@ -1,0 +1,38 @@
+{
+  "machine": "<lab-pc>",
+  "report": "daily-report.md",
+  "events": "events.json",
+  "clips": [
+    "clips53/01-dock13-walk.mp4",
+    "clips53/02-hangar-fight-rahn.mp4",
+    "clips53/03-outro-cinematic.mp4",
+    "clips53/04-postgame-screens-ship.mp4"
+  ],
+  "screenshots": [
+    "screenshots53/01-hangar-rahn.png",
+    "screenshots53/02-outro-guardian-ghost.png",
+    "screenshots53/03-outro-jumpship.png",
+    "screenshots53/04-activity-rewards-ship.png",
+    "screenshots53/05-mission-summary.png"
+  ],
+  "metadata": {
+    "package_kind": "engineering-report",
+    "reporting_date": "2026-10-29",
+    "reporting_timezone": "Europe/London",
+    "topic": "A Guardian Rises: ending cinematic and end-of-mission screens",
+    "feature": "mission completion",
+    "event_type": "milestone",
+    "importance": "MAJOR",
+    "description": "The opening mission plays its ending cinematic and shows the end-of-mission screens with the Guardian's results.",
+    "previous_state": "The mission stopped at Clear Out the Fallen; after the cinematic the screen stayed black.",
+    "current_state": "All eight hangar groups clear; outro plays in full; ACTIVITY REWARDS and MISSION SUMMARY display server-provided results.",
+    "remaining_issue": "CONTINUE is blocked and a loading indicator remains; rewards are not granted; values are synthetic.",
+    "next_task": "Enable CONTINUE and travel onward; real rewards and experience.",
+    "game_build": "PS4 56578",
+    "contains_sensitive_information": false,
+    "requires_manual_review": true,
+    "contains_voice": false,
+    "audio": "game audio only, one emulator port; music may be present",
+    "git_commit": "2b0ae14ec830bef3216b47d32c958c17e2f6a56e"
+  }
+}

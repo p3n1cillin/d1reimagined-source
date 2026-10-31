@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "source_machine": "<lab-pc>",
+  "clip_id": "<lab-pc>-20261030T193908-eed19b3209b041b892bcc013db045c4a",
+  "project": "destiny1-preservation",
+  "recorded_at": "2026-10-30T19:39:08.335976+00:00",
+  "devblog": null,
+  "contains_voice": false,
+  "contains_microphone_audio": false,
+  "importance": "USEFUL",
+  "clips": [
+    {
+      "file": "clips/clip01.mp4",
+      "duration_seconds": 45.25,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.02,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip02.mp4",
+      "duration_seconds": 56.217,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.86,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    },
+    {
+      "file": "clips/clip03.mp4",
+      "duration_seconds": 41.1,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.96,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    }
+  ],
+  "new_video_count": 3,
+  "new_screenshot_count": 6,
+  "package_kind": "engineering-report",
+  "reporting_date": "2026-10-30",
+  "reporting_timezone": "Europe/London",
+  "topic": "Vendors open in the Tower",
+  "feature": "Tower North",
+  "event_type": "milestone",
+  "description": "The Tower now loads as the city's social space, and two vendor screens open with their stock; the Guardian stays for as long as it is played.",
+  "previous_state": "The Tower ran as a stand-in for a story mission, so no vendor screen could open.",
+  "current_state": "The Tower loads as its own social space with its menus and objective; Executor Hideo's and Eva Levante's vendor screens open, show their stock and item prices, and close.",
+  "remaining_issue": "Buying is blocked because characters have no currency yet; the Research Assistant screen does not finish loading; CONTINUE still goes to the Tower instead of the next story mission.",
+  "next_task": "Give characters currency and serve the purchase, find what the Research Assistant screen waits for, and serve the scripted first Tower visit.",
+  "game_build": "PS4 56578",
+  "contains_sensitive_information": false,
+  "requires_manual_review": true,
+  "audio": "game audio only, one emulator port; music may be present",
+  "supersedes_clip_id": "<lab-pc>-20261030T164246-78853df8364e4dadae6c6a800905aa30",
+  "git_commit": "e58c9d2404bfc5363e040b40b4e9675f3fff9473"
+}

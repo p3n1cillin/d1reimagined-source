@@ -1,0 +1,32 @@
+FUNCTION 97ec70..97ece0
+0x0097ec70 push      rbp
+0x0097ec71 mov       rbp, rsp
+0x0097ec74 push      rbx
+0x0097ec75 sub       rsp, 0x28
+0x0097ec79 mov       rbx, qword ptr [rip + 0x10a0480] ; [0x1a1f100]
+0x0097ec80 mov       rax, qword ptr [rbx]
+0x0097ec83 mov       qword ptr [rbp - 0x10], rax
+0x0097ec87 mov       eax, dword ptr [rdx]
+0x0097ec89 mov       dword ptr [rbp - 0x18], eax
+0x0097ec8c mov       eax, dword ptr [rip + 0x1dd83be] ; [0x2757050]
+0x0097ec92 mov       dword ptr [rbp - 0x20], eax
+0x0097ec95 lea       rdx, [rbp - 0x18]
+0x0097ec99 lea       r10, [rbp - 0x20]
+0x0097ec9d lea       rax, [rip + 0x1dd31d4] ; [0x2751e78]
+0x0097eca4 mov       r9, qword ptr [rax + 8]
+0x0097eca8 mov       qword ptr [rsp], r8
+0x0097ecac mov       r8, r10
+0x0097ecaf call      0x983000
+0x0097ecb4 mov       rcx, qword ptr [rbx]
+0x0097ecb7 cmp       rcx, qword ptr [rbp - 0x10]
+0x0097ecbb jne       0x97ecc4
+0x0097ecbd add       rsp, 0x28
+0x0097ecc1 pop       rbx
+0x0097ecc2 pop       rbp
+0x0097ecc3 ret       
+0x0097ecc4 call      0x12aa7f0
+0x0097ecc9 nop       
+0x0097ecca nop       word ptr [rax + rax]
+0x0097ecd0 mov       rax, qword ptr [rdi + 8]
+0x0097ecd4 ret       
+0x0097ecd5 nop       word ptr cs:[rax + rax]

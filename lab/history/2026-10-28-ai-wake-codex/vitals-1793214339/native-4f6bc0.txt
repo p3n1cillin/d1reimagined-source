@@ -1,0 +1,47 @@
+0x004f6bc0 push      rbp
+0x004f6bc1 mov       rbp, rsp
+0x004f6bc4 push      r15
+0x004f6bc6 push      r14
+0x004f6bc8 push      r13
+0x004f6bca push      r12
+0x004f6bcc push      rbx
+0x004f6bcd push      rax
+0x004f6bce mov       r15, rsi
+0x004f6bd1 mov       r14, rdi
+0x004f6bd4 lea       r12, [r14 + 0x368]
+0x004f6bdb mov       r13d, dword ptr [r14 + 0x380]
+0x004f6be2 xor       ebx, ebx
+0x004f6be4 nop       word ptr cs:[rax + rax]
+0x004f6bf0 cmp       ebx, r13d
+0x004f6bf3 jge       0x4f6c3d
+0x004f6bf5 add       r12, 0x20
+0x004f6bf9 mov       rdi, r12
+0x004f6bfc mov       rsi, r15
+0x004f6bff call      0x1d0400
+0x004f6c04 inc       ebx
+0x004f6c06 test      al, al
+0x004f6c08 je        0x4f6bf0
+0x004f6c0a mov       eax, dword ptr [r14 + 0x380]
+0x004f6c11 mov       ecx, eax
+0x004f6c13 sub       ecx, ebx
+0x004f6c15 test      ecx, ecx
+0x004f6c17 jle       0x4f6c34
+0x004f6c19 movsxd    rdx, ecx
+0x004f6c1c shl       rdx, 5
+0x004f6c20 mov       rdi, r12
+0x004f6c23 lea       rsi, [r12 + 0x20]
+0x004f6c28 call      0x12aaab0
+0x004f6c2d mov       eax, dword ptr [r14 + 0x380]
+0x004f6c34 dec       eax
+0x004f6c36 mov       dword ptr [r14 + 0x380], eax
+0x004f6c3d add       rsp, 8
+0x004f6c41 pop       rbx
+0x004f6c42 pop       r12
+0x004f6c44 pop       r13
+0x004f6c46 pop       r14
+0x004f6c48 pop       r15
+0x004f6c4a pop       rbp
+0x004f6c4b ret       
+0x004f6c4c nop       dword ptr [rax]
+0x004f6c50 ret       
+0x004f6c51 nop       word ptr cs:[rax + rax]

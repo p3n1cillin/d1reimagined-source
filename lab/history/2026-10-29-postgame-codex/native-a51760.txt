@@ -1,0 +1,49 @@
+0x00a51760 push      rbp
+0x00a51761 mov       rbp, rsp
+0x00a51764 push      r14
+0x00a51766 push      rbx
+0x00a51767 mov       rax, qword ptr [rsi]
+0x00a5176a mov       rcx, qword ptr [rsi + 8]
+0x00a5176e xor       r14b, r14b
+0x00a51771 cmp       rax, rcx
+0x00a51774 je        0xa517f1
+0x00a51776 movsx     ebx, word ptr [rax]
+0x00a51779 test      ebx, ebx
+0x00a5177b je        0xa517f1
+0x00a5177d cmp       ebx, 1
+0x00a51780 jne       0xa517e4
+0x00a51782 cmp       word ptr [rax + 2], 0
+0x00a51787 jne       0xa517f1
+0x00a51789 add       rax, 4
+0x00a5178d cmp       rax, rcx
+0x00a51790 jne       0xa517f1
+0x00a51792 mov       rax, qword ptr [rdx]
+0x00a51795 cmp       rax, qword ptr [rip + 0xfcde94] ; [0x1a1f630]
+0x00a5179c je        0xa517ab
+0x00a5179e mov       rax, qword ptr [rdx + 8]
+0x00a517a2 cmp       rax, qword ptr [rip + 0xfcde87] ; [0x1a1f630]
+0x00a517a9 jne       0xa517f1
+0x00a517ab mov       eax, dword ptr [rdx + 0x28]
+0x00a517ae mov       ecx, 1
+0x00a517b3 test      eax, eax
+0x00a517b5 cmovg     ecx, eax
+0x00a517b8 mov       eax, 0xa
+0x00a517bd cmp       ecx, 0xa
+0x00a517c0 cmovle    eax, ecx
+0x00a517c3 mov       r14b, 1
+0x00a517c6 cmp       dword ptr [rdi + 0x88], eax
+0x00a517cc je        0xa517f1
+0x00a517ce mov       dword ptr [rdi + 0x88], eax
+0x00a517d4 add       rdi, 0x78
+0x00a517d8 mov       esi, 1
+0x00a517dd call      0x9984d0
+0x00a517e2 jmp       0xa517f1
+0x00a517e4 mov       ecx, 2
+0x00a517e9 call      0x1163ff0
+0x00a517ee mov       r14b, al
+0x00a517f1 mov       al, r14b
+0x00a517f4 pop       rbx
+0x00a517f5 pop       r14
+0x00a517f7 pop       rbp
+0x00a517f8 ret       
+0x00a517f9 nop       dword ptr [rax]

@@ -1,0 +1,5 @@
+0x0017a5a0 movsxd    rax, dword ptr [rdi + 8]
+0x0017a5a4 mov       rcx, qword ptr [rdi]
+0x0017a5a7 mov       eax, dword ptr [rcx + rax*8 + 0x280]
+0x0017a5ae ret       
+0x0017a5af nop       

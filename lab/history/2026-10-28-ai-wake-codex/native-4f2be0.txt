@@ -1,0 +1,9 @@
+0x004f2be0 mov       eax, 0x805
+0x004f2be5 bextr     eax, edi, eax
+0x004f2bea lea       rcx, [rip + 0x14452d7] ; [0x1937ec8]
+0x004f2bf1 mov       rcx, qword ptr [rcx]
+0x004f2bf4 mov       eax, dword ptr [rcx + rax*4]
+0x004f2bf7 bt        eax, edi
+0x004f2bfa setb      al
+0x004f2bfd ret       
+0x004f2bfe nop       

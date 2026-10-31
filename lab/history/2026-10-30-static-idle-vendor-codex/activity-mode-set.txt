@@ -1,0 +1,169 @@
+FUNCTION 7a9880..7a9b40
+0x007a9880 push      rbp
+0x007a9881 mov       rbp, rsp
+0x007a9884 push      r15
+0x007a9886 push      r14
+0x007a9888 push      rbx
+0x007a9889 sub       rsp, 0x148
+0x007a9890 mov       r14, rdi
+0x007a9893 mov       rax, qword ptr [rip + 0x1275866] ; [0x1a1f100]
+0x007a989a mov       rax, qword ptr [rax]
+0x007a989d mov       qword ptr [rbp - 0x20], rax
+0x007a98a1 mov       edi, 1
+0x007a98a6 call      0x775770
+0x007a98ab lea       rdi, [rax + 0x9b8]
+0x007a98b2 call      0x11c3f80
+0x007a98b7 mov       ecx, dword ptr [rax + 0xa0]
+0x007a98bd mov       dword ptr [r14 + 0x680], ecx
+0x007a98c4 mov       rax, qword ptr [rax + 0x98]
+0x007a98cb mov       qword ptr [r14 + 0x688], rax
+0x007a98d2 call      0x75f070
+0x007a98d7 test      rax, rax
+0x007a98da je        0x7a98fb
+0x007a98dc cmp       byte ptr [rax + 0x628], 0
+0x007a98e3 je        0x7a98fb
+0x007a98e5 lea       rdi, [r14 + 0x30]
+0x007a98e9 mov       rsi, rax
+0x007a98ec mov       edx, 0x650
+0x007a98f1 call      0x12aa7c0
+0x007a98f6 jmp       0x7a9a02
+0x007a98fb call      0x75f040
+0x007a9900 test      rax, rax
+0x007a9903 je        0x7a9920
+0x007a9905 mov       byte ptr [r14 + 0x30], 1
+0x007a990a lea       rdi, [r14 + 0x658]
+0x007a9911 mov       rsi, rax
+0x007a9914 mov       edx, 0x28
+0x007a9919 call      0x65030
+0x007a991e jmp       0x7a9991
+0x007a9920 mov       edi, 5
+0x007a9925 mov       esi, 4
+0x007a992a call      0xe4d70
+0x007a992f test      al, al
+0x007a9931 je        0x7a9991
+0x007a9933 mov       al, byte ptr [rip + 0x1f26a87] ; [0x26d03c0]
+0x007a9939 test      al, al
+0x007a993b jne       0x7a996b
+0x007a993d lea       rdi, [rip + 0x1f26a7c] ; [0x26d03c0]
+0x007a9944 call      0x12aa7d0
+0x007a9949 test      eax, eax
+0x007a994b je        0x7a996b
+0x007a994d lea       rdi, [rip + 0xeb33bd] ; [0x165cd11] 'world_controller:state:setup:activity_world_transition: Could not get the activity name from the client.  This is likely a DWC case with a broken instantiation path'
+0x007a9954 call      0xe4a10
+0x007a9959 mov       dword ptr [rip + 0x1f26a59], eax ; [0x26d03b8]
+0x007a995f lea       rdi, [rip + 0x1f26a5a] ; [0x26d03c0]
+0x007a9966 call      0x12aa7e0
+0x007a996b lea       rbx, [rbp - 0x160]
+0x007a9972 lea       rsi, [rip + 0xeb3398] ; [0x165cd11] 'world_controller:state:setup:activity_world_transition: Could not get the activity name from the client.  This is likely a DWC case with a broken instantiation path'
+0x007a9979 mov       rdi, rbx
+0x007a997c xor       al, al
+0x007a997e call      0x1008290
+0x007a9983 mov       edi, dword ptr [rip + 0x1f26a2f] ; [0x26d03b8]
+0x007a9989 mov       rsi, rbx
+0x007a998c call      0xe4aa0
+0x007a9991 mov       edi, 5
+0x007a9996 mov       esi, 4
+0x007a999b call      0xe4d70
+0x007a99a0 test      al, al
+0x007a99a2 je        0x7a9a02
+0x007a99a4 mov       al, byte ptr [rip + 0x1f26a26] ; [0x26d03d0]
+0x007a99aa test      al, al
+0x007a99ac jne       0x7a99dc
+0x007a99ae lea       rdi, [rip + 0x1f26a1b] ; [0x26d03d0]
+0x007a99b5 call      0x12aa7d0
+0x007a99ba test      eax, eax
+0x007a99bc je        0x7a99dc
+0x007a99be lea       rdi, [rip + 0xeb33f1] ; [0x165cdb6] 'world_controller:state:setup:activity_world_transition: Unable to get world options from the activity client options, this may cause world option CRC mismatches!'
+0x007a99c5 call      0xe4a10
+0x007a99ca mov       dword ptr [rip + 0x1f269f8], eax ; [0x26d03c8]
+0x007a99d0 lea       rdi, [rip + 0x1f269f9] ; [0x26d03d0]
+0x007a99d7 call      0x12aa7e0
+0x007a99dc lea       rbx, [rbp - 0x160]
+0x007a99e3 lea       rsi, [rip + 0xeb33cc] ; [0x165cdb6] 'world_controller:state:setup:activity_world_transition: Unable to get world options from the activity client options, this may cause world option CRC mismatches!'
+0x007a99ea mov       rdi, rbx
+0x007a99ed xor       al, al
+0x007a99ef call      0x1008290
+0x007a99f4 mov       edi, dword ptr [rip + 0x1f269ce] ; [0x26d03c8]
+0x007a99fa mov       rsi, rbx
+0x007a99fd call      0xe4aa0
+0x007a9a02 mov       edi, 3
+0x007a9a07 call      0x752150
+0x007a9a0c test      al, al
+0x007a9a0e je        0x7a9af1
+0x007a9a14 call      0x78b250
+0x007a9a19 mov       r15d, eax
+0x007a9a1c mov       edi, 5
+0x007a9a21 mov       esi, 2
+0x007a9a26 call      0xe4d70
+0x007a9a2b test      al, al
+0x007a9a2d je        0x7a9a98
+0x007a9a2f mov       al, byte ptr [rip + 0x1f269ab] ; [0x26d03e0]
+0x007a9a35 test      al, al
+0x007a9a37 jne       0x7a9a67
+0x007a9a39 lea       rdi, [rip + 0x1f269a0] ; [0x26d03e0]
+0x007a9a40 call      0x12aa7d0
+0x007a9a45 test      eax, eax
+0x007a9a47 je        0x7a9a67
+0x007a9a49 lea       rdi, [rip + 0xeb3408] ; [0x165ce58] "world_controller:state:setup:activity_world_transition: Setting world options based on game mode '%s'."
+0x007a9a50 call      0xe4a10
+0x007a9a55 mov       dword ptr [rip + 0x1f2697d], eax ; [0x26d03d8]
+0x007a9a5b lea       rdi, [rip + 0x1f2697e] ; [0x26d03e0]
+0x007a9a62 call      0x12aa7e0
+0x007a9a67 mov       edi, r15d
+0x007a9a6a call      0x78b2c0
+0x007a9a6f lea       rbx, [rbp - 0x160]
+0x007a9a76 lea       rsi, [rip + 0xeb33db] ; [0x165ce58] "world_controller:state:setup:activity_world_transition: Setting world options based on game mode '%s'."
+0x007a9a7d mov       rdi, rbx
+0x007a9a80 mov       rdx, rax
+0x007a9a83 xor       al, al
+0x007a9a85 call      0x1008290
+0x007a9a8a mov       edi, dword ptr [rip + 0x1f26948] ; [0x26d03d8]
+0x007a9a90 mov       rsi, rbx
+0x007a9a93 call      0xe4aa0
+0x007a9a98 cmp       r15d, 2
+0x007a9a9c jne       0x7a9afb
+0x007a9a9e movzx     edi, word ptr [r14 + 0x650]
+0x007a9aa6 call      0x78e010
+0x007a9aab mov       edi, eax
+0x007a9aad call      0x78e060
+0x007a9ab2 mov       ebx, eax
+0x007a9ab4 mov       edi, ebx
+0x007a9ab6 call      0x78b1a0
+0x007a9abb cmp       ebx, 2
+0x007a9abe sete      r15b
+0x007a9ac2 call      0x5c4590
+0x007a9ac7 xor       al, r15b
+0x007a9aca je        0x7a9ada
+0x007a9acc cmp       ebx, 2
+0x007a9acf sete      al
+0x007a9ad2 movzx     edi, al
+0x007a9ad5 call      0x5c4440
+0x007a9ada call      0x771940
+0x007a9adf movzx     esi, word ptr [r14 + 0x650]
+0x007a9ae7 mov       rdi, rax
+0x007a9aea call      0x76dc20
+0x007a9aef jmp       0x7a9afb
+0x007a9af1 mov       edi, 1
+0x007a9af6 call      0x752150
+0x007a9afb mov       rax, qword ptr [rip + 0x12755fe] ; [0x1a1f100]
+0x007a9b02 mov       rax, qword ptr [rax]
+0x007a9b05 cmp       rax, qword ptr [rbp - 0x20]
+0x007a9b09 jne       0x7a9b19
+0x007a9b0b add       rsp, 0x148
+0x007a9b12 pop       rbx
+0x007a9b13 pop       r14
+0x007a9b15 pop       r15
+0x007a9b17 pop       rbp
+0x007a9b18 ret       
+0x007a9b19 call      0x12aa7f0
+0x007a9b1e nop       
+0x007a9b1f nop       
+0x007a9b20 pop       r15
+0x007a9b22 pop       rbp
+0x007a9b23 ret       
+0x007a9b24 call      0x7a9b29
+0x007a9b29 nop       
+0x007a9b2a nop       word ptr [rax + rax]
+0x007a9b30 pop       rbp
+0x007a9b31 ret       
+0x007a9b32 nop       word ptr cs:[rax + rax]

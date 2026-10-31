@@ -1,0 +1,4 @@
+{"event": "start", "pid": 24636, "base": "0x50f0000", "addrs": ["0x53393d3", "0x53393d8", "0x533942c"], "t": 1793011336.836241}
+{"event": "exec", "tid": 23680, "rip_img": "0x2493d3", "rax": "0x3810a7260", "al": 96, "rdi": "0x3810a7260", "rsi": "0x3810b5a40", "rdx": "0x2cac0", "rcx": "0x3810a7260", "defn": "0x0", "defn_head": "", "defn_type": null, "stack_img": ["0x25920a", "0xb641f7", "0x324aad", "0x30e0a0"], "peek": {"rsi": "0x7a0fd954", "rax=": "0x3810a7260", "rbx": "0x7a0fd954", "r13": "0x1"}, "t": 1793011341.7366984}
+{"event": "exec", "tid": 23680, "rip_img": "0x2493d8", "rax": "0x0", "al": 0, "rdi": "0x3810a7260", "rsi": "0x3810b5a40", "rdx": "0x2cac0", "rcx": "0x3810a7260", "defn": "0x0", "defn_head": "", "defn_type": null, "stack_img": ["0x25920a", "0xb641f7", "0x324aad", "0x30e0a0"], "peek": {"rsi": "0x7a0fd954", "rax=": "0x0", "rbx": "0x7a0fd954", "r13": "0x1"}, "t": 1793011341.7370536}
+{"event": "detached", "hits": 2, "t": 1793011357.8867152}

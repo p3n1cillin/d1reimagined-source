@@ -1,0 +1,42 @@
+0x0025d180  55                             push     rbp
+0x0025d181  4889e5                         mov      rbp, rsp
+0x0025d184  488b07                         mov      rax, [rdi]
+0x0025d187  ff5008                         call     qword ptr [rax+8]
+0x0025d18a  4c8d0567563f02                 lea      r8, [rip+0x23f5667]   ; [0x26527f8]
+0x0025d191  498b5050                       mov      rdx, [r8+0x50]
+0x0025d195  4885d2                         test     rdx, rdx
+0x0025d198  754c                           jne      short 0x25d1e6   ; -> 0x25d1e6
+0x0025d19a  8b80a8000000                   mov      eax, [rax+0xa8]
+0x0025d1a0  89c1                           mov      ecx, eax
+0x0025d1a2  c1f90d                         sar      ecx, 0xd
+0x0025d1a5  89ce                           mov      esi, ecx
+0x0025d1a7  c1ee12                         shr      esi, 0x12
+0x0025d1aa  81ceff030000                   or       esi, 0x3ff
+0x0025d1b0  21ce                           and      esi, ecx
+0x0025d1b2  488d0de7667c01                 lea      rcx, [rip+0x17c66e7]   ; [0x1a238a0]
+0x0025d1b9  488b09                         mov      rcx, [rcx]
+0x0025d1bc  488b09                         mov      rcx, [rcx]
+0x0025d1bf  48c1e606                       shl      rsi, 6
+0x0025d1c3  488b543110                     mov      rdx, [rcx+rsi+0x10]
+0x0025d1c8  48637c3134                     movsxd   rdi, [rcx+rsi+0x34]
+0x0025d1cd  25ff1f0000                     and      eax, 0x1fff
+0x0025d1d2  0faf443130                     imul     eax, [rcx+rsi+0x30]
+0x0025d1d7  48237c0208                     and      rdi, [rdx+rax+8]
+0x0025d1dc  4801c2                         add      rdx, rax
+0x0025d1df  4829fa                         sub      rdx, rdi
+0x0025d1e2  49895050                       mov      [r8+0x50], rdx
+0x0025d1e6  488d4208                       lea      rax, [rdx+8]
+0x0025d1ea  4885d2                         test     rdx, rdx
+0x0025d1ed  480f44c2                       cmove    rax, rdx
+0x0025d1f1  5d                             pop      rbp
+0x0025d1f2  c3                             ret      
+0x0025d1f3  666666662e0f1f840000000000     nop      [rax+rax]
+0x0025d200  55                             push     rbp
+0x0025d201  4889e5                         mov      rbp, rsp
+0x0025d204  488b07                         mov      rax, [rdi]
+0x0025d207  ff5008                         call     qword ptr [rax+8]
+0x0025d20a  4c8d05e7553f02                 lea      r8, [rip+0x23f55e7]   ; [0x26527f8]
+0x0025d211  498b5058                       mov      rdx, [r8+0x58]
+0x0025d215  4885d2                         test     rdx, rdx
+0x0025d218  754c                           jne      short 0x25d266   ; -> 0x25d266
+0x0025d21a  8b80b8000000                   mov      eax, [rax+0xb8]

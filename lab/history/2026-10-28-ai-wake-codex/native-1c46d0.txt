@@ -1,0 +1,13 @@
+0x001c46d0 and       edi, 0x1fff
+0x001c46d6 lea       rax, [rip + 0x24132c3] ; [0x25d79a0]
+0x001c46dd imul      edi, dword ptr [rax + 0x10]
+0x001c46e1 mov       rax, qword ptr [rax + 8]
+0x001c46e5 movsx     eax, byte ptr [rdi + rax + 0x20a]
+0x001c46ed ret       
+0x001c46ee nop       
+0x001c46f0 adc       byte ptr [rax - 0x75], cl
+0x001c46f3 or        byte ptr [rdi], cl
+0x001c46f6 mov       esi, 0x20c0784
+0x001c46fb add       byte ptr [rax], al
+0x001c46fd ret       
+0x001c46fe nop       

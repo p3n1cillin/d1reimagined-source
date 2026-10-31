@@ -1,0 +1,13 @@
+0x0010c250 lea       rax, [rip + 0x24cae19] ; [0x25d7070]
+0x0010c257 mov       rax, qword ptr [rax]
+0x0010c25a ret       
+0x0010c25b nop       dword ptr [rax + rax]
+0x0010c260 lea       rax, [rip]
+0x0010c267 mov       rax, qword ptr [rax]
+0x0010c26a ret       
+0x0010c26b nop       dword ptr [rax + rax]
+0x0010c270 lea       rax, [rip]
+0x0010c277 cmp       qword ptr [rax], 0
+0x0010c27b setne     al
+0x0010c27e ret       
+0x0010c27f nop       

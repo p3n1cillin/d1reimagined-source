@@ -1,0 +1,1 @@
+d1-eboot: reading investment definitions F:\d1\d1preservation-main\d1-server\crates\d1-eboot/../../../capture-rig/schemas/investment-message-definitions.bin: The system cannot find the path specified. (os error 3)

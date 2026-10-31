@@ -1,0 +1,8 @@
+0x00149420 and       edi, 0x1fff
+0x00149426 lea       rax, [rip + 0x248e573] ; [0x25d79a0]
+0x0014942d imul      edi, dword ptr [rax + 0x10]
+0x00149431 mov       rcx, qword ptr [rax + 8]
+0x00149435 mov       eax, dword ptr [rdi + rcx + 0x23b8]
+0x0014943c mov       rdx, qword ptr [rdi + rcx + 0x23c0]
+0x00149444 ret       
+0x00149445 nop       word ptr cs:[rax + rax]

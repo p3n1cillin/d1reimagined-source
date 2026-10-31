@@ -1,0 +1,14 @@
+0x001c2890 push      rbp
+0x001c2891 mov       rbp, rsp
+0x001c2894 mov       rdi, qword ptr [rip + 0x2416a9d] ; [0x25d9338]
+0x001c289b xor       esi, esi
+0x001c289d mov       edx, 0x6a0
+0x001c28a2 call      0x12aa980
+0x001c28a7 pop       rbp
+0x001c28a8 ret       
+0x001c28a9 nop       dword ptr [rax]
+0x001c28b0 add       byte ptr [rax], al
+0x001c28b2 call      0x1c28b7
+0x001c28b7 pop       rbp
+0x001c28b8 ret       
+0x001c28b9 nop       dword ptr [rax]

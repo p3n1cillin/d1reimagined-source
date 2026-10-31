@@ -1,0 +1,21 @@
+0x001616e0 vmovss    xmm0, dword ptr [rdi + 8]
+0x001616e5 ret       
+0x001616e6 nop       word ptr cs:[rax + rax]
+0x001616f0 mov       eax, dword ptr [rdi + 8]
+0x001616f3 ret       
+0x001616f4 nop       word ptr cs:[rax + rax]
+0x00161700 mov       eax, dword ptr [rdi + 8]
+0x00161703 ret       
+0x00161704 nop       word ptr cs:[rax + rax]
+0x00161710 movzx     eax, word ptr [rdi + 8]
+0x00161714 ret       
+0x00161715 nop       word ptr cs:[rax + rax]
+0x00161720 movzx     eax, word ptr [rdi + 8]
+0x00161724 ret       
+0x00161725 nop       word ptr cs:[rax + rax]
+0x00161730 mov       al, byte ptr [rdi + 8]
+0x00161733 ret       
+0x00161734 nop       word ptr cs:[rax + rax]
+0x00161740 movzx     eax, word ptr [rdi + 8]
+0x00161744 ret       
+0x00161745 nop       word ptr cs:[rax + rax]

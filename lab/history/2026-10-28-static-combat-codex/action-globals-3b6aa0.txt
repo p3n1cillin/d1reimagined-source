@@ -1,0 +1,10 @@
+0x003b6aa0 mov       eax, 1
+0x003b6aa5 mov       cl, dil
+0x003b6aa8 shl       eax, cl
+0x003b6aaa mov       ecx, 0x805
+0x003b6aaf bextr     ecx, edi, ecx
+0x003b6ab4 lea       rdx, [rip + 0x22f66d5] ; [0x26ad190]
+0x003b6abb mov       rdx, qword ptr [rdx]
+0x003b6abe or        dword ptr [rdx + rcx*4], eax
+0x003b6ac1 ret       
+0x003b6ac2 nop       word ptr cs:[rax + rax]

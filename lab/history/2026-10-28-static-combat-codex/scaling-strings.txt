@@ -1,0 +1,25 @@
+0x15df7f0 N3cui22c_death_data_componentE
+0x16389e3 :killing_object_weapon
+0x1640334 networking:online:matchmaking:bungie: Online session search nonce: '0x%llx', config: '%s', filters: [skill: '%d', difficulty: '%f', loc: '%f', jip: '%s'], advertisements: [total: '%d' active: '%d']
+0x167e3ef Average Raw Skill Level: '%d' Difficulty Delta: '%f'
+0x1683a13 networking:composition: [game_in_progress %d][lowest skill %d][highest skill %d][average skill %d][difficulty %f][min-nat %d][local-nat %d]
+0x1683bc6 least-qualified-player-difficulty-delta
+0x1684365 networking:configuration:dump: [average raw skill range %d][difficulty range %f][locality range %f]
+0x16843c9 networking:configuration:dump: weights: [skill %.2f][difficulty_delta %.2f][locality_weight %.2f][social_id_weight %.2f][join_in_progress_weight %.2f][player_higher_population_weight %.2f]
+0x1684486 networking:configuration:dump: [average raw skill range advertisement: %d][difficulty range advertisement %f][locality range advertisement %f]
+0x1684bce matchmaking_desirability_undesirable_difficulty_delta
+0x16ba3ee Lookup timeout set to %f seconds. This is outside the normal recommended range
+0x16bb4f7 UPnP discovery timeout set to %f seconds. This is outside the normal recommended range
+0x16bb54e UPnP response timeout set to %f seconds. This is outside the normal recommended range
+0x16bb5e5 UPnP discovery retries set to %u . This is outside the normal recommended range
+0x16bdfdb Max resends configured to %u. This is outside the normal recommended range
+0x16be026 Send timeout configured to %f. This is outside the normal recommended range
+0x16be123 NAT Traversal keep alive configured to %f. This is outside the normal recommended range of %f-%f
+0x16be184 NAT Traversal starvation timeout configured to %f. This is outside the normal recommended range of %f-%f
+0x16be1ed NAT Traversal stage timeout configured to %f. This is outside the normal recommended range of %f-%f
+0x16be268 NAT Traversal stage retries configured to %u. This is outside the normal recommended range of %u-%u
+0x16beb79 Max resends configured to %u. This is outside the normal recommended range
+0x16bebc4 Send timeout configured to %f. This is outside the normal recommended range
+0x16bee7f Ignore connection reset differs from recommended setting of %s
+0x16beec9 Receive timeout configured to %f. This is outside the normal recommended range
+0x16bef18 Max connection resets to ignore configured to %u. This is outside the normal recommended range

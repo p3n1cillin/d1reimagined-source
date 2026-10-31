@@ -1,0 +1,21 @@
+0x00511250 push      rbp
+0x00511251 mov       rbp, rsp
+0x00511254 push      rbx
+0x00511255 push      rax
+0x00511256 call      0x71f60
+0x0051125b mov       ebx, eax
+0x0051125d cmp       ebx, -1
+0x00511260 jne       0x511269
+0x00511262 mov       eax, 0xffffffff
+0x00511267 jmp       0x51127c
+0x00511269 mov       edi, ebx
+0x0051126b call      0x4f2be0
+0x00511270 mov       cl, al
+0x00511272 mov       eax, 0xffffffff
+0x00511277 test      cl, cl
+0x00511279 cmove     eax, ebx
+0x0051127c add       rsp, 8
+0x00511280 pop       rbx
+0x00511281 pop       rbp
+0x00511282 ret       
+0x00511283 nop       word ptr cs:[rax + rax]

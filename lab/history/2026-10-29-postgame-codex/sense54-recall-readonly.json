@@ -1,0 +1,13 @@
+{
+  "world_controller": "0x2050306c0",
+  "world_state": 36,
+  "session_root": "0x204f0e4a0",
+  "slot": 0,
+  "session_state": 6,
+  "session_628": 34,
+  "session_62c": 0,
+  "session_632c": 0,
+  "leader_predicate": true,
+  "recall_parameter": "10dfd106000000000c000000000000001d4ca40600000000b0e4f00402000000000000000200000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff",
+  "ui_mode_global": "02000000020000000000000000000000326dd310c32f173bb5e68bd2081655c3"
+}

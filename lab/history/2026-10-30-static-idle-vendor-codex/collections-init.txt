@@ -1,0 +1,54 @@
+FUNCTION 25b1a0..25b1f0
+0x0025b1a0 push      rbp
+0x0025b1a1 mov       rbp, rsp
+0x0025b1a4 push      rbx
+0x0025b1a5 push      rax
+0x0025b1a6 mov       ebx, esi
+0x0025b1a8 lea       rax, [rip + 0x23f7631] ; [0x26527e0]
+0x0025b1af mov       rdi, qword ptr [rax]
+0x0025b1b2 mov       rax, qword ptr [rdi]
+0x0025b1b5 call      qword ptr [rax + 0x178]
+0x0025b1bb mov       rcx, rax
+0x0025b1be xor       eax, eax
+0x0025b1c0 test      rcx, rcx
+0x0025b1c3 je        0x25b1e2
+0x0025b1c5 movsx     rdx, bx
+0x0025b1c9 movsxd    rsi, dword ptr [rcx]
+0x0025b1cc cmp       rsi, rdx
+0x0025b1cf jbe       0x25b1e2
+0x0025b1d1 lea       rax, [rcx + 8]
+0x0025b1d5 add       rax, qword ptr [rcx + 8]
+0x0025b1d9 shl       rdx, 6
+0x0025b1dd lea       rax, [rdx + rax + 0x10]
+0x0025b1e2 add       rsp, 8
+0x0025b1e6 pop       rbx
+0x0025b1e7 pop       rbp
+0x0025b1e8 ret       
+0x0025b1e9 nop       dword ptr [rax]
+FUNCTION 25b540..25b590
+0x0025b540 push      rbp
+0x0025b541 mov       rbp, rsp
+0x0025b544 push      rbx
+0x0025b545 push      rax
+0x0025b546 mov       ebx, esi
+0x0025b548 lea       rax, [rip + 0x23f7291] ; [0x26527e0]
+0x0025b54f mov       rdi, qword ptr [rax]
+0x0025b552 mov       rax, qword ptr [rdi]
+0x0025b555 call      qword ptr [rax + 0x1e0]
+0x0025b55b mov       rcx, rax
+0x0025b55e xor       eax, eax
+0x0025b560 test      rcx, rcx
+0x0025b563 je        0x25b582
+0x0025b565 movsx     rdx, bx
+0x0025b569 movsxd    rsi, dword ptr [rcx]
+0x0025b56c cmp       rsi, rdx
+0x0025b56f jbe       0x25b582
+0x0025b571 lea       rax, [rcx + 8]
+0x0025b575 add       rax, qword ptr [rcx + 8]
+0x0025b579 shl       rdx, 5
+0x0025b57d lea       rax, [rdx + rax + 0x10]
+0x0025b582 add       rsp, 8
+0x0025b586 pop       rbx
+0x0025b587 pop       rbp
+0x0025b588 ret       
+0x0025b589 nop       dword ptr [rax]

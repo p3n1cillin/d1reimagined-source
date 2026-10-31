@@ -1,0 +1,118 @@
+{
+  "run": "sense55",
+  "pid": 15496,
+  "base": "0x5300000",
+  "started_utc": "2026-10-29T15:05:10.398302+00:00",
+  "seconds_requested": 2.0,
+  "log_dir": "F:\\d1\\d1preservation-main\\cfw-staging\\contained-boot\\20261029-140735-sense55",
+  "follow_file": "F:\\d1\\d1preservation-main\\cfw-staging\\sense55-launched-activity.txt",
+  "events": "lab/history\\2026-10-29-postgame-codex\\recall-departure-sense55-1793286310267525500.jsonl",
+  "milestones_after_start": {},
+  "limits": [
+    "50ms memory samples can miss same-frame flags",
+    "world record indicates loaded scenario, not successful player spawn",
+    "log observations are timestamped when read; log timestamps remain in each line",
+    "startup log history is labelled baseline and never counts as new traffic",
+    "no reattachment or input if the process exits"
+  ],
+  "stop_reason": "duration_elapsed",
+  "ended_utc": "2026-10-29T15:05:12.431591+00:00",
+  "elapsed_s": 2.033,
+  "event_count_before_summary": 8,
+  "last_observed": {
+    "native_fast": {
+      "selection": {
+        "type": 1,
+        "activity": 165
+      },
+      "world_controller": {
+        "state": 36,
+        "cleanup_reason6c4": 0,
+        "cleanup_field6c8": 0
+      },
+      "session0": {
+        "state": 6,
+        "leader": true,
+        "goal_valid": true,
+        "goal": 36,
+        "goal_reason": 0,
+        "recall_valid": false,
+        "recall_active_fc": 0,
+        "recall_seconds_e8": 0,
+        "recall_api_active": false,
+        "desired_valid": true,
+        "desired_type": 1,
+        "desired_activity": 164
+      },
+      "session1": {
+        "state": 6,
+        "leader": true,
+        "goal_valid": true,
+        "goal": 36,
+        "goal_reason": 0,
+        "recall_valid": false,
+        "recall_active_fc": 0,
+        "recall_seconds_e8": 0,
+        "recall_api_active": false,
+        "desired_valid": true,
+        "desired_type": 1,
+        "desired_activity": 164
+      },
+      "input": {
+        "controller": 0,
+        "held106": 0,
+        "consumed108": 0,
+        "route110": 0,
+        "route114": 37,
+        "hold_elapsed5c": 0,
+        "ordinary64": 0,
+        "alternate65": 0,
+        "reward66": 0,
+        "rewardhold67": 0,
+        "edge68": 0,
+        "screen_gate11b": 4,
+        "ui_context_state": 43
+      },
+      "departure": {
+        "handler31": 0,
+        "handler32": 0
+      }
+    },
+    "native_slow": {
+      "recall_gate": {
+        "completion673": 1,
+        "plane2838": 1,
+        "plane_valid": 1
+      },
+      "collector": {
+        "state": 4,
+        "target": 4,
+        "activity": 164,
+        "xp": [
+          0,
+          900,
+          900
+        ]
+      },
+      "world": {
+        "scenario_tag": "0x80cb800d",
+        "world_name": "act_cosmo_m0_highway",
+        "world_name_hash": "0x992bb471",
+        "private_checksum": "0x8fe07299",
+        "public_checksum": "0xe354f1ea",
+        "bubble_count": 22
+      },
+      "lifetime": {
+        "content_index": 182,
+        "phases": [
+          7
+        ]
+      }
+    },
+    "follow_file": {
+      "text": "1846390409",
+      "hash": "0x6e0dae89",
+      "index": 164
+    }
+  }
+}

@@ -1,0 +1,80 @@
+0x01017530  55                             push     rbp
+0x01017531  4889e5                         mov      rbp, rsp
+0x01017534  4157                           push     r15
+0x01017536  4156                           push     r14
+0x01017538  53                             push     rbx
+0x01017539  50                             push     rax
+0x0101753a  c5f828c8                       vmovaps  xmm1, xmm0
+0x0101753e  4989ff                         mov      r15, rdi
+0x01017541  4d8b37                         mov      r14, [r15]
+0x01017544  c5f857c0                       vxorps   xmm0, xmm0, xmm0
+0x01017548  4585f6                         test     r14d, r14d
+0x0101754b  0f8ee1000000                   jle      0x1017632   ; -> 0x1017632
+0x01017551  498b4708                       mov      rax, [r15+8]
+0x01017555  c4a17a2a443818                 vcvtsi2ss xmm0, xmm0, dword ptr [rax+r15+0x18]
+0x0101755c  c5f25cd8                       vsubss   xmm3, xmm1, xmm0
+0x01017560  c5e857d2                       vxorps   xmm2, xmm2, xmm2
+0x01017564  c5f82eda                       vucomiss xmm3, xmm2
+0x01017568  7304                           jae      short 0x101756e   ; -> 0x101756e
+0x0101756a  c5f828c8                       vmovaps  xmm1, xmm0
+0x0101756e  4a8d543808                     lea      rdx, [rax+r15+8]
+0x01017573  4c89f6                         mov      rsi, r14
+0x01017576  48c1e620                       shl      rsi, 0x20
+0x0101757a  48b900000000ffffffff           mov      rcx, 0xffffffff00000000
+0x01017584  4801f1                         add      rcx, rsi
+0x01017587  48c1f920                       sar      rcx, 0x20
+0x0101758b  c5fa2a5cca10                   vcvtsi2ss xmm3, xmm0, dword ptr [rdx+rcx*8+0x10]
+0x01017591  c5f25ce3                       vsubss   xmm4, xmm1, xmm3
+0x01017595  c5f82ee2                       vucomiss xmm4, xmm2
+0x01017599  c5f828e3                       vmovaps  xmm4, xmm3
+0x0101759d  7304                           jae      short 0x10175a3   ; -> 0x10175a3
+0x0101759f  c5f828e1                       vmovaps  xmm4, xmm1
+0x010175a3  c5fa1165e4                     vmovss   [rbp-0x1c], xmm4
+0x010175a8  c5f82ec4                       vucomiss xmm0, xmm4
+0x010175ac  7372                           jae      short 0x1017620   ; -> 0x1017620
+0x010175ae  c5f82ee3                       vucomiss xmm4, xmm3
+0x010175b2  7373                           jae      short 0x1017627   ; -> 0x1017627
+0x010175b4  c5f857c0                       vxorps   xmm0, xmm0, xmm0
+0x010175b8  4183fe02                       cmp      r14d, 2
+0x010175bc  7c74                           jl       short 0x1017632   ; -> 0x1017632
+0x010175be  4983c708                       add      r15, 8
+0x010175c2  4183c6fe                       add      r14d, 0xfffffffe
+0x010175c6  c5f857c0                       vxorps   xmm0, xmm0, xmm0
+0x010175ca  31db                           xor      ebx, ebx
+0x010175cc  eb08                           jmp      short 0x10175d6   ; -> 0x10175d6
+0x010175ce  6690                           xchg     ax, ax
+0x010175d0  48ffc3                         inc      rbx
+0x010175d3  498b07                         mov      rax, [r15]
+0x010175d6  4c01f8                         add      rax, r15
+0x010175d9  8b4cd810                       mov      ecx, [rax+rbx*8+0x10]
+0x010175dd  c5fa2ac9                       vcvtsi2ss xmm1, xmm0, ecx
+0x010175e1  c5f82ee1                       vucomiss xmm4, xmm1
+0x010175e5  7232                           jb       short 0x1017619   ; -> 0x1017619
+0x010175e7  8b54d818                       mov      edx, [rax+rbx*8+0x18]
+0x010175eb  c5fa2ad2                       vcvtsi2ss xmm2, xmm0, edx
+0x010175ef  c5f82ed4                       vucomiss xmm2, xmm4
+0x010175f3  7624                           jbe      short 0x1017619   ; -> 0x1017619
+0x010175f5  c5da5cc1                       vsubss   xmm0, xmm4, xmm1
+0x010175f9  29ca                           sub      edx, ecx
+0x010175fb  c5fa2aca                       vcvtsi2ss xmm1, xmm0, edx
+0x010175ff  c5fa5ed1                       vdivss   xmm2, xmm0, xmm1
+0x01017603  c5fa104cd81c                   vmovss   xmm1, [rax+rbx*8+0x1c]
+0x01017609  c5fa1044d814                   vmovss   xmm0, [rax+rbx*8+0x14]
+0x0101760f  e8cc9f07ff                     call     0x915e0   ; -> 0x915e0
+0x01017614  c5fa1065e4                     vmovss   xmm4, [rbp-0x1c]
+0x01017619  4139de                         cmp      r14d, ebx
+0x0101761c  7414                           je       short 0x1017632   ; -> 0x1017632
+0x0101761e  ebb0                           jmp      short 0x10175d0   ; -> 0x10175d0
+0x01017620  c5fa104214                     vmovss   xmm0, [rdx+0x14]
+0x01017625  eb0b                           jmp      short 0x1017632   ; -> 0x1017632
+0x01017627  4a8d443818                     lea      rax, [rax+r15+0x18]
+0x0101762c  c5fa1044c804                   vmovss   xmm0, [rax+rcx*8+4]
+0x01017632  4883c408                       add      rsp, 8
+0x01017636  5b                             pop      rbx
+0x01017637  415e                           pop      r14
+0x01017639  415f                           pop      r15
+0x0101763b  5d                             pop      rbp
+0x0101763c  c3                             ret      
+0x0101763d  90                             nop      
+0x0101763e  90                             nop      
+0x0101763f  90                             nop      

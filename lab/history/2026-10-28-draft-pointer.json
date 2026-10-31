@@ -1,0 +1,20 @@
+{
+  "state": "DELIVERED_AND_VERIFIED",
+  "draft": "lab/history\\2026-10-28-daily-draft-190716",
+  "prepared_at": "2026-10-28T19:07:16.316895+00:00",
+  "reporting_date": "2026-10-28",
+  "checked_utc": "2026-10-28T19:07:37.961686+00:00",
+  "active_driver_inventory": [
+    {
+      "ProcessId": 14392,
+      "ParentProcessId": 16000,
+      "Name": "python.exe",
+      "CreationDate": "2026-10-28T19:07:03.239938+00:00",
+      "CommandLine": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe -u %USERPROFILE%\\AppData\\Local\\Temp\\claude\\F--d1-d1xenia\\eb49bdd6-2562-42a0-a73d-ed14111dbab8\\scratchpad\\run.py 90.0,-553.0 --max-s 100.0 --tol 1.5 --walk"
+    }
+  ],
+  "package": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\content-outbox\\<lab-pc>-20261028T190845-f3d9bb97f810428087116e2c45c13fc6",
+  "clip_id": "<lab-pc>-20261028T190845-f3d9bb97f810428087116e2c45c13fc6",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\28\\<lab-pc>-20261028T190845-f3d9bb97f810428087116e2c45c13fc6.ready",
+  "verified_at": "2026-10-28T19:08:48.121664+00:00"
+}

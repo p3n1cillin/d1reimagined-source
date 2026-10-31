@@ -1,0 +1,67 @@
+{
+ "time": 1793376786.609675,
+ "count": 4,
+ "packages": [
+  {
+   "slot": 0,
+   "handle": "0x80814000",
+   "live": true,
+   "screens": 36,
+   "has": {
+    "c2ddef93": false
+   },
+   "sample": [
+    "0ec49609",
+    "0fcd6c24",
+    "15147121",
+    "17a73819",
+    "366ebdee",
+    "3e5ec8fa"
+   ]
+  },
+  {
+   "slot": 1,
+   "handle": "0x808a0000",
+   "live": true,
+   "screens": 0,
+   "has": {
+    "c2ddef93": false
+   },
+   "sample": []
+  },
+  {
+   "slot": 2,
+   "handle": "0x80830000",
+   "live": true,
+   "screens": 42,
+   "has": {
+    "c2ddef93": false
+   },
+   "sample": [
+    "034348cd",
+    "06f7bf51",
+    "0fef87c4",
+    "103ee069",
+    "12e97d9b",
+    "141adba3"
+   ]
+  },
+  {
+   "slot": 3,
+   "handle": "0x80876000",
+   "live": true,
+   "screens": 14,
+   "has": {
+    "c2ddef93": true
+   },
+   "sample": [
+    "0d89e1c7",
+    "268ab804",
+    "31baeac2",
+    "3259bcf8",
+    "5e863f20",
+    "6496f08c"
+   ]
+  }
+ ]
+}

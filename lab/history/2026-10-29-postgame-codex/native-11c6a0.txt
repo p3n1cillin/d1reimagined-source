@@ -1,0 +1,28 @@
+0x0011c6a0 push      rbp
+0x0011c6a1 mov       rbp, rsp
+0x0011c6a4 push      rbx
+0x0011c6a5 sub       rsp, 0x28
+0x0011c6a9 mov       rbx, qword ptr [rip + 0x1902a50] ; [0x1a1f100]
+0x0011c6b0 mov       rax, qword ptr [rbx]
+0x0011c6b3 mov       qword ptr [rbp - 0x10], rax
+0x0011c6b7 lea       rdx, [rbp - 0x28]
+0x0011c6bb mov       edi, 0xf
+0x0011c6c0 xor       esi, esi
+0x0011c6c2 call      0x1072c0
+0x0011c6c7 test      al, al
+0x0011c6c9 je        0x11c6d4
+0x0011c6cb mov       rdx, qword ptr [rbp - 0x20]
+0x0011c6cf mov       eax, dword ptr [rbp - 0x28]
+0x0011c6d2 jmp       0x11c6db
+0x0011c6d4 mov       eax, 0xffffffff
+0x0011c6d9 xor       edx, edx
+0x0011c6db mov       rcx, qword ptr [rbx]
+0x0011c6de cmp       rcx, qword ptr [rbp - 0x10]
+0x0011c6e2 jne       0x11c6eb
+0x0011c6e4 add       rsp, 0x28
+0x0011c6e8 pop       rbx
+0x0011c6e9 pop       rbp
+0x0011c6ea ret       
+0x0011c6eb call      0x12aa7f0
+0x0011c6f0 nop       
+0x0011c6f1 nop       word ptr cs:[rax + rax]

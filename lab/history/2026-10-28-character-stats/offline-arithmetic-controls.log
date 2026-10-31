@@ -1,0 +1,7 @@
+   Compiling private-d1-stat-probe v0.1.0 (lab/history\2026-10-28-character-stats\native-stat-probe)
+    Finished `release` profile [optimized] target(s) in 1.76s
+     Running `lab/history\2026-10-28-character-stats\native-stat-probe\target\release\private-d1-stat-probe.exe lab/history\2026-10-28-character-stats`
+ARITH vaddss alias: xmm0=4 xmm3=0
+ARITH vaddss separate: xmm0=2 xmm3=2
+ARITH vaddss same source1: xmm0=12 xmm3=0
+ARITH addss legacy: xmm0=12 xmm3=0

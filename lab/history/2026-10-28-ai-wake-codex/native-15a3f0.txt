@@ -1,0 +1,54 @@
+0x0015a3f0 and       edi, 0x1fff
+0x0015a3f6 lea       rcx, [rip + 0x247d5a3] ; [0x25d79a0]
+0x0015a3fd imul      edi, dword ptr [rcx + 0x10]
+0x0015a401 mov       al, 1
+0x0015a403 cmp       esi, 5
+0x0015a406 ja        0x15a449
+0x0015a408 mov       rax, qword ptr [rcx + 8]
+0x0015a40c movsx     eax, byte ptr [rdi + rax + 0x2342]
+0x0015a414 mov       esi, esi
+0x0015a416 lea       rcx, [rip + 0x2f] ; [0x15a44c]
+0x0015a41d movsxd    rsi, dword ptr [rcx + rsi*4]
+0x0015a421 add       rsi, rcx
+0x0015a424 jmp       rsi
+0x0015a426 cmp       eax, edx
+0x0015a428 setl      al
+0x0015a42b ret       
+0x0015a42c cmp       eax, edx
+0x0015a42e setle     al
+0x0015a431 ret       
+0x0015a432 cmp       eax, edx
+0x0015a434 setg      al
+0x0015a437 ret       
+0x0015a438 cmp       eax, edx
+0x0015a43a setge     al
+0x0015a43d ret       
+0x0015a43e cmp       eax, edx
+0x0015a440 sete      al
+0x0015a443 ret       
+0x0015a444 cmp       eax, edx
+0x0015a446 setne     al
+0x0015a449 ret       
+0x0015a44a nop       
+0x0015a44c .byte     0xda
+0x0015a44d .byte     0xff
+0x0015a44e .byte     0xff
+0x0015a44f jmp       rax
+0x0015a451 .byte     0xff
+0x0015a452 .byte     0xff
+0x0015a453 jmp       rsi
+0x0015a455 .byte     0xff
+0x0015a456 .byte     0xff
+0x0015a457 .byte     0xff
+0x0015a458 in        al, dx
+0x0015a459 .byte     0xff
+0x0015a45a .byte     0xff
+0x0015a45b push      rdx
+0x0015a45d .byte     0xff
+0x0015a45e .byte     0xff
+0x0015a45f .byte     0xff
+0x0015a460 clc       
+0x0015a461 .byte     0xff
+0x0015a462 .byte     0xff
+0x0015a463 jmp       qword ptr [rsi + 0x66]
+0x0015a466 nop       word ptr cs:[rax + rax]

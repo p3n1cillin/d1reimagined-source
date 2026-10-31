@@ -1,0 +1,68 @@
+0x0017b6a0 push      rbp
+0x0017b6a1 mov       rbp, rsp
+0x0017b6a4 push      r15
+0x0017b6a6 push      r14
+0x0017b6a8 push      r13
+0x0017b6aa push      r12
+0x0017b6ac push      rbx
+0x0017b6ad push      rax
+0x0017b6ae mov       r13, r8
+0x0017b6b1 mov       r14, rcx
+0x0017b6b4 mov       r15, rdx
+0x0017b6b7 mov       r12, rsi
+0x0017b6ba mov       eax, dword ptr [rdi + 0x188]
+0x0017b6c0 jmp       0x17b6d8
+0x0017b6c2 nop       word ptr cs:[rax + rax]
+0x0017b6d0 mov       rdi, rbx
+0x0017b6d3 call      0x1769c0
+0x0017b6d8 cmp       eax, -1
+0x0017b6db je        0x17b789
+0x0017b6e1 cmp       dword ptr [r13], 0x20
+0x0017b6e6 je        0x17b789
+0x0017b6ec mov       edx, eax
+0x0017b6ee sar       edx, 0xd
+0x0017b6f1 mov       ecx, edx
+0x0017b6f3 shr       ecx, 0x12
+0x0017b6f6 or        ecx, 0x3ff
+0x0017b6fc and       ecx, edx
+0x0017b6fe shl       rcx, 6
+0x0017b702 lea       rdx, [rip + 0x18a8197] ; [0x1a238a0]
+0x0017b709 mov       rdx, qword ptr [rdx]
+0x0017b70c mov       rsi, qword ptr [rdx]
+0x0017b70f mov       rbx, qword ptr [rsi + rcx + 0x10]
+0x0017b714 movsxd    rdx, dword ptr [rsi + rcx + 0x34]
+0x0017b719 and       eax, 0x1fff
+0x0017b71e imul      eax, dword ptr [rsi + rcx + 0x30]
+0x0017b723 and       rdx, qword ptr [rbx + rax + 8]
+0x0017b728 add       rbx, rax
+0x0017b72b sub       rbx, rdx
+0x0017b72e mov       rdi, rbx
+0x0017b731 call      0x176cb0
+0x0017b736 xor       cl, cl
+0x0017b738 mov       edx, dword ptr [r12]
+0x0017b73c cmp       edx, 0x811c9dc5
+0x0017b742 je        0x17b74d
+0x0017b744 cmp       edx, dword ptr [rax + 0x84]
+0x0017b74a setne     cl
+0x0017b74d test      cl, cl
+0x0017b74f jne       0x17b6d0
+0x0017b755 mov       al, byte ptr [rax + 0x8c]
+0x0017b75b xor       al, byte ptr [r15]
+0x0017b75e and       al, byte ptr [r14]
+0x0017b761 jne       0x17b6d0
+0x0017b767 movsxd    rax, dword ptr [r13]
+0x0017b76b lea       ecx, [rax + 1]
+0x0017b76e mov       dword ptr [r13], ecx
+0x0017b772 shl       rax, 4
+0x0017b776 mov       dword ptr [r13 + rax + 0x10], 0
+0x0017b77f mov       qword ptr [r13 + rax + 8], rbx
+0x0017b784 jmp       0x17b6d0
+0x0017b789 add       rsp, 8
+0x0017b78d pop       rbx
+0x0017b78e pop       r12
+0x0017b790 pop       r13
+0x0017b792 pop       r14
+0x0017b794 pop       r15
+0x0017b796 pop       rbp
+0x0017b797 ret       
+0x0017b798 nop       dword ptr [rax + rax]

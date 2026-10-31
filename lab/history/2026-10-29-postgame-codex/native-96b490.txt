@@ -1,0 +1,53 @@
+0x0096b490 push      rbp
+0x0096b491 mov       rbp, rsp
+0x0096b494 push      r15
+0x0096b496 push      r14
+0x0096b498 push      r12
+0x0096b49a push      rbx
+0x0096b49b mov       r14, rsi
+0x0096b49e mov       r12, rdi
+0x0096b4a1 call      0x9438f0
+0x0096b4a6 test      byte ptr [r12 + 0x1e], 0x80
+0x0096b4ac jne       0x96b4e9
+0x0096b4ae cmp       qword ptr [r12 + 0x98], 0
+0x0096b4b7 jne       0x96b4e9
+0x0096b4b9 mov       rax, qword ptr [r12]
+0x0096b4bd mov       rdi, r12
+0x0096b4c0 call      qword ptr [rax + 0xa8]
+0x0096b4c6 mov       r15, rax
+0x0096b4c9 test      r15, r15
+0x0096b4cc je        0x96b4e9
+0x0096b4ce lea       rbx, [r12 + 0x98]
+0x0096b4d6 mov       rdi, rbx
+0x0096b4d9 call      0x982db0
+0x0096b4de mov       qword ptr [rbx], r15
+0x0096b4e1 mov       rdi, rbx
+0x0096b4e4 call      0x982da0
+0x0096b4e9 mov       rax, qword ptr [r12 + 0x98]
+0x0096b4f1 xor       bl, bl
+0x0096b4f3 test      rax, rax
+0x0096b4f6 je        0x96b4ff
+0x0096b4f8 cmp       dword ptr [rax + 8], 1
+0x0096b4fc setg      bl
+0x0096b4ff movzx     eax, byte ptr [r12 + 0xa0]
+0x0096b508 movzx     ecx, bl
+0x0096b50b cmp       ecx, eax
+0x0096b50d je        0x96b52e
+0x0096b50f test      al, al
+0x0096b511 je        0x96b526
+0x0096b513 cmp       byte ptr [r12 + 0xa1], 0
+0x0096b51c je        0x96b526
+0x0096b51e mov       rdi, r14
+0x0096b521 call      0x98c8a0
+0x0096b526 mov       byte ptr [r12 + 0xa0], bl
+0x0096b52e pop       rbx
+0x0096b52f pop       r12
+0x0096b531 pop       r14
+0x0096b533 pop       r15
+0x0096b535 pop       rbp
+0x0096b536 ret       
+0x0096b537 nop       word ptr [rax + rax]
+0x0096b540 pop       rbx
+0x0096b541 pop       rbp
+0x0096b542 ret       
+0x0096b543 nop       word ptr cs:[rax + rax]

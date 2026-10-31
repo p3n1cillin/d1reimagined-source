@@ -1,0 +1,36 @@
+#!/bin/bash
+# Post-game CONTINUE on a parked run: pre-departure component read -> recall gate check -> monitor + recording ->
+# hold triangle ~4.2 s (hold-to-confirm, 3 s) -> screenshots through the load. Usage: continue-hold.sh RUNNAME
+C=F:/d1/d1preservation-main/cfw-staging; Q=lab/history/2026-10-29-postgame-codex
+S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad; R=$C/$1; K=$R/capture
+recorders() { powershell -NoProfile -Command "(Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | Where-Object { \$_.CommandLine -match 'd1-record' }).Count"; }
+until grep -q 'recording stopped' $R/capture.log 2>/dev/null; do sleep 10; done
+until [ "$(recorders | tr -d '\r')" = "0" ]; do sleep 10; done
+echo "$(date +%H:%M:%S) tour done, no recorder running"
+(cd $S && timeout 300 python pregame-component-read.py | head -1 | sed 's/^/component read: /'
+ f=$(ls -t $Q/pregame-component-*.json | head -1); python -c "
+import json,sys; d=json.load(open(sys.argv[1])); print('  components', len(d['components']), 'collector', d.get('collector',{}).get('level_xp'))
+for c in d['components']: print('  ', {k:v for k,v in c.items() if k!='raw_0_700'})" $f)
+g=$(cd $Q && timeout 90 python probe-recall-gate-readonly.py 2>/dev/null | grep -m1 '\.json$')
+python -c "
+import json,sys; d=json.load(open(sys.argv[1])); print('gate', {k:d.get(k) for k in ('profile_completion673','plane_state','leader_predicate','selection_activity','ordinary_branch_predicted')})
+sys.exit(0 if d.get('ordinary_branch_predicted') is True and d.get('selection_activity')==165 else 3)" "$g" || { echo "gate not ordinary/165: no input sent"; exit 3; }
+(cd F:/d1/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $K/continue.mp4 --seconds 240 > $K/continue-record.log 2>&1 &)
+(cd $Q && timeout 220 python monitor-recall-departure-readonly.py --run $1 --seconds 180 > $K/continue-monitor.out 2>&1 &)
+until grep -q READY $K/continue-monitor.out 2>/dev/null; do sleep 0.5; done; sleep 3
+cd $S && python -c "
+import importlib.util,ctypes,time
+s=importlib.util.spec_from_file_location('gf','gamefocus.py');gf=importlib.util.module_from_spec(s);s.loader.exec_module(gf)
+s2=importlib.util.spec_from_file_location('fight','fight.py');f=importlib.util.module_from_spec(s2);s2.loader.exec_module(f)
+u=ctypes.WinDLL('user32'); gf.ensure(); time.sleep(1)
+print(time.strftime('%H:%M:%S'), 'hold')
+u.keybd_event(0x43,u.MapVirtualKeyW(0x43,0),0,None); time.sleep(1.5); f.grab('$K/hold-ring.png'); time.sleep(2.7); u.keybd_event(0x43,u.MapVirtualKeyW(0x43,0),2,None)
+print(time.strftime('%H:%M:%S'), 'release')
+for k in range(1,13): time.sleep(10); f.grab('$K/after-%03d.png'%(k*10))
+" 2>&1 | grep -v shadPS4
+until grep -q '"stop_reason"' $Q/recall-departure-$1-*.summary.json 2>/dev/null; do sleep 10; done
+python -c "
+import json,sys,glob,os
+f=max(glob.glob(r'$Q/recall-departure-$1-*.summary.json'),key=os.path.getmtime); d=json.load(open(f)); print(f)
+for k,v in d['milestones_after_start'].items(): print('  ',k,v['utc'][11:23])
+w=d['last_observed'].get('native_slow',{}).get('world'); print('  world',w)"

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "source_machine": "<lab-pc>",
+  "clip_id": "<lab-pc>-20261030T131032-ca874d4364984f30944ed9e0e9195391",
+  "project": "destiny1-preservation",
+  "recorded_at": "2026-10-30T13:10:32.150526+00:00",
+  "devblog": null,
+  "contains_voice": false,
+  "contains_microphone_audio": false,
+  "importance": "USEFUL",
+  "clips": [
+    {
+      "file": "clips/clip.mp4",
+      "duration_seconds": 45.25,
+      "width": 1920,
+      "height": 1080,
+      "video_codec": "h264",
+      "average_frame_rate": 29.02,
+      "audio": [
+        {
+          "codec": "aac",
+          "sample_rate": 48000,
+          "channels": 2
+        }
+      ],
+      "decoded_fully": true
+    }
+  ],
+  "new_video_count": 1,
+  "new_screenshot_count": 2,
+  "package_kind": "engineering-report",
+  "reporting_date": "2026-10-30",
+  "reporting_timezone": "Europe/London",
+  "topic": "Staying in the Tower",
+  "feature": "Tower North",
+  "event_type": "milestone",
+  "description": "The Guardian now stays in the Tower for as long as it is played; the vendor screens were traced to one cause.",
+  "previous_state": "The game returned the Guardian to orbit after a few minutes in the Tower.",
+  "current_state": "The Guardian stayed in Tower North for almost two hours; the idle return now follows the game's normal 15-minute rule.",
+  "remaining_issue": "Vendor menus do not open yet: the Tower runs under the story-mission menus, and its own activity needs a permission the character does not have.",
+  "next_task": "Serve the permission for the Tower's own activity so its menus and vendors load.",
+  "game_build": "PS4 56578",
+  "contains_sensitive_information": false,
+  "requires_manual_review": true,
+  "audio": "game audio only, one emulator port; music may be present",
+  "git_commit": "ebaeab778f990e893f3cbfc0e8e15ce7bc6b9486"
+}

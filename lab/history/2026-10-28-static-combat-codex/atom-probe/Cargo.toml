@@ -1,0 +1,7 @@
+[package]
+name="d1-private-atom-probe"
+version="0.1.0"
+edition="2021"
+[dependencies]
+d1-oracle={path="F:/d1/public-work/d1reimagined-sense/ps4/d1-server/crates/d1-oracle"}
+unicorn-engine={version="2.1.5",default-features=false,features=["arch_x86"]}

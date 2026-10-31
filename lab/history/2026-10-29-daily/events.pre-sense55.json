@@ -1,0 +1,44 @@
+[
+  {
+    "id": "2026-10-29-outro",
+    "time": "2026-10-29T12:19:49Z",
+    "feature": "mission ending cinematic",
+    "maturity": "Partially Working",
+    "claim": "Outro cinematic plays to completion after the hangar clear",
+    "evidence": [
+      "clips/clip03.mp4"
+    ]
+  },
+  {
+    "id": "2026-10-29-postgame",
+    "time": "2026-10-29T12:22:22Z",
+    "feature": "post-game screens",
+    "maturity": "Partially Working",
+    "claim": "ACTIVITY REWARDS and MISSION SUMMARY show the Guardian's row from server data; values synthetic; CONTINUE blocked; jumpship reward shown as a display entry (sense54)",
+    "evidence": [
+      "clips/clip04.mp4",
+      "screenshots/04.png",
+      "screenshots/05.png"
+    ]
+  },
+  {
+    "id": "2026-10-29-hangar",
+    "time": "2026-10-29T12:19:05Z",
+    "feature": "hangar encounter",
+    "maturity": "Partially Working",
+    "claim": "All eight hangar Fallen groups clear; two are released by an inferred encounter-task assignment",
+    "evidence": [
+      "clips/clip02.mp4"
+    ]
+  },
+  {
+    "id": "2026-10-29-dock13",
+    "time": "2026-10-29T12:02:00Z",
+    "feature": "Dock 13 traversal",
+    "maturity": "Fully Working (tested scope: this run)",
+    "claim": "Arrival and traversal of Dock 13",
+    "evidence": [
+      "clips/clip01.mp4"
+    ]
+  }
+]

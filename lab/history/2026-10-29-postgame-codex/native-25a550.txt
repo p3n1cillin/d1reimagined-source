@@ -1,0 +1,4 @@
+0x0025a550 lea       rax, [rip + 0x23f8289] ; [0x26527e0]
+0x0025a557 mov       rax, qword ptr [rax]
+0x0025a55a ret       
+0x0025a55b nop       dword ptr [rax + rax]

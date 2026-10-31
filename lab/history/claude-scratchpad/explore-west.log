@@ -1,0 +1,7 @@
+shadPS4 pid 15268  eboot base 0x5210000  control vtable[0]=0x5964410 PASS
+start (468.64971923828125, -814.0543823242188, 18.39163589477539) goal [300.0, -815.0]
+at (450.6, -814.9, 18.9) dist 150.6 best 150.6 cells 5 blocked 0
+at (432.4, -814.4, 18.9) dist 132.4 best 132.4 cells 10 blocked 0
+at (414.1, -813.8, 18.5) dist 114.1 best 114.1 cells 15 blocked 0
+at (405.4, -811.6, 20.0) dist 105.4 best 105.4 cells 19 blocked 1
+stopped (408.6914978027344, -813.3106689453125, 18.26014518737793) dist 108.7 route 18 points -> route-west.json

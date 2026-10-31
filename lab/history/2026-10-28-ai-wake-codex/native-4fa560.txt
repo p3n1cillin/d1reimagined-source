@@ -1,0 +1,24 @@
+0x004fa560 mov       qword ptr [rdi + 8], rsi
+0x004fa564 mov       qword ptr [rdi + 0x10], 0
+0x004fa56c mov       eax, dword ptr [rsi]
+0x004fa56e mov       edx, eax
+0x004fa570 sar       edx, 0xd
+0x004fa573 mov       ecx, edx
+0x004fa575 shr       ecx, 0x12
+0x004fa578 or        ecx, 0x3ff
+0x004fa57e lea       r8, [rip + 0x152931b] ; [0x1a238a0]
+0x004fa585 and       ecx, edx
+0x004fa587 shl       rcx, 6
+0x004fa58b mov       rdx, qword ptr [r8]
+0x004fa58e mov       r9, qword ptr [rdx]
+0x004fa591 mov       rdx, qword ptr [r9 + rcx + 0x10]
+0x004fa596 movsxd    r8, dword ptr [r9 + rcx + 0x34]
+0x004fa59b and       eax, 0x1fff
+0x004fa5a0 imul      eax, dword ptr [r9 + rcx + 0x30]
+0x004fa5a6 and       r8, qword ptr [rdx + rax + 8]
+0x004fa5ab add       rdx, rax
+0x004fa5ae sub       rdx, r8
+0x004fa5b1 add       rdx, qword ptr [rsi + 8]
+0x004fa5b5 mov       qword ptr [rdi], rdx
+0x004fa5b8 ret       
+0x004fa5b9 nop       dword ptr [rax]

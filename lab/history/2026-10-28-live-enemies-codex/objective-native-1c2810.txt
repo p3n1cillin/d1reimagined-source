@@ -1,0 +1,26 @@
+0x001c2810 push      rbp
+0x001c2811 mov       rbp, rsp
+0x001c2814 sub       rsp, 0x20
+0x001c2818 lea       rax, [rip + 0x1745251] ; [0x1907a70]
+0x001c281f mov       rax, qword ptr [rax]
+0x001c2822 mov       r8d, 0xffffffff
+0x001c2828 test      rax, rax
+0x001c282b je        0x1c2830
+0x001c282d mov       r8d, dword ptr [rax]
+0x001c2830 lea       rax, [rip + 0xe4a089] ; [0x100c8c0]
+0x001c2837 mov       qword ptr [rsp + 0x10], rax
+0x001c283c mov       dword ptr [rsp + 8], 0x21
+0x001c2844 mov       dword ptr [rsp], 0
+0x001c284b lea       rdi, [rip + 0x2416ae6] ; [0x25d9338]
+0x001c2852 lea       rsi, [rip + 0x1457fcb] ; [0x161a824] 'objective sensor client update state'
+0x001c2859 mov       edx, 0x6a0
+0x001c285e mov       ecx, 4
+0x001c2863 mov       r9d, 7
+0x001c2869 call      0x23e010
+0x001c286e mov       rax, qword ptr [rip + 0x2416ac3] ; [0x25d9338]
+0x001c2875 mov       dword ptr [rax], 0xffffffff
+0x001c287b mov       dword ptr [rax + 4], 0xffffffff
+0x001c2882 mov       qword ptr [rax + 8], 0
+0x001c288a add       rsp, 0x20
+0x001c288e pop       rbp
+0x001c288f ret       

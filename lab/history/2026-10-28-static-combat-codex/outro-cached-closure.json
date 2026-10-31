@@ -1,0 +1,114 @@
+[
+  {
+    "tag": "0x80cb8165",
+    "class": "0x8080076e",
+    "size": 6583,
+    "matches": [
+      0
+    ],
+    "strings": [
+      "cosmo_m0_phase04_outro.pf_105_cto._cinematic",
+      "cosmo_m0_phase04_outro",
+      "cosmo_m0_phase04_outro.pf_105_cto"
+    ]
+  },
+  {
+    "tag": "0x80cb83dd",
+    "class": "0x8080076e",
+    "size": 6631,
+    "matches": [
+      0
+    ],
+    "strings": [
+      "cosmo_m0_phase04_outro.pf_105_cto._cinematic",
+      "cosmo_m0_phase04_outro",
+      "cosmo_m0_phase04_outro.pf_105_cto"
+    ]
+  },
+  {
+    "tag": "0x80cb8688",
+    "class": "0x8080076e",
+    "size": 6495,
+    "matches": [
+      0
+    ],
+    "strings": [
+      "cosmo_m0_phase04_outro.pf_105_cto._cinematic",
+      "cosmo_m0_phase04_outro",
+      "cosmo_m0_phase04_outro.pf_105_cto"
+    ]
+  },
+  {
+    "tag": "0x80cb86ea",
+    "class": "0x8080076e",
+    "size": 5975,
+    "matches": [
+      0
+    ],
+    "strings": [
+      "cosmo_m0_phase04_outro.pf_105_cto._cinematic",
+      "cosmo_m0_phase04_outro",
+      "cosmo_m0_phase04_outro.pf_105_cto"
+    ]
+  },
+  {
+    "tag": "0x80cb86ed",
+    "class": "0x80800861",
+    "size": 1037,
+    "matches": [
+      0,
+      1
+    ],
+    "strings": [
+      "cosmo_m0_phase04_outro.pf_105_cto._cinematic"
+    ]
+  },
+  {
+    "tag": "0x80cb86fe",
+    "class": "0x80800861",
+    "size": 42848,
+    "matches": [
+      1
+    ],
+    "strings": []
+  },
+  {
+    "tag": "0x80cb8c77",
+    "class": "0x8080076e",
+    "size": 6583,
+    "matches": [
+      0
+    ],
+    "strings": [
+      "cosmo_m0_phase04_outro.pf_105_cto._cinematic",
+      "cosmo_m0_phase04_outro",
+      "cosmo_m0_phase04_outro.pf_105_cto"
+    ]
+  },
+  {
+    "tag": "0x80cb8cf3",
+    "class": "0x8080076e",
+    "size": 6055,
+    "matches": [
+      0
+    ],
+    "strings": [
+      "cosmo_m0_phase04_outro.pf_105_cto._cinematic",
+      "cosmo_m0_phase04_outro",
+      "cosmo_m0_phase04_outro.pf_105_cto"
+    ]
+  },
+  {
+    "tag": "0x80cb90ae",
+    "class": "0x8080076e",
+    "size": 6431,
+    "matches": [
+      0
+    ],
+    "strings": [
+      "cosmo_m0_phase04_outro.pf_105_cto._cinematic",
+      "cosmo_m0_phase04_outro",
+      "cosmo_m0_phase04_outro.pf_105_cto"
+    ]
+  }
+]

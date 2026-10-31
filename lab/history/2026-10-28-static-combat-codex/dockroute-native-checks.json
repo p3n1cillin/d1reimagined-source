@@ -1,0 +1,53 @@
+{
+  "utc": "2026-10-28T14:09:46.727306+00:00",
+  "base": "0x50c0000",
+  "controls": [
+    {
+      "tag": "0x80cb9120",
+      "off": "0x1360",
+      "bytes": 64,
+      "native_match": true,
+      "address": "0x3843547f0"
+    },
+    {
+      "tag": "0x80cb9120",
+      "off": "0x2110",
+      "bytes": 96,
+      "native_match": true,
+      "address": "0x3843555a0"
+    },
+    {
+      "tag": "0x80cb86aa",
+      "off": "0x4b0",
+      "bytes": 1408,
+      "native_match": true,
+      "address": "0x38609b780"
+    },
+    {
+      "tag": "0x80cb86ba",
+      "off": "0x4f8",
+      "bytes": 40,
+      "native_match": true,
+      "address": "0x38608a158"
+    },
+    {
+      "tag": "0x80cb86bd",
+      "off": "0x4f8",
+      "bytes": 40,
+      "native_match": true,
+      "address": "0x38608adf8"
+    },
+    {
+      "tag": "0x80cb86a5",
+      "off": "0x2c0",
+      "bytes": 8,
+      "native_match": true,
+      "address": "0x38609a140"
+    }
+  ],
+  "player_position": [
+    115.60423278808594,
+    -542.1439208984375,
+    6.638851165771484
+  ]
+}

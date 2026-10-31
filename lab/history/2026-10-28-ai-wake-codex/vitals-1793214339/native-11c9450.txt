@@ -1,0 +1,18 @@
+0x011c9450 movsx     rax, sil
+0x011c9454 lea       rax, [rax + rax*2]
+0x011c9458 shl       rax, 4
+0x011c945c vmovss    xmm0, dword ptr [rdi + rax + 0x34]
+0x011c9462 ret       
+0x011c9463 nop       
+0x011c9464 nop       
+0x011c9465 nop       
+0x011c9466 nop       
+0x011c9467 nop       
+0x011c9468 nop       
+0x011c9469 nop       
+0x011c946a nop       
+0x011c946b nop       
+0x011c946c nop       
+0x011c946d nop       
+0x011c946e nop       
+0x011c946f nop       

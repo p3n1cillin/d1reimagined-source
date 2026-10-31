@@ -1,0 +1,12 @@
+0x0066ae60 cmp       edi, -1
+0x0066ae63 jne       0x66ae68
+0x0066ae65 xor       eax, eax
+0x0066ae67 ret       
+0x0066ae68 lea       rax, [rip + 0x20d3c11] ; [0x273ea80]
+0x0066ae6f mov       rax, qword ptr [rax]
+0x0066ae72 mov       rax, qword ptr [rax + 8]
+0x0066ae76 movzx     ecx, di
+0x0066ae79 imul      rcx, rcx, 0x2af0
+0x0066ae80 lea       rax, [rax + rcx + 0x1660]
+0x0066ae88 ret       
+0x0066ae89 nop       dword ptr [rax]

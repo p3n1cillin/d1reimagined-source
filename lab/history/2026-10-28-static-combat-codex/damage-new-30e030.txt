@@ -1,0 +1,66 @@
+0x0030e030 push      rbp
+0x0030e031 mov       rbp, rsp
+0x0030e034 push      r15
+0x0030e036 push      r14
+0x0030e038 push      r12
+0x0030e03a push      rbx
+0x0030e03b mov       r15d, r8d
+0x0030e03e mov       r14, rdx
+0x0030e041 mov       r12d, esi
+0x0030e044 mov       rbx, rdi
+0x0030e047 mov       eax, dword ptr [r14 + 8]
+0x0030e04b mov       esi, eax
+0x0030e04d sar       esi, 0xd
+0x0030e050 mov       edx, esi
+0x0030e052 shr       edx, 0x12
+0x0030e055 or        edx, 0x3ff
+0x0030e05b and       edx, esi
+0x0030e05d lea       rsi, [rip + 0x171583c] ; [0x1a238a0]
+0x0030e064 mov       rsi, qword ptr [rsi]
+0x0030e067 mov       rsi, qword ptr [rsi]
+0x0030e06a mov       r8, qword ptr [r14 + 0x10]
+0x0030e06e shl       rdx, 6
+0x0030e072 mov       rdi, qword ptr [rsi + rdx + 0x10]
+0x0030e077 movsxd    r9, dword ptr [rsi + rdx + 0x34]
+0x0030e07c and       eax, 0x1fff
+0x0030e081 imul      eax, dword ptr [rsi + rdx + 0x30]
+0x0030e086 and       r9, qword ptr [rdi + rax + 8]
+0x0030e08b add       rdi, rax
+0x0030e08e sub       rdi, r9
+0x0030e091 lea       rsi, [r8 + rdi + 0x38]
+0x0030e096 mov       rdi, rbx
+0x0030e099 mov       edx, ecx
+0x0030e09b call      0x324a90
+0x0030e0a0 test      al, al
+0x0030e0a2 je        0x30e0f8
+0x0030e0a4 mov       dword ptr [rbx + 0x18], r12d
+0x0030e0a8 mov       qword ptr [rbx + 0x28], r14
+0x0030e0ac test      r15b, r15b
+0x0030e0af je        0x30e0f0
+0x0030e0b1 lea       rax, [r14 + 0x28]
+0x0030e0b5 mov       qword ptr [rbx + 0x20], rax
+0x0030e0b9 mov       rax, qword ptr [rbx + 0x10]
+0x0030e0bd nop       dword ptr [rax]
+0x0030e0c0 movsx     rcx, word ptr [rax]
+0x0030e0c4 mov       dx, word ptr [rax + 2]
+0x0030e0c8 test      word ptr [r14 + rcx*2 + 0x28], dx
+0x0030e0ce je        0x30e0f8
+0x0030e0d0 movzx     ecx, word ptr [rbx + 8]
+0x0030e0d4 inc       ecx
+0x0030e0d6 mov       word ptr [rbx + 8], cx
+0x0030e0da add       rax, 0x28
+0x0030e0de mov       qword ptr [rbx + 0x10], rax
+0x0030e0e2 cmp       cx, word ptr [rbx + 0xa]
+0x0030e0e6 jl        0x30e0c0
+0x0030e0e8 mov       word ptr [rbx + 8], 0xffff
+0x0030e0ee jmp       0x30e0f8
+0x0030e0f0 mov       qword ptr [rbx + 0x20], 0
+0x0030e0f8 cmp       word ptr [rbx + 8], -1
+0x0030e0fd setne     al
+0x0030e100 pop       rbx
+0x0030e101 pop       r12
+0x0030e103 pop       r14
+0x0030e105 pop       r15
+0x0030e107 pop       rbp
+0x0030e108 ret       
+0x0030e109 nop       dword ptr [rax]

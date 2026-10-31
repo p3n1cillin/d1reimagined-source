@@ -1,0 +1,2 @@
+PASS: real KnownWorld Tower lookup and list encoder; team0, phase3, 20 non-lifetime clients, 321 bytes
+PASS: real KnownWorld Tower lookup and list encoder; team-1, phase3, 20 non-lifetime clients, 321 bytes

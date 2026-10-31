@@ -1,0 +1,49 @@
+{
+  "machine": "<lab-pc>",
+  "report": "daily-report.md",
+  "screenshots": [
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/pkg/shots/lut-after.png",
+    "%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/pkg/shots/breach-after.png"
+  ],
+  "metadata": {
+    "reporting_date": "2026-10-26",
+    "reporting_timezone": "Europe/London",
+    "daily_update_id": "destiny1-2026-10-26",
+    "package_kind": "comparison-screenshots",
+    "game_build": "PS4 Destiny 56578 (01.33), A Guardian Rises, own servers, emulator with project fixes",
+    "build": "PS4 Destiny 56578 (01.33), A Guardian Rises, own servers, emulator with project fixes",
+    "repository": "https://github.com/p3n1cillin/d1reimagined-source",
+    "git_branch": "main",
+    "emulator_repository": "https://github.com/p3n1cillin/d1reimagined-shadps4",
+    "topic": "graphics-colour-grading",
+    "feature": "colour-grading-lut-fix",
+    "importance": "HIGH",
+    "comparison_group_id": "destiny1-2026-10-26-colour-grading-lut",
+    "previous_state": "Shadows rendered black with blue patches; lit areas of The Breach blew out to white.",
+    "current_state": "Shadows show ambient light and texture detail; lit areas keep warm colour.",
+    "remaining_issue": "Screenshots are from 1280x720 test runs; no side-by-side comparison with the original console yet.",
+    "next_task": "Record a 1080p before/after clip of the same scene.",
+    "contains_sensitive_information": false,
+    "requires_manual_review": true,
+    "publication_review_required": true,
+    "recording_notes": "Screenshots captured earlier today during the fix runs, cropped to the game image (no window border or desktop).",
+    "event_type": "AFTER",
+    "comparison_role": "AFTER",
+    "recorded_at": "2026-10-26T12:18:38+00:00",
+    "git_commit": "75730ff6ab144c52811f702d47dacad9942f3dd9",
+    "emulator_commit": "d93d64ab3f47092080aa954dd0038ea84d392b84",
+    "description": "After the colour-grading fix: the same highway view shows rusted wrecks and a grey gun with shading; The Breach shows warm light and rust instead of white.",
+    "screenshot_notes": [
+      {
+        "file": "screenshots/01.png",
+        "scene": "highway, same spot as BEFORE 01",
+        "captured_at": "2026-10-26T12:18:38Z"
+      },
+      {
+        "file": "screenshots/02.png",
+        "scene": "The Breach, same area as BEFORE 02 (different view)",
+        "captured_at": "2026-10-26T12:48:01Z"
+      }
+    ]
+  }
+}

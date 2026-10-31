@@ -1,0 +1,134 @@
+{
+  "at": "2026-10-07T17:52:04.6429241Z",
+  "previous_goal_turn": "PROGRESS",
+  "current_goal_turn": "PROGRESS",
+  "classification_basis": [
+    "Implemented corrected read-only context lookup and automatic native sampling, with five passing focused checks.",
+    "Native171 resolves1372 samples and distinguishes pending20=2/pending18=0; proxy receives no21 after teleport, while native copies contain112.",
+    "Pushed current source/data documentation and exact remote heads verified.",
+    "One consolidated October7 private report delivered through durable outbox, all NAS payloads reverified; no media resend.",
+    "Resumed engineering by inspecting actual native queue/serializer and watch implementation: hooks are function-entry only; existing watch parser has no subtype filter."
+  ],
+  "goal_status": "active/incomplete",
+  "source_commit": "b104fbc5aafdd51b85728a9bb5b74ec5858c133a",
+  "data_commit": "f6082456f966e10b4d91ea5bac8a6518be12127e",
+  "all_native_owned_closed": true,
+  "native_acceptance": {
+    "at": "2026-10-07T18:43:29.286074+01:00",
+    "run": "FINAL124_JOIN171",
+    "samples": 1372,
+    "first_sample_utc": "2026-10-07T18:34:17.410618+01:00",
+    "last_sample_utc": "2026-10-07T18:41:37.32566+01:00",
+    "sample_is_atomic": false,
+    "sample_pointer_recheck_failures": 0,
+    "context_lookup_errors": [],
+    "context_lookup_recheck_failures": 0,
+    "context_handle_state_recheck_failures": 0,
+    "observed_session_states": [
+      6
+    ],
+    "pending18_states": [
+      0
+    ],
+    "pending20_states": [
+      0,
+      2
+    ],
+    "loaded_inactive112_samples": 1105,
+    "first_loaded_inactive112_utc": "2026-10-07T18:35:47.993048+01:00",
+    "last_loaded_inactive112_utc": "2026-10-07T18:41:37.32566+01:00",
+    "native_idle112_samples": 0,
+    "host_teleport_request_lines": [
+      "2026-10-07T18:35:45.853 [20261007-183303-965342] world state: teleport request -> slice set 112:0x811c9dc5 (state 1)"
+    ],
+    "received_type21_messages": 5,
+    "type21_after_teleport": 0,
+    "world_group_switch_publications": 0,
+    "socket_resets": 0,
+    "screenshot_failure": "Late Invoke-RpcsStep request failed after 20 seconds; no image claimed",
+    "clock_snapshots": "Two direct native reads at17:41:47.529565/17:41:49.529886UTC: tick5848 both; pending start2567. No observed state37/38; UTC duration does not prove local timeout.",
+    "actually_inspected_images": [
+      {
+        "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\BLES01857\\BLES01857_screenshot_2026_10_07_18_34_39.png",
+        "sha256": "d6f962214167341ade5adcd734dd9213209377485c35ca16498d345779273109",
+        "observation": "Unobstructed outdoor cinematic after one posted Cross; no Guardian control or mission advancement proved."
+      }
+    ],
+    "acceptance": {
+      "reader": "PASS in sampled active-context scope",
+      "mission_arrival": "FAIL",
+      "visible_control": "NOT RUN; arrival prerequisite absent",
+      "combined_graphics": "NOT ACCEPTED",
+      "full_game": "INCOMPLETE"
+    },
+    "video_inspection": {
+      "at": "2026-10-07T17:44:34.6254745Z",
+      "actually_inspected": [
+        "613feb36aeca4f54b90bbd2764eb18a0-01.png",
+        "613feb36aeca4f54b90bbd2764eb18a0-06.png",
+        "7c7f438bdd934bf3ad65d4cfbf52e27c-01.png"
+      ],
+      "observations": [
+        "Loading UI; first sample includes native recording-path notice.",
+        "Loading UI without notice.",
+        "Loading/contacting-server text with native recording notice."
+      ],
+      "indexed_originals": 14,
+      "unindexed_original_failures_retained": 10,
+      "all_indexed_hashes_match": true,
+      "last_two_full_decodes": "PASS",
+      "originals_edited": false,
+      "new_media_package": "NONE",
+      "publication": false
+    }
+  },
+  "handoff_receipt": {
+    "verified_at": "2026-10-07T17:49:35.1256926Z",
+    "clip_id": "<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962",
+    "ready_directory": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\07\\<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962.ready",
+    "state": {
+      "status": "SUBMITTED",
+      "attempts": 0,
+      "next_attempt": 0,
+      "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\07\\<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962.ready",
+      "updated_at": "2026-10-07T18:49:01.03582+01:00",
+      "transfer_started_at": "2026-10-07T18:49:00.682891+01:00",
+      "submitted_at": "2026-10-07T18:49:01.030431+01:00",
+      "error": null
+    },
+    "schema_version": 1,
+    "all_payloads_hashes_sizes_verified": true,
+    "checks": [
+      {
+        "file": "daily-report.md",
+        "bytes": 13502,
+        "size_match": true,
+        "sha256": "e15ee5d945be9034a38ce6d503f5b65feb2c4b816f786c3e9fd4098a5b4c5439",
+        "hash_match": true
+      },
+      {
+        "file": "events.json",
+        "bytes": 4696,
+        "size_match": true,
+        "sha256": "8cd87ae75d258068c9fb471bd9e9aa8770bdf30273ec2071db0e28294d1ab203",
+        "hash_match": true
+      },
+      {
+        "file": "metadata.json",
+        "bytes": 2957,
+        "size_match": true,
+        "sha256": "58ff3a112466b6ee772f8e3f8ae6cbeb0a8d2f618377adfc1be23ab1191f4258",
+        "hash_match": true
+      }
+    ],
+    "available_nas_bytes": 536707203072,
+    "pending_outbox": 0,
+    "new_media_sent": false,
+    "previous_packages_modified": false,
+    "handoff_complete": true,
+    "engineering_resumed": true
+  },
+  "next_engineering": "Add narrowly scoped subtype21 filtering before PPU watch budget/dedup, preserve ordinary watch behavior, test actual source and build only at idle. Trace wrapper/queue/serializer and actual packet receipt; capture a matching-symbol host wait dump if late screenshot/clock stall recurs. Do not treat entry-only watches at post-call PCs as active or fabricate ACK/state changes.",
+  "goal_completion": "NOT ACHIEVED",
+  "user_action_required": false
+}

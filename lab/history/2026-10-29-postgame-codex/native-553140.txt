@@ -1,0 +1,168 @@
+0x00553140 push      rbp
+0x00553141 mov       rbp, rsp
+0x00553144 push      r15
+0x00553146 push      r14
+0x00553148 push      r13
+0x0055314a push      r12
+0x0055314c push      rbx
+0x0055314d and       rsp, 0xffffffffffffffe0
+0x00553154 sub       rsp, 0x1e0
+0x0055315b mov       r12, rcx
+0x0055315e mov       r13, rdx
+0x00553161 mov       r15d, esi
+0x00553164 mov       ebx, edi
+0x00553166 mov       rax, qword ptr [rip + 0x14cbf93] ; [0x1a1f100]
+0x0055316d mov       rax, qword ptr [rax]
+0x00553170 mov       qword ptr [rsp + 0x1c0], rax
+0x00553178 call      0x25cc10
+0x0055317d test      al, al
+0x0055317f je        0x5533df
+0x00553185 call      0x25cbd0
+0x0055318a mov       rcx, qword ptr [rax]
+0x0055318d mov       rdi, rax
+0x00553190 mov       esi, ebx
+0x00553192 call      qword ptr [rcx + 0x300]
+0x00553198 mov       bx, ax
+0x0055319b mov       byte ptr [rsp + 0x160], 0
+0x005531a3 xor       edi, edi
+0x005531a5 call      0x559c30
+0x005531aa mov       r14d, eax
+0x005531ad vxorps    ymm0, ymm0, ymm0
+0x005531b1 lea       rdi, [rsp + 0x178]
+0x005531b9 vmovaps   ymmword ptr [rsp], ymm0
+0x005531be vmovaps   ymmword ptr [rsp + 0x180], ymm0
+0x005531c7 vmovaps   ymmword ptr [rsp + 0x160], ymm0
+0x005531d0 mov       qword ptr [rsp + 0x1a8], 0
+0x005531dc mov       qword ptr [rsp + 0x1a0], 0
+0x005531e8 call      0x1271d0
+0x005531ed mov       word ptr [rsp], bx
+0x005531f1 mov       qword ptr [rsp + 8], r13
+0x005531f6 mov       qword ptr [rsp + 0x10], 0
+0x005531ff cmp       r14d, 3
+0x00553203 mov       dword ptr [rsp + 0x18], 0
+0x0055320b jne       0x553248
+0x0055320d lea       rax, [rip + 0x216672c] ; [0x26b9940]
+0x00553214 mov       rdi, qword ptr [rax]
+0x00553217 mov       esi, ebx
+0x00553219 mov       rdx, r12
+0x0055321c call      0x558960
+0x00553221 lea       rdx, [rsp + 0x160]
+0x00553229 lea       rcx, [rsp]
+0x0055322d mov       edi, 0
+0x00553232 mov       esi, r15d
+0x00553235 mov       r8d, 0x20
+0x0055323b mov       r9, rax
+0x0055323e call      0x55aa80
+0x00553243 jmp       0x5533df
+0x00553248 mov       edi, 7
+0x0055324d mov       esi, 4
+0x00553252 call      0xe4d70
+0x00553257 test      r15d, r15d
+0x0055325a je        0x55332f
+0x00553260 test      al, al
+0x00553262 je        0x553311
+0x00553268 mov       al, byte ptr [rip + 0x21665ba] ; [0x26b9828]
+0x0055326e test      al, al
+0x00553270 jne       0x5532a0
+0x00553272 lea       rdi, [rip + 0x21665af] ; [0x26b9828]
+0x00553279 call      0x12aa7d0
+0x0055327e test      eax, eax
+0x00553280 je        0x5532a0
+0x00553282 lea       rdi, [rip + 0x10e5c23] ; [0x1638eac] 'networking:investment:server_message_interface: failed to send message. message_type:[%s] bap_connection_type:[%s] bap_connection_status:[%s] policy_type=%s'
+0x00553289 call      0xe4a10
+0x0055328e mov       dword ptr [rip + 0x216658c], eax ; [0x26b9820]
+0x00553294 lea       rdi, [rip + 0x216658d] ; [0x26b9828]
+0x0055329b call      0x12aa7e0
+0x005532a0 call      0x25cbd0
+0x005532a5 mov       rcx, qword ptr [rax]
+0x005532a8 mov       rdi, rax
+0x005532ab mov       esi, ebx
+0x005532ad call      qword ptr [rcx + 0x2f8]
+0x005532b3 mov       esi, dword ptr [rax]
+0x005532b5 lea       rdi, [rip + 0x10ccd7b] ; [0x1620037] 'HASH'
+0x005532bc call      0x79a30
+0x005532c1 mov       r12, rax
+0x005532c4 xor       edi, edi
+0x005532c6 call      0x559cb0
+0x005532cb mov       r13, rax
+0x005532ce mov       edi, r14d
+0x005532d1 call      0x55abb0
+0x005532d6 mov       rbx, rax
+0x005532d9 mov       edi, r15d
+0x005532dc call      0x5605a0
+0x005532e1 lea       r14, [rsp + 0x20]
+0x005532e6 lea       rsi, [rip + 0x10e5bbf] ; [0x1638eac] 'networking:investment:server_message_interface: failed to send message. message_type:[%s] bap_connection_type:[%s] bap_connection_status:[%s] policy_type=%s'
+0x005532ed mov       rdi, r14
+0x005532f0 mov       rdx, r12
+0x005532f3 mov       rcx, r13
+0x005532f6 mov       r8, rbx
+0x005532f9 mov       r9, rax
+0x005532fc xor       al, al
+0x005532fe call      0x1008290
+0x00553303 mov       edi, dword ptr [rip + 0x2166517] ; [0x26b9820]
+0x00553309 mov       rsi, r14
+0x0055330c call      0xe4aa0
+0x00553311 lea       rdi, [rip + 0x2168f58] ; [0x26bc270]
+0x00553318 call      0x21860
+0x0055331d mov       rdi, rax
+0x00553320 mov       esi, 1
+0x00553325 call      0x575990
+0x0055332a jmp       0x5533df
+0x0055332f test      al, al
+0x00553331 je        0x5533df
+0x00553337 mov       al, byte ptr [rip + 0x21664db] ; [0x26b9818]
+0x0055333d test      al, al
+0x0055333f jne       0x55336f
+0x00553341 lea       rdi, [rip + 0x21664d0] ; [0x26b9818]
+0x00553348 call      0x12aa7d0
+0x0055334d test      eax, eax
+0x0055334f je        0x55336f
+0x00553351 lea       rdi, [rip + 0x10e5b54] ; [0x1638eac] 'networking:investment:server_message_interface: failed to send message. message_type:[%s] bap_connection_type:[%s] bap_connection_status:[%s] policy_type=%s'
+0x00553358 call      0xe4a10
+0x0055335d mov       dword ptr [rip + 0x21664ad], eax ; [0x26b9810]
+0x00553363 lea       rdi, [rip + 0x21664ae] ; [0x26b9818]
+0x0055336a call      0x12aa7e0
+0x0055336f call      0x25cbd0
+0x00553374 mov       rcx, qword ptr [rax]
+0x00553377 mov       rdi, rax
+0x0055337a mov       esi, ebx
+0x0055337c call      qword ptr [rcx + 0x2f8]
+0x00553382 mov       esi, dword ptr [rax]
+0x00553384 lea       rdi, [rip + 0x10cccac] ; [0x1620037] 'HASH'
+0x0055338b call      0x79a30
+0x00553390 mov       r15, rax
+0x00553393 xor       edi, edi
+0x00553395 call      0x559cb0
+0x0055339a mov       r12, rax
+0x0055339d mov       edi, r14d
+0x005533a0 call      0x55abb0
+0x005533a5 mov       rbx, rax
+0x005533a8 xor       edi, edi
+0x005533aa call      0x5605a0
+0x005533af lea       r14, [rsp + 0x20]
+0x005533b4 lea       rsi, [rip + 0x10e5af1] ; [0x1638eac] 'networking:investment:server_message_interface: failed to send message. message_type:[%s] bap_connection_type:[%s] bap_connection_status:[%s] policy_type=%s'
+0x005533bb mov       rdi, r14
+0x005533be mov       rdx, r15
+0x005533c1 mov       rcx, r12
+0x005533c4 mov       r8, rbx
+0x005533c7 mov       r9, rax
+0x005533ca xor       al, al
+0x005533cc call      0x1008290
+0x005533d1 mov       edi, dword ptr [rip + 0x2166439] ; [0x26b9810]
+0x005533d7 mov       rsi, r14
+0x005533da call      0xe4aa0
+0x005533df mov       rax, qword ptr [rip + 0x14cbd1a] ; [0x1a1f100]
+0x005533e6 mov       rax, qword ptr [rax]
+0x005533e9 cmp       rax, qword ptr [rsp + 0x1c0]
+0x005533f1 jne       0x553402
+0x005533f3 lea       rsp, [rbp - 0x28]
+0x005533f7 pop       rbx
+0x005533f8 pop       r12
+0x005533fa pop       r13
+0x005533fc pop       r14
+0x005533fe pop       r15
+0x00553400 pop       rbp
+0x00553401 ret       
+0x00553402 call      0x12aa7f0
+0x00553407 nop       
+0x00553408 nop       dword ptr [rax + rax]

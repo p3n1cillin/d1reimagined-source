@@ -1,0 +1,42 @@
+{
+  "utc": "2026-10-28T14:29:01.358298+00:00",
+  "count": 45,
+  "float_type": "0x8080000f",
+  "rows": [
+    {
+      "slot": "0x26b0a5c",
+      "hash": "0xf958f59e",
+      "records": []
+    },
+    {
+      "slot": "0x26b0a60",
+      "hash": "0x15902f0",
+      "records": []
+    },
+    {
+      "slot": "0x26b0a64",
+      "hash": "0xdfed454",
+      "records": []
+    },
+    {
+      "slot": "0x26b0a68",
+      "hash": "0x3a7b7563",
+      "records": []
+    },
+    {
+      "slot": "0x26b0a6c",
+      "hash": "0x410dffb5",
+      "records": []
+    },
+    {
+      "slot": "0x26b0a70",
+      "hash": "0x4bf45c",
+      "records": []
+    },
+    {
+      "slot": "0x26b0a74",
+      "hash": "0x159758eb",
+      "records": []
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+shadPS4 pid 24952  eboot base 0x50b0000  control vtable[0]=0x5804410 PASS
+start (278.3327331542969, -616.92919921875, 5.384528160095215)
+step 1: no waypoint (nav mode)
+step 2: waypoint at x=143 (score 0.73), turn -33 deg
+step 3: waypoint at x=307 (score 0.77), turn -27 deg
+step 4: waypoint at x=251 (score 0.77), turn -29 deg
+step 5: waypoint at x=557 (score 0.72), turn -17 deg
+step 6: waypoint at x=555 (score 0.71), turn -17 deg
+step 7: waypoint at x=143 (score 0.71), turn -33 deg
+step 8: walked to (274.5, -619.0, 6.0) moved 5.0
+step 9: walked to (273.4, -620.2, 7.2) moved 2.8
+step 10: waypoint at x=367 (score 0.79), turn -24 deg
+step 11: waypoint at x=143 (score 0.73), turn -33 deg
+step 12: waypoint at x=361 (score 0.81), turn -24 deg
+step 13: walked to (275.0, -621.8, 6.0) moved 3.6
+step 14: walked to (276.6, -623.4, 5.4) moved 2.8
+step 15: walked to (278.0, -625.4, 5.0) moved 2.8
+step 16: waypoint at x=547 (score 0.73), turn -17 deg
+step 17: waypoint at x=553 (score 0.74), turn -17 deg
+step 18: waypoint at x=555 (score 0.73), turn -17 deg
+step 19: waypoint at x=143 (score 0.72), turn -33 deg
+step 20: waypoint at x=663 (score 0.86), turn -12 deg
+step 21: walked to (282.6, -627.1, 4.8) moved 5.1
+step 22: walked to (287.1, -630.4, 5.1) moved 5.9
+step 23: waypoint at x=763 (score 0.80), turn -8 deg
+step 24: walked to (291.4, -631.7, 5.2) moved 4.5
+step 25: walked to (294.9, -631.4, 5.4) moved 3.7
+step 26: walked to (299.2, -635.0, 5.5) moved 5.7
+step 27: walked to (303.0, -638.8, 5.5) moved 5.3
+step 28: walked to (307.8, -642.0, 5.2) moved 6.1
+step 29: walked to (313.7, -644.2, 5.2) moved 6.3
+step 30: waypoint at x=777 (score 0.78), turn -8 deg
+step 31: walked to (319.6, -646.0, 5.7) moved 6.7
+step 32: walked to (325.5, -647.8, 7.0) moved 7.4
+step 33: walked to (331.3, -649.5, 7.5) moved 6.6
+step 34: walked to (334.0, -652.1, 7.7) moved 3.9
+step 35: waypoint at x=717 (score 0.80), turn -10 deg
+step 36: walked to (338.7, -653.8, 8.0) moved 5.4
+step 37: walked to (344.7, -654.8, 8.8) moved 6.9
+step 38: waypoint at x=789 (score 0.80), turn -7 deg
+step 39: walked to (349.2, -656.3, 9.3) moved 5.1
+step 40: waypoint at x=761 (score 0.78), turn -8 deg
+step 41: walked to (354.8, -655.3, 9.3) moved 5.8
+step 42: waypoint at x=553 (score 0.72), turn -17 deg
+step 43: waypoint at x=459 (score 0.75), turn -21 deg
+step 44: waypoint at x=553 (score 0.73), turn -17 deg
+step 45: waypoint at x=551 (score 0.73), turn -17 deg
+step 46: waypoint at x=551 (score 0.73), turn -17 deg
+step 47: waypoint at x=555 (score 0.73), turn -17 deg
+step 48: waypoint at x=559 (score 0.72), turn -16 deg
+step 49: waypoint at x=553 (score 0.73), turn -17 deg
+step 50: waypoint at x=557 (score 0.72), turn -17 deg
+step 51: waypoint at x=555 (score 0.81), turn -17 deg
+step 52: waypoint at x=455 (score 0.82), turn -21 deg
+step 53: walked to (350.5, -653.3, 8.7) moved 5.3
+step 54: waypoint at x=643 (score 0.76), turn -13 deg
+step 55: waypoint at x=1221 (score 0.80), turn +10 deg
+step 56: walked to (345.8, -651.4, 8.7) moved 5.1
+step 57: walked to (341.3, -649.5, 8.0) moved 5.6
+step 58: walked to (336.8, -647.7, 7.9) moved 5.0
+step 59: walked to (332.2, -645.8, 7.6) moved 5.3
+step 60: walked to (327.6, -643.9, 7.2) moved 5.3
+step 61: walked to (323.1, -642.0, 6.2) moved 6.0
+step 62: walked to (318.3, -640.0, 5.4) moved 5.9
+step 63: waypoint at x=1555 (score 0.80), turn +24 deg
+step 64: waypoint at x=1167 (score 0.80), turn +8 deg
+step 65: walked to (314.2, -636.3, 5.4) moved 5.5
+step 66: walked to (310.0, -632.5, 5.9) moved 6.1
+step 67: walked to (305.7, -628.5, 5.5) moved 6.2
+step 68: walked to (301.1, -624.3, 5.5) moved 6.2
+step 69: waypoint at x=1195 (score 0.79), turn +9 deg
+step 70: walked to (297.1, -619.8, 5.8) moved 6.5
+step 71: waypoint at x=549 (score 0.72), turn -17 deg
+step 72: waypoint at x=1385 (score 0.80), turn +17 deg
+step 73: waypoint at x=143 (score 0.73), turn -33 deg
+step 74: waypoint at x=261 (score 0.81), turn -28 deg
+step 75: walked to (293.9, -617.8, 5.4) moved 4.1
+step 76: waypoint at x=739 (score 0.83), turn -9 deg
+step 77: walked to (293.1, -617.2, 5.6) moved 1.2
+step 78: waypoint at x=665 (score 0.82), turn -12 deg
+step 79: walked to (293.2, -616.8, 5.5) moved 0.0
+step 80: waypoint at x=103 (score 0.87), turn -35 deg
+step 81: waypoint at x=101 (score 0.84), turn -35 deg
+step 82: waypoint at x=1429 (score 0.77), turn +19 deg
+step 83: walked to (295.9, -618.1, 6.1) moved 0.4
+step 84: no waypoint (nav mode)
+step 85: no waypoint (turn 60)
+step 86: walked to (293.1, -617.2, 5.4) moved 3.6
+step 87: walked to (293.3, -617.2, 5.7) moved 0.2
+step 88: waypoint at x=105 (score 0.87), turn -35 deg
+step 89: waypoint at x=101 (score 0.89), turn -35 deg
+step 90: waypoint at x=1225 (score 0.83), turn +10 deg
+step 91: walked to (294.8, -618.8, 5.6) moved 2.2
+step 92: walked to (296.5, -620.6, 5.8) moved 2.7
+step 93: walked to (296.0, -624.9, 5.2) moved 4.9
+step 94: no waypoint (nav mode)
+step 95: waypoint at x=143 (score 0.72), turn -33 deg
+step 96: waypoint at x=101 (score 0.75), turn -35 deg
+step 97: waypoint at x=467 (score 0.80), turn -20 deg
+step 98: waypoint at x=1311 (score 0.76), turn +14 deg
+step 99: walked to (301.0, -628.6, 5.4) moved 6.4
+step 100: waypoint at x=671 (score 0.78), turn -12 deg
+step 101: walked to (306.5, -631.3, 5.4) moved 6.2
+step 102: walked to (312.1, -633.9, 5.9) moved 6.6
+step 103: walked to (317.7, -636.5, 5.8) moved 6.3
+step 104: walked to (323.3, -639.1, 6.2) moved 6.7
+step 105: walked to (328.9, -641.7, 7.0) moved 6.9
+step 106: walked to (334.6, -644.4, 7.6) moved 7.0
+step 107: walked to (340.3, -647.1, 7.7) moved 6.3
+step 108: walked to (345.9, -649.7, 8.6) moved 7.1
+step 109: walked to (351.5, -652.3, 8.7) moved 6.3
+step 110: waypoint at x=743 (score 0.76), turn -9 deg
+step 111: walked to (357.5, -654.5, 9.3) moved 7.0
+step 112: waypoint at x=551 (score 0.73), turn -17 deg
+step 113: waypoint at x=521 (score 0.75), turn -18 deg
+step 114: waypoint at x=485 (score 0.76), turn -19 deg
+step 115: waypoint at x=757 (score 0.73), turn -9 deg
+step 116: waypoint at x=553 (score 0.72), turn -17 deg
+step 117: waypoint at x=143 (score 0.71), turn -33 deg
+step 118: waypoint at x=553 (score 0.72), turn -17 deg
+step 119: waypoint at x=555 (score 0.71), turn -17 deg
+step 120: waypoint at x=559 (score 0.72), turn -16 deg
+step 121: waypoint at x=551 (score 0.71), turn -17 deg
+step 122: waypoint at x=465 (score 0.80), turn -20 deg
+step 123: waypoint at x=499 (score 0.81), turn -19 deg
+step 124: walked to (353.6, -652.6, 8.9) moved 4.7
+step 125: walked to (349.3, -650.5, 8.7) moved 5.1
+step 126: walked to (345.1, -648.4, 8.7) moved 4.7
+step 127: walked to (340.7, -646.3, 7.7) moved 5.7
+step 128: no waypoint (nav mode)
+step 129: no waypoint (turn 60)
+step 130: no waypoint (turn 60)
+step 131: no waypoint (nav mode)
+step 132: waypoint at x=417 (score 0.72), turn -22 deg
+step 133: no waypoint (nav mode)
+step 134: no waypoint (turn 60)
+step 135: waypoint at x=1193 (score 0.80), turn +9 deg
+step 136: walked to (345.1, -648.5, 8.6) moved 5.8
+step 137: walked to (350.8, -650.4, 8.7) moved 6.0
+step 138: walked to (356.4, -652.4, 9.3) moved 6.6
+step 139: no waypoint (nav mode)
+step 140: no waypoint (turn 60)
+step 141: waypoint at x=549 (score 0.71), turn -17 deg
+step 142: no waypoint (nav mode)
+step 143: no waypoint (turn 60)
+step 144: no waypoint (turn 60)
+step 145: walked to (352.0, -650.9, 8.7) moved 5.2
+step 146: walked to (347.6, -649.4, 8.7) moved 4.7
+stopped (347.5992431640625, -649.3907470703125, 8.665093421936035) trail 64 -> %USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad/route-nav17.json

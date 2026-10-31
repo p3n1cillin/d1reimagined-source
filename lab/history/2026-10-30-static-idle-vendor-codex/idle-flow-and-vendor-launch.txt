@@ -1,0 +1,1056 @@
+FUNCTION 783ee0..784e50
+0x00783ee0 push      rbp
+0x00783ee1 mov       rbp, rsp
+0x00783ee4 push      r15
+0x00783ee6 push      r14
+0x00783ee8 push      r13
+0x00783eea push      r12
+0x00783eec push      rbx
+0x00783eed sub       rsp, 0x808
+0x00783ef4 mov       r13d, esi
+0x00783ef7 mov       dword ptr [rbp - 0x7e0], edi
+0x00783efd mov       rax, qword ptr [rip + 0x129b1fc] ; [0x1a1f100]
+0x00783f04 mov       rax, qword ptr [rax]
+0x00783f07 mov       qword ptr [rbp - 0x30], rax
+0x00783f0b lea       rax, [rip + 0xe91a68] ; [0x161597a] 'none'
+0x00783f12 test      rdx, rdx
+0x00783f15 cmovne    rax, rdx
+0x00783f19 mov       qword ptr [rbp - 0x7d8], rax
+0x00783f20 call      0x768050
+0x00783f25 mov       r14, rax
+0x00783f28 cmp       r13d, 0x10
+0x00783f2c mov       byte ptr [rbp - 0x670], 0
+0x00783f33 setb      al
+0x00783f36 cmp       r13d, -1
+0x00783f3a sete      cl
+0x00783f3d or        cl, al
+0x00783f3f mov       byte ptr [rbp - 0x7e8], cl
+0x00783f45 jne       0x783f66
+0x00783f47 lea       eax, [r13 - 0x10]
+0x00783f4b mov       r15b, 1
+0x00783f4e cmp       eax, 0x108
+0x00783f53 jb        0x784085
+0x00783f59 cmp       r13d, 0x119
+0x00783f60 jne       0x784085
+0x00783f66 mov       r15b, 1
+0x00783f69 cmp       r13d, 0xf
+0x00783f6d ja        0x783f7e
+0x00783f6f mov       eax, 0xf78a
+0x00783f74 bt        eax, r13d
+0x00783f78 jb        0x784078
+0x00783f7e xor       edi, edi
+0x00783f80 call      0x775770
+0x00783f85 test      rax, rax
+0x00783f88 je        0x783f9b
+0x00783f8a mov       rdi, rax
+0x00783f8d call      0xb93120
+0x00783f92 cmp       eax, 0x1b
+0x00783f95 je        0x784078
+0x00783f9b mov       edi, 1
+0x00783fa0 call      0x7853a0
+0x00783fa5 mov       r15b, al
+0x00783fa8 test      r15b, r15b
+0x00783fab jne       0x784078
+0x00783fb1 mov       qword ptr [rbp - 0x800], r14
+0x00783fb8 mov       r14d, r13d
+0x00783fbb mov       edi, 1
+0x00783fc0 call      0x7756e0
+0x00783fc5 lea       rbx, [rip + 0xe91ae9] ; [0x1615ab5] 'NONE'
+0x00783fcc test      rax, rax
+0x00783fcf mov       r12, rbx
+0x00783fd2 je        0x783ffb
+0x00783fd4 movsxd    rcx, dword ptr [rax + 0x10]
+0x00783fd8 imul      rcx, rcx, 0x168
+0x00783fdf movsxd    rax, dword ptr [rax + rcx + 0x148]
+0x00783fe7 cmp       rax, -1
+0x00783feb mov       r12, rbx
+0x00783fee je        0x783ffb
+0x00783ff0 lea       rcx, [rip + 0x11c1349] ; [0x1945340]
+0x00783ff7 mov       r12, qword ptr [rcx + rax*8]
+0x00783ffb call      0x768050
+0x00784000 test      rax, rax
+0x00784003 mov       r13, rbx
+0x00784006 je        0x784023
+0x00784008 movsxd    rax, dword ptr [rax + 0x1b0]
+0x0078400f cmp       rax, -1
+0x00784013 mov       r13, rbx
+0x00784016 je        0x784023
+0x00784018 lea       rcx, [rip + 0x11c1321] ; [0x1945340]
+0x0078401f mov       r13, qword ptr [rcx + rax*8]
+0x00784023 mov       edi, 1
+0x00784028 call      0x775770
+0x0078402d test      rax, rax
+0x00784030 je        0x78404d
+0x00784032 mov       rdi, rax
+0x00784035 call      0xb93120
+0x0078403a cmp       eax, -1
+0x0078403d je        0x78404d
+0x0078403f movsxd    rax, eax
+0x00784042 lea       rcx, [rip + 0x11c12f7] ; [0x1945340]
+0x00784049 mov       rbx, qword ptr [rcx + rax*8]
+0x0078404d lea       rdi, [rbp - 0x670]
+0x00784054 lea       rsi, [rip + 0xed291d] ; [0x1656978] 'posse host state [%s] not closer than local state [%s] to goal [%s]'
+0x0078405b xor       r15b, r15b
+0x0078405e mov       rdx, r12
+0x00784061 mov       rcx, r13
+0x00784064 mov       r8, rbx
+0x00784067 xor       al, al
+0x00784069 call      0x10080a0
+0x0078406e mov       r13d, r14d
+0x00784071 mov       r14, qword ptr [rbp - 0x800]
+0x00784078 test      byte ptr [rbp - 0x7e8], 1
+0x0078407f jne       0x784098
+0x00784081 lea       eax, [r13 - 0x10]
+0x00784085 cmp       eax, 0x108
+0x0078408a jb        0x7840b1
+0x0078408c cmp       r13d, 0x119
+0x00784093 mov       al, r15b
+0x00784096 jne       0x7840b4
+0x00784098 cmp       r13d, 0xf
+0x0078409c ja        0x78414c
+0x007840a2 mov       eax, 0xf382
+0x007840a7 bt        eax, r13d
+0x007840ab jae       0x78414c
+0x007840b1 mov       al, r15b
+0x007840b4 test      al, 1
+0x007840b6 je        0x784196
+0x007840bc mov       byte ptr [rbp - 0x7f1], 0
+0x007840c3 test      r14, r14
+0x007840c6 mov       ebx, dword ptr [rbp - 0x7e0]
+0x007840cc je        0x784e17
+0x007840d2 cmp       dword ptr [r14 + 0x1b0], ebx
+0x007840d9 jne       0x7843de
+0x007840df cmp       ebx, 0x19
+0x007840e2 je        0x7843de
+0x007840e8 mov       edi, 5
+0x007840ed mov       esi, 3
+0x007840f2 call      0xe4d70
+0x007840f7 test      al, al
+0x007840f9 je        0x7843de
+0x007840ff mov       al, byte ptr [rip + 0x1f48033] ; [0x26cc138]
+0x00784105 test      al, al
+0x00784107 jne       0x784137
+0x00784109 lea       rdi, [rip + 0x1f48028] ; [0x26cc138]
+0x00784110 call      0x12aa7d0
+0x00784115 test      eax, eax
+0x00784117 je        0x784137
+0x00784119 lea       rdi, [rip + 0xed2281] ; [0x16563a1] "world_controller:state_manager: Duplicate request to a state '%s' which is not cleanup."
+0x00784120 call      0xe4a10
+0x00784125 mov       dword ptr [rip + 0x1f48005], eax ; [0x26cc130]
+0x0078412b lea       rdi, [rip + 0x1f48006] ; [0x26cc138]
+0x00784132 call      0x12aa7e0
+0x00784137 cmp       ebx, -1
+0x0078413a jne       0x7843aa
+0x00784140 lea       rdx, [rip + 0xe9196e] ; [0x1615ab5] 'NONE'
+0x00784147 jmp       0x7843b8
+0x0078414c xor       edi, edi
+0x0078414e call      0xb21070
+0x00784153 test      al, al
+0x00784155 jne       0x784166
+0x00784157 xor       edi, edi
+0x00784159 call      0xb210e0
+0x0078415e test      al, al
+0x00784160 je        0x7842d5
+0x00784166 xor       edi, edi
+0x00784168 call      0xb21070
+0x0078416d lea       rcx, [rip + 0xed2865] ; [0x16569d9] 'QUEUED'
+0x00784174 lea       rdx, [rip + 0xecd422] ; [0x165159d] 'IN-PROGRESS'
+0x0078417b test      al, al
+0x0078417d cmovne    rdx, rcx
+0x00784181 lea       rdi, [rbp - 0x670]
+0x00784188 lea       rsi, [rip + 0xed282d] ; [0x16569bc] 'active outbound FT join [%s]'
+0x0078418f xor       al, al
+0x00784191 call      0x10080a0
+0x00784196 lea       rcx, [rip + 0xe91918] ; [0x1615ab5] 'NONE'
+0x0078419d mov       eax, dword ptr [rbp - 0x7e0]
+0x007841a3 cmp       eax, -1
+0x007841a6 mov       rdx, rcx
+0x007841a9 je        0x7841b9
+0x007841ab movsxd    rax, eax
+0x007841ae lea       rdx, [rip + 0x11c118b] ; [0x1945340]
+0x007841b5 mov       rdx, qword ptr [rdx + rax*8]
+0x007841b9 cmp       r13d, -1
+0x007841bd je        0x7841d1
+0x007841bf movsxd    rax, r13d
+0x007841c2 shl       rax, 4
+0x007841c6 lea       rcx, [rip + 0x1f46d73] ; [0x26caf40]
+0x007841cd mov       rcx, qword ptr [rax + rcx]
+0x007841d1 lea       r14, [rbp - 0x7b0]
+0x007841d8 lea       rsi, [rip + 0xed215f] ; [0x165633e] "world_controller:state_manager: State '%s' requested, reason '%s', context '%s', but we can't: %s'"
+0x007841df lea       r9, [rbp - 0x670]
+0x007841e6 mov       rdi, r14
+0x007841e9 mov       r8, qword ptr [rbp - 0x7d8]
+0x007841f0 xor       al, al
+0x007841f2 call      0x1008290
+0x007841f7 mov       rdi, r14
+0x007841fa mov       esi, 0x140
+0x007841ff call      0x65290
+0x00784204 mov       r15d, 0x811c9dc5
+0x0078420a test      eax, eax
+0x0078420c je        0x78423e
+0x0078420e movsxd    rbx, eax
+0x00784211 mov       r15d, 0x811c9dc5
+0x00784217 nop       word ptr [rax + rax]
+0x00784220 movsx     edi, byte ptr [r14]
+0x00784224 imul      r12d, r15d, 0x1000193
+0x0078422b call      0x64e20
+0x00784230 mov       r15d, eax
+0x00784233 xor       r15d, r12d
+0x00784236 inc       r14
+0x00784239 dec       rbx
+0x0078423c jne       0x784220
+0x0078423e mov       eax, dword ptr [rip + 0x1158890] ; [0x18dcad4]
+0x00784244 cmp       eax, 0x811c9dc5
+0x00784249 je        0x78426d
+0x0078424b cmp       r15d, eax
+0x0078424e jne       0x78426d
+0x00784250 call      0x697a0
+0x00784255 sub       eax, dword ptr [rip + 0x1f47ec5] ; [0x26cc120]
+0x0078425b mov       byte ptr [rbp - 0x7f1], 0
+0x00784262 cmp       eax, 0x7531
+0x00784267 jb        0x784e17
+0x0078426d mov       al, byte ptr [rip + 0x1f47eb5] ; [0x26cc128]
+0x00784273 test      al, al
+0x00784275 jne       0x7842a5
+0x00784277 lea       rdi, [rip + 0x1f47eaa] ; [0x26cc128]
+0x0078427e call      0x12aa7d0
+0x00784283 test      eax, eax
+0x00784285 je        0x7842a5
+0x00784287 lea       rdi, [rip + 0xed20b0] ; [0x165633e] "world_controller:state_manager: State '%s' requested, reason '%s', context '%s', but we can't: %s'"
+0x0078428e call      0xe4a10
+0x00784293 mov       dword ptr [rip + 0x1f47e8b], eax ; [0x26cc124]
+0x00784299 lea       rdi, [rip + 0x1f47e88] ; [0x26cc128]
+0x007842a0 call      0x12aa7e0
+0x007842a5 mov       edi, dword ptr [rip + 0x1f47e79] ; [0x26cc124]
+0x007842ab lea       rsi, [rbp - 0x7b0]
+0x007842b2 call      0xe4aa0
+0x007842b7 mov       dword ptr [rip + 0x1158816], r15d ; [0x18dcad4]
+0x007842be call      0x697a0
+0x007842c3 mov       dword ptr [rip + 0x1f47e57], eax ; [0x26cc120]
+0x007842c9 mov       byte ptr [rbp - 0x7f1], 0
+0x007842d0 jmp       0x784e17
+0x007842d5 mov       edi, 1
+0x007842da call      0x7754d0
+0x007842df test      al, al
+0x007842e1 jne       0x7840b1
+0x007842e7 xor       edi, edi
+0x007842e9 call      0x7853a0
+0x007842ee test      al, al
+0x007842f0 je        0x7842f5
+0x007842f2 mov       al, r15b
+0x007842f5 jne       0x7840b4
+0x007842fb xor       edi, edi
+0x007842fd call      0x7756e0
+0x00784302 lea       rbx, [rip + 0xe917ac] ; [0x1615ab5] 'NONE'
+0x00784309 test      rax, rax
+0x0078430c mov       r15, rbx
+0x0078430f je        0x784338
+0x00784311 movsxd    rcx, dword ptr [rax + 0x10]
+0x00784315 imul      rcx, rcx, 0x168
+0x0078431c movsxd    rax, dword ptr [rax + rcx + 0x148]
+0x00784324 cmp       rax, -1
+0x00784328 mov       r15, rbx
+0x0078432b je        0x784338
+0x0078432d lea       rcx, [rip + 0x11c100c] ; [0x1945340]
+0x00784334 mov       r15, qword ptr [rcx + rax*8]
+0x00784338 call      0x768050
+0x0078433d test      rax, rax
+0x00784340 mov       r12, rbx
+0x00784343 je        0x784360
+0x00784345 movsxd    rax, dword ptr [rax + 0x1b0]
+0x0078434c cmp       rax, -1
+0x00784350 mov       r12, rbx
+0x00784353 je        0x784360
+0x00784355 lea       rcx, [rip + 0x11c0fe4] ; [0x1945340]
+0x0078435c mov       r12, qword ptr [rcx + rax*8]
+0x00784360 xor       edi, edi
+0x00784362 call      0x775770
+0x00784367 test      rax, rax
+0x0078436a je        0x784387
+0x0078436c mov       rdi, rax
+0x0078436f call      0xb93120
+0x00784374 cmp       eax, -1
+0x00784377 je        0x784387
+0x00784379 movsxd    rax, eax
+0x0078437c lea       rcx, [rip + 0x11c0fbd] ; [0x1945340]
+0x00784383 mov       rbx, qword ptr [rcx + rax*8]
+0x00784387 lea       rdi, [rbp - 0x670]
+0x0078438e lea       rsi, [rip + 0xed264b] ; [0x16569e0] 'FT host state [%s] not closer than local state [%s] to goal state [%s]'
+0x00784395 mov       rdx, r15
+0x00784398 mov       rcx, r12
+0x0078439b mov       r8, rbx
+0x0078439e xor       al, al
+0x007843a0 call      0x10080a0
+0x007843a5 jmp       0x784196
+0x007843aa movsxd    rax, ebx
+0x007843ad lea       rcx, [rip + 0x11c0f8c] ; [0x1945340]
+0x007843b4 mov       rdx, qword ptr [rcx + rax*8]
+0x007843b8 lea       r15, [rbp - 0x570]
+0x007843bf lea       rsi, [rip + 0xed1fdb] ; [0x16563a1] "world_controller:state_manager: Duplicate request to a state '%s' which is not cleanup."
+0x007843c6 mov       rdi, r15
+0x007843c9 xor       al, al
+0x007843cb call      0x1008290
+0x007843d0 mov       edi, dword ptr [rip + 0x1f47d5a] ; [0x26cc130]
+0x007843d6 mov       rsi, r15
+0x007843d9 call      0xe4aa0
+0x007843de mov       dword ptr [r14 + 0x1c0], ebx
+0x007843e5 mov       dword ptr [r14 + 0x1c4], r13d
+0x007843ec mov       byte ptr [rbp - 0x7f1], 1
+0x007843f3 test      byte ptr [rbp - 0x7e8], 1
+0x007843fa jne       0x784e17
+0x00784400 lea       eax, [r13 - 0x10]
+0x00784404 cmp       eax, 0x108
+0x00784409 jb        0x784418
+0x0078440b cmp       r13d, 0x119
+0x00784412 je        0x784e17
+0x00784418 call      0x771940
+0x0078441d mov       rbx, rax
+0x00784420 vxorps    xmm0, xmm0, xmm0
+0x00784424 vmovaps   xmmword ptr [rbp - 0x7d0], xmm0
+0x0078442c mov       qword ptr [rbp - 0x7c0], 0
+0x00784437 movsxd    rax, dword ptr [r14 + 0x1b0]
+0x0078443e cmp       rax, -1
+0x00784442 je        0x784459
+0x00784444 mov       rdi, qword ptr [r14 + rax*8 + 0x80]
+0x0078444c mov       rax, qword ptr [rdi]
+0x0078444f lea       rsi, [rbp - 0x7d0]
+0x00784456 call      qword ptr [rax + 0x40]
+0x00784459 mov       al, byte ptr [rip + 0x1f47ce9] ; [0x26cc148]
+0x0078445f test      al, al
+0x00784461 jne       0x784491
+0x00784463 lea       rdi, [rip + 0x1f47cde] ; [0x26cc148]
+0x0078446a call      0x12aa7d0
+0x0078446f test      eax, eax
+0x00784471 je        0x784491
+0x00784473 lea       rdi, [rip + 0xed1f7f] ; [0x16563f9] 'world_controller:state_manager: KTOBUCKET: STATE_CHANGE_REASON [%s], Current State [%s], Next State [%s], Context [%s]'
+0x0078447a call      0xe4a10
+0x0078447f mov       dword ptr [rip + 0x1f47cbb], eax ; [0x26cc140]
+0x00784485 lea       rdi, [rip + 0x1f47cbc] ; [0x26cc148]
+0x0078448c call      0x12aa7e0
+0x00784491 mov       qword ptr [rbp - 0x810], rbx
+0x00784498 movsxd    rax, r13d
+0x0078449b shl       rax, 4
+0x0078449f lea       rcx, [rip + 0x1f46a9a] ; [0x26caf40]
+0x007844a6 mov       rdx, qword ptr [rax + rcx]
+0x007844aa movsxd    rax, dword ptr [r14 + 0x1b0]
+0x007844b1 lea       r8, [rip + 0xe915fd] ; [0x1615ab5] 'NONE'
+0x007844b8 cmp       rax, -1
+0x007844bc mov       rcx, r8
+0x007844bf je        0x7844cc
+0x007844c1 lea       rcx, [rip + 0x11c0e78] ; [0x1945340]
+0x007844c8 mov       rcx, qword ptr [rcx + rax*8]
+0x007844cc movsxd    rax, dword ptr [r14 + 0x1c0]
+0x007844d3 cmp       rax, -1
+0x007844d7 je        0x7844e4
+0x007844d9 lea       rsi, [rip + 0x11c0e60] ; [0x1945340]
+0x007844e0 mov       r8, qword ptr [rsi + rax*8]
+0x007844e4 mov       qword ptr [rbp - 0x800], r14
+0x007844eb lea       rbx, [rbp - 0x570]
+0x007844f2 lea       rsi, [rip + 0xed1f00] ; [0x16563f9] 'world_controller:state_manager: KTOBUCKET: STATE_CHANGE_REASON [%s], Current State [%s], Next State [%s], Context [%s]'
+0x007844f9 mov       rdi, rbx
+0x007844fc mov       r9, qword ptr [rbp - 0x7d8]
+0x00784503 xor       al, al
+0x00784505 call      0x1008290
+0x0078450a mov       edi, dword ptr [rip + 0x1f47c30] ; [0x26cc140]
+0x00784510 mov       rsi, rbx
+0x00784513 call      0xe4aa0
+0x00784518 mov       al, byte ptr [rip + 0x1f47c3a] ; [0x26cc158]
+0x0078451e test      al, al
+0x00784520 jne       0x784550
+0x00784522 lea       rdi, [rip + 0x1f47c2f] ; [0x26cc158]
+0x00784529 call      0x12aa7d0
+0x0078452e test      eax, eax
+0x00784530 je        0x784550
+0x00784532 lea       rdi, [rip + 0xed1f37] ; [0x1656470] 'world_controller:state_manager: KTOBUCKET: State status [%lld], tasks remaining: [0x%016llx], tasks requested: [0x%016llx]'
+0x00784539 call      0xe4a10
+0x0078453e mov       dword ptr [rip + 0x1f47c0c], eax ; [0x26cc150]
+0x00784544 lea       rdi, [rip + 0x1f47c0d] ; [0x26cc158]
+0x0078454b call      0x12aa7e0
+0x00784550 mov       dword ptr [rbp - 0x804], r13d
+0x00784557 mov       rcx, qword ptr [rbp - 0x7c0]
+0x0078455e mov       rdx, qword ptr [rbp - 0x7d0]
+0x00784565 mov       r8, qword ptr [rbp - 0x7c8]
+0x0078456c lea       rbx, [rbp - 0x570]
+0x00784573 lea       rsi, [rip + 0xed1ef6] ; [0x1656470] 'world_controller:state_manager: KTOBUCKET: State status [%lld], tasks remaining: [0x%016llx], tasks requested: [0x%016llx]'
+0x0078457a mov       rdi, rbx
+0x0078457d xor       al, al
+0x0078457f call      0x1008290
+0x00784584 mov       edi, dword ptr [rip + 0x1f47bc6] ; [0x26cc150]
+0x0078458a mov       rsi, rbx
+0x0078458d call      0xe4aa0
+0x00784592 xor       edi, edi
+0x00784594 nop       word ptr cs:[rax + rax]
+0x007845a0 mov       dword ptr [rbp - 0x7f0], edi
+0x007845a6 xor       r14d, r14d
+0x007845a9 nop       dword ptr [rax]
+0x007845b0 cmp       r14d, 1
+0x007845b4 jne       0x7845c0
+0x007845b6 call      0x772ec0
+0x007845bb jmp       0x7845c5
+0x007845bd nop       dword ptr [rax]
+0x007845c0 call      0x775180
+0x007845c5 mov       rbx, rax
+0x007845c8 test      rbx, rbx
+0x007845cb je        0x78479a
+0x007845d1 cmp       dword ptr [rbx + 0x8c48], 0
+0x007845d8 je        0x78479a
+0x007845de mov       rdi, rbx
+0x007845e1 call      0xb6db70
+0x007845e6 mov       qword ptr [rbp - 0x7e0], rax
+0x007845ed mov       eax, dword ptr [rbx + 0x8c48]
+0x007845f3 cmp       eax, 8
+0x007845f6 sete      byte ptr [rbp - 0x7e9]
+0x007845fd mov       ecx, eax
+0x007845ff and       ecx, 0xfffffffe
+0x00784602 cmp       ecx, 6
+0x00784605 sete      r15b
+0x00784609 cmp       eax, 9
+0x0078460c sete      byte ptr [rbp - 0x7ea]
+0x00784613 mov       ecx, dword ptr [rbx + 0x628]
+0x00784619 cmp       ecx, -1
+0x0078461c lea       rcx, [rip + 0xe9d7c2] ; [0x1621de5] 'N'
+0x00784623 je        0x784641
+0x00784625 mov       ecx, dword ptr [rbx + 0x632c]
+0x0078462b cmp       ecx, dword ptr [rbx + 0x62c]
+0x00784631 lea       rcx, [rip + 0xe9d7ab] ; [0x1621de3] 'Y'
+0x00784638 je        0x784641
+0x0078463a lea       rcx, [rip + 0xe9d7a4] ; [0x1621de5] 'N'
+0x00784641 mov       qword ptr [rbp - 0x7e8], rcx
+0x00784648 mov       dword ptr [rbp - 0x7d8], 0
+0x00784652 cmp       eax, 0xa
+0x00784655 ja        0x7846f0
+0x0078465b mov       ecx, 0x7f0
+0x00784660 bt        ecx, eax
+0x00784663 jae       0x7846f0
+0x00784669 mov       rdi, rbx
+0x0078466c call      0xb742d0
+0x00784671 test      al, al
+0x00784673 je        0x7846f0
+0x00784675 mov       rdi, rbx
+0x00784678 call      0xb742e0
+0x0078467d test      al, al
+0x0078467f je        0x7846f0
+0x00784681 mov       rdi, rbx
+0x00784684 call      0xb74340
+0x00784689 mov       rbx, rax
+0x0078468c test      rbx, rbx
+0x0078468f lea       r12, [rip + 0xe9d74f] ; [0x1621de5] 'N'
+0x00784696 mov       r13d, 0
+0x0078469c je        0x7846fa
+0x0078469e mov       eax, dword ptr [rbx + 0x28]
+0x007846a1 mov       dword ptr [rbp - 0x7d8], eax
+0x007846a7 mov       rdi, rbx
+0x007846aa call      0xb7e9a0
+0x007846af xor       r13d, r13d
+0x007846b2 jmp       0x7846e0
+0x007846b4 nop       word ptr cs:[rax + rax]
+0x007846c0 movsxd    rsi, eax
+0x007846c3 imul      rax, rsi, 0x168
+0x007846ca cmp       dword ptr [rbx + rax + 0x5c], 0xa
+0x007846cf sete      al
+0x007846d2 movzx     eax, al
+0x007846d5 add       r13d, eax
+0x007846d8 mov       rdi, rbx
+0x007846db call      0xb7e9d0
+0x007846e0 cmp       eax, -1
+0x007846e3 jne       0x7846c0
+0x007846e5 lea       r12, [rip + 0xe9d6f7] ; [0x1621de3] 'Y'
+0x007846ec jmp       0x7846fa
+0x007846ee nop       
+0x007846f0 lea       r12, [rip + 0xe9d6ee] ; [0x1621de5] 'N'
+0x007846f7 xor       r13d, r13d
+0x007846fa mov       al, byte ptr [rip + 0x1f47b48] ; [0x26cc248]
+0x00784700 test      al, al
+0x00784702 jne       0x784732
+0x00784704 lea       rdi, [rip + 0x1f47b3d] ; [0x26cc248]
+0x0078470b call      0x12aa7d0
+0x00784710 test      eax, eax
+0x00784712 je        0x784732
+0x00784714 lea       rdi, [rip + 0xed21f0] ; [0x165690b] 'world_controller:state_manager: KTOBUCKET: SESSION ID:=%s, HOST=%s, LEADER=%s, MEM=%s, PEERS=%d, ESTPEERS=%d'
+0x0078471b call      0xe4a10
+0x00784720 mov       dword ptr [rip + 0x1f47b1a], eax ; [0x26cc240]
+0x00784726 lea       rdi, [rip + 0x1f47b1b] ; [0x26cc248]
+0x0078472d call      0x12aa7e0
+0x00784732 or        r15b, byte ptr [rbp - 0x7e9]
+0x00784739 or        r15b, byte ptr [rbp - 0x7ea]
+0x00784740 test      r15b, r15b
+0x00784743 mov       dword ptr [rsp + 8], r13d
+0x00784748 mov       eax, dword ptr [rbp - 0x7d8]
+0x0078474e mov       dword ptr [rsp], eax
+0x00784751 lea       rcx, [rip + 0xe9d68d] ; [0x1621de5] 'N'
+0x00784758 lea       rax, [rip + 0xe9d684] ; [0x1621de3] 'Y'
+0x0078475f cmovne    rcx, rax
+0x00784763 lea       rbx, [rbp - 0x570]
+0x0078476a mov       rdi, rbx
+0x0078476d lea       rsi, [rip + 0xed2197] ; [0x165690b] 'world_controller:state_manager: KTOBUCKET: SESSION ID:=%s, HOST=%s, LEADER=%s, MEM=%s, PEERS=%d, ESTPEERS=%d'
+0x00784774 mov       rdx, qword ptr [rbp - 0x7e0]
+0x0078477b mov       r8, qword ptr [rbp - 0x7e8]
+0x00784782 mov       r9, r12
+0x00784785 xor       al, al
+0x00784787 call      0x1008290
+0x0078478c mov       edi, dword ptr [rip + 0x1f47aae] ; [0x26cc240]
+0x00784792 mov       rsi, rbx
+0x00784795 call      0xe4aa0
+0x0078479a inc       r14d
+0x0078479d cmp       r14d, 2
+0x007847a1 mov       edi, dword ptr [rbp - 0x7f0]
+0x007847a7 jne       0x7845b0
+0x007847ad inc       edi
+0x007847af cmp       edi, 3
+0x007847b2 jne       0x7845a0
+0x007847b8 call      0xb658f0
+0x007847bd mov       al, byte ptr [rip + 0x1f47a45] ; [0x26cc208]
+0x007847c3 test      al, al
+0x007847c5 jne       0x7847f5
+0x007847c7 lea       rdi, [rip + 0x1f47a3a] ; [0x26cc208]
+0x007847ce call      0x12aa7d0
+0x007847d3 test      eax, eax
+0x007847d5 je        0x7847f5
+0x007847d7 lea       rdi, [rip + 0xed1fb9] ; [0x1656797] 'world_controller:state_manager: KTOBUCKET: ACTIVITY ACTNAME:[%s] SLICESET HASH:[0x%08x]'
+0x007847de call      0xe4a10
+0x007847e3 mov       dword ptr [rip + 0x1f47a17], eax ; [0x26cc200]
+0x007847e9 lea       rdi, [rip + 0x1f47a18] ; [0x26cc208]
+0x007847f0 call      0x12aa7e0
+0x007847f5 call      0x3409a0
+0x007847fa mov       rdi, rax
+0x007847fd call      0x340cb0
+0x00784802 test      al, al
+0x00784804 je        0x784818
+0x00784806 call      0x3409a0
+0x0078480b mov       rdi, rax
+0x0078480e call      0x78970
+0x00784813 mov       rbx, rax
+0x00784816 jmp       0x78481f
+0x00784818 lea       rbx, [rip + 0xe91296] ; [0x1615ab5] 'NONE'
+0x0078481f call      0x3430b0
+0x00784824 lea       rdi, [rbp - 0x130]
+0x0078482b mov       rsi, rax
+0x0078482e call      0x345640
+0x00784833 mov       ecx, dword ptr [rbp - 0x130]
+0x00784839 lea       r14, [rbp - 0x570]
+0x00784840 lea       rsi, [rip + 0xed1f50] ; [0x1656797] 'world_controller:state_manager: KTOBUCKET: ACTIVITY ACTNAME:[%s] SLICESET HASH:[0x%08x]'
+0x00784847 mov       rdi, r14
+0x0078484a mov       rdx, rbx
+0x0078484d xor       al, al
+0x0078484f call      0x1008290
+0x00784854 mov       edi, dword ptr [rip + 0x1f479a6] ; [0x26cc200]
+0x0078485a mov       rsi, r14
+0x0078485d call      0xe4aa0
+0x00784862 mov       al, byte ptr [rip + 0x1f479b0] ; [0x26cc218]
+0x00784868 test      al, al
+0x0078486a jne       0x78489a
+0x0078486c lea       rdi, [rip + 0x1f479a5] ; [0x26cc218]
+0x00784873 call      0x12aa7d0
+0x00784878 test      eax, eax
+0x0078487a je        0x78489a
+0x0078487c lea       rdi, [rip + 0xed1f6c] ; [0x16567ef] 'world_controller:state_manager: KTOBUCKET: LAST BAP LOG NOTIFICATION: %s'
+0x00784883 call      0xe4a10
+0x00784888 mov       dword ptr [rip + 0x1f47982], eax ; [0x26cc210]
+0x0078488e lea       rdi, [rip + 0x1f47983] ; [0x26cc218]
+0x00784895 call      0x12aa7e0
+0x0078489a call      0x75e400
+0x0078489f test      rax, rax
+0x007848a2 je        0x7848ab
+0x007848a4 call      0x75e400
+0x007848a9 jmp       0x7848b2
+0x007848ab lea       rax, [rip + 0xe91203] ; [0x1615ab5] 'NONE'
+0x007848b2 lea       rbx, [rbp - 0x570]
+0x007848b9 lea       rsi, [rip + 0xed1f2f] ; [0x16567ef] 'world_controller:state_manager: KTOBUCKET: LAST BAP LOG NOTIFICATION: %s'
+0x007848c0 mov       rdi, rbx
+0x007848c3 mov       rdx, rax
+0x007848c6 xor       al, al
+0x007848c8 call      0x1008290
+0x007848cd mov       edi, dword ptr [rip + 0x1f4793d] ; [0x26cc210]
+0x007848d3 mov       rsi, rbx
+0x007848d6 call      0xe4aa0
+0x007848db xor       r13d, r13d
+0x007848de nop       
+0x007848e0 xor       r15d, r15d
+0x007848e3 nop       word ptr cs:[rax + rax]
+0x007848f0 mov       edi, r13d
+0x007848f3 mov       esi, r15d
+0x007848f6 call      0x75cdc0
+0x007848fb test      al, al
+0x007848fd je        0x784ac5
+0x00784903 mov       edi, r13d
+0x00784906 mov       esi, r15d
+0x00784909 call      0x75cbe0
+0x0078490e mov       ebx, eax
+0x00784910 mov       edi, r13d
+0x00784913 mov       esi, r15d
+0x00784916 call      0x75ccb0
+0x0078491b mov       qword ptr [rbp - 0x7d8], rax
+0x00784922 mov       edi, r13d
+0x00784925 mov       esi, r15d
+0x00784928 call      0x75d560
+0x0078492d mov       r12, rax
+0x00784930 mov       al, byte ptr [rip + 0x1f478f2] ; [0x26cc228]
+0x00784936 test      al, al
+0x00784938 jne       0x784968
+0x0078493a lea       rdi, [rip + 0x1f478e7] ; [0x26cc228]
+0x00784941 call      0x12aa7d0
+0x00784946 test      eax, eax
+0x00784948 je        0x784968
+0x0078494a lea       rdi, [rip + 0xed1ee7] ; [0x1656838] 'world_controller:state_manager: KTOBUCKET: ACTIVITY %s STATUS: [%s] SID: %s'
+0x00784951 call      0xe4a10
+0x00784956 mov       dword ptr [rip + 0x1f478c4], eax ; [0x26cc220]
+0x0078495c lea       rdi, [rip + 0x1f478c5] ; [0x26cc228]
+0x00784963 call      0x12aa7e0
+0x00784968 test      r12, r12
+0x0078496b jne       0x7849b0
+0x0078496d mov       edi, ebx
+0x0078496f call      0x2a46b0
+0x00784974 lea       rbx, [rbp - 0x570]
+0x0078497b mov       rdi, rbx
+0x0078497e lea       rsi, [rip + 0xed1eb3] ; [0x1656838] 'world_controller:state_manager: KTOBUCKET: ACTIVITY %s STATUS: [%s] SID: %s'
+0x00784985 lea       rdx, [rip + 0xe91129] ; [0x1615ab5] 'NONE'
+0x0078498c mov       rcx, rax
+0x0078498f mov       r8, qword ptr [rbp - 0x7d8]
+0x00784996 xor       al, al
+0x00784998 call      0x1008290
+0x0078499d mov       edi, dword ptr [rip + 0x1f4787d] ; [0x26cc220]
+0x007849a3 mov       rsi, rbx
+0x007849a6 jmp       0x784ac0
+0x007849ab nop       dword ptr [rax + rax]
+0x007849b0 mov       rax, qword ptr [r12]
+0x007849b4 mov       rdi, r12
+0x007849b7 call      qword ptr [rax + 0x30]
+0x007849ba mov       r14d, r13d
+0x007849bd mov       r13, rax
+0x007849c0 mov       edi, ebx
+0x007849c2 call      0x2a46b0
+0x007849c7 lea       rbx, [rbp - 0x570]
+0x007849ce mov       rdi, rbx
+0x007849d1 lea       rsi, [rip + 0xed1e60] ; [0x1656838] 'world_controller:state_manager: KTOBUCKET: ACTIVITY %s STATUS: [%s] SID: %s'
+0x007849d8 mov       rdx, r13
+0x007849db mov       r13d, r14d
+0x007849de mov       rcx, rax
+0x007849e1 mov       r8, qword ptr [rbp - 0x7d8]
+0x007849e8 xor       al, al
+0x007849ea call      0x1008290
+0x007849ef mov       edi, dword ptr [rip + 0x1f4782b] ; [0x26cc220]
+0x007849f5 mov       rsi, rbx
+0x007849f8 call      0xe4aa0
+0x007849fd mov       rdi, r12
+0x00784a00 call      0x29a480
+0x00784a05 test      al, al
+0x00784a07 je        0x784ac5
+0x00784a0d mov       rdi, r12
+0x00784a10 call      0x299af0
+0x00784a15 mov       rbx, rax
+0x00784a18 mov       edi, 5
+0x00784a1d mov       esi, 2
+0x00784a22 call      0xe4d70
+0x00784a27 test      al, al
+0x00784a29 je        0x784ac5
+0x00784a2f mov       al, byte ptr [rip + 0x1f47803] ; [0x26cc238]
+0x00784a35 test      al, al
+0x00784a37 jne       0x784a67
+0x00784a39 lea       rdi, [rip + 0x1f477f8] ; [0x26cc238]
+0x00784a40 call      0x12aa7d0
+0x00784a45 test      eax, eax
+0x00784a47 je        0x784a67
+0x00784a49 lea       rdi, [rip + 0xed1e34] ; [0x1656884] 'world_controller:state_manager: KTOBUCKET: ACTIVITY: activity=%d, insp=%d, override activity=%s, bubbles=%s, reservations=%d, nonce=%d'
+0x00784a50 call      0xe4a10
+0x00784a55 mov       dword ptr [rip + 0x1f477d5], eax ; [0x26cc230]
+0x00784a5b lea       rdi, [rip + 0x1f477d6] ; [0x26cc238]
+0x00784a62 call      0x12aa7e0
+0x00784a67 movsx     ecx, byte ptr [rbx + 0x10]
+0x00784a6b movsx     edx, word ptr [rbx + 0xe]
+0x00784a6f mov       eax, dword ptr [rbx + 0x698]
+0x00784a75 mov       esi, dword ptr [rbx + 4]
+0x00784a78 mov       dword ptr [rsp + 8], esi
+0x00784a7c mov       dword ptr [rsp], eax
+0x00784a7f lea       r8, [rbx + 0x98]
+0x00784a86 add       rbx, 0x198
+0x00784a8d lea       r14, [rbp - 0x570]
+0x00784a94 mov       rdi, r14
+0x00784a97 lea       rsi, [rip + 0xed1de6] ; [0x1656884] 'world_controller:state_manager: KTOBUCKET: ACTIVITY: activity=%d, insp=%d, override activity=%s, bubbles=%s, reservations=%d, nonce=%d'
+0x00784a9e mov       r9, rbx
+0x00784aa1 xor       al, al
+0x00784aa3 call      0x1008290
+0x00784aa8 mov       edi, dword ptr [rip + 0x1f47782] ; [0x26cc230]
+0x00784aae mov       rsi, r14
+0x00784ab1 nop       word ptr cs:[rax + rax]
+0x00784ac0 call      0xe4aa0
+0x00784ac5 inc       r15d
+0x00784ac8 cmp       r15d, 2
+0x00784acc jne       0x7848f0
+0x00784ad2 inc       r13d
+0x00784ad5 cmp       r13d, 2
+0x00784ad9 jne       0x7848e0
+0x00784adf xor       ebx, ebx
+0x00784ae1 lea       r12, [rbp - 0x570]
+0x00784ae8 lea       r14, [rip + 0xed1c2f] ; [0x165671e] 'world_controller:state_manager: KTOBUCKET: SOCKET INFO: %s'
+0x00784aef lea       r15, [rip + 0x1f47702] ; [0x26cc1f8]
+0x00784af6 lea       r13, [rip + 0xed1c5c] ; [0x1656759] 'world_controller:state_manager: KTOBUCKET: SEND/RECV INFO: %s'
+0x00784afd nop       dword ptr [rax]
+0x00784b00 mov       edi, ebx
+0x00784b02 call      0x559c30
+0x00784b07 test      eax, eax
+0x00784b09 je        0x784c6c
+0x00784b0f mov       byte ptr [rbp - 0x130], 0
+0x00784b16 mov       byte ptr [rbp - 0x230], 0
+0x00784b1d mov       byte ptr [rbp - 0x330], 0
+0x00784b24 mov       byte ptr [rbp - 0x430], 0
+0x00784b2b mov       edi, ebx
+0x00784b2d lea       rsi, [rbp - 0x130]
+0x00784b34 call      0x559cc0
+0x00784b39 mov       edi, ebx
+0x00784b3b lea       rsi, [rbp - 0x230]
+0x00784b42 call      0x55a1a0
+0x00784b47 mov       edi, ebx
+0x00784b49 lea       rsi, [rbp - 0x330]
+0x00784b50 call      0x55a200
+0x00784b55 mov       edi, ebx
+0x00784b57 lea       rsi, [rbp - 0x430]
+0x00784b5e call      0x55a280
+0x00784b63 mov       al, byte ptr [rip + 0x1f4766f] ; [0x26cc1d8]
+0x00784b69 test      al, al
+0x00784b6b jne       0x784b9b
+0x00784b6d lea       rdi, [rip + 0x1f47664] ; [0x26cc1d8]
+0x00784b74 call      0x12aa7d0
+0x00784b79 test      eax, eax
+0x00784b7b je        0x784b9b
+0x00784b7d lea       rdi, [rip + 0xed1b5b] ; [0x16566df] 'world_controller:state_manager: KTOBUCKET: BAP DESC: %s IP: %s'
+0x00784b84 call      0xe4a10
+0x00784b89 mov       dword ptr [rip + 0x1f47641], eax ; [0x26cc1d0]
+0x00784b8f lea       rdi, [rip + 0x1f47642] ; [0x26cc1d8]
+0x00784b96 call      0x12aa7e0
+0x00784b9b mov       rdi, r12
+0x00784b9e lea       rsi, [rip + 0xed1b3a] ; [0x16566df] 'world_controller:state_manager: KTOBUCKET: BAP DESC: %s IP: %s'
+0x00784ba5 lea       rdx, [rbp - 0x130]
+0x00784bac lea       rcx, [rbp - 0x230]
+0x00784bb3 xor       al, al
+0x00784bb5 call      0x1008290
+0x00784bba mov       edi, dword ptr [rip + 0x1f47610] ; [0x26cc1d0]
+0x00784bc0 mov       rsi, r12
+0x00784bc3 call      0xe4aa0
+0x00784bc8 mov       al, byte ptr [rip + 0x1f4761a] ; [0x26cc1e8]
+0x00784bce test      al, al
+0x00784bd0 jne       0x784bfc
+0x00784bd2 lea       rdi, [rip + 0x1f4760f] ; [0x26cc1e8]
+0x00784bd9 call      0x12aa7d0
+0x00784bde test      eax, eax
+0x00784be0 je        0x784bfc
+0x00784be2 mov       rdi, r14
+0x00784be5 call      0xe4a10
+0x00784bea mov       dword ptr [rip + 0x1f475f0], eax ; [0x26cc1e0]
+0x00784bf0 lea       rdi, [rip + 0x1f475f1] ; [0x26cc1e8]
+0x00784bf7 call      0x12aa7e0
+0x00784bfc mov       rdi, r12
+0x00784bff mov       rsi, r14
+0x00784c02 lea       rdx, [rbp - 0x330]
+0x00784c09 xor       al, al
+0x00784c0b call      0x1008290
+0x00784c10 mov       edi, dword ptr [rip + 0x1f475ca] ; [0x26cc1e0]
+0x00784c16 mov       rsi, r12
+0x00784c19 call      0xe4aa0
+0x00784c1e mov       al, byte ptr [rip + 0x1f475d4] ; [0x26cc1f8]
+0x00784c24 test      al, al
+0x00784c26 jne       0x784c4a
+0x00784c28 mov       rdi, r15
+0x00784c2b call      0x12aa7d0
+0x00784c30 test      eax, eax
+0x00784c32 je        0x784c4a
+0x00784c34 mov       rdi, r13
+0x00784c37 call      0xe4a10
+0x00784c3c mov       dword ptr [rip + 0x1f475ae], eax ; [0x26cc1f0]
+0x00784c42 mov       rdi, r15
+0x00784c45 call      0x12aa7e0
+0x00784c4a mov       rdi, r12
+0x00784c4d mov       rsi, r13
+0x00784c50 lea       rdx, [rbp - 0x430]
+0x00784c57 xor       al, al
+0x00784c59 call      0x1008290
+0x00784c5e mov       edi, dword ptr [rip + 0x1f4758c] ; [0x26cc1f0]
+0x00784c64 mov       rsi, r12
+0x00784c67 call      0xe4aa0
+0x00784c6c inc       ebx
+0x00784c6e cmp       ebx, 4
+0x00784c71 jne       0x784b00
+0x00784c77 call      0x2e42c0
+0x00784c7c xor       r14d, r14d
+0x00784c7f mov       r15d, 0x7f0
+0x00784c85 mov       r12d, dword ptr [rbp - 0x804]
+0x00784c8c nop       dword ptr [rax]
+0x00784c90 mov       edi, r14d
+0x00784c93 call      0x775180
+0x00784c98 mov       rbx, rax
+0x00784c9b test      rbx, rbx
+0x00784c9e je        0x784cf0
+0x00784ca0 mov       eax, dword ptr [rbx + 0x8c48]
+0x00784ca6 test      eax, eax
+0x00784ca8 je        0x784cf0
+0x00784caa cmp       eax, 0xa
+0x00784cad ja        0x784cf0
+0x00784caf bt        r15d, eax
+0x00784cb3 jae       0x784cf0
+0x00784cb5 mov       rdi, rbx
+0x00784cb8 call      0xb742d0
+0x00784cbd test      al, al
+0x00784cbf je        0x784cf0
+0x00784cc1 mov       rdi, rbx
+0x00784cc4 call      0xb742e0
+0x00784cc9 test      al, al
+0x00784ccb je        0x784cf0
+0x00784ccd mov       rdi, rbx
+0x00784cd0 call      0xb74340
+0x00784cd5 test      rax, rax
+0x00784cd8 je        0x784cf0
+0x00784cda mov       rdi, rax
+0x00784cdd lea       rsi, [rax + 8]
+0x00784ce1 call      0xb84eb0
+0x00784ce6 nop       word ptr cs:[rax + rax]
+0x00784cf0 mov       edi, r14d
+0x00784cf3 call      0x772ec0
+0x00784cf8 mov       rbx, rax
+0x00784cfb test      rbx, rbx
+0x00784cfe je        0x784d50
+0x00784d00 mov       eax, dword ptr [rbx + 0x8c48]
+0x00784d06 test      eax, eax
+0x00784d08 je        0x784d50
+0x00784d0a cmp       eax, 0xa
+0x00784d0d ja        0x784d50
+0x00784d0f bt        r15d, eax
+0x00784d13 jae       0x784d50
+0x00784d15 mov       rdi, rbx
+0x00784d18 call      0xb742d0
+0x00784d1d test      al, al
+0x00784d1f je        0x784d50
+0x00784d21 mov       rdi, rbx
+0x00784d24 call      0xb742e0
+0x00784d29 test      al, al
+0x00784d2b je        0x784d50
+0x00784d2d mov       rdi, rbx
+0x00784d30 call      0xb74340
+0x00784d35 test      rax, rax
+0x00784d38 je        0x784d50
+0x00784d3a mov       rdi, rax
+0x00784d3d lea       rsi, [rax + 8]
+0x00784d41 call      0xb84eb0
+0x00784d46 nop       word ptr cs:[rax + rax]
+0x00784d50 inc       r14d
+0x00784d53 cmp       r14d, 3
+0x00784d57 jne       0x784c90
+0x00784d5d mov       rbx, qword ptr [rbp - 0x810]
+0x00784d64 test      rbx, rbx
+0x00784d67 je        0x784da6
+0x00784d69 mov       rax, qword ptr [rbp - 0x800]
+0x00784d70 mov       esi, dword ptr [rax + 0x1b0]
+0x00784d76 lea       rcx, [rbp - 0x7d0]
+0x00784d7d mov       rdi, rbx
+0x00784d80 mov       edx, r12d
+0x00784d83 call      0x76d2b0
+0x00784d88 mov       rdi, rbx
+0x00784d8b call      0x76c830
+0x00784d90 mov       rdi, rbx
+0x00784d93 call      0x76d760
+0x00784d98 test      al, al
+0x00784d9a je        0x784e17
+0x00784d9c mov       edi, r12d
+0x00784d9f call      0x7779d0
+0x00784da4 jmp       0x784e17
+0x00784da6 mov       edi, 5
+0x00784dab mov       esi, 4
+0x00784db0 call      0xe4d70
+0x00784db5 test      al, al
+0x00784db7 je        0x784e17
+0x00784db9 mov       al, byte ptr [rip + 0x1f473a9] ; [0x26cc168]
+0x00784dbf test      al, al
+0x00784dc1 jne       0x784df1
+0x00784dc3 lea       rdi, [rip + 0x1f4739e] ; [0x26cc168]
+0x00784dca call      0x12aa7d0
+0x00784dcf test      eax, eax
+0x00784dd1 je        0x784df1
+0x00784dd3 lea       rdi, [rip + 0xed1711] ; [0x16564eb] 'world_controller:state_manager: KTOBUCKET: Unable to log KTO reason to retail datamine'
+0x00784dda call      0xe4a10
+0x00784ddf mov       dword ptr [rip + 0x1f4737b], eax ; [0x26cc160]
+0x00784de5 lea       rdi, [rip + 0x1f4737c] ; [0x26cc168]
+0x00784dec call      0x12aa7e0
+0x00784df1 lea       rbx, [rbp - 0x570]
+0x00784df8 lea       rsi, [rip + 0xed16ec] ; [0x16564eb] 'world_controller:state_manager: KTOBUCKET: Unable to log KTO reason to retail datamine'
+0x00784dff mov       rdi, rbx
+0x00784e02 xor       al, al
+0x00784e04 call      0x1008290
+0x00784e09 mov       edi, dword ptr [rip + 0x1f47351] ; [0x26cc160]
+0x00784e0f mov       rsi, rbx
+0x00784e12 call      0xe4aa0
+0x00784e17 mov       rax, qword ptr [rip + 0x129a2e2] ; [0x1a1f100]
+0x00784e1e mov       rax, qword ptr [rax]
+0x00784e21 cmp       rax, qword ptr [rbp - 0x30]
+0x00784e25 jne       0x784e3f
+0x00784e27 mov       al, byte ptr [rbp - 0x7f1]
+0x00784e2d add       rsp, 0x808
+0x00784e34 pop       rbx
+0x00784e35 pop       r12
+0x00784e37 pop       r13
+0x00784e39 pop       r14
+0x00784e3b pop       r15
+0x00784e3d pop       rbp
+0x00784e3e ret       
+0x00784e3f call      0x12aa7f0
+0x00784e44 nop       
+0x00784e45 nop       word ptr cs:[rax + rax]
+FUNCTION a96110..a96480
+0x00a96110 push      rbp
+0x00a96111 mov       rbp, rsp
+0x00a96114 push      r15
+0x00a96116 push      r14
+0x00a96118 push      r12
+0x00a9611a push      rbx
+0x00a9611b and       rsp, 0xffffffffffffffe0
+0x00a96122 sub       rsp, 0x3e0
+0x00a96129 mov       r12, rdx
+0x00a9612c mov       r15, rsi
+0x00a9612f mov       rax, qword ptr [rip + 0xf88fca] ; [0x1a1f100]
+0x00a96136 mov       rax, qword ptr [rax]
+0x00a96139 mov       qword ptr [rsp + 0x3c8], rax
+0x00a96141 mov       qword ptr [rsp + 0xc8], rcx
+0x00a96149 call      0x9231e0
+0x00a9614e mov       ebx, eax
+0x00a96150 cmp       ebx, 3
+0x00a96153 ja        0xa96450
+0x00a96159 call      0x906f70
+0x00a9615e test      al, al
+0x00a96160 jne       0xa96450
+0x00a96166 mov       eax, dword ptr [r15]
+0x00a96169 mov       dword ptr [rsp + 0xc0], eax
+0x00a96170 lea       rdi, [rsp + 0xc0]
+0x00a96178 call      0x58ab80
+0x00a9617d mov       r14d, eax
+0x00a96180 cmp       r14d, -1
+0x00a96184 je        0xa96450
+0x00a9618a lea       rdi, [rsp + 0x98]
+0x00a96192 mov       esi, 1
+0x00a96197 mov       edx, ebx
+0x00a96199 call      0x982b00
+0x00a9619e mov       byte ptr [rsp + 0xb9], 1
+0x00a961a6 vxorps    ymm0, ymm0, ymm0
+0x00a961aa vmovaps   ymmword ptr [rsp + 0x360], ymm0
+0x00a961b3 vmovaps   ymmword ptr [rsp + 0x340], ymm0
+0x00a961bc vmovaps   ymmword ptr [rsp + 0x320], ymm0
+0x00a961c5 vmovaps   ymmword ptr [rsp + 0x300], ymm0
+0x00a961ce mov       qword ptr [rsp + 0x388], 0
+0x00a961da mov       qword ptr [rsp + 0x380], 0
+0x00a961e6 mov       byte ptr [rsp + 0x35a], 0xff
+0x00a961ee lea       rbx, [rsp + 0x58]
+0x00a961f3 mov       qword ptr [rsp + 0x3b0], 0
+0x00a961ff mov       qword ptr [rsp + 0x3a8], 0
+0x00a9620b mov       qword ptr [rsp + 0x3a0], 0
+0x00a96217 mov       qword ptr [rsp + 0x398], 0
+0x00a96223 mov       qword ptr [rsp + 0x390], 0
+0x00a9622f mov       dword ptr [rsp + 0x390], 0xffffffff
+0x00a9623a mov       rdi, rbx
+0x00a9623d call      0xa07bd0
+0x00a96242 lea       rdi, [rsp + 0x128]
+0x00a9624a lea       rdx, [rsp + 0x300]
+0x00a96252 vxorps    ymm0, ymm0, ymm0
+0x00a96256 vmovaps   ymmword ptr [rsp + 0x380], ymm0
+0x00a9625f vmovaps   ymmword ptr [rsp + 0x360], ymm0
+0x00a96268 vmovaps   ymmword ptr [rsp + 0x340], ymm0
+0x00a96271 vmovaps   ymmword ptr [rsp + 0x320], ymm0
+0x00a9627a vmovaps   ymmword ptr [rsp + 0x300], ymm0
+0x00a96283 mov       qword ptr [rsp + 0x3b0], 0
+0x00a9628f mov       qword ptr [rsp + 0x3a8], 0
+0x00a9629b mov       qword ptr [rsp + 0x3a0], 0
+0x00a962a7 mov       rax, qword ptr [rsp + 0xc8]
+0x00a962af mov       qword ptr [rsp], rax
+0x00a962b3 xor       esi, esi
+0x00a962b5 mov       ecx, r14d
+0x00a962b8 mov       r8, rbx
+0x00a962bb mov       r9d, 1
+0x00a962c1 call      0x97e9e0
+0x00a962c6 lea       rax, [rip + 0xebb793] ; [0x1951a60]
+0x00a962cd add       rax, 0x10
+0x00a962d1 mov       qword ptr [rsp + 0x50], 0
+0x00a962da mov       qword ptr [rsp + 0x48], rax
+0x00a962df mov       dword ptr [rsp + 0xb0], 0
+0x00a962ea mov       eax, dword ptr [r15]
+0x00a962ed mov       dword ptr [rsp + 0xb4], eax
+0x00a962f4 call      0xad120
+0x00a962f9 call      0x982110
+0x00a962fe mov       ecx, dword ptr [r12]
+0x00a96302 cmp       ecx, 0x811c9dc5
+0x00a96308 jne       0xa96311
+0x00a9630a lea       r12, [rip + 0x1cf2c5f] ; [0x2788f70]
+0x00a96311 mov       ecx, dword ptr [r12]
+0x00a96315 mov       dword ptr [rsp + 0x40], ecx
+0x00a96319 lea       rdi, [rsp + 0x48]
+0x00a9631e lea       rdx, [rsp + 0x40]
+0x00a96323 lea       rcx, [rsp + 0x98]
+0x00a9632b lea       r8, [rsp + 0x128]
+0x00a96333 mov       rsi, rax
+0x00a96336 call      0x97ec70
+0x00a9633b mov       rbx, rax
+0x00a9633e call      0xad140
+0x00a96343 test      rbx, rbx
+0x00a96346 je        0xa96429
+0x00a9634c lea       rdi, [rsp + 0xc8]
+0x00a96354 call      0x71f60
+0x00a96359 cmp       eax, -1
+0x00a9635c je        0xa96375
+0x00a9635e mov       rdx, qword ptr [rsp + 0xc8]
+0x00a96366 lea       rdi, [rip + 0x1cf953b] ; [0x278f8a8]
+0x00a9636d mov       esi, r14d
+0x00a96370 call      0xab63a0
+0x00a96375 mov       r14, qword ptr [rbx + 0x28]
+0x00a96379 mov       dword ptr [rsp + 0xd0], 0x811c9dc5
+0x00a96384 mov       qword ptr [rsp + 0x120], 0
+0x00a96390 lea       rsi, [rsp + 0xd0]
+0x00a96398 mov       rdi, r14
+0x00a9639b call      0xace5d0
+0x00a963a0 test      al, al
+0x00a963a2 je        0xa96429
+0x00a963a8 vxorps    xmm0, xmm0, xmm0
+0x00a963ac vmovaps   xmmword ptr [rsp + 0x30], xmm0
+0x00a963b2 mov       eax, dword ptr [r14 + 0x168]
+0x00a963b9 mov       dword ptr [rsp + 0x28], eax
+0x00a963bd lea       rdi, [rsp + 0xd0]
+0x00a963c5 lea       rsi, [rsp + 0x28]
+0x00a963ca lea       rdx, [rsp + 0x30]
+0x00a963cf call      0xace650
+0x00a963d4 test      al, al
+0x00a963d6 je        0xa96417
+0x00a963d8 mov       rax, qword ptr [rsp + 0x30]
+0x00a963dd mov       qword ptr [rsp + 0x18], rax
+0x00a963e2 mov       rax, qword ptr [rsp + 0x38]
+0x00a963e7 mov       qword ptr [rsp + 0x20], rax
+0x00a963ec test      rax, rax
+0x00a963ef je        0xa963f4
+0x00a963f1 inc       dword ptr [rax + 8]
+0x00a963f4 lea       rbx, [rsp + 0x38]
+0x00a963f9 lea       rsi, [rsp + 0x18]
+0x00a963fe mov       rdi, r14
+0x00a96401 call      0x977dc0
+0x00a96406 mov       rdi, qword ptr [rsp + 0x20]
+0x00a9640b test      rdi, rdi
+0x00a9640e je        0xa9641c
+0x00a96410 call      0x8dd4f0
+0x00a96415 jmp       0xa9641c
+0x00a96417 lea       rbx, [rsp + 0x38]
+0x00a9641c mov       rdi, qword ptr [rbx]
+0x00a9641f test      rdi, rdi
+0x00a96422 je        0xa96429
+0x00a96424 call      0x8dd4f0
+0x00a96429 lea       rax, [rip + 0xeb6300] ; [0x194c730]
+0x00a96430 add       rax, 0x10
+0x00a96434 mov       qword ptr [rsp + 0x48], rax
+0x00a96439 lea       rdi, [rsp + 0x50]
+0x00a9643e call      0x982db0
+0x00a96443 lea       rdi, [rsp + 0x2b8]
+0x00a9644b call      0x9f87f0
+0x00a96450 mov       rax, qword ptr [rip + 0xf88ca9] ; [0x1a1f100]
+0x00a96457 mov       rax, qword ptr [rax]
+0x00a9645a cmp       rax, qword ptr [rsp + 0x3c8]
+0x00a96462 jne       0xa96471
+0x00a96464 lea       rsp, [rbp - 0x20]
+0x00a96468 pop       rbx
+0x00a96469 pop       r12
+0x00a9646b pop       r14
+0x00a9646d pop       r15
+0x00a9646f pop       rbp
+0x00a96470 ret       
+0x00a96471 call      0x12aa7f0
+0x00a96476 nop       
+0x00a96477 nop       word ptr [rax + rax]

@@ -1,0 +1,33 @@
+{
+  "recorded_at": "2026-10-11T18:00:03.4470078Z",
+  "reporting_date": "2026-10-11",
+  "reporting_timezone": "Europe/London",
+  "reporting_interval_start": "2026-10-10T18:10:54Z",
+  "reporting_interval_end": "2026-10-11T18:00:03.4470078Z",
+  "daily_update_id": "destiny1-2026-10-11",
+  "development_session": "ps4-exact-0129-preparation",
+  "topic": "exact-build-content-and-platform-preparation",
+  "feature": "ps4-0129-preparation",
+  "event_type": "GENERAL_PROGRESS",
+  "importance": "USEFUL",
+  "description": "One private daily handoff: verified exact-target content recovery and contained server preparation; exact executable and native runtime remain blocked.",
+  "previous_state": "Earlier content was uninstalled; decompression and duplicate-generation lookup defects prevented reliable validation; native target executable unavailable.",
+  "current_state": "1647 packages and 701164 stored-block hashes pass; exact manifest installed; 19 live server-only checks and clean shutdown pass. No game boot.",
+  "remaining_issue": "Exact 01.29 decrypted executable, metadata verification, native Windows transport/probe conditions and actual gameplay acceptance.",
+  "referenced_package_ids": [
+    "<lab-pc>-20261010T181054-bbc9e7edfce14abfb991cee8485b098c",
+    "<lab-pc>-20261010T180802-6a22199448334c9d9b7c118ae9ddbfb6",
+    "<lab-pc>-20261010T180808-5edaf0838d814fb9b5895bd5a98f1515"
+  ],
+  "new_media_included": false,
+  "media_decode": "NOT APPLICABLE: text-only report",
+  "publication_review_required": true,
+  "native_pending_at_cutoff": [],
+  "native_boot_accepted": false,
+  "windows_transport_validated": false,
+  "tested_source_commit": "12467f31286da4e4a34dcf0610c9fad48f9b318d",
+  "tested_source_branch": "master",
+  "tested_worktree_clean": true,
+  "imported_project_git_metadata": false,
+  "imported_runtime_reproducibility": "Supplied separate tree plus original patches and local toolchains; no full runtime vendored."
+}

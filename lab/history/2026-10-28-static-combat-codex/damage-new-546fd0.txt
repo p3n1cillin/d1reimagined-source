@@ -1,0 +1,35 @@
+0x00546fd0 push      rbp
+0x00546fd1 mov       rbp, rsp
+0x00546fd4 push      r15
+0x00546fd6 push      r14
+0x00546fd8 push      rbx
+0x00546fd9 sub       rsp, 0x108
+0x00546fe0 mov       rbx, rsi
+0x00546fe3 mov       r14, rdi
+0x00546fe6 mov       r15, qword ptr [rip + 0x14d8113] ; [0x1a1f100]
+0x00546fed mov       rax, qword ptr [r15]
+0x00546ff0 mov       qword ptr [rbp - 0x20], rax
+0x00546ff4 lea       rsi, [rbp - 0x120]
+0x00546ffb call      0x266a30
+0x00547000 mov       qword ptr [rbx + 8], 0
+0x00547008 mov       qword ptr [rbx], 0
+0x0054700f mov       rdi, r14
+0x00547012 call      0x1616e0
+0x00547017 vmovss    dword ptr [rbx], xmm0
+0x0054701b mov       rdi, r14
+0x0054701e call      0x1616e0
+0x00547023 vmovss    dword ptr [rbx + 8], xmm0
+0x00547028 vmovss    xmm0, dword ptr [rbx]
+0x0054702c vmovss    dword ptr [rbx + 4], xmm0
+0x00547031 mov       rax, qword ptr [r15]
+0x00547034 cmp       rax, qword ptr [rbp - 0x20]
+0x00547038 jne       0x547048
+0x0054703a add       rsp, 0x108
+0x00547041 pop       rbx
+0x00547042 pop       r14
+0x00547044 pop       r15
+0x00547046 pop       rbp
+0x00547047 ret       
+0x00547048 call      0x12aa7f0
+0x0054704d nop       
+0x0054704e nop       

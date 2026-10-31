@@ -1,0 +1,74 @@
+[
+  {
+    "event_id": "d1-20261025-client-update-diagnostics",
+    "timestamp": "2026-10-25T18:05:53.035336+00:00",
+    "timestamp_basis": "Checkpoint inspection/test verification; source commit time is separately recorded.",
+    "source_commit": "19150dcad115d3c9c7ef218084abdef4cf982a9d",
+    "feature": "client-owned-trigger-observability",
+    "maturity": "Unit Tested / Experimental; one bounded native exercise, no mission acceptance",
+    "claim": "Default-off bounded 21/47 diagnostic capture, with a delayed observation baseline; no protocol replies/authority changes.",
+    "tests": {
+      "targeted": {
+        "passed": 7,
+        "failed": 0
+      },
+      "full_attempt_before_seventh_test": {
+        "passed": 70,
+        "failed": 9,
+        "reason": "missing pinned eboot input"
+      },
+      "native_mission_progression": "NOT ACCEPTED"
+    },
+    "full_game_accepted": false,
+    "changed_source_sha256": {
+      "ps4/d1-server/crates/d1-activity-host/src/listener.rs": "3628d502ee2cef564c9568988483e145538542b1c7c9a8bf25510ec35aa38352",
+      "ps4/design/client-update-capture.md": "ed5b67744e3417fd43643100e55ded53287a3fc51afe21a4f15824e5eaecf286"
+    }
+  },
+  {
+    "event_id": "d1-20261025-native-weasel",
+    "timestamp": "2026-10-25T18:00:56.8891726Z",
+    "started_at": "2026-10-25T17:44:29.1947033Z",
+    "feature": "native-diagnostic-probe",
+    "maturity": "Known Failure / Experimental",
+    "native_receipt": {
+      "name": "2026-10-25-agr-cap",
+      "startedUtc": "2026-10-25T17:44:29.1947033Z",
+      "endedUtc": "2026-10-25T18:00:56.8891726Z",
+      "emulatorExitCode": -1,
+      "emulatorExitedByItself": true,
+      "serversStopped": true,
+      "emulatorFault": [],
+      "guestCrashReport": null,
+      "nativeBootAccepted": false,
+      "emulatorSha256": "31c3ff14f3f734dc933a1c78c7e48c76e9b88ee19c058949f817b63f978c5d8c",
+      "clientPatch": {
+        "path": "F:\\d1\\d1preservation-main\\patches\\CUSA00219-56578-lab-orbit.xml",
+        "sha256": "dd3ed7495b0601b63bbb09a18314a99a8b948ebc3b241e91c26c75c298526bb5",
+        "synthetic": true
+      }
+    },
+    "claim": "Diagnostic probe ends with a visible WEASEL error; no mission completion.",
+    "evidence": [
+      {
+        "file": "screenshots/01.png",
+        "source_modified_at_utc": "2026-10-25T17:59:58.866403+00:00",
+        "source_sha256": "432eedd3be72e69fe48612382e4396d7ecd158b8c8f4883a3517f35a9bbcf0d3",
+        "bytes": 51569,
+        "dimensions": [
+          1296,
+          759
+        ],
+        "visual_review": "inspected for private handoff only",
+        "claim": "Visible WEASEL error after the diagnostic probe; no proof of the cause or mission completion.",
+        "publication_approved": false,
+        "suggested_production_crop": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 720
+        }
+      }
+    ]
+  }
+]

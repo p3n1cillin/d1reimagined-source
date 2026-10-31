@@ -1,0 +1,26 @@
+[
+  {
+    "name": [
+      "0x062dd95d",
+      "0x1",
+      "12"
+    ],
+    "proof": "tag 0x8080071e  struct 124 (=0x7c) bytes\npayload 63 bytes / 504 bits\n  8316ecae848004c08e4ee2807fff88c000d5300000005811c9dc5c08e4ee2e0472771403fffe0472771403fffc0000000400000004186000000003811c9dc5\nround trip: 504 bits consumed, object IDENTICAL\n"
+  },
+  {
+    "name": [
+      "0x062dd95d",
+      "0x1",
+      "11"
+    ],
+    "proof": "tag 0x8080071e  struct 124 (=0x7c) bytes\npayload 63 bytes / 504 bits\n  8316ecae848004c08e4ee2807fff88c000d5300000005811c9dc5c08e4ee2e0472771403fffe0472771403fffc0000000400000004186000000003811c9dc5\nround trip: 504 bits consumed, object IDENTICAL\n"
+  },
+  {
+    "name": [
+      "0x062dd95d",
+      "0x3",
+      "4"
+    ],
+    "proof": "tag 0x808004fa  struct 28 (=0x1c) bytes\npayload 29 bytes / 225 bits\n  c0c0404040404040404040404040404040404040404040404000000000\nround trip: 225 bits consumed, object IDENTICAL\n"
+  }
+]

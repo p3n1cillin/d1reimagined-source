@@ -1,0 +1,87 @@
+0x0026f400  55                             push     rbp
+0x0026f401  4889e5                         mov      rbp, rsp
+0x0026f404  4157                           push     r15
+0x0026f406  4156                           push     r14
+0x0026f408  4155                           push     r13
+0x0026f40a  4154                           push     r12
+0x0026f40c  53                             push     rbx
+0x0026f40d  4883ec18                       sub      rsp, 0x18
+0x0026f411  4989f6                         mov      r14, rsi
+0x0026f414  4889fb                         mov      rbx, rdi
+0x0026f417  e8b420d9ff                     call     0x14d0   ; -> 0x14d0
+0x0026f41c  480fbec0                       movsx    rax, al
+0x0026f420  c5fa2a448318                   vcvtsi2ss xmm0, xmm0, dword ptr [rbx+rax*4+0x18]
+0x0026f426  c5fa1145d0                     vmovss   [rbp-0x30], xmm0
+0x0026f42b  66448b6320                     mov      r12w, [rbx+0x20]
+0x0026f430  4883c338                       add      rbx, 0x38
+0x0026f434  4889df                         mov      rdi, rbx
+0x0026f437  e854740100                     call     0x286890   ; -> 0x286890
+0x0026f43c  664189c7                       mov      r15w, ax
+0x0026f440  e80bb1feff                     call     0x25a550   ; -> 0x25a550
+0x0026f445  4889c3                         mov      rbx, rax
+0x0026f448  488b03                         mov      rax, [rbx]
+0x0026f44b  4c8ba8c8040000                 mov      r13, [rax+0x4c8]
+0x0026f452  e8292e0100                     call     0x282280   ; -> 0x282280
+0x0026f457  0fb6f0                         movzx    esi, al
+0x0026f45a  4889df                         mov      rdi, rbx
+0x0026f45d  41ffd5                         call     r13
+0x0026f460  c5f857c0                       vxorps   xmm0, xmm0, xmm0
+0x0026f464  c5fa1145d4                     vmovss   [rbp-0x2c], xmm0
+0x0026f469  4885c0                         test     rax, rax
+0x0026f46c  c5f857c0                       vxorps   xmm0, xmm0, xmm0
+0x0026f470  7427                           je       short 0x26f499   ; -> 0x26f499
+0x0026f472  488b4808                       mov      rcx, [rax+8]
+0x0026f476  4885c9                         test     rcx, rcx
+0x0026f479  c5f857c0                       vxorps   xmm0, xmm0, xmm0
+0x0026f47d  741a                           je       short 0x26f499   ; -> 0x26f499
+0x0026f47f  664501e7                       add      r15w, r12w
+0x0026f483  4883c008                       add      rax, 8
+0x0026f487  488d7c0110                     lea      rdi, [rcx+rax+0x10]
+0x0026f48c  410fbfc7                       movsx    eax, r15w
+0x0026f490  c5fa2ac0                       vcvtsi2ss xmm0, xmm0, eax
+0x0026f494  e89780da00                     call     0x1017530   ; -> 0x1017530
+0x0026f499  c5fa1145cc                     vmovss   [rbp-0x34], xmm0
+0x0026f49e  e82d20d9ff                     call     0x14d0   ; -> 0x14d0
+0x0026f4a3  480fbec0                       movsx    rax, al
+0x0026f4a7  c4c17a2a448618                 vcvtsi2ss xmm0, xmm0, dword ptr [r14+rax*4+0x18]
+0x0026f4ae  c5fa1145c8                     vmovss   [rbp-0x38], xmm0
+0x0026f4b3  66458b6620                     mov      r12w, [r14+0x20]
+0x0026f4b8  498d7e38                       lea      rdi, [r14+0x38]
+0x0026f4bc  e8cf730100                     call     0x286890   ; -> 0x286890
+0x0026f4c1  664189c7                       mov      r15w, ax
+0x0026f4c5  e886b0feff                     call     0x25a550   ; -> 0x25a550
+0x0026f4ca  4889c3                         mov      rbx, rax
+0x0026f4cd  488b03                         mov      rax, [rbx]
+0x0026f4d0  4c8ba8c8040000                 mov      r13, [rax+0x4c8]
+0x0026f4d7  e8a42d0100                     call     0x282280   ; -> 0x282280
+0x0026f4dc  0fb6f0                         movzx    esi, al
+0x0026f4df  4889df                         mov      rdi, rbx
+0x0026f4e2  41ffd5                         call     r13
+0x0026f4e5  4885c0                         test     rax, rax
+0x0026f4e8  7428                           je       short 0x26f512   ; -> 0x26f512
+0x0026f4ea  488b4808                       mov      rcx, [rax+8]
+0x0026f4ee  4885c9                         test     rcx, rcx
+0x0026f4f1  741f                           je       short 0x26f512   ; -> 0x26f512
+0x0026f4f3  664501e7                       add      r15w, r12w
+0x0026f4f7  4883c008                       add      rax, 8
+0x0026f4fb  488d7c0110                     lea      rdi, [rcx+rax+0x10]
+0x0026f500  410fbfc7                       movsx    eax, r15w
+0x0026f504  c5fa2ac0                       vcvtsi2ss xmm0, xmm0, eax
+0x0026f508  e82380da00                     call     0x1017530   ; -> 0x1017530
+0x0026f50d  c5fa1145d4                     vmovss   [rbp-0x2c], xmm0
+0x0026f512  c5fa1045d0                     vmovss   xmm0, [rbp-0x30]
+0x0026f517  c5fa5845cc                     vaddss   xmm0, xmm0, [rbp-0x34]
+0x0026f51c  c5fa1145d0                     vmovss   [rbp-0x30], xmm0
+0x0026f521  e82ab0feff                     call     0x25a550   ; -> 0x25a550
+0x0026f526  410fb77624                     movzx    esi, word ptr [r14+0x24]
+0x0026f52b  488b08                         mov      rcx, [rax]
+0x0026f52e  4889c7                         mov      rdi, rax
+0x0026f531  ff9110040000                   call     qword ptr [rcx+0x410]
+0x0026f537  4889c3                         mov      rbx, rax
+0x0026f53a  c5fa1045c8                     vmovss   xmm0, [rbp-0x38]
+0x0026f53f  c5fa584dd4                     vaddss   xmm1, xmm0, [rbp-0x2c]
+0x0026f544  c5fa114dd4                     vmovss   [rbp-0x2c], xmm1
+0x0026f549  c5f857c0                       vxorps   xmm0, xmm0, xmm0
+0x0026f54d  c5fa1055d0                     vmovss   xmm2, [rbp-0x30]
+0x0026f552  c5f82ed1                       vucomiss xmm2, xmm1
+0x0026f556  0f86c2000000                   jbe      0x26f61e   ; -> 0x26f61e

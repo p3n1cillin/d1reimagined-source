@@ -1,0 +1,96 @@
+   Compiling private-d1-stat-probe v0.1.0 (lab/history\2026-10-28-character-stats\native-stat-probe)
+    Finished `release` profile [optimized] target(s) in 0.96s
+     Running `lab/history\2026-10-28-character-stats\native-stat-probe\target\release\private-d1-stat-probe.exe lab/history\2026-10-28-character-stats`
+ci=6514 key=0 value=0
+ci=6514 key=1 value=0
+ci=6514 key=2 value=0
+ci=6514 key=3 value=0
+ci=6514 key=4 value=0
+ci=6514 key=5 value=0
+ci=6514 key=6 value=0
+ci=6514 key=7 value=0
+ci=6514 key=11 value=0
+ci=5942 key=0 value=200
+ci=5942 key=1 value=200
+ci=5942 key=2 value=0
+ci=5942 key=3 value=0
+ci=5942 key=4 value=0
+ci=5942 key=5 value=0
+ci=5942 key=6 value=0
+ci=5942 key=7 value=0
+ci=5942 key=11 value=0
+ci=3886 key=0 value=200
+ci=3886 key=1 value=200
+ci=3886 key=2 value=0
+ci=3886 key=3 value=0
+ci=3886 key=4 value=0
+ci=3886 key=5 value=0
+ci=3886 key=6 value=0
+ci=3886 key=7 value=0
+ci=3886 key=11 value=0
+ci=5946 key=0 value=200
+ci=5946 key=1 value=200
+ci=5946 key=2 value=0
+ci=5946 key=3 value=0
+ci=5946 key=4 value=0
+ci=5946 key=5 value=0
+ci=5946 key=6 value=0
+ci=5946 key=7 value=0
+ci=5946 key=11 value=0
+ci=5879 key=0 value=200
+ci=5879 key=1 value=200
+ci=5879 key=2 value=0
+ci=5879 key=3 value=0
+ci=5879 key=4 value=0
+ci=5879 key=5 value=0
+ci=5879 key=6 value=0
+ci=5879 key=7 value=0
+ci=5879 key=11 value=0
+ci=710 key=0 value=0
+ci=710 key=1 value=0
+ci=710 key=2 value=0
+ci=710 key=3 value=0
+ci=710 key=4 value=0
+ci=710 key=5 value=0
+ci=710 key=6 value=0
+ci=710 key=7 value=0
+ci=710 key=11 value=0
+ci=4531 key=0 value=200
+ci=4531 key=1 value=200
+ci=4531 key=2 value=0
+ci=4531 key=3 value=0
+ci=4531 key=4 value=0
+ci=4531 key=5 value=0
+ci=4531 key=6 value=0
+ci=4531 key=7 value=0
+ci=4531 key=11 value=0
+ci=4286 key=0 value=200
+ci=4286 key=1 value=200
+ci=4286 key=2 value=0
+ci=4286 key=3 value=0
+ci=4286 key=4 value=0
+ci=4286 key=5 value=0
+ci=4286 key=6 value=0
+ci=4286 key=7 value=0
+ci=4286 key=11 value=0
+ci=3598 key=0 value=200
+ci=3598 key=1 value=0
+ci=3598 key=2 value=0
+ci=3598 key=3 value=0
+ci=3598 key=4 value=0
+ci=3598 key=5 value=0
+ci=3598 key=6 value=0
+ci=3598 key=7 value=0
+ci=3598 key=11 value=200
+CONTROL curve ci=3598 key=11 level=0 expected_anchor=3 returned=Some(3)
+CONTROL curve ci=3598 key=11 level=1 expected_anchor=5 returned=Some(3)
+CONTROL curve ci=3598 key=11 level=2 expected_anchor=10 returned=Some(3)
+CONTROL curve ci=3598 key=11 level=20 expected_anchor=100 returned=Some(3)
+CONTROL curve ci=3598 key=11 level=40 expected_anchor=200 returned=Some(200)
+PASS absent-key, out-of-range and active-talent refusals ci=3598
+CONTROL curve ci=5942 key=1 level=0 expected_anchor=3 returned=Some(3)
+CONTROL curve ci=5942 key=1 level=1 expected_anchor=5 returned=Some(3)
+CONTROL curve ci=5942 key=1 level=2 expected_anchor=10 returned=Some(3)
+CONTROL curve ci=5942 key=1 level=20 expected_anchor=100 returned=Some(3)
+CONTROL curve ci=5942 key=1 level=40 expected_anchor=200 returned=Some(200)
+PASS absent-key, out-of-range and active-talent refusals ci=5942

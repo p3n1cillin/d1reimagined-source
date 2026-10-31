@@ -1,0 +1,6 @@
+target 0x80800357: 0 confirmed reference(s) over 0 candidate window(s) [kinds: call,jmp,riprel,rela]
+
+POSITIVE CONTROL call    0x5858c0 -> 0x5719f2: *** FAIL - results are NOT trustworthy ***
+POSITIVE CONTROL jmp     0x56ffb0 -> 0x560d27: *** FAIL - results are NOT trustworthy ***
+POSITIVE CONTROL riprel  0x164ce3e -> 0x7982da: *** FAIL - results are NOT trustworthy ***
+POSITIVE CONTROL rela    0x25a330 -> 0x18f5260: *** FAIL - results are NOT trustworthy ***

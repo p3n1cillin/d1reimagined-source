@@ -1,0 +1,507 @@
+2026-10-28T04:07:23.137392Z  INFO d1_activity_host: ⭐ mission step: index 164 At(0ns) -> F:/d1/d1preservation-main/cfw-staging/sensor-clients-act_cosmo_m0_highway-r113-cine.txt (23 sensor clients)
+2026-10-28T04:07:24.999274Z  INFO d1_activity_host: ⭐ mission step: index 164 OnIncident { incidents: [891, 1726, 4294967295, 4294967295], timeout: 70s } -> F:/d1/d1preservation-main/cfw-staging/agr-step1.txt (23 sensor clients)
+2026-10-28T04:07:26.861796Z  INFO d1_activity_host: ⭐ mission step: index 164 OnIncident { incidents: [891, 1726, 4294967295, 4294967295], timeout: 45s } -> F:/d1/d1preservation-main/cfw-staging/agr-step2.txt (23 sensor clients)
+2026-10-28T04:07:28.985132Z  INFO d1_activity_host: ⭐ mission step: index 164 AfterPrevious(5s) -> F:/d1/d1preservation-main/cfw-staging/agr-step3t.txt (138 sensor clients), region 112
+2026-10-28T04:07:31.109954Z  INFO d1_activity_host: ⭐ mission step: index 164 OnTrigger { group: 2569778289, kind: 29, index: 30, timeout: 900s } -> F:/d1/d1preservation-main/cfw-staging/agr-wall-done.txt (138 sensor clients)
+2026-10-28T04:07:33.242213Z  INFO d1_activity_host: ⭐ mission step: index 164 AfterPrevious(4s) -> F:/d1/d1preservation-main/cfw-staging/agr-breach.txt (248 sensor clients)
+2026-10-28T04:07:35.623571Z  INFO d1_activity_host: ⭐ mission step: index 164 OnSlice { slice: 24, timeout: 900s } -> F:/d1/d1preservation-main/cfw-staging/agr-investigate.txt (248 sensor clients)
+2026-10-28T04:07:38.338649Z  INFO d1_activity_host: ⭐ mission step: index 164 AfterPrevious(35s) -> F:/d1/d1preservation-main/cfw-staging/agr-b-light-armed.txt (248 sensor clients)
+2026-10-28T04:07:40.997090Z  INFO d1_activity_host: ⭐ mission step: index 164 OnTrigger { group: 4228793763, kind: 29, index: 120, timeout: 900s } -> F:/d1/d1preservation-main/cfw-staging/agr-b-light-up.txt (248 sensor clients)
+2026-10-28T04:07:44.439607Z  INFO d1_activity_host: ⭐ mission step: index 164 AfterPrevious(22s) -> F:/d1/d1preservation-main/cfw-staging/agr-b-lights.txt (248 sensor clients)
+2026-10-28T04:07:47.896278Z  INFO d1_activity_host: ⭐ mission step: index 164 AfterPrevious(2s) -> F:/d1/d1preservation-main/cfw-staging/agr-b-activate.txt (248 sensor clients)
+2026-10-28T04:07:51.631844Z  INFO d1_activity_host: ⭐ mission step: index 164 AfterPrevious(10s) -> F:/d1/d1preservation-main/cfw-staging/agr-b-activate-c.txt (248 sensor clients)
+2026-10-28T04:07:55.093622Z  INFO d1_activity_host: ⭐ mission step: index 164 OnTrigger { group: 2569778289, kind: 29, index: 34, timeout: 900s } -> F:/d1/d1preservation-main/cfw-staging/agr-b-investigated2-c.txt (248 sensor clients)
+2026-10-28T04:07:59.370234Z  INFO d1_activity_host: ⭐ mission step: index 164 AfterPrevious(4s) -> F:/d1/d1preservation-main/cfw-staging/agr-b-get-weapon2-c.txt (248 sensor clients)
+2026-10-28T04:08:03.718599Z  INFO d1_activity_host: ⭐ mission step: index 164 OnTrigger { group: 2569778289, kind: 29, index: 35, timeout: 900s } -> F:/d1/d1preservation-main/cfw-staging/agr-b-got-weapon-c.txt (248 sensor clients)
+2026-10-28T04:08:08.569023Z  INFO d1_activity_host: ⭐ mission step: index 164 AfterPrevious(4s) -> F:/d1/d1preservation-main/cfw-staging/agr-b-graveyard.txt (248 sensor clients)
+2026-10-28T04:08:15.341090Z  INFO d1_activity_host: ⭐ mission step: index 164 OnSlice { slice: 96, timeout: 900s } -> F:/d1/d1preservation-main/cfw-staging/agr-divide-objective17.txt (135 sensor clients)
+2026-10-28T04:08:22.361467Z  INFO d1_activity_host: ⭐ mission step: index 164 OnSlice { slice: 104, timeout: 14400s } -> F:/d1/d1preservation-main/cfw-staging/agr-divide-objective20-m52.txt (135 sensor clients)
+2026-10-28T04:12:18.054708Z  INFO d1_activity_host::state: ⭐ mission step 0 at +0 s for activity index 164
+2026-10-28T04:12:19.502173Z  INFO d1_activity_host::state: incident 2681 reported by the client
+2026-10-28T04:12:19.728685	udt6	8028f0d81c03600170000001d02393b8b1a108800001fffffffc000000000000000000060000080000000000000010
+2026-10-28T04:13:28.276739Z  INFO d1_activity_host::state: ⭐ mission step 1 at +70 s for activity index 164
+2026-10-28T04:13:28.659353Z  INFO d1_activity_host::state: incident 2681 reported by the client
+2026-10-28T04:13:28.681167Z  INFO d1_activity_host::state: incident 891 reported by the client
+2026-10-28T04:14:14.264971Z  INFO d1_activity_host::state: ⭐ mission step 2 at +116 s for activity index 164
+2026-10-28T04:14:14.855363Z  INFO d1_activity_host::state: incident 891 reported by the client
+2026-10-28T04:14:20.171936Z  INFO d1_activity_host::state: ⭐ mission step 3 at +122 s for activity index 164, region 112
+2026-10-28T04:14:33.104575Z  INFO d1_activity_host::state: incident 566 reported by the client
+2026-10-28T04:14:33.105628Z  INFO d1_activity_host::state: incident 3615 reported by the client
+2026-10-28T04:14:33.106014Z  INFO d1_activity_host::state: incident 2014 reported by the client
+2026-10-28T04:15:43.427900Z  INFO d1_activity_host::state: ⭐ client targets slice set 24: region record 112 -> 24, client token 2 -> 3
+2026-10-28T04:16:27.756324Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:16:27.757781Z  INFO d1_activity_host::state: ⭐ mission step 4: player trigger 0x992bb471/0x1d/30
+2026-10-28T04:16:27.758192Z  INFO d1_activity_host::state: ⭐ mission step 4 at +250 s for activity index 164
+2026-10-28T04:16:27.783141Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:16:27.806184Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:16:27.828901Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:16:32.082024Z  INFO d1_activity_host::state: ⭐ mission step 5 at +254 s for activity index 164
+2026-10-28T04:16:59.792539Z  INFO d1_activity_host::state: ⭐ client is now in slice set 24 (hash 0x68935472, was None)
+2026-10-28T04:16:59.793288Z  INFO d1_activity_host::state: ⭐ mission step 6: the client is in slice set 24
+2026-10-28T04:16:59.793695Z  INFO d1_activity_host::state: ⭐ mission step 6 at +282 s for activity index 164
+2026-10-28T04:17:34.928095Z  INFO d1_activity_host::state: ⭐ mission step 7 at +317 s for activity index 164
+2026-10-28T04:17:53.492612Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:17:53.494015Z  INFO d1_activity_host::state: ⭐ mission step 8: player trigger 0xfc0e45a3/0x1d/120
+2026-10-28T04:17:53.494424Z  INFO d1_activity_host::state: ⭐ mission step 8 at +335 s for activity index 164
+2026-10-28T04:17:53.563816Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:17:53.587259Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:17:53.609790Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.022913Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.047266Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.069966Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.322397Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.344349Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.366523Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.624140Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.646711Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.669545Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.923672Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.946769Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:02.969740Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.224105Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.246468Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.268495Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.524548Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.549414Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.581139Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.603201Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.925037Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.948252Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:03.971224Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:04.224650Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:04.246728Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:04.268782Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:04.524885Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:04.548325Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:04.572531Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:04.825743Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:04.849789Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:04.872206Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:05.125237Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:05.147319Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:05.169584Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:05.425241Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:05.447144Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:05.469352Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:05.725591Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:05.749025Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:05.771211Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:06.028536Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:06.052797Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:06.075579Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:06.328319Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:06.408687Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:06.558536Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:06.691276Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:06.829571Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:06.967440Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:07.061505Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:07.177428Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:07.365778Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:07.443129Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:07.517660Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:07.638827Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:07.857686Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:07.940476Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:08.017951Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:08.213336Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:08.312450Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:08.393710Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:08.510060Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:08.595883Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:08.822833Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:08.971022Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:09.130305Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:09.284295Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:09.390216Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:09.452181Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:09.551458Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:09.750881Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:09.901745Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:09.978851Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:10.109619Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:10.179326Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:10.251080Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:10.431608Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:10.538319Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:10.608335Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:10.738284Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:10.917379Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:10.973800Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:11.059604Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:11.148803Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:11.433290Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:11.502722Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:11.565868Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:12.663101Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:12.717645Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:12.776302Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:12.841479Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:12.902323Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.009245Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.245256Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.269365Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.291881Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.313692Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.336213Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.357750Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.385557Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.409603Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.431521Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.453185Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.475545Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.497034Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.518805Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.556509Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.581819Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.618460Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.651714Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.685057Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.708315Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.732992Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.755289Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.778295Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.802178Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.825023Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.848069Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.871487Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.935781Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.958178Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:13.981155Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:14.235344Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:14.257117Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:14.279206Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:14.537454Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:14.559257Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:14.582632Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:14.836646Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:14.859397Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:14.882197Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:15.136504Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:15.158267Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:15.180305Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:15.437251Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:15.459055Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:15.481290Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:15.737936Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:15.738966Z  INFO d1_activity_host::state: ⭐ mission step 9 at +358 s for activity index 164
+2026-10-28T04:18:15.805003Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:15.950711Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:16.032388Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:16.141782Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:16.303322Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:16.541776Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:16.776190Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:16.935179Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:17.103787Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:17.178653Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:17.559686Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:17.627976Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:17.736027Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:17.955344Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:17.974461Z  INFO d1_activity_host::state: ⭐ mission step 10 at +360 s for activity index 164
+2026-10-28T04:18:18.148499Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:18.299751Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:18.417458Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:18.552371Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:18.704132Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:18.777212Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:18.861982Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:18.997865Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:19.226886Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:19.356991Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:19.472829Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:19.669527Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:19.750725Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:19.818658Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:20.091208Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:20.205711Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:20.261218Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:20.375433Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:20.509438Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:20.635142Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:20.691423Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:20.759568Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:20.980897Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.033207Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.084773Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.183225Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.329399Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.399160Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.496005Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.619366Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.699843Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.782104Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.859003Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:21.926023Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:22.144837Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:22.204146Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:22.267934Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:22.368754Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:22.493654Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:22.592794Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:22.723945Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.099343Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.171904Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.301360Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.358666Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.458573Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.574709Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.707825Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.832856Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.887551Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:23.931916Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:24.083558Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:24.157627Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:24.263197Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:24.315512Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:28.130665Z  INFO d1_activity_host::state: ⭐ mission step 11: host incident 1851 (72 body bytes)
+2026-10-28T04:18:28.213854Z  INFO d1_activity_host::state: ⭐ mission step 11 at +370 s for activity index 164
+2026-10-28T04:18:28.670656Z  INFO d1_activity_host::state: ⭐ mission step 12: player trigger 0x992bb471/0x1d/34
+2026-10-28T04:18:28.828423Z  INFO d1_activity_host::state: ⭐ mission step 12 at +371 s for activity index 164
+2026-10-28T04:18:33.260812Z  INFO d1_activity_host::state: ⭐ mission step 13 at +375 s for activity index 164
+2026-10-28T04:18:33.997348Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:33.998349Z  INFO d1_activity_host::state: ⭐ mission step 14: player trigger 0x992bb471/0x1d/35
+2026-10-28T04:18:33.998731Z  INFO d1_activity_host::state: ⭐ mission step 14 at +376 s for activity index 164
+2026-10-28T04:18:34.022106Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:34.043930Z  INFO d1_activity_host::state: incident 3403 reported by the client
+2026-10-28T04:18:38.313733Z  INFO d1_activity_host::state: ⭐ mission step 15 at +380 s for activity index 164
+2026-10-28T04:22:36.757177Z  INFO d1_activity_host::state: incident 3569 reported by the client
+2026-10-28T04:22:36.784360Z  INFO d1_activity_host::state: incident 3569 reported by the client
+2026-10-28T04:23:28.874259Z  INFO d1_activity_host::state: ⭐ client targets slice set 96: region record 24 -> 96, client token 3 -> 4
+2026-10-28T04:29:35.671991Z  INFO d1_activity_host::state: ⭐ client is now in slice set 96 (hash 0x10ff7418, was Some(24))
+2026-10-28T04:29:35.672582Z  INFO d1_activity_host::state: ⭐ client targets slice set 24: region record 96 -> 24, client token 4 -> 4
+2026-10-28T04:29:35.672999Z  INFO d1_activity_host::state: ⭐ mission step 16: the client is in slice set 96
+2026-10-28T04:29:35.673398Z  INFO d1_activity_host::state: ⭐ mission step 16 at +1038 s for activity index 164
+2026-10-28T04:31:20.409010	udt6	0032487bff60a004a1104a0000000480
+2026-10-28T04:31:20.946992	udt6	0032487bff60a004e1105a0000000600
+2026-10-28T04:31:21.004048	udt6	0032487bff60a00221104a0000000400
+2026-10-28T04:31:22.690926	udt6	0032487bff60a00461105a0000000500
+2026-10-28T04:31:22.743277	udt6	0032487bff60a00461125a0000000580
+2026-10-28T04:31:23.639737	udt6	0032487bff60a00461105a0000000600
+2026-10-28T04:31:24.817458	udt6	0032487bff612000f41249200000000000000000001c
+2026-10-28T04:31:25.492504	udt6	0032487bff612000f412492400000000000000000020
+2026-10-28T04:31:26.320525	udt6	0032487bff60a001211a4a00000004e490f7fec1400a4218b40000000700
+2026-10-28T04:31:27.080763	udt6	0032487bff60a001a10c5e00000005e490f7fec140084218b40000000800
+2026-10-28T04:31:27.131206	udt6	0032487bff60a003a10c4a0000000380
+2026-10-28T04:31:27.409659	udt6	0032487bff60a003e10c5a0000000400
+2026-10-28T04:31:29.053642	udt6	0032487bff612000f492492400000000000000000024
+2026-10-28T04:31:29.968532	udt6	0032487bff60a004a10e4a0000000500
+2026-10-28T04:31:31.168232	udt6	0032487bff60a004e10e5a0000000680
+2026-10-28T04:31:31.219803	udt6	0032487bff60a003202b0000000272487bff60a004610e5a0000000680
+2026-10-28T04:31:35.447480	udt6	0032487bff60a002a10e5e0000000580
+2026-10-28T04:31:36.769025	udt6	0032487bff60a001202d0000000280
+2026-10-28T04:31:36.822678	udt6	0032487bff60a001202f00000002c0
+2026-10-28T04:31:39.015593	udt6	0032487bff60a00121185e0000000600
+2026-10-28T04:31:39.867829	udt6	0032487bff60a001202b0000000340
+2026-10-28T04:31:39.918434	udt6	0032487bff60a005210a5a0000000400
+2026-10-28T04:31:40.659358	udt6	0032487bff60a001202f0000000380
+2026-10-28T04:31:41.267156	udt6	0032487bff60a004210a5a0000000480
+2026-10-28T04:31:41.320845	udt6	0032487bff60a004a10c4a0000000580
+2026-10-28T04:31:41.674884	udt6	0032487bff60a003e10a5a00000004e490f7fec1400742149400000008c921effd8480039000000e00000000a0
+2026-10-28T04:31:43.724171	udt6	0032487bff60a004e10c5a0000000700
+2026-10-28T04:31:46.871976	udt6	0032487bff60a001a10a5e0000000600
+2026-10-28T04:31:47.376081	udt6	0032487bff60a004610c5a0000000700
+2026-10-28T04:31:48.974948	udt6	0032487bff60a003202f0000000280
+2026-10-28T04:31:54.578585	udt6	0032487bff60a00121165e0000000780
+2026-10-28T04:31:55.788854Z  INFO d1_activity_host::state: ⭐ client targets slice set 104: region record 24 -> 104, client token 4 -> 5
+2026-10-28T04:31:55.847269	udt6	0032487bff60a004a10a4a0000000600
+2026-10-28T04:31:57.213925	udt6	0032487bff60a004e10a5a0000000780
+2026-10-28T04:31:57.267012	udt6	0032487bff60a004610a5a0000000780
+2026-10-28T04:32:02.082516	udt6	0032487bff612000e400000b880000002c
+2026-10-28T04:32:04.883960	udt6	0032487bff60a00121145e0000000800
+2026-10-28T04:32:06.286666	udt6	0032487bff60a003210e5e0000000580
+2026-10-28T04:32:07.392430	udt6	0032487bff60a001202b0000000440
+2026-10-28T04:32:08.281852	udt6	0032487bff60a004a1084a0000000680
+2026-10-28T04:32:09.089204	udt6	0032487bff60a003a10c4a0000000480
+2026-10-28T04:32:09.168272	udt6	0032487bff60a003e10c5a0000000500
+2026-10-28T04:32:09.492333	udt6	0032487bff60a004210c5a0000000500
+2026-10-28T04:32:10.888858	udt6	0032487bff60a00461085a0000000800
+2026-10-28T04:32:11.294849	udt6	0032487bff60a004610a5a0000000880
+2026-10-28T04:32:11.994083	udt6	0032487bff60a00461085a0000000900
+2026-10-28T04:32:14.597272	udt6	0032487bff60a004e1085a0000000800
+2026-10-28T04:32:16.895590	udt6	0032487bff60a005210c5a0000000480
+2026-10-28T04:32:17.500649	udt6	0032487bff60a002210e4a0000000480
+2026-10-28T04:32:19.573927	udt6	0032487bff60a0012112560000000900
+2026-10-28T04:32:20.001176	udt6	0032487bff60a00321105e0000000600
+2026-10-28T04:32:21.098155	udt6	0032487bff60a004a1064a0000000700
+2026-10-28T04:32:21.150164	udt6	0032487bff60a003e10e5a00000005e490f7fec14007421c940000000a00
+2026-10-28T04:32:21.402118	udt6	0032487bff60a00461065a00000009e490f7fec14008421cb40000000b00
+2026-10-28T04:32:22.099588	udt6	0032487bff60a004e1065a0000000880
+2026-10-28T04:32:22.502738	udt6	0032487bff60a002a10c5e0000000600
+2026-10-28T04:32:22.555405	udt6	0032487bff60a005210e5a0000000500
+2026-10-28T04:32:24.300645	udt6	0032487bff60a004a02d00000003c0
+2026-10-28T04:32:24.714263	udt6	0032487bff60a002202d0000000280
+2026-10-28T04:32:25.006321	udt6	0032487bff60a002202f00000002c0
+2026-10-28T04:32:29.904012	udt6	0032487bff60a002210c5e0000000600
+2026-10-28T04:32:29.957544	udt6	0032487bff60a0012110560000000980
+2026-10-28T04:32:31.005967	udt6	0032487bff60a00321125e00000006e490f7fec140094208b40000001000
+2026-10-28T04:32:31.057015	udt6	0032487bff60a003e1105a000000066490f7fec140074220940000000b00
+2026-10-28T04:32:33.610481	udt6	0032487bff60a003e10e5a0000000680
+2026-10-28T04:32:33.663539	udt6	0032487bff60a001a1085e0000000680
+2026-10-28T04:32:35.764885	udt6	0032487bff60a001a10a5e0000000700
+2026-10-28T04:32:36.008241	udt6	0032487bff60a003a10e4a0000000600
+2026-10-28T04:32:36.615608	udt6	0032487bff60a004a1065a0000000880
+2026-10-28T04:32:39.121584	udt6	0032487bff60a00321105e0000000700
+2026-10-28T04:32:41.196062	udt6	0032487bff60a001a1085e0000000780
+2026-10-28T04:32:41.552433	udt6	0032487bff60a004a1045a0000000900
+2026-10-28T04:32:41.849938	udt6	0032487bff60a00321125e00000007e490f7fec140074220940000000d00
+2026-10-28T04:32:42.588907Z  INFO d1_activity_host::state: incident 1768 reported by the client
+2026-10-28T04:32:43.648967	udt6	0032487bff60a003e1105a0000000700
+2026-10-28T04:32:43.698991	udt6	0032487bff60a00421105a0000000600
+2026-10-28T04:32:44.051857	udt6	0032487bff60a004e1045a000000096490f7fec14008c208b40000001400
+2026-10-28T04:32:45.250202	udt6	0032487bff60a00521105a0000000580
+2026-10-28T04:32:48.155820	udt6	0032487bff60a002a10a5e0000000680
+2026-10-28T04:32:48.663643Z  INFO d1_activity_host::state: incident 1768 reported by the client
+2026-10-28T04:32:54.456489	udt6	0032487bff60a004a1025a0000000980
+2026-10-28T04:32:54.508349	udt6	0032487bff60a003e1125a00000007e490f7fec140074224940000000e00
+2026-10-28T04:32:54.560552	udt6	0032487bff60a00421125a0000000680
+2026-10-28T04:32:54.586039Z  INFO d1_activity_host::state: incident 1768 reported by the client
+2026-10-28T04:32:54.586486Z  INFO d1_activity_host::state: incident 2805 reported by the client
+2026-10-28T04:32:54.761382	udt6	0032487bff60a00321145e0000000800
+2026-10-28T04:32:54.817216	udt6	0032487bff60a001210e560000000a00
+2026-10-28T04:33:02.334268	udt6	0032487bff60a002a02b0000000380
+2026-10-28T04:33:02.387745	udt6	0032487bff60a002202b0000000340
+2026-10-28T04:33:07.264958	udt6	0032487bff60a002a02f00000003c0
+2026-10-28T04:33:36.635384Z  INFO d1_activity_host::state: incident 1768 reported by the client
+2026-10-28T04:33:46.597371	udt6	0032487bff60a0012110560000000a80
+2026-10-28T04:33:46.646930	udt6	0032487bff60a00421105a0000000700
+2026-10-28T04:33:46.697365	udt6	0032487bff60a00321125e00000008e490f7fec14007c220b40000001000
+2026-10-28T04:33:46.769426	udt6	0032487bff60a004a1045a0000000a00
+2026-10-28T04:33:46.821184	udt6	0032487bff60a003a1104a0000000780
+2026-10-28T04:33:47.900319	udt6	0032487bff60a002202f0000000380
+2026-10-28T04:34:01.713362	udt6	0032487bff60a002202b00000003c0
+2026-10-28T04:34:05.761871	udt6	0032487bff60a002202f0000000400
+2026-10-28T04:34:06.058605Z  INFO d1_activity_host::state: incident 1768 reported by the client
+2026-10-28T04:34:06.059547Z  INFO d1_activity_host::state: incident 2805 reported by the client
+2026-10-28T04:34:12.098096Z  INFO d1_activity_host::state: incident 1768 reported by the client
+2026-10-28T04:34:12.099051Z  INFO d1_activity_host::state: incident 2805 reported by the client
+2026-10-28T04:34:18.071683Z  INFO d1_activity_host::state: incident 1768 reported by the client
+2026-10-28T04:34:18.072676Z  INFO d1_activity_host::state: incident 2805 reported by the client
+2026-10-28T04:34:19.903589Z  INFO d1_activity_host::state: incident 734 reported by the client
+2026-10-28T04:34:19.904669Z  INFO d1_activity_host::state: incident 1825 reported by the client
+2026-10-28T04:34:19.905320Z  INFO d1_activity_host::state: incident 2079 reported by the client
+2026-10-28T04:34:19.905758Z  INFO d1_activity_host::state: incident 2767 reported by the client
+2026-10-28T04:34:19.960003	udt6	0028f0d81c03600170000001902393b8bda108800001fffffffc00000000000000000006000008000000000000007c921effd82801387f968000000279243dffb0500210ff2d00000003c0
+2026-10-28T04:34:20.012381	udt6	0032487bff60a001a1fe5e000000086490f7fec1400443fcbc00000011c921effd82800c87f978000000259243dffb0500290ff2d0000000328f0d81c03600170000001902393b8bda108800001fffffffe00000000000000000006000008000000000000008c921effd82801287f9680000002b9243dffb0500230ff2d0000000572487bff60a003e1fe5a00000008e490f7fec1400743fc94000000100
+2026-10-28T04:34:20.065615	udt6	0032487bff60a00121fe560000000b6490f7fec14003405600000008e490f7fec1400543fcbc00000010c921effd82800c80ac00000013c921effd82801380a40000001400
+2026-10-28T04:34:20.231747	udt6	0032487bff60a004a02900000005b2487bff60a004602900000005b2487bff612000f002492400000000000000000030
+2026-10-28T04:34:20.281309	udt6	0032487bff60a002a02b0000000472487bff612000f000492400000000000000000034
+2026-10-28T04:34:20.329056	udt6	0032487bff612000f000092400000000000000000038
+2026-10-28T04:34:20.527407	udt6	0032487bff612000f00001240000000000000000003c
+2026-10-28T04:34:20.575715	udt6	0032487bff612000f000002400000000000000000040
+2026-10-28T04:34:20.838753	udt6	0032487bff612000f000000000000000000000000044
+2026-10-28T04:34:21.672260Z  INFO d1_activity_host::state: incident 566 reported by the client
+2026-10-28T04:34:21.673208Z  INFO d1_activity_host::state: incident 3749 reported by the client
+2026-10-28T04:34:21.673628Z  INFO d1_activity_host::state: incident 222 reported by the client
+2026-10-28T04:34:21.726206	udt6	0028f0d81c03600170000001902393b8b9a108800001fffffffc00000000000000000006000008000000000000009c921effd8280138429480000002b9243dffb0500250852900000005f2487bff60a004210a5a000000086490f7fec14007c214b40000001200
+2026-10-28T04:34:21.776558	udt6	0032487bff60a0012116560000000be490f7fec140034214ac00000012c921effd828008843978000000259243dffb0500150872b00000004b2487bff60a003210c560000000a6490f7fec1400a4214b40000000dc921effd8280118429480000002f9243dffb05001d085250000000440
+2026-10-28T04:34:22.230479	udt6	0032487bff612000f490000000000000000000000048
+2026-10-28T04:34:22.280993	udt6	0032487bff612000f49200000000000000000000004c
+2026-10-28T04:34:22.331451	udt6	0032487bff612000f492400000000000000000000050
+2026-10-28T04:34:22.531131	udt6	0032487bff612000f492480000000000000000000054
+2026-10-28T04:34:22.582213	udt6	0032487bff60a001a02f00000004f2487bff60a003202f0000000540
+2026-10-28T04:34:22.634280	udt6	0032487bff60a002202b00000004f2487bff60a002a02f00000004f2487bff612000f492490000000000000000000058
+2026-10-28T04:34:22.686538	udt6	0032487bff612000f49249240000000000000000005c
+2026-10-28T04:34:25.146468	udt6	0032487bff60a00520290000000380
+2026-10-28T04:34:25.430935	udt6	0032487bff60a003e02900000004c0
+2026-10-28T04:34:25.476635	udt6	0032487bff60a00420290000000440
+2026-10-28T04:35:08.177614	udt6	0032487bff60a002a02b0000000500
+2026-10-28T04:35:08.712653	udt6	0032487bff60a002a02f0000000540
+2026-10-28T04:35:20.168261	udt6	0032487bff60a002a02b0000000580
+2026-10-28T04:35:20.742089	udt6	0032487bff60a002a02f00000005c0
+2026-10-28T04:35:52.884038	udt6	0032487bff60a002a02b0000000600
+2026-10-28T04:36:16.803302	udt6	0032487bff60a005202d00000003f2487bff60a004e02d00000005b2487bff60a004a02d0000000632487bff60a003a02d0000000480
+2026-10-28T04:36:16.872648	udt6	0032487bff60a004602d0000000632487bff60a004202d00000004b2487bff60a003e02d0000000500
+2026-10-28T04:36:19.724141	udt6	0032487bff60a00521085a0000000800
+2026-10-28T04:36:23.576725	udt6	0032487bff60a00521065a0000000880
+2026-10-28T04:36:24.867585	udt6	0032487bff60a005202f0000000480
+2026-10-28T04:36:29.308571	udt6	0032487bff60a00521045e0000000980
+2026-10-28T04:36:31.791876	udt6	0032487bff60a00521025e0000000a00
+2026-10-28T04:36:34.479473	udt6	0032487bff60a00520330000000540
+2026-10-28T04:36:41.201437	udt6	0032487bff60a0012114560000000c00
+2026-10-28T04:36:42.012309	udt6	0032487bff60a003210e5e0000000b00
+2026-10-28T04:36:42.747901	udt6	0032487bff60a003210c5e0000000b80
+2026-10-28T04:36:55.874189	udt6	0032487bff60a0012116560000000c80
+2026-10-28T04:37:03.949841Z  INFO d1_activity_host::state: incident 734 reported by the client
+2026-10-28T04:37:03.950345Z  INFO d1_activity_host::state: incident 1825 reported by the client
+2026-10-28T04:37:03.950731Z  INFO d1_activity_host::state: incident 2079 reported by the client
+2026-10-28T04:37:03.951109Z  INFO d1_activity_host::state: incident 2767 reported by the client
+2026-10-28T04:37:04.002686	udt6	0028f0d81c03600170000001902393b8bda108800001fffffffe0000000000000000000600000800000000000000ac921effd82801387f9680000002f9243dffb0500250ff2d0000000672487bff60a00421fe5a00000009e490f7fec14007c3fcb40000001500
+2026-10-28T04:37:04.054453	udt6	0032487bff60a00121fe560000000d6490f7fec1400343fcac00000014c921effd82800887f958000000299243dffb0500150ff2b0000000672487bff60a00321fe560000000c6490f7fec1400a43fccc00000016c921effd82801187f968000000339243dffb05001d0ff2d00000004c0
+2026-10-28T04:37:04.339558	udt6	0032487bff60a005202b00000005c0
+2026-10-28T04:37:04.965190	udt6	0032487bff612000f002492400000000000000000060
+2026-10-28T04:37:05.017573	udt6	0032487bff612000f000492400000000000000000064
+2026-10-28T04:37:05.069937	udt6	0032487bff612000f000092400000000000000000068
+2026-10-28T04:37:05.297858	udt6	0032487bff612000f00001240000000000000000006c
+2026-10-28T04:37:05.348655	udt6	0032487bff612000f000002400000000000000000070
+2026-10-28T04:37:05.705524	udt6	0032487bff612000f000000000000000000000000074
+2026-10-28T04:37:06.595406Z  INFO d1_activity_host::state: incident 566 reported by the client
+2026-10-28T04:37:06.596351Z  INFO d1_activity_host::state: incident 3749 reported by the client
+2026-10-28T04:37:06.596762Z  INFO d1_activity_host::state: incident 222 reported by the client
+2026-10-28T04:37:06.649883	udt6	0028f0d81c03600170000001902393b8b9a108800001fffffffc0000000000000000000600000800000000000000bc921effd828013843968000000319243dffb0500250872d00000006b2487bff60a004210c5a0000000a6490f7fec14007c218b40000001600
+2026-10-28T04:37:06.704422	udt6	0032487bff60a0012118560000000de490f7fec140034218ac00000015c921effd8280088441580000002b9243dffb0500150882b00000006b2487bff60a003210c560000000ce490f7fec1400a4210ac00000018c921effd828011843968000000359243dffb05001d0862d0000000500
+2026-10-28T04:37:07.348824	udt6	0032487bff612000f490000000000000000000000078
+2026-10-28T04:37:07.399943	udt6	0032487bff612000f49200000000000000000000007c
+2026-10-28T04:37:07.482088	udt6	0032487bff612000f492400000000000000000000080
+2026-10-28T04:37:07.654283	udt6	0032487bff612000f492480000000000000000000084
+2026-10-28T04:37:07.709308	udt6	0032487bff612000f492490000000000000000000088
+2026-10-28T04:37:07.947225	udt6	0032487bff612000f49249240000000000000000008c
+2026-10-28T04:37:08.001537	udt6	0032487bff60a001a02f0000000580
+2026-10-28T04:37:08.352265	udt6	0032487bff60a002a02f00000006c0
+2026-10-28T04:37:09.947731	udt6	0032487bff60a003e02900000005c0
+2026-10-28T04:37:10.420262	udt6	0032487bff60a00420290000000540
+2026-10-28T04:37:10.496538	udt6	0032487bff60a004602900000006c0
+2026-10-28T04:37:10.550999	udt6	0032487bff60a004e0290000000672487bff60a004a02900000006f2487bff60a003a0290000000540
+2026-10-28T04:37:11.250984	udt6	0032487bff60a001202f0000000700
+2026-10-28T04:37:17.864515	udt6	0032487bff60a0052106560000000c80
+2026-10-28T04:37:18.160556	udt6	0032487bff60a005202f0000000680
+2026-10-28T04:37:21.162475	udt6	0032487bff60a002202f0000000580
+2026-10-28T04:37:22.668363	udt6	0032487bff60a00521045e0000000d80
+2026-10-28T04:37:24.964564	udt6	0032487bff60a00521025e0000000e00
+2026-10-28T04:37:27.294803	udt6	0032487bff60a00520330000000740
+2026-10-28T04:37:29.979827	udt6	0032487bff60a004202d00000005b2487bff60a003e02d0000000600
+2026-10-28T04:37:30.036829	udt6	0032487bff60a003202f00000006b2487bff60a004e02d00000006b2487bff60a003a02d0000000580
+2026-10-28T04:37:30.092871	udt6	0032487bff60a001a03300000005f2487bff60a004a02d0000000732487bff60a004602d0000000700
+2026-10-28T04:37:32.234720	udt6	0032487bff60a001211a5e0000000e80
+2026-10-28T04:37:44.821229	udt6	0032487bff60a003202b00000006c0
+2026-10-28T04:37:49.171690Z  INFO d1_activity_host::state: incident 734 reported by the client
+2026-10-28T04:37:49.172659Z  INFO d1_activity_host::state: incident 1825 reported by the client
+2026-10-28T04:37:49.173051Z  INFO d1_activity_host::state: incident 2079 reported by the client
+2026-10-28T04:37:49.173439Z  INFO d1_activity_host::state: incident 2767 reported by the client
+2026-10-28T04:37:49.225437	udt6	0028f0d81c03600170000001902393b8bda108800001fffffffc0000000000000000000600000800000000000000cc921effd82801387f968000000379243dffb0500210ff2d00000005c0
+2026-10-28T04:37:49.277583	udt6	0032487bff60a001a1fe660000000c6490f7fec1400443fcbc00000017c921effd82800c87f958000000399243dffb0500290ff2b00000007a8f0d81c03600170000001902393b8bda108800001fffffffe0000000000000000000600000800000000000000dc921effd82801287f9680000003b9243dffb0500230ff2d0000000772487bff60a003e1fe5a0000000ce490f7fec1400743fcb4000000170
+2026-10-28T04:37:49.329435	udt6	0032487bff60a00121fe560000000f6490f7fec1400340560000000ce490f7fec1400543fcbc0000001cc921effd848003c009249000000000000000000240
+2026-10-28T04:37:49.505115	udt6	0032487bff60a002202b0000000632487bff60a002a02b0000000772487bff612000f000492400000000000000000094
+2026-10-28T04:37:49.573440	udt6	0032487bff612000f000092400000000000000000098
+2026-10-28T04:37:49.624360	udt6	0032487bff612000f00001240000000000000000009c
+2026-10-28T04:37:49.880213	udt6	0032487bff612000f0000024000000000000000000a0
+2026-10-28T04:37:49.931072	udt6	0032487bff612000f0000000000000000000000000a4
+2026-10-28T04:37:50.291707Z  INFO d1_activity_host::state: incident 566 reported by the client
+2026-10-28T04:37:50.292662Z  INFO d1_activity_host::state: incident 3749 reported by the client
+2026-10-28T04:37:50.293093Z  INFO d1_activity_host::state: incident 222 reported by the client
+2026-10-28T04:37:50.349650	udt6	0028f0d81c03600170000001902393b8b9a108800001fffffffc0000000000000000000600000800000000000000ec921effd828013845168000000399243dffb05002508a2d00000007b2487bff60a004210e5a0000000c6490f7fec14007c21cb40000001a00
+2026-10-28T04:37:50.375452Z  INFO d1_activity_host::state: ⭐ client targets slice set 24: region record 104 -> 24, client token 5 -> 6
+2026-10-28T04:37:50.755643	udt6	0032487bff60a0012120560000000fe490f7fec140034220ac0000001ac921effd828008845158000000339243dffb05001508a2b00000007b2487bff60a003210c560000000ee490f7fec1400a4210ac0000001fc921effd8280118451680000003d9243dffb05001d0872d0000000600
+2026-10-28T04:37:51.407021	udt6	0032487bff60a001a02f00000006c0
+2026-10-28T04:37:51.464025	udt6	0032487bff60a002202f0000000680
+2026-10-28T04:37:51.753890	udt6	0032487bff60a003202f0000000780
+2026-10-28T04:37:51.805935	udt6	0032487bff612000f0004000000000000000000000a8
+2026-10-28T04:37:51.861917	udt6	0032487bff612000f0004800000000000000000000ac
+2026-10-28T04:37:52.281364	udt6	0032487bff612000f0004900000000000000000000b0
+2026-10-28T04:37:52.727047	udt6	0032487bff60a002a02f00000007c0
+2026-10-28T04:37:55.267558	udt6	0032487bff60a003e02900000006c0
+2026-10-28T04:37:55.317655	udt6	0032487bff60a004a02900000007f2487bff60a004602900000007f2487bff60a00420290000000640
+2026-10-28T04:37:55.557959	udt6	0032487bff60a004e0290000000772487bff60a003a0290000000640
+2026-10-28T04:37:58.225398	udt6	0032487bff60a003202b00000007c0
+2026-10-28T04:37:58.748851	udt6	0032487bff60a003202f0000000800
+2026-10-28T04:38:04.433794	udt6	0032487bff60a003202b0000000840
+2026-10-28T04:38:05.149154	udt6	0032487bff60a003202f0000000880
+2026-10-28T04:38:07.088663	udt6	0032487bff60a003202b00000008c0
+2026-10-28T04:38:07.381836	udt6	0032487bff60a003202f0000000900
+2026-10-28T04:38:11.090222	udt6	0032487bff60a003202b0000000940
+2026-10-28T04:38:11.134868	udt6	0032487bff60a003202f0000000980
+2026-10-28T04:38:13.282409	udt6	0032487bff60a003202b00000009c0
+2026-10-28T04:38:13.579712	udt6	0032487bff60a003202f0000000a00
+2026-10-28T04:38:16.697225	udt6	0032487bff60a003202b0000000a40
+2026-10-28T04:38:17.388582	udt6	0032487bff60a003202f0000000a80

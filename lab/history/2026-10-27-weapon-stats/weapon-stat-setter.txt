@@ -1,0 +1,45 @@
+0x00673800  c5fa100f                       vmovss   xmm1, [rdi]
+0x00673804  c5f82ec8                       vucomiss xmm1, xmm0
+0x00673808  7502                           jne      short 0x67380c   ; -> 0x67380c
+0x0067380a  7b12                           jnp      short 0x67381e   ; -> 0x67381e
+0x0067380c  c5fa1107                       vmovss   [rdi], xmm0
+0x00673810  c5fa114704                     vmovss   [rdi+4], xmm0
+0x00673815  488d7704                       lea      rsi, [rdi+4]
+0x00673819  e902f8ffff                     jmp      0x673020   ; -> 0x673020
+0x0067381e  c3                             ret      
+0x0067381f  90                             nop      
+0x00673820  55                             push     rbp
+0x00673821  4889e5                         mov      rbp, rsp
+0x00673824  53                             push     rbx
+0x00673825  50                             push     rax
+0x00673826  89c8                           mov      eax, ecx
+0x00673828  89d1                           mov      ecx, edx
+0x0067382a  4889fb                         mov      rbx, rdi
+0x0067382d  488d7b08                       lea      rdi, [rbx+8]
+0x00673831  4889da                         mov      rdx, rbx
+0x00673834  4189c0                         mov      r8d, eax
+0x00673837  e854070000                     call     0x673f90   ; -> 0x673f90
+0x0067383c  4889df                         mov      rdi, rbx
+0x0067383f  4883c408                       add      rsp, 8
+0x00673843  5b                             pop      rbx
+0x00673844  5d                             pop      rbp
+0x00673845  e9e6feffff                     jmp      0x673730   ; -> 0x673730
+0x0067384a  660f1f440000                   nop      [rax+rax]
+0x00673850  55                             push     rbp
+0x00673851  4889e5                         mov      rbp, rsp
+0x00673854  53                             push     rbx
+0x00673855  50                             push     rax
+0x00673856  4889fb                         mov      rbx, rdi
+0x00673859  488d7b08                       lea      rdi, [rbx+8]
+0x0067385d  e86e060000                     call     0x673ed0   ; -> 0x673ed0
+0x00673862  4889df                         mov      rdi, rbx
+0x00673865  4883c408                       add      rsp, 8
+0x00673869  5b                             pop      rbx
+0x0067386a  5d                             pop      rbp
+0x0067386b  e9c0feffff                     jmp      0x673730   ; -> 0x673730
+0x00673870  55                             push     rbp
+0x00673871  4889e5                         mov      rbp, rsp
+0x00673874  53                             push     rbx
+0x00673875  50                             push     rax
+0x00673876  4889fb                         mov      rbx, rdi
+0x00673879  488d7b08                       lea      rdi, [rbx+8]

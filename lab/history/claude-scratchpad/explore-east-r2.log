@@ -1,0 +1,30 @@
+shadPS4 pid 3592  eboot base 0x51b0000  control vtable[0]=0x5904410 PASS
+start (325.85516357421875, -819.7089233398438, 3.738246440887451) goal [700.0, -815.0]
+at (328.4, -819.6, 4.6) dist 371.6 best 370.5 cells 3 blocked 2
+at (329.5, -820.1, 4.5) dist 370.5 best 370.5 cells 3 blocked 2
+at (329.5, -820.6, 4.9) dist 370.5 best 370.5 cells 4 blocked 3
+at (328.7, -821.6, 4.6) dist 371.3 best 370.5 cells 5 blocked 3
+at (339.9, -825.7, -3.1) dist 360.3 best 360.3 cells 9 blocked 3
+at (348.5, -828.3, -3.0) dist 351.8 best 350.5 cells 14 blocked 4
+at (349.6, -821.9, -3.1) dist 350.4 best 350.5 cells 16 blocked 4
+at (349.7, -826.7, -2.9) dist 350.5 best 350.5 cells 18 blocked 4
+at (346.7, -825.3, -2.7) dist 353.4 best 350.5 cells 19 blocked 4
+at (349.6, -820.6, -2.9) dist 350.4 best 350.5 cells 23 blocked 4
+at (349.6, -818.6, -2.9) dist 350.4 best 350.5 cells 24 blocked 4
+at (349.6, -819.6, -2.7) dist 350.4 best 350.5 cells 25 blocked 4
+at (349.6, -814.4, -2.5) dist 350.4 best 350.5 cells 25 blocked 4
+at (349.6, -816.8, -2.4) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -813.5, -2.4) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -816.1, -2.5) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -813.7, -2.9) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -818.2, -2.5) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -816.8, -3.0) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -821.2, -3.0) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -820.1, -3.0) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -824.9, -3.1) dist 350.5 best 350.5 cells 26 blocked 4
+at (349.6, -821.0, -2.9) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -818.7, -2.9) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -822.5, -3.1) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -819.8, -3.1) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -823.0, -3.1) dist 350.4 best 350.5 cells 26 blocked 4
+at (349.6, -820.3, -3.1) dist 350.4 best 350.5 cells 26 blocked 4

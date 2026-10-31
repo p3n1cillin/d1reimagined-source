@@ -1,0 +1,68 @@
+{
+  "utc": "2026-10-29T19:04:38.259196+00:00",
+  "owned_image_sha256": "672f03411c0503dfbcda804cbb9fb27cdd9a8d73a8bcb71bf0c4f688073b0833",
+  "method": "RTTI relocation references; candidate boundaries stop at first non-code value",
+  "scope": "static lead only; no proof of Approach sender or vendor-screen acceptance",
+  "rows": [
+    {
+      "name": "N3cui36c_vendor_interaction_request_handlerE",
+      "typeinfo": "0x1963920",
+      "candidate_vtable": "0x19638f0",
+      "methods": [
+        {
+          "slot": 0,
+          "va": "0xa1ba00",
+          "function": "0xa1ba00"
+        },
+        {
+          "slot": 1,
+          "va": "0x10bcab0",
+          "function": "0x10bcab0"
+        },
+        {
+          "slot": 2,
+          "va": "0x10bcac0",
+          "function": "0x10bcac0"
+        },
+        {
+          "slot": 3,
+          "va": "0xa4eb10",
+          "function": "0xa4eb10"
+        },
+        {
+          "slot": 4,
+          "va": "0x983350",
+          "function": "0x983350"
+        }
+      ]
+    },
+    {
+      "name": "55c_simulation_queue_ui_vendor_dialogue_action_definition",
+      "typeinfo": "0x19698b0",
+      "candidate_vtable": "0x1969890",
+      "methods": [
+        {
+          "slot": 0,
+          "va": "0x11b21e0",
+          "function": "0x11b21e0"
+        },
+        {
+          "slot": 1,
+          "va": "0x14d0",
+          "function": "0x14d0"
+        },
+        {
+          "slot": 2,
+          "va": "0xab6be0",
+          "function": "0xab6be0"
+        }
+      ]
+    },
+    {
+      "name": "49c_simulation_queue_element_schematized_definitionI27s_ui_vendor_dialogue_actionE",
+      "typeinfo": "0x19698d0",
+      "candidate_vtable": "0x19698c8",
+      "methods": []
+    }
+  ]
+}

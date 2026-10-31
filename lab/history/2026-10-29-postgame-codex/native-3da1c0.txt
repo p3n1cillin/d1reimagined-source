@@ -1,0 +1,30 @@
+0x003da1c0 push      rbp
+0x003da1c1 mov       rbp, rsp
+0x003da1c4 push      rbx
+0x003da1c5 sub       rsp, 0x18
+0x003da1c9 lea       rax, [rip + 0x155bf28] ; [0x19360f8]
+0x003da1d0 mov       rax, qword ptr [rax]
+0x003da1d3 mov       r8d, 0xffffffff
+0x003da1d9 test      rax, rax
+0x003da1dc je        0x3da1e1
+0x003da1de mov       r8d, dword ptr [rax]
+0x003da1e1 lea       rax, [rip + 0xc326d8] ; [0x100c8c0]
+0x003da1e8 mov       qword ptr [rsp + 0x10], rax
+0x003da1ed mov       dword ptr [rsp + 8], 0x21
+0x003da1f5 mov       dword ptr [rsp], 3
+0x003da1fc lea       rbx, [rip + 0x22d392d] ; [0x26adb30]
+0x003da203 lea       rsi, [rip + 0x125440a] ; [0x162e614] 'activity_interface_state'
+0x003da20a mov       rdi, rbx
+0x003da20d mov       edx, 0x5838
+0x003da212 mov       ecx, 4
+0x003da217 mov       r9d, 1
+0x003da21d call      0x23e010
+0x003da222 mov       rdi, qword ptr [rbx]
+0x003da225 call      0x103f020
+0x003da22a mov       edi, 0xcc8
+0x003da22f add       rdi, qword ptr [rbx]
+0x003da232 add       rsp, 0x18
+0x003da236 pop       rbx
+0x003da237 pop       rbp
+0x003da238 jmp       0x103f400
+0x003da23d nop       dword ptr [rax]

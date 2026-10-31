@@ -1,0 +1,17 @@
+0x0017a9a0 push      rbp
+0x0017a9a1 mov       rbp, rsp
+0x0017a9a4 push      rbx
+0x0017a9a5 push      rax
+0x0017a9a6 mov       ebx, edi
+0x0017a9a8 and       edi, 0x1fff
+0x0017a9ae lea       rax, [rip + 0x245cfeb] ; [0x25d79a0]
+0x0017a9b5 imul      edi, dword ptr [rax + 0x10]
+0x0017a9b9 add       rdi, qword ptr [rax + 8]
+0x0017a9bd xor       esi, esi
+0x0017a9bf call      0x1380c0
+0x0017a9c4 mov       edi, ebx
+0x0017a9c6 add       rsp, 8
+0x0017a9ca pop       rbx
+0x0017a9cb pop       rbp
+0x0017a9cc jmp       0x17a9e0
+0x0017a9d1 nop       word ptr cs:[rax + rax]

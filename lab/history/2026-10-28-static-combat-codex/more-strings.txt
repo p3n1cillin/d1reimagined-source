@@ -1,0 +1,60 @@
+0x15b6570 29c_client_ability_atom_control
+0x15b6e60 42c_orbis_get_psn_availability_async_np_task
+0x15b9800 44c_feature_condition_matches_exact_stat_level
+0x15b9bd0 50c_investment_talent_grid_internal_ability_iterator
+0x15b9c10 45c_investment_talent_grid_ability_mod_iterator
+0x15b9c40 41c_investment_talent_grid_ability_iterator
+0x15be5a0 27c_action_impl_blink_ability
+0x15be680 37c_action_impl_dynamic_binding_ability
+0x15be950 34c_action_impl_player_evade_ability
+0x15bea10 25c_action_impl_power_melee
+0x15bea30 30c_action_impl_radiance_ability
+0x15beae0 30c_action_impl_sequence_ability
+0x15beb10 28c_action_impl_shield_ability
+0x15beb60 26c_action_impl_slam_ability
+0x15beb80 28c_action_impl_sprint_ability
+0x15bec80 28c_action_impl_vanish_ability
+0x15becc0 34c_action_impl_ward_of_dawn_ability
+0x15c2e40 44c_investment_joinability_manager_game_system
+0x16207bf networking:platform_user: bootflow requested update of psn availability task
+0x162095e Platform Get PSN Availability Async Task
+0x163d791 investment_joinability_manager
+0x164187f ?stateful ability
+0x1643603 ?ability_condition_activate_array
+0x1643625 ability_condition_deactivate_array
+0x1644797 send_client_datamine_ability_event
+0x164483f ?ability_slot_index
+0x164d929 world_controller:retail_datamine: KTO upload probability (%f) will be used for the next '%d' minutes.
+0x16840df networking:configuration:dump: latency desirability piece [index %d][fraction %f][start ms %d][stop ms %d]
+0x1684560 networking:desirability: configuration does not match session_properties, build result=%s
+0x16845ba networking:desirability: [START] building desirability for gather->%s, searcher->%s, type=%d
+0x1684617 networking:desirability: Client computing desirability rating using session score from service.
+0x1684677 networking:desirability: [END] result->UNDESIRABLE reason=%s
+0x16846c5 networking:desirability: dumping configuration for desirability computation
+0x1684711 networking:desirability: '%s' gather party properties
+0x1684747 networking:desirability: '%s' search party properties -- latency: '%d' session_score: '%f'
+0x16847a2 networking:desirability: Computing final session score: '%f', latency [score: '%f' weight: '%f'], session [score: '%f' weight: '%f']
+0x1684827 networking:desirability: [END] Final desirability score: '%f', used: %s
+0x1684878 networking:desirability: [END] Final desirablity score: '%f' was outside expected range of 0.0 to 1.0, clamping to valid range
+0x16848f7 networking:desirability: computing latency weight [%d ms -> config %d weight %f normalized_latency_desirability %f weighted_latency_desirability %f running total latency weight %f]
+0x16849ac matchmaking_desirability_desirable
+0x16849cf matchmaking_desirability_undesirable_composition
+0x1684a00 matchmaking_desirability_undesirable_not_enough_space
+0x1684a36 matchmaking_desirability_undesirable_violates_max_player_count
+0x1684a75 matchmaking_desirability_undesirable_violates_reservations_allowed
+0x1684ab8 matchmaking_desirability_undesirable_violates_max_party_count
+0x1684af6 matchmaking_desirability_undesirable_preference_missmatch
+0x1684b30 matchmaking_desirability_undesirable_failed_good_latency_check
+0x1684b6f matchmaking_desirability_undesirable_nat_type
+0x1684b9d matchmaking_desirability_undesirable_skill_range
+0x1684bce matchmaking_desirability_undesirable_difficulty_delta
+0x1684c04 matchmaking_desirability_undesirable_composition_requires_not_in_progress
+0x1684c4e matchmaking_desirability_undesirable_social_id_mismatch
+0x1684c86 matchmaking_desirability_undesirable_too_many_big_parties
+0x1684cc0 matchmaking_desirability_undesirable_team_pick
+0x1684cef matchmaking_desirability_undesirable_team_cannot_even_out_teams
+0x1684d2f matchmaking_desirability_invalid_big_party_needs_more_big_parties_before_rabble
+0x1684d7f matchmaking_desirability_undesirable_reputation_pool_missmatch
+0x168612d networking:logic:session_tracker: %s: status=%d, score=%f, desirability=%f
+0x1686b36 estimated_upstream_bps_reliability
+0x16a63e9 CONSTRAINT_TYPE_POWERED_CHAIN

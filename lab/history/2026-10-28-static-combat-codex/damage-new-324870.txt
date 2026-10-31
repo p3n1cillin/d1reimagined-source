@@ -1,0 +1,39 @@
+0x00324870 mov       ecx, dword ptr [rdi]
+0x00324872 xor       ecx, esi
+0x00324874 mov       eax, esi
+0x00324876 shl       eax, 4
+0x00324879 add       eax, ecx
+0x0032487b mov       ecx, eax
+0x0032487d shr       ecx, 0xa
+0x00324880 xor       ecx, eax
+0x00324882 imul      ecx, ecx, 0x81
+0x00324888 mov       eax, ecx
+0x0032488a shr       eax, 0xd
+0x0032488d xor       eax, ecx
+0x0032488f mov       r9, qword ptr [rdi + 0x10]
+0x00324893 mov       r8d, dword ptr [rdi + 8]
+0x00324897 dec       r8d
+0x0032489a and       eax, r8d
+0x0032489d lea       rcx, [r9 + rdi + 0x20]
+0x003248a2 lea       rdi, [r9 + rdi + 0x10]
+0x003248a7 mov       edi, dword ptr [rdi + rax*8 + 0x10]
+0x003248ab jmp       0x3248b8
+0x003248ad nop       dword ptr [rax]
+0x003248b0 inc       eax
+0x003248b2 and       eax, r8d
+0x003248b5 mov       edi, dword ptr [rcx + rax*8]
+0x003248b8 cmp       edi, esi
+0x003248ba je        0x3248ce
+0x003248bc mov       edi, eax
+0x003248be cmp       word ptr [rcx + rdi*8 + 6], 0
+0x003248c4 js        0x3248b0
+0x003248c6 xor       eax, eax
+0x003248c8 mov       si, 0xffff
+0x003248cc jmp       0x3248dd
+0x003248ce movzx     esi, word ptr [rcx + rax*8 + 4]
+0x003248d3 movzx     eax, word ptr [rcx + rax*8 + 6]
+0x003248d8 and       eax, 0x7fff
+0x003248dd mov       word ptr [rdx], ax
+0x003248e0 movsx     eax, si
+0x003248e3 ret       
+0x003248e4 nop       word ptr cs:[rax + rax]

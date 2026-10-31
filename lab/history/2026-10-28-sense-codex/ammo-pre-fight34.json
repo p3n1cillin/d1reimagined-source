@@ -1,0 +1,35 @@
+{
+  "utc": "2026-10-28T06:33:23Z",
+  "label": "pre-fight34",
+  "base": "0x52a0000",
+  "pointer": "0x37f97be90",
+  "values": [
+    0,
+    0,
+    0,
+    -1
+  ],
+  "code_controls": [
+    {
+      "va": "0x630c70",
+      "native_matches_owned": true,
+      "bytes": 24
+    },
+    {
+      "va": "0x630d20",
+      "native_matches_owned": true,
+      "bytes": 24
+    },
+    {
+      "va": "0x66e740",
+      "native_matches_owned": true,
+      "bytes": 24
+    },
+    {
+      "va": "0x66e817",
+      "native_matches_owned": true,
+      "bytes": 24
+    }
+  ],
+  "interpretation": "candidate ammo globals; correlate against HUD before calling this Guardian reserve"
+}

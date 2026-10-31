@@ -1,0 +1,46 @@
+[
+  {
+    "event_id": "d1-20261029-full-cohort",
+    "timestamp": "2026-10-29T12:19:05Z",
+    "feature": "hangar-encounter",
+    "maturity": "Partially Working",
+    "claim": "Full5\u201312 cohort clears after inferred task assignment; not recovered authentic script.",
+    "referenced_package_id": "<lab-pc>-20261029T153911-dcb6eb8933d040b4bd6ea1ad58b6980a",
+    "evidence_file": "clips/clip02.mp4"
+  },
+  {
+    "event_id": "d1-20261029-outro",
+    "timestamp": "2026-10-29T12:21:14.2Z",
+    "feature": "outro-and-results",
+    "maturity": "Partially Working",
+    "claim": "Outro completes; diagnostic scoreboard/rewards follow.",
+    "referenced_package_id": "<lab-pc>-20261029T153911-dcb6eb8933d040b4bd6ea1ad58b6980a",
+    "evidence_file": "clips/clip03.mp4"
+  },
+  {
+    "event_id": "d1-20261029-tower",
+    "timestamp": "2026-10-29T17:34:11Z",
+    "feature": "tower-entry",
+    "maturity": "Partially Working",
+    "claim": "Tower spawn via labelled activity165 bypass; original intervening cinematic unimplemented.",
+    "referenced_package_id": "<lab-pc>-20261029T173936-f34dc117b28f4e4fb9325930a78e2c7b",
+    "evidence_file": "clips/clip.mp4"
+  },
+  {
+    "event_id": "d1-20261029-npc",
+    "timestamp": "2026-10-29T17:52:00Z",
+    "timestamp_basis": "operator minute-level observation",
+    "feature": "tower-diagnostic-population",
+    "maturity": "Experimental",
+    "claim": "15 North squad counts0\u21921 after copied activation image; revised variant-count draft remains unserved.",
+    "evidence_scope": "operator private captures, not included"
+  },
+  {
+    "event_id": "d1-20261029-xp-binding",
+    "timestamp": "2026-10-29T18:52:00Z",
+    "timestamp_basis": "bounded probe minute-level observation",
+    "feature": "advancement-investigation",
+    "maturity": "Experimental",
+    "claim": "XP900 cached; equipment list separate; current UI no longer post-game. No proved character-bar predicate."
+  }
+]

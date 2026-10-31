@@ -1,0 +1,15 @@
+0x16ba3ee Lookup timeout set to %f seconds. This is outside the normal recommended range
+0x16bb4f7 UPnP discovery timeout set to %f seconds. This is outside the normal recommended range
+0x16bb54e UPnP response timeout set to %f seconds. This is outside the normal recommended range
+0x16bb5e5 UPnP discovery retries set to %u . This is outside the normal recommended range
+0x16bdfdb Max resends configured to %u. This is outside the normal recommended range
+0x16be026 Send timeout configured to %f. This is outside the normal recommended range
+0x16be123 NAT Traversal keep alive configured to %f. This is outside the normal recommended range of %f-%f
+0x16be184 NAT Traversal starvation timeout configured to %f. This is outside the normal recommended range of %f-%f
+0x16be1ed NAT Traversal stage timeout configured to %f. This is outside the normal recommended range of %f-%f
+0x16be268 NAT Traversal stage retries configured to %u. This is outside the normal recommended range of %u-%u
+0x16beb79 Max resends configured to %u. This is outside the normal recommended range
+0x16bebc4 Send timeout configured to %f. This is outside the normal recommended range
+0x16bee7f Ignore connection reset differs from recommended setting of %s
+0x16beec9 Receive timeout configured to %f. This is outside the normal recommended range
+0x16bef18 Max connection resets to ignore configured to %u. This is outside the normal recommended range

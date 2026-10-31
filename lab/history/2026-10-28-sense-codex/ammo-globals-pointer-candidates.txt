@@ -1,0 +1,13 @@
+target 0x26be8a0: 10 confirmed reference(s) over 10 candidate window(s) [kinds: riprel]
+   riprel  fn 0x062fd30  0x062fdb6  lea     rcx, [rip+0x208eae3]
+   riprel  fn 0x062fd30  0x062fdf7  lea     rcx, [rip+0x208eaa2]
+   riprel  fn 0x062fec0  0x062ff34  lea     rax, [rip+0x208e965]
+   riprel  fn 0x0630c70  0x0630cab  lea     rdi, [rip+0x208dbee]
+   riprel  fn 0x0630ce0  0x0630ce0  lea     rdi, [rip+0x208dbb9]
+   riprel  fn 0x0630cf0  0x0630cf0  lea     rax, [rip+0x208dba9]
+   riprel  fn 0x0630d20  0x0630d23  lea     rcx, [rip+0x208db76]
+   riprel  fn 0x0630d50  0x0630d50  lea     rax, [rip+0x208db49]
+   riprel  fn 0x0630dd0  0x0630dd0  lea     rax, [rip+0x208dac9]
+   riprel  fn 0x0630dd0  0x0630f79  lea     rax, [rip+0x208d920]
+
+POSITIVE CONTROL: none supplied - 'not found' from this run is NOT evidence of absence

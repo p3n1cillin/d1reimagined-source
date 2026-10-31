@@ -1,0 +1,61 @@
+{
+  "recorded_at": "2026-10-29T19:03:31.962993+00:00",
+  "reporting_date": "2026-10-29",
+  "reporting_timezone": "Europe/London",
+  "reporting_interval_start": "2026-10-28T19:00:00Z",
+  "reporting_interval_end": "2026-10-29T19:00:00Z",
+  "daily_update_id": "d1-engineering-2026-10-29",
+  "supersedes_clip_id": "<lab-pc>-20261029T153911-dcb6eb8933d040b4bd6ea1ad58b6980a",
+  "correction_reason": "Consolidate already-delivered daily and Tower event; correct stale destination/spinner wording and add pre-cutoff NPC/XP findings without resending media.",
+  "referenced_package_ids": [
+    "<lab-pc>-20261029T153911-dcb6eb8933d040b4bd6ea1ad58b6980a",
+    "<lab-pc>-20261029T173936-f34dc117b28f4e4fb9325930a78e2c7b"
+  ],
+  "referenced_integrity": [
+    {
+      "clip_id": "<lab-pc>-20261029T153911-dcb6eb8933d040b4bd6ea1ad58b6980a",
+      "payloads": 16,
+      "bytes": 368103001,
+      "manifest_sha256": "53efe991619ac2f98f45647c36db06792104b43baf0300d688610fa8d7da3e4d",
+      "all_payload_hashes_match": true,
+      "new_decode": "NOT RUN; prior metadata records full decode",
+      "media_resent": false
+    },
+    {
+      "clip_id": "<lab-pc>-20261029T173936-f34dc117b28f4e4fb9325930a78e2c7b",
+      "payloads": 7,
+      "bytes": 20662635,
+      "manifest_sha256": "96fa5928bee34d8b38dbc66c845380064e1720fe095ec3f06a238d7262c5bad1",
+      "all_payload_hashes_match": true,
+      "new_decode": "NOT RUN; prior metadata records full decode",
+      "media_resent": false
+    }
+  ],
+  "feature": "daily-consolidated-closeout",
+  "event_type": "GENERAL_PROGRESS",
+  "importance": "MAJOR",
+  "description": "Consolidated29Oct private closeout: diagnostic full-cohort/outro/results, Tower bypass arrival and NPC activation; original165 stage/vendors remain open.",
+  "previous_state": "Earlier same-day snapshot ended at lunar fallback and misidentified the menu cursor as loading.",
+  "current_state": "Tower entry/movement and diagnostic population observed; XP cached; authentic intervening cinematic and vendor transactions unresolved.",
+  "remaining_issue": "Authentic165 world/cinematic/chain, original encounter/population states, vendor screens, character-bar presentation and reward persistence.",
+  "lab_owner_source_snapshot": {
+    "commit": "134a36c75a7b1fdd3adaf8cfb3b10af33f9f2274",
+    "branch": "hangar-known-world",
+    "dirty": ""
+  },
+  "reporting_source_snapshot": {
+    "commit": "9fff49bd0e88c3cb6c83a702efc6e34f5cd5d8e8",
+    "branch": "codex/postgame-lifetime-phase",
+    "dirty": ""
+  },
+  "media_resent": false,
+  "new_media_count": 0,
+  "new_decode": "NOT RUN; no new media",
+  "late_evidence_rule": "Only events before19:00Z included; later outcomes roll forward with actual timestamps.",
+  "publication_review_required": true,
+  "native_safe_checkpoint_observed_at": "2026-10-29T19:04:01.103261+00:00",
+  "safe_checkpoint_basis": "Read-only process inventory: no other D1 Python/route/combat/watch driver; native game remains live and no process/input was changed by the report.",
+  "late_delivery": true,
+  "before_production_start_2000": true,
+  "delivery_timing_basis": "Policy target19:00; bounded native combat allowed to reach an input-idle checkpoint. Post-cutoff outcomes excluded; text-only transfer."
+}

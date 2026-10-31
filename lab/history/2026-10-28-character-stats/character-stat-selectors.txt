@@ -1,0 +1,39 @@
+0x00553580  55                             push     rbp
+0x00553581  4889e5                         mov      rbp, rsp
+0x00553584  4156                           push     r14
+0x00553586  53                             push     rbx
+0x00553587  4189fe                         mov      r14d, edi
+0x0055358a  e88196d0ff                     call     0x25cc10   ; -> 0x25cc10
+0x0055358f  b3ff                           mov      bl, 0xff
+0x00553591  84c0                           test     al, al
+0x00553593  7455                           je       short 0x5535ea   ; -> 0x5535ea
+0x00553595  e83696d0ff                     call     0x25cbd0   ; -> 0x25cbd0
+0x0055359a  488b08                         mov      rcx, [rax]
+0x0055359d  4889c7                         mov      rdi, rax
+0x005535a0  ff5168                         call     qword ptr [rcx+0x68]
+0x005535a3  4183fe05                       cmp      r14d, 5
+0x005535a7  7741                           ja       short 0x5535ea   ; -> 0x5535ea
+0x005535a9  4489f1                         mov      ecx, r14d
+0x005535ac  488d1541000000                 lea      rdx, [rip+0x41]   ; [0x5535f4]
+0x005535b3  48630c8a                       movsxd   rcx, [rdx+rcx*4]
+0x005535b7  4801d1                         add      rcx, rdx
+0x005535ba  ffe1                           jmp      rcx
+0x005535bc  8a9841010000                   mov      bl, [rax+0x141]
+0x005535c2  eb26                           jmp      short 0x5535ea   ; -> 0x5535ea
+0x005535c4  8a9842010000                   mov      bl, [rax+0x142]
+0x005535ca  eb1e                           jmp      short 0x5535ea   ; -> 0x5535ea
+0x005535cc  8a9843010000                   mov      bl, [rax+0x143]
+0x005535d2  eb16                           jmp      short 0x5535ea   ; -> 0x5535ea
+0x005535d4  8a985c010000                   mov      bl, [rax+0x15c]
+0x005535da  eb0e                           jmp      short 0x5535ea   ; -> 0x5535ea
+0x005535dc  8a985d010000                   mov      bl, [rax+0x15d]
+0x005535e2  eb06                           jmp      short 0x5535ea   ; -> 0x5535ea
+0x005535e4  8a985e010000                   mov      bl, [rax+0x15e]
+0x005535ea  88d8                           mov      al, bl
+0x005535ec  5b                             pop      rbx
+0x005535ed  415e                           pop      r14
+0x005535ef  5d                             pop      rbp
+0x005535f0  c3                             ret      
+0x005535f1  0f1f00                         nop      [rax]
+0x005535f4  c8ffffff                       enter    0xffff, 0xff
+0x005535f8  d0ff                           sar      bh, 1

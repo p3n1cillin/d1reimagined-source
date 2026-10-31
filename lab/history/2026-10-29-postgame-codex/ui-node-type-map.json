@@ -1,0 +1,141 @@
+{
+  "0xae7e6d99": [
+    "22c_cui_container_widget"
+  ],
+  "0xce30d0b": [
+    "13c_text_widget"
+  ],
+  "0x7d1bd221": [
+    "15c_bitmap_widget",
+    "N3cui25c_cinematic_bitmap_widgetE"
+  ],
+  "0x7a03d1d1555dd272": [
+    "18c_shader_component"
+  ],
+  "0xc505857a": [
+    "30c_player_select_pipe_component"
+  ],
+  "0xbd1a2765": [
+    "36c_one_off_animation_container_widget"
+  ],
+  "0xb1790a3f": [
+    "37c_player_select_pipe_reader_component"
+  ],
+  "0x8fcdb212": [
+    "37c_player_select_pipe_writer_component"
+  ],
+  "0x18e6f254": [
+    "25c_screen_loader_component"
+  ],
+  "0xe88fcd15": [
+    "24c_close_screen_component"
+  ],
+  "0x30f5fed161b8389b": [
+    "N3cui25c_cinematic_bitmap_widgetE"
+  ],
+  "0xfa639150": [
+    "37c_cui_transformation_container_widget"
+  ],
+  "0x41fc0329": [
+    "30c_input_event_container_widget"
+  ],
+  "0x725ad1d887a7707b": [
+    "N3cui30c_arrangement_container_widgetE"
+  ],
+  "0x3904a8f7": [
+    "35c_custom_animation_container_widget"
+  ],
+  "0xfb00805707feb634": [
+    "N3cui27c_overdraw_shader_componentE"
+  ],
+  "0x46918eec": [
+    "25c_simple_subscreen_widget"
+  ],
+  "0x9a2db52bfaa93a20": [
+    "N3cui36c_stack_arrangement_container_widgetE"
+  ],
+  "0xec981439": [
+    "22c_expression_component"
+  ],
+  "0xcf73c827947bc081": [
+    "N3cui28c_string_formatter_componentE"
+  ],
+  "0xed1635a9": [
+    "28c_number_formatter_component"
+  ],
+  "0xfbb44b29": [
+    "26c_decision_maker_component"
+  ],
+  "0xf6215a33": [
+    "29c_static_data_local_component"
+  ],
+  "0x505241fa": [
+    "24c_row_selector_component"
+  ],
+  "0x879669a748d56de4": [
+    "N3cui26c_post_game_data_componentE"
+  ],
+  "0xe50f89ffdaca934b": [
+    "42c_cui_investment_character_state_component"
+  ],
+  "0xc332e44f": [
+    "27c_progress_indicator_widget"
+  ],
+  "0x72d3679518d5b2c1": [
+    "N3cui27c_chain_animation_containerE"
+  ],
+  "0x5aa97aee": [
+    "33c_static_data_reference_component"
+  ],
+  "0x484e7cdc5bee50e2": [
+    "N3cui27c_scoreboard_data_componentE"
+  ],
+  "0x31d5927ae4cec26e": [
+    "N3cui34c_director_activity_data_componentE"
+  ],
+  "0x800bfb220faa055b": [
+    "N3cui23c_list_item_view_widgetE"
+  ],
+  "0x80b069a2": [
+    "26c_time_formatter_component"
+  ],
+  "0x65127262d23d9790": [
+    "N3cui18c_list_view_widgetE"
+  ],
+  "0xbd8ec6e8": [
+    "25c_trigger_event_component"
+  ],
+  "0x6f910e10": [
+    "36c_focused_animation_container_widget"
+  ],
+  "0xd6af778d87cc706a": [
+    "N3cui15c_border_widgetE"
+  ],
+  "0x8e65b4b320e8adbb": [
+    "N3cui24c_investment_item_widgetE"
+  ],
+  "0xfdfa62c42ade6230": [
+    "N3cui33c_internal_dynamic_data_componentE"
+  ],
+  "0x31124e02": [
+    "23c_timer_event_component"
+  ],
+  "0xfae11f289bc18ba9": [
+    "N3cui23c_roster_contact_widgetE"
+  ],
+  "0x561ab5d320c7b719": [
+    "22c_orbit_recall_handler"
+  ],
+  "0xddd40627a1d59ce5": [
+    "N3cui13c_view_widgetE"
+  ],
+  "0x6e1694b1932b09f": [
+    "N3cui29c_conditional_sound_componentE"
+  ],
+  "0xf0c7a58e45a80dba": [
+    "N3cui38c_investment_item_comparison_componentE"
+  ],
+  "0xe129fc64f56bab31": [
+    "N3cui32c_number_interpolation_componentE"
+  ]
+}

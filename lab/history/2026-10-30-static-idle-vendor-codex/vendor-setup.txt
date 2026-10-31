@@ -1,0 +1,32 @@
+FUNCTION 5c43e0..5c4410
+0x005c43e0 lea       rax, [rip + 0x20f9819] ; [0x26bdc00]
+0x005c43e7 mov       rcx, qword ptr [rax]
+0x005c43ea mov       edx, dword ptr [rcx + 4]
+0x005c43ed lea       esi, [rdx + 1]
+0x005c43f0 mov       dword ptr [rcx + 4], esi
+0x005c43f3 test      edx, edx
+0x005c43f5 jne       0x5c440c
+0x005c43f7 mov       rax, qword ptr [rax]
+0x005c43fa mov       cl, 1
+0x005c43fc cmp       byte ptr [rax + 3], 0
+0x005c4400 jne       0x5c4409
+0x005c4402 cmp       dword ptr [rax + 4], 0
+0x005c4406 setg      cl
+0x005c4409 mov       byte ptr [rax + 1], cl
+0x005c440c mov       al, 1
+0x005c440e ret       
+0x005c440f nop       
+FUNCTION 5c4410..5c4440
+0x005c4410 lea       rax, [rip + 0x20f97e9] ; [0x26bdc00]
+0x005c4417 mov       rcx, qword ptr [rax]
+0x005c441a dec       dword ptr [rcx + 4]
+0x005c441d jne       0x5c4434
+0x005c441f mov       rax, qword ptr [rax]
+0x005c4422 mov       cl, 1
+0x005c4424 cmp       byte ptr [rax + 3], 0
+0x005c4428 jne       0x5c4431
+0x005c442a cmp       dword ptr [rax + 4], 0
+0x005c442e setg      cl
+0x005c4431 mov       byte ptr [rax + 1], cl
+0x005c4434 ret       
+0x005c4435 nop       word ptr cs:[rax + rax]

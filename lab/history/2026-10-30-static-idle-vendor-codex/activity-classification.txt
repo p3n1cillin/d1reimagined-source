@@ -1,0 +1,184 @@
+FUNCTION 78c3e0..78c540
+0x0078c3e0 push      rbp
+0x0078c3e1 mov       rbp, rsp
+0x0078c3e4 push      r15
+0x0078c3e6 push      r14
+0x0078c3e8 push      r12
+0x0078c3ea push      rbx
+0x0078c3eb sub       rsp, 0x150
+0x0078c3f2 mov       rax, qword ptr [rip + 0x1292d07] ; [0x1a1f100]
+0x0078c3f9 mov       rax, qword ptr [rax]
+0x0078c3fc mov       qword ptr [rbp - 0x28], rax
+0x0078c400 xor       edi, edi
+0x0078c402 call      0x785060
+0x0078c407 mov       r14d, eax
+0x0078c40a xor       edi, edi
+0x0078c40c call      0x785080
+0x0078c411 mov       r15d, eax
+0x0078c414 cmp       r14d, 0x25
+0x0078c418 je        0x78c447
+0x0078c41a cmp       r14d, 0x1b
+0x0078c41e jne       0x78c517
+0x0078c424 mov       eax, r15d
+0x0078c427 and       eax, 0xfffffffe
+0x0078c42a cmp       eax, 4
+0x0078c42d je        0x78c517
+0x0078c433 cmp       r15d, 8
+0x0078c437 je        0x78c517
+0x0078c43d cmp       r15d, 7
+0x0078c441 je        0x78c517
+0x0078c447 mov       edi, 1
+0x0078c44c xor       esi, esi
+0x0078c44e call      0x772750
+0x0078c453 test      al, al
+0x0078c455 je        0x78c517
+0x0078c45b mov       edi, 1
+0x0078c460 call      0x775430
+0x0078c465 test      al, al
+0x0078c467 jne       0x78c517
+0x0078c46d mov       edi, 5
+0x0078c472 mov       esi, 4
+0x0078c477 call      0xe4d70
+0x0078c47c test      al, al
+0x0078c47e je        0x78c50d
+0x0078c484 mov       al, byte ptr [rip + 0x1f42e2e] ; [0x26cf2b8]
+0x0078c48a test      al, al
+0x0078c48c jne       0x78c4bc
+0x0078c48e lea       rdi, [rip + 0x1f42e23] ; [0x26cf2b8]
+0x0078c495 call      0x12aa7d0
+0x0078c49a test      eax, eax
+0x0078c49c je        0x78c4bc
+0x0078c49e lea       rdi, [rip + 0xecb0ab] ; [0x1657550] "world_controller:online: Leaving posse because we shouldn't be in one! Current state=%s, FT goal=%s, reason=%s"
+0x0078c4a5 call      0xe4a10
+0x0078c4aa mov       dword ptr [rip + 0x1f42e04], eax ; [0x26cf2b4]
+0x0078c4b0 lea       rdi, [rip + 0x1f42e01] ; [0x26cf2b8]
+0x0078c4b7 call      0x12aa7e0
+0x0078c4bc call      0x7850a0
+0x0078c4c1 mov       edi, eax
+0x0078c4c3 call      0x783940
+0x0078c4c8 mov       r12, rax
+0x0078c4cb mov       edi, r14d
+0x0078c4ce call      0x783940
+0x0078c4d3 mov       rbx, rax
+0x0078c4d6 mov       edi, r15d
+0x0078c4d9 call      0x783960
+0x0078c4de lea       r14, [rbp - 0x168]
+0x0078c4e5 lea       rsi, [rip + 0xecb064] ; [0x1657550] "world_controller:online: Leaving posse because we shouldn't be in one! Current state=%s, FT goal=%s, reason=%s"
+0x0078c4ec mov       rdi, r14
+0x0078c4ef mov       rdx, r12
+0x0078c4f2 mov       rcx, rbx
+0x0078c4f5 mov       r8, rax
+0x0078c4f8 xor       al, al
+0x0078c4fa call      0x1008290
+0x0078c4ff mov       edi, dword ptr [rip + 0x1f42daf] ; [0x26cf2b4]
+0x0078c505 mov       rsi, r14
+0x0078c508 call      0xe4aa0
+0x0078c50d mov       edi, 1
+0x0078c512 call      0x774700
+0x0078c517 mov       rax, qword ptr [rip + 0x1292be2] ; [0x1a1f100]
+0x0078c51e mov       rax, qword ptr [rax]
+0x0078c521 cmp       rax, qword ptr [rbp - 0x28]
+0x0078c525 jne       0x78c537
+0x0078c527 add       rsp, 0x150
+0x0078c52e pop       rbx
+0x0078c52f pop       r12
+0x0078c531 pop       r14
+0x0078c533 pop       r15
+0x0078c535 pop       rbp
+0x0078c536 ret       
+0x0078c537 call      0x12aa7f0
+0x0078c53c nop       
+0x0078c53d nop       dword ptr [rax]
+FUNCTION 78b1d0..78b250
+0x0078b1d0 push      rbp
+0x0078b1d1 mov       rbp, rsp
+0x0078b1d4 mov       edi, 3
+0x0078b1d9 call      0x752150
+0x0078b1de test      al, al
+0x0078b1e0 je        0x78b242
+0x0078b1e2 mov       ecx, dword ptr [rip + 0x1f434a8] ; [0x26ce690]
+0x0078b1e8 mov       dword ptr [rip + 0x1f434a6], ecx ; [0x26ce694]
+0x0078b1ee mov       eax, dword ptr [rip + 0x1f434a4] ; [0x26ce698]
+0x0078b1f4 mov       dword ptr [rip + 0x1f434a2], eax ; [0x26ce69c]
+0x0078b1fa mov       edi, 5
+0x0078b1ff cmp       ecx, 1
+0x0078b202 je        0x78b20e
+0x0078b204 cmp       ecx, 3
+0x0078b207 jne       0x78b214
+0x0078b209 mov       edi, 6
+0x0078b20e pop       rbp
+0x0078b20f jmp       0x788db0
+0x0078b214 cmp       ecx, 2
+0x0078b217 jne       0x78b242
+0x0078b219 mov       edi, 7
+0x0078b21e test      eax, eax
+0x0078b220 je        0x78b20e
+0x0078b222 cmp       eax, 2
+0x0078b225 jne       0x78b232
+0x0078b227 mov       edi, 9
+0x0078b22c pop       rbp
+0x0078b22d jmp       0x788db0
+0x0078b232 cmp       eax, 1
+0x0078b235 jne       0x78b242
+0x0078b237 mov       edi, 8
+0x0078b23c pop       rbp
+0x0078b23d jmp       0x788db0
+0x0078b242 pop       rbp
+0x0078b243 ret       
+0x0078b244 nop       word ptr cs:[rax + rax]
+FUNCTION 7b22c0..7b2370
+0x007b22c0 push      rbp
+0x007b22c1 mov       rbp, rsp
+0x007b22c4 push      r15
+0x007b22c6 push      r14
+0x007b22c8 push      rbx
+0x007b22c9 push      rax
+0x007b22ca mov       r14, rsi
+0x007b22cd mov       eax, 0x1fff
+0x007b22d2 and       eax, dword ptr [rdi + 4]
+0x007b22d5 lea       rcx, [rip + 0x1ed72a4] ; [0x2689580]
+0x007b22dc imul      eax, dword ptr [rcx + 0x10]
+0x007b22e0 mov       rcx, qword ptr [rcx + 8]
+0x007b22e4 mov       r15d, dword ptr [rax + rcx + 0x4c]
+0x007b22e9 mov       edi, r15d
+0x007b22ec call      0x9236f0
+0x007b22f1 mov       ebx, eax
+0x007b22f3 mov       dword ptr [r14], 0xffffffff
+0x007b22fa jmp       0x7b230c
+0x007b22fc nop       dword ptr [rax]
+0x007b2300 mov       edi, r15d
+0x007b2303 mov       esi, ebx
+0x007b2305 call      0x923720
+0x007b230a mov       ebx, eax
+0x007b230c cmp       ebx, -1
+0x007b230f je        0x7b232a
+0x007b2311 mov       edi, ebx
+0x007b2313 call      0x923750
+0x007b2318 test      al, al
+0x007b231a je        0x7b2300
+0x007b231c mov       edi, ebx
+0x007b231e call      0x945900
+0x007b2323 mov       ebx, eax
+0x007b2325 cmp       ebx, -1
+0x007b2328 jne       0x7b2335
+0x007b232a add       rsp, 8
+0x007b232e pop       rbx
+0x007b232f pop       r14
+0x007b2331 pop       r15
+0x007b2333 pop       rbp
+0x007b2334 ret       
+0x007b2335 mov       edi, ebx
+0x007b2337 call      0xb1bb60
+0x007b233c shr       rax, 3
+0x007b2340 movabs    rcx, 0x20c49ba5e353f7cf
+0x007b234a mul       rcx
+0x007b234d shr       rdx, 4
+0x007b2351 mov       dword ptr [r14], edx
+0x007b2354 mov       edi, ebx
+0x007b2356 add       rsp, 8
+0x007b235a pop       rbx
+0x007b235b pop       r14
+0x007b235d pop       r15
+0x007b235f pop       rbp
+0x007b2360 jmp       0xb1bba0
+0x007b2365 nop       word ptr cs:[rax + rax]

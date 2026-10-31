@@ -1,0 +1,8 @@
+0x0013cfb0 mov       byte ptr [rdi + 0xa93], sil
+0x0013cfb7 mov       byte ptr [rdi + 0xa94], dl
+0x0013cfbd mov       byte ptr [rdi + 0xa95], cl
+0x0013cfc3 movsx     esi, sil
+0x0013cfc7 movsx     edx, dl
+0x0013cfca movsx     ecx, cl
+0x0013cfcd jmp       0x13cfe0
+0x0013cfd2 nop       word ptr cs:[rax + rax]

@@ -1,0 +1,14 @@
+0x0056b260 lea       rax, [rip + 0x214fa51] ; [0x26bacb8]
+0x0056b267 mov       rax, qword ptr [rax + 8]
+0x0056b26b ret       
+0x0056b26c nop       dword ptr [rax]
+0x0056b270 mov       rax, qword ptr [rdi + 8]
+0x0056b274 ret       
+0x0056b275 nop       word ptr cs:[rax + rax]
+0x0056b280 lea       rax, [rip]
+0x0056b287 mov       rax, qword ptr [rax + 8]
+0x0056b28b ret       
+0x0056b28c nop       dword ptr [rax]
+0x0056b290 mov       rax, qword ptr [rdi + 8]
+0x0056b294 ret       
+0x0056b295 nop       word ptr cs:[rax + rax]

@@ -1,0 +1,37 @@
+0x00557c40 mov       rax, qword ptr [rdi + 8]
+0x00557c44 test      rax, rax
+0x00557c47 jne       0x557c4b
+0x00557c49 xor       eax, eax
+0x00557c4b ret       
+0x00557c4c nop       dword ptr [rax]
+0x00557c50 mov       rax, qword ptr [rdi + 8]
+0x00557c54 ret       
+0x00557c55 nop       word ptr cs:[rax + rax]
+0x00557c60 mov       rax, qword ptr [rdi + 8]
+0x00557c64 test      rax, rax
+0x00557c67 jne       0x557c6b
+0x00557c69 xor       eax, eax
+0x00557c6b ret       
+0x00557c6c nop       dword ptr [rax]
+0x00557c70 xor       eax, eax
+0x00557c72 xor       edx, edx
+0x00557c74 ret       
+0x00557c75 nop       word ptr cs:[rax + rax]
+0x00557c80 xor       eax, eax
+0x00557c82 xor       edx, edx
+0x00557c84 ret       
+0x00557c85 nop       word ptr cs:[rax + rax]
+0x00557c90 add       byte ptr [rax], al
+0x00557c92 add       byte ptr [rax + 0x2e666666], dl
+0x00557c98 nop       dword ptr [rax + rax]
+0x00557ca0 add       byte ptr [rax], al
+0x00557ca2 add       byte ptr [rax + 0x2e666666], dl
+0x00557ca8 nop       dword ptr [rax + rax]
+0x00557cb0 cmp       di, -1
+0x00557cb4 jne       0x557cb7
+0x00557cb6 ret       
+0x00557cb7 xor       edx, edx
+0x00557cb9 jmp       0x557cbe
+0x00557cbe nop       
+0x00557cc0 ret       
+0x00557cc1 nop       word ptr cs:[rax + rax]

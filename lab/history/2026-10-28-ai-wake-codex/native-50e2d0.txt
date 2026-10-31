@@ -1,0 +1,25 @@
+0x0050e2d0 test      esi, esi
+0x0050e2d2 js        0x50e324
+0x0050e2d4 movsxd    rax, esi
+0x0050e2d7 mov       r8, qword ptr [rdi + 0x18]
+0x0050e2db mov       rdx, qword ptr [r8]
+0x0050e2de cmp       rax, qword ptr [rdx + 0x2e8]
+0x0050e2e5 jge       0x50e324
+0x0050e2e7 lea       rcx, [rdx + 0x2f0]
+0x0050e2ee add       rcx, qword ptr [rdx + 0x2f0]
+0x0050e2f5 imul      rdx, rax, 0x3c
+0x0050e2f9 lea       rcx, [rdx + rcx + 0x10]
+0x0050e2fe mov       qword ptr [rdi], rcx
+0x0050e301 mov       rdx, qword ptr [r8 + 8]
+0x0050e305 lea       rcx, [rdx + 0x320]
+0x0050e30c add       rcx, qword ptr [rdx + 0x320]
+0x0050e313 lea       rax, [rax + rax*4]
+0x0050e317 lea       rax, [rcx + rax*8 + 0x10]
+0x0050e31c mov       qword ptr [rdi + 0x20], rax
+0x0050e320 mov       dword ptr [rdi + 8], esi
+0x0050e323 ret       
+0x0050e324 mov       qword ptr [rdi], 0
+0x0050e32b mov       qword ptr [rdi + 0x20], 0
+0x0050e333 mov       dword ptr [rdi + 8], 0xffffffff
+0x0050e33a ret       
+0x0050e33b nop       dword ptr [rax + rax]

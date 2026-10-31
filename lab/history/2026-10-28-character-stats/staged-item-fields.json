@@ -1,0 +1,146 @@
+{
+  "items": [
+    {
+      "file": "00-Subclass.bin",
+      "ci": 710,
+      "soid": "0xd100000000000301",
+      "level": 40,
+      "curve_offset": 0,
+      "grid": 65535
+    },
+    {
+      "file": "01-Ghost.bin",
+      "ci": 4531,
+      "soid": "0xd100000000000302",
+      "level": 40,
+      "curve_offset": 0,
+      "grid": 65535
+    },
+    {
+      "file": "02-Helmet.bin",
+      "ci": 6514,
+      "soid": "0xd100000000000303",
+      "level": 40,
+      "curve_offset": 70,
+      "grid": 65535
+    },
+    {
+      "file": "03-Gauntlets.bin",
+      "ci": 5942,
+      "soid": "0xd100000000000304",
+      "level": 40,
+      "curve_offset": 0,
+      "grid": 65535
+    },
+    {
+      "file": "04-Chest Armor.bin",
+      "ci": 3886,
+      "soid": "0xd100000000000305",
+      "level": 40,
+      "curve_offset": 0,
+      "grid": 65535
+    },
+    {
+      "file": "05-Leg Armor.bin",
+      "ci": 5946,
+      "soid": "0xd100000000000306",
+      "level": 40,
+      "curve_offset": 0,
+      "grid": 65535
+    },
+    {
+      "file": "06-Class Armor.bin",
+      "ci": 5879,
+      "soid": "0xd100000000000307",
+      "level": 40,
+      "curve_offset": 0,
+      "grid": 65535
+    },
+    {
+      "file": "07-Artifacts.bin",
+      "ci": 4286,
+      "soid": "0xd100000000000308",
+      "level": 40,
+      "curve_offset": 0,
+      "grid": 65535
+    },
+    {
+      "file": "08-Vehicle.bin",
+      "ci": 6386,
+      "soid": "0xd100000000000309",
+      "level": 40,
+      "curve_offset": 0,
+      "grid": 65535
+    },
+    {
+      "file": "09-Sparrow Horn.bin",
+      "ci": 5357,
+      "soid": "0xd10000000000030a",
+      "level": 40,
+      "curve_offset": 0,
+      "grid": 65535
+    }
+  ],
+  "peer_slots": [
+    {
+      "slot": 0,
+      "soid": "0xd100000000000301",
+      "ci": 710
+    },
+    {
+      "slot": 1,
+      "soid": "0xd100000000000303",
+      "ci": 6514
+    },
+    {
+      "slot": 2,
+      "soid": "0xd100000000000304",
+      "ci": 5942
+    },
+    {
+      "slot": 3,
+      "soid": "0xd100000000000305",
+      "ci": 3886
+    },
+    {
+      "slot": 4,
+      "soid": "0xd100000000000306",
+      "ci": 5946
+    },
+    {
+      "slot": 5,
+      "soid": "0xd100000000000307",
+      "ci": 5879
+    },
+    {
+      "slot": 6,
+      "soid": "0xd100000000000401",
+      "ci": 3598
+    },
+    {
+      "slot": 10,
+      "soid": "0xd100000000000309",
+      "ci": 6386
+    },
+    {
+      "slot": 11,
+      "soid": "0xd100000000000302",
+      "ci": 4531
+    },
+    {
+      "slot": 12,
+      "soid": "0x0",
+      "ci": 1512
+    },
+    {
+      "slot": 15,
+      "soid": "0xd10000000000030a",
+      "ci": 5357
+    },
+    {
+      "slot": 16,
+      "soid": "0xd100000000000308",
+      "ci": 4286
+    }
+  ]
+}

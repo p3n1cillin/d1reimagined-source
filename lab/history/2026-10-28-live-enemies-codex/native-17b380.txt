@@ -1,0 +1,68 @@
+0x0017b380 push      rbp
+0x0017b381 mov       rbp, rsp
+0x0017b384 push      r15
+0x0017b386 push      r14
+0x0017b388 push      rbx
+0x0017b389 push      rax
+0x0017b38a mov       r15, rdi
+0x0017b38d mov       eax, dword ptr [rdx]
+0x0017b38f mov       dword ptr [r15 + 0xc], eax
+0x0017b393 mov       eax, dword ptr [rdx]
+0x0017b395 mov       qword ptr [r15], rsi
+0x0017b398 mov       dword ptr [r15 + 0xc], eax
+0x0017b39c mov       dword ptr [r15 + 8], 0
+0x0017b3a4 cmp       dword ptr [rsi + 0x278], 0
+0x0017b3ab jle       0x17b441
+0x0017b3b1 xor       eax, eax
+0x0017b3b3 lea       r14, [rip + 0x245c5e6] ; [0x25d79a0]
+0x0017b3ba nop       word ptr [rax + rax]
+0x0017b3c0 movsxd    rax, eax
+0x0017b3c3 lea       rdi, [rsi + rax*8 + 0x27c]
+0x0017b3cb call      0x71f60
+0x0017b3d0 cmp       eax, -1
+0x0017b3d3 je        0x17b40c
+0x0017b3d5 and       eax, 0x1fff
+0x0017b3da imul      eax, dword ptr [r14 + 0x10]
+0x0017b3df mov       rdx, qword ptr [r14 + 8]
+0x0017b3e3 mov       ecx, dword ptr [rdx + rax + 0x50]
+0x0017b3e7 mov       dx, word ptr [rdx + rax]
+0x0017b3eb and       dx, 1
+0x0017b3ef sete      bl
+0x0017b3f2 mov       eax, dword ptr [r15 + 0xc]
+0x0017b3f6 test      al, 8
+0x0017b3f8 jne       0x17b429
+0x0017b3fa test      al, 4
+0x0017b3fc jne       0x17b42f
+0x0017b3fe cmp       ecx, -1
+0x0017b401 sete      dl
+0x0017b404 test      al, 2
+0x0017b406 jne       0x17b436
+0x0017b408 test      al, 1
+0x0017b40a jne       0x17b43c
+0x0017b40c mov       ecx, dword ptr [r15 + 8]
+0x0017b410 lea       eax, [rcx + 1]
+0x0017b413 mov       dword ptr [r15 + 8], eax
+0x0017b417 cmp       ecx, -1
+0x0017b41a jl        0x17b441
+0x0017b41c mov       rsi, qword ptr [r15]
+0x0017b41f cmp       eax, dword ptr [rsi + 0x278]
+0x0017b425 jl        0x17b3c0
+0x0017b427 jmp       0x17b441
+0x0017b429 test      bl, bl
+0x0017b42b je        0x17b441
+0x0017b42d jmp       0x17b3fa
+0x0017b42f test      dx, dx
+0x0017b432 je        0x17b441
+0x0017b434 jmp       0x17b3fe
+0x0017b436 test      dl, dl
+0x0017b438 je        0x17b441
+0x0017b43a jmp       0x17b408
+0x0017b43c cmp       ecx, -1
+0x0017b43f jne       0x17b40c
+0x0017b441 add       rsp, 8
+0x0017b445 pop       rbx
+0x0017b446 pop       r14
+0x0017b448 pop       r15
+0x0017b44a pop       rbp
+0x0017b44b ret       
+0x0017b44c nop       dword ptr [rax]

@@ -1,0 +1,26 @@
+shadPS4 pid 24364  eboot base 0x5100000  control vtable[0]=0x5854410 PASS
+start (426.0614318847656, -716.2681884765625, 10.574522018432617) goal [300.0, -700.0]
+at (425.8, -720.0, 10.5) dist 127.4 best 127.1 cells 3 blocked 8
+at (425.8, -716.3, 11.0) dist 126.9 best 127.1 cells 3 blocked 8
+at (425.8, -719.1, 10.5) dist 127.3 best 127.1 cells 3 blocked 8
+at (425.8, -716.5, 11.0) dist 126.9 best 127.1 cells 3 blocked 8
+at (425.8, -719.7, 10.5) dist 127.4 best 127.1 cells 3 blocked 8
+at (425.8, -716.9, 11.0) dist 126.9 best 127.1 cells 3 blocked 8
+at (425.8, -720.1, 10.4) dist 127.4 best 127.1 cells 3 blocked 8
+at (425.8, -717.3, 11.0) dist 127.0 best 127.1 cells 3 blocked 8
+%USERPROFILE%\AppData\Local\Temp\claude\F--d1-d1xenia\eb49bdd6-2562-42a0-a73d-ed14111dbab8\scratchpad\tools\d1-walk.py:55: RuntimeWarning: invalid value encountered in subtract
+  m = ((abs(a[:-2] - centre[0]) < radius) & (abs(a[1:-1] - centre[1]) < radius)
+%USERPROFILE%\AppData\Local\Temp\claude\F--d1-d1xenia\eb49bdd6-2562-42a0-a73d-ed14111dbab8\scratchpad\tools\d1-walk.py:56: RuntimeWarning: invalid value encountered in subtract
+  & (abs(a[2:] - centre[2]) < radius))
+retracked (no movement): 173 copies at (422.9974670410156, -709.0498046875, 10.084136962890625)
+at (419.2, -709.3, 10.4) dist 119.6 best 117.7 cells 6 blocked 13
+at (420.0, -716.1, 10.1) dist 121.1 best 117.7 cells 10 blocked 13
+at (418.8, -708.4, 10.1) dist 119.1 best 117.7 cells 13 blocked 13
+at (424.1, -716.1, 9.9) dist 125.1 best 117.7 cells 14 blocked 14
+at (418.1, -708.0, 10.1) dist 118.3 best 117.7 cells 17 blocked 14
+at (419.0, -712.7, 10.1) dist 119.7 best 117.7 cells 18 blocked 14
+at (419.4, -712.5, 10.7) dist 120.0 best 117.7 cells 18 blocked 14
+at (418.3, -712.4, 10.6) dist 119.0 best 117.7 cells 18 blocked 14
+at (421.6, -713.4, 10.6) dist 122.4 best 117.7 cells 18 blocked 14
+at (418.2, -711.8, 10.6) dist 118.8 best 117.7 cells 20 blocked 14
+stopped (417.68560791015625, -708.2210083007812, 10.162614822387695) dist 118.0 route 4 points -> route-pb4.json

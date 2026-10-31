@@ -1,0 +1,1246 @@
+0x0190a210  Si  c_activity_complete_incident_metadata_investment_interface
+      base  0x0190a2c8  i_incident_metadata_investment
+      vtable 0x0190a200  offset_to_top 0  2 slots
+0x0190a2c8  Base  i_incident_metadata_investment
+0x0190b830  Si  c_player_time_incident_metadata_investment_interface
+      base  0x0190a2c8  i_incident_metadata_investment
+      vtable 0x0190b820  offset_to_top 0  2 slots
+0x0190bb00  Si  c_racing_lap_complete_incident_metadata_investment_interface
+      base  0x0190a2c8  i_incident_metadata_investment
+      vtable 0x0190baf0  offset_to_top 0  2 slots
+0x0190cf18  Base  i_investment_globals_interface
+0x0190d4b0  Si  c_investment_globals_interface
+      base  0x0190cf18  i_investment_globals_interface
+      vtable 0x0190cf40  offset_to_top 0  173 slots
+0x0190dbc0  Si  s_investment_utility_context
+      base  0x0190dbf0  i_investment_utility_context
+      vtable 0x0190dad0  offset_to_top 0  29 slots
+0x0190dbe0  Base  i_investment_item_repository
+0x0190dbf0  Base  i_investment_utility_context
+0x0190f720  Si  c_investment_activity_requirements_iterator
+      base  0x0190f790  c_investment_label_elements_iterator<s_investment_activity_requirements_label_shared_definition, s_investment_activity_playing_requirements_shared_definition, s_investment_unlock_flag_expression>
+0x0190f740  Si  c_investment_activity_leader_requirements_iterator
+      base  0x0190f720  c_investment_activity_requirements_iterator
+      vtable 0x0190f6d0  offset_to_top 0  4 slots
+0x0190f760  Si  c_investment_activity_fireteam_requirements_iterator
+      base  0x0190f720  c_investment_activity_requirements_iterator
+      vtable 0x0190f700  offset_to_top 0  4 slots
+0x0190f780  Base  c_investment_label_iterator<s_investment_activity_requirements_label_shared_definition>
+0x0190f790  Si  c_investment_label_elements_iterator<s_investment_activity_requirements_label_shared_definition, s_investment_activity_playing_requirements_shared_definition, s_investment_unlock_flag_expression>
+      base  0x0190f780  c_investment_label_iterator<s_investment_activity_requirements_label_shared_definition>
+0x0190f7f0  Base  c_investment_inventory_iterator<340>
+      vtable 0x0190fab0  offset_to_top 0  3 slots
+0x0190f800  Si  c_investment_inventory_visible_iterator<0, 340>
+      base  0x0190f7f0  c_investment_inventory_iterator<340>
+      vtable 0x01910140  offset_to_top 0  40 slots
+0x0190f820  Si  c_investment_item_progression_const_iterator<0, 340>
+      base  0x0190f800  c_investment_inventory_visible_iterator<0, 340>
+0x0190f840  Si  c_investment_item_progression_iterator<0, 340>
+      base  0x0190f820  c_investment_item_progression_const_iterator<0, 340>
+      vtable 0x0190f7d0  offset_to_top 0  4 slots
+0x0190fa50  Base  c_investment_character_equipment_const_iterator
+      vtable 0x0190fa00  offset_to_top 0  2 slots
+0x0190fa60  Si  c_investment_character_usable_equipment_const_iterator
+      base  0x0190fa50  c_investment_character_equipment_const_iterator
+      vtable 0x0190fa20  offset_to_top 0  2 slots
+0x0190fa80  Si  c_investment_character_usable_equipment_with_default_gear_const_iterator
+      base  0x0190fa60  c_investment_character_usable_equipment_const_iterator
+      vtable 0x0190fa40  offset_to_top 0  2 slots
+0x0190fb00  Si  c_investment_inventory_active_objective_item_iterator<0, 340>
+      base  0x0190f800  c_investment_inventory_visible_iterator<0, 340>
+      vtable 0x0190fae0  offset_to_top 0  4 slots
+0x0190fbc0  Si  c_investment_account_progression_const_iterator
+      base  0x0190fc50  i_investment_progression_const_iterator
+      vtable 0x0190fb30  offset_to_top 0  4 slots
+0x0190fbe0  Si  c_investment_character_progression_const_iterator
+      base  0x0190fc50  i_investment_progression_const_iterator
+      vtable 0x0190fb60  offset_to_top 0  4 slots
+0x0190fc00  Si  c_investment_equipped_item_progression_const_iterator
+      base  0x0190fa60  c_investment_character_usable_equipment_const_iterator
+      vtable 0x0190fb90  offset_to_top 0  2 slots
+0x0190fc50  Base  i_investment_progression_const_iterator
+0x0190fc60  Si  c_investment_character_progression_iterator
+      base  0x0190fbe0  c_investment_character_progression_const_iterator
+      vtable 0x0190fc30  offset_to_top 0  4 slots
+0x0190fdb0  Si  c_reward_site_finder<s_investment_incident_reward>
+      base  0x0190fd98  i_reward_site_finder
+0x0190fdd0  Si  c_reward_site_finder<s_investment_combatant_reward>
+      base  0x0190fd98  i_reward_site_finder
+0x0190ffb0  Base  c_investment_talent_grid_provided_effect_iterator
+      vtable 0x0190fe00  offset_to_top 0  4 slots
+0x0190ffc0  Si  c_investment_talent_grid_step_iterator
+      base  0x0190ffb0  c_investment_talent_grid_provided_effect_iterator
+      vtable 0x0190fe30  offset_to_top 0  4 slots
+0x0190ffe0  Si  c_investment_talent_grid_perk_iterator
+      base  0x0190ffb0  c_investment_talent_grid_provided_effect_iterator
+      vtable 0x0190fe60  offset_to_top 0  4 slots
+0x01910000  Si  c_investment_talent_grid_stat_iterator
+      base  0x0190ffb0  c_investment_talent_grid_provided_effect_iterator
+      vtable 0x0190fe90  offset_to_top 0  4 slots
+0x01910020  Si  c_investment_talent_grid_internal_ability_iterator
+      base  0x0190ffb0  c_investment_talent_grid_provided_effect_iterator
+      vtable 0x0190fec0  offset_to_top 0  4 slots
+0x01910040  Si  c_investment_talent_grid_ability_mod_iterator
+      base  0x01910020  c_investment_talent_grid_internal_ability_iterator
+      vtable 0x0190fef0  offset_to_top 0  4 slots
+0x01910060  Si  c_investment_talent_grid_ability_iterator
+      base  0x01910020  c_investment_talent_grid_internal_ability_iterator
+      vtable 0x0190ff20  offset_to_top 0  4 slots
+0x01910080  Si  c_investment_talent_grid_intrinsic_unlock_flag_iterator
+      base  0x0190ffb0  c_investment_talent_grid_provided_effect_iterator
+      vtable 0x0190ff50  offset_to_top 0  4 slots
+0x019100a0  Si  c_investment_talent_grid_intrinsic_unlock_value_iterator
+      base  0x0190ffb0  c_investment_talent_grid_provided_effect_iterator
+      vtable 0x0190ff80  offset_to_top 0  4 slots
+0x019100b8  Base  c_investment_talent_grid_const_iterator
+0x019100f0  Si  c_investment_talent_grid_iterator
+      base  0x019100b8  c_investment_talent_grid_const_iterator
+      vtable 0x019100e0  offset_to_top 0  1 slots
+0x01936680  Si  s_object_behavior_type_wrapper<s_object_behavior_investment_unlock_flag>
+      base  0x019362a8  i_object_behavior_type_wrapper
+      vtable 0x01936660  offset_to_top 0  3 slots
+0x01937e90  Si  c_investment_bap_message_push_policy_bap_to_client_challenge_request
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x01937e60  offset_to_top 0  6 slots
+0x01937ea8  Base  i_investment_bap_message_push_policy_interface
+0x01939af0  Si  c_investment_activity_requirements_client_iterator
+      base  0x01939b70  c_investment_label_elements_client_iterator<s_investment_activity_requirements_label_shared_definition, s_investment_activity_playing_requirements_shared_definition, s_investment_unlock_flag_expression, s_investment_activity_requirements_label_client_definition, s_investment_activity_playing_requirements_client_definition, s_investment_activity_requirement_client_definition>
+0x01939b10  Si  c_investment_activity_leader_requirements_client_iterator
+      base  0x01939af0  c_investment_activity_requirements_client_iterator
+      vtable 0x01939a50  offset_to_top 0  6 slots
+0x01939b30  Si  c_investment_activity_fireteam_requirements_client_iterator
+      base  0x01939af0  c_investment_activity_requirements_client_iterator
+      vtable 0x01939a90  offset_to_top 0  6 slots
+0x01939b50  Si  c_investment_activity_unlock_strings_iterator
+      base  0x01939ba0  c_investment_label_elements_iterator<s_investment_activity_unlock_strings_label_client_definition, st_dynamic_array<s_investment_activity_unlock_string_client_definition>, s_investment_activity_unlock_string_client_definition>
+      vtable 0x01939ad0  offset_to_top 0  4 slots
+0x01939b70  Si  c_investment_label_elements_client_iterator<s_investment_activity_requirements_label_shared_definition, s_investment_activity_playing_requirements_shared_definition, s_investment_unlock_flag_expression, s_investment_activity_requirements_label_client_definition, s_investment_activity_playing_requirements_client_definition, s_investment_activity_requirement_client_definition>
+      base  0x0190f790  c_investment_label_elements_iterator<s_investment_activity_requirements_label_shared_definition, s_investment_activity_playing_requirements_shared_definition, s_investment_unlock_flag_expression>
+0x01939b88  Base  c_investment_label_iterator<s_investment_activity_unlock_strings_label_client_definition>
+0x01939ba0  Si  c_investment_label_elements_iterator<s_investment_activity_unlock_strings_label_client_definition, st_dynamic_array<s_investment_activity_unlock_string_client_definition>, s_investment_activity_unlock_string_client_definition>
+      base  0x01939b88  c_investment_label_iterator<s_investment_activity_unlock_strings_label_client_definition>
+0x01939c50  Si  c_investment_engine_shim_spasaha
+      base  0x01939c68  i_investment_engine_shim
+      vtable 0x01939c00  offset_to_top 0  9 slots
+0x01939c68  Base  i_investment_engine_shim
+0x0193a080  Base  c_investment_talent_grid_step_progress_iterator
+      vtable 0x0193a070  offset_to_top 0  2 slots
+0x0193a0b8  Base  c_investment_inventory_iterator<326>
+      vtable 0x0193a0a0  offset_to_top 0  3 slots
+0x0193a110  Si  c_investment_server_message_response_handler
+      base  0x0193a128  i_investment_bap_message_queue_callbacks
+      vtable 0x0193a100  offset_to_top 0  1 slots
+0x0193a128  Base  i_investment_bap_message_queue_callbacks
+0x0193a580  Si  c_investment_bap_message_base
+      base  0x0193a598  i_investment_bap_message_interface
+0x0193a598  Base  i_investment_bap_message_interface
+0x0193a600  Si  c_investment_bap_message_client_to_bap_account_id_translation_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193a5c0  offset_to_top 0  8 slots
+0x0193a670  Si  c_investment_bap_message_client_to_bap_account_id_translation_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193a630  offset_to_top 0  8 slots
+0x0193a6e0  Si  c_investment_bap_message_bap_to_activity_host_request
+      base  0x0193d140  c_investment_bap_protobuf_message_base
+      vtable 0x0193a6a0  offset_to_top 0  8 slots
+0x0193a750  Si  c_investment_bap_message_bap_to_activity_host_response
+      base  0x0193d140  c_investment_bap_protobuf_message_base
+      vtable 0x0193a710  offset_to_top 0  8 slots
+0x0193a7c0  Si  c_investment_bap_message_client_to_activity_host_manager_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193a780  offset_to_top 0  8 slots
+0x0193a830  Si  c_investment_bap_message_client_to_activity_host_manager_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193a7f0  offset_to_top 0  8 slots
+0x0193a8a0  Si  c_investment_bap_message_bap_to_activity_host_manager_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193a860  offset_to_top 0  8 slots
+0x0193a910  Si  c_investment_bap_message_bap_to_activity_host_manager_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193a8d0  offset_to_top 0  8 slots
+0x0193a980  Si  c_investment_bap_message_bap_to_activity_host_socket_handoff_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193a940  offset_to_top 0  8 slots
+0x0193a9f0  Si  c_investment_bap_message_client_to_bap_clan_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193a9b0  offset_to_top 0  8 slots
+0x0193aa60  Si  c_investment_bap_message_client_to_bap_clan_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193aa20  offset_to_top 0  8 slots
+0x0193aad0  Si  c_investment_bap_message_client_to_bap_client_config_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193aa90  offset_to_top 0  8 slots
+0x0193ab40  Si  c_investment_bap_message_client_to_bap_client_config_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193ab00  offset_to_top 0  8 slots
+0x0193abb0  Si  c_investment_bap_message_client_to_bap_update_purchased_offers_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193ab70  offset_to_top 0  8 slots
+0x0193ac20  Si  c_investment_bap_message_client_to_bap_update_purchased_offers_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193abe0  offset_to_top 0  8 slots
+0x0193ac90  Si  c_investment_bap_message_client_to_bap_friends_update_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193ac50  offset_to_top 0  8 slots
+0x0193ad00  Si  c_investment_bap_message_client_to_bap_friends_generic_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193acc0  offset_to_top 0  8 slots
+0x0193ad70  Si  c_investment_bap_message_client_to_bap_party_invite_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193ad30  offset_to_top 0  8 slots
+0x0193ade0  Si  c_investment_bap_message_client_to_bap_party_invite_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193ada0  offset_to_top 0  8 slots
+0x0193ae50  Si  c_investment_bap_message_client_to_bap_check_party_invite_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193ae10  offset_to_top 0  8 slots
+0x0193aec0  Si  c_investment_bap_message_client_to_bap_check_party_invite_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193ae80  offset_to_top 0  8 slots
+0x0193b580  Base  i_investment_bap_message_header_interface
+0x0193b5e0  Si  c_investment_bap_message_client_to_bap_update_matchmaking_core_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193b5a0  offset_to_top 0  8 slots
+0x0193b650  Si  c_investment_bap_message_client_to_bap_update_matchmaking_core_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193b610  offset_to_top 0  8 slots
+0x0193b6c0  Si  c_investment_bap_message_client_to_bap_update_matchmaking_skill_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193b680  offset_to_top 0  8 slots
+0x0193b730  Si  c_investment_bap_message_client_to_bap_update_matchmaking_skill_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193b6f0  offset_to_top 0  8 slots
+0x0193b7a0  Si  c_investment_bap_message_client_to_bap_nat_punch_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193b760  offset_to_top 0  8 slots
+0x0193b810  Si  c_investment_bap_message_bap_to_client_nat_punch_relay_intro_notification
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193b7d0  offset_to_top 0  8 slots
+0x0193b880  Si  c_investment_bap_message_activity_host_to_client_notification
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193b840  offset_to_top 0  8 slots
+0x0193b8f0  Si  c_investment_bap_message_bap_to_client_notification
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193b8b0  offset_to_top 0  8 slots
+0x0193b960  Si  c_investment_bap_message_bap_to_client_log_notification
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193b920  offset_to_top 0  8 slots
+0x0193b9d0  Si  c_investment_bap_message_bap_to_client_server_shutdown_notification
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193b990  offset_to_top 0  8 slots
+0x0193ba40  Si  c_investment_bap_message_bap_to_activity_host_notification
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193ba00  offset_to_top 0  8 slots
+0x0193bab0  Si  c_investment_bap_message_client_to_activity_host_notification
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193ba70  offset_to_top 0  8 slots
+0x0193bb20  Si  c_investment_bap_message_activity_host_to_client_log_notification
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193bae0  offset_to_top 0  8 slots
+0x0193be60  Si  c_investment_bap_message_policy_base
+      base  0x0193be78  i_investment_bap_message_policy_interface
+0x0193be78  Base  i_investment_bap_message_policy_interface
+0x0193bf00  Si  c_investment_bap_message_policy_client_to_activity_host_manager_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193bea0  offset_to_top 0  12 slots
+0x0193bf90  Si  c_investment_bap_message_policy_client_to_activity_host_manager_response
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193bf30  offset_to_top 0  12 slots
+0x0193c020  Si  c_investment_bap_message_policy_bap_to_activity_host_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193bfc0  offset_to_top 0  12 slots
+0x0193c0b0  Si  c_investment_bap_message_policy_bap_to_activity_host_response
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c050  offset_to_top 0  12 slots
+0x0193c140  Si  c_investment_bap_message_policy_activity_host_to_client_notification
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c0e0  offset_to_top 0  12 slots
+0x0193c1d0  Si  c_investment_bap_message_policy_activity_host_to_client_log_notification
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c170  offset_to_top 0  12 slots
+0x0193c260  Si  c_investment_bap_message_policy_bap_to_client_notification
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c200  offset_to_top 0  12 slots
+0x0193c2f0  Si  c_investment_bap_message_policy_client_to_activity_host_notification
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c290  offset_to_top 0  12 slots
+0x0193c380  Si  c_investment_bap_message_policy_bap_to_activity_host_notification
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c320  offset_to_top 0  12 slots
+0x0193c410  Si  c_investment_bap_message_policy_bap_to_activity_host_manager_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c3b0  offset_to_top 0  12 slots
+0x0193c4a0  Si  c_investment_bap_message_policy_client_to_bap_get_activity_host_proxy_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c440  offset_to_top 0  12 slots
+0x0193c530  Si  c_investment_bap_message_policy_client_to_bap_challenge_response
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c4d0  offset_to_top 0  12 slots
+0x0193c5c0  Si  c_investment_bap_message_policy_client_to_bap_account_id_translation_request
+      base  0x0193be78  i_investment_bap_message_policy_interface
+      vtable 0x0193c560  offset_to_top 0  12 slots
+0x0193c650  Si  c_investment_bap_message_policy_client_to_bap_subscription_request
+      base  0x0193be78  i_investment_bap_message_policy_interface
+      vtable 0x0193c5f0  offset_to_top 0  12 slots
+0x0193c6e0  Si  c_investment_bap_message_policy_client_to_bap_unsubscribe_request
+      base  0x0193be78  i_investment_bap_message_policy_interface
+      vtable 0x0193c680  offset_to_top 0  12 slots
+0x0193c770  Si  c_investment_bap_message_policy_client_to_bap_initiate_relay_connection_notification
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c710  offset_to_top 0  12 slots
+0x0193c800  Si  c_investment_bap_message_policy_client_to_bap_register_relay_client_request
+      base  0x0193be78  i_investment_bap_message_policy_interface
+      vtable 0x0193c7a0  offset_to_top 0  12 slots
+0x0193c890  Si  c_investment_bap_message_policy_bap_to_client_server_shutdown_notification
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c830  offset_to_top 0  12 slots
+0x0193c920  Si  c_investment_bap_message_policy_client_to_bap_nat_punch_intro_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c8c0  offset_to_top 0  12 slots
+0x0193c9b0  Si  c_investment_bap_message_policy_client_to_bap_clan_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c950  offset_to_top 0  12 slots
+0x0193ca40  Si  c_investment_bap_message_policy_client_to_bap_client_config_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193c9e0  offset_to_top 0  12 slots
+0x0193cad0  Si  c_investment_bap_message_policy_client_to_bap_update_purchased_offers_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193ca70  offset_to_top 0  12 slots
+0x0193cb60  Si  c_investment_bap_message_policy_client_to_bap_friends_update_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193cb00  offset_to_top 0  12 slots
+0x0193cbf0  Si  c_investment_bap_message_policy_client_to_bap_friends_party_invite_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193cb90  offset_to_top 0  12 slots
+0x0193cc80  Si  c_investment_bap_message_policy_client_to_bap_friends_check_party_invite_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193cc20  offset_to_top 0  12 slots
+0x0193cd10  Si  c_investment_bap_message_policy_bap_to_client_log_notification
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193ccb0  offset_to_top 0  12 slots
+0x0193cda0  Si  c_investment_bap_message_policy_client_to_bap_matchmaking_core_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193cd40  offset_to_top 0  12 slots
+0x0193ce30  Si  c_investment_bap_message_policy_client_to_bap_matchmaking_skill_request
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193cdd0  offset_to_top 0  12 slots
+0x0193cec0  Si  c_investment_bap_message_policy_bap_to_client_user_message
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193ce60  offset_to_top 0  12 slots
+0x0193cee0  Si  c_investment_bap_message_policy_client_to_world_server_request_base
+      base  0x0193be78  i_investment_bap_message_policy_interface
+0x0193cf70  Si  c_investment_bap_message_policy_client_to_world_server_nondeterministic_request
+      base  0x0193cee0  c_investment_bap_message_policy_client_to_world_server_request_base
+      vtable 0x0193cf10  offset_to_top 0  12 slots
+0x0193d000  Si  c_investment_bap_message_policy_client_to_world_server_deterministic_request
+      base  0x0193cee0  c_investment_bap_message_policy_client_to_world_server_request_base
+      vtable 0x0193cfa0  offset_to_top 0  12 slots
+0x0193d090  Si  c_investment_bap_message_policy_service_to_world_server_request
+      base  0x0193cee0  c_investment_bap_message_policy_client_to_world_server_request_base
+      vtable 0x0193d030  offset_to_top 0  12 slots
+0x0193d120  Si  c_investment_bap_message_policy_client_to_xetrov_notification
+      base  0x0193be60  c_investment_bap_message_policy_base
+      vtable 0x0193d0c0  offset_to_top 0  12 slots
+0x0193d140  Si  c_investment_bap_protobuf_message_base
+      base  0x0193a580  c_investment_bap_message_base
+0x0193d1b0  Si  c_investment_bap_message_client_to_bap_secure_hello_request
+      base  0x0193d140  c_investment_bap_protobuf_message_base
+      vtable 0x0193d170  offset_to_top 0  8 slots
+0x0193d1d0  Si  c_investment_bap_message_wrapper_message_base
+      base  0x0193d140  c_investment_bap_protobuf_message_base
+0x0193d240  Si  c_investment_bap_message_server_challenge_request
+      base  0x0193d1d0  c_investment_bap_message_wrapper_message_base
+      vtable 0x0193d200  offset_to_top 0  8 slots
+0x0193d2b0  Si  c_investment_bap_message_server_challenge_response
+      base  0x0193d1d0  c_investment_bap_message_wrapper_message_base
+      vtable 0x0193d270  offset_to_top 0  8 slots
+0x0193d320  Si  c_investment_bap_message_client_to_bap_echo_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d2e0  offset_to_top 0  8 slots
+0x0193d390  Si  c_investment_bap_message_client_to_bap_echo_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d350  offset_to_top 0  8 slots
+0x0193d400  Si  c_investment_bap_message_client_to_bap_channel_startup_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d3c0  offset_to_top 0  8 slots
+0x0193d470  Si  c_investment_bap_message_client_to_bap_channel_startup_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d430  offset_to_top 0  8 slots
+0x0193d4e0  Si  c_investment_bap_message_client_to_bap_secure_hello_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d4a0  offset_to_top 0  8 slots
+0x0193d550  Si  c_investment_bap_message_client_to_bap_queuez_register_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d510  offset_to_top 0  8 slots
+0x0193d5c0  Si  c_investment_bap_message_client_to_bap_queuez_register_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d580  offset_to_top 0  8 slots
+0x0193d630  Si  c_investment_bap_message_client_to_bap_subscription_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d5f0  offset_to_top 0  8 slots
+0x0193d6a0  Si  c_investment_bap_message_client_to_bap_subscription_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d660  offset_to_top 0  8 slots
+0x0193d710  Si  c_investment_bap_message_client_to_bap_unsubscribe_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d6d0  offset_to_top 0  8 slots
+0x0193d780  Si  c_investment_bap_message_client_to_bap_unsubscribe_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d740  offset_to_top 0  8 slots
+0x0193d7f0  Si  c_investment_bap_message_client_to_bap_initiate_relay_connection_notification
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d7b0  offset_to_top 0  8 slots
+0x0193d860  Si  c_investment_bap_message_bap_to_client_request_relay_connection_notification
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d820  offset_to_top 0  8 slots
+0x0193d8d0  Si  c_investment_bap_message_client_to_bap_register_relay_client_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d890  offset_to_top 0  8 slots
+0x0193d940  Si  c_investment_bap_message_client_to_bap_register_relay_client_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d900  offset_to_top 0  8 slots
+0x0193d9b0  Si  c_investment_bap_message_client_to_bap_get_activity_host_proxy_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d970  offset_to_top 0  8 slots
+0x0193da20  Si  c_investment_bap_message_client_to_bap_get_activity_host_proxy_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193d9e0  offset_to_top 0  8 slots
+0x0193da90  Si  c_investment_bap_message_push_handler
+      base  0x0193daa8  i_network_server_bap_connection_push_handler_interface
+      vtable 0x0193da50  offset_to_top 0  7 slots
+0x0193dbe0  Si  c_investment_bap_message_push_policy_bap_to_client_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193dbb0  offset_to_top 0  6 slots
+0x0193dc40  Si  c_investment_bap_message_push_policy_bap_client_to_activity_host_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193dc10  offset_to_top 0  6 slots
+0x0193dca0  Si  c_investment_bap_message_push_policy_bap_to_activity_host_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193dc70  offset_to_top 0  6 slots
+0x0193dd00  Si  c_investment_bap_message_push_policy_bap_to_activity_host_request
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193dcd0  offset_to_top 0  6 slots
+0x0193dd60  Si  c_investment_bap_message_push_policy_bap_client_to_activity_host_manager_request
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193dd30  offset_to_top 0  6 slots
+0x0193ddc0  Si  c_investment_bap_message_push_policy_bap_to_client_log_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193dd90  offset_to_top 0  6 slots
+0x0193de20  Si  c_investment_bap_message_push_policy_bap_to_client_nat_punch_relay_intro_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193ddf0  offset_to_top 0  6 slots
+0x0193de80  Si  c_investment_bap_message_push_policy_activity_host_to_client_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193de50  offset_to_top 0  6 slots
+0x0193dee0  Si  c_investment_bap_message_push_policy_queuez_to_client_update_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193deb0  offset_to_top 0  6 slots
+0x0193df40  Si  c_investment_bap_message_push_policy_queuez_to_client_subscription_lost_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193df10  offset_to_top 0  6 slots
+0x0193dfa0  Si  c_investment_bap_message_push_policy_bap_to_client_request_relay_connection_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193df70  offset_to_top 0  6 slots
+0x0193e000  Si  c_investment_bap_message_push_policy_bap_to_client_server_shutdown_notification
+      base  0x01937ea8  i_investment_bap_message_push_policy_interface
+      vtable 0x0193dfd0  offset_to_top 0  6 slots
+0x0193e080  Si  c_investment_bap_message_queue
+      base  0x0193e098  i_network_server_bap_connection_message_source_interface
+      vtable 0x0193e030  offset_to_top 0  10 slots
+0x0193e100  Si  c_investment_bap_message_queuez_to_client_update_notification
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193e0c0  offset_to_top 0  8 slots
+0x0193e170  Si  c_investment_bap_message_queuez_to_client_subscription_lost_notification
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193e130  offset_to_top 0  8 slots
+0x0193e1f0  Si  c_investment_bap_message_bap_to_client_user_message_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193e1b0  offset_to_top 0  8 slots
+0x0193e260  Si  c_investment_bap_message_bap_to_client_user_message_response
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193e220  offset_to_top 0  8 slots
+0x0193e2d0  Si  c_investment_bap_message_client_to_world_server_request
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193e290  offset_to_top 0  8 slots
+0x0193e340  Si  c_investment_bap_message_client_to_world_server_response
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193e300  offset_to_top 0  8 slots
+0x0193e3b0  Si  c_investment_bap_message_service_to_world_server_request
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193e370  offset_to_top 0  8 slots
+0x0193e420  Si  c_investment_bap_message_activity_host_to_world_server_response
+      base  0x0193a598  i_investment_bap_message_interface
+      vtable 0x0193e3e0  offset_to_top 0  8 slots
+0x0193e490  Si  c_investment_bap_message_client_to_xetrov_request
+      base  0x0193a580  c_investment_bap_message_base
+      vtable 0x0193e450  offset_to_top 0  8 slots
+0x0193e5d0  Si  c_investment_server_object_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193e580  offset_to_top 0  9 slots
+0x0193e5f0  Si  c_simulation_queue_investment_server_object_manager_start_family_replication
+      base  0x0193e690  c_simulation_queue_element_schematized_definition<s_investment_server_object_manager_event_start_family_replication>
+      vtable 0x0193e4c0  offset_to_top 0  3 slots
+0x0193e610  Si  c_simulation_queue_investment_server_object_manager_stop_family_replication
+      base  0x0193e6b0  c_simulation_queue_element_schematized_definition<s_investment_server_object_manager_event_stop_family_replication>
+      vtable 0x0193e4f0  offset_to_top 0  3 slots
+0x0193e630  Si  c_simulation_queue_investment_server_object_manager_update_family_playing_state
+      base  0x0193e6d0  c_simulation_queue_element_schematized_definition<s_investment_server_object_manager_event_update_family_playing_state>
+      vtable 0x0193e520  offset_to_top 0  3 slots
+0x0193e650  Si  c_simulation_queue_investment_server_object_manager_update_family_record_force_subscription
+      base  0x0193e6f0  c_simulation_queue_element_schematized_definition<s_investment_server_object_manager_event_update_family_record_force_subscription>
+      vtable 0x0193e550  offset_to_top 0  3 slots
+0x0193e690  Si  c_simulation_queue_element_schematized_definition<s_investment_server_object_manager_event_start_family_replication>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193e6b0  Si  c_simulation_queue_element_schematized_definition<s_investment_server_object_manager_event_stop_family_replication>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193e6d0  Si  c_simulation_queue_element_schematized_definition<s_investment_server_object_manager_event_update_family_playing_state>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193e6f0  Si  c_simulation_queue_element_schematized_definition<s_investment_server_object_manager_event_update_family_record_force_subscription>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193e7c0  Si  c_investment_activity_reward_tracker_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193e770  offset_to_top 0  9 slots
+0x0193e850  Si  c_investment_activity_selection_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193e800  offset_to_top 0  9 slots
+0x0193e8b0  Si  c_investment_client_item_repository
+      base  0x0190dbe0  i_investment_item_repository
+      vtable 0x0193e890  offset_to_top 0  4 slots
+0x0193e990  Si  c_investment_game_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193e940  offset_to_top 0  9 slots
+0x0193e9b0  Si  c_simulation_queue_investment_game_set_reset_state
+      base  0x0193ea00  c_simulation_queue_element_schematized_definition<s_investment_game_reset_state>
+      vtable 0x0193e8e0  offset_to_top 0  3 slots
+0x0193e9d0  Si  c_simulation_queue_investment_game_set_update_state
+      base  0x0193ea20  c_simulation_queue_element_schematized_definition<s_investment_game_update_state>
+      vtable 0x0193e910  offset_to_top 0  3 slots
+0x0193ea00  Si  c_simulation_queue_element_schematized_definition<s_investment_game_reset_state>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193ea20  Si  c_simulation_queue_element_schematized_definition<s_investment_game_update_state>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193eb10  Si  c_investment_item_loader_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193eac0  offset_to_top 0  9 slots
+0x0193eb50  Si  c_investment_world_tag_loader_fill_desired_items_character_instance
+      base  0x0193ed28  i_investment_world_tag_loader_fill_desired
+      vtable 0x0193eb40  offset_to_top 0  1 slots
+0x0193eb90  Si  c_investment_world_tag_loader_fill_desired_talent_grids_character_instance
+      base  0x0193ed28  i_investment_world_tag_loader_fill_desired
+      vtable 0x0193eb80  offset_to_top 0  1 slots
+0x0193ebd0  Si  c_investment_world_tag_loader_fill_desired_items_peer_view
+      base  0x0193ed28  i_investment_world_tag_loader_fill_desired
+      vtable 0x0193ebc0  offset_to_top 0  1 slots
+0x0193ec10  Si  c_investment_world_tag_loader_fill_desired_items_select_character_view
+      base  0x0193ed28  i_investment_world_tag_loader_fill_desired
+      vtable 0x0193ec00  offset_to_top 0  1 slots
+0x0193ec50  Si  c_investment_world_tag_loader_fill_desired_items_default_gear
+      base  0x0193ed28  i_investment_world_tag_loader_fill_desired
+      vtable 0x0193ec40  offset_to_top 0  1 slots
+0x0193ec90  Si  c_investment_world_tag_loader_fill_desired_handles_character_creation
+      base  0x0193ed28  i_investment_world_tag_loader_fill_desired
+      vtable 0x0193ec80  offset_to_top 0  1 slots
+0x0193ecd0  Si  c_investment_world_tag_loader_fill_desired_string_lists_rich_presence
+      base  0x0193ed28  i_investment_world_tag_loader_fill_desired
+      vtable 0x0193ecc0  offset_to_top 0  1 slots
+0x0193ed10  Si  c_investment_world_tag_loader_fill_desired_items_activity_reward_incidents
+      base  0x0193ed28  i_investment_world_tag_loader_fill_desired
+      vtable 0x0193ed00  offset_to_top 0  1 slots
+0x0193ed28  Base  i_investment_world_tag_loader_fill_desired
+0x0193ed40  Si  c_simulation_queue_element_schematized_definition<s_investment_world_tag_loader_cache_state>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193ed60  Si  c_investment_world_tag_loader_cache_state_simulation_queue_handler
+      base  0x0193ed40  c_simulation_queue_element_schematized_definition<s_investment_world_tag_loader_cache_state>
+      vtable 0x0193ea90  offset_to_top 0  3 slots
+0x0193ee48  Base  i_investment_world_tag_loader_cache
+0x0193ee60  Si  c_investment_world_tag_loader_cache_base<340, 1>
+      base  0x0193ee48  i_investment_world_tag_loader_cache
+      vtable 0x0193eda0  offset_to_top 0  21 slots
+0x0193ef40  Si  c_investment_world_tag_loader_cache_base<4, 1>
+      base  0x0193ee48  i_investment_world_tag_loader_cache
+      vtable 0x0193ee90  offset_to_top 0  21 slots
+0x0193f020  Si  c_investment_world_tag_loader_cache_base<16, 1>
+      base  0x0193ee48  i_investment_world_tag_loader_cache
+      vtable 0x0193ef70  offset_to_top 0  21 slots
+0x0193f100  Si  c_investment_world_tag_loader_cache_base<768, 2>
+      base  0x0193ee48  i_investment_world_tag_loader_cache
+      vtable 0x0193f050  offset_to_top 0  21 slots
+0x0193f1e0  Si  c_investment_world_tag_loader_cache_base<128, 1>
+      base  0x0193ee48  i_investment_world_tag_loader_cache
+      vtable 0x0193f130  offset_to_top 0  21 slots
+0x0193f2c0  Si  c_investment_world_tag_loader_cache_base<40, 1>
+      base  0x0193ee48  i_investment_world_tag_loader_cache
+      vtable 0x0193f210  offset_to_top 0  21 slots
+0x0193f3a0  Si  c_investment_world_tag_loader_cache_base<1460, 1>
+      base  0x0193ee48  i_investment_world_tag_loader_cache
+      vtable 0x0193f2f0  offset_to_top 0  21 slots
+0x0193f470  Si  c_investment_joinability_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193f400  offset_to_top 0  9 slots
+0x0193f600  Si  c_investment_latency_record_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193f5b0  offset_to_top 0  9 slots
+0x0193f640  Si  c_investment_loot_latency_record_from_loot_state_updater
+      base  0x0193f698  i_investment_loot_latency_record_update_interface
+      vtable 0x0193f630  offset_to_top 0  2 slots
+0x0193f680  Si  c_investment_loot_latency_record_from_incident_updater
+      base  0x0193f698  i_investment_loot_latency_record_update_interface
+      vtable 0x0193f670  offset_to_top 0  2 slots
+0x0193f698  Base  i_investment_loot_latency_record_update_interface
+0x0193f720  Si  c_investment_location_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193f6d0  offset_to_top 0  9 slots
+0x0193f7b0  Si  c_investment_peer_subscription_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193f760  offset_to_top 0  9 slots
+0x0193f8d0  Si  c_investment_profile_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193f880  offset_to_top 0  9 slots
+0x0193f8f0  Si  c_simulation_queue_investment_profile_set_account_profile_nondeterministic
+      base  0x0193f960  c_simulation_queue_element_schematized_definition<s_investment_profile_manager_event_set_account_profile_nondeterministic_chunk>
+      vtable 0x0193f7f0  offset_to_top 0  3 slots
+0x0193f910  Si  c_simulation_queue_investment_profile_set_character_profile_nondeterministic
+      base  0x0193f980  c_simulation_queue_element_schematized_definition<s_investment_profile_manager_event_set_character_profile_nondeterministic_chunk>
+      vtable 0x0193f820  offset_to_top 0  3 slots
+0x0193f930  Si  c_simulation_queue_investment_profile_schedule_high_priority_flush
+      base  0x0193f9a0  c_simulation_queue_element_schematized_definition<s_investment_profile_manager_event_schedule_high_priority_flush>
+      vtable 0x0193f850  offset_to_top 0  3 slots
+0x0193f960  Si  c_simulation_queue_element_schematized_definition<s_investment_profile_manager_event_set_account_profile_nondeterministic_chunk>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193f980  Si  c_simulation_queue_element_schematized_definition<s_investment_profile_manager_event_set_character_profile_nondeterministic_chunk>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193f9a0  Si  c_simulation_queue_element_schematized_definition<s_investment_profile_manager_event_schedule_high_priority_flush>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193fa70  Si  c_investment_roster_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193fa20  offset_to_top 0  9 slots
+0x0193fb20  Si  c_investment_roster_party_details_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193fad0  offset_to_top 0  9 slots
+0x0193fc40  Si  c_investment_ui_trigger_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193fbf0  offset_to_top 0  9 slots
+0x0193fcd0  Si  c_simulation_queue_element_schematized_definition<s_investment_ui_trigger_manager_ui_event>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193fcf0  Si  c_simulation_queue_element_schematized_definition<s_investment_ui_trigger_manager_nondeterministic_state>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193fe20  Si  c_investment_user_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193fdd0  offset_to_top 0  9 slots
+0x0193fe40  Si  c_simulation_queue_investment_local_time_update_definition
+      base  0x0193feb0  c_simulation_queue_element_schematized_definition<s_investment_local_time_update>
+      vtable 0x0193fd40  offset_to_top 0  3 slots
+0x0193fe60  Si  c_simulation_queue_investment_user_manager_universe_update_definition
+      base  0x0193fed0  c_simulation_queue_element_schematized_definition<s_investment_universe_performance_counter_update>
+      vtable 0x0193fd70  offset_to_top 0  3 slots
+0x0193fe80  Si  c_simulation_queue_investment_server_object_family_select_character_refresh
+      base  0x0193fef0  c_simulation_queue_element_schematized_definition<s_investment_server_object_family_select_character_refresh>
+      vtable 0x0193fda0  offset_to_top 0  3 slots
+0x0193feb0  Si  c_simulation_queue_element_schematized_definition<s_investment_local_time_update>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193fed0  Si  c_simulation_queue_element_schematized_definition<s_investment_universe_performance_counter_update>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193fef0  Si  c_simulation_queue_element_schematized_definition<s_investment_server_object_family_select_character_refresh>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x0193ff90  Si  c_investment_user_message_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x0193ff40  offset_to_top 0  9 slots
+0x01940118  Base  i_investment_game_system
+0x01940190  Si  c_investment_loot_object_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x01940140  offset_to_top 0  9 slots
+0x01940250  Si  c_investment_activity_proxy_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x01940200  offset_to_top 0  9 slots
+0x01940270  Si  c_simulation_queue_investment_activity_proxy_set_activity_state
+      base  0x01940290  c_simulation_queue_element_schematized_definition<s_investment_online_world_controller_activity_state>
+      vtable 0x019401d0  offset_to_top 0  3 slots
+0x01940290  Si  c_simulation_queue_element_schematized_definition<s_investment_online_world_controller_activity_state>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x01940350  Si  c_investment_peer_subscription_proxy_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x01940300  offset_to_top 0  9 slots
+0x01940370  Si  c_simulation_queue_element_schematized_definition<s_investment_peer_subscription_state>
+      base  0x01912420  c_simulation_queue_element_schematized_definition_base_type
+0x01940390  Si  c_investment_peer_subscription_proxy_simulation_queue_handler
+      base  0x01940370  c_simulation_queue_element_schematized_definition<s_investment_peer_subscription_state>
+      vtable 0x019402d0  offset_to_top 0  3 slots
+0x01940420  Si  c_investment_player_identifier_proxy_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x019403d0  offset_to_top 0  9 slots
+0x019404e0  Si  c_investment_social_presence_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x01940490  offset_to_top 0  9 slots
+0x01940590  Si  c_investment_translation_manager_game_system
+      base  0x01940118  i_investment_game_system
+      vtable 0x01940540  offset_to_top 0  9 slots
+0x019466b0  Si  c_world_controller_state_bootflow_investment_signin_handler
+      base  0x01945a10  c_world_controller_tiger_base_state_handler
+      vtable 0x01946660  offset_to_top 0  10 slots
+0x0194fbc0  Si  cui::c_property_value::c_typed_holder<cui::s_investment_character_id>
+      base  0x01967750  cui::c_property_value::c_holder
+      vtable 0x0194fba0  offset_to_top 0  4 slots
+0x0194fc10  Si  cui::c_property_value::c_typed_holder<cui::s_investment_item_id>
+      base  0x01967750  cui::c_property_value::c_holder
+      vtable 0x0194fbf0  offset_to_top 0  4 slots
+0x019534c0  Si  c_cui_investment_activity_quota_component
+      base  0x01951a10  c_cui_object_component
+      vtable 0x019533e0  offset_to_top 0  21 slots
+      vtable 0x01953498  offset_to_top -136  5 slots
+0x019535d0  Si  c_cui_investment_character_loot_state_component
+      base  0x01951a10  c_cui_object_component
+      vtable 0x019534f0  offset_to_top 0  21 slots
+      vtable 0x019535a8  offset_to_top -136  5 slots
+0x01953680  Si  c_cui_investment_character_state_component
+      base  0x01951710  c_cui_component
+      vtable 0x01953600  offset_to_top 0  16 slots
+0x01953730  Si  cui::c_investment_character_statistics_component
+      base  0x01951710  c_cui_component
+      vtable 0x019536b0  offset_to_top 0  16 slots
+0x01953780  Si  ui::detail::c_shared_ptr_tracker<cui::s_investment_perk_info>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x01953760  offset_to_top 0  4 slots
+0x019537d0  Si  ui::detail::c_shared_ptr_tracker<cui::s_investment_item_stat>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x019537b0  offset_to_top 0  4 slots
+0x01953820  Si  cui::c_property_value::c_typed_holder<ui::c_shared_ptr<cui::s_investment_item_stat>>
+      base  0x01967750  cui::c_property_value::c_holder
+      vtable 0x01953800  offset_to_top 0  4 slots
+0x01953868  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_perk_info>, 18>
+0x01953880  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_perk_info>, 18>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x01953868  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_perk_info>, 18>
+      vtable 0x01953850  offset_to_top 0  3 slots
+0x019538e8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_item_stat>, 6>
+0x01953900  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_item_stat>, 6>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x019538e8  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_item_stat>, 6>
+      vtable 0x019538d0  offset_to_top 0  3 slots
+0x019539a0  Si  cui::c_properties_accessor_base<cui::s_investment_item_stat>
+      base  0x019674b8  cui::i_properties
+0x019539c0  Si  cui::s_investment_item_stat
+      base  0x019539a0  cui::c_properties_accessor_base<cui::s_investment_item_stat>
+      vtable 0x01953950  offset_to_top 0  9 slots
+0x01953ae0  Si  cui::c_investment_equip_inventory_item_component
+      base  0x0194e860  c_event_handler_component
+      vtable 0x019539f0  offset_to_top 0  22 slots
+      vtable 0x01953ab0  offset_to_top -136  5 slots
+0x01953c00  Si  c_cui_investment_loot_pipe_component
+      base  0x01950580  c_screen_pipe_component
+      vtable 0x01953b10  offset_to_top 0  22 slots
+      vtable 0x01953bd0  offset_to_top -136  5 slots
+0x01953c50  Si  c_cui_investment_loot_pipe
+      base  0x0194d190  cui::c_screen_pipe
+      vtable 0x01953c40  offset_to_top 0  2 slots
+0x01956ad0  Si  c_mock_investment_state_component
+      base  0x01951a10  c_cui_object_component
+      vtable 0x019569f0  offset_to_top 0  21 slots
+      vtable 0x01956aa8  offset_to_top -136  5 slots
+0x0195b390  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_progression>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195b370  offset_to_top 0  4 slots
+0x0195b3d8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_progression>, 4>
+0x0195b3f0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_progression>, 4>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195b3d8  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_progression>, 4>
+      vtable 0x0195b3c0  offset_to_top 0  3 slots
+0x0195b510  Si  cui::c_property_value::c_typed_holder<cui::c_value_ptr<cui::c_investment_progression>>
+      base  0x01967750  cui::c_property_value::c_holder
+      vtable 0x0195b4f0  offset_to_top 0  4 slots
+0x0195b590  Si  cui::c_properties_accessor_base<cui::c_investment_progression>
+      base  0x019674b8  cui::i_properties
+0x0195b5b0  Si  cui::c_investment_progression
+      base  0x0195b590  cui::c_properties_accessor_base<cui::c_investment_progression>
+      vtable 0x0195b540  offset_to_top 0  9 slots
+0x0195c178  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_progression>, 32>
+0x0195c190  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_progression>, 32>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195c178  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_progression>, 32>
+      vtable 0x0195c160  offset_to_top 0  3 slots
+0x0195cc90  Si  cui::c_investment_backpack_item
+      base  0x0195e450  cui::c_investment_item_context
+      vtable 0x0195ca00  offset_to_top 0  9 slots
+0x0195ccb0  Si  cui::c_investment_backpack_slot_flyout
+      base  0x01967fc8  cui::i_flyout_data
+      vtable 0x0195ca60  offset_to_top 0  11 slots
+0x0195ccd0  Vmi  cui::c_investment_backpack_component
+      base  0x01951710  c_cui_component
+      base  0x0195ce08  cui::i_investment_item_action_interface
+      base  0x0195ce18  cui::i_investment_item_equip_interface
+      base  0x0195ce28  cui::i_investment_item_lockbox_overlay_interface
+      base  0x0195ce38  cui::i_investment_item_precache_interface
+      base  0x0195ce48  cui::i_investment_item_select_interface
+      vtable 0x0195cad0  offset_to_top 0  31 slots
+      vtable 0x0195cbd8  offset_to_top -136  4 slots
+      vtable 0x0195cc08  offset_to_top -144  5 slots
+      vtable 0x0195cc40  offset_to_top -152  4 slots
+      vtable 0x0195cc70  offset_to_top -160  1 slots
+      vtable 0x0195cc88  offset_to_top -168  1 slots
+0x0195ce08  Base  cui::i_investment_item_action_interface
+0x0195ce18  Base  cui::i_investment_item_equip_interface
+0x0195ce28  Base  cui::i_investment_item_lockbox_overlay_interface
+0x0195ce38  Base  cui::i_investment_item_precache_interface
+0x0195ce48  Base  cui::i_investment_item_select_interface
+0x0195ce60  Si  cui::c_properties_accessor_base<cui::c_investment_backpack_slot>
+      base  0x019674b8  cui::i_properties
+0x0195ce80  Si  cui::c_investment_backpack_slot
+      base  0x0195ce60  cui::c_properties_accessor_base<cui::c_investment_backpack_slot>
+      vtable 0x0195cd60  offset_to_top 0  9 slots
+0x0195cf10  Si  cui::c_property_value::c_typed_holder<ui::c_shared_ptr<cui::c_investment_backpack_item>>
+      base  0x01967750  cui::c_property_value::c_holder
+      vtable 0x0195cef0  offset_to_top 0  4 slots
+0x0195cf60  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_backpack_item>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195cf40  offset_to_top 0  4 slots
+0x0195d000  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_item_lockbox_overlay_token>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195cfe0  offset_to_top 0  4 slots
+0x0195d048  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_backpack_slot>, 6>
+0x0195d060  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_backpack_slot>, 6>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195d048  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_backpack_slot>, 6>
+      vtable 0x0195d030  offset_to_top 0  3 slots
+0x0195d0d0  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_backpack_item>, 340>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195d0b0  offset_to_top 0  4 slots
+0x0195d118  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_backpack_item>, 340>
+0x0195d130  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_backpack_item>, 340>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195d118  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_backpack_item>, 340>
+      vtable 0x0195d100  offset_to_top 0  3 slots
+0x0195d220  Si  cui::c_properties_accessor_base<cui::s_investment_item_details_screen_data>
+      base  0x019674b8  cui::i_properties
+0x0195d240  Si  cui::s_investment_item_details_screen_data
+      base  0x0195d220  cui::c_properties_accessor_base<cui::s_investment_item_details_screen_data>
+      vtable 0x0195d1d0  offset_to_top 0  9 slots
+0x0195d2e0  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_backpack_slot>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195d2c0  offset_to_top 0  4 slots
+0x0195d330  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_backpack_slot_flyout>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195d310  offset_to_top 0  4 slots
+0x0195d3e0  Si  cui::c_investment_currency_reward_alert_data_component
+      base  0x01951710  c_cui_component
+      vtable 0x0195d360  offset_to_top 0  16 slots
+0x0195d570  Vmi  cui::c_investment_infusion_data_component
+      base  0x01951710  c_cui_component
+      base  0x0195ce08  cui::i_investment_item_action_interface
+      base  0x0195d5b8  cui::i_investment_item_infusion_interface
+      vtable 0x0195d470  offset_to_top 0  22 slots
+      vtable 0x0195d530  offset_to_top -136  4 slots
+      vtable 0x0195d560  offset_to_top -144  2 slots
+0x0195d5b8  Base  cui::i_investment_item_infusion_interface
+0x0195d5d0  Si  cui::c_properties_accessor_base<cui::c_investment_infusion_item>
+      base  0x019674b8  cui::i_properties
+0x0195d5f0  Si  cui::c_investment_infusion_item
+      base  0x0195d5d0  cui::c_properties_accessor_base<cui::c_investment_infusion_item>
+      vtable 0x0195d410  offset_to_top 0  9 slots
+0x0195d640  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_infusion_item>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195d620  offset_to_top 0  4 slots
+0x0195d688  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_infusion_item>, 15>
+0x0195d6a0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_infusion_item>, 15>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195d688  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_infusion_item>, 15>
+      vtable 0x0195d670  offset_to_top 0  3 slots
+0x0195d7b0  Si  cui::c_investment_inventory_monitor_component
+      base  0x01951710  c_cui_component
+      vtable 0x0195d730  offset_to_top 0  16 slots
+0x0195d800  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_item_record_node_info>, 4>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195d7e0  offset_to_top 0  4 slots
+0x0195d848  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_item_record_node_info>, 4>
+0x0195d860  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_item_record_node_info>, 4>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195d848  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_item_record_node_info>, 4>
+      vtable 0x0195d830  offset_to_top 0  3 slots
+0x0195d8d0  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_perk_info>, 6>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195d8b0  offset_to_top 0  4 slots
+0x0195d918  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_perk_info>, 6>
+0x0195d930  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_perk_info>, 6>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195d918  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_perk_info>, 6>
+      vtable 0x0195d900  offset_to_top 0  3 slots
+0x0195d9d0  Si  cui::c_properties_accessor_base<cui::s_investment_item_record_book_reward_item_info>
+      base  0x019674b8  cui::i_properties
+0x0195d9f0  Si  cui::s_investment_item_record_book_reward_item_info
+      base  0x0195d9d0  cui::c_properties_accessor_base<cui::s_investment_item_record_book_reward_item_info>
+      vtable 0x0195d980  offset_to_top 0  9 slots
+0x0195da40  Si  ui::detail::c_shared_ptr_tracker<cui::s_investment_item_record_book_reward_item_info>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195da20  offset_to_top 0  4 slots
+0x0195dac0  Si  cui::c_properties_accessor_base<cui::c_investment_item_record_node_info>
+      base  0x019674b8  cui::i_properties
+0x0195dae0  Si  cui::c_investment_item_record_node_info
+      base  0x0195dac0  cui::c_properties_accessor_base<cui::c_investment_item_record_node_info>
+      vtable 0x0195da70  offset_to_top 0  9 slots
+0x0195db30  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_item_record_node_info>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195db10  offset_to_top 0  4 slots
+0x0195dbb0  Si  cui::c_properties_accessor_base<cui::s_investment_item_record_book_info>
+      base  0x019674b8  cui::i_properties
+0x0195dbd0  Si  cui::s_investment_item_record_book_info
+      base  0x0195dbb0  cui::c_properties_accessor_base<cui::s_investment_item_record_book_info>
+      vtable 0x0195db60  offset_to_top 0  9 slots
+0x0195dc20  Si  ui::detail::c_shared_ptr_tracker<cui::s_investment_item_record_book_info>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195dc00  offset_to_top 0  4 slots
+0x0195dca0  Si  cui::c_properties_accessor_base<cui::c_investment_item_activity_score>
+      base  0x019674b8  cui::i_properties
+0x0195dcc0  Si  cui::c_investment_item_activity_score
+      base  0x0195dca0  cui::c_properties_accessor_base<cui::c_investment_item_activity_score>
+      vtable 0x0195dc50  offset_to_top 0  9 slots
+0x0195dd10  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_item_activity_score>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195dcf0  offset_to_top 0  4 slots
+0x0195dd58  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_item_activity_score>, 12>
+0x0195dd70  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_item_activity_score>, 12>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195dd58  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_item_activity_score>, 12>
+      vtable 0x0195dd40  offset_to_top 0  3 slots
+0x0195dde0  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_item_activity_score>, 12>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195ddc0  offset_to_top 0  4 slots
+0x0195de60  Si  cui::c_properties_accessor_base<cui::c_investment_objective_item>
+      base  0x019674b8  cui::i_properties
+0x0195de80  Si  cui::c_investment_objective_item
+      base  0x0195de60  cui::c_properties_accessor_base<cui::c_investment_objective_item>
+      vtable 0x0195de10  offset_to_top 0  9 slots
+0x0195ded0  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_objective_item>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195deb0  offset_to_top 0  4 slots
+0x0195df18  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_objective_item>, 8>
+0x0195df30  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_objective_item>, 8>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195df18  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_objective_item>, 8>
+      vtable 0x0195df00  offset_to_top 0  3 slots
+0x0195dfa0  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_objective_item>, 8>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195df80  offset_to_top 0  4 slots
+0x0195dff0  Si  ui::detail::c_shared_ptr_tracker<cui::s_investment_material_requirement>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195dfd0  offset_to_top 0  4 slots
+0x0195e070  Si  cui::c_properties_accessor_base<cui::s_investment_material_requirement>
+      base  0x019674b8  cui::i_properties
+0x0195e090  Si  cui::s_investment_material_requirement
+      base  0x0195e070  cui::c_properties_accessor_base<cui::s_investment_material_requirement>
+      vtable 0x0195e020  offset_to_top 0  9 slots
+0x0195e0e0  Si  ui::detail::c_shared_ptr_tracker<cui::s_investment_unlock_flag>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195e0c0  offset_to_top 0  4 slots
+0x0195e160  Si  cui::c_properties_accessor_base<cui::s_investment_unlock_flag>
+      base  0x019674b8  cui::i_properties
+0x0195e180  Si  cui::s_investment_unlock_flag
+      base  0x0195e160  cui::c_properties_accessor_base<cui::s_investment_unlock_flag>
+      vtable 0x0195e110  offset_to_top 0  9 slots
+0x0195e1c8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_unlock_flag>, 4>
+0x0195e1e0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_unlock_flag>, 4>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195e1c8  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_unlock_flag>, 4>
+      vtable 0x0195e1b0  offset_to_top 0  3 slots
+0x0195e250  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_unlock_flag>, 4>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195e230  offset_to_top 0  4 slots
+0x0195e298  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_material_requirement>, 8>
+0x0195e2b0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_material_requirement>, 8>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195e298  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_material_requirement>, 8>
+      vtable 0x0195e280  offset_to_top 0  3 slots
+0x0195e320  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_material_requirement>, 8>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195e300  offset_to_top 0  4 slots
+0x0195e3d0  Si  cui::c_investment_item_comparison_component
+      base  0x01951710  c_cui_component
+      vtable 0x0195e350  offset_to_top 0  16 slots
+0x0195e450  Si  cui::c_investment_item_context
+      base  0x019674b8  cui::i_properties
+      vtable 0x0195e400  offset_to_top 0  9 slots
+0x0195e510  Si  cui::c_investment_item_details_screen_loader_component
+      base  0x01952fb0  cui::c_event_handler_component_v2
+      vtable 0x0195e480  offset_to_top 0  17 slots
+0x0195e6b0  Si  cui::c_investment_item_lockbox_overlay_component
+      base  0x01951710  c_cui_component
+      vtable 0x0195e630  offset_to_top 0  16 slots
+0x0195e7d0  Si  cui::c_investment_item_lock_event_handler
+      base  0x0194e860  c_event_handler_component
+      vtable 0x0195e6e0  offset_to_top 0  22 slots
+      vtable 0x0195e7a0  offset_to_top -136  5 slots
+0x0195e970  Si  cui::c_investment_item_event
+      base  0x019674b8  cui::i_properties
+      vtable 0x0195e920  offset_to_top 0  9 slots
+0x0195e9f0  Si  cui::c_investment_item_track_progress_event
+      base  0x0195e970  cui::c_investment_item_event
+      vtable 0x0195e9a0  offset_to_top 0  9 slots
+0x0195ea10  Si  cui::c_investment_item_widget
+      base  0x01951880  c_cui_container_widget
+      vtable 0x0195e800  offset_to_top 0  26 slots
+      vtable 0x0195e8e0  offset_to_top -136  5 slots
+0x0195ea90  Si  cui::c_properties_accessor_proxy<cui::c_investment_item_widget>
+      base  0x019674b8  cui::i_properties
+      vtable 0x0195ea40  offset_to_top 0  9 slots
+0x0195eb40  Si  cui::c_investment_login_info_component_v2
+      base  0x01951710  c_cui_component
+      vtable 0x0195eac0  offset_to_top 0  16 slots
+0x0195ee00  Si  cui::c_investment_progression_data_component
+      base  0x01951710  c_cui_component
+      vtable 0x0195ed80  offset_to_top 0  16 slots
+0x0195ef20  Si  cui::c_investment_promotion_entry_event_handler_component
+      base  0x0194e860  c_event_handler_component
+      vtable 0x0195ee30  offset_to_top 0  22 slots
+      vtable 0x0195eef0  offset_to_top -136  5 slots
+0x0195efd0  Si  cui::c_investment_quest_data_component
+      base  0x01951710  c_cui_component
+      vtable 0x0195ef50  offset_to_top 0  16 slots
+0x0195f210  Si  cui::c_investment_record_node_info
+      base  0x0195f320  cui::c_properties_accessor_base<cui::c_investment_record_node_info>
+      vtable 0x0195f000  offset_to_top 0  9 slots
+0x0195f230  Si  cui::c_investment_record_book_reward_item
+      base  0x0195e450  cui::c_investment_item_context
+      vtable 0x0195f060  offset_to_top 0  9 slots
+0x0195f250  Si  cui::c_investment_record_page_info
+      base  0x0195f340  cui::c_properties_accessor_base<cui::c_investment_record_page_info>
+      vtable 0x0195f0c0  offset_to_top 0  9 slots
+0x0195f2d0  Vmi  cui::c_investment_record_book_component
+      base  0x01951710  c_cui_component
+      base  0x0195ce08  cui::i_investment_item_action_interface
+      base  0x0195ce48  cui::i_investment_item_select_interface
+      vtable 0x0195f120  offset_to_top 0  21 slots
+      vtable 0x0195f1d8  offset_to_top -136  4 slots
+      vtable 0x0195f208  offset_to_top -144  1 slots
+0x0195f320  Si  cui::c_properties_accessor_base<cui::c_investment_record_node_info>
+      base  0x019674b8  cui::i_properties
+0x0195f340  Si  cui::c_properties_accessor_base<cui::c_investment_record_page_info>
+      base  0x019674b8  cui::i_properties
+0x0195f380  Vmi  N3cui6detail29c_member_function_change_slotINS_21c_tracked_change_slotEN2ui20c_indirect_allocatorINS_26c_screen_change_slot_poolsEEENS_34c_investment_record_book_componentEXadL_ZNS7_39refresh_pages_have_new_items_propertiesEjEEEE
+      base  0x0194ed50  cui::c_tracked_change_slot
+      base  0x0194ed80  ui::c_empty_base<ui::c_indirect_allocator<cui::c_screen_change_slot_pools>, 0, void>
+      vtable 0x0195f370  offset_to_top 0  2 slots
+0x0195f3f0  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_record_page_info>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195f3d0  offset_to_top 0  4 slots
+0x0195f438  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_record_page_info>, 20>
+0x0195f450  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_record_page_info>, 20>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195f438  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_record_page_info>, 20>
+      vtable 0x0195f420  offset_to_top 0  3 slots
+0x0195f4c0  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_record_book_reward_item>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195f4a0  offset_to_top 0  4 slots
+0x0195f510  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_record_node_info>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195f4f0  offset_to_top 0  4 slots
+0x0195f558  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_record_book_reward_item>, 16>
+0x0195f570  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_record_book_reward_item>, 16>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195f558  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_record_book_reward_item>, 16>
+      vtable 0x0195f540  offset_to_top 0  3 slots
+0x0195f5d8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_record_node_info>, 8>
+0x0195f5f0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_record_node_info>, 8>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195f5d8  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_record_node_info>, 8>
+      vtable 0x0195f5c0  offset_to_top 0  3 slots
+0x0195f6d8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_objective_item>, 1>
+0x0195f6f0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_objective_item>, 1>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195f6d8  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_objective_item>, 1>
+      vtable 0x0195f6c0  offset_to_top 0  3 slots
+0x0195f770  Si  cui::c_investment_server_message_request_handler
+      base  0x0193a128  i_investment_bap_message_queue_callbacks
+      vtable 0x0195f740  offset_to_top 0  5 slots
+0x0195f820  Si  cui::c_investment_stat_group_component
+      base  0x01951710  c_cui_component
+      vtable 0x0195f7a0  offset_to_top 0  16 slots
+0x0195f870  Si  ui::detail::c_shared_ptr_tracker<cui::s_investment_item_stat_meter>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195f850  offset_to_top 0  4 slots
+0x0195f8b8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_item_stat_meter>, 16>
+0x0195f8d0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_item_stat_meter>, 16>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195f8b8  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_item_stat_meter>, 16>
+      vtable 0x0195f8a0  offset_to_top 0  3 slots
+0x0195f970  Si  cui::c_properties_accessor_base<cui::s_investment_item_stat_meter>
+      base  0x019674b8  cui::i_properties
+0x0195f990  Si  cui::s_investment_item_stat_meter
+      base  0x0195f970  cui::c_properties_accessor_base<cui::s_investment_item_stat_meter>
+      vtable 0x0195f920  offset_to_top 0  9 slots
+0x0195fab0  Si  cui::c_investment_tracked_offer_upsell_event_handler_component
+      base  0x0194e860  c_event_handler_component
+      vtable 0x0195f9c0  offset_to_top 0  22 slots
+      vtable 0x0195fa80  offset_to_top -136  5 slots
+0x0195fb60  Si  cui::c_investment_vendor_interaction_display_component
+      base  0x01951710  c_cui_component
+      vtable 0x0195fae0  offset_to_top 0  16 slots
+0x0195fbe0  Si  cui::c_properties_accessor_base<cui::c_investment_vendor_interaction_reply>
+      base  0x019674b8  cui::i_properties
+0x0195fc00  Si  cui::c_investment_vendor_interaction_reply
+      base  0x0195fbe0  cui::c_properties_accessor_base<cui::c_investment_vendor_interaction_reply>
+      vtable 0x0195fb90  offset_to_top 0  9 slots
+0x0195fc50  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_vendor_interaction_reply>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195fc30  offset_to_top 0  4 slots
+0x0195fc98  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_interaction_reply>, 4>
+0x0195fcb0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_interaction_reply>, 4>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195fc98  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_interaction_reply>, 4>
+      vtable 0x0195fc80  offset_to_top 0  3 slots
+0x0195fd80  Si  cui::c_investment_vendor_interaction_event_handler_component
+      base  0x01951710  c_cui_component
+      vtable 0x0195fd00  offset_to_top 0  16 slots
+0x0195fee0  Vmi  cui::c_investment_vendor_refund_component
+      base  0x01951710  c_cui_component
+      base  0x0195ce08  cui::i_investment_item_action_interface
+      vtable 0x0195fe10  offset_to_top 0  20 slots
+      vtable 0x0195fec0  offset_to_top -136  4 slots
+0x0195ff20  Si  cui::c_properties_accessor_base<cui::c_investment_vendor_refund_receipt>
+      base  0x019674b8  cui::i_properties
+0x0195ff40  Si  cui::c_investment_vendor_refund_receipt
+      base  0x0195ff20  cui::c_properties_accessor_base<cui::c_investment_vendor_refund_receipt>
+      vtable 0x0195fdb0  offset_to_top 0  9 slots
+0x0195ff90  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_vendor_refund_receipt>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x0195ff70  offset_to_top 0  4 slots
+0x0195ffd8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_refund_receipt>, 30>
+0x0195fff0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_refund_receipt>, 30>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x0195ffd8  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_refund_receipt>, 30>
+      vtable 0x0195ffc0  offset_to_top 0  3 slots
+0x01960280  Vmi  cui::c_investment_vendor_wares_component
+      base  0x01951710  c_cui_component
+      base  0x0195ce08  cui::i_investment_item_action_interface
+      base  0x0195ce38  cui::i_investment_item_precache_interface
+      base  0x0195ce48  cui::i_investment_item_select_interface
+      base  0x019602e8  cui::i_investment_item_upsell_interface
+      vtable 0x01960140  offset_to_top 0  24 slots
+      vtable 0x01960210  offset_to_top -136  4 slots
+      vtable 0x01960240  offset_to_top -144  1 slots
+      vtable 0x01960258  offset_to_top -152  1 slots
+      vtable 0x01960270  offset_to_top -160  2 slots
+0x019602e8  Base  cui::i_investment_item_upsell_interface
+0x01960300  Si  cui::c_properties_accessor_base<cui::c_investment_vendor_item>
+      base  0x019674b8  cui::i_properties
+0x01960320  Si  cui::c_investment_vendor_item
+      base  0x01960300  cui::c_properties_accessor_base<cui::c_investment_vendor_item>
+      vtable 0x01960080  offset_to_top 0  9 slots
+0x01960340  Si  cui::c_properties_accessor_base<cui::s_investment_vendor_pagination_settings>
+      base  0x019674b8  cui::i_properties
+0x01960360  Si  cui::s_investment_vendor_pagination_settings
+      base  0x01960340  cui::c_properties_accessor_base<cui::s_investment_vendor_pagination_settings>
+      vtable 0x019600e0  offset_to_top 0  9 slots
+0x019603b0  Si  ui::detail::c_shared_ptr_tracker<cui::s_investment_requirement_description>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x01960390  offset_to_top 0  4 slots
+0x019603f8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_requirement_description>, 4>
+0x01960410  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_requirement_description>, 4>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x019603f8  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_requirement_description>, 4>
+      vtable 0x019603e0  offset_to_top 0  3 slots
+0x01960478  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_bucket>, 32>
+0x01960490  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_bucket>, 32>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x01960478  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_bucket>, 32>
+      vtable 0x01960460  offset_to_top 0  3 slots
+0x01960500  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_item>, 8>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x019604e0  offset_to_top 0  4 slots
+0x01960548  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_item>, 8>
+0x01960560  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_item>, 8>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x01960548  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_item>, 8>
+      vtable 0x01960530  offset_to_top 0  3 slots
+0x019605d0  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_item>, 14>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x019605b0  offset_to_top 0  4 slots
+0x01960618  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_item>, 14>
+0x01960630  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_item>, 14>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x01960618  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_item>, 14>
+      vtable 0x01960600  offset_to_top 0  3 slots
+0x019606d0  Si  cui::c_properties_accessor_base<cui::c_investment_vendor_bucket>
+      base  0x019674b8  cui::i_properties
+0x019606f0  Si  cui::c_investment_vendor_bucket
+      base  0x019606d0  cui::c_properties_accessor_base<cui::c_investment_vendor_bucket>
+      vtable 0x01960680  offset_to_top 0  9 slots
+0x01960780  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_vendor_bucket>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x01960760  offset_to_top 0  4 slots
+0x019607d0  Si  ui::detail::c_shared_ptr_tracker<cui::c_investment_vendor_item>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x019607b0  offset_to_top 0  4 slots
+0x01960818  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_item>, 84>
+0x01960830  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_item>, 84>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x01960818  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_item>, 84>
+      vtable 0x01960800  offset_to_top 0  3 slots
+0x019608a0  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_item>, 84>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x01960880  offset_to_top 0  4 slots
+0x01960920  Si  cui::c_properties_accessor_base<cui::s_investment_requirement_description>
+      base  0x019674b8  cui::i_properties
+0x01960940  Si  cui::s_investment_requirement_description
+      base  0x01960920  cui::c_properties_accessor_base<cui::s_investment_requirement_description>
+      vtable 0x019608d0  offset_to_top 0  9 slots
+0x01962410  Si  cui::c_properties_accessor_proxy<cui::s_investment_display_metadata>
+      base  0x019674b8  cui::i_properties
+      vtable 0x019623c0  offset_to_top 0  9 slots
+0x01963028  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_requirement_description>, 9>
+0x01963040  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_requirement_description>, 9>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x01963028  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_requirement_description>, 9>
+      vtable 0x01963010  offset_to_top 0  3 slots
+0x01963390  Si  cui::c_properties_accessor_base<cui::c_investment_talent_basic_node_info>
+      base  0x019674b8  cui::i_properties
+0x019633b0  Si  cui::c_investment_talent_basic_node_info
+      base  0x01963390  cui::c_properties_accessor_base<cui::c_investment_talent_basic_node_info>
+      vtable 0x01963200  offset_to_top 0  9 slots
+0x019634b0  Si  cui::c_properties_accessor_base<cui::c_investment_talent_step>
+      base  0x019674b8  cui::i_properties
+0x019634d0  Si  cui::c_investment_talent_step
+      base  0x019634b0  cui::c_properties_accessor_base<cui::c_investment_talent_step>
+      vtable 0x01963460  offset_to_top 0  9 slots
+0x01963550  Si  cui::c_properties_accessor_base<cui::s_investment_perk_info>
+      base  0x019674b8  cui::i_properties
+0x01963570  Si  cui::s_investment_perk_info
+      base  0x01963550  cui::c_properties_accessor_base<cui::s_investment_perk_info>
+      vtable 0x01963500  offset_to_top 0  9 slots
+0x019635b8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_item_stat>, 16>
+0x019635d0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_item_stat>, 16>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x019635b8  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_item_stat>, 16>
+      vtable 0x019635a0  offset_to_top 0  3 slots
+0x01963640  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_item_stat>, 16>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x01963620  offset_to_top 0  4 slots
+0x01963b80  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_item_stat>, 5>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x01963b60  offset_to_top 0  4 slots
+0x01963bc8  Base  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_item_stat>, 5>
+0x01963be0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::s_investment_item_stat>, 5>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x01963bc8  ui::c_static_vector<ui::c_shared_ptr<cui::s_investment_item_stat>, 5>
+      vtable 0x01963bb0  offset_to_top 0  3 slots
+0x01964a40  Si  ui::detail::c_shared_ptr_tracker<cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_item>, 4>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      vtable 0x01964a20  offset_to_top 0  4 slots
+0x01964a88  Base  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_item>, 4>
+0x01964aa0  Vmi  cui::c_static_properties_sequence<ui::c_shared_ptr<cui::c_investment_vendor_item>, 4>
+      base  0x0194e058  cui::i_properties_sequence
+      base  0x01964a88  ui::c_static_vector<ui::c_shared_ptr<cui::c_investment_vendor_item>, 4>
+      vtable 0x01964a70  offset_to_top 0  3 slots
+0x01967640  Si  cui::c_property_value::c_typed_holder<ui::c_shared_ptr<cui::c_investment_vendor_bucket>>
+      base  0x01967750  cui::c_property_value::c_holder
+      vtable 0x01967620  offset_to_top 0  4 slots
+0x01969a50  Base  ui::c_tag_loader::s_investment_talent_grid_request_deleter
+0x01969a60  Vmi  ui::c_empty_base<ui::c_tag_loader::s_investment_talent_grid_request_deleter, 0, void>
+      base  0x01969a50  ui::c_tag_loader::s_investment_talent_grid_request_deleter
+0x01969a90  Vmi  ui::detail::c_shared_ptr_tracker_with_deleter_and_allocator<ui::c_tag_loader::c_investment_talent_grid_request, ui::s_investment_talent_grid_request_deleter, ui::c_indirect_allocator<ui::c_tracker_allocator>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      base  0x01969a60  ui::c_empty_base<ui::c_tag_loader::s_investment_talent_grid_request_deleter, 0, void>
+      vtable 0x01969a30  offset_to_top 0  4 slots
+0x01969b00  Base  ui::c_tag_loader::s_investment_item_request_deleter
+0x01969b10  Vmi  ui::c_empty_base<ui::c_tag_loader::s_investment_item_request_deleter, 0, void>
+      base  0x01969b00  ui::c_tag_loader::s_investment_item_request_deleter
+0x01969b40  Vmi  ui::detail::c_shared_ptr_tracker_with_deleter_and_allocator<ui::c_tag_loader::c_investment_item_request, ui::s_investment_item_request_deleter, ui::c_indirect_allocator<ui::c_tracker_allocator>>
+      base  0x01949aa0  ui::detail::c_shared_tracker
+      base  0x01969b10  ui::c_empty_base<ui::c_tag_loader::s_investment_item_request_deleter, 0, void>
+      vtable 0x01969ae0  offset_to_top 0  4 slots

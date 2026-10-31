@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-10-07T23:46:35.1940683Z",
+  "trigger_reporting_date": "2026-10-07",
+  "package": "<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962",
+  "ready_directory": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\07\\<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962.ready",
+  "payload_checks": [
+    {
+      "file": "daily-report.md",
+      "bytes": 13502,
+      "size_match": true,
+      "hash_match": true
+    },
+    {
+      "file": "events.json",
+      "bytes": 4696,
+      "size_match": true,
+      "hash_match": true
+    },
+    {
+      "file": "metadata.json",
+      "bytes": 2957,
+      "size_match": true,
+      "hash_match": true
+    }
+  ],
+  "unmanifested_payloads": 0,
+  "new_package_created": false,
+  "media_resent": false,
+  "previous_ready_packages_modified": false,
+  "critical_native": "JOIN179 active; remaining evidence deferred to next eligible daily edition",
+  "user_action_required": false
+}

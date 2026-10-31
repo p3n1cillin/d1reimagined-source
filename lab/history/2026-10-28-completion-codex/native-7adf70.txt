@@ -1,0 +1,33 @@
+0x007adf70 push      rbp
+0x007adf71 mov       rbp, rsp
+0x007adf74 push      r14
+0x007adf76 push      rbx
+0x007adf77 mov       r14d, edx
+0x007adf7a mov       rbx, rdi
+0x007adf7d mov       dword ptr [rbx + 0x70], r14d
+0x007adf81 mov       qword ptr [rbx + 0x68], 0
+0x007adf89 mov       qword ptr [rbx + 0x60], 0
+0x007adf91 mov       qword ptr [rbx + 0x58], 0
+0x007adf99 call      0x766750
+0x007adf9e test      al, al
+0x007adfa0 je        0x7adfa7
+0x007adfa2 pop       rbx
+0x007adfa3 pop       r14
+0x007adfa5 pop       rbp
+0x007adfa6 ret       
+0x007adfa7 add       rbx, 0x58
+0x007adfab or        byte ptr [rbx], 1
+0x007adfae mov       edi, 1
+0x007adfb3 call      0x78b170
+0x007adfb8 add       r14d, -3
+0x007adfbc cmp       r14d, 2
+0x007adfc0 jb        0x7adfcc
+0x007adfc2 mov       edi, 0x13
+0x007adfc7 call      0x788e10
+0x007adfcc mov       edi, 6
+0x007adfd1 call      0x765fb0
+0x007adfd6 pop       rbx
+0x007adfd7 pop       r14
+0x007adfd9 pop       rbp
+0x007adfda jmp       0x766020
+0x007adfdf nop       

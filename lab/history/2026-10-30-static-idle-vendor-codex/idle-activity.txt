@@ -1,0 +1,259 @@
+FUNCTION 78faa0..78fef0
+0x0078faa0 push      rbp
+0x0078faa1 mov       rbp, rsp
+0x0078faa4 push      r15
+0x0078faa6 push      r14
+0x0078faa8 push      r13
+0x0078faaa push      r12
+0x0078faac push      rbx
+0x0078faad sub       rsp, 0x178
+0x0078fab4 mov       dword ptr [rbp - 0x198], esi
+0x0078faba mov       r13, rdi
+0x0078fabd mov       rax, qword ptr [rip + 0x128f63c] ; [0x1a1f100]
+0x0078fac4 mov       rax, qword ptr [rax]
+0x0078fac7 mov       qword ptr [rbp - 0x30], rax
+0x0078facb call      0x34e5c0
+0x0078fad0 mov       r14, qword ptr [rax + 0xd8]
+0x0078fad7 call      0x34e5c0
+0x0078fadc mov       eax, dword ptr [rax + 0xd0]
+0x0078fae2 mov       dword ptr [rbp - 0x194], eax
+0x0078fae8 call      0x34e3c0
+0x0078faed cmp       byte ptr [rax + 0x86], 0
+0x0078faf4 je        0x78fb05
+0x0078faf6 xor       edi, edi
+0x0078faf8 call      0x78c820
+0x0078fafd test      al, al
+0x0078faff je        0x78fbb6
+0x0078fb05 xor       edi, edi
+0x0078fb07 call      0x78ccc0
+0x0078fb0c mov       bl, al
+0x0078fb0e xor       bl, 1
+0x0078fb11 test      al, al
+0x0078fb13 jne       0x78fb20
+0x0078fb15 call      0x75c600
+0x0078fb1a xor       cl, cl
+0x0078fb1c test      al, al
+0x0078fb1e jne       0x78fb22
+0x0078fb20 mov       cl, bl
+0x0078fb22 test      cl, cl
+0x0078fb24 je        0x78fbb6
+0x0078fb2a call      0x7850a0
+0x0078fb2f mov       ebx, eax
+0x0078fb31 lea       eax, [rbx - 0x21]
+0x0078fb34 cmp       eax, 1
+0x0078fb37 ja        0x78fc92
+0x0078fb3d mov       edi, 5
+0x0078fb42 mov       esi, 4
+0x0078fb47 call      0xe4d70
+0x0078fb4c test      al, al
+0x0078fb4e je        0x78fc27
+0x0078fb54 mov       al, byte ptr [rip + 0x1f3f9de] ; [0x26cf538]
+0x0078fb5a test      al, al
+0x0078fb5c jne       0x78fb8c
+0x0078fb5e lea       rdi, [rip + 0x1f3f9d3] ; [0x26cf538]
+0x0078fb65 call      0x12aa7d0
+0x0078fb6a test      eax, eax
+0x0078fb6c je        0x78fb8c
+0x0078fb6e lea       rdi, [rip + 0xec8647] ; [0x16581bc] "world_controller:state_manager:private_repair: Cannot attempt repair during state '%s'. Allowing prerequisite to fail."
+0x0078fb75 call      0xe4a10
+0x0078fb7a mov       dword ptr [rip + 0x1f3f9b0], eax ; [0x26cf530]
+0x0078fb80 lea       rdi, [rip + 0x1f3f9b1] ; [0x26cf538]
+0x0078fb87 call      0x12aa7e0
+0x0078fb8c mov       edi, ebx
+0x0078fb8e call      0x783940
+0x0078fb93 lea       rbx, [rbp - 0x170]
+0x0078fb9a lea       rsi, [rip + 0xec861b] ; [0x16581bc] "world_controller:state_manager:private_repair: Cannot attempt repair during state '%s'. Allowing prerequisite to fail."
+0x0078fba1 mov       rdi, rbx
+0x0078fba4 mov       rdx, rax
+0x0078fba7 xor       al, al
+0x0078fba9 call      0x1008290
+0x0078fbae mov       edi, dword ptr [rip + 0x1f3f97c] ; [0x26cf530]
+0x0078fbb4 jmp       0x78fc1f
+0x0078fbb6 mov       edi, 5
+0x0078fbbb mov       esi, 4
+0x0078fbc0 call      0xe4d70
+0x0078fbc5 test      al, al
+0x0078fbc7 je        0x78fc27
+0x0078fbc9 mov       al, byte ptr [rip + 0x1f3f959] ; [0x26cf528]
+0x0078fbcf test      al, al
+0x0078fbd1 jne       0x78fc01
+0x0078fbd3 lea       rdi, [rip + 0x1f3f94e] ; [0x26cf528]
+0x0078fbda call      0x12aa7d0
+0x0078fbdf test      eax, eax
+0x0078fbe1 je        0x78fc01
+0x0078fbe3 lea       rdi, [rip + 0xec8546] ; [0x1658130] 'world_controller:state_manager:private_repair: Cannot attempt repair because private soft KTOs are disabled. Allowing prerequisite to fail.'
+0x0078fbea call      0xe4a10
+0x0078fbef mov       dword ptr [rip + 0x1f3f92b], eax ; [0x26cf520]
+0x0078fbf5 lea       rdi, [rip + 0x1f3f92c] ; [0x26cf528]
+0x0078fbfc call      0x12aa7e0
+0x0078fc01 lea       rbx, [rbp - 0x170]
+0x0078fc08 lea       rsi, [rip + 0xec8521] ; [0x1658130] 'world_controller:state_manager:private_repair: Cannot attempt repair because private soft KTOs are disabled. Allowing prerequisite to fail.'
+0x0078fc0f mov       rdi, rbx
+0x0078fc12 xor       al, al
+0x0078fc14 call      0x1008290
+0x0078fc19 mov       edi, dword ptr [rip + 0x1f3f901] ; [0x26cf520]
+0x0078fc1f mov       rsi, rbx
+0x0078fc22 call      0xe4aa0
+0x0078fc27 lea       rdi, [r13 + 0x28]
+0x0078fc2b mov       rsi, r14
+0x0078fc2e call      0x1681a0
+0x0078fc33 mov       r12b, 1
+0x0078fc36 inc       dword ptr [r13 + 0x44]
+0x0078fc3a mov       eax, dword ptr [rbp - 0x198]
+0x0078fc40 mov       word ptr [r13 + 2], ax
+0x0078fc45 lea       rax, [rip + 0x1ec575c] ; [0x26553a8]
+0x0078fc4c cmp       byte ptr [rax], 0
+0x0078fc4f je        0x78fc57
+0x0078fc51 mov       rax, qword ptr [rax + 8]
+0x0078fc55 jmp       0x78fc5c
+0x0078fc57 call      0x694d0
+0x0078fc5c mov       qword ptr [r13 + 8], rax
+0x0078fc60 mov       dword ptr [r13 + 0x18], 0
+0x0078fc68 mov       byte ptr [r13 + 0x21], r12b
+0x0078fc6c mov       rax, qword ptr [rip + 0x128f48d] ; [0x1a1f100]
+0x0078fc73 mov       rax, qword ptr [rax]
+0x0078fc76 cmp       rax, qword ptr [rbp - 0x30]
+0x0078fc7a jne       0x78fede
+0x0078fc80 add       rsp, 0x178
+0x0078fc87 pop       rbx
+0x0078fc88 pop       r12
+0x0078fc8a pop       r13
+0x0078fc8c pop       r14
+0x0078fc8e pop       r15
+0x0078fc90 pop       rbp
+0x0078fc91 ret       
+0x0078fc92 xor       edi, edi
+0x0078fc94 xor       esi, esi
+0x0078fc96 call      0x75cbe0
+0x0078fc9b cmp       eax, 0x23
+0x0078fc9e jne       0x78fd3e
+0x0078fca4 xor       edi, edi
+0x0078fca6 xor       esi, esi
+0x0078fca8 call      0x75cc30
+0x0078fcad mov       ebx, eax
+0x0078fcaf cmp       ebx, 0xa
+0x0078fcb2 ja        0x78fd3e
+0x0078fcb8 mov       eax, 0x740
+0x0078fcbd bt        eax, ebx
+0x0078fcc0 jae       0x78fd3e
+0x0078fcc2 mov       edi, 5
+0x0078fcc7 mov       esi, 4
+0x0078fccc call      0xe4d70
+0x0078fcd1 test      al, al
+0x0078fcd3 je        0x78fc27
+0x0078fcd9 mov       al, byte ptr [rip + 0x1f3f869] ; [0x26cf548]
+0x0078fcdf test      al, al
+0x0078fce1 jne       0x78fd11
+0x0078fce3 lea       rdi, [rip + 0x1f3f85e] ; [0x26cf548]
+0x0078fcea call      0x12aa7d0
+0x0078fcef test      eax, eax
+0x0078fcf1 je        0x78fd11
+0x0078fcf3 lea       rdi, [rip + 0xec8539] ; [0x1658233] "world_controller:state_manager:private_repair: Cannot attempt repair for activity host boot reason '%s'. Allowing prerequisite to fail."
+0x0078fcfa call      0xe4a10
+0x0078fcff mov       dword ptr [rip + 0x1f3f83b], eax ; [0x26cf540]
+0x0078fd05 lea       rdi, [rip + 0x1f3f83c] ; [0x26cf548]
+0x0078fd0c call      0x12aa7e0
+0x0078fd11 mov       edi, ebx
+0x0078fd13 call      0xe9fa0
+0x0078fd18 lea       rbx, [rbp - 0x170]
+0x0078fd1f lea       rsi, [rip + 0xec850d] ; [0x1658233] "world_controller:state_manager:private_repair: Cannot attempt repair for activity host boot reason '%s'. Allowing prerequisite to fail."
+0x0078fd26 mov       rdi, rbx
+0x0078fd29 mov       rdx, rax
+0x0078fd2c xor       al, al
+0x0078fd2e call      0x1008290
+0x0078fd33 mov       edi, dword ptr [rip + 0x1f3f807] ; [0x26cf540]
+0x0078fd39 jmp       0x78fc1f
+0x0078fd3e lea       rbx, [r13 + 0x28]
+0x0078fd42 mov       rdi, rbx
+0x0078fd45 mov       rsi, r14
+0x0078fd48 call      0x1681a0
+0x0078fd4d mov       rdi, rbx
+0x0078fd50 call      0x298460
+0x0078fd55 mov       r15d, eax
+0x0078fd58 cmp       r15d, dword ptr [rbp - 0x194]
+0x0078fd5f jle       0x78fde9
+0x0078fd65 mov       edi, 5
+0x0078fd6a mov       esi, 4
+0x0078fd6f call      0xe4d70
+0x0078fd74 mov       r12b, 1
+0x0078fd77 test      al, al
+0x0078fd79 je        0x78fc36
+0x0078fd7f mov       al, byte ptr [rip + 0x1f3f7d3] ; [0x26cf558]
+0x0078fd85 test      al, al
+0x0078fd87 jne       0x78fdb7
+0x0078fd89 lea       rdi, [rip + 0x1f3f7c8] ; [0x26cf558]
+0x0078fd90 call      0x12aa7d0
+0x0078fd95 test      eax, eax
+0x0078fd97 je        0x78fdb7
+0x0078fd99 lea       rdi, [rip + 0xec851b] ; [0x16582bb] "world_controller:state_manager:private_repair: Repair is '%d' (of '%d' max), threshold is '%lld'ms. TOO MANY, NOT REPAIRING."
+0x0078fda0 call      0xe4a10
+0x0078fda5 mov       dword ptr [rip + 0x1f3f7a5], eax ; [0x26cf550]
+0x0078fdab lea       rdi, [rip + 0x1f3f7a6] ; [0x26cf558]
+0x0078fdb2 call      0x12aa7e0
+0x0078fdb7 lea       rbx, [rbp - 0x170]
+0x0078fdbe lea       rsi, [rip + 0xec84f6] ; [0x16582bb] "world_controller:state_manager:private_repair: Repair is '%d' (of '%d' max), threshold is '%lld'ms. TOO MANY, NOT REPAIRING."
+0x0078fdc5 mov       rdi, rbx
+0x0078fdc8 mov       edx, r15d
+0x0078fdcb mov       ecx, dword ptr [rbp - 0x194]
+0x0078fdd1 mov       r8, r14
+0x0078fdd4 xor       al, al
+0x0078fdd6 call      0x1008290
+0x0078fddb mov       edi, dword ptr [rip + 0x1f3f76f] ; [0x26cf550]
+0x0078fde1 mov       rsi, rbx
+0x0078fde4 jmp       0x78fed4
+0x0078fde9 mov       rbx, r14
+0x0078fdec lea       rdi, [rbp - 0x178]
+0x0078fdf3 xor       esi, esi
+0x0078fdf5 xor       edx, edx
+0x0078fdf7 mov       ecx, dword ptr [rbp - 0x198]
+0x0078fdfd call      0x75f5a0
+0x0078fe02 call      0x9503d0
+0x0078fe07 mov       ecx, dword ptr [rbp - 0x178]
+0x0078fe0d mov       dword ptr [rbp - 0x180], ecx
+0x0078fe13 lea       rsi, [rbp - 0x180]
+0x0078fe1a mov       rdi, rax
+0x0078fe1d call      0x950eb0
+0x0078fe22 test      eax, eax
+0x0078fe24 jne       0x78fe52
+0x0078fe26 lea       rdi, [rbp - 0x188]
+0x0078fe2d call      0x75f880
+0x0078fe32 call      0x9503d0
+0x0078fe37 mov       ecx, dword ptr [rbp - 0x188]
+0x0078fe3d mov       dword ptr [rbp - 0x190], ecx
+0x0078fe43 lea       rsi, [rbp - 0x190]
+0x0078fe4a mov       rdi, rax
+0x0078fe4d call      0x950eb0
+0x0078fe52 mov       edi, 5
+0x0078fe57 mov       esi, 3
+0x0078fe5c call      0xe4d70
+0x0078fe61 xor       r12b, r12b
+0x0078fe64 test      al, al
+0x0078fe66 je        0x78fc36
+0x0078fe6c mov       al, byte ptr [rip + 0x1f3f6f6] ; [0x26cf568]
+0x0078fe72 test      al, al
+0x0078fe74 jne       0x78fea4
+0x0078fe76 lea       rdi, [rip + 0x1f3f6eb] ; [0x26cf568]
+0x0078fe7d call      0x12aa7d0
+0x0078fe82 test      eax, eax
+0x0078fe84 je        0x78fea4
+0x0078fe86 lea       rdi, [rip + 0xec84ab] ; [0x1658338] "world_controller:state_manager:private_repair: Repair is '%d' (of '%d' max), threshold is '%lld'ms."
+0x0078fe8d call      0xe4a10
+0x0078fe92 mov       dword ptr [rip + 0x1f3f6c8], eax ; [0x26cf560]
+0x0078fe98 lea       rdi, [rip + 0x1f3f6c9] ; [0x26cf568]
+0x0078fe9f call      0x12aa7e0
+0x0078fea4 lea       r14, [rbp - 0x170]
+0x0078feab lea       rsi, [rip + 0xec8486] ; [0x1658338] "world_controller:state_manager:private_repair: Repair is '%d' (of '%d' max), threshold is '%lld'ms."
+0x0078feb2 xor       r12b, r12b
+0x0078feb5 mov       rdi, r14
+0x0078feb8 mov       edx, r15d
+0x0078febb mov       ecx, dword ptr [rbp - 0x194]
+0x0078fec1 mov       r8, rbx
+0x0078fec4 xor       al, al
+0x0078fec6 call      0x1008290
+0x0078fecb mov       edi, dword ptr [rip + 0x1f3f68f] ; [0x26cf560]
+0x0078fed1 mov       rsi, r14
+0x0078fed4 call      0xe4aa0
+0x0078fed9 jmp       0x78fc36
+0x0078fede call      0x12aa7f0
+0x0078fee3 nop       
+0x0078fee4 nop       word ptr cs:[rax + rax]

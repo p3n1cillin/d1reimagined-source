@@ -1,0 +1,2 @@
+0x163857f item_ammo
+0x16439d0 ammo globals

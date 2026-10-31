@@ -1,0 +1,4 @@
+0x004f6190 mov       al, byte ptr [rdi + 0x30c]
+0x004f6196 and       al, 1
+0x004f6198 ret       
+0x004f6199 nop       dword ptr [rax]

@@ -1,0 +1,16 @@
+0x007ac5d0 push      rbp
+0x007ac5d1 mov       rbp, rsp
+0x007ac5d4 push      rbx
+0x007ac5d5 push      rax
+0x007ac5d6 mov       rbx, rdi
+0x007ac5d9 lea       rax, [rip + 0x1f23260] ; [0x26cf840]
+0x007ac5e0 mov       rdx, qword ptr [rax]
+0x007ac5e3 xor       esi, esi
+0x007ac5e5 call      0x792c90
+0x007ac5ea mov       rdi, rbx
+0x007ac5ed mov       esi, 0x19
+0x007ac5f2 add       rsp, 8
+0x007ac5f6 pop       rbx
+0x007ac5f7 pop       rbp
+0x007ac5f8 jmp       0x7591a0
+0x007ac5fd nop       dword ptr [rax]

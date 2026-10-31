@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-10-08T15:25:34.7151092Z",
+  "reporting_date": "2026-10-08",
+  "daily_report": "<lab-pc>-20261008T152517-07184ef78cc44667ba6e253184d065b4",
+  "afternoon_packages": [
+    "<lab-pc>-20261008T144234-8592532f78714512be94d1b36c75f135 JOIN201 Ghost fly-in",
+    "<lab-pc>-20261008T150408-1fc43eea16ca495abef8503e389c254f JOIN202 resurrection",
+    "<lab-pc>-20261008T150435-05aa33fa5bba4a1286b9f5120a3a5731 JOIN202 first-person bug",
+    "<lab-pc>-20261008T150436-d8f7480bf9d4439aade3107c2ac1f77a JOIN202 Breach torch (support/00 near-black, noted in report)"
+  ],
+  "independent_nas_check": "8 packages today, all files hash-match, no unmanifested files",
+  "nas_free_gb": 536,
+  "source_head": "d26acbb"
+}

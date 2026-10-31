@@ -1,0 +1,16 @@
+0x001ad3e0 mov       eax, dword ptr [rdi + 0x14]
+0x001ad3e3 cmp       eax, -1
+0x001ad3e6 jne       0x1ad408
+0x001ad3e8 mov       eax, 0x1fff
+0x001ad3ed and       eax, dword ptr [rdi + 0x10]
+0x001ad3f0 lea       rcx, [rip + 0x242ba79] ; [0x25d8e70]
+0x001ad3f7 imul      eax, dword ptr [rcx + 0x10]
+0x001ad3fb mov       rcx, qword ptr [rcx + 8]
+0x001ad3ff lea       rax, [rax + rcx + 0x1c0]
+0x001ad407 ret       
+0x001ad408 and       eax, 0x1fff
+0x001ad40d lea       rcx, [rip + 0x242bb5c] ; [0x25d8f70]
+0x001ad414 imul      eax, dword ptr [rcx + 0x10]
+0x001ad418 add       rax, qword ptr [rcx + 8]
+0x001ad41c ret       
+0x001ad41d nop       dword ptr [rax]

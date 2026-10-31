@@ -1,0 +1,40 @@
+0x001c1df0 push      rbp
+0x001c1df1 mov       rbp, rsp
+0x001c1df4 push      r15
+0x001c1df6 push      r14
+0x001c1df8 push      r12
+0x001c1dfa push      rbx
+0x001c1dfb mov       r12, rdi
+0x001c1dfe mov       rcx, qword ptr [r12 + 0x1d0]
+0x001c1e06 test      rcx, rcx
+0x001c1e09 jle       0x1c1e73
+0x001c1e0b mov       rax, qword ptr [r12 + 0x1d8]
+0x001c1e13 lea       r15, [r12 + 0x1d8]
+0x001c1e1b xor       r14d, r14d
+0x001c1e1e nop       
+0x001c1e20 lea       rdx, [rax + r15]
+0x001c1e24 mov       rbx, r14
+0x001c1e27 shl       rbx, 4
+0x001c1e2b cmp       dword ptr [rbx + rdx + 0x10], -1
+0x001c1e30 je        0x1c1e6b
+0x001c1e32 lea       rdx, [rbx + rdx + 0x10]
+0x001c1e37 nop       word ptr [rax + rax]
+0x001c1e40 mov       rdi, r12
+0x001c1e43 mov       esi, r14d
+0x001c1e46 call      0x1c1e80
+0x001c1e4b mov       rax, qword ptr [r12 + 0x1d8]
+0x001c1e53 lea       rcx, [rax + r15]
+0x001c1e57 lea       rdx, [rbx + rcx + 0x10]
+0x001c1e5c cmp       dword ptr [rbx + rcx + 0x10], -1
+0x001c1e61 jne       0x1c1e40
+0x001c1e63 mov       rcx, qword ptr [r12 + 0x1d0]
+0x001c1e6b inc       r14
+0x001c1e6e cmp       r14, rcx
+0x001c1e71 jl        0x1c1e20
+0x001c1e73 pop       rbx
+0x001c1e74 pop       r12
+0x001c1e76 pop       r14
+0x001c1e78 pop       r15
+0x001c1e7a pop       rbp
+0x001c1e7b ret       
+0x001c1e7c nop       dword ptr [rax]

@@ -1,0 +1,165 @@
+[
+  {
+    "id": "late-renderer158",
+    "timestamp": "2026-10-06T19:57:33.7018077Z",
+    "feature": "combined-renderer-acceptance",
+    "maturity": "Known Broken",
+    "claims": [
+      "Two descriptor-reset callbacks in late6 October test; carried into7 October edition."
+    ],
+    "tests": [
+      {
+        "scenario": "native158",
+        "outcome": "FAIL conformance"
+      }
+    ],
+    "evidence_media_resent": false
+  },
+  {
+    "id": "renderer-controls160-165",
+    "timestamp": "2026-10-07T12:57:14.4659705Z",
+    "feature": "combined-renderer-acceptance",
+    "maturity": "Experimental",
+    "claims": [
+      "Allocation-cache CPU checks pass20/20 with five original failures; native160/162 still fail.",
+      "Native164/165 bounded API logs clean, sustained graphics/gameplay unaccepted."
+    ],
+    "tests": [
+      {
+        "scenario": "CPU allocation/retirement",
+        "outcome": "PASS20/23"
+      },
+      {
+        "scenario": "native164/165 combined character-world-mission",
+        "outcome": "FAIL acceptance"
+      }
+    ]
+  },
+  {
+    "id": "native-ui-replay166",
+    "timestamp": "2026-10-07T13:23:25Z",
+    "feature": "native-capture-replay",
+    "maturity": "Fully Working",
+    "scope": "One inactivity-dialog UI control only",
+    "claims": [
+      "Two scoped replay repairs permit actual RGB-identical control output."
+    ],
+    "comparison_group_id": "native-ui-replay166",
+    "before_video_available": false,
+    "after_video_available": false,
+    "tests": [
+      {
+        "scenario": "source reproduction/Release builds",
+        "outcome": "PASS"
+      },
+      {
+        "scenario": "two actual RGB UI comparisons",
+        "outcome": "PASS"
+      },
+      {
+        "scenario": "outdoor fault replay",
+        "outcome": "NOT VERIFIED"
+      }
+    ]
+  },
+  {
+    "id": "native-handoff168",
+    "timestamp": "2026-10-07T14:12:53Z",
+    "feature": "owned-short-join",
+    "maturity": "Fully Working",
+    "scope": "Profile-reply handoff retains exact native client",
+    "tests": [
+      {
+        "scenario": "isolated run/join fixtures",
+        "outcome": "PASS173/19"
+      },
+      {
+        "scenario": "native retained ownership",
+        "outcome": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "native-capture168-followup",
+    "timestamp": "2026-10-07T15:05:37.9530213Z",
+    "feature": "capture-scope-validation",
+    "maturity": "Partially Working",
+    "claims": [
+      "Untouched original video confirms loading before native marker, consistent with replay.",
+      "Outdoor/fault capture matching remains unverified."
+    ],
+    "tests": [
+      {
+        "scenario": "11 indexed original hashes",
+        "outcome": "PASS"
+      },
+      {
+        "scenario": "last2 original full decodes",
+        "outcome": "PASS"
+      }
+    ],
+    "comparison_group_id": "native-capture168"
+  },
+  {
+    "id": "native-transition169",
+    "timestamp": "2026-10-07T15:15:54.6168600Z",
+    "feature": "opening-mission-arrival",
+    "maturity": "Known Broken",
+    "claims": [
+      "Urgent dismissed; guarded route never reaches idle112 and sends no walking input.",
+      "Two requested transitions reset the live activity-host connection.",
+      "Late timeline context_handle field is invalid."
+    ],
+    "tests": [
+      {
+        "scenario": "native169 arrival",
+        "outcome": "FAIL"
+      },
+      {
+        "scenario": "owned cleanup",
+        "outcome": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "native-transition171",
+    "timestamp": "2026-10-07T17:42:18.1565375Z",
+    "feature": "opening-mission-session-probe",
+    "maturity": "Experimental",
+    "claims": [
+      "Corrected owned read-only context resolution verified in1372 non-atomic samples.",
+      "Second pending state2/first0;112 loaded-inactive1105samples; native copies advance but no type21 arrives after teleport.",
+      "No state37/38 observed; two separate clock reads unchanged, late screenshot fails."
+    ],
+    "tests": [
+      {
+        "scenario": "final focused reader fixtures",
+        "outcome": "PASS5"
+      },
+      {
+        "scenario": "native reader lookup/rechecks",
+        "outcome": "PASS sampled scope"
+      },
+      {
+        "scenario": "idle112 arrival",
+        "outcome": "FAIL0samples"
+      },
+      {
+        "scenario": "late screenshot",
+        "outcome": "FAIL deadline"
+      },
+      {
+        "scenario": "owned cleanup/core API",
+        "outcome": "PASS bounded scope"
+      }
+    ],
+    "video_checks": {
+      "indexed_originals": 14,
+      "hashes": "PASS",
+      "unindexed_failures_retained": 10,
+      "last2_full_decode": "PASS",
+      "media_resent": false
+    },
+    "comparison_group_id": "native-transition169-171"
+  }
+]

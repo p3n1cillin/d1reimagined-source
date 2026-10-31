@@ -1,0 +1,47 @@
+0x00118540 movsxd    rcx, dword ptr [rdi]
+0x00118543 xor       eax, eax
+0x00118545 test      rcx, rcx
+0x00118548 je        0x1185b1
+0x0011854a lea       r8, [rdi + 4]
+0x0011854e mov       r9d, dword ptr [rsi]
+0x00118551 mov       r10, r8
+0x00118554 nop       word ptr cs:[rax + rax]
+0x00118560 mov       rdx, rcx
+0x00118563 sar       rdx, 1
+0x00118566 lea       rdx, [rdx + rdx*2]
+0x0011856a mov       esi, dword ptr [r10 + rdx*8]
+0x0011856e cmp       esi, r9d
+0x00118571 je        0x118587
+0x00118573 ja        0x11857d
+0x00118575 lea       r10, [r10 + rdx*8 + 0x18]
+0x0011857a dec       rcx
+0x0011857d sar       rcx, 1
+0x00118580 test      rcx, rcx
+0x00118583 jne       0x118560
+0x00118585 jmp       0x1185b1
+0x00118587 lea       rdx, [r10 + rdx*8]
+0x0011858b sub       rdx, r8
+0x0011858e sar       rdx, 3
+0x00118592 movabs    rcx, 0xaaaaaaaaaaaaaaab
+0x0011859c imul      rcx, rdx
+0x001185a0 cmp       ecx, -1
+0x001185a3 je        0x1185b1
+0x001185a5 movsxd    rax, ecx
+0x001185a8 lea       rax, [rax + rax*2]
+0x001185ac lea       rax, [rdi + rax*8 + 4]
+0x001185b1 ret       
+0x001185b2 nop       word ptr cs:[rax + rax]
+0x001185c0 add       al, 0xc3
+0x001185c2 nop       word ptr cs:[rax + rax]
+0x001185d0 or        al, 0x49
+0x001185d2 movsxd    eax, edx
+0x001185d4 lea       rax, [rax + rax*2]
+0x001185d8 lea       rax, [rdi + rax*8 + 4]
+0x001185dd ret       
+0x001185de nop       
+0x001185e0 or        al, 0x49
+0x001185e2 movsxd    eax, edx
+0x001185e4 lea       rax, [rax + rax*2]
+0x001185e8 lea       rax, [rdi + rax*8 + 4]
+0x001185ed ret       
+0x001185ee nop       

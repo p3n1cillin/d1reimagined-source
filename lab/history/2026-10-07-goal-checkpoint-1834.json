@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-07T18:37:22.935425+00:00",
+  "previous_goal_turn": "PROGRESS",
+  "current_goal_turn": "PROGRESS",
+  "goal_status": "active/incomplete",
+  "source_commit": "c1e564650d24f0159a3b8a6e985b71e0cccca34f",
+  "data_commit": "370a3209ddd2c26f1fa44df00cbf6575ccf119fc",
+  "JOIN172_acceptance": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN172-session-probe-acceptance.json",
+  "all_owned_closed": true,
+  "cpu_checks": 44,
+  "final_build": {
+    "at": "2026-10-07T18:28:53.3906913Z",
+    "build_exit_code": 0,
+    "build_sha256": "6f5c2ed64e1ef7fd6335cf7de267e3b0a207d841de36df1905836af32e2b7191",
+    "pdb_sha256": "ac1dfde208fe1e0b57a5fe790adaaaec825927479421e5d362dc17167e4bf5e2",
+    "deployment_match": true,
+    "cpu_checks": 44,
+    "native_JOIN172": "Previous97518199 build verified r5/r6 watches, with40 CPU checks; final parser guard rejects unsupported LLVM ABI r0/r2",
+    "final_build_full_native_join": "NOT RUN",
+    "scope": "Private incremental diagnostic build; no protocol/renderer/game fix; native JOIN172 symbols now superseded, no JOIN172 host dump captured."
+  },
+  "new_native_gameplay_fix": false,
+  "daily_handoff_complete": true,
+  "late_evidence_next_edition": true,
+  "next": "Scoped readiness/enqueue evidence and actual packet correlation; require native control and combined graphics afterward"
+}

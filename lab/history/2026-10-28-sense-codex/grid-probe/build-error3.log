@@ -1,0 +1,3 @@
+   Compiling private-grid-probe v0.1.0 (lab/history\2026-10-28-sense-codex\grid-probe)
+    Finished `release` profile [optimized] target(s) in 1.78s
+     Running `d1-server\target\release\private-grid-probe.exe`

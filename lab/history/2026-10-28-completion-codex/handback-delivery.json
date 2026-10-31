@@ -1,0 +1,8 @@
+{
+  "time": "2026-10-28T23:51:53.7532197+00:00",
+  "destination": "Claude desktop Code session PS4 build 56578 retarget",
+  "sessionUrl": "https://claude.ai/epitaxy/local_fd664759-3f2d-4dc2-8acd-cf822c8a3bf7",
+  "handoff": "F:\\d1\\d1xenia\\HANDOFF-codex-to-claude-2026-10-28-2349.md",
+  "status": "sent; subsequent Claude response visually verified",
+  "evidence": "Composer became empty. Claude response said PR73 merged, stopped sense48 before building host, then verified the rebuilt host contains @phase. Accessibility remained stale; no specific message number/read receipt claimed."
+}

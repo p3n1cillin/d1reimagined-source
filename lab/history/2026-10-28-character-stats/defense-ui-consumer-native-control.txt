@@ -1,0 +1,38 @@
+Native hardware byte watch reached0x9A9042 after the six-byte cmp at0x9A903C. 192 owned/native instruction bytes agree.
+9a903c cmp al, byte ptr [rcx + 0x145]
+9a9042 mov r14, r15
+9a9045 jne 0x9a90c6
+9a9047 movzx esi, al
+9a904a mov rdi, qword ptr [rbp - 0xc78]
+9a9051 xor edx, edx
+9a9053 xor ecx, ecx
+9a9055 xor r8d, r8d
+9a9058 call 0xa85c70
+9a905d mov esi, dword ptr [r13 + rbx*8 + 0x80c]
+9a9065 cmp dword ptr [r14 + 0xdc], esi
+9a906c je 0x9a908a
+9a906e mov dword ptr [r14 + 0xdc], esi
+9a9075 mov rdi, r12
+9a9078 mov esi, 8
+9a907d call 0x9984d0
+9a9082 mov esi, dword ptr [r13 + rbx*8 + 0x80c]
+9a908a movzx edi, byte ptr [r13 + rbx*8 + 0x808]
+9a9093 mov rdx, qword ptr [rbp - 0xc70]
+9a909a call 0x281c40
+9a909f vmovss xmm1, dword ptr [r14 + 0xe8]
+9a90a8 vucomiss xmm1, xmm0
+9a90ac jne 0x9a90b0
+9a90ae jnp 0x9a90c6
+9a90b0 vmovss dword ptr [r14 + 0xe8], xmm0
+9a90b9 mov rdi, r12
+9a90bc mov esi, 0x40
+9a90c1 call 0x9984d0
+9a90c6 inc rbx
+9a90c9 cmp ebx, 0x10
+9a90cc jne 0x9a8f6e
+9a90d2 lea rdx, [r14 + 0x110]
+9a90d9 lea rcx, [r14 + 0x178]
+9a90e0 lea rdi, [rbp - 0x5b0]
+9a90e7 lea rsi, [rbp - 0x278]
+9a90ee lea r8, [rbp - 0x308]
+9a90f5 call 0x10a96c0

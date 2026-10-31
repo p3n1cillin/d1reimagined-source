@@ -1,0 +1,14 @@
+0x00423b70 push      rbp
+0x00423b71 mov       rbp, rsp
+0x00423b74 push      rbx
+0x00423b75 push      rax
+0x00423b76 mov       rbx, rsi
+0x00423b79 movsx     esi, byte ptr [rbx + 0x49]
+0x00423b7d xor       edx, edx
+0x00423b7f call      0x447d40
+0x00423b84 vmovss    dword ptr [rbx + 0x124], xmm0
+0x00423b8c add       rsp, 8
+0x00423b90 pop       rbx
+0x00423b91 pop       rbp
+0x00423b92 ret       
+0x00423b93 nop       word ptr cs:[rax + rax]

@@ -1,0 +1,4 @@
+{"event": "start", "pid": 10032, "base": "0x51c0000", "addrs": ["0x5ad1850", "0x5ad1a70", "0x5828d80", "0x582a8f0"], "t": 1793027573.9786298}
+{"event": "exec", "tid": 25176, "rip_img": "0x911850", "rax": "0x100", "al": 0, "rdi": "0xec700000", "rsi": "0x37f8c26b8", "rdx": "0x0", "rcx": "0x7812b00", "defn": "0x0", "defn_head": "", "defn_type": null, "stack_img": ["0x58db82", "0x5887dc", "0x588769", "0x54286e", "0x74cf8c", "0x74ce50", "0x23c9da", "0xfaa45", "0x74ce50", "0xfae24"], "peek": {}, "t": 1793027585.2441618}
+{"event": "exec", "tid": 25176, "rip_img": "0x668d80", "rax": "0x382eccbb0", "al": 176, "rdi": "0x37fccd130", "rsi": "0x7efb75b90", "rdx": "0x7efb76c68", "rcx": "0x7efb759f0", "defn": "0x0", "defn_head": "", "defn_type": null, "stack_img": ["0x74044d"], "peek": {}, "t": 1793027585.244536}
+{"event": "detached", "hits": 2, "t": 1793027816.990142}

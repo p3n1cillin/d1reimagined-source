@@ -1,0 +1,7 @@
+0x001c1dd0 mov       rax, qword ptr [rdi + 8]
+0x001c1dd4 mov       ecx, dword ptr [rdi]
+0x001c1dd6 mov       dword ptr [rdi + 0x1b0], ecx
+0x001c1ddc mov       qword ptr [rdi + 0x1b8], rax
+0x001c1de3 mov       al, 1
+0x001c1de5 ret       
+0x001c1de6 nop       word ptr cs:[rax + rax]

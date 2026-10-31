@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-07T14:18:15.9253345Z",
+  "clip_id": "<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56",
+  "ready_directory": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\06\\<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56.ready",
+  "all_payloads_verified": true,
+  "checks": [
+    {
+      "name": "daily-report.md",
+      "bytes": 10718,
+      "size_match": true,
+      "sha256": "42cf784815acf56661aa3b98418ef239fc24de3e1df08f64b20846408b39322e",
+      "hash_match": true
+    },
+    {
+      "name": "events.json",
+      "bytes": 6256,
+      "size_match": true,
+      "sha256": "fb6e92abeb23c6ac0108e543ccb4a3df5d0d03a2e084988c1551551bbae36993",
+      "hash_match": true
+    },
+    {
+      "name": "metadata.json",
+      "bytes": 2381,
+      "size_match": true,
+      "sha256": "2b74514382e1210feefabdf507a1d7b2c91ae6c6a9404e1ce27ef75c2dbdd2d4",
+      "hash_match": true
+    }
+  ]
+}

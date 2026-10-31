@@ -1,0 +1,47 @@
+0x00500ce0 push      rbp
+0x00500ce1 mov       rbp, rsp
+0x00500ce4 push      r15
+0x00500ce6 push      r14
+0x00500ce8 push      r13
+0x00500cea push      r12
+0x00500cec push      rbx
+0x00500ced push      rax
+0x00500cee mov       r15, rdi
+0x00500cf1 cmp       qword ptr [r15 + 8], 0
+0x00500cf6 jle       0x500d63
+0x00500cf8 lea       r14, [rbp + 0x10]
+0x00500cfc lea       r12, [r15 + 0x10]
+0x00500d00 vmovss    xmm0, dword ptr [rip + 0x1136508] ; [0x1637210]
+0x00500d08 vmovss    dword ptr [rbp - 0x2c], xmm0
+0x00500d0d xor       r13d, r13d
+0x00500d10 mov       ebx, 0x94
+0x00500d15 nop       word ptr cs:[rax + rax]
+0x00500d20 mov       rax, qword ptr [r12]
+0x00500d24 add       rax, r12
+0x00500d27 lea       rdi, [rbx + rax - 0x84]
+0x00500d2f mov       rsi, r14
+0x00500d32 call      0x3178b0
+0x00500d37 test      al, al
+0x00500d39 je        0x500d51
+0x00500d3b mov       rax, qword ptr [r12]
+0x00500d3f add       rax, r12
+0x00500d42 vmovss    xmm0, dword ptr [rbp - 0x2c]
+0x00500d47 vmulss    xmm0, xmm0, dword ptr [rbx + rax]
+0x00500d4c vmovss    dword ptr [rbp - 0x2c], xmm0
+0x00500d51 add       rbx, 0x88
+0x00500d58 inc       r13
+0x00500d5b cmp       r13, qword ptr [r15 + 8]
+0x00500d5f jl        0x500d20
+0x00500d61 jmp       0x500d70
+0x00500d63 vmovss    xmm0, dword ptr [rip + 0x11364a5] ; [0x1637210]
+0x00500d6b vmovss    dword ptr [rbp - 0x2c], xmm0
+0x00500d70 vmovss    xmm0, dword ptr [rbp - 0x2c]
+0x00500d75 add       rsp, 8
+0x00500d79 pop       rbx
+0x00500d7a pop       r12
+0x00500d7c pop       r13
+0x00500d7e pop       r14
+0x00500d80 pop       r15
+0x00500d82 pop       rbp
+0x00500d83 ret       
+0x00500d84 nop       word ptr cs:[rax + rax]

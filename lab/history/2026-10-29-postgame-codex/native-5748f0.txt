@@ -1,0 +1,4 @@
+0x005748f0 movsxd    rax, esi
+0x005748f3 lea       rax, [rdi + rax*8 + 0x40]
+0x005748f8 ret       
+0x005748f9 nop       dword ptr [rax]

@@ -1,0 +1,68 @@
+0x01098340 push      rbp
+0x01098341 mov       rbp, rsp
+0x01098344 push      r14
+0x01098346 push      rbx
+0x01098347 sub       rsp, 0x10
+0x0109834b mov       rbx, rdx
+0x0109834e mov       r14, qword ptr [rip + 0x986dab] ; [0x1a1f100]
+0x01098355 mov       rax, qword ptr [r14]
+0x01098358 mov       qword ptr [rbp - 0x18], rax
+0x0109835c mov       eax, dword ptr [rdi + 0xa8]
+0x01098362 shr       eax, 0x1c
+0x01098365 and       al, 1
+0x01098367 mov       byte ptr [rbp - 0x19], al
+0x0109836a mov       rax, qword ptr [rbx]
+0x0109836d cmp       rax, qword ptr [rip + 0x9872ac] ; [0x1a1f620]
+0x01098374 je        0x10983c4
+0x01098376 cmp       qword ptr [rbx + 8], 0
+0x0109837b je        0x109838d
+0x0109837d cmp       byte ptr [rbx + 0x18], 0
+0x01098381 jne       0x109838d
+0x01098383 mov       rax, qword ptr [rbx + 0x20]
+0x01098387 lea       rdi, [rbx + 0x20]
+0x0109838b call      qword ptr [rax]
+0x0109838d lea       rax, [rip + 0x16ee95c] ; [0x2786cf0]
+0x01098394 mov       qword ptr [rbx], rax
+0x01098397 mov       qword ptr [rbx + 8], rax
+0x0109839b lea       rsi, [rbp - 0x19]
+0x0109839f mov       rdi, rbx
+0x010983a2 xor       al, al
+0x010983a4 call      0x107cc70
+0x010983a9 mov       byte ptr [rbx + 0x18], 1
+0x010983ad lea       rax, [rip + 0x8b4abc] ; [0x194ce70]
+0x010983b4 add       rax, 0x10
+0x010983b8 mov       cl, byte ptr [rbp - 0x19]
+0x010983bb mov       qword ptr [rbx + 0x20], rax
+0x010983bf mov       byte ptr [rbx + 0x28], cl
+0x010983c2 jmp       0x10983d8
+0x010983c4 lea       rsi, [rbp - 0x19]
+0x010983c8 mov       rdi, rbx
+0x010983cb xor       al, al
+0x010983cd call      0x107cc70
+0x010983d2 mov       al, byte ptr [rbp - 0x19]
+0x010983d5 mov       byte ptr [rbx + 0x28], al
+0x010983d8 mov       rax, qword ptr [r14]
+0x010983db cmp       rax, qword ptr [rbp - 0x18]
+0x010983df jne       0x10983ec
+0x010983e1 mov       al, 1
+0x010983e3 add       rsp, 0x10
+0x010983e7 pop       rbx
+0x010983e8 pop       r14
+0x010983ea pop       rbp
+0x010983eb ret       
+0x010983ec call      0x12aa7f0
+0x010983f1 nop       
+0x010983f2 nop       
+0x010983f3 nop       
+0x010983f4 nop       
+0x010983f5 nop       
+0x010983f6 nop       
+0x010983f7 nop       
+0x010983f8 nop       
+0x010983f9 nop       
+0x010983fa nop       
+0x010983fb nop       
+0x010983fc nop       
+0x010983fd nop       
+0x010983fe nop       
+0x010983ff nop       

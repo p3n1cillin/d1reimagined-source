@@ -1,0 +1,19 @@
+0x007ae540 push      rbp
+0x007ae541 mov       rbp, rsp
+0x007ae544 call      0x789240
+0x007ae549 call      0x766750
+0x007ae54e test      al, al
+0x007ae550 jne       0x7ae569
+0x007ae552 call      0x765c40
+0x007ae557 test      al, al
+0x007ae559 je        0x7ae569
+0x007ae55b call      0x765ee0
+0x007ae560 mov       rdi, rax
+0x007ae563 pop       rbp
+0x007ae564 jmp       0x758c40
+0x007ae569 mov       edi, 0x21
+0x007ae56e pop       rbp
+0x007ae56f jmp       0x783ed0
+0x007ae574 nop       word ptr cs:[rax + rax]
+0x007ae580 ret       
+0x007ae581 nop       word ptr cs:[rax + rax]

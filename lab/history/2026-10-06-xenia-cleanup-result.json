@@ -1,0 +1,652 @@
+{
+  "bytes": 87344341166,
+  "at": "2026-10-06T19:36:43.8618548Z",
+  "git_history_rewritten": false,
+  "protected_unchanged": {
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\d1\\d1ppu.txt": true,
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\ps3_updates\\01.24\\USRDIR\\EBOOT.elf": true,
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe": true,
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\config\\custom_configs\\config_BLES01857.yml": true,
+    "F:\\d1\\d1xenia-data\\SHA256SUMS.txt": true
+  },
+  "files": 49964,
+  "imported_unrelated_changes_preserved": true,
+  "targets": [
+    {
+      "removed": true,
+      "bytes": 15049613312,
+      "files": 11,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\00_ORIGINAL_DUMP\\HDD_CAPTURE_2026-09-23"
+    },
+    {
+      "removed": true,
+      "bytes": 16199192614,
+      "files": 54,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\00_ORIGINAL_DUMP\\USB_CAPTURE_2026-09-22"
+    },
+    {
+      "removed": true,
+      "bytes": 16199192614,
+      "files": 54,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\01_WORKING\\test001"
+    },
+    {
+      "removed": true,
+      "bytes": 15049613312,
+      "files": 11,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\01_WORKING\\test002_packages"
+    },
+    {
+      "removed": true,
+      "bytes": 12493048,
+      "files": 58,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\02_EXTRACTED\\Content1_WORKAROUND"
+    },
+    {
+      "removed": true,
+      "bytes": 1385,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\hdd_destiny_archive_2026-09-23.csv"
+    },
+    {
+      "removed": true,
+      "bytes": 1385,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\hdd_destiny_d_archive_2026-09-23.csv"
+    },
+    {
+      "removed": true,
+      "bytes": 1385,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\hdd_destiny_source_2026-09-23.csv"
+    },
+    {
+      "removed": true,
+      "bytes": 8646,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\usb_content_archive_2026-09-22.csv"
+    },
+    {
+      "removed": true,
+      "bytes": 8646,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\usb_content_source_2026-09-22.csv"
+    },
+    {
+      "removed": true,
+      "bytes": 190,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\2XXXXXXX-STFS-list.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 5583,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\3XXXXXXX-STFS-list.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 4470,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\4E9759515BB2CBB78EB5C577E2B73BD899470B7841-STFS-list.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 781747,
+      "files": 9,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\console-network-capture"
+    },
+    {
+      "removed": true,
+      "bytes": 213,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-STFS-list.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 4866,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-STFS-workaround-extract.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 4792,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-STFS-workaround-list.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 12191,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-Xenia-patched-vfs-active-hash.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 40260,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-Xenia-patched-vfs-debug.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 12983,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-Xenia-patched-vfs-list.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 3661,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content2-Xenia-patched-vfs-active-hash.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 2973,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content3-Xenia-patched-vfs-active-hash.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 1216178,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G00_baseline-1.png"
+    },
+    {
+      "removed": true,
+      "bytes": 1212227,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G00_baseline-2.png"
+    },
+    {
+      "removed": true,
+      "bytes": 62422,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G00_baseline.config.toml"
+    },
+    {
+      "removed": true,
+      "bytes": 296597,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G00_baseline.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 1208569,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G01_rov-1.png"
+    },
+    {
+      "removed": true,
+      "bytes": 62421,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G01_rov.config.toml"
+    },
+    {
+      "removed": true,
+      "bytes": 305077,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G01_rov.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 1215482,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G02_readback_fast-1.png"
+    },
+    {
+      "removed": true,
+      "bytes": 1211058,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G02_readback_fast-2.png"
+    },
+    {
+      "removed": true,
+      "bytes": 62421,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G02_readback_fast.config.toml"
+    },
+    {
+      "removed": true,
+      "bytes": 304963,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G02_readback_fast.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 1215905,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G03_readback_full-1.png"
+    },
+    {
+      "removed": true,
+      "bytes": 1211820,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G03_readback_full-2.png"
+    },
+    {
+      "removed": true,
+      "bytes": 62421,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G03_readback_full.config.toml"
+    },
+    {
+      "removed": true,
+      "bytes": 305251,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G03_readback_full.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 1215905,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G04_clear_page_state-1.png"
+    },
+    {
+      "removed": true,
+      "bytes": 1211662,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G04_clear_page_state-2.png"
+    },
+    {
+      "removed": true,
+      "bytes": 62421,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G04_clear_page_state.config.toml"
+    },
+    {
+      "removed": true,
+      "bytes": 305188,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G04_clear_page_state.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 1214835,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G05_no_cpu_vs_extent-1.png"
+    },
+    {
+      "removed": true,
+      "bytes": 1211407,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G05_no_cpu_vs_extent-2.png"
+    },
+    {
+      "removed": true,
+      "bytes": 62421,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G05_no_cpu_vs_extent.config.toml"
+    },
+    {
+      "removed": true,
+      "bytes": 305116,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G05_no_cpu_vs_extent.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 1217161,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G10_trace-1.png"
+    },
+    {
+      "removed": true,
+      "bytes": 62422,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G10_trace.config.toml"
+    },
+    {
+      "removed": true,
+      "bytes": 206084,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G10_trace.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 46992,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test001-canary-error.png"
+    },
+    {
+      "removed": true,
+      "bytes": 837987,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test001-title-screen.png"
+    },
+    {
+      "removed": true,
+      "bytes": 62422,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test001.config.toml"
+    },
+    {
+      "removed": true,
+      "bytes": 630177,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test001.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 54180,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test002-canary-error.png"
+    },
+    {
+      "removed": true,
+      "bytes": 22716,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test002-content1-install.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 489049,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test002-TU-only.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 169753,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test003-Vulkan.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 186613,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test004-Content3.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 25118,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test005-patched-install.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 25432,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test006-failfast-install.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 47166,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test007-active-hash-install.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 30773,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test008-content2-install.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 29306,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test008-content3-install.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 1574073,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test009-full-content-boot.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 43502,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test009-full-content-canary.png"
+    },
+    {
+      "removed": true,
+      "bytes": 182294315,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test010-network-trace.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 43551,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test011-ethernet-active-canary.png"
+    },
+    {
+      "removed": true,
+      "bytes": 330524,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test011-ethernet-active.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 18267,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test012-live-state-hidden-preflight.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 185867,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test012-live-state.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 168307,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test013-xhttp-startup.xenia.log"
+    },
+    {
+      "removed": true,
+      "bytes": 460,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\tu00000002_00000000-STFS-list.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 7434,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\usb_copy_2026-09-22.log"
+    },
+    {
+      "removed": true,
+      "bytes": 10243,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\working_copy_test001.log"
+    },
+    {
+      "removed": true,
+      "bytes": 7192,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-patched-app-build.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 5811,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-patched-final-build.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 5811,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-test005-harness-build.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 5820,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-test006-failfast-build.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 6590,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-test007-active-hash-build.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 5808,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-test011-ethernet-build.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 17977,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-trace-build.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 4422,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-trace-dump-build.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 64,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-WebServices-clone.txt"
+    },
+    {
+      "removed": true,
+      "bytes": 65030,
+      "files": 34,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\TOOLS\\Extract-STFS"
+    },
+    {
+      "removed": true,
+      "bytes": 129121,
+      "files": 39,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\TOOLS\\XBLA-Extract"
+    },
+    {
+      "removed": true,
+      "bytes": 24591,
+      "files": 5,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\TOOLS\\xenia-source-74c4e4acb"
+    },
+    {
+      "removed": true,
+      "bytes": 3649059,
+      "files": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\TOOLS\\xenia_canary_windows_74c4e4a.7z"
+    },
+    {
+      "removed": true,
+      "bytes": 42745389,
+      "files": 22,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA"
+    },
+    {
+      "removed": true,
+      "bytes": 12365726210,
+      "files": 48715,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_BUILDS"
+    },
+    {
+      "removed": true,
+      "bytes": 223854157,
+      "files": 28,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G00_baseline"
+    },
+    {
+      "removed": true,
+      "bytes": 222634249,
+      "files": 27,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G01_rov"
+    },
+    {
+      "removed": true,
+      "bytes": 223852292,
+      "files": 28,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G02_readback_fast"
+    },
+    {
+      "removed": true,
+      "bytes": 223853477,
+      "files": 28,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G03_readback_full"
+    },
+    {
+      "removed": true,
+      "bytes": 223853319,
+      "files": 28,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G04_clear_page_state"
+    },
+    {
+      "removed": true,
+      "bytes": 223851994,
+      "files": 28,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G05_no_cpu_vs_extent"
+    },
+    {
+      "removed": true,
+      "bytes": 222642913,
+      "files": 27,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G10_trace"
+    },
+    {
+      "removed": true,
+      "bytes": 404562568,
+      "files": 28,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST002"
+    },
+    {
+      "removed": true,
+      "bytes": 403125296,
+      "files": 28,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST003_VULKAN"
+    },
+    {
+      "removed": true,
+      "bytes": 2303339141,
+      "files": 29,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST004_CONTENT3"
+    },
+    {
+      "removed": true,
+      "bytes": 199405773,
+      "files": 14,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST005_STFS"
+    },
+    {
+      "removed": true,
+      "bytes": 18089165,
+      "files": 13,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST006_STFS_FAILFAST"
+    },
+    {
+      "removed": true,
+      "bytes": 6200351437,
+      "files": 437,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST007_STFS_ACTIVE"
+    },
+    {
+      "removed": true,
+      "bytes": 221427048,
+      "files": 26,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST009_FULL_CONTENT"
+    },
+    {
+      "removed": true,
+      "bytes": 221427048,
+      "files": 26,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST010_NETWORK_TRACE"
+    },
+    {
+      "removed": true,
+      "bytes": 221427560,
+      "files": 26,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST011_ETHERNET_ACTIVE"
+    },
+    {
+      "removed": true,
+      "bytes": 221427048,
+      "files": 26,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST012_LIVE_STATE"
+    },
+    {
+      "removed": true,
+      "bytes": 237455849,
+      "files": 28,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST013_XHTTP_STARTUP"
+    }
+  ]
+}

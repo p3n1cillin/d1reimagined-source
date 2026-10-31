@@ -1,0 +1,44 @@
+shadPS4 pid 20720  eboot base 0x52c0000  control vtable[0]=0x5a14410 PASS
+start (428.2688293457031, -801.7329711914062, 9.100706577301025) goal [700.0, -801.0]
+at (442.9, -813.1, 18.8) dist 257.4 best 257.4 cells 5 blocked 0
+at (461.2, -812.7, 18.5) dist 239.1 best 239.1 cells 10 blocked 0
+at (468.6, -812.0, 18.7) dist 231.6 best 231.9 cells 14 blocked 1
+at (468.6, -813.7, 18.5) dist 231.7 best 231.9 cells 14 blocked 2
+at (468.7, -812.9, 18.5) dist 231.6 best 231.9 cells 15 blocked 2
+at (468.6, -816.2, 19.1) dist 231.8 best 231.9 cells 15 blocked 2
+at (468.6, -813.5, 18.6) dist 231.7 best 231.9 cells 15 blocked 2
+at (468.6, -816.1, 19.1) dist 231.8 best 231.9 cells 15 blocked 2
+at (468.6, -813.3, 18.5) dist 231.7 best 231.9 cells 15 blocked 2
+at (468.6, -816.1, 19.1) dist 231.8 best 231.9 cells 15 blocked 2
+at (468.6, -813.1, 18.5) dist 231.7 best 231.9 cells 15 blocked 2
+at (467.3, -815.8, 18.8) dist 233.1 best 231.9 cells 15 blocked 2
+at (468.6, -813.9, 18.7) dist 231.7 best 231.9 cells 15 blocked 2
+at (468.6, -816.1, 19.1) dist 231.8 best 231.9 cells 15 blocked 2
+at (468.6, -813.8, 18.7) dist 231.7 best 231.9 cells 15 blocked 2
+at (468.6, -816.1, 19.2) dist 231.8 best 231.9 cells 15 blocked 2
+at (468.6, -813.3, 18.5) dist 231.7 best 231.9 cells 15 blocked 2
+at (468.6, -815.8, 19.0) dist 231.8 best 231.9 cells 15 blocked 2
+at (467.7, -816.2, 19.1) dist 232.8 best 231.9 cells 16 blocked 3
+at (466.7, -816.1, 18.7) dist 233.8 best 231.9 cells 18 blocked 3
+at (467.0, -812.7, 18.3) dist 233.2 best 231.9 cells 18 blocked 3
+at (466.3, -815.5, 18.5) dist 234.1 best 231.9 cells 18 blocked 3
+at (466.3, -813.7, 18.4) dist 234.0 best 231.9 cells 18 blocked 3
+at (468.1, -814.5, 18.6) dist 232.3 best 231.9 cells 21 blocked 3
+at (468.6, -811.9, 18.7) dist 231.6 best 231.9 cells 22 blocked 3
+at (468.6, -814.6, 18.6) dist 231.7 best 231.9 cells 22 blocked 3
+at (468.6, -816.1, 19.1) dist 231.9 best 231.9 cells 22 blocked 3
+at (467.8, -812.6, 18.3) dist 232.5 best 231.9 cells 22 blocked 3
+at (466.6, -813.3, 18.3) dist 233.7 best 231.9 cells 22 blocked 3
+at (468.6, -814.6, 18.6) dist 231.7 best 231.9 cells 23 blocked 5
+at (468.3, -807.2, 18.8) dist 231.8 best 231.9 cells 26 blocked 5
+at (464.6, -804.4, 18.0) dist 235.4 best 231.9 cells 28 blocked 10
+at (466.1, -805.3, 18.0) dist 233.9 best 231.9 cells 31 blocked 10
+at (466.7, -803.2, 18.1) dist 233.3 best 231.9 cells 32 blocked 10
+at (466.8, -803.9, 18.1) dist 233.3 best 231.9 cells 33 blocked 11
+at (466.8, -802.0, 18.0) dist 233.2 best 231.9 cells 34 blocked 12
+at (463.7, -801.1, 18.1) dist 236.3 best 231.9 cells 35 blocked 12
+at (467.8, -799.7, 18.3) dist 232.2 best 231.9 cells 37 blocked 13
+at (466.8, -802.9, 18.1) dist 233.2 best 231.9 cells 40 blocked 13
+at (466.8, -802.8, 18.1) dist 233.2 best 231.9 cells 41 blocked 13
+at (467.6, -797.2, 18.2) dist 232.4 best 231.9 cells 41 blocked 13
+stopped (467.89105224609375, -798.0371704101562, 18.252910614013672) dist 232.1 route 18 points -> route-e4.json

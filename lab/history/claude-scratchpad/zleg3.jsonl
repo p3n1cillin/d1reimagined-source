@@ -1,0 +1,4 @@
+{"event": "start", "pid": 4980, "base": "0x51f0000", "addrs": ["0x596f849", "0x596fb05"], "t": 1792964407.6046565}
+{"event": "exec", "tid": 14048, "rip_img": "0x77f849", "rax": "0x70", "al": 112, "rdi": "0xe", "rsi": "0x38501cb60", "rdx": "0x204403280", "rcx": "0x19b40", "defn": "0x0", "defn_head": "", "defn_type": null, "stack_img": ["0x778d3d", "0x778b9c", "0x7732ab", "0x34c801", "0x239680", "0x7850a9", "0x244ff5"], "peek": {"r15=": "0x0", "r12=": "0x20", "rbp-0xa0": "0x70"}, "t": 1792964407.6149974}
+{"event": "exec", "tid": 14048, "rip_img": "0x77fb05", "rax": "0xd8f01", "al": 1, "rdi": "0x0", "rsi": "0xffffffff00000000", "rdx": "0xd8fb7", "rcx": "0xd8fb7", "defn": "0x0", "defn_head": "", "defn_type": null, "stack_img": ["0x778d3d", "0x778b9c", "0x7732ab", "0x34c801", "0x239680", "0x7850a9", "0x244ff5"], "peek": {"r15=": "0x1", "r12=": "0x20", "rbp-0xa0": "0x70"}, "t": 1792964407.615298}
+{"event": "detached", "hits": 2, "t": 1792964408.6506255}

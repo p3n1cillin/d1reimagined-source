@@ -1,0 +1,144 @@
+[
+  {
+    "name": "roster-defense1200",
+    "result": {
+      "contributions_slot_index_soid_value": [
+        [
+          2,
+          5942,
+          15060037153926939396,
+          200
+        ],
+        [
+          3,
+          3886,
+          15060037153926939397,
+          200
+        ],
+        [
+          4,
+          5946,
+          15060037153926939398,
+          200
+        ],
+        [
+          5,
+          5879,
+          15060037153926939399,
+          200
+        ],
+        [
+          11,
+          4531,
+          15060037153926939394,
+          200
+        ],
+        [
+          16,
+          4286,
+          15060037153926939400,
+          200
+        ]
+      ],
+      "limitations": "no talent/progression contributions; native gameplay still requires testing",
+      "round_trip": "IDENTICAL",
+      "source": "native 56578 base-stat calculation",
+      "stat": 1,
+      "table": "character",
+      "value": 1200
+    },
+    "decoded_changed_offsets": [
+      "0x840",
+      "0x844",
+      "0x845"
+    ],
+    "light_unchanged": true,
+    "existing_output_refused": true,
+    "sha256": "a9d1e5d8338a9e157d238ffbde7744fae6abdf3a285b1e4b5050d441439fd0c8",
+    "native": "NOT SERVED"
+  },
+  {
+    "name": "roster-defense1200-unarmed",
+    "result": {
+      "contributions_slot_index_soid_value": [
+        [
+          2,
+          5942,
+          15060037153926939396,
+          200
+        ],
+        [
+          3,
+          3886,
+          15060037153926939397,
+          200
+        ],
+        [
+          4,
+          5946,
+          15060037153926939398,
+          200
+        ],
+        [
+          5,
+          5879,
+          15060037153926939399,
+          200
+        ],
+        [
+          11,
+          4531,
+          15060037153926939394,
+          200
+        ],
+        [
+          16,
+          4286,
+          15060037153926939400,
+          200
+        ]
+      ],
+      "limitations": "no talent/progression contributions; native gameplay still requires testing",
+      "round_trip": "IDENTICAL",
+      "source": "native 56578 base-stat calculation",
+      "stat": 1,
+      "table": "character",
+      "value": 1200
+    },
+    "decoded_changed_offsets": [
+      "0x840",
+      "0x844",
+      "0x845"
+    ],
+    "light_unchanged": true,
+    "existing_output_refused": true,
+    "sha256": "e75e9946b34e8730fff657d02bb2bd6d57c940c84e43f1960172c24c28571288",
+    "native": "NOT SERVED"
+  },
+  {
+    "name": "roster-attack-derived",
+    "result": {
+      "contributions_slot_index_soid_value": [
+        [
+          6,
+          3598,
+          15060037153926939649,
+          200
+        ]
+      ],
+      "limitations": "no talent/progression contributions; native gameplay still requires testing",
+      "round_trip": "IDENTICAL",
+      "source": "native 56578 base-stat calculation",
+      "stat": 11,
+      "table": "primary",
+      "value": 200
+    },
+    "decoded_changed_offsets": [
+      "0x8bc"
+    ],
+    "light_unchanged": true,
+    "existing_output_refused": true,
+    "sha256": "3c97c3a408c067b98dc963a43d68bf0dcb0a0b5912b38650090c9e1d6fc473a9",
+    "native": "NOT SERVED"
+  }
+]

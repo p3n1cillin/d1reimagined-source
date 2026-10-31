@@ -1,0 +1,17 @@
+Run sense31 (Defense 1200 + Attack 200 roster; udt 6 capture window from 04:31:20). Times UTC (= UK).
+04:32:54  Guardian reaches the Divide exit (155, -605); stand-and-fight starts
+04:36:39  health 0.51 -> retreat (g-077)
+04:36:57  a Dreg at point-blank range, nameplate engaged, ADS burst (g-078)
+04:37:02  second burst at the same Dreg (g-079)
+04:37:07  death camera: the Guardian is killed (g-080)
+04:37:10  respawn, "SUPER CHARGED" (g-081)
+No enemy kill in this window. Frames: cfw-staging/sense31/guard1/g-*.png; clip: cfw-staging/sense31/clips/sense31-fight.mp4
+
+What the death looks like in the captures (see udt6-sense31.tsv around 04:37):
+- 04:37:03.95  incidents 734, 1825, 2079, 2767 (the set seen at every death)
+- 04:37:04.96-04:37:05.71  six 22-byte updates "0032487bff612000f0 XXXXXX ..." in which one field clears step by step:
+  02492400 -> 00492400 -> 00092400 -> 00012400 -> 00002400 -> 00000000
+  (0x2492.. is repeated 3-bit groups of 010, so per-member 3-bit counters are being zeroed one at a time).
+  The final byte steps by 4 each update (0x60, 0x64, ... 0x78): probably a 6-bit sequence number.
+- 04:37:06.6  incidents 566, 3749, 222 (the respawn set)
+- The same 3-bit field also appears in sense30 (03:53:48, "...534924920024924..."), before the Divide fight.

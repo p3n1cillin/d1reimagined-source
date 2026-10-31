@@ -1,0 +1,35 @@
+{
+  "published": false,
+  "source": "live sense54 canonical profile; byte-identical to existing profile-complete164-xp900.obj after owned codec normalization",
+  "raw_unserialized_differences": 324,
+  "canonical_template_differences": 0,
+  "gate": {
+    "unlock_index": 2838,
+    "hash": "0x2c39ab77",
+    "kind": 3,
+    "sub": 673,
+    "profile_offset": "0x5661",
+    "live_byte": 2,
+    "live_plane": 2
+  },
+  "drafts": [
+    {
+      "new_value": 1,
+      "object": "lab/history\\2026-10-29-postgame-codex\\sense54-completion673-1-recall.obj",
+      "draft": "F:\\d1\\d1preservation-main\\cfw-staging\\sense54-completion673-1-recall.draft.bin",
+      "bytes": 20836,
+      "bits": 166685,
+      "object_sha256": "85e15a1c21ab39afe44e1846decde0ad0ded07f6b2167c0ed70561a98b65de3e",
+      "draft_sha256": "a0c63b1ed68c92c2c7614f116cc88768f2a522579b0b25165e921bbd1e04e87a"
+    },
+    {
+      "new_value": 0,
+      "object": "lab/history\\2026-10-29-postgame-codex\\sense54-completion673-0-recall.obj",
+      "draft": "F:\\d1\\d1preservation-main\\cfw-staging\\sense54-completion673-0-recall.draft.bin",
+      "bytes": 20836,
+      "bits": 166685,
+      "object_sha256": "3ad08c9d0c65af26f83397122bb14c4bbb99a7f618443df48721023dddc3ac4d",
+      "draft_sha256": "6a3e40c612877ba4356f24a72ecc001d198fee9bc2556ff7c901d3b5c8850c95"
+    }
+  ]
+}

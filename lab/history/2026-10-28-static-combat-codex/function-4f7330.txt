@@ -1,0 +1,36 @@
+0x004f7330 movsx     eax, sil
+0x004f7334 vxorps    xmm0, xmm0, xmm0
+0x004f7338 cmp       eax, 4
+0x004f733b ja        0x4f7379
+0x004f733d lea       rcx, [rip + 0x38] ; [0x4f737c]
+0x004f7344 movsxd    rax, dword ptr [rcx + rax*4]
+0x004f7348 add       rax, rcx
+0x004f734b jmp       rax
+0x004f734d vmovss    xmm0, dword ptr [rdi + 0x154]
+0x004f7355 ret       
+0x004f7356 vmovss    xmm0, dword ptr [rdi + 0x184]
+0x004f735e ret       
+0x004f735f vmovss    xmm0, dword ptr [rdi + 0x1b4]
+0x004f7367 ret       
+0x004f7368 vmovss    xmm0, dword ptr [rdi + 0x1e4]
+0x004f7370 ret       
+0x004f7371 vmovss    xmm0, dword ptr [rdi + 0x214]
+0x004f7379 ret       
+0x004f737a nop       
+0x004f737c sar       edi, 1
+0x004f737e .byte     0xff
+0x004f737f .byte     0xff
+0x004f7380 .byte     0xda
+0x004f7381 .byte     0xff
+0x004f7382 .byte     0xff
+0x004f7383 jmp       rbx
+0x004f7385 .byte     0xff
+0x004f7386 .byte     0xff
+0x004f7387 .byte     0xff
+0x004f7388 in        al, dx
+0x004f7389 .byte     0xff
+0x004f738a .byte     0xff
+0x004f738b push      rbp
+0x004f738d .byte     0xff
+0x004f738e .byte     0xff
+0x004f738f .byte     0xff

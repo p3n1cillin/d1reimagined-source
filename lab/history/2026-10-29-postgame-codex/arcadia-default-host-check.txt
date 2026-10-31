@@ -1,0 +1,1 @@
+Error: guest fault: memset with length 0xffffffffffffff5c (return address 0x2c8f89, r13 0x1732, rbx 0xfeb23ffe, stack 0x2c8f89,0x10034,0x1303258,0x2c9a89,0x102a42f,0x13de090,0x101c561,0x133f2e0,0x132e910,0x1331428,0x13de090,0x1322de0) - no guest              buffer is that large; the caller's arguments are not what this stub was told they are (calling 0x2c9a80)

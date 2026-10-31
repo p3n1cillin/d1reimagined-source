@@ -1,0 +1,23 @@
+0x005749d0 mov       rdi, qword ptr [rdi + 8]
+0x005749d4 test      rdi, rdi
+0x005749d7 jne       0x5749db
+0x005749d9 xor       edi, edi
+0x005749db jmp       0x573570
+0x005749e0 mov       rax, qword ptr [rdi + 8]
+0x005749e4 test      rax, rax
+0x005749e7 jne       0x5749eb
+0x005749e9 xor       eax, eax
+0x005749eb ret       
+0x005749ec nop       dword ptr [rax]
+0x005749f0 mov       rax, qword ptr [rdi + 8]
+0x005749f4 test      rax, rax
+0x005749f7 jne       0x5749fb
+0x005749f9 xor       eax, eax
+0x005749fb ret       
+0x005749fc nop       dword ptr [rax]
+0x00574a00 mov       rax, qword ptr [rdi + 8]
+0x00574a04 test      rax, rax
+0x00574a07 jne       0x574a0b
+0x00574a09 xor       eax, eax
+0x00574a0b ret       
+0x00574a0c nop       dword ptr [rax]

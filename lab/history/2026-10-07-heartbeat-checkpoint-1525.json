@@ -1,0 +1,31 @@
+{
+  "checked_at": "2026-10-07T15:23:51.5002365Z",
+  "automation_id": "daily-engineering-handoff",
+  "trigger_timestamp": "2026-10-06T19:57:30.649Z",
+  "current_reporting_date": "2026-10-07",
+  "timezone": "Europe/London",
+  "policy_read": true,
+  "due_now": false,
+  "reason": "Current UK time precedes the 19:00 target. October 6 consolidated handoff is already complete; October 7 will be prepared at the next eligible safe checkpoint.",
+  "prior_handoff_verification": "2026-10-07-heartbeat-checkpoint-1423.json (historical verification; no new NAS check claimed)",
+  "native_run": "FINAL124_JOIN169",
+  "manifest_owned_alive": [],
+  "native_cleanup": {
+    "at": "2026-10-07T15:15:54.61686Z",
+    "fixture_completed": true,
+    "all_owned_closed": true,
+    "title_unchanged": true,
+    "watch_unchanged": true,
+    "input": "Handler: XInput",
+    "active_controls": [],
+    "shared_rpcn_preserved": true,
+    "errors": []
+  },
+  "new_package_created": false,
+  "previous_ready_modified": false,
+  "media_resent": false,
+  "outbox_check": "NOT RUN this checkpoint",
+  "nas_transfer": "NOT RUN this checkpoint",
+  "next_engineering": "Correct the read-only context-handle lookup from the verified 01.24 instructions, then arm the session/engine timeline before the 113-to-112 transition to identify its pending timeout. Native arrival/control plus combined character/world/mission fidelity remain unaccepted.",
+  "user_action_required": false
+}

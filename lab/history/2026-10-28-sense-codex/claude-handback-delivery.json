@@ -1,0 +1,11 @@
+{
+  "delivered_at_utc": "2026-10-28T08:03:48.6537493+00:00",
+  "requested_handback": "2026-10-28T08:00:00Z",
+  "session": "PS4 build 56578 retarget",
+  "destination": "https://claude.ai/epitaxy/local_fd664759-3f2d-4dc2-8acd-cf822c8a3bf7",
+  "source_file": "F:\\d1\\d1xenia\\HANDOFF-codex-to-claude.md",
+  "source_sha256": "6FC3B98F129086AB88B91F383DF4F846A7A9B835EAC9111D49FC45515B01F721",
+  "source_characters": 14480,
+  "verification": "Claude UI showed the full handoff as a sent user message, END HANDOFF marker, empty Prompt composer and Working status. No Send now step required.",
+  "timing_note": "Sent at about 08:03 UK, after context compaction delayed the scheduled 08:00 hand-back."
+}

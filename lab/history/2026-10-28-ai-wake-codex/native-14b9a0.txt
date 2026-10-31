@@ -1,0 +1,11 @@
+0x0014b9a0 and       edi, 0x1fff
+0x0014b9a6 lea       rax, [rip + 0x248bff3] ; [0x25d79a0]
+0x0014b9ad imul      edi, dword ptr [rax + 0x10]
+0x0014b9b1 mov       rcx, qword ptr [rax + 8]
+0x0014b9b5 mov       al, 1
+0x0014b9b7 test      byte ptr [rdi + rcx + 0x23a8], 1
+0x0014b9bf jne       0x14b9c8
+0x0014b9c1 test      byte ptr [rcx + rdi], 1
+0x0014b9c5 sete      al
+0x0014b9c8 ret       
+0x0014b9c9 nop       dword ptr [rax]

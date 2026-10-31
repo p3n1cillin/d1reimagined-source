@@ -1,0 +1,7 @@
+80c7a004: ps4_city_tower_activities_act_023d_5.pkg/4 class80800499, 48 bytes
+80c7a018: ps4_city_tower_activities_act_023d_5.pkg/24 class80800734, 1492 bytes
+80c7a006: ps4_city_tower_activities_act_023d_5.pkg/6 class808008f0, 59 bytes
+80cb8042: ps4_cosmo_activities_activity_025c_5.pkg/66 class80800341, 64 bytes
+80cb8043: ps4_cosmo_activities_activity_025c_5.pkg/67 class80800734, 1492 bytes
+80b52004: ps4_orbit_01a9_5.pkg/4 class808008f0, 54 bytes
+80a5ffb6: ps4_investment_globals_012f_6.pkg/8118 class80801766, 2688 bytes

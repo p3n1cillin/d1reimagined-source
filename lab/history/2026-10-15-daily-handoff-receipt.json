@@ -1,0 +1,72 @@
+{
+  "verified_at": "2026-10-15T18:09:24.363425+00:00",
+  "reporting_date": "2026-10-15",
+  "daily_report": "<lab-pc>-20261015T180922-747c0780f05a4e3c83f61acaebb0578d",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\15\\<lab-pc>-20261015T180922-747c0780f05a4e3c83f61acaebb0578d.ready",
+  "ready_verified": true,
+  "manifest_bytes_match": true,
+  "payloads": [
+    {
+      "file": "daily-report.md",
+      "size": 13201,
+      "sha256": "68c84543d0f4ca18dde346ba4c395c351c01013a735f4241dee9a2ea463d2809",
+      "matches": true
+    },
+    {
+      "file": "events.json",
+      "size": 10466,
+      "sha256": "a3f34e5140609013565ab96dcdf8c93cf91d0911b44b0abc5cd417a2bd890ad2",
+      "matches": true
+    },
+    {
+      "file": "metadata.json",
+      "size": 9778,
+      "sha256": "896d83f754b6624de490ba991092ed0c29ed4fcc198ede61284c980aeb79c7d5",
+      "matches": true
+    },
+    {
+      "file": "screenshots/01.png",
+      "size": 1588968,
+      "sha256": "607c8ba4b6e8da96cc9b596d81f891f7b0e1502b05e1d49c87dd179b6a5e27e0",
+      "matches": true
+    },
+    {
+      "file": "screenshots/02.png",
+      "size": 1284140,
+      "sha256": "840e18fb9d2cd40b8d46f24b0094390a44f7393c5e7efd679ebdf9cc974fbe44",
+      "matches": true
+    },
+    {
+      "file": "screenshots/03.png",
+      "size": 2047549,
+      "sha256": "7ad14359eb3813dbc703a014edf4c10a2045ba9a8cdcfefab4ba72b7c818a224",
+      "matches": true
+    },
+    {
+      "file": "screenshots/04.png",
+      "size": 351853,
+      "sha256": "6f907d7233effc9f2320bf0328d37b389acfda4001958f6f2dec709b0b1944f3",
+      "matches": true
+    }
+  ],
+  "transfer_started_at": "2026-10-15T18:09:23.276426+00:00",
+  "submitted_at": "2026-10-15T18:09:24.030401+00:00",
+  "new_screenshots": 4,
+  "new_clips": 0,
+  "screenshot_bytes_match_inspected_originals": true,
+  "screenshot_decode": "PASS",
+  "video_decode": "NOT APPLICABLE: no video",
+  "earlier_media_resent": false,
+  "referenced_package_ids": [
+    "<lab-pc>-20261014T193305-e7a2a8daaa4a4f7d9e50a3f454ddd3b4"
+  ],
+  "nas_free_bytes_at_verification": 501591703552,
+  "pending_outbox": [],
+  "terminal_superseded_not_queued": [
+    "<lab-pc>-20261006T082350-35a26ff986fc4d87a5428cdef765c812"
+  ],
+  "late_delivery": true,
+  "source_checkpoint": "512c659de0db2ff2673c6b1dee87cad975b83301",
+  "publication_review_required": true,
+  "handoff_complete": true
+}

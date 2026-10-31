@@ -1,0 +1,807 @@
+[
+ {
+  "class": "c_world_controller_state_bootflow_media_check_handler",
+  "short": "bootflow_media_check",
+  "rung": 1,
+  "state": "bootflow:media_check",
+  "vtable": 26502880,
+  "slots": {
+   "slot10": 7987280,
+   "enter": 7988080,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 7988128,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_bootload_handler",
+  "short": "bootflow_bootload",
+  "rung": 2,
+  "state": "bootflow:bootload",
+  "vtable": 26500656,
+  "slots": {
+   "slot10": 7971504,
+   "enter": 7972576,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 7972624,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_intro_screen_display_handler",
+  "short": "bootflow_intro_screen_display",
+  "rung": 3,
+  "state": "bootflow:intro_screen_display",
+  "vtable": 26502448,
+  "slots": {
+   "slot10": 7985136,
+   "enter": 7985152,
+   "exit": 7984432,
+   "update_guard": 7941328,
+   "update": 7985216,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_start_handler",
+  "short": "bootflow_start",
+  "rung": 4,
+  "state": "bootflow:start",
+  "vtable": 26504656,
+  "slots": {
+   "slot10": 7997760,
+   "enter": 7997776,
+   "exit": 7984432,
+   "update_guard": 7941328,
+   "update": 7997984,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_platform_signin_handler",
+  "short": "bootflow_platform_signin",
+  "rung": 5,
+  "state": "bootflow:platform_signin",
+  "vtable": 26503504,
+  "slots": {
+   "slot10": 7991776,
+   "enter": 7991808,
+   "exit": 7994160,
+   "update_guard": 7941328,
+   "update": 7992080,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_platform_account_warnings_handler",
+  "short": "bootflow_platform_account_warnings",
+  "rung": 6,
+  "state": "bootflow:platform_account_warnings",
+  "vtable": 26503296,
+  "slots": {
+   "slot10": 7990624,
+   "enter": 7990768,
+   "exit": 7990960,
+   "update_guard": 7941328,
+   "update": 7990976,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_enumerate_content_rights_handler",
+  "short": "bootflow_enumerate_content_rights",
+  "rung": 7,
+  "state": "bootflow:enumerate_content_rights",
+  "vtable": 26502000,
+  "slots": {
+   "slot10": 7965376,
+   "enter": 7983760,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 7983808,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_account_signin_handler",
+  "short": "bootflow_account_signin",
+  "rung": 8,
+  "state": "bootflow:account_signin",
+  "vtable": 26500176,
+  "slots": {
+   "slot10": 7965376,
+   "enter": 7965392,
+   "exit": 7966304,
+   "update_guard": 7941328,
+   "update": 7966400,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_eula_handler",
+  "short": "bootflow_eula",
+  "rung": 9,
+  "state": "bootflow:eula",
+  "vtable": 26502128,
+  "slots": {
+   "slot10": 7965376,
+   "enter": 7984384,
+   "exit": 7984432,
+   "update_guard": 7941328,
+   "update": 7984448,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_upsell_handler",
+  "short": "bootflow_upsell",
+  "rung": 10,
+  "state": "bootflow:upsell",
+  "vtable": 26504960,
+  "slots": {
+   "slot10": 7999168,
+   "enter": 7999232,
+   "exit": 7984432,
+   "update_guard": 7941328,
+   "update": 7999296,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_email_handler",
+  "short": "bootflow_email",
+  "rung": 11,
+  "state": "bootflow:email",
+  "vtable": 26501632,
+  "slots": {
+   "slot10": 7965376,
+   "enter": 7982960,
+   "exit": 7983024,
+   "update_guard": 7941328,
+   "update": 7983056,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_confirm_account_transfer_handler",
+  "short": "bootflow_confirm_account_transfer",
+  "rung": 12,
+  "state": "bootflow:confirm_account_transfer",
+  "vtable": 26500832,
+  "slots": {
+   "slot10": 7965376,
+   "enter": 7977344,
+   "exit": 7977392,
+   "update_guard": 7941328,
+   "update": 7977424,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_content_check_handler",
+  "short": "bootflow_content_check",
+  "rung": 13,
+  "state": "bootflow:content_check",
+  "vtable": 26501200,
+  "slots": {
+   "slot10": 7978192,
+   "enter": 7978240,
+   "exit": 7979696,
+   "update_guard": 7941328,
+   "update": 7978400,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_content_install_handler",
+  "short": "bootflow_content_install",
+  "rung": 14,
+  "state": "bootflow:content_install",
+  "vtable": 26501328,
+  "slots": {
+   "slot10": 7980144,
+   "enter": 7980176,
+   "exit": 7981840,
+   "update_guard": 7941328,
+   "update": 7980656,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_queuing_handler",
+  "short": "bootflow_queuing",
+  "rung": 17,
+  "state": "bootflow:queuing",
+  "vtable": 26504320,
+  "slots": {
+   "slot10": 7996688,
+   "enter": 7996704,
+   "exit": 7996816,
+   "update_guard": 7941328,
+   "update": 7996848,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_package_registration_handler",
+  "short": "bootflow_package_registration",
+  "rung": 18,
+  "state": "bootflow:package_registration",
+  "vtable": 26503056,
+  "slots": {
+   "slot10": 7969264,
+   "enter": 7988944,
+   "exit": 7988976,
+   "update_guard": 7941328,
+   "update": 7989024,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_bap_signin_handler",
+  "short": "bootflow_bap_signin",
+  "rung": 19,
+  "state": "bootflow:bap_signin",
+  "vtable": 26500496,
+  "slots": {
+   "slot10": 7969264,
+   "enter": 7969280,
+   "exit": 7969312,
+   "update_guard": 7941328,
+   "update": 7969360,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_investment_signin_handler",
+  "short": "bootflow_investment_signin",
+  "rung": 20,
+  "state": "bootflow:investment_signin",
+  "vtable": 26502752,
+  "slots": {
+   "slot10": 7985616,
+   "enter": 7985632,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 7985680,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_profile_setup_handler",
+  "short": "bootflow_profile_setup",
+  "rung": 21,
+  "state": "bootflow:profile_setup",
+  "vtable": 26504000,
+  "slots": {
+   "slot10": 7994784,
+   "enter": 7995808,
+   "exit": 7984432,
+   "update_guard": 7941328,
+   "update": 7995840,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_bootflow_prepare_for_orbit_handler",
+  "short": "bootflow_prepare_for_orbit",
+  "rung": 22,
+  "state": "bootflow:prepare_for_orbit",
+  "vtable": 26503872,
+  "slots": {
+   "slot10": 7994784,
+   "enter": 7994800,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 7994848,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_character_signin_handler",
+  "short": "character_signin",
+  "rung": 23,
+  "state": "character:signin",
+  "vtable": 26505376,
+  "slots": {
+   "slot10": 7994784,
+   "enter": 8002032,
+   "exit": 8002176,
+   "update_guard": 7941328,
+   "update": 8002288,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_character_prologue_handler",
+  "short": "character_prologue",
+  "rung": 24,
+  "state": "character:prologue",
+  "vtable": 26505248,
+  "slots": {
+   "slot10": 8000368,
+   "enter": 8000384,
+   "exit": 8000544,
+   "update_guard": 7941328,
+   "update": 8000624,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_cleanup_handler",
+  "short": "cleanup",
+  "rung": 25,
+  "state": "cleanup",
+  "vtable": 26505696,
+  "slots": {
+   "slot10": 8003808,
+   "enter": 8014496,
+   "exit": 8015776,
+   "update_guard": 7941328,
+   "update": 8016096,
+   "slot40": 8019248
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_setup_orbit_loading_handler",
+  "short": "setup_orbit_loading",
+  "rung": 26,
+  "state": "setup:orbit_loading",
+  "vtable": 26506544,
+  "slots": {
+   "slot10": 8052320,
+   "enter": 8052592,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 8052704,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_setup_orbit_handler",
+  "short": "setup_orbit",
+  "rung": 27,
+  "state": "setup:orbit",
+  "vtable": 26506416,
+  "slots": {
+   "slot10": 8046032,
+   "enter": 8046080,
+   "exit": 8046608,
+   "update_guard": 7941328,
+   "update": 8046864,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_setup_activity_session_creation_handler",
+  "short": "setup_activity_session_creation",
+  "rung": 28,
+  "state": "setup:activity_session_creation",
+  "vtable": 26506032,
+  "slots": {
+   "slot10": 8027888,
+   "enter": 8029840,
+   "exit": 8029936,
+   "update_guard": 7941328,
+   "update": 8029968,
+   "slot40": 8030720
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_setup_matchmaking_handler",
+  "short": "setup_matchmaking",
+  "rung": 29,
+  "state": "setup:matchmaking",
+  "vtable": 26506288,
+  "slots": {
+   "slot10": 8037328,
+   "enter": 8037440,
+   "exit": 8037888,
+   "update_guard": 7941328,
+   "update": 8038080,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_setup_activity_host_setup_handler",
+  "short": "setup_activity_host_setup",
+  "rung": 30,
+  "state": "setup:activity_host_setup",
+  "vtable": 26505904,
+  "slots": {
+   "slot10": 8022384,
+   "enter": 8022464,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 8023040,
+   "slot40": 8027440
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_setup_prologue_intro_loading_handler",
+  "short": "setup_prologue_intro_loading",
+  "rung": 31,
+  "state": "setup:prologue_intro_loading",
+  "vtable": 26506800,
+  "slots": {
+   "slot10": 8053984,
+   "enter": 8054544,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 8054592,
+   "slot40": 8027440
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_setup_orbit_outro_handler",
+  "short": "setup_orbit_outro",
+  "rung": 32,
+  "state": "setup:orbit_outro",
+  "vtable": 26506672,
+  "slots": {
+   "slot10": 8053984,
+   "enter": 7685136,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 8054080,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_setup_activity_world_transition_handler",
+  "short": "setup_activity_world_transition",
+  "rung": 33,
+  "state": "setup:activity_world_transition",
+  "vtable": 26506160,
+  "slots": {
+   "slot10": 8031344,
+   "enter": 8033456,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 8033712,
+   "slot40": 8034352
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_activity_initial_slice_set_loading_handler",
+  "short": "activity_initial_slice_set_loading",
+  "rung": 34,
+  "state": "activity:initial_slice_set_loading",
+  "vtable": 26499664,
+  "slots": {
+   "slot10": 7952576,
+   "enter": 7956736,
+   "exit": 7685136,
+   "update_guard": 7941328,
+   "update": 7956896,
+   "slot40": 7956976
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_activity_physics_join_handler",
+  "short": "activity_physics_join",
+  "rung": 35,
+  "state": "activity:physics_join",
+  "vtable": 26499920,
+  "slots": {
+   "slot10": 7962144,
+   "enter": 7962192,
+   "exit": 7962208,
+   "update_guard": 7941328,
+   "update": 7962368,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_activity_in_world_handler",
+  "short": "activity_in_world",
+  "rung": 36,
+  "state": "activity:in_world",
+  "vtable": 26499792,
+  "slots": {
+   "slot10": 7957472,
+   "enter": 7958096,
+   "exit": 7958992,
+   "update_guard": 7941328,
+   "update": 7959104,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ },
+ {
+  "class": "c_world_controller_state_activity_watch_video_handler",
+  "short": "activity_watch_video",
+  "rung": 37,
+  "state": "activity:watch_video",
+  "vtable": 26500048,
+  "slots": {
+   "slot10": 7963280,
+   "enter": 7963296,
+   "exit": 7963440,
+   "update_guard": 7941328,
+   "update": 7963664,
+   "slot40": 17117776
+  },
+  "overridden": {
+   "slot10": true,
+   "enter": true,
+   "exit": true,
+   "update_guard": true,
+   "update": true,
+   "slot40": true
+  }
+ }
+]

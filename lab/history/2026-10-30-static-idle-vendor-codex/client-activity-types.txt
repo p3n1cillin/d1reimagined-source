@@ -1,0 +1,60 @@
+FUNCTION 549c60..549d30
+0x00549c60 lea       r8, [rip + 0x216f939] ; [0x26b95a0]
+0x00549c67 mov       rcx, qword ptr [r8]
+0x00549c6a test      rcx, rcx
+0x00549c6d jne       0x549cb7
+0x00549c6f mov       edx, dword ptr [rdi]
+0x00549c71 mov       eax, edx
+0x00549c73 sar       eax, 0xd
+0x00549c76 mov       esi, eax
+0x00549c78 shr       esi, 0x12
+0x00549c7b or        esi, 0x3ff
+0x00549c81 and       esi, eax
+0x00549c83 lea       rax, [rip + 0x14d9c16] ; [0x1a238a0]
+0x00549c8a mov       rax, qword ptr [rax]
+0x00549c8d mov       rax, qword ptr [rax]
+0x00549c90 shl       rsi, 6
+0x00549c94 mov       rcx, qword ptr [rax + rsi + 0x10]
+0x00549c99 movsxd    rdi, dword ptr [rax + rsi + 0x34]
+0x00549c9e and       edx, 0x1fff
+0x00549ca4 imul      edx, dword ptr [rax + rsi + 0x30]
+0x00549ca9 and       rdi, qword ptr [rcx + rdx + 8]
+0x00549cae add       rcx, rdx
+0x00549cb1 sub       rcx, rdi
+0x00549cb4 mov       qword ptr [r8], rcx
+0x00549cb7 mov       rdx, qword ptr [r8 + 0x20]
+0x00549cbb test      rdx, rdx
+0x00549cbe jne       0x549d0a
+0x00549cc0 mov       ecx, dword ptr [rcx + 0x60]
+0x00549cc3 mov       eax, ecx
+0x00549cc5 sar       eax, 0xd
+0x00549cc8 mov       esi, eax
+0x00549cca shr       esi, 0x12
+0x00549ccd or        esi, 0x3ff
+0x00549cd3 and       esi, eax
+0x00549cd5 lea       rax, [rip + 0x14d9bc4] ; [0x1a238a0]
+0x00549cdc mov       rax, qword ptr [rax]
+0x00549cdf mov       rax, qword ptr [rax]
+0x00549ce2 shl       rsi, 6
+0x00549ce6 mov       rdx, qword ptr [rax + rsi + 0x10]
+0x00549ceb movsxd    rdi, dword ptr [rax + rsi + 0x34]
+0x00549cf0 and       ecx, 0x1fff
+0x00549cf6 imul      ecx, dword ptr [rax + rsi + 0x30]
+0x00549cfb and       rdi, qword ptr [rdx + rcx + 8]
+0x00549d00 add       rdx, rcx
+0x00549d03 sub       rdx, rdi
+0x00549d06 mov       qword ptr [r8 + 0x20], rdx
+0x00549d0a lea       rax, [rdx + 8]
+0x00549d0e test      rdx, rdx
+0x00549d11 cmove     rax, rdx
+0x00549d15 ret       
+0x00549d16 nop       word ptr cs:[rax + rax]
+0x00549d20 add       dh, byte ptr [rcx]
+0x00549d22 ror       byte ptr [rax - 0x7d], cl
+0x00549d25 .byte     0xc4
+0x00549d26 or        byte ptr [rbx + 0x41], bl
+0x00549d29 pop       rsi
+0x00549d2a pop       r15
+0x00549d2c pop       rbp
+0x00549d2d ret       
+0x00549d2e nop       

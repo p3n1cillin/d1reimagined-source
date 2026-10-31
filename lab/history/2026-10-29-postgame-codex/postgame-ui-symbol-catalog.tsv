@@ -1,0 +1,11 @@
+80892000	0	ps4_ui_bootflow_unpatchable_0.pkg ui_bootflow_unpatchable type8080213a
+808a0000	0	ps4_ui_cinematics_0050_6.pkg ui_cinematics type8080213a
+80814000	0	ps4_ui_core_000a_6.pkg ui_core type8080213a
+80822000	0	ps4_ui_login_0011_6.pkg ui_login type8080213a
+80830000	0	ps4_ui_menus_0018_6.pkg ui_menus type8080213a
+8083e000	0	ps4_ui_mock_001f_1.pkg ui_mock type8080213a
+8084c000	0	ps4_ui_orbit_0026_6.pkg ui_orbit type8080213a
+8085a000	0	ps4_ui_pve_002d_6.pkg ui_pve type8080213a
+80868000	0	ps4_ui_pvp_0034_6.pkg ui_pvp type8080213a
+80876000	0	ps4_ui_social_003b_6.pkg ui_social type8080213a
+80884000	0	ps4_ui_startup_unpatchable_0.pkg ui_startup_unpatchable type8080213a

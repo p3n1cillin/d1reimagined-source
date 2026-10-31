@@ -1,0 +1,77 @@
+0x0015e6d0 push      rbp
+0x0015e6d1 mov       rbp, rsp
+0x0015e6d4 push      r14
+0x0015e6d6 push      rbx
+0x0015e6d7 sub       rsp, 0x10
+0x0015e6db vmovaps   xmm1, xmm0
+0x0015e6df mov       r14d, edx
+0x0015e6e2 and       edi, 0x1fff
+0x0015e6e8 lea       rax, [rip + 0x24792b1] ; [0x25d79a0]
+0x0015e6ef imul      edi, dword ptr [rax + 0x10]
+0x0015e6f3 mov       rax, qword ptr [rax + 8]
+0x0015e6f7 movsx     ecx, byte ptr [rdi + rax + 0x208]
+0x0015e6ff movsx     edx, sil
+0x0015e703 vmovss    xmm0, dword ptr [rip + 0x14b9af1] ; [0x16181fc]
+0x0015e70b cmp       ecx, edx
+0x0015e70d jne       0x15e735
+0x0015e70f mov       ebx, dword ptr [rdi + rax + 0x204]
+0x0015e716 cmp       ebx, -1
+0x0015e719 je        0x15e735
+0x0015e71b vmovss    dword ptr [rbp - 0x14], xmm1
+0x0015e720 call      0x241180
+0x0015e725 sub       eax, ebx
+0x0015e727 vcvtsi2ss xmm0, xmm0, eax
+0x0015e72b call      0x241190
+0x0015e730 vmovss    xmm1, dword ptr [rbp - 0x14]
+0x0015e735 mov       al, 1
+0x0015e737 cmp       r14d, 5
+0x0015e73b ja        0x15e787
+0x0015e73d mov       ecx, r14d
+0x0015e740 lea       rax, [rip + 0x49] ; [0x15e790]
+0x0015e747 movsxd    rcx, dword ptr [rax + rcx*4]
+0x0015e74b add       rcx, rax
+0x0015e74e jmp       rcx
+0x0015e750 vucomiss  xmm1, xmm0
+0x0015e754 seta      al
+0x0015e757 jmp       0x15e787
+0x0015e759 vucomiss  xmm1, xmm0
+0x0015e75d setae     al
+0x0015e760 jmp       0x15e787
+0x0015e762 vucomiss  xmm0, xmm1
+0x0015e766 seta      al
+0x0015e769 jmp       0x15e787
+0x0015e76b vucomiss  xmm0, xmm1
+0x0015e76f setae     al
+0x0015e772 jmp       0x15e787
+0x0015e774 vcmpeqss  xmm0, xmm0, xmm1
+0x0015e779 jmp       0x15e780
+0x0015e77b vcmpneqss xmm0, xmm0, xmm1
+0x0015e780 vmovd     eax, xmm0
+0x0015e784 and       eax, 1
+0x0015e787 add       rsp, 0x10
+0x0015e78b pop       rbx
+0x0015e78c pop       r14
+0x0015e78e pop       rbp
+0x0015e78f ret       
+0x0015e790 sar       bh, 0xff
+0x0015e793 dec       ecx
+0x0015e795 .byte     0xff
+0x0015e796 .byte     0xff
+0x0015e797 call      rdx
+0x0015e799 .byte     0xff
+0x0015e79a .byte     0xff
+0x0015e79b .byte     0xff
+0x0015e79c .byte     0xdb
+0x0015e79d .byte     0xff
+0x0015e79e .byte     0xff
+0x0015e79f jmp       rsp
+0x0015e7a1 .byte     0xff
+0x0015e7a2 .byte     0xff
+0x0015e7a3 .byte     0xff
+0x0015e7a4 jmp       0x15e7a5
+0x0015e7a6 .byte     0xff
+0x0015e7a7 dec       dword ptr [rdi]
+0x0015e7a9 .byte     0x1f
+0x0015e7aa test      byte ptr [rax], al
+0x0015e7ac add       byte ptr [rax], al
+0x0015e7ae add       byte ptr [rax], al

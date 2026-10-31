@@ -1,0 +1,3 @@
+0x004f6c60 mov       byte ptr [rdi + 0x640], sil
+0x004f6c67 ret       
+0x004f6c68 nop       dword ptr [rax + rax]

@@ -1,0 +1,11 @@
+{
+  "state": "DELIVERED_AND_VERIFIED",
+  "draft": "lab/history\\2026-10-29-daily-closeout-190332",
+  "prepared_at": "2026-10-29T19:03:31.962993+00:00",
+  "reporting_date": "2026-10-29",
+  "supersedes_clip_id": "<lab-pc>-20261029T153911-dcb6eb8933d040b4bd6ea1ad58b6980a",
+  "package": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\content-outbox\\<lab-pc>-20261029T190401-70ab977fcc40450ba8699a34f16fcad2",
+  "clip_id": "<lab-pc>-20261029T190401-70ab977fcc40450ba8699a34f16fcad2",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\29\\<lab-pc>-20261029T190401-70ab977fcc40450ba8699a34f16fcad2.ready",
+  "verified_at": "2026-10-29T19:04:02.644413+00:00"
+}

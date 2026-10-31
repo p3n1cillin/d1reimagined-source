@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-10-06T17:52:00+00:00",
+  "reporting_date": "2026-10-06",
+  "reporting_timezone": "Europe/London",
+  "daily_update_id": "destiny1-2026-10-06",
+  "reporting_interval_start": "2026-10-06T00:00:00+00:00",
+  "reporting_interval_end": "2026-10-06T17:52:00+00:00",
+  "topic": "graphics-stability",
+  "feature": "vulkan-conformance-and-capture-resilience",
+  "development_session": "renderer-and-inventory-restoration",
+  "event_type": "GENERAL_PROGRESS",
+  "importance": "USEFUL",
+  "description": "One consolidated private engineering handoff: queue/query repairs verified in a bounded native fixture, remaining descriptor/layout and recorder failures documented; next fence increment passes CPU/build checks with native acceptance pending.",
+  "previous_state": "Native device loss and queue/query API errors prevent reliable rendering acceptance.",
+  "current_state": "Queue/query callbacks are absent in matching comparisons; descriptor/layout errors remain. Capture telemetry survives contention, but later recorder exit persists.",
+  "remaining_issue": "Character fidelity, flicker, mission handoff/combat and long-run recording remain unresolved.",
+  "referenced_package_ids": [
+    "<lab-pc>-20261006T065220-7641e8704d0841978e0c575aad433c87",
+    "<lab-pc>-20261006T082554-05a38c92bf8d4457a36e9cf2b57d4324",
+    "<lab-pc>-20261006T132502-7aa19388507d4333a577cfb19994ea20"
+  ],
+  "tested_uncommitted_changes": [
+    "three-file fence completion increment; scoped patch/audit in public worktree; private native executable contains earlier unrelated renderer modifications"
+  ],
+  "publication_review_required": true,
+  "native_pending_at_cutoff": [
+    "JOIN154"
+  ]
+}

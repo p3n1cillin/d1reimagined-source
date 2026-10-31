@@ -1,0 +1,32 @@
+[
+  {
+    "va": "0x2686db",
+    "ins": "mov bl, byte ptr [rax + rdi*4 + 0x18]",
+    "candidate_prologue": "0x2684c0"
+  },
+  {
+    "va": "0x26f420",
+    "ins": "vcvtsi2ss xmm0, xmm0, dword ptr [rbx + rax*4 + 0x18]",
+    "candidate_prologue": "0x26f400"
+  },
+  {
+    "va": "0x26f4a7",
+    "ins": "vcvtsi2ss xmm0, xmm0, dword ptr [r14 + rax*4 + 0x18]",
+    "candidate_prologue": "0x26f400"
+  },
+  {
+    "va": "0x26f782",
+    "ins": "mov eax, dword ptr [rbx + rax*4 + 0x18]",
+    "candidate_prologue": "0x26f770"
+  },
+  {
+    "va": "0x281abc",
+    "ins": "mov eax, dword ptr [r13 + rax*4 + 0x18]",
+    "candidate_prologue": "0x281a20"
+  },
+  {
+    "va": "0x283acc",
+    "ins": "mov cx, word ptr [rcx + rdx*4 + 0x18]",
+    "candidate_prologue": "0x283a40"
+  }
+]

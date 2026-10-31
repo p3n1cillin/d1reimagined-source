@@ -1,0 +1,4 @@
+{"event": "start", "pid": 25524, "base": "0x50a0000", "addrs": ["0x5628dbd"], "t": 1793019671.2363307}
+{"event": "detached", "hits": 0, "t": 1793019677.275458}
+{"event": "start", "pid": 25524, "base": "0x50a0000", "addrs": ["0x5628de0"], "t": 1793019683.2902174}
+{"event": "detached", "hits": 0, "t": 1793019689.3556252}

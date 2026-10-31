@@ -1,0 +1,42 @@
+[
+  {
+    "run": "JOIN252",
+    "package_id": "<lab-pc>-20261010T180802-6a22199448334c9d9b7c118ae9ddbfb6",
+    "source_file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_09_22_18_25.mp4",
+    "recorded_at": "2026-10-09T21:18:25+00:00",
+    "source_sha256": "79442d2586b07eee0a0cbca6459eb4e7a3789014031f35325784240e0795fc70",
+    "package_path": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\content-outbox\\<lab-pc>-20261010T180802-6a22199448334c9d9b7c118ae9ddbfb6",
+    "duration_seconds": 30.66,
+    "video_properties": {
+      "inspection": "AVAILABLE",
+      "width": 1280,
+      "height": 720,
+      "average_fps_reported": 14.41,
+      "base_fps_reported": 30.0,
+      "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+    },
+    "contains_audio": true,
+    "full_decode": "PASS",
+    "requires_manual_review": true
+  },
+  {
+    "run": "JOIN253",
+    "package_id": "<lab-pc>-20261010T180808-5edaf0838d814fb9b5895bd5a98f1515",
+    "source_file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_10_01_53_41.mp4",
+    "recorded_at": "2026-10-10T00:53:41+00:00",
+    "source_sha256": "540866a1b6aca51b17d78db75a711b985953945962f992ffafe73abf0bb861bc",
+    "package_path": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\content-outbox\\<lab-pc>-20261010T180808-5edaf0838d814fb9b5895bd5a98f1515",
+    "duration_seconds": 30.85,
+    "video_properties": {
+      "inspection": "AVAILABLE",
+      "width": 1280,
+      "height": 720,
+      "average_fps_reported": 13.84,
+      "base_fps_reported": 30.0,
+      "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+    },
+    "contains_audio": true,
+    "full_decode": "PASS",
+    "requires_manual_review": true
+  }
+]

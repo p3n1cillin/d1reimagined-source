@@ -1,0 +1,17 @@
+0x00324c00 mov       eax, dword ptr [rdi + 0x20]
+0x00324c03 mov       dword ptr [rsi + 0x10], eax
+0x00324c06 mov       rax, qword ptr [rdi + 0x10]
+0x00324c0a mov       rcx, qword ptr [rdi + 0x18]
+0x00324c0e mov       qword ptr [rsi + 8], rcx
+0x00324c12 mov       qword ptr [rsi], rax
+0x00324c15 movsxd    rax, dword ptr [rdi + 4]
+0x00324c19 mov       ecx, dword ptr [rdi + 0xc]
+0x00324c1c mov       dword ptr [rsi + 0x28], ecx
+0x00324c1f lea       rcx, [rsi + 0x18]
+0x00324c23 test      cl, 3
+0x00324c26 mov       qword ptr [rcx + 8], 0
+0x00324c2e mov       qword ptr [rcx], 0
+0x00324c35 mov       dword ptr [rsi + 0x18], edx
+0x00324c38 mov       qword ptr [rsi + 0x20], rax
+0x00324c3c ret       
+0x00324c3d nop       dword ptr [rax]

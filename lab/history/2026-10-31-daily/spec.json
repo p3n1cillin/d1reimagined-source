@@ -1,0 +1,43 @@
+{
+ "machine": "<lab-pc>",
+ "report": "daily-report.md",
+ "events": "events.json",
+ "clips": [
+  "clips/clip01.mp4",
+  "clips/clip02.mp4",
+  "clips/clip03.mp4",
+  "clips/clip04.mp4",
+  "clips/clip05.mp4",
+  "clips/clip06.mp4"
+ ],
+ "screenshots": [
+  "screenshots/01.png",
+  "screenshots/02.png",
+  "screenshots/03.png",
+  "screenshots/04.png",
+  "screenshots/05.png",
+  "screenshots/06.png",
+  "screenshots/07.png",
+  "screenshots/08.png"
+ ],
+ "metadata": {
+  "package_kind": "engineering-report",
+  "reporting_date": "2026-10-31",
+  "reporting_timezone": "Europe/London",
+  "topic": "Buying from a vendor; PC mouse and keyboard; 60 fps at full speed",
+  "feature": "Vendors",
+  "event_type": "milestone",
+  "importance": "USEFUL",
+  "description": "An emblem is bought from Eva Levante with Glimmer: the Glimmer is spent and the emblem arrives as owned.",
+  "previous_state": "Vendor screens opened with their stock, but every price read 0 Glimmer and nothing could be bought.",
+  "current_state": "Glimmer reaches the game, the purchase is sent, and the server's answer spends the Glimmer and delivers the item.",
+  "remaining_issue": "Purchases priced in character-held currencies, selling, and the other vendors are untested; the Guardian still renders without a head in third person.",
+  "next_task": "Selling, other vendors and reputation; the game's own PC key bindings; the Guardian's missing head.",
+  "game_build": "PS4 56578",
+  "contains_sensitive_information": false,
+  "requires_manual_review": true,
+  "contains_voice": false,
+  "audio": "game audio only, one emulator port; music may be present",
+  "git_commit": "77d306bab26844e461342a9185beaec5ecc906a4"
+ }
+}

@@ -1,0 +1,116 @@
+{
+  "time": 1793214512.77703,
+  "base": "0x5090000",
+  "rows": [
+    {
+      "squad": 11,
+      "member_handle": 1995800576,
+      "component": "0x37fd46d40",
+      "flags_30c": 0,
+      "regions": [
+        {
+          "index": 0,
+          "category": 0,
+          "pool": 0,
+          "fraction": 1.0
+        },
+        {
+          "index": 1,
+          "category": 3,
+          "pool": 1,
+          "fraction": 1.0
+        },
+        {
+          "index": 2,
+          "category": 3,
+          "pool": 2,
+          "fraction": 1.0
+        }
+      ],
+      "pools": [
+        {
+          "index": 0,
+          "region": 0,
+          "definition_flags": 0,
+          "base_capacity": 100.0,
+          "current_base": 100.0,
+          "term_50ec70": 0.0,
+          "term_50ec90": 0.0
+        },
+        {
+          "index": 1,
+          "region": 1,
+          "definition_flags": 0,
+          "base_capacity": 50.0,
+          "current_base": 50.0,
+          "term_50ec70": 0.0,
+          "term_50ec90": 0.0
+        },
+        {
+          "index": 2,
+          "region": 2,
+          "definition_flags": 0,
+          "base_capacity": 0.9999999776482582,
+          "current_base": 0.9999999776482582,
+          "term_50ec70": 0.0,
+          "term_50ec90": 0.0
+        }
+      ]
+    },
+    {
+      "squad": 12,
+      "member_handle": 1710587913,
+      "component": "0x37fcfc4a0",
+      "flags_30c": 0,
+      "regions": [
+        {
+          "index": 0,
+          "category": 0,
+          "pool": 0,
+          "fraction": 1.0
+        },
+        {
+          "index": 1,
+          "category": 3,
+          "pool": 1,
+          "fraction": 1.0
+        },
+        {
+          "index": 2,
+          "category": 3,
+          "pool": 2,
+          "fraction": 1.0
+        }
+      ],
+      "pools": [
+        {
+          "index": 0,
+          "region": 0,
+          "definition_flags": 0,
+          "base_capacity": 100.0,
+          "current_base": 100.0,
+          "term_50ec70": 0.0,
+          "term_50ec90": 0.0
+        },
+        {
+          "index": 1,
+          "region": 1,
+          "definition_flags": 0,
+          "base_capacity": 50.0,
+          "current_base": 50.0,
+          "term_50ec70": 0.0,
+          "term_50ec90": 0.0
+        },
+        {
+          "index": 2,
+          "region": 2,
+          "definition_flags": 0,
+          "base_capacity": 0.9999999776482582,
+          "current_base": 0.9999999776482582,
+          "term_50ec70": 0.0,
+          "term_50ec90": 0.0
+        }
+      ]
+    }
+  ]
+}

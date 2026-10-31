@@ -1,0 +1,47 @@
+{
+  "published": false,
+  "draft": "F:\\d1\\d1preservation-main\\cfw-staging\\agr-postgame-scoreboard.draft.txt",
+  "row_count": 22,
+  "schema": "0x808008d0",
+  "size": 19792,
+  "identity": {
+    "utc": "2026-10-28T13:34:00.204702+00:00",
+    "base": "0x50c0000",
+    "player_array": "0x37fa38580",
+    "native_identity": "01020000000000d1",
+    "oracle_identity": "d100000000000201"
+  },
+  "synthetic_stats": {
+    "kills": 50,
+    "precision_kills": 15,
+    "deaths": 2
+  },
+  "stat_hashes": [
+    "0x232708fc",
+    "0xdad09fcf",
+    "0xb184cd9c",
+    "0xafb554ad",
+    "0x8f6f8162",
+    "0xc4dd4512",
+    "0xe30c1684",
+    "0x4cdadc39",
+    "0xd044ef93",
+    "0x54e5f1d4",
+    "0xd0c749b3",
+    "0x3ae1f134",
+    "0xdc48030",
+    "0xda2ecc05",
+    "0xf1367c24",
+    "0xe1c8c219",
+    "0x208fb8e1",
+    "0x98a3d131",
+    "0xea6079d",
+    "0x5a4ac67f",
+    "0x66d62ad4",
+    "0xab04a796",
+    "0xcfc7f8d0"
+  ],
+  "object_sha256": "f3ac5e2bb1572658ca6664a300b23e7ad70324fa6cf64643e304732a026d9232",
+  "draft_sha256": "3688192730085cc91fa9a86b74578aae3352cc6cb6061167a940799fb78524e9",
+  "codec_stdout": "tag 0x808008d0  struct 19792 (=0x4d50) bytes\npayload 124 bytes / 988 bits -> lab/history\\2026-10-29-postgame-codex\\scoreboard-one-player-A.wire.bin\nround trip: 988 bits consumed, object IDENTICAL\n"
+}

@@ -1,0 +1,44 @@
+{
+  "verified_at": "2026-10-29T19:04:02.644413+00:00",
+  "reporting_date": "2026-10-29",
+  "daily_report": "<lab-pc>-20261029T190401-70ab977fcc40450ba8699a34f16fcad2",
+  "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\29\\<lab-pc>-20261029T190401-70ab977fcc40450ba8699a34f16fcad2.ready",
+  "ready_verified": true,
+  "manifest_bytes_match": true,
+  "payloads": [
+    {
+      "file": "daily-report.md",
+      "size": 12688,
+      "sha256": "615821bab395ac7c2b9da75839e1646aad2996f2918f8c465553511e363b1272",
+      "matches": true
+    },
+    {
+      "file": "events.json",
+      "size": 1922,
+      "sha256": "8411c92d43cb54025b44bf47862456e8152e7b1c01539c75934947d825a8f3a9",
+      "matches": true
+    },
+    {
+      "file": "metadata.json",
+      "size": 3983,
+      "sha256": "32cca7aaec32c71402bdaaf5b4e0fba56214f5efe128738da3fa89d70ec7bc38",
+      "matches": true
+    }
+  ],
+  "transfer_started_at": "2026-10-29T19:04:02.130717+00:00",
+  "submitted_at": "2026-10-29T19:04:02.414266+00:00",
+  "new_screenshots": 0,
+  "new_clips": 0,
+  "video_decode": "NOT APPLICABLE: no new media",
+  "earlier_media_resent": false,
+  "referenced_package_ids": [
+    "<lab-pc>-20261029T153911-dcb6eb8933d040b4bd6ea1ad58b6980a",
+    "<lab-pc>-20261029T173936-f34dc117b28f4e4fb9325930a78e2c7b"
+  ],
+  "nas_free_bytes_at_verification": 490094854144,
+  "late_delivery": true,
+  "before_production_start_2000": true,
+  "pending_outbox": [],
+  "publication_review_required": true,
+  "handoff_complete": true
+}

@@ -1,0 +1,5 @@
+tag 0x8080254d  struct 212 (=0xd4) bytes
+payload 29 bytes / 231 bits
+  8000000000000002a0472771403fff8403a20000000000040200000000
+round trip: 231 bits consumed, object IDENTICAL
+

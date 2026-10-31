@@ -1,0 +1,749 @@
+{
+  "root": "F:\\d1\\<pc>-import\\d1xenia\\local",
+  "targets": [
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\00_ORIGINAL_DUMP\\HDD_CAPTURE_2026-09-23",
+      "reason": "Xbox HDD capture",
+      "files": 11,
+      "bytes": 15049613312,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\00_ORIGINAL_DUMP\\USB_CAPTURE_2026-09-22",
+      "reason": "Xbox USB capture",
+      "files": 54,
+      "bytes": 16199192614,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\01_WORKING\\test001",
+      "reason": "Xbox installed-game working copy",
+      "files": 54,
+      "bytes": 16199192614,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\01_WORKING\\test002_packages",
+      "reason": "Xbox content working copy",
+      "files": 11,
+      "bytes": 15049613312,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\02_EXTRACTED\\Content1_WORKAROUND",
+      "reason": "Xbox STFS extraction",
+      "files": 58,
+      "bytes": 12493048,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\hdd_destiny_archive_2026-09-23.csv",
+      "reason": "Xbox capture hash manifest",
+      "files": 1,
+      "bytes": 1385,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\hdd_destiny_d_archive_2026-09-23.csv",
+      "reason": "Xbox capture hash manifest",
+      "files": 1,
+      "bytes": 1385,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\hdd_destiny_source_2026-09-23.csv",
+      "reason": "Xbox capture hash manifest",
+      "files": 1,
+      "bytes": 1385,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\usb_content_archive_2026-09-22.csv",
+      "reason": "Xbox capture hash manifest",
+      "files": 1,
+      "bytes": 8646,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\HASHES\\usb_content_source_2026-09-22.csv",
+      "reason": "Xbox capture hash manifest",
+      "files": 1,
+      "bytes": 8646,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\2XXXXXXX-STFS-list.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 190,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\3XXXXXXX-STFS-list.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 5583,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\4E9759515BB2CBB78EB5C577E2B73BD899470B7841-STFS-list.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 4470,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\console-network-capture",
+      "reason": "Xbox reference network capture",
+      "files": 9,
+      "bytes": 781747,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-STFS-list.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 213,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-STFS-workaround-extract.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 4866,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-STFS-workaround-list.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 4792,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-Xenia-patched-vfs-active-hash.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 12191,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-Xenia-patched-vfs-debug.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 40260,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content1-Xenia-patched-vfs-list.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 12983,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content2-Xenia-patched-vfs-active-hash.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 3661,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Content3-Xenia-patched-vfs-active-hash.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 2973,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G00_baseline-1.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1216178,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G00_baseline-2.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1212227,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G00_baseline.config.toml",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 62422,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G00_baseline.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 296597,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G01_rov-1.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1208569,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G01_rov.config.toml",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 62421,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G01_rov.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 305077,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G02_readback_fast-1.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1215482,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G02_readback_fast-2.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1211058,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G02_readback_fast.config.toml",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 62421,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G02_readback_fast.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 304963,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G03_readback_full-1.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1215905,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G03_readback_full-2.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1211820,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G03_readback_full.config.toml",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 62421,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G03_readback_full.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 305251,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G04_clear_page_state-1.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1215905,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G04_clear_page_state-2.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1211662,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G04_clear_page_state.config.toml",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 62421,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G04_clear_page_state.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 305188,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G05_no_cpu_vs_extent-1.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1214835,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G05_no_cpu_vs_extent-2.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1211407,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G05_no_cpu_vs_extent.config.toml",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 62421,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G05_no_cpu_vs_extent.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 305116,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G10_trace-1.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1217161,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G10_trace.config.toml",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 62422,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Gfx-G10_trace.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 206084,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test001-canary-error.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 46992,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test001-title-screen.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 837987,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test001.config.toml",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 62422,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test001.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 630177,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test002-canary-error.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 54180,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test002-content1-install.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 22716,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test002-TU-only.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 489049,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test003-Vulkan.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 169753,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test004-Content3.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 186613,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test005-patched-install.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 25118,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test006-failfast-install.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 25432,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test007-active-hash-install.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 47166,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test008-content2-install.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 30773,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test008-content3-install.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 29306,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test009-full-content-boot.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 1574073,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test009-full-content-canary.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 43502,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test010-network-trace.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 182294315,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test011-ethernet-active-canary.png",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 43551,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test011-ethernet-active.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 330524,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test012-live-state-hidden-preflight.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 18267,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test012-live-state.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 185867,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Test013-xhttp-startup.xenia.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 168307,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\tu00000002_00000000-STFS-list.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 460,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\usb_copy_2026-09-22.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 7434,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\working_copy_test001.log",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 10243,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-patched-app-build.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 7192,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-patched-final-build.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 5811,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-test005-harness-build.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 5811,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-test006-failfast-build.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 5820,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-test007-active-hash-build.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 6590,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-test011-ethernet-build.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 5808,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-trace-build.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 17977,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-trace-dump-build.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 4422,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\LOGS\\Xenia-WebServices-clone.txt",
+      "reason": "Xbox experiment output",
+      "files": 1,
+      "bytes": 64,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\TOOLS\\Extract-STFS",
+      "reason": "Xbox-only extractor",
+      "files": 34,
+      "bytes": 65030,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\TOOLS\\XBLA-Extract",
+      "reason": "Xbox-only extractor",
+      "files": 39,
+      "bytes": 129121,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\TOOLS\\xenia-source-74c4e4acb",
+      "reason": "retired emulator source",
+      "files": 5,
+      "bytes": 24591,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\TOOLS\\xenia_canary_windows_74c4e4a.7z",
+      "reason": "retired emulator download",
+      "files": 1,
+      "bytes": 3649059,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA",
+      "reason": "retired emulator build/test",
+      "files": 22,
+      "bytes": 42745389,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_BUILDS",
+      "reason": "retired emulator build/test",
+      "files": 48715,
+      "bytes": 12365726210,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G00_baseline",
+      "reason": "retired emulator build/test",
+      "files": 28,
+      "bytes": 223854157,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G01_rov",
+      "reason": "retired emulator build/test",
+      "files": 27,
+      "bytes": 222634249,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G02_readback_fast",
+      "reason": "retired emulator build/test",
+      "files": 28,
+      "bytes": 223852292,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G03_readback_full",
+      "reason": "retired emulator build/test",
+      "files": 28,
+      "bytes": 223853477,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G04_clear_page_state",
+      "reason": "retired emulator build/test",
+      "files": 28,
+      "bytes": 223853319,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G05_no_cpu_vs_extent",
+      "reason": "retired emulator build/test",
+      "files": 28,
+      "bytes": 223851994,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_GFX_G10_trace",
+      "reason": "retired emulator build/test",
+      "files": 27,
+      "bytes": 222642913,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST002",
+      "reason": "retired emulator build/test",
+      "files": 28,
+      "bytes": 404562568,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST003_VULKAN",
+      "reason": "retired emulator build/test",
+      "files": 28,
+      "bytes": 403125296,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST004_CONTENT3",
+      "reason": "retired emulator build/test",
+      "files": 29,
+      "bytes": 2303339141,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST005_STFS",
+      "reason": "retired emulator build/test",
+      "files": 14,
+      "bytes": 199405773,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST006_STFS_FAILFAST",
+      "reason": "retired emulator build/test",
+      "files": 13,
+      "bytes": 18089165,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST007_STFS_ACTIVE",
+      "reason": "retired emulator build/test",
+      "files": 437,
+      "bytes": 6200351437,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST009_FULL_CONTENT",
+      "reason": "retired emulator build/test",
+      "files": 26,
+      "bytes": 221427048,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST010_NETWORK_TRACE",
+      "reason": "retired emulator build/test",
+      "files": 26,
+      "bytes": 221427048,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST011_ETHERNET_ACTIVE",
+      "reason": "retired emulator build/test",
+      "files": 26,
+      "bytes": 221427560,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST012_LIVE_STATE",
+      "reason": "retired emulator build/test",
+      "files": 26,
+      "bytes": 221427048,
+      "reparse_points": 0
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\XENIA_TEST013_XHTTP_STARTUP",
+      "reason": "retired emulator build/test",
+      "files": 28,
+      "bytes": 237455849,
+      "reparse_points": 0
+    }
+  ],
+  "files": 49964,
+  "bytes": 87344341166
+}

@@ -1,0 +1,61 @@
+{
+  "checked_at": "2026-10-07T20:01:07.6134020Z",
+  "automation_id": "daily-engineering-handoff",
+  "requested_reporting_date": "2026-10-06",
+  "existing_daily_reports": [
+    {
+      "verified": true,
+      "ready_directory": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\06\\<lab-pc>-20261006T175458-41a4ed0b5dd54026940252e15717ba56.ready",
+      "payloads": [
+        {
+          "verified": true,
+          "bytes": 10718,
+          "file": "daily-report.md"
+        },
+        {
+          "verified": true,
+          "bytes": 6256,
+          "file": "events.json"
+        },
+        {
+          "verified": true,
+          "bytes": 2381,
+          "file": "metadata.json"
+        }
+      ]
+    },
+    {
+      "verified": true,
+      "ready_directory": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\07\\<lab-pc>-20261007T174859-b81ced7030e147b089c1887ba2e3b962.ready",
+      "payloads": [
+        {
+          "verified": true,
+          "bytes": 13502,
+          "file": "daily-report.md"
+        },
+        {
+          "verified": true,
+          "bytes": 4696,
+          "file": "events.json"
+        },
+        {
+          "verified": true,
+          "bytes": 2957,
+          "file": "metadata.json"
+        }
+      ]
+    }
+  ],
+  "new_package_created": false,
+  "previous_ready_packages_modified": false,
+  "media_resent": false,
+  "pending_outbox": 0,
+  "pending_review": 0,
+  "nas_connected": true,
+  "available_nas_bytes": 536707203072,
+  "critical_native_test_active": false,
+  "native_checkpoint": "JOIN174 finalized, exact native processes closed, automatic cleanup PASS; no RPCS3 client active at this checkpoint.",
+  "late_evidence_rule": "Post-cutoff JOIN173/JOIN174 and later evidence rolls into the next eligible edition with actual dates and UTC timestamps; completed October 6/7 packages remain immutable.",
+  "next_engineering_task": "JOIN175 planned but not armed: capture and decode initialized type-21 transition payload, verify BAP factory-3 header encoding and forwarding after the proven queue allocation and consumer. Full mission activation and combined character/world graphics remain unresolved.",
+  "user_action_required": false
+}

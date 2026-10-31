@@ -1,0 +1,86 @@
+{
+  "base": "0x5090000",
+  "rows": [
+    {
+      "squad": 8,
+      "root": "0x37fd27d30",
+      "components": [
+        {
+          "key": "0x1939b49e",
+          "offset": "0xc0d0",
+          "component": "0x37fd33e00",
+          "native_tag": "0x80aac4b3",
+          "definition": "0x381799c30",
+          "record": "00000000d0c00000000000009b278080b3c4aa8000000000c0020000000000007bddaa8000000000"
+        },
+        {
+          "key": "0xe52389ae",
+          "offset": "0x3e10",
+          "component": "0x37fd2bb40",
+          "native_tag": "0x80cd0554",
+          "definition": "0x3853dc6a0",
+          "record": "00000000103e000000000000e6c4aa805405cd8000000000700c000000000000a1c3aa8000000000"
+        }
+      ],
+      "position": [
+        68.65397644042969,
+        -563.5413818359375,
+        6.416899681091309
+      ]
+    },
+    {
+      "squad": 11,
+      "root": "0x37fd48ef0",
+      "components": [
+        {
+          "key": "0xe52389ae",
+          "offset": "0x3dc0",
+          "component": "0x37fd4ccb0",
+          "native_tag": "0x80cd0037",
+          "definition": "0x384b2bfd0",
+          "record": "00000000c03d000000000000e6c4aa803700cd8000000000700c000000000000a1c3aa8000000000"
+        },
+        {
+          "key": "0x1939b49e",
+          "offset": "0xcc40",
+          "component": "0x37fd55b30",
+          "native_tag": "0x80aac4b3",
+          "definition": "0x381799c30",
+          "record": "0000000040cc0000000000009b278080b3c4aa8000000000c0020000000000007bddaa8000000000"
+        }
+      ],
+      "position": [
+        98.14977264404297,
+        -581.5595092773438,
+        7.378838539123535
+      ]
+    },
+    {
+      "squad": 12,
+      "root": "0x37fcf86e0",
+      "components": [
+        {
+          "key": "0xe52389ae",
+          "offset": "0x3dc0",
+          "component": "0x37fcfc4a0",
+          "native_tag": "0x80cd0037",
+          "definition": "0x384b2bfd0",
+          "record": "00000000c03d000000000000e6c4aa803700cd8000000000700c000000000000a1c3aa8000000000"
+        },
+        {
+          "key": "0x1939b49e",
+          "offset": "0xcc40",
+          "component": "0x37fd05320",
+          "native_tag": "0x80aac4b3",
+          "definition": "0x381799c30",
+          "record": "0000000040cc0000000000009b278080b3c4aa8000000000c0020000000000007bddaa8000000000"
+        }
+      ],
+      "position": [
+        98.23101043701172,
+        -577.7598266601562,
+        7.543365478515625
+      ]
+    }
+  ]
+}

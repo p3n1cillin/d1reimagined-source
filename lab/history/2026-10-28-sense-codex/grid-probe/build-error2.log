@@ -1,0 +1,11 @@
+   Compiling private-grid-probe v0.1.0 (lab/history\2026-10-28-sense-codex\grid-probe)
+error[E0432]: unresolved import `unicorn_engine`
+  --> F:\d1\public-work\d1reimagined-stats\ps4\d1-server\crates\d1-oracle\src\scalar_float.rs:11:5
+   |
+11 | use unicorn_engine::{RegisterX86 as R, Unicorn};
+   |     ^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `unicorn_engine`
+   |
+   = help: if you wanted to use a crate named `unicorn_engine`, use `cargo add unicorn_engine` to add it to your `Cargo.toml`
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `private-grid-probe` (bin "private-grid-probe") due to 1 previous error

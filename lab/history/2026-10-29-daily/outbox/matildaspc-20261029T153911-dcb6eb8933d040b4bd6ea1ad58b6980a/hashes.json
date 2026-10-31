@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "files": {
+    "clips/clip01.mp4": {
+      "size": 99673478,
+      "sha256": "3ed889bdb9fd59604156e2afa60783c3f086fb75b2b21b292c99ff497863d092"
+    },
+    "clips/clip02.mp4": {
+      "size": 134230137,
+      "sha256": "823fecce9a18dde74e6e61f61a803766497d418b4a169b68c0b85780c79ad1ad"
+    },
+    "clips/clip03.mp4": {
+      "size": 100127944,
+      "sha256": "723b8ab29380089fefa44e562ff438055836f985ced3b59d71e54e670ddd5233"
+    },
+    "clips/clip04.mp4": {
+      "size": 12041788,
+      "sha256": "4d2f26aa5f7c682a99a64c9a6a359b6fed701be01ece5f119aadf58096b73f84"
+    },
+    "clips/clip05.mp4": {
+      "size": 9705205,
+      "sha256": "7fa4424bc3b4a96ff329178841b57bc9ff1ca3ec8f4ce0e0a820d31ce8cbb319"
+    },
+    "daily-report.md": {
+      "size": 9204,
+      "sha256": "b1c52d4724f6b57f7f993f598319fb551041260bd3b9d62c2765567ddad77e64"
+    },
+    "events.json": {
+      "size": 1925,
+      "sha256": "3e34066413d2d9fcf78d1a5dd56e1947e29aa3c32c8b0389e75fcbc7426681f9"
+    },
+    "metadata.json": {
+      "size": 3375,
+      "sha256": "a7676f25352b5f6d6aacb83bba8d57ea50a97d3b789ece001a5ed306d57d5d1b"
+    },
+    "screenshots/01.png": {
+      "size": 1713201,
+      "sha256": "e3b591f76487769ff6989b05e5971e2493b95e6e7107ae06642791664183cf7b"
+    },
+    "screenshots/02.png": {
+      "size": 1546517,
+      "sha256": "0701ee226069a50a47b778b92495d19c550caa497ae7898a3ac4d0a1c69bed5b"
+    },
+    "screenshots/03.png": {
+      "size": 1427209,
+      "sha256": "9f0a8bd3c3045a9b63e09e5e0bcaeb40f633a13fd41565b403232f39ebd4d453"
+    },
+    "screenshots/04.png": {
+      "size": 1421962,
+      "sha256": "98b2a7227c6bf6d5f5b1c2360e7d1435ff8c5712500dc59a70721289614c02cc"
+    },
+    "screenshots/05.png": {
+      "size": 1423114,
+      "sha256": "ff646deb510757c5e506b29e50d2959c693c8de1ae4b934d358b22f68a369bef"
+    },
+    "screenshots/06.png": {
+      "size": 1426440,
+      "sha256": "96885b116aa073f943a7a0318010e046a77c5755a5281ba9336f536afadb9c28"
+    },
+    "screenshots/07.png": {
+      "size": 1930604,
+      "sha256": "0f0f9c9207b33a78b3e4c7fbd512a1c6f08cc556767ac32541478d7540dcc3fb"
+    },
+    "screenshots/08.png": {
+      "size": 1420898,
+      "sha256": "8ed29f75a9d35e0f7ac62d8b42919b853b57c0ccb5dbd1a6430ef58b9643e5b4"
+    }
+  }
+}

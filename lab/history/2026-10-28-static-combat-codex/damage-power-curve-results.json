@@ -1,0 +1,188 @@
+{
+  "method": "offline float32 replica of owned native selector and expression bytecode; not a live hit test",
+  "scope": "positive finite powers; equal triples; observed absent overrides; channel 0 is damage multiplier",
+  "results": [
+    {
+      "player_power": 1.0,
+      "npc_power": 1.0,
+      "direction": "outgoing",
+      "attacker_clamped": 1.0,
+      "defender_clamped": 1.0,
+      "interval": [
+        0.0,
+        5.800000190734863
+      ],
+      "coordinate": 0,
+      "channels": [
+        1.0,
+        2.0,
+        1
+      ]
+    },
+    {
+      "player_power": 1.0,
+      "npc_power": 1.0,
+      "direction": "incoming",
+      "attacker_clamped": 1.0,
+      "defender_clamped": 1.0,
+      "interval": [
+        -5.800000190734863,
+        5.800000190734863
+      ],
+      "coordinate": 0.5,
+      "channels": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "player_power": 2.0,
+      "npc_power": 1.0,
+      "direction": "outgoing",
+      "attacker_clamped": 2.0,
+      "defender_clamped": 1.0,
+      "interval": [
+        0.0,
+        5.599999904632568
+      ],
+      "coordinate": 0,
+      "channels": [
+        1.0,
+        2.0,
+        1
+      ]
+    },
+    {
+      "player_power": 2.0,
+      "npc_power": 1.0,
+      "direction": "incoming",
+      "attacker_clamped": 1.0,
+      "defender_clamped": 2.0,
+      "interval": [
+        -5.800000190734863,
+        5.800000190734863
+      ],
+      "coordinate": 0.5862069129943848,
+      "channels": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "player_power": 5.0,
+      "npc_power": 1.0,
+      "direction": "outgoing",
+      "attacker_clamped": 5.0,
+      "defender_clamped": 1.0,
+      "interval": [
+        0.0,
+        5.0
+      ],
+      "coordinate": 0,
+      "channels": [
+        1.0,
+        2.0,
+        1
+      ]
+    },
+    {
+      "player_power": 5.0,
+      "npc_power": 1.0,
+      "direction": "incoming",
+      "attacker_clamped": 1.0,
+      "defender_clamped": 5.0,
+      "interval": [
+        -5.800000190734863,
+        5.800000190734863
+      ],
+      "coordinate": 0.8448275923728943,
+      "channels": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "player_power": 40.0,
+      "npc_power": 1.0,
+      "direction": "outgoing",
+      "attacker_clamped": 11.0,
+      "defender_clamped": 1.0,
+      "interval": [
+        0.0,
+        4.0
+      ],
+      "coordinate": 0,
+      "channels": [
+        1.0,
+        2.0,
+        1
+      ]
+    },
+    {
+      "player_power": 40.0,
+      "npc_power": 1.0,
+      "direction": "incoming",
+      "attacker_clamped": 1.0,
+      "defender_clamped": 11.0,
+      "interval": [
+        -5.800000190734863,
+        5.800000190734863
+      ],
+      "coordinate": 1,
+      "channels": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "curve_samples": {
+    "0x100": [
+      [
+        0,
+        1.0
+      ],
+      [
+        0.25,
+        0.7139999866485596
+      ],
+      [
+        0.5,
+        0.5774999856948853
+      ],
+      [
+        0.75,
+        0.5040002465248108
+      ],
+      [
+        1,
+        0.0
+      ]
+    ],
+    "0x1a8": [
+      [
+        0,
+        5.0
+      ],
+      [
+        0.25,
+        1.899999976158142
+      ],
+      [
+        0.5,
+        1.0
+      ],
+      [
+        0.75,
+        1.0
+      ],
+      [
+        1,
+        1.0
+      ]
+    ]
+  }
+}

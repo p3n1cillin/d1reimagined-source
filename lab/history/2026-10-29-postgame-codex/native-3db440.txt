@@ -1,0 +1,4 @@
+0x003db440 lea       rcx, [rip + 0x22d26e9] ; [0x26adb30]
+0x003db447 mov       eax, 0xcc8
+0x003db44c add       rax, qword ptr [rcx]
+0x003db44f ret       

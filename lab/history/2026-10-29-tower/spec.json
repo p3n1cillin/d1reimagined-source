@@ -1,0 +1,33 @@
+{
+ "machine": "<lab-pc>",
+ "report": "daily-report.md",
+ "events": "events.json",
+ "clips": [
+  "clips/01-continue-to-tower.mp4"
+ ],
+ "screenshots": [
+  "screenshots/01-tower-north-arrival.png",
+  "screenshots/02-guardian-in-tower.png",
+  "screenshots/03-continue-hold.png"
+ ],
+ "metadata": {
+  "package_kind": "engineering-report",
+  "reporting_date": "2026-10-29",
+  "reporting_timezone": "Europe/London",
+  "topic": "A Guardian Rises: arrival in the Tower",
+  "feature": "travel to the Tower",
+  "event_type": "milestone",
+  "importance": "MAJOR",
+  "description": "After completing the opening mission, holding Continue takes the Guardian to Tower North in the Last City.",
+  "previous_state": "Continue left the end-of-mission screens but the game loaded a stand-in lunar map, then the Tower stalled on its loading screen.",
+  "current_state": "The Tower loads and the Guardian stands in Tower North with the HUD up.",
+  "remaining_issue": "The story cinematic between the mission and the Tower is skipped by a stand-in mapping; Tower characters and vendors untested; advancement tab empty; values synthetic.",
+  "next_task": "Serve the story cinematic before the Tower; check movement and vendors in the Tower.",
+  "game_build": "PS4 56578",
+  "contains_sensitive_information": false,
+  "requires_manual_review": true,
+  "contains_voice": false,
+  "audio": "game audio only, one emulator port; music may be present",
+  "git_commit": "56ff331fb3c0bd0fb05879af6da86c10ec992290"
+ }
+}

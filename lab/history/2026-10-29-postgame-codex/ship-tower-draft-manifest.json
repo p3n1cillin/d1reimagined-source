@@ -1,0 +1,88 @@
+{
+  "scope": "UNSERVED ship grant and Tower drafts",
+  "item_index": 3517,
+  "instance_soid": "0xd1000000000003f1",
+  "equipment_ordinal": 9,
+  "art_arrangement": 2321,
+  "backpack_slot": 123,
+  "files": [
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\arcadia-3517-inventory.draft.bin",
+      "size": 171,
+      "sha256": "7c4d83e72c1d5020b3904a0a278d327475e0b2ff1f1058af6240e05acfe7482b",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\arcadia-profile-xp0-owned.draft.bin",
+      "size": 20836,
+      "sha256": "3d44c703fc2c20ddb90715c3d21823b7170d5809bf8c314bdb8edf596622d87b",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\arcadia-profile-xp0-equipped.draft.bin",
+      "size": 20836,
+      "sha256": "349068c1aae81f642d21055647ed03861fb7a6a1ef87d94a6c35304948b3fe00",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\arcadia-profile-xp900-owned.draft.bin",
+      "size": 20836,
+      "sha256": "63fbdc8ff4e707d7e85bfc4d368396be10d354c45e430a858a92af767eb9dfb9",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\arcadia-profile-xp900-equipped.draft.bin",
+      "size": 20836,
+      "sha256": "ec58f993c8206384667c771caae94cd0f38891dc04845892dd10a9a49a7385f5",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\agr-postgame-scoreboard-arcadia.draft.txt",
+      "size": 43005,
+      "sha256": "329b65439dbd78113a36e2f29724b29e8101cbd30a931e283940ce7da3024bd0",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\arcadia-reward-host-types.draft.txt",
+      "size": 864,
+      "sha256": "c5179451b990ceee1cf7939f0f1d041be419aefda8a090e325f83a23e197fa62",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\tower-common-clients.draft.txt",
+      "size": 1311,
+      "sha256": "41752e69f6c4623b0665f8174064117065667d662edb190fdfae9eeb874a8f3d",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\world-table-tower.draft.txt",
+      "size": 1202,
+      "sha256": "7318e2d11383cb95ea9b4307a43a882aeacdb59fa8d79cc975baad5e1159f278",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\tower-known-world.draft.txt",
+      "size": 792,
+      "sha256": "66651f619e0900e78df357aabf42d1d70d4c450dfe98e9a4b721a13055b0c4b0",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\tower-follow-env.draft.txt",
+      "size": 1299,
+      "sha256": "5e52e84327772aace3f684ef979b1ac84da1f5abf7133754d6e24252b96595c8",
+      "published": false
+    },
+    {
+      "path": "F:\\d1\\d1preservation-main\\cfw-staging\\arcadia-grant.draft.txt",
+      "size": 1969,
+      "sha256": "4c9ce48e083a7f1fdf7bbfaa2d33fcf8edb967e2eea30f46558d7722ff7bb2dd",
+      "published": false
+    }
+  ],
+  "inventory_codec_bits": 1367,
+  "reward_object_bits": 2388,
+  "reward_frame_after_registry_addition": 1338,
+  "tower_common_frame": 321,
+  "live_acceptance": false,
+  "activity165_world_binding": "unresolved"
+}

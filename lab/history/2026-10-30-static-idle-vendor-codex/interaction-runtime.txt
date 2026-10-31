@@ -1,0 +1,136 @@
+FUNCTION 5c53b0..5c5440
+0x005c53b0 push      rbp
+0x005c53b1 mov       rbp, rsp
+0x005c53b4 push      r14
+0x005c53b6 push      rbx
+0x005c53b7 sub       rsp, 0x60
+0x005c53bb mov       rbx, rdi
+0x005c53be mov       r14, qword ptr [rip + 0x1459d3b] ; [0x1a1f100]
+0x005c53c5 mov       rax, qword ptr [r14]
+0x005c53c8 mov       qword ptr [rbp - 0x18], rax
+0x005c53cc call      0x30cf70
+0x005c53d1 lea       rax, [rip + 0x1354d10] ; [0x191a0e8]
+0x005c53d8 lea       rdi, [rbx + 0x288]
+0x005c53df mov       rax, qword ptr [rax]
+0x005c53e2 lea       rdx, [rbp - 0x70]
+0x005c53e6 lea       r8, [rbp - 0x20]
+0x005c53ea mov       rcx, qword ptr [rax + 8]
+0x005c53ee mov       dword ptr [rbp - 0x20], 0x811c9dc5
+0x005c53f5 mov       esi, 1
+0x005c53fa xor       r9d, r9d
+0x005c53fd call      0x322350
+0x005c5402 add       rbx, 0x3d0
+0x005c5409 lea       rcx, [rbp - 0x50]
+0x005c540d test      eax, eax
+0x005c540f cmovle    rcx, rbx
+0x005c5413 vmovaps   xmm0, xmmword ptr [rcx]
+0x005c5417 vandps    xmm0, xmm0, xmmword ptr [rip + 0x107cb31] ; [0x1641f50]
+0x005c541f vorps     xmm0, xmm0, xmmword ptr [rip + 0x107cb39] ; [0x1641f60]
+0x005c5427 mov       rax, qword ptr [r14]
+0x005c542a cmp       rax, qword ptr [rbp - 0x18]
+0x005c542e jne       0x5c5439
+0x005c5430 add       rsp, 0x60
+0x005c5434 pop       rbx
+0x005c5435 pop       r14
+0x005c5437 pop       rbp
+0x005c5438 ret       
+0x005c5439 call      0x12aa7f0
+0x005c543e nop       
+0x005c543f nop       
+FUNCTION 5c77c0..5c79f0
+0x005c77c0 push      rbp
+0x005c77c1 mov       rbp, rsp
+0x005c77c4 push      r15
+0x005c77c6 push      r14
+0x005c77c8 push      rbx
+0x005c77c9 push      rax
+0x005c77ca mov       r15, rdi
+0x005c77cd mov       eax, dword ptr [r15]
+0x005c77d0 mov       edx, eax
+0x005c77d2 sar       edx, 0xd
+0x005c77d5 mov       ecx, edx
+0x005c77d7 shr       ecx, 0x12
+0x005c77da or        ecx, 0x3ff
+0x005c77e0 and       ecx, edx
+0x005c77e2 lea       rdx, [rip + 0x145c0b7] ; [0x1a238a0]
+0x005c77e9 shl       rcx, 6
+0x005c77ed mov       rdx, qword ptr [rdx]
+0x005c77f0 mov       rsi, qword ptr [rdx]
+0x005c77f3 lea       rdi, [r15 + 0x88]
+0x005c77fa mov       r14, qword ptr [r15 + 8]
+0x005c77fe mov       rbx, qword ptr [rsi + rcx + 0x10]
+0x005c7803 movsxd    rdx, dword ptr [rsi + rcx + 0x34]
+0x005c7808 and       eax, 0x1fff
+0x005c780d imul      eax, dword ptr [rsi + rcx + 0x30]
+0x005c7812 and       rdx, qword ptr [rbx + rax + 8]
+0x005c7817 add       rbx, rax
+0x005c781a sub       rbx, rdx
+0x005c781d vmovss    xmm0, dword ptr [r14 + rbx + 0x70]
+0x005c7824 call      0x673800
+0x005c7829 lea       rdi, [r15 + 0xa8]
+0x005c7830 vmovss    xmm0, dword ptr [r14 + rbx + 0x74]
+0x005c7837 call      0x673800
+0x005c783c lea       rdi, [r15 + 0xc8]
+0x005c7843 vmovss    xmm0, dword ptr [r14 + rbx + 0x78]
+0x005c784a call      0x673800
+0x005c784f lea       rdi, [r15 + 0xe8]
+0x005c7856 vmovss    xmm0, dword ptr [r14 + rbx + 0x7c]
+0x005c785d call      0x673800
+0x005c7862 lea       rdi, [r15 + 0x108]
+0x005c7869 vmovss    xmm0, dword ptr [r14 + rbx + 0x80]
+0x005c7873 call      0x673800
+0x005c7878 lea       rdi, [r15 + 0x128]
+0x005c787f vmovss    xmm0, dword ptr [r14 + rbx + 0x84]
+0x005c7889 call      0x673800
+0x005c788e lea       rdi, [r15 + 0x148]
+0x005c7895 vmovss    xmm0, dword ptr [r14 + rbx + 0x88]
+0x005c789f call      0x673800
+0x005c78a4 lea       rdi, [r15 + 0x168]
+0x005c78ab vmovss    xmm0, dword ptr [r14 + rbx + 0x8c]
+0x005c78b5 call      0x673800
+0x005c78ba lea       rdi, [r15 + 0x188]
+0x005c78c1 vmovss    xmm0, dword ptr [r14 + rbx + 0x90]
+0x005c78cb call      0x673800
+0x005c78d0 lea       rdi, [r15 + 0x1a8]
+0x005c78d7 vmovss    xmm0, dword ptr [r14 + rbx + 0x94]
+0x005c78e1 call      0x673800
+0x005c78e6 lea       rdi, [r15 + 0x1c8]
+0x005c78ed vmovss    xmm0, dword ptr [r14 + rbx + 0x98]
+0x005c78f7 call      0x673800
+0x005c78fc lea       rdi, [r15 + 0x1e8]
+0x005c7903 vmovss    xmm0, dword ptr [r14 + rbx + 0x9c]
+0x005c790d call      0x673800
+0x005c7912 lea       rdi, [r15 + 0x208]
+0x005c7919 vmovss    xmm0, dword ptr [r14 + rbx + 0xa0]
+0x005c7923 call      0x673800
+0x005c7928 lea       rdi, [r15 + 0x228]
+0x005c792f vmovss    xmm0, dword ptr [r14 + rbx + 0xa4]
+0x005c7939 call      0x673800
+0x005c793e lea       rdi, [r15 + 0x248]
+0x005c7945 vmovss    xmm0, dword ptr [r14 + rbx + 0xa8]
+0x005c794f call      0x673800
+0x005c7954 lea       rdi, [r15 + 0x268]
+0x005c795b vmovss    xmm0, dword ptr [r14 + rbx + 0xac]
+0x005c7965 call      0x673800
+0x005c796a lea       rdi, [r15 + 0x288]
+0x005c7971 vmovss    xmm0, dword ptr [r14 + rbx + 0xb0]
+0x005c797b call      0x673800
+0x005c7980 lea       rdi, [r15 + 0x2a8]
+0x005c7987 vmovss    xmm0, dword ptr [r14 + rbx + 0xb4]
+0x005c7991 call      0x673800
+0x005c7996 lea       rdi, [r15 + 0x2c8]
+0x005c799d vmovss    xmm0, dword ptr [r14 + rbx + 0xb8]
+0x005c79a7 call      0x673800
+0x005c79ac lea       rdi, [r15 + 0x2e8]
+0x005c79b3 vmovss    xmm0, dword ptr [r14 + rbx + 0xbc]
+0x005c79bd call      0x673800
+0x005c79c2 vmovss    xmm0, dword ptr [r14 + rbx + 0xc0]
+0x005c79cc vmovss    dword ptr [r15 + 0x348], xmm0
+0x005c79d5 mov       al, 1
+0x005c79d7 add       rsp, 8
+0x005c79db pop       rbx
+0x005c79dc pop       r14
+0x005c79de pop       r15
+0x005c79e0 pop       rbp
+0x005c79e1 ret       
+0x005c79e2 nop       word ptr cs:[rax + rax]
