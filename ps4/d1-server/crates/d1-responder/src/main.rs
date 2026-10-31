@@ -3695,14 +3695,18 @@ async fn main() -> Result<()> {
                                                                         // four (`d1-oracle message --tag <rsp> --msgid <id>`), the same
                                                                         // five bytes as 701/901. Before this arm they fell through to
                                                                         // the padded default, a message id with no object - the shape
-                                                                        // that made 104 fail to decode. This only ACCEPTS the request;
-                                                                        // the move itself is not yet applied to the served profile.
+                                                                        // that made 104 fail to decode. A 403 is applied to the served
+                                                                        // profile's equipped array (vendor::on_equip, when the purchase
+                                                                        // state is on); 402/404/405 are accepted only.
                                                                         let req = plain.get(8..).unwrap_or(&[]);
                                                                         warn!("      ⭐ ITEM {} ({}B request): {} -> accepted",
                                                                               match id { 402 => "MOVE (402)", 403 => "EQUIP (403)",
                                                                                          404 => "UNEQUIP (404)", _ => "TRANSFER (405)" },
                                                                               req.len(),
                                                                               req.iter().map(|x| format!("{x:02x}")).collect::<String>());
+                                                                        if id == 403 {
+                                                                            vendor::on_equip(req.to_vec());
+                                                                        }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 901 || id == 903 {
                                                                         // 901 vendor_buy_item / 903 vendor_sell_item. Responses
