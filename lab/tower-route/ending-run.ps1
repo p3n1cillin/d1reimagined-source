@@ -55,7 +55,9 @@ if (-not $NoVendors) {
 if ($ExtraEnv) { $extra += ",$ExtraEnv" }
 Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name', $Name, '-Minutes', '300', '-UnlockFlags', $UnlockFlags, '-Extra', $extra) -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
 $jobs = @(
-    "until tasklist | grep -q shadPS4; do sleep 5; done; exec $RepoFwd/tools/ps4_setup/d1-idle-guard.sh",
+    # The keep-alive starts in gameplay: an early press can carry the client past the title before the
+    # activity host listens (about 9 minutes), and it then fails to reach it (run sense75).
+    "until grep -q 'in gameplay' $Cf/$Name/launcher.log 2>/dev/null; do sleep 5; done; exec $RepoFwd/tools/ps4_setup/d1-idle-guard.sh",
     "until ls -d $Cf/contained-boot/*-$Name >/dev/null 2>&1; do sleep 5; done; H=`$(ls -d $Cf/contained-boot/*-$Name)/activity-host.log; R=$Cf/$Name; cd $RepoFwd && python -u -I tools/ps4_setup/d1-agr-replay.py --run-dir `$R --host-log `$H --garage-clients `$R/breach-prop3-only.txt --boot-timeout 1800 > `$R/replay-console.log 2> `$R/replay-error.log; grep -q 'DIVIDE REACHED' `$R/replay-console.log && bash $S/chain2.sh $Name > `$R/chain.log 2>&1",
     "bash $S/$Postgame $Name $($Scoreboard -replace '\\','/') > $Cf/$Name/postgame.log 2>&1"
 )
