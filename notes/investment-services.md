@@ -11,6 +11,8 @@ multiply then xor). Names are given where a search of one to three words joined 
 (31 October 2026; about one false match in twenty is expected at that size, so a longer name could still
 collide). For example, 903 is `vendor_sell_item`; its request `0x80801734` is `{bool @0, u64 @8, i16 @0x10}`,
 `i32 @0x18`, `u8 @0x1C` (32 bytes, 121 bits), by a round trip through the client codec.
+This table is the PS3 01.24 one. The PS4 56578 table also has 904 `vendor_interact` and 905
+`vendor_refund_item` (FNV-1 against the live table).
 
 | Wire | Name hash | Wrapper | Request | Response | Meaning |
 | ---: | --- | --- | --- | --- | --- |
