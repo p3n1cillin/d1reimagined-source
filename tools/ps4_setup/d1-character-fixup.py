@@ -4,7 +4,8 @@ through the client's own codec (d1-oracle object). Writes a new file; never edit
 
     d1-character-fixup.py peer    IN OUT [--grid 132] [--helmet]   family 0/1 peer view (0x808017FD)
     d1-character-fixup.py item    IN OUT --grid 132                inventory item (0x80801732): the subclass
-    d1-character-fixup.py profile IN OUT [--helmet] [--stack 278:870:100 ...]   profile (0x80801743)
+    d1-character-fixup.py profile IN OUT [--helmet] [--stack 278:870:100 ...] [--item 93:3598:0xd100000000000401@7 ...]
+                                                                   profile (0x80801743)
 
 Abilities (issue #134): the subclass item names its talent grid (+0x58) and its active nodes (36
 node-state bytes at +0x5A, 1 = active). The peer view carries the five ability rows at +0x40 (5 x
@@ -20,6 +21,12 @@ Stacks: a profile inventory slot (32 bytes from +0x38: u16 content, u64 instance
 at +0x10) holding a stack of a non-instanced item, e.g. a character-held currency: Vanguard Marks
 (870) in slot 278, Crucible Marks (871) in 279 (notes/ps4-56578-vendor-purchase-2026-10-30.md). The
 slot must be empty or already hold that content.
+
+Items: an instanced item in a profile slot (content, instance at +8, quantity 0), and with @N the
+equipped array (20 x u64 instance at +0x2B78) entry N pointing at it. From the geared fixture: 1 =
+subclass (bucket 0x06, slot 40), 2..6 = the armour (0x07..0x0B, slots 43/53/63/73/83), 7/8/9 = the
+weapons (0x02/0x03/0x04, slots 93/103/113), 11 = vehicle (0x0D, slot 143), 12 = ghost (0x0E, slot
+153). The item itself must be served too (D1_INVENTORY, as a 0x80801732 element).
 
 Needs D1_ORACLE (or the workspace build), D1_BUILDS and D1_BUILD, plus D1_PKGDIR for --grid.
 """
@@ -42,6 +49,7 @@ PEER_ROWS, ROW_SIZE, OPTIONS = 0x40, 68, 16
 PEER_PERKS, PERK_SLOTS, NO_PERK = 0x30 + 0x768, 32, 256
 ITEM_GRID, ITEM_NODES, NODE_BYTES = 0x58, 0x5A, 36
 PROFILE_SLOTS, SLOT_SIZE, EMPTY = 0x38, 32, 0xFFFF
+EQUIPPED, EQUIPPED_COUNT = 0x2B78, 20
 
 
 def oracle():
@@ -67,8 +75,28 @@ def stack(text):
     return slot, content, quantity
 
 
-def fix(kind, data, grid, helmet, stacks=()):
+def item(text):
+    entry, _, index = text.partition('@')
+    slot, content, instance = (int(x, 0) for x in entry.split(':'))
+    return slot, content, instance, int(index) if index else None
+
+
+def fix(kind, data, grid, helmet, stacks=(), items=()):
     data = bytearray(data)
+    for slot, content, instance, index in items:
+        if kind != 'profile':
+            sys.exit('--item is for a profile')
+        at = PROFILE_SLOTS + SLOT_SIZE * slot
+        held = struct.unpack_from('<H', data, at)[0]
+        if held != EMPTY:
+            sys.exit(f'profile slot {slot} already holds content {held}')
+        data[at:at + SLOT_SIZE] = bytes(SLOT_SIZE)
+        struct.pack_into('<H', data, at, content)
+        struct.pack_into('<Q', data, at + 8, instance)
+        if index is not None:
+            if not 0 <= index < EQUIPPED_COUNT:
+                sys.exit(f'equipped index {index} is outside 0..{EQUIPPED_COUNT - 1}')
+            struct.pack_into('<Q', data, EQUIPPED + 8 * index, instance)
     for slot, content, quantity in stacks:
         if kind != 'profile':
             sys.exit('--stack is for a profile')
@@ -110,21 +138,22 @@ def main():
     ap.add_argument('--grid', type=int)
     ap.add_argument('--helmet', action='store_true')
     ap.add_argument('--stack', type=stack, action='append', default=[], metavar='SLOT:CONTENT:QUANTITY')
+    ap.add_argument('--item', type=item, action='append', default=[], metavar='SLOT:CONTENT:INSTANCE[@EQUIPPED]')
     a = ap.parse_args()
     if a.output.exists():
         sys.exit(f'{a.output} exists; choose a new file')
-    if a.grid is None and not a.helmet and not a.stack:
-        sys.exit('nothing to do: give --grid, --helmet and/or --stack')
+    if a.grid is None and not a.helmet and not a.stack and not a.item:
+        sys.exit('nothing to do: give --grid, --helmet, --stack and/or --item')
     tag = f'{TAGS[a.kind]:#010x}'
     with tempfile.TemporaryDirectory() as tmp:
         obj, new = Path(tmp) / 'in.obj', Path(tmp) / 'out.obj'
         run('object', '--tag', tag, '--decode-file', str(a.input), '--out-obj', str(obj))
-        new.write_bytes(fix(a.kind, obj.read_bytes(), a.grid, a.helmet, a.stack))
+        new.write_bytes(fix(a.kind, obj.read_bytes(), a.grid, a.helmet, a.stack, a.item))
         out = run('object', '--tag', tag, '--obj-file', str(new), '--out', str(a.output))
     if 'IDENTICAL' not in out:
         a.output.unlink(missing_ok=True)
         sys.exit(f'the client codec did not round-trip the edited object: {out[-400:]}')
-    print(f'{a.output}: {a.kind} edited (grid {a.grid}, helmet {a.helmet}, stacks {a.stack}); round trip identical')
+    print(f'{a.output}: {a.kind} edited (grid {a.grid}, helmet {a.helmet}, stacks {a.stack}, items {a.item}); round trip identical')
     return 0
 
 
