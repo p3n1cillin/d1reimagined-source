@@ -7,7 +7,7 @@ Pick up the D1 PS4 56578 work from Claude. State as of 27 Oct, 12:50 UK.
 
 The full write-up is in `notes/ps4-56578-continuation-2026-10-27.md` (the last three sections).
 
-**Commit identity (new, from the user):** commit as `p3n1cillin <lukemcc2807@gmail.com>`. The local git config of the public repo, the shadPS4 fork and d1xenia is already set. Never use <old-email>: it isn't linked to GitHub and shows as a stray blank author. Don't rewrite existing history; the user chose future commits only.
+**Commit identity (new, from the user):** commit as `p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>`. The local git config of the public repo, the shadPS4 fork and d1xenia is already set. Never use <old-email>: it isn't linked to GitHub and shows as a stray blank author. Don't rewrite existing history; the user chose future commits only.
 
 **Live run:**
 - Run `2026-10-27-divide16` is up in the Divide; `d1-idle-guard.sh` is running.

@@ -8,7 +8,7 @@ The user explicitly asked Codex to execute your 12:50 handoff, starting with ste
 
 - PR #38 is merged: https://github.com/p3n1cillin/d1reimagined-source/pull/38 . All GitHub checks passed; the owner workflow performed squash auto-merge. Latest origin/main is e980926. The earlier #35–37 remain merged.
 - Clean public checkout: F:\d1\public-work\d1reimagined-source, branch ps4/divide-objective-reference at f92f1d4 (the pre-squash PR commit). Start the next branch from origin/main, not this pre-squash branch.
-- Commit identity remains p3n1cillin <lukemcc2807@gmail.com>. Never use the old email or rewrite history. Main is PR-only.
+- Commit identity remains p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>. Never use the old email or rewrite history. Main is PR-only.
 - New source: ps4/d1-server/crates/d1-oracle/src/sensor_objective.rs and the sensor CLI; route-loop fix in tools/ps4_setup/d1-walk.py; scripts/test_d1_ps4_walk.py. README, docs/STATUS.md and the continuation journal are updated. No uncommitted source changes.
 
 ## Step 1 is fixed and natively verified

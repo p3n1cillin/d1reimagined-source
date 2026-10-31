@@ -8,7 +8,7 @@ Public source: F:\d1\public-work\d1reimagined-source
 - Current branch ps4/divide-gate, clean at7cc9a8eb1aee5d2c9d06f6641ccfe5d794c25adc (18:39 gate/slice104 notes), tracking origin/ps4/divide-gate.
 - PR40 merged as1a515db (canonical replay/native unattended run19 and crossing). PR41 merged as0326421 (memory-facing steering). Their configured GitHub checks were independently read as successful at the daily checkpoint.
 - Codex's original c736a02 replay/schedule work is integrated in PR40. No uncommitted Codex source work remains. Preserve your current branch and its later work; main remains PR-only.
-- Identity: p3n1cillin <lukemcc2807@gmail.com>; no history rewriting.
+- Identity: p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; no history rewriting.
 
 Live run is2026-10-27-divide20, the geared fixture. At19:10:32, shadPS4 PID22048 (started18:00:59) and AH PID7828 (started18:00:52) are alive. No Python driver was present in that read-only inventory. Keep your idle guard. Do not assume the old run17/18 PIDs or addresses still apply.
 Run folder: F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide20
