@@ -14,8 +14,9 @@ param(
     [string]$WorldTable = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Fixtures 'mission\world-table-tower.txt'),
     # The roster cards served after the Breach rifle claim (the loot grant).
     [string]$LootRoster = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Fixtures 'characters\roster-def1200-helm-saint14'),
-    # Unlock flags as run sense73 served them, 308 and 3391 included: without them the tutorial stopped
-    # in 'cleanup' after the prologue (sense74). The route reaches the Tower through 165, not index 0.
+    # Unlock flags as run sense73 served them, 308 and 3391 included; it reached the Tower through 165.
+    # Run sense66 cleared both and reached the social Tower instead (D1_AH_ACTIVITY_REMAP=165:0; notes/
+    # ps4-56578-tower-social-vendors-2026-10-30.md): pass that list and -ExtraEnv to do the same.
     [string]$UnlockFlags = '98,308,419,440,834,2668,3391,5021,5998,6029,433,2539,2549,3558,3587,3520,3527,3531,3533,3534,3535,3536,3544,3568,3594,3595,305,2669,2670,3389',
     # The d1-oracle build the responder encodes vendor purchases with.
     [string]$Oracle = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Workspace 'd1-server\target\release\d1-oracle.exe'),

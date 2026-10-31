@@ -20,8 +20,7 @@ param(
     [int]$Minutes = 90,
     # Unlock-flag indices served on the 503/205 pair list. Not 308 or 3391 by default: the Tower's own
     # activity (index 0) requires both CLEAR (notes/ps4-56578-tower-social-vendors-2026-10-30.md).
-    # lab/tower-route serves both: without them the tutorial stopped in 'cleanup' after the prologue
-    # (run sense74), and the route reaches the Tower through 165.
+    # lab/tower-route serves both, as run sense73 did (it reaches the Tower through 165).
     [string]$UnlockFlags = '98,419,440,834,2668,5021,5998,6029,433,2539,2549,3558,3587,3520,3527,3531,3533,3534,3535,3536,3544,3568,3594,3595,305,2669,2670,3389',
     # A cold shader/content load can take longer than the old 200-second world wait.
     [ValidateRange(1, 3600)][int]$WorldTimeoutSeconds = 900,
