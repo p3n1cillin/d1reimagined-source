@@ -626,8 +626,9 @@ fn main() -> anyhow::Result<()> {
                         }
                     }
                     // ⭐ D1_AH_WORLD_TABLE=<file>: `activity_index world sensor_group sensor_file` per
-                    // line. Each world must be a known world (checksum, bubbles, chosen); its sensor
-                    // frame is built here for both spawn teams, and the instance swaps world at join.
+                    // line; a relative sensor_file is taken from the table's folder. Each world must be
+                    // a known world (checksum, bubbles, chosen); its sensor frame is built here for
+                    // both spawn teams, and the instance swaps world at join.
                     if let Ok(path) = std::env::var("D1_AH_WORLD_TABLE") {
                         let text = std::fs::read_to_string(&path)
                             .map_err(|e| anyhow::anyhow!("D1_AH_WORLD_TABLE {path}: {e}"))?;
@@ -647,7 +648,7 @@ fn main() -> anyhow::Result<()> {
                             };
                             let group = parse_u32(f[2].to_string())
                                 .ok_or_else(|| anyhow::anyhow!("D1_AH_WORLD_TABLE: bad sensor group {:?}", f[2]))?;
-                            let list = std::fs::read_to_string(f[3])
+                            let list = std::fs::read_to_string(d1_activity_host::sensor_list::listed_path(&path, f[3]))
                                 .map_err(|e| anyhow::anyhow!("D1_AH_WORLD_TABLE {}: {e}", f[3]))?;
                             let build = |team: i32| {
                                 let p = d1_activity_host::sensor_list::params_for_list(&params, group, team, &list)
@@ -671,8 +672,9 @@ fn main() -> anyhow::Result<()> {
                         }
                     }
                     // ⭐ D1_AH_MISSION_STEPS=<file>: `activity_index when sensor_group sensor_file
-                    // [region]` per line, `when` = N | +N | @T|N (see `StepWhen`). Each step's frame
-                    // is prebuilt for both spawn teams.
+                    // [region]` per line, `when` = N | +N | @T|N (see `StepWhen`); a relative
+                    // sensor_file is taken from the list's folder. Each step's frame is prebuilt for
+                    // both spawn teams.
                     if let Ok(path) = std::env::var("D1_AH_MISSION_STEPS") {
                         let text = std::fs::read_to_string(&path)
                             .map_err(|e| anyhow::anyhow!("D1_AH_MISSION_STEPS {path}: {e}"))?;
@@ -707,7 +709,7 @@ fn main() -> anyhow::Result<()> {
                                     .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad region {r:?}"))?),
                                 None => None,
                             };
-                            let list = std::fs::read_to_string(f[3])
+                            let list = std::fs::read_to_string(d1_activity_host::sensor_list::listed_path(&path, f[3]))
                                 .map_err(|e| anyhow::anyhow!("D1_AH_MISSION_STEPS {}: {e}", f[3]))?;
                             let build = |team: i32| {
                                 let p = d1_activity_host::sensor_list::params_for_list(&params, group, team, &list)

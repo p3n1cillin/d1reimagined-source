@@ -8,11 +8,12 @@ param(
     [int]$WatchSeconds = 220,
     # Raw d1-watchwrite arguments (e.g. --read ADDR) instead of -WatchExec.
     [string[]]$WatchArgs = @(),
-    # Promote a verified full schedule with d1-agr-steps.py --promote-steps first.
-    [string]$Steps = (& "$PSScriptRoot\D1Paths.ps1" Staging 'agr-steps-divide.txt'),
+    # The mission schedule: the repo's (ps4/fixtures/56578/mission), or one promoted with
+    # d1-agr-steps.py --promote-steps.
+    [string]$Steps = (& "$PSScriptRoot\D1Paths.ps1" Fixtures 'mission\agr-steps-divide.txt'),
     # The served profile. profile-tutorial-t.bin is the unarmed tutorial Guardian (no weapons in the
     # inventory or the roster) who owes the starter Khvostov as pending loot.
-    [string]$Profile = (& "$PSScriptRoot\D1Paths.ps1" Workspace 'capture-rig\builds\later-56578\profile-tutorial-t.bin'),
+    [string]$Profile = (& "$PSScriptRoot\D1Paths.ps1" Fixtures 'characters\profile-tutorial-t.bin'),
     # -Geared: the old fixture (geared inventory and roster, hand cannon in hand, no rifle grant).
     [switch]$Geared,
     # Session length passed to d1-lab-served.ps1 (its default is 90 minutes).
@@ -31,10 +32,10 @@ $ErrorActionPreference = 'Continue'
 . "$PSScriptRoot\D1Paths.ps1"
 $existing = @(Get-Process shadPS4, d1-activity-host, d1-responder, shadnet-server -ErrorAction SilentlyContinue)
 if ($existing.Count) { throw "Refusing to replace an active lab run (process ids: $($existing.Id -join ', ')). End that run first." }
-if (-not (Test-Path -LiteralPath $Steps -PathType Leaf)) { throw "Missing private mission schedule: $Steps" }
+if (-not (Test-Path -LiteralPath $Steps -PathType Leaf)) { throw "Missing mission schedule: $Steps" }
 $runStartedAt = Get-Date
 Start-Sleep 3
-$B = Get-D1Path Workspace 'capture-rig\builds\later-56578'
+$B = Get-D1Path Fixtures 'characters'   # served characters (ps4/fixtures/56578)
 $D = Get-D1Path Staging $Name
 New-Item -ItemType Directory -Force $D | Out-Null
 # Milestones also go to RUN\launcher.log: d1-agr-replay.py waits there for "in gameplay (112)" even
@@ -43,7 +44,7 @@ $LaunchLog = "$D\launcher.log"
 Set-Content -LiteralPath $LaunchLog -Value "launch $(Get-Date -Format o) $Name"
 function Say($m) { $m; Add-Content -LiteralPath $LaunchLog -Value $m }
 $L = Get-D1Path ShadPS4 'user\log\shad_log.txt'
-$pad = Get-D1Path Tools 'd1-pad.ps1'
+$pad = (Join-Path $PSScriptRoot 'd1-pad.ps1')
 $hostExe = Get-D1Path Workspace 'd1-server\target\release\d1-activity-host.exe'
 # The Breach props (lights, barrier, rifle) are created by the client only while it holds their
 # authority block: every block assigned to machine 3 (the client's machine in bubble 3), not yet
@@ -64,7 +65,7 @@ if (-not $Geared) {
 }
 if ($Extra) { $x += ",$Extra" }
 # Not 308 or 3391: the Tower's own activity (index 0) requires both CLEAR (notes/ps4-56578-tower-social-vendors-2026-10-30.md).
-Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', (Get-D1Path Tools 'd1-lab-served.ps1'), '-Name', $Name,
+Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', (Join-Path $PSScriptRoot 'd1-lab-served.ps1'), '-Name', $Name,
     '-Profile', $Profile, '-Minutes', "$Minutes",
     '-UnlockFlags', '98,419,440,834,2668,5021,5998,6029,433,2539,2549,3558,3587,3520,3527,3531,3533,3534,3535,3536,3544,3568,3594,3595,305,2669,2670,3389',
     '-Extra', $x)
@@ -114,7 +115,7 @@ if (WaitFor "Entering state 'character:prologue'" 300) {
 }
 $w = $null
 if ($WatchExec) {
-    $a = @('-I', (Get-D1Path Tools 'd1-watchwrite.py'), '--seconds', "$WatchSeconds", '--max-hits', '60', '--exec', $WatchExec, '--out', "$D\watch.jsonl")
+    $a = @('-I', (Join-Path $PSScriptRoot 'd1-watchwrite.py'), '--seconds', "$WatchSeconds", '--max-hits', '60', '--exec', $WatchExec, '--out', "$D\watch.jsonl")
     foreach ($p in $Peek) { $a += @('--peek', $p) }
     $w = Start-Process python -ArgumentList $a -PassThru -WindowStyle Hidden
 }
@@ -123,7 +124,7 @@ Start-Sleep 8; Skip; Start-Sleep 10; Skip; Say 'cutscenes skipped'
 if (-not (WaitFor "transitioning:teleportation' due to completed" 150)) { exit 2 }
 Say 'in gameplay (112)'
 Start-Sleep 10
-& (Get-D1Path Tools 'd1-shot.ps1') -Out "$D\gameplay.png" | Out-Null
+& (Join-Path $PSScriptRoot 'd1-shot.ps1') -Out "$D\gameplay.png" | Out-Null
 if ($w) { Wait-Process -Id $w.Id -Timeout ($WatchSeconds + 30) -ErrorAction SilentlyContinue }
-python -I (Get-D1Path Tools 'd1-winguest.py') masks 2>&1 | Select-Object -Last 1
+python -I (Join-Path $PSScriptRoot 'd1-winguest.py') masks 2>&1 | Select-Object -Last 1
 Say "run dir: $D"

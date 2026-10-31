@@ -1,0 +1,64 @@
+# One unattended A Guardian Rises run to the Tower: boot -> replay -> chain (Divide, gate, Dock 13, full
+# hangar clear) -> outro -> XP + completion + ship + scoreboard + phase 7 -> post-game tour -> CONTINUE
+# (3 s hold) -> 165 -> Tower North with its squads and vendors, recorded with game audio.
+#   ending-run.ps1 -Name sense73 [-WorldTable <file>] [-Postgame postgame5.sh] [-NoContinue] [-NoRecord] [-NoVendors]
+# The defaults recreate run sense73 (31 Oct 2026). Served fixtures come from ps4/fixtures/56578
+# (D1_FIXTURES); run output goes to the staging folder (D1_STAGING). The lab must already be stopped.
+# The served host/responder are whatever is in the served target; build and swap them separately,
+# with the lab stopped.
+param(
+    [Parameter(Mandatory)][string]$Name,
+    [string]$Scoreboard = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Fixtures 'postgame\agr-postgame-scoreboard-arcadia-ratio30.draft.txt'),
+    [string]$Postgame = 'postgame5.sh',
+    # The host world table: rows 0 and 165 serve the Tower with its own (squad-populated) list.
+    [string]$WorldTable = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Fixtures 'mission\world-table-tower.txt'),
+    # The roster cards served after the Breach rifle claim (the loot grant).
+    [string]$LootRoster = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Fixtures 'characters\roster-def1200-helm-saint14'),
+    # The d1-oracle build the responder encodes vendor purchases with.
+    [string]$Oracle = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Workspace 'd1-server\target\release\d1-oracle.exe'),
+    # Stop at the post-game screens instead of holding CONTINUE.
+    [switch]$NoContinue,
+    # Leave out the account, Glimmer and vendor purchase serving.
+    [switch]$NoVendors,
+    # Extra D1_KEY=VALUE server variables, comma-joined, appended after the defaults (later wins).
+    [string]$ExtraEnv = '',
+    [switch]$NoRecord,
+    [string]$Bash = 'C:\Program Files\Git\bin\bash.exe'
+)
+$ErrorActionPreference = 'Stop'
+$Repo = (Resolve-Path "$PSScriptRoot\..\..").Path
+. "$Repo\tools\ps4_setup\D1Paths.ps1"
+$S = $PSScriptRoot -replace '\\', '/'
+$RepoFwd = $Repo -replace '\\', '/'
+$C = Get-D1Path Staging
+$F = Get-D1Path Fixtures
+$Cf = $C -replace '\\', '/'
+# Stop the previous lab yourself first (by exact PID); this script only refuses to start over a running one.
+if (Get-Process d1-activity-host, d1-responder, shadnet-server, shadPS4 -ErrorAction SilentlyContinue) { throw 'lab still running' }
+if (-not $env:D1_AUDIO_TAP) { $env:D1_AUDIO_TAP = Get-D1Path ShadPS4 '..\audio-tap' }
+foreach ($f in "$C\profile-push.bin", "$C\profile-push.item", "$C\profile-push.soid", "$env:D1_AUDIO_TAP\rec.flag") { if (Test-Path $f) { Remove-Item -LiteralPath $f -Force } }
+New-Item -ItemType Directory -Force "$C\$Name" | Out-Null
+Copy-Item "$F\mission\breach-prop3-only.txt" "$C\$Name\"
+$extra = "D1_LOOT_GRANT_ROSTER=$LootRoster,D1_AH_CAPTURE_CLIENT_UPDATES=2048,D1_AH_CAPTURE_CLIENT_UPDATES_AFTER_S=900,D1_AH_WORLD_PERIOD_MS=33.333333,D1_AH_SENSE_SCHEMAS=1:0x80800357,2:0x808005D9,3:0x80800830,4:0x80800387,0xC:0x80802C30,0x18:0x8080048A,0x1C:0x808005C3,0x27:0x80802B18,D1_PROFILE_PUSH_FILE=$C\profile-push.bin"
+if ($WorldTable) { $extra += ",D1_AH_WORLD_TABLE=$WorldTable" }
+if (-not $NoVendors) {
+    # Glimmer 25,000 (slot 308), Silver 500 (309) and Legendary Marks 200 (310) in the account; the
+    # responder applies vendor purchases itself (notes/ps4-56578-vendor-purchase-2026-10-30.md).
+    $V = "$F\vendor"
+    $extra += ",D1_ACCOUNT_FILE=$V\account-currencies.bin,D1_ACCOUNT_PUSH_FILE=$C\account-push.bin"
+    $extra += ",D1_VENDOR_SALES=$V\vendor-sales.tsv,D1_VENDOR_PROFILE_OBJ=$V\vendor-profile.obj,D1_VENDOR_ITEM_TEMPLATE=$V\vendor-item-template.obj"
+    $extra += ",D1_VENDOR_ACCOUNT_SLOTS=308:869:25000,309:873:500,310:4548:200,D1_ORACLE=$Oracle"
+}
+if ($ExtraEnv) { $extra += ",$ExtraEnv" }
+Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name', $Name, '-Minutes', '300', '-Extra', $extra) -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
+$jobs = @(
+    "until tasklist | grep -q shadPS4; do sleep 5; done; exec $RepoFwd/tools/ps4_setup/d1-idle-guard.sh",
+    "until ls -d $Cf/contained-boot/*-$Name >/dev/null 2>&1; do sleep 5; done; H=`$(ls -d $Cf/contained-boot/*-$Name)/activity-host.log; R=$Cf/$Name; cd $RepoFwd && python -u -I tools/ps4_setup/d1-agr-replay.py --run-dir `$R --host-log `$H --garage-clients `$R/breach-prop3-only.txt --boot-timeout 1800 > `$R/replay-console.log 2> `$R/replay-error.log; grep -q 'DIVIDE REACHED' `$R/replay-console.log && bash $S/chain2.sh $Name > `$R/chain.log 2>&1",
+    "bash $S/$Postgame $Name $($Scoreboard -replace '\\','/') > $Cf/$Name/postgame.log 2>&1"
+)
+if (-not $NoRecord) { $jobs += "bash $S/capture51.sh $Name > $Cf/$Name/capture.log 2>&1" }
+# continue-hold.sh waits for the capture tour to finish, so it needs the recording.
+if (-not $NoContinue -and -not $NoRecord) { $jobs += "bash $S/continue-hold.sh $Name > $Cf/$Name/continue.log 2>&1" }
+# Start-Process joins ArgumentList unquoted, so the script must be one quoted argument (the jobs hold no double quotes).
+foreach ($j in $jobs) { Start-Process $Bash -WindowStyle Hidden -ArgumentList "-c `"$j`"" | Out-Null }
+"$Name launched at $(Get-Date -Format HH:mm:ss); logs in $C\$Name (replay-console, chain, postgame, capture, continue)"

@@ -1,0 +1,7 @@
+# sense58+: as sense57, with the Tower squads given desired counts (DIAGNOSTIC values copied from the hangar; spawns civilians and Patches 99-40). 165->Tower is a bypass.
+410  pvp_moonbase          0xc2dacaf7  sensor-clients-pvp_moonbase-bundle7-team0.txt
+416  pvp_moonbase          0xc2dacaf7  sensor-clients-pvp_moonbase-bundle7-team0.txt
+164  act_cosmo_m0_highway  0x4786c0e0  sensor-clients-act_cosmo_m0_highway-r113-cine.txt  113
+168  act_cosmo_m1_dome_a   0x4786c0e0  sensor-clients-act_cosmo_m1_dome_a-bundle.txt  8
+0    city_tower_default1   0x40aebf90  sensor-clients-city_tower_default1-squads.txt  0
+165  city_tower_default1   0x40aebf90  sensor-clients-city_tower_default1-squads.txt  0

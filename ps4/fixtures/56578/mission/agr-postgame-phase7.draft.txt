@@ -1,0 +1,7 @@
+# PRIVATE UNPUBLISHED DRAFT; requires source PR for @phase.
+# sense48 gen 0; lifetime group 4786c0e0, kind16, sub3; no pending clients at sample.
+# Publish using clients 4786c0e0 THIS_PATH after rebuilding only when lab stopped.
+# Native 75e4c0 requires phase 7 for 7976b0 Enter post game.
+# Retain the current authority sequence (from outro), not launch authority 3.
+@authority 13,2,0
+@phase 7
