@@ -1,0 +1,16 @@
+FAIL late cyclic binding refreshes pass layout
+FAIL late cyclic layout selects a distinct cached pass
+FAIL reverse feedback-to-attachment transition refreshes key
+FAIL depth compare restores a sampleable layout after fall-out
+FAIL depth descriptor is written with feedback or general layout
+FAIL no stale initial layout across cyclic sequence
+FAIL late cyclic binding refreshes pass layout
+FAIL late cyclic layout selects a distinct cached pass
+FAIL reverse feedback-to-attachment transition refreshes key
+FAIL depth compare restores a sampleable layout after fall-out
+FAIL depth descriptor is written with feedback or general layout
+FAIL no stale initial layout across cyclic sequence
+FAIL all five attachment layouts refreshed
+FAIL programmable blending retains all input attachments
+FAIL input-mask refresh leaves attachment layouts valid
+31 attachment layout checks, 15 failed

@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-08T07:52:49.262506+00:00",
+  "run": "FINAL124_JOIN182",
+  "session": {
+    "samples": 3146,
+    "pairs": {
+      "(113, -1, 0)": 331,
+      "(113, 112, 6)": 1,
+      "(-1, 112, 6)": 5,
+      "(112, -1, 6)": 20,
+      "(112, -1, 0)": 1364,
+      "(112, 24, 3)": 1425
+    },
+    "session_states": {
+      "6": 3146
+    },
+    "pointer_recheck_failures": 0
+  },
+  "native_log": {
+    "vuid_lines": 0,
+    "device_loss_lines": 0,
+    "fatal_lines": 0,
+    "last_timestamp": [
+      "0:17:28.892378"
+    ]
+  },
+  "media": {
+    "segments": 0,
+    "indexed": 0,
+    "inventory": []
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "singleton": "0x33d9bf04",
+  "words": [
+    "0x13ecf68",
+    "0x60099410",
+    "0x307091a0",
+    "0x816564aa",
+    "0x80b1a06b",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0"
+  ],
+  "vtable": "0x13ecf68",
+  "database_getter_descriptor": "0x185e028",
+  "function": "0x5aef50",
+  "disassembly": 

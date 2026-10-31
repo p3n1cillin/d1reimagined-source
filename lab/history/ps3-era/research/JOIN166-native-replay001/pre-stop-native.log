@@ -1,0 +1,669 @@
+﻿RPCS3 v0.0.42-b5a174e9 Alpha | HEAD | local_build
+Architecture: x64
+AMD Ryzen 7 5700X 8-Core Processor | 16 Threads | 31.92 GiB RAM | TSC: 3.400GHz | AVX+ | FMA3
+Operating system: Windows, Major: 10, Minor: 0, Build: 26300, Service Pack: none
+Qt version: Compiled against Qt 6.11.2 | Run-time uses Qt 6.11.2
+Current Time: 2026-10-07T14:28:36
+Initialization times before main(): 0.139860Gc
+·! 0:00:00.000006 SYS: argc: 4, argv: 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe' '--no-gui' '--rsx-capture' 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz'
+·! 0:00:00.000383 SYS: argv_utf8: 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe' '--no-gui' '--rsx-capture' 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz'
+·A 0:00:00.161587 {Vulkan Device Enumeration Thread} RSX: Found Vulkan-compatible GPU: 'NVIDIA GeForce RTX 2060 SUPER' running on driver 617.14.0.0
+·! 0:00:00.162692 CFG: Setting the default renderer to Vulkan. Default GPU: 'NVIDIA GeForce RTX 2060 SUPER'
+·! 0:00:00.162850 SYS: Option passed via command line: no-gui 
+·! 0:00:00.162853 SYS: Option passed via command line: rsx-capture F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz
+·! 0:00:00.163128 UUID: Installation ID: {52497f52-3051-4522-b947-bd29be826cd4}
+·! 0:00:00.266537 SYS: Setting user ID '00000001'
+·A 0:00:00.266545 SYS: LLVM version: 22.1.8
+·! 0:00:00.273992 VFS: VFS config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/vfs.yml
+·! 0:00:00.274044 SYS: Using VFS config:
+$(EmulatorDir): ""
+/dev_hdd0/: $(EmulatorDir)dev_hdd0/
+/dev_hdd1/: $(EmulatorDir)dev_hdd1/
+/dev_flash/: $(EmulatorDir)dev_flash/
+/dev_flash2/: $(EmulatorDir)dev_flash2/
+/dev_flash3/: $(EmulatorDir)dev_flash3/
+/dev_bdvd/: $(EmulatorDir)dev_bdvd/
+/games/: $(EmulatorDir)games/
+/app_home/: ""
+/dev_usb***/:
+  /dev_usb000:
+    Path: $(EmulatorDir)dev_usb000/
+    Serial: ""
+    VID: ""
+    PID: ""
+·! 0:00:00.274120 VFS: Mounted path "/dev_hdd0" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_hdd0/"
+·! 0:00:00.274172 VFS: Mounted path "/dev_flash" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash/"
+·! 0:00:00.274218 VFS: Mounted path "/dev_flash2" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash2/"
+·! 0:00:00.274262 VFS: Mounted path "/dev_flash3" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash3/"
+·! 0:00:00.274267 VFS: Mounted path "/app_home" to "//"
+·! 0:00:00.274349 VFS: Mounted path "/dev_usb000" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_usb000/"
+·! 0:00:00.274380 SYS: Applying global config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/config.yml
+·! 0:00:00.278720 SYS: Logged in as user '00000001' with the username 'User'
+·! 0:00:00.278834 IPC: IPC config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/ipc.yml
+·! 0:00:00.278845 SYS: Using IPC config:
+IPC Server enabled: false
+IPC Port: 28012
+·A 0:00:00.278912 SYS: Firmware version: 4.60
+·! 0:00:00.280136 SYS: get_one_drive_paths: Found OneDrive registry path: '%USERPROFILE%\OneDrive' (key='Software\Microsoft\OneDrive\Accounts\Personal')
+·! 0:00:00.280480 SYS: New timer resolution: 500 us (old=1000 us, min=15625 us, max=500 us)
+·! 0:00:00.280492 SYS: Booting rsx capture from command line: F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz
+·! 0:00:00.431757 VFS: VFS config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/vfs.yml
+·! 0:00:00.431811 SYS: Using VFS config:
+$(EmulatorDir): ""
+/dev_hdd0/: $(EmulatorDir)dev_hdd0/
+/dev_hdd1/: $(EmulatorDir)dev_hdd1/
+/dev_flash/: $(EmulatorDir)dev_flash/
+/dev_flash2/: $(EmulatorDir)dev_flash2/
+/dev_flash3/: $(EmulatorDir)dev_flash3/
+/dev_bdvd/: $(EmulatorDir)dev_bdvd/
+/games/: $(EmulatorDir)games/
+/app_home/: ""
+/dev_usb***/:
+  /dev_usb000:
+    Path: $(EmulatorDir)dev_usb000/
+    Serial: ""
+    VID: ""
+    PID: ""
+·! 0:00:00.431893 VFS: Mounted path "/dev_hdd0" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_hdd0/"
+·! 0:00:00.431942 VFS: Mounted path "/dev_flash" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash/"
+·! 0:00:00.431989 VFS: Mounted path "/dev_flash2" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash2/"
+·! 0:00:00.432034 VFS: Mounted path "/dev_flash3" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash3/"
+·! 0:00:00.432039 VFS: Mounted path "/app_home" to "//"
+·! 0:00:00.432124 VFS: Mounted path "/dev_usb000" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_usb000/"
+·! 0:00:00.432162 SYS: Applying global config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/config.yml
+·! 0:00:00.436461 SYS: Logged in as user '00000001' with the username 'User'
+·! 0:00:00.436605 IPC: IPC config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/ipc.yml
+·! 0:00:00.436617 SYS: Using IPC config:
+IPC Server enabled: false
+IPC Port: 28012
+·! 0:00:00.436619 VM: Guest memory bases address ranges:
+vm::g_base_addr = 0000000300000000 - 00000003ffffffff
+vm::g_sudo_addr = 0000000400000000 - 00000004ffffffff
+vm::g_exec_addr = 0000000500000000 - 00000006ffffffff
+vm::g_hook_addr = 0000000800000000 - 0000000fffffffff
+vm::g_stat_addr = 0000001000000000 - 00000010ffffffff
+vm::g_reservations = 00007ff7daaad000 - 00007ff7daab4fff
+
+·S 0:00:00.450115 PPU: Enabled: Non-Java Mode Fixup
+·S 0:00:00.450118 PPU: Enabled: VNAN Fixup
+·E 0:00:00.450964 PPU: PPU Cache location not initialized.
+·! 0:00:00.455438 IPv6_layer: is_ipv6_supported(): disabled cause: force-disabled through config
+·! 0:00:00.455511 sys_net: P2P port 3658 was bound!
+·! 0:00:00.455657 rpcn: Loading RPCN config. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/rpcn.yml
+·! 0:00:00.455797 cellSysutil: cellAudioOut: found support for Linear PCM 2 Ch.
+·! 0:00:00.455799 cellSysutil: cellAudioOut: added primary mode: type=0, channel=2, fs=4, layout=1
+·! 0:00:00.455800 cellSysutil: cellAudioOut: added secondary mode: type=0, channel=2, fs=4, layout=1
+·! 0:00:00.455801 cellSysutil: cellAudioOut: initial primary output configuration: channels=2, encoder=0, downmixer=0
+·! 0:00:00.455802 cellSysutil: cellAudioOut: initial secondary output configuration: channels=2, encoder=0, downmixer=0
+·! 0:00:00.466205 CFG: Loading usio config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/usio.yml
+·! 0:00:00.466784 sys_usbd: USIO config=
+
+·S 0:00:00.466790 sys_usbd: Emulating device: Skylanders Portal (1)
+·S 0:00:00.466799 sys_usbd: Emulating device: Disney Infinity Base (1)
+·S 0:00:00.466801 sys_usbd: Emulating device: Lego Dimensions Portal (1)
+·S 0:00:00.466806 sys_usbd: Emulating device: Kamen Rider Summonride Portal (1)
+·S 0:00:00.466812 sys_usbd: Emulating device: lgFF_c283_c29b (1)
+·! 0:00:00.466821 CFG: Loading LogitechG27 config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/LogitechG27.yml
+·S 0:00:00.467448 sys_usbd: Emulating device: PS3A-USJ (1)
+·! 0:00:00.467693 Music: Constructing Qt music handler...
+·! 0:00:00.487483 CFG: Loading gem_real config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem_real.yml
+·! 0:00:00.487780 CFG: Loading gem config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem.yml
+·! 0:00:00.488392 CFG: Loading gem_mouse config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem_mouse.yml
+·! 0:00:00.489668 cellGem: Real gem config=Player 1:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+Player 2:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+Player 3:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+Player 4:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+·! 0:00:00.489988 cellGem: Fake gem config=Player 1:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+  X-Axis: Left Stick X-Axis
+  Y-Axis: Left Stick Y-Axis
+  Sharpshooter Firing Mode 1: D-Pad Left
+  Sharpshooter Firing Mode 2: D-Pad Up
+  Sharpshooter Firing Mode 3: D-Pad Right
+  Sharpshooter Trigger: L1
+  Sharpshooter Reload: L2
+  Racing Wheel D-Pad Up: D-Pad Up
+  Racing Wheel D-Pad Right: D-Pad Right
+  Racing Wheel D-Pad Down: D-Pad Down
+  Racing Wheel D-Pad Left: D-Pad Left
+  Racing Wheel Throttle: Right Stick Up
+  Racing Wheel L1: L1
+  Racing Wheel R1: R1
+  Racing Wheel L2: L2
+  Racing Wheel R2: R2
+  Racing Wheel Paddle L: L3
+  Racing Wheel Paddle R: R3
+  External Device: Disconnected
+Player 2:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+  X-Axis: Left Stick X-Axis
+  Y-Axis: Left Stick Y-Axis
+  Sharpshooter Firing Mode 1: D-Pad Left
+  Sharpshooter Firing Mode 2: D-Pad Up
+  Sharpshooter Firing Mode 3: D-Pad Right
+  Sharpshooter Trigger: L1
+  Sharpshooter Reload: L2
+  Racing Wheel D-Pad Up: D-Pad Up
+  Racing Wheel D-Pad Right: D-Pad Right
+  Racing Wheel D-Pad Down: D-Pad Down
+  Racing Wheel D-Pad Left: D-Pad Left
+  Racing Wheel Throttle: Right Stick Up
+  Racing Wheel L1: L1
+  Racing Wheel R1: R1
+  Racing Wheel L2: L2
+  Racing Wheel R2: R2
+  Racing Wheel Paddle L: L3
+  Racing Wheel Paddle R: R3
+  External Device: Disconnected
+Player 3:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+  X-Axis: Left Stick X-Axis
+  Y-Axis: Left Stick Y-Axis
+  Sharpshooter Firing Mode 1: D-Pad Left
+  Sharpshooter Firing Mode 2: D-Pad Up
+  Sharpshooter Firing Mode 3: D-Pad Right
+  Sharpshooter Trigger: L1
+  Sharpshooter Reload: L2
+  Racing Wheel D-Pad Up: D-Pad Up
+  Racing Wheel D-Pad Right: D-Pad Right
+  Racing Wheel D-Pad Down: D-Pad Down
+  Racing Wheel D-Pad Left: D-Pad Left
+  Racing Wheel Throttle: Right Stick Up
+  Racing Wheel L1: L1
+  Racing Wheel R1: R1
+  Racing Wheel L2: L2
+  Racing Wheel R2: R2
+  Racing Wheel Paddle L: L3
+  Racing Wheel Paddle R: R3
+  External Device: Disconnected
+Player 4:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+  X-Axis: Left Stick X-Axis
+  Y-Axis: Left Stick Y-Axis
+  Sharpshooter Firing Mode 1: D-Pad Left
+  Sharpshooter Firing Mode 2: D-Pad Up
+  Sharpshooter Firing Mode 3: D-Pad Right
+  Sharpshooter Trigger: L1
+  Sharpshooter Reload: L2
+  Racing Wheel D-Pad Up: D-Pad Up
+  Racing Wheel D-Pad Right: D-Pad Right
+  Racing Wheel D-Pad Down: D-Pad Down
+  Racing Wheel D-Pad Left: D-Pad Left
+  Racing Wheel Throttle: Right Stick Up
+  Racing Wheel L1: L1
+  Racing Wheel R1: R1
+  Racing Wheel L2: L2
+  Racing Wheel R2: R2
+  Racing Wheel Paddle L: L3
+  Racing Wheel Paddle R: R3
+  External Device: Disconnected
+·! 0:00:00.490526 cellGem: Mouse gem config=Player 1:
+  Start: Mouse Button 6
+  Select: Mouse Button 7
+  Triangle: Mouse Button 8
+  Circle: Mouse Button 4
+  Cross: Mouse Button 5
+  Square: Mouse Button 3
+  Move: Mouse Button 2
+  T: Mouse Button 1
+  Combo: ""
+  Combo Start: ""
+  Combo Select: ""
+  Combo Triangle: ""
+  Combo Circle: ""
+  Combo Cross: ""
+  Combo Square: ""
+  Combo Move: ""
+  Combo T: ""
+  Sharpshooter Firing Mode 1: ""
+  Sharpshooter Firing Mode 2: ""
+  Sharpshooter Firing Mode 3: ""
+  Sharpshooter Trigger: ""
+  Sharpshooter Reload: ""
+  Combo Sharpshooter Firing Mode 1: ""
+  Combo Sharpshooter Firing Mode 2: ""
+  Combo Sharpshooter Firing Mode 3: ""
+  Combo Sharpshooter Trigger: ""
+  Combo Sharpshooter Reload: ""
+  Racing Wheel D-Pad Up: ""
+  Racing Wheel D-Pad Right: ""
+  Racing Wheel D-Pad Down: ""
+  Racing Wheel D-Pad Left: ""
+  Racing Wheel Throttle: ""
+  Racing Wheel L1: ""
+  Racing Wheel R1: ""
+  Racing Wheel L2: ""
+  Racing Wheel R2: ""
+  Racing Wheel Paddle L: ""
+  Racing Wheel Paddle R: ""
+  Combo Racing Wheel D-Pad Up: ""
+  Combo Racing Wheel D-Pad Right: ""
+  Combo Racing Wheel D-Pad Down: ""
+  Combo Racing Wheel D-Pad Left: ""
+  Combo Racing Wheel Throttle: ""
+  Combo Racing Wheel L1: ""
+  Combo Racing Wheel R1: ""
+  Combo Racing Wheel L2: ""
+  Combo Racing Wheel R2: ""
+  Combo Racing Wheel Paddle L: ""
+  Combo Racing Wheel Paddle R: ""
+  External Device: Disconnected
+Player 2:
+  Start: Mouse Button 6
+  Select: Mouse Button 7
+  Triangle: Mouse Button 8
+  Circle: Mouse Button 4
+  Cross: Mouse Button 5
+  Square: Mouse Button 3
+  Move: Mouse Button 2
+  T: Mouse Button 1
+  Combo: ""
+  Combo Start: ""
+  Combo Select: ""
+  Combo Triangle: ""
+  Combo Circle: ""
+  Combo Cross: ""
+  Combo Square: ""
+  Combo Move: ""
+  Combo T: ""
+  Sharpshooter Firing Mode 1: ""
+  Sharpshooter Firing Mode 2: ""
+  Sharpshooter Firing Mode 3: ""
+  Sharpshooter Trigger: ""
+  Sharpshooter Reload: ""
+  Combo Sharpshooter Firing Mode 1: ""
+  Combo Sharpshooter Firing Mode 2: ""
+  Combo Sharpshooter Firing Mode 3: ""
+  Combo Sharpshooter Trigger: ""
+  Combo Sharpshooter Reload: ""
+  Racing Wheel D-Pad Up: ""
+  Racing Wheel D-Pad Right: ""
+  Racing Wheel D-Pad Down: ""
+  Racing Wheel D-Pad Left: ""
+  Racing Wheel Throttle: ""
+  Racing Wheel L1: ""
+  Racing Wheel R1: ""
+  Racing Wheel L2: ""
+  Racing Wheel R2: ""
+  Racing Wheel Paddle L: ""
+  Racing Wheel Paddle R: ""
+  Combo Racing Wheel D-Pad Up: ""
+  Combo Racing Wheel D-Pad Right: ""
+  Combo Racing Wheel D-Pad Down: ""
+  Combo Racing Wheel D-Pad Left: ""
+  Combo Racing Wheel Throttle: ""
+  Combo Racing Wheel L1: ""
+  Combo Racing Wheel R1: ""
+  Combo Racing Wheel L2: ""
+  Combo Racing Wheel R2: ""
+  Combo Racing Wheel Paddle L: ""
+  Combo Racing Wheel Paddle R: ""
+  External Device: Disconnected
+Player 3:
+  Start: Mouse Button 6
+  Select: Mouse Button 7
+  Triangle: Mouse Button 8
+  Circle: Mouse Button 4
+  Cross: Mouse Button 5
+  Square: Mouse Button 3
+  Move: Mouse Button 2
+  T: Mouse Button 1
+  Combo: ""
+  Combo Start: ""
+  Combo Select: ""
+  Combo Triangle: ""
+  Combo Circle: ""
+  Combo Cross: ""
+  Combo Square: ""
+  Combo Move: ""
+  Combo T: ""
+  Sharpshooter Firing Mode 1: ""
+  Sharpshooter Firing Mode 2: ""
+  Sharpshooter Firing Mode 3: ""
+  Sharpshooter Trigger: ""
+  Sharpshooter Reload: ""
+  Combo Sharpshooter Firing Mode 1: ""
+  Combo Sharpshooter Firing Mode 2: ""
+  Combo Sharpshooter Firing Mode 3: ""
+  Combo Sharpshooter Trigger: ""
+  Combo Sharpshooter Reload: ""
+  Racing Wheel D-Pad Up: ""
+  Racing Wheel D-Pad Right: ""
+  Racing Wheel D-Pad Down: ""
+  Racing Wheel D-Pad Left: ""
+  Racing Wheel Throttle: ""
+  Racing Wheel L1: ""
+  Racing Wheel R1: ""
+  Racing Wheel L2: ""
+  Racing Wheel R2: ""
+  Racing Wheel Paddle L: ""
+  Racing Wheel Paddle R: ""
+  Combo Racing Wheel D-Pad Up: ""
+  Combo Racing Wheel D-Pad Right: ""
+  Combo Racing Wheel D-Pad Down: ""
+  Combo Racing Wheel D-Pad Left: ""
+  Combo Racing Wheel Throttle: ""
+  Combo Racing Wheel L1: ""
+  Combo Racing Wheel R1: ""
+  Combo Racing Wheel L2: ""
+  Combo Racing Wheel R2: ""
+  Combo Racing Wheel Paddle L: ""
+  Combo Racing Wheel Paddle R: ""
+  External Device: Disconnected
+Player 4:
+  Start: Mouse Button 6
+  Select: Mouse Button 7
+  Triangle: Mouse Button 8
+  Circle: Mouse Button 4
+  Cross: Mouse Button 5
+  Square: Mouse Button 3
+  Move: Mouse Button 2
+  T: Mouse Button 1
+  Combo: ""
+  Combo Start: ""
+  Combo Select: ""
+  Combo Triangle: ""
+  Combo Circle: ""
+  Combo Cross: ""
+  Combo Square: ""
+  Combo Move: ""
+  Combo T: ""
+  Sharpshooter Firing Mode 1: ""
+  Sharpshooter Firing Mode 2: ""
+  Sharpshooter Firing Mode 3: ""
+  Sharpshooter Trigger: ""
+  Sharpshooter Reload: ""
+  Combo Sharpshooter Firing Mode 1: ""
+  Combo Sharpshooter Firing Mode 2: ""
+  Combo Sharpshooter Firing Mode 3: ""
+  Combo Sharpshooter Trigger: ""
+  Combo Sharpshooter Reload: ""
+  Racing Wheel D-Pad Up: ""
+  Racing Wheel D-Pad Right: ""
+  Racing Wheel D-Pad Down: ""
+  Racing Wheel D-Pad Left: ""
+  Racing Wheel Throttle: ""
+  Racing Wheel L1: ""
+  Racing Wheel R1: ""
+  Racing Wheel L2: ""
+  Racing Wheel R2: ""
+  Racing Wheel Paddle L: ""
+  Racing Wheel Paddle R: ""
+  Combo Racing Wheel D-Pad Up: ""
+  Combo Racing Wheel D-Pad Right: ""
+  Combo Racing Wheel D-Pad Down: ""
+  Combo Racing Wheel D-Pad Left: ""
+  Combo Racing Wheel Throttle: ""
+  Combo Racing Wheel L1: ""
+  Combo Racing Wheel R1: ""
+  Combo Racing Wheel L2: ""
+  Combo Racing Wheel R2: ""
+  Combo Racing Wheel Paddle L: ""
+  Combo Racing Wheel Paddle R: ""
+  External Device: Disconnected
+·! 0:00:00.490721 {Gem Thread} cellGem: Starting thread
+·! 0:00:00.491519 GUI: gui_application: Creating new game window
+·! 0:00:00.491537 GUI: gui_application: game window geometry: x=0, y=0, w=2560, h=1080, screen=0, resize=0, manually=1
+·! 0:00:00.491568 CFG: Loading recording config from 'F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/recording.yml'
+·! 0:00:00.491767 GUI: Using recording config:
+Video:
+  Framerate: 30
+  Width: 1280
+  Height: 720
+  AVPixelFormat: 0
+  Video Codec: ""
+  AVCodecID: 12
+  Video Bitrate: 4000000
+  Max B-Frames: 2
+  Group of Pictures Size: 30
+Audio:
+  Audio Codec: ""
+  AVCodecID: 86018
+  Audio Bitrate: 192000
+·! 0:00:00.492239 {GDB Server} GDB: Started listening on '127.0.0.1:2345'.
+·! 0:00:00.494786 {cellAudio Thread} Cubeb: Using backend wasapi
+·! 0:00:00.494799 {cellAudio Thread} cellAudio: cellAudio initializing. Backend: Cubeb
+·! 0:00:00.494802 {cellAudio Thread} Cubeb: Trying to open default device
+·! 0:00:00.494803 {cellAudio Thread} Cubeb: Searching for default device
+·! 0:00:00.514738 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{086dc989-c606-4ea1-8cd3-1da9cbf69978}" (PREFERRED)
+	Name:	"Headphones (2- Arctis Nova 7)"
+	Group:	"USB\VID_1038&PID_2202&MI_00\7&1fe88594&0&0000"
+	Vendor:	"(
+·! 0:00:00.514749 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{42122191-4642-4d34-ae64-333cb898afed}"
+	Name:	"Realtek Digital Output (Realtek(R) Audio)"
+	Group:	"HDAUDIO\FUNC_01&VEN_10EC&DEV_0887&SUBSYS_1458A182&REV_1003
+·! 0:00:00.514752 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{6d466fa4-fbae-474e-92bc-c19fd4746de5}"
+	Name:	"Speakers (Realtek(R) Audio)"
+	Group:	"HDAUDIO\FUNC_01&VEN_10EC&DEV_0887&SUBSYS_1458A182&REV_1003\5&18339b10&0&
+·! 0:00:00.514754 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{d4f8c637-2eb4-4bfd-95e0-a04146061710}"
+	Name:	"Optix G24C (NVIDIA High Definition Audio)"
+	Group:	"HDAUDIO\FUNC_01&VEN_10DE&DEV_0093&SUBSYS_1462C757&REV_1001
+·! 0:00:00.514755 {cellAudio Thread} Cubeb: Found 4 possible output devices
+·! 0:00:00.514756 {cellAudio Thread} Cubeb: Found device '{0.0.0.00000000}.{086dc989-c606-4ea1-8cd3-1da9cbf69978}' with 2 channels
+·! 0:00:00.514758 {cellAudio Thread} Cubeb: Channel count is 2
+·! 0:00:00.518040 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:1912:default device period: 100000, minimum device period: 30000
+·! 0:00:00.518045 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:1927:Minimum latency in frames: 480
+·! 0:00:00.518072 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2617:(0000023721A3C220) Setup render: device=00000237E9A48A40
+·! 0:00:00.519581 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2333:Setup requested=[f=2 r=48000 c=2 l=3] mix=[f=2 r=48000 c=2 l=3]
+·! 0:00:00.526227 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2431:Buffer size is: 1056 for render
+
+·! 0:00:00.526460 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2668:Target sample rate: 48000
+·! 0:00:00.526469 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_resampler_internal.h:553:Input and output sample-rate match, target rate of 48000Hz
+·! 0:00:00.526753 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2898:Stream init successful (0000023721A3C220)
+·! 0:00:00.527200 {cellAudio Thread} Cubeb: Stream started
+·! 0:00:00.527322 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:3158:GetStreamLatency returned 0, using workaround.
+·! 0:00:00.527327 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:3166:Output latency 0 frames.
+·! 0:00:00.527331 {cellAudio Thread} cellAudio: Opened audio backend (sampling_rate=48000, sample_size=4, channels=2, layout=Stereo)
+·! 0:00:00.598624 GUI: Registering device notifications...
+·A 0:00:00.640370 RSX: Found Vulkan-compatible GPU: 'NVIDIA GeForce RTX 2060 SUPER' running on driver 617.14.0.0
+·! 0:00:00.649705 RSX: GPU/driver supports float16 data types natively. Using native float16_t variables if possible.
+·! 0:00:00.716587 RSX: 11 extensions loaded:
+·! 0:00:00.716594 RSX: ** Using VK_KHR_swapchain
+·! 0:00:00.716595 RSX: ** Using VK_EXT_custom_border_color
+·! 0:00:00.716596 RSX: ** Using VK_EXT_multi_draw
+·! 0:00:00.716596 RSX: ** Using VK_EXT_conditional_rendering
+·! 0:00:00.716597 RSX: ** Using VK_EXT_depth_range_unrestricted
+·! 0:00:00.716597 RSX: ** Using VK_EXT_external_memory_host
+·! 0:00:00.716598 RSX: ** Using VK_EXT_attachment_feedback_loop_layout
+·! 0:00:00.716598 RSX: ** Using VK_KHR_fragment_shader_barycentric
+·! 0:00:00.716599 RSX: ** Using VK_KHR_synchronization2
+·! 0:00:00.716599 RSX: ** Using VK_EXT_device_fault
+·! 0:00:00.716600 RSX: ** Using VK_EXT_provoking_vertex
+·! 0:00:00.716628 RSX: Detected 8220 MB of device local memory
+·! 0:00:00.716629 RSX: Detected 16345 MB of host coherent memory
+·! 0:00:00.716629 RSX: Detected 214 MB of BAR memory
+·! 0:00:00.716663 RSX: Vulkan: Renderer initialized on device 'NVIDIA GeForce RTX 2060 SUPER'
+·! 0:00:00.717746 RSX: Swapchain: present mode 0 in use.
+·! 0:00:00.717750 RSX: Swapchain: requesting full screen exclusive mode 0.
+·! 0:00:00.742523 RSX: Data heap fragment env buffer will attempt to use Re-BAR memory
+·! 0:00:00.749620 RSX: Data heap fragment texture params buffer will attempt to use Re-BAR memory
+·! 0:00:00.754173 RSX: Data heap vertex layout buffer will attempt to use Re-BAR memory
+·! 0:00:00.758460 RSX: Data heap fragment constants buffer will attempt to use Re-BAR memory
+·! 0:00:00.762779 RSX: Data heap raster env buffer will attempt to use Re-BAR memory
+·! 0:00:00.784612 RSX: Async pipeline compiler auto-selected 8 worker(s) for 16 host thread(s).
+·! 0:00:00.796031 {Pad Thread} Input: Using input configuration: 'Default' (override='')
+·! 0:00:00.796038 {Pad Thread} Input: Loading pad config (title_id='', config_file='Default', strict=0)
+·! 0:00:00.796173 {Pad Thread} Input: Loading input configuration: 'F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/input_configs/global/Default.yml'
+·! 0:00:00.799029 {Pad Thread} Input: Loading pad config (title_id='', config_file='Default', strict=0)
+·! 0:00:00.799112 {Pad Thread} Input: Loading input configuration: 'F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/input_configs/global/Default.yml'
+·! 0:00:00.803315 {Pad Thread} Input: Pad 0: device='XInput Pad #1', handler=XInput, VID=0x54c, PID=0x268, class_type=0x0, class_profile=0x0
+·! 0:00:00.803536 {Pad Thread} Input: Pad 0: config=
+Handler: XInput
+Device: "XInput Pad #1"
+Config:
+  Left Stick Left: LS X-
+  Left Stick Down: LS Y-
+  Left Stick Right: LS X+
+  Left Stick Up: LS Y+
+  Right Stick Left: RS X-
+  Right Stick Down: RS Y-
+  Right Stick Right: RS X+
+  Right Stick Up: RS Y+
+  Start: Start
+  Select: Back
+  PS Button: "Back&Start,Guide"
+  Square: X
+  Cross: A
+  Circle: B
+  Triangle: Y
+  Left: Left
+  Down: Down
+  Right: Right
+  Up: Up
+  R1: RB
+  R2: RT
+  R3: RS
+  L1: LB
+  L2: LT
+  L3: LS
+  IR Nose: ""
+  IR Tail: ""
+  IR Left: ""
+  IR Right: ""
+  Tilt Left: ""
+  Tilt Right: ""
+  Motion Sensor X:
+    Axis: ""
+    Mirrored: false
+    Shift: 0
+  Motion Sensor Y:
+    Axis: ""
+    Mirrored: false
+    Shift: 0
+  Motion Sensor Z:
+    Axis: ""
+    Mirrored: false
+    Shift: 0
+  Motion Sensor G:
+    Axis: ""
+    Mirrored: false
+    Shift: 0
+  Orientation Reset Button: ""
+  Orientation Enabled: false
+  Pressure Intensity Button: ""
+  Pressure Intensity Percent: 50
+  Pressure Intensity Toggle Mode: false
+  Pressure Intensity Deadzone: 0
+  Analog Limiter Button: ""
+  Analog Limiter Toggle Mode: false
+  Left Stick Multiplier: 100
+  Right Stick Multiplier: 100
+  Left Stick Deadzone: 7849
+  Right Stick Deadzone: 8689
+  Left Stick Anti-Deadzone: 4259
+  Right Stick Anti-Deadzone: 4259
+  Left Trigger Threshold: 30
+  Right Trigger Threshold: 30
+  Left Pad Squircling Factor: 4000
+  Right Pad Squircling Factor: 4000
+  Color Value R: 0
+  Color Value G: 0
+  Color Value B: 0
+  Blink LED when battery is below 20%: true
+  Use LED as a battery indicator: false
+  LED battery indicator brightness: 50
+  Player LED enabled: true
+  Large Vibration Motor Multiplier: 100
+  Small Vibration Motor Multiplier: 100
+  Switch Vibration Motors: false
+  Vibration Threshold: 63
+  Mouse Movement Mode: Relative
+  Mouse Deadzone X Axis: 60
+  Mouse Deadzone Y Axis: 60
+  Mouse Acceleration X Axis: 200
+  Mouse Acceleration Y Axis: 250
+  Left Stick Lerp Factor: 100
+  Right Stick Lerp Factor: 100
+  Analog Button Lerp Factor: 100
+  Trigger Lerp Factor: 100
+  Device Class Type: 0
+  Vendor ID: 1356
+  Product ID: 616
+Buddy Device: ""
+·! 0:00:00.803539 {Pad Thread} Input: Pad 1: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.803541 {Pad Thread} Input: Pad 2: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.803542 {Pad Thread} Input: Pad 3: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.803543 {Pad Thread} Input: Pad 4: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.803545 {Pad Thread} Input: Pad 5: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.803546 {Pad Thread} Input: Pad 6: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.803547 {Pad Thread} Input: set_mouse_and_keyboard: device=emulated
+·! 0:00:00.803550 {Pad Thread} Input: Stopping pad threads...
+·! 0:00:00.803551 {Pad Thread} Input: Pad threads stopped
+·S 0:00:00.803551 {Pad Thread} Input: The pad mode was changed to Single-threaded
+·! 0:00:01.174401 {Performance Sensor} PERF: CPU Usage: Total: 7.3%, Cores: 18.8%, 12.5%, 0.1%, 0.1%, 3.2%, 9.4%, 0.1%, 3.2%, 12.5%, 53.1%, 0.1%, 3.2%, 0.1%, 0.1%, 0.1%, 0.1%, RAM Usage: 10524MB (Peak: 10524MB)
+·! 0:00:01.350464 {RSX Replay} SYS: StackTrace
+
+0> F:\d1\<pc>-import\dev\rpcs3\Utilities\Thread.cpp(3436): rpcs3!thread_ctrl::emergency_exit+0x50
+1> F:\d1\<pc>-import\dev\rpcs3\Utilities\StrFmt.cpp(678): rpcs3!fmt::raw_throw_exception+0x8D
+2> F:\d1\<pc>-import\dev\rpcs3\rpcs3\Emu\RSX\Capture\rsx_replay.cpp(35): rpcs3!rsx::rsx_replay_thread::allocate_context+0x363
+3> F:\d1\<pc>-import\dev\rpcs3\rpcs3\Emu\RSX\Capture\rsx_replay.cpp(178): rpcs3!rsx::rsx_replay_thread::cpu_task+0x24
+4> F:\d1\<pc>-import\dev\rpcs3\rpcs3\Emu\CPU\CPUThread.cpp(763): rpcs3!cpu_thread::operator()+0x238
+5> F:\d1\<pc>-import\dev\rpcs3\Utilities\Thread.h(481): rpcs3!named_thread<rsx::rsx_replay_thread>::entry_point+0x75
+6> 
+
+·F 0:00:01.350477 {RSX Replay} SIG: Thread terminated due to fatal error: Capture Replay: context alloc failed
+(in file F:\d1\<pc>-import\dev\rpcs3\rpcs3\Emu\RSX\Capture\rsx_replay.cpp:35[:24], in function 'stx::se_t<uint,1,4> rsx::rsx_replay_thread::allocate_context(void)')
+·W 0:00:01.644392 {RSX Replay} SYS: Emulation has been frozen! You can either use debugger tools to inspect current emulation state or terminate it.
+·! 0:00:01.649953 {RSX Replay} SIG: Thread time: 0.468750s (1.526147Gc); Faults: 0 [rsx:0, spu:0]; [soft:0 hard:0]; Switches:[vol:0 unvol:0]; Wait:[0.004s, spur:0]
+·! 0:00:01.674549 {Performance Sensor} PERF: CPU Usage: Total: 3.2%, Cores: 3.2%, 9.4%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 37.5%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, RAM Usage: 10582MB (Peak: 10582MB)
+·! 0:00:11.674351 {Performance Sensor} PERF: CPU Usage: Total: 1.9%, Cores: 9.3%, 15.6%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 3.0%, 0.0%, 0.0%, 3.0%, 0.0%, 0.0%, 0.0%, 0.0%, RAM Usage: 10571MB (Peak: 10582MB)

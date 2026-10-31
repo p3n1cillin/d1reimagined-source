@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-08T00:14:43.2016979Z",
+  "id": 3748,
+  "startTimeUtcTicks": "639270152637317081",
+  "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+  "command_line": "\"%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe\" F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\observe-owned-player180.py F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\FINAL124_JOIN180-processes.json F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN180-after-natural-entry 90"
+}

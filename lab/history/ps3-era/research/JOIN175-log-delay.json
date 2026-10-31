@@ -1,0 +1,83 @@
+{
+  "utc": "2026-10-07T20:13:23.109318+00:00",
+  "events": 8191,
+  "measured_pairs": 4043,
+  "over_50ms": 198,
+  "over_1s": 67,
+  "total_pair_seconds": 195.797,
+  "worst": [
+    {
+      "ev": "frame",
+      "n": 295,
+      "seconds": 6.579,
+      "message": "[20261007-210527-332018] frame 295 (kind 1): c->ah not id=294 payload=22 bytes 0000000000000001010000000f00000"
+    },
+    {
+      "ev": "ah",
+      "n": 261,
+      "seconds": 5.92,
+      "message": "[20261007-210527-332018] c->ah not host 0x1 type 15 len 1 body 00"
+    },
+    {
+      "ev": "ah",
+      "n": 2022,
+      "seconds": 5.879,
+      "message": "[20261007-210527-332018] c->ah not host 0x1 type 15 len 1 body 00"
+    },
+    {
+      "ev": "frame",
+      "n": 1000,
+      "seconds": 5.6,
+      "message": "[20261007-210527-332018] frame 1000 (kind 1): c->ah not id=999 payload=22 bytes 0000000000000001010000000f0000"
+    },
+    {
+      "ev": "frame",
+      "n": 179,
+      "seconds": 4.455,
+      "message": "[20261007-210527-332018] frame 179 (kind 1): c->ah not id=178 payload=22 bytes 0000000000000001010000000f00000"
+    },
+    {
+      "ev": "frame",
+      "n": 2022,
+      "seconds": 4.318,
+      "message": "[20261007-210527-332018] frame 2022 (kind 1): c->ah not id=2021 payload=22 bytes 0000000000000001010000000f000"
+    },
+    {
+      "ev": "frame",
+      "n": 48,
+      "seconds": 4.289,
+      "message": "[20261007-210527-332018] frame 48 (kind 1): c->ah not id=47 payload=22 bytes 0000000000000001010000000f0000000"
+    },
+    {
+      "ev": "ah",
+      "n": 294,
+      "seconds": 4.253,
+      "message": "[20261007-210527-332018] c->ah not host 0x1 type 15 len 1 body 00"
+    },
+    {
+      "ev": "ah",
+      "n": 1000,
+      "seconds": 4.132,
+      "message": "[20261007-210527-332018] c->ah not host 0x1 type 15 len 1 body 00"
+    },
+    {
+      "ev": "ah",
+      "n": 295,
+      "seconds": 4.096,
+      "message": "[20261007-210527-332018] c->ah not host 0x1 type 15 len 1 body 00"
+    },
+    {
+      "ev": "frame",
+      "n": 1001,
+      "seconds": 4.067,
+      "message": "[20261007-210527-332018] frame 1001 (kind 1): c->ah not id=1000 payload=22 bytes 0000000000000001010000000f000"
+    },
+    {
+      "ev": "frame",
+      "n": 1348,
+      "seconds": 3.56,
+      "message": "[20261007-210527-332018] frame 1348 (kind 1): c->ah not id=1347 payload=22 bytes 0000000000000001010000000f000"
+    }
+  ],
+  "scope": "Elapsed time from structured event timestamp before log() to log event timestamp after flushed stdout print; includes intervening code/event IO, does not measure raw capture write time or all receive processing."
+}

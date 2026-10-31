@@ -1,0 +1,8 @@
+0007ddb0  38600000  li       r3, 0
+0007ddb4  4e800020  blr      
+0007ddb8  60000000  nop      
+0007ddbc  60000000  nop      
+0007ddc0  4e800020  blr      
+0007ddc4  3f000000  lis      r24, 0
+0007ddc8  3f800000  lis      r28, 0
+0007ddcc  60000000  nop      

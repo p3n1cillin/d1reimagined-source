@@ -1,0 +1,12 @@
+# JOIN221: queue-submission gates for the explicit selector-2 host incident (synthetic fixture).
+27d744 8 if=r3==25 r5:128
+12f9d4 40 if=lr==0x27d774
+bee3a8 40 if=lr==0x27d798
+1db184 40 if=lr==0x27d7b8 r3:32 r4:32
+bee268 40 if=lr==0x27d7d8
+1f6ec8 40 if=lr==0x27d864
+99e380 40 if=lr==0x27d8a4
+1f6f88 40 if=lr==0x27d8ac r3:32
+5aede4 12 r4:24
+2b2a60 12 r3:128
+472518 12 r3:24

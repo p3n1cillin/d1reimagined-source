@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-06T13:29:50.4701754Z",
+  "package": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\06\\<lab-pc>-20261006T132502-7aa19388507d4333a577cfb19994ea20.ready",
+  "ready_count": 11,
+  "payload_count": 6,
+  "file_count": 7,
+  "all_verified": true,
+  "checks": [
+    {
+      "file": "clip.mp4",
+      "size_ok": true,
+      "hash_ok": true
+    },
+    {
+      "file": "development-event.json",
+      "size_ok": true,
+      "hash_ok": true
+    },
+    {
+      "file": "metadata.json",
+      "size_ok": true,
+      "hash_ok": true
+    },
+    {
+      "file": "notes.md",
+      "size_ok": true,
+      "hash_ok": true
+    },
+    {
+      "file": "screenshot-01.png",
+      "size_ok": true,
+      "hash_ok": true
+    },
+    {
+      "file": "screenshot-02.png",
+      "size_ok": true,
+      "hash_ok": true
+    }
+  ]
+}

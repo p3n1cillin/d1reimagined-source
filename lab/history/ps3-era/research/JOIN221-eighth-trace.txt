@@ -1,0 +1,9 @@
+# JOIN221 eighth phase: native incident queue ingest/drain after 0x1d97c8 delivery.
+27d744 3 if=r3==25
+c32dcc 6 if=lr==0x1d9840 r3:32 r4:128
+c32dcc 6 r3:32 r4:128
+c330b0 6 r3:32
+1cae2c 6 r3:32 r4:32
+5ae4dc 6 r3:32 r4:32
+5aede4 12 r4:24
+2b2a60 12 r3:128

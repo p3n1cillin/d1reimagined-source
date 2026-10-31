@@ -1,0 +1,27 @@
+{
+  "original": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\BLES01857\\BLES01857_screenshot_2026_10_07_14_23_13.png",
+  "original_pixel_sha256": "a285953822c4c2b281d5a485b9672ece946d74e99360261223558794d909b47e",
+  "checks": [
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_07_14_45_26.png",
+      "size": [
+        1280,
+        720
+      ],
+      "pixel_sha256": "a285953822c4c2b281d5a485b9672ece946d74e99360261223558794d909b47e",
+      "matches_inspected_original_pixels": true
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_07_14_45_36.png",
+      "size": [
+        1280,
+        720
+      ],
+      "pixel_sha256": "a285953822c4c2b281d5a485b9672ece946d74e99360261223558794d909b47e",
+      "matches_inspected_original_pixels": true
+    }
+  ],
+  "actual_images_inspected": true,
+  "visible_result": "STILL THERE? inactivity dialog reproduced in both replay frames",
+  "scope": "Captured UI/control frame only; not outdoor fault or live gameplay acceptance"
+}

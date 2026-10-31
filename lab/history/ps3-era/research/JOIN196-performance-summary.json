@@ -1,0 +1,376 @@
+{
+  "samples": 1186,
+  "read_errors": 0,
+  "failed_rechecks": 0,
+  "transitions": [
+    {
+      "utc": "2026-10-08T12:52:03.802763+00:00",
+      "state": [],
+      "slot_resource_at_14": [
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:54:07.948395+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:54:29.056144+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:54:32.064175+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          0
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:55:11.174070+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:55:17.691556+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          2
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:55:23.709539+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          3
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:55:28.724297+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          4
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:55:34.243031+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          5
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:55:42.767638+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          6
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:55:47.281819+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          7
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:55:55.805670+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          8
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:56:11.847892+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:56:12.870057+00:00",
+      "state": [
+        [
+          2160823643,
+          2,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:56:19.890024+00:00",
+      "state": [
+        [
+          2160823643,
+          2,
+          0
+        ],
+        [
+          2160823653,
+          -1,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:57:07.522544+00:00",
+      "state": [
+        [
+          2160823643,
+          -1,
+          -1
+        ],
+        [
+          2160823653,
+          -1,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:57:18.881397+00:00",
+      "state": [],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    }
+  ]
+}

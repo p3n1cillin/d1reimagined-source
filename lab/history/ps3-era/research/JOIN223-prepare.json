@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-09T08:06:01.4221629Z",
+  "source_base": "277008667d7839b0963f14fb0e6e9e93b1349060",
+  "source_clean": false,
+  "source_status": [
+    " M notes/incident-diagnostics.md"
+  ],
+  "change": "Unchanged source (2770086). Private unarmed starter and synthetic pending rifle; explicit selector-2 event with recipient player 1 and current world 14 (JOIN222 found these reach 0x5aede4 and allocate a loot unit), then the ordinary route to the Breach chest. Watches the pickup path. No production changes or guest writes.",
+  "trace": "# JOIN223: synthetic recipient/world-corrected rifle event, then route to the chest; pickup path watches.\n5aede4 6 r4:24\n2b2a60 6 r3:128\n2b36f8 400 if=m4:2==0xe0e r4:56\n2b2c00 12 r3:64\n472518 12 r3:64\n",
+  "launch_sha256": "2958A6E67E1AF3A9E598A5D73EBE3BD11F86411D25A974E0F7064DBE5B9C0EC6"
+}

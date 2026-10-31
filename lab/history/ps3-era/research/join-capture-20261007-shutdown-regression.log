@@ -1,0 +1,23 @@
+PASS Paths.ps1 syntax
+PASS Final124RunHelpers.ps1 syntax
+PASS Invoke-Final124Join.ps1 syntax
+PASS unknown shortened name fails clearly
+PASS unknown name keeps client running
+PASS unknown name keeps backend running
+PASS unknown name attempts no stops
+stopped FINAL124_TEST
+PASS backend stays alive until client shutdown
+PASS debugger detaches before client shutdown
+PASS bap stops after client exit
+PASS proxy stops after client exit
+PASS stale identity cannot stop unrelated child
+PASS cooperative shutdown marker is written
+PASS final client evidence is retained
+PASS bap has exited
+PASS rpcs3 has exited
+PASS gdbd has exited
+PASS proxy has exited
+stopped FINAL124_TEST
+PASS repeated stop preserves unrelated child
+PASS repeated stop preserves prior evidence
+All isolated join shutdown checks passed.

@@ -1,0 +1,6 @@
+{
+  "patch_sha256": "46887ce08de61ed9df464a75a9602fcd0f9ef4e748d36ca7e9935869b591e984",
+  "source_matches_applied_patch": {
+    "rpcs3/Emu/RSX/VK/VKResourceManager.h": true
+  }
+}

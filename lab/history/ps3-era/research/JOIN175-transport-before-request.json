@@ -1,0 +1,34 @@
+{
+  "utc": "2026-10-07T20:08:37.545717+00:00",
+  "atomic": false,
+  "queue_object": "0x3063aea8",
+  "queue_fields114": "0086000000000800000005490000000000000000",
+  "queue_consumed2124": 0,
+  "inner": "0x30630518",
+  "inner_state10f8": 8,
+  "inner_queue_objects": [
+    "0x30630570",
+    "0x3063aea8"
+  ],
+  "send_state_1628_1643": "00000000000000000000000000000000000000000000000000000001",
+  "counter_1624": 3403,
+  "forward_queues": [
+    {
+      "channel": 0,
+      "capacity": 32,
+      "head": 2,
+      "used": 0,
+      "records": [],
+      "queue_header_unchanged": true
+    },
+    {
+      "channel": 1,
+      "capacity": 32,
+      "head": 9,
+      "used": 0,
+      "records": [],
+      "queue_header_unchanged": true
+    }
+  ],
+  "inner_pointer_unchanged": true
+}

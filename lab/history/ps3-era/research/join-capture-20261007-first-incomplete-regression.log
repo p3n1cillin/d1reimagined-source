@@ -1,0 +1,2 @@
+PASS successful child preserves one result
+PASS literal argument survives native boundary

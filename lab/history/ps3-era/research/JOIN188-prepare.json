@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-08T09:48:12.6380808Z",
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "source_commit": "2f6bc359621558142d161f385e8ad542ba3ce1a0",
+  "source_clean": true,
+  "mission": "missions/a_guardian_rises.json (production, incident-driven revival)",
+  "watch": "original JOIN118 lines unchanged; route tool leases the player hook",
+  "markers": "d1checkpoint,d1depthfp.on as JOIN187",
+  "scope": "Natural Breach crossing, then deeper exploration; observe follow-mode completion, Ghost light triggers, Fallen."
+}

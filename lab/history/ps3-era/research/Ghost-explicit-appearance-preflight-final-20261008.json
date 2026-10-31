@@ -1,0 +1,18 @@
+{
+  "utc": "2026-10-08T14:00:03.759029+00:00",
+  "gear": [
+    {
+      "family": "peer",
+      "bytes": 100,
+      "explicit_appearance": 42
+    },
+    {
+      "family": "select",
+      "bytes": 100,
+      "explicit_appearance": 42
+    }
+  ],
+  "both_build_starter_defaults_unchanged": true,
+  "mission_changes": 46,
+  "scope": "Final code: explicit custom support; no new automatic defaults."
+}

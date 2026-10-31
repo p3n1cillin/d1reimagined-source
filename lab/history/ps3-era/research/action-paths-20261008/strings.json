@@ -1,0 +1,102 @@
+[
+  {
+    "address": "0x12dc2e0",
+    "text": "ator reward"
+  },
+  {
+    "address": "0x12dc300",
+    "text": "reward mapping"
+  },
+  {
+    "address": "0x12dc310",
+    "text": "reward sheet"
+  },
+  {
+    "address": "0x12dc320",
+    "text": "reward site"
+  },
+  {
+    "address": "0x12dc330",
+    "text": "reward stream"
+  },
+  {
+    "address": "0x12f0ea0",
+    "text": "loot_manager_record_client_data_from_nonce"
+  },
+  {
+    "address": "0x12f0ecc",
+    "text": "loot-bauble"
+  },
+  {
+    "address": "0x12f0ed8",
+    "text": "investment_loot_object_manager"
+  },
+  {
+    "address": "0x1303868",
+    "text": "item_loot"
+  },
+  {
+    "address": "0x13053e0",
+    "text": "investment_activity_reward_tracker"
+  },
+  {
+    "address": "0x133a3a4",
+    "text": "c_cui_investment_character_loot_state_component"
+  },
+  {
+    "address": "0x133a4e4",
+    "text": "c_cui_investment_loot_pipe_component"
+  },
+  {
+    "address": "0x133a684",
+    "text": "c_cui_loot_pickup_item_server_message_component"
+  },
+  {
+    "address": "0x133b2e0",
+    "text": "cui::c_record_reward_redemption_event_container_widget"
+  },
+  {
+    "address": "0x133d7a8",
+    "text": "cui::c_currency_reward_item_container"
+  },
+  {
+    "address": "0x133ec0c",
+    "text": "cui::c_item_progression_reward_item_container"
+  },
+  {
+    "address": "0x133eee8",
+    "text": "cui::c_loot_reward_item_container"
+  },
+  {
+    "address": "0x133f6c8",
+    "text": "cui::c_progression_reward_item_container"
+  },
+  {
+    "address": "0x133f748",
+    "text": "cui::c_quest_step_reward_item_container"
+  },
+  {
+    "address": "0x133f79c",
+    "text": "cui::c_record_completion_reward_item_container"
+  },
+  {
+    "address": "0x133f7e0",
+    "text": "cui::c_reward_display_widget"
+  },
+  {
+    "address": "0x133f814",
+    "text": "cui::c_reward_item_container"
+  },
+  {
+    "address": "0x1342950",
+    "text": "reward_info"
+  },
+  {
+    "address": "0x1342c90",
+    "text": "e_rewards_info"
+  },
+  {
+    "address": "0x13cd260",
+    "text": "loot_component_send_pickup_message"
+  }
+]

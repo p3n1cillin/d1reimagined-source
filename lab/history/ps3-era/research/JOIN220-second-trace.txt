@@ -1,0 +1,12 @@
+# JOIN220: explicit host incident to native loot-cache path, synthetic fixture.
+12f2e8 12 r4:96
+2700a4 12 r5:32 r5+0xd4:16
+5aede4 12 r4:24
+2b2a60 12 r3:128
+2b2f74 12 r3:48
+2b36f8 24 if=m4:2==0xe0e r4:56 r6:48
+2b3240 24 if=m5:2==0xe0e r5:56 r6:48
+472518 12 r3:24
+d98a60 4 if=lr==0x270250 r1+0x470:128 r1+0x870:48
+bee268 4 if=lr==0x27028c r3:160
+27d744 4 if=r3==25 r5:128 r5+0x80:128

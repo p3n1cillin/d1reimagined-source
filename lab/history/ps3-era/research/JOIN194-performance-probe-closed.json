@@ -1,0 +1,11 @@
+{
+  "at_utc": "2026-10-08T12:25:06.9997427Z",
+  "identity": {
+    "tag": "performance-probe",
+    "id": 22612,
+    "startTimeUtcTicks": "639270587368204872",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "exact_owned_closed": true,
+  "reason": "Read-only candidate trace obtained; stop probe before safe native checkpoint closure."
+}

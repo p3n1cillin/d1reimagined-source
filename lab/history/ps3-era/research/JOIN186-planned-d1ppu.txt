@@ -1,0 +1,9 @@
+# JOIN186: bounded cinematic dispatch only; static call-site returns verified.
+580928 4 r3:448
+425654 4 if=lr==0x580a3c r3:4
+425120 4 if=lr==0x42567c r3:4
+42478c 4 if=lr==0x425694 r3:32
+42c060 96 r3:208
+42afec 96 r3:208
+42b51c 256 r3:32 r4:192
+580640 12 r3:448 r4:4

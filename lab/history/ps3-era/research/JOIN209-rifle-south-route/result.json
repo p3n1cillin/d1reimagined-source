@@ -1,0 +1,8 @@
+{
+  "utc": "2026-10-08T18:10:24.754831+00:00",
+  "run": "JOIN209",
+  "scope": "ordinary guarded input; read-only guest memory",
+  "status": "stopped",
+  "reason": "bounded exploration deadline",
+  "finished_utc": "2026-10-08T18:12:24.800978+00:00"
+}

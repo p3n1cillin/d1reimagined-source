@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-08T12:30:50.411780+00:00",
+  "atomic": false,
+  "count": 5,
+  "libraries": [
+    {
+      "index": 0,
+      "handle": "0x80ae4000",
+      "address": "0x700138d0",
+      "count": 2,
+      "matches": []
+    },
+    {
+      "index": 1,
+      "handle": "0x80b1a000",
+      "address": "0x70361ec0",
+      "count": 20,
+      "matches": []
+    },
+    {
+      "index": 2,
+      "handle": "0x80a7d644",
+      "address": "0x7196bbf0",
+      "count": 9526,
+      "matches": [
+        {
+          "index": 433,
+          "resource": "0x80a6a008"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "handle": "0x80cda004",
+      "address": "0x722418d0",
+      "count": 2,
+      "matches": []
+    },
+    {
+      "index": 4,
+      "handle": "0x80cb8026",
+      "address": "0x721d3fb0",
+      "count": 1,
+      "matches": []
+    }
+  ],
+  "rechecks_pass": true
+}

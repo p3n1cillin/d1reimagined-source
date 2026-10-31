@@ -1,0 +1,6 @@
+{
+  "apply_check": "PASS",
+  "apply": "PASS",
+  "normalized_source_match": true,
+  "patch_sha256": "1d853038bc40b4e9552fe7eedd3de17173b5ea1a384d45fdb6097c0a25e1b9f5"
+}

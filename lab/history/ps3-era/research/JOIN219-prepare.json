@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-08T22:41:32.3165574Z",
+  "source_base": "e5c05bc0e48073d7dce6ff7b683cd40d291bc381",
+  "source_clean": true,
+  "source_status": [],
+  "change": "Native incoming incident interface and action-body lookup; unmodified starter, no mission/renderer change, echo or incident injection.",
+  "trace": "# JOIN219: client incident context and body selection, read-only.\r\n12f2e8 12 r4:96\r\n1cb0b0 12 r4:64 r4+0x130:24\r\n1caf20 16 r4:12 r5:24 r6:64\r\n26ba98 12 r3:24\r\n5aea30 12 r4:64 r4+0x130:24\r\n5ae7a4 12 r4:12 r5:24\r\n5aede4 12 r4:24\r\n2b279c 12 r3:32\r\n2b2a60 12 r3:32\r\n2b2f74 12 r3:48\r\n472518 12 r3:24\n",
+  "launch_sha256": "75DF6C8028319EDE093DA5FE10646BA643DD6449C5BC18CBC956B39982C868C9"
+}

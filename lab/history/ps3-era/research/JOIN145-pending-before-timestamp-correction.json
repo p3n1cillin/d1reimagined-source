@@ -1,0 +1,31 @@
+[
+  {
+    "event_id": "e10992dda6414c7c90e3509c40f72888",
+    "at": "2026-10-06T08:22:28.263683+00:00",
+    "feature": "native-recording-recovery",
+    "game_build": "01.24",
+    "event_type": "FEATURE_WORKING",
+    "importance": "USEFUL",
+    "description": "native-recording-recovery: new passed evidence. Interrupted RPCS3 recording recovered through complete fragments, fully decoded and verified against its original prefix; the unfinished original is preserved.",
+    "previous_state": "UNKNOWN",
+    "current_state": "PASSED",
+    "maturity": "Experimental",
+    "evidence": {
+      "summary": "Interrupted RPCS3 recording recovered through complete fragments, fully decoded and verified against its original prefix; the unfinished original is preserved.",
+      "contains_audio": true,
+      "source_recovery": {
+        "retained_bytes": 1808249,
+        "original_bytes": 1835028,
+        "discarded_tail_bytes": 26779,
+        "method": "complete MOV/MP4 fragments",
+        "source_sha256": "ee2ed70ac8074e48af4d0d65f9cca75e854bd253468eb4afce5a62465d2c8d6d",
+        "retained_sha256": "d3d3137e09b9f10fd282ea52a06d02024e76f1b8f4b56c7dc2c5d10cbe41bba1"
+      }
+    },
+    "comparison_group_id": null,
+    "comparison_role": null,
+    "remaining_issue": "An observed engine state or stub response does not establish playable gameplay.",
+    "milestone_group": "01.24/native-recording-recovery",
+    "run": "FINAL124_JOIN145"
+  }
+]

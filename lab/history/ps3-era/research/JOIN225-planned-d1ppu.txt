@@ -1,0 +1,6 @@
+# JOIN225: Breach rifle event (world 3), walk onto it; service-601 grant and self update.
+5aede4 6 r4:24
+2b2a60 6 r3:128
+2b36f8 400 if=m4:2==0xe0e r4:56
+2b2c00 12 r3:64
+472518 12 r3:64

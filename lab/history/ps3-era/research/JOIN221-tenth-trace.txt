@@ -1,0 +1,6 @@
+# JOIN221 tenth phase: recipient/schema check inside 0x5ae120 for the 1504 event.
+27d744 3 if=r3==25
+5ae7a4 3 r4:16 r5:64
+5ae120 12 if=m4:4==0x84f68b44 r4:4 r5:32 r6:64
+26a544 12 if=m3:4==0x84f68b44 r3:4 r4:32 r5:64
+5aede4 6 r4:24

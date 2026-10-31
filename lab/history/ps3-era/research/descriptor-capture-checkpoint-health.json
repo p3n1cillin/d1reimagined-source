@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-06T18:48:22.3728043Z",
+  "observer_alive": true,
+  "observer": {
+    "tag": "content-monitor",
+    "id": 4024,
+    "startTimeUtcTicks": "639269090435093550",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "status": {
+    "CONTENT_CAPTURE_ENABLED": true,
+    "DEVELOPMENT_MACHINE_ID": "<lab-pc>",
+    "LOCAL_OUTBOX_COUNT": 0,
+    "LOCAL_REVIEW_COUNT": 0,
+    "LAST_SUCCESSFUL_TRANSFER": "2026-10-06T18:55:22.047152+01:00",
+    "CURRENT_DEVBLOG": null,
+    "CURRENT_SESSION": "renderer-and-inventory-restoration",
+    "AVAILABLE_BUFFER_SPACE": 1229058809856,
+    "NAS_CONNECTED": true,
+    "updated_at": "2026-10-06T19:48:22.262813+01:00",
+    "RECORDER_STATUS": "IDLE",
+    "ACTIVE_RUN": null,
+    "RECORDER_EXIT": null,
+    "MONITOR_ERROR": null,
+    "SAMPLE_STATUS": "AVAILABLE",
+    "SAMPLE_ERROR": null,
+    "PROCESSING_ERROR": null,
+    "STATUS_UPDATE_DEFERRED": false,
+    "STATUS_UPDATE_ERROR": null,
+    "AVAILABLE_NAS_SPACE": 536707203072,
+    "NAS_TRANSFER_REQUIRED_BYTES": 19798,
+    "NAS_CAPACITY_ERROR": null
+  },
+  "stderr_bytes": 0,
+  "emulator_running": false,
+  "commit": "232523c8329ed226680f87cf1a8b2911a614d2f8"
+}

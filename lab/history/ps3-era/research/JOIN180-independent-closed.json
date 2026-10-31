@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-08T00:29:12.6060786Z",
+  "checks": [
+    {
+      "id": 16096,
+      "startTimeUtcTicks": "639270146777757844",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 20196,
+      "startTimeUtcTicks": "639270146778021108",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 17784,
+      "startTimeUtcTicks": "639270146778156775",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 22712,
+      "startTimeUtcTicks": "639270146781786392",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 23732,
+      "startTimeUtcTicks": "639270146782333213",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 15208,
+      "startTimeUtcTicks": "639270146812666619",
+      "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 24228,
+      "startTimeUtcTicks": "639270146849205130",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 19380,
+      "startTimeUtcTicks": "639270148324393884",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 4868,
+      "startTimeUtcTicks": "639270149180888232",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 16928,
+      "startTimeUtcTicks": "639270150837509118",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 3748,
+      "startTimeUtcTicks": "639270152637317081",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 4992,
+      "startTimeUtcTicks": "639270153782585782",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    },
+    {
+      "id": 24204,
+      "startTimeUtcTicks": "639270154161929602",
+      "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "exact_owned_alive": false
+    }
+  ],
+  "all_exact_owned_closed": true,
+  "configuration": [
+    {
+      "name": "title",
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\config\\custom_configs\\config_BLES01857.yml",
+      "sha256": "22C081E2680A9F81C565860262232AF1296EBEA2831849338BA79BD6E7C2350B",
+      "unchanged": true
+    },
+    {
+      "name": "global",
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\config\\config.yml",
+      "sha256": "71C7E08939860F78C12A53D095DDC1CCD1525A46D1493714DEE6F9F85D229AB9",
+      "unchanged": true
+    },
+    {
+      "name": "watch",
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\d1\\d1ppu.txt",
+      "sha256": "442847E5847064F2D570943381CAA88DFD66E9DC212FFD299D9AC6D2F1EDD4B6",
+      "unchanged": true
+    }
+  ],
+  "all_hashes_match": true
+}

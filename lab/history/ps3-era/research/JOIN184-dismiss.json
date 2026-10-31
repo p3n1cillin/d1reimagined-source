@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-08T08:36:41.5764352+00:00",
+  "client": {
+    "tag": "rpcs3",
+    "id": 9820,
+    "startTimeUtcTicks": "639270449783669542",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "action": "Dismiss model-inspected Urgent Message after cinematic sampling. No clean cutscene acceptance."
+}

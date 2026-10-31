@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-08T08:28:44.2138534Z",
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "source_base": "7bedf8e5df854bac79633baf242cc6110957a5f8",
+  "source_clean": false,
+  "change": "Bounded read-only cinematic dispatch watches; production mission/codec unchanged.",
+  "candidate_sha256": "aa1b4bfb5ae22403c091d94d451e3e7df165514cea80128580241740439b4011",
+  "trace": "# JOIN184: bounded cinematic dispatch only; static call-site returns verified.\n580928 4 r3:448\n425654 4 if=lr==0x580a3c r3:4\n425120 4 if=lr==0x42567c r3:4\n42478c 4 if=lr==0x425694 r3:32\n42c060 96 r3:208\n42afec 96 r3:208\n42b51c 256 r3:32 r4:192\n",
+  "scope": "C5 native diagnostics; no cinematic timing/cast changes, guest writes or playback acceptance claimed."
+}

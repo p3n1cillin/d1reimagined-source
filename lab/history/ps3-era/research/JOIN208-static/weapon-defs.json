@@ -1,0 +1,96 @@
+[
+  {
+    "wrapper": "0x80cb8168",
+    "definition": "0x80cb828b",
+    "object_matches": [
+      [
+        "weapon",
+        856
+      ]
+    ],
+    "placements": [
+      {
+        "unit": "0x80cb828c",
+        "xyz": [
+          410.6444396972656,
+          -794.384521484375,
+          17.723047256469727
+        ],
+        "quaternion": [
+          -0.4164291322231293,
+          -0.5416907668113708,
+          -0.6633186936378479,
+          -0.30523112416267395
+        ],
+        "field": "0x378",
+        "offset": "0x3c0"
+      }
+    ],
+    "names": [
+      "!cosmo_m0_phase01_breach.o_weapon\u0000"
+    ]
+  },
+  {
+    "wrapper": "0x80cb817f",
+    "definition": "0x80cb82a4",
+    "object_matches": [
+      [
+        "lights",
+        856
+      ]
+    ],
+    "placements": [
+      {
+        "unit": "0x80cc0528",
+        "xyz": [
+          410.10302734375,
+          -788.7418823242188,
+          17.59393310546875
+        ],
+        "quaternion": [
+          0.0,
+          0.0,
+          -0.7071067094802856,
+          0.7071068286895752
+        ],
+        "field": "0x378",
+        "offset": "0x3c0"
+      }
+    ],
+    "names": [
+      "#o_breach_gating_lights\u0000",
+      "m0_power_up\u0000"
+    ]
+  },
+  {
+    "wrapper": "0x80cb8182",
+    "definition": "0x80cb82a7",
+    "object_matches": [
+      [
+        "chest",
+        856
+      ]
+    ],
+    "placements": [
+      {
+        "unit": "0x80cb82a8",
+        "xyz": [
+          534.8648681640625,
+          -736.8001098632812,
+          16.50700569152832
+        ],
+        "quaternion": [
+          0.0,
+          0.0,
+          0.8076143264770508,
+          -0.58971107006073
+        ],
+        "field": "0x378",
+        "offset": "0x3c0"
+      }
+    ],
+    "names": [
+      "o_chest_primary_weapon\u0000"
+    ]
+  }
+]

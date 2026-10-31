@@ -1,0 +1,1675 @@
+﻿RPCS3 v0.0.42-b5a174e9 Alpha | HEAD | local_build
+Architecture: x64
+AMD Ryzen 7 5700X 8-Core Processor | 16 Threads | 31.92 GiB RAM | TSC: 3.400GHz | AVX+ | FMA3
+Operating system: Windows, Major: 10, Minor: 0, Build: 26300, Service Pack: none
+Qt version: Compiled against Qt 6.11.2 | Run-time uses Qt 6.11.2
+Current Time: 2026-10-07T15:17:44
+Initialization times before main(): 0.141378Gc
+·! 0:00:00.000004 SYS: argc: 4, argv: 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe' '--no-gui' '--rsx-capture' 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007151639_capture.rrc.gz'
+·! 0:00:00.000344 SYS: argv_utf8: 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe' '--no-gui' '--rsx-capture' 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007151639_capture.rrc.gz'
+·A 0:00:00.160422 {Vulkan Device Enumeration Thread} RSX: Found Vulkan-compatible GPU: 'NVIDIA GeForce RTX 2060 SUPER' running on driver 617.14.0.0
+·! 0:00:00.161469 CFG: Setting the default renderer to Vulkan. Default GPU: 'NVIDIA GeForce RTX 2060 SUPER'
+·! 0:00:00.161627 SYS: Option passed via command line: no-gui 
+·! 0:00:00.161630 SYS: Option passed via command line: rsx-capture F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007151639_capture.rrc.gz
+·! 0:00:00.161893 UUID: Installation ID: {52497f52-3051-4522-b947-bd29be826cd4}
+·! 0:00:00.273020 SYS: Setting user ID '00000001'
+·A 0:00:00.273030 SYS: LLVM version: 22.1.8
+·! 0:00:00.280556 VFS: VFS config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/vfs.yml
+·! 0:00:00.280609 SYS: Using VFS config:
+$(EmulatorDir): ""
+/dev_hdd0/: $(EmulatorDir)dev_hdd0/
+/dev_hdd1/: $(EmulatorDir)dev_hdd1/
+/dev_flash/: $(EmulatorDir)dev_flash/
+/dev_flash2/: $(EmulatorDir)dev_flash2/
+/dev_flash3/: $(EmulatorDir)dev_flash3/
+/dev_bdvd/: $(EmulatorDir)dev_bdvd/
+/games/: $(EmulatorDir)games/
+/app_home/: ""
+/dev_usb***/:
+  /dev_usb000:
+    Path: $(EmulatorDir)dev_usb000/
+    Serial: ""
+    VID: ""
+    PID: ""
+·! 0:00:00.280688 VFS: Mounted path "/dev_hdd0" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_hdd0/"
+·! 0:00:00.280739 VFS: Mounted path "/dev_flash" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash/"
+·! 0:00:00.280785 VFS: Mounted path "/dev_flash2" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash2/"
+·! 0:00:00.280829 VFS: Mounted path "/dev_flash3" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash3/"
+·! 0:00:00.280834 VFS: Mounted path "/app_home" to "//"
+·! 0:00:00.280917 VFS: Mounted path "/dev_usb000" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_usb000/"
+·! 0:00:00.280948 SYS: Applying global config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/config.yml
+·! 0:00:00.285195 SYS: Logged in as user '00000001' with the username 'User'
+·! 0:00:00.285315 IPC: IPC config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/ipc.yml
+·! 0:00:00.285327 SYS: Using IPC config:
+IPC Server enabled: false
+IPC Port: 28012
+·A 0:00:00.285403 SYS: Firmware version: 4.60
+·! 0:00:00.286640 SYS: get_one_drive_paths: Found OneDrive registry path: '%USERPROFILE%\OneDrive' (key='Software\Microsoft\OneDrive\Accounts\Personal')
+·! 0:00:00.286957 SYS: New timer resolution: 500 us (old=1000 us, min=15625 us, max=500 us)
+·! 0:00:00.286966 SYS: Booting rsx capture from command line: F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007151639_capture.rrc.gz
+·! 0:00:00.409511 VFS: VFS config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/vfs.yml
+·! 0:00:00.409565 SYS: Using VFS config:
+$(EmulatorDir): ""
+/dev_hdd0/: $(EmulatorDir)dev_hdd0/
+/dev_hdd1/: $(EmulatorDir)dev_hdd1/
+/dev_flash/: $(EmulatorDir)dev_flash/
+/dev_flash2/: $(EmulatorDir)dev_flash2/
+/dev_flash3/: $(EmulatorDir)dev_flash3/
+/dev_bdvd/: $(EmulatorDir)dev_bdvd/
+/games/: $(EmulatorDir)games/
+/app_home/: ""
+/dev_usb***/:
+  /dev_usb000:
+    Path: $(EmulatorDir)dev_usb000/
+    Serial: ""
+    VID: ""
+    PID: ""
+·! 0:00:00.409649 VFS: Mounted path "/dev_hdd0" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_hdd0/"
+·! 0:00:00.409698 VFS: Mounted path "/dev_flash" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash/"
+·! 0:00:00.409745 VFS: Mounted path "/dev_flash2" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash2/"
+·! 0:00:00.409790 VFS: Mounted path "/dev_flash3" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash3/"
+·! 0:00:00.409795 VFS: Mounted path "/app_home" to "//"
+·! 0:00:00.409879 VFS: Mounted path "/dev_usb000" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_usb000/"
+·! 0:00:00.409913 SYS: Applying global config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/config.yml
+·! 0:00:00.414213 SYS: Logged in as user '00000001' with the username 'User'
+·! 0:00:00.414317 IPC: IPC config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/ipc.yml
+·! 0:00:00.414328 SYS: Using IPC config:
+IPC Server enabled: false
+IPC Port: 28012
+·! 0:00:00.414330 VM: Guest memory bases address ranges:
+vm::g_base_addr = 0000000300000000 - 00000003ffffffff
+vm::g_sudo_addr = 0000000400000000 - 00000004ffffffff
+vm::g_exec_addr = 0000000500000000 - 00000006ffffffff
+vm::g_hook_addr = 0000000800000000 - 0000000fffffffff
+vm::g_stat_addr = 0000001000000000 - 00000010ffffffff
+vm::g_reservations = 00007ff699f8d000 - 00007ff699f94fff
+
+·S 0:00:00.428919 PPU: Enabled: Non-Java Mode Fixup
+·S 0:00:00.428922 PPU: Enabled: VNAN Fixup
+·E 0:00:00.429651 PPU: PPU Cache location not initialized.
+·! 0:00:00.433976 IPv6_layer: is_ipv6_supported(): disabled cause: force-disabled through config
+·! 0:00:00.434042 sys_net: P2P port 3658 was bound!
+·! 0:00:00.434188 rpcn: Loading RPCN config. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/rpcn.yml
+·! 0:00:00.434329 cellSysutil: cellAudioOut: found support for Linear PCM 2 Ch.
+·! 0:00:00.434331 cellSysutil: cellAudioOut: added primary mode: type=0, channel=2, fs=4, layout=1
+·! 0:00:00.434332 cellSysutil: cellAudioOut: added secondary mode: type=0, channel=2, fs=4, layout=1
+·! 0:00:00.434333 cellSysutil: cellAudioOut: initial primary output configuration: channels=2, encoder=0, downmixer=0
+·! 0:00:00.434334 cellSysutil: cellAudioOut: initial secondary output configuration: channels=2, encoder=0, downmixer=0
+·! 0:00:00.444639 CFG: Loading usio config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/usio.yml
+·! 0:00:00.445227 sys_usbd: USIO config=
+
+·S 0:00:00.445233 sys_usbd: Emulating device: Skylanders Portal (1)
+·S 0:00:00.445244 sys_usbd: Emulating device: Disney Infinity Base (1)
+·S 0:00:00.445247 sys_usbd: Emulating device: Lego Dimensions Portal (1)
+·S 0:00:00.445251 sys_usbd: Emulating device: Kamen Rider Summonride Portal (1)
+·S 0:00:00.445258 sys_usbd: Emulating device: lgFF_c283_c29b (1)
+·! 0:00:00.445267 CFG: Loading LogitechG27 config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/LogitechG27.yml
+·S 0:00:00.445912 sys_usbd: Emulating device: PS3A-USJ (1)
+·! 0:00:00.446157 Music: Constructing Qt music handler...
+·! 0:00:00.465070 CFG: Loading gem_real config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem_real.yml
+·! 0:00:00.465350 CFG: Loading gem config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem.yml
+·! 0:00:00.465940 CFG: Loading gem_mouse config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem_mouse.yml
+·! 0:00:00.467176 cellGem: Real gem config=Player 1:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+Player 2:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+Player 3:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+Player 4:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+·! 0:00:00.467494 cellGem: Fake gem config=Player 1:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+  X-Axis: Left Stick X-Axis
+  Y-Axis: Left Stick Y-Axis
+  Sharpshooter Firing Mode 1: D-Pad Left
+  Sharpshooter Firing Mode 2: D-Pad Up
+  Sharpshooter Firing Mode 3: D-Pad Right
+  Sharpshooter Trigger: L1
+  Sharpshooter Reload: L2
+  Racing Wheel D-Pad Up: D-Pad Up
+  Racing Wheel D-Pad Right: D-Pad Right
+  Racing Wheel D-Pad Down: D-Pad Down
+  Racing Wheel D-Pad Left: D-Pad Left
+  Racing Wheel Throttle: Right Stick Up
+  Racing Wheel L1: L1
+  Racing Wheel R1: R1
+  Racing Wheel L2: L2
+  Racing Wheel R2: R2
+  Racing Wheel Paddle L: L3
+  Racing Wheel Paddle R: R3
+  External Device: Disconnected
+Player 2:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+  X-Axis: Left Stick X-Axis
+  Y-Axis: Left Stick Y-Axis
+  Sharpshooter Firing Mode 1: D-Pad Left
+  Sharpshooter Firing Mode 2: D-Pad Up
+  Sharpshooter Firing Mode 3: D-Pad Right
+  Sharpshooter Trigger: L1
+  Sharpshooter Reload: L2
+  Racing Wheel D-Pad Up: D-Pad Up
+  Racing Wheel D-Pad Right: D-Pad Right
+  Racing Wheel D-Pad Down: D-Pad Down
+  Racing Wheel D-Pad Left: D-Pad Left
+  Racing Wheel Throttle: Right Stick Up
+  Racing Wheel L1: L1
+  Racing Wheel R1: R1
+  Racing Wheel L2: L2
+  Racing Wheel R2: R2
+  Racing Wheel Paddle L: L3
+  Racing Wheel Paddle R: R3
+  External Device: Disconnected
+Player 3:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+  X-Axis: Left Stick X-Axis
+  Y-Axis: Left Stick Y-Axis
+  Sharpshooter Firing Mode 1: D-Pad Left
+  Sharpshooter Firing Mode 2: D-Pad Up
+  Sharpshooter Firing Mode 3: D-Pad Right
+  Sharpshooter Trigger: L1
+  Sharpshooter Reload: L2
+  Racing Wheel D-Pad Up: D-Pad Up
+  Racing Wheel D-Pad Right: D-Pad Right
+  Racing Wheel D-Pad Down: D-Pad Down
+  Racing Wheel D-Pad Left: D-Pad Left
+  Racing Wheel Throttle: Right Stick Up
+  Racing Wheel L1: L1
+  Racing Wheel R1: R1
+  Racing Wheel L2: L2
+  Racing Wheel R2: R2
+  Racing Wheel Paddle L: L3
+  Racing Wheel Paddle R: R3
+  External Device: Disconnected
+Player 4:
+  Start: Start
+  Select: Select
+  Triangle: Triangle
+  Circle: Circle
+  Cross: Cross
+  Square: Square
+  Move: R1
+  T: R2
+  X-Axis: Left Stick X-Axis
+  Y-Axis: Left Stick Y-Axis
+  Sharpshooter Firing Mode 1: D-Pad Left
+  Sharpshooter Firing Mode 2: D-Pad Up
+  Sharpshooter Firing Mode 3: D-Pad Right
+  Sharpshooter Trigger: L1
+  Sharpshooter Reload: L2
+  Racing Wheel D-Pad Up: D-Pad Up
+  Racing Wheel D-Pad Right: D-Pad Right
+  Racing Wheel D-Pad Down: D-Pad Down
+  Racing Wheel D-Pad Left: D-Pad Left
+  Racing Wheel Throttle: Right Stick Up
+  Racing Wheel L1: L1
+  Racing Wheel R1: R1
+  Racing Wheel L2: L2
+  Racing Wheel R2: R2
+  Racing Wheel Paddle L: L3
+  Racing Wheel Paddle R: R3
+  External Device: Disconnected
+·! 0:00:00.468031 cellGem: Mouse gem config=Player 1:
+  Start: Mouse Button 6
+  Select: Mouse Button 7
+  Triangle: Mouse Button 8
+  Circle: Mouse Button 4
+  Cross: Mouse Button 5
+  Square: Mouse Button 3
+  Move: Mouse Button 2
+  T: Mouse Button 1
+  Combo: ""
+  Combo Start: ""
+  Combo Select: ""
+  Combo Triangle: ""
+  Combo Circle: ""
+  Combo Cross: ""
+  Combo Square: ""
+  Combo Move: ""
+  Combo T: ""
+  Sharpshooter Firing Mode 1: ""
+  Sharpshooter Firing Mode 2: ""
+  Sharpshooter Firing Mode 3: ""
+  Sharpshooter Trigger: ""
+  Sharpshooter Reload: ""
+  Combo Sharpshooter Firing Mode 1: ""
+  Combo Sharpshooter Firing Mode 2: ""
+  Combo Sharpshooter Firing Mode 3: ""
+  Combo Sharpshooter Trigger: ""
+  Combo Sharpshooter Reload: ""
+  Racing Wheel D-Pad Up: ""
+  Racing Wheel D-Pad Right: ""
+  Racing Wheel D-Pad Down: ""
+  Racing Wheel D-Pad Left: ""
+  Racing Wheel Throttle: ""
+  Racing Wheel L1: ""
+  Racing Wheel R1: ""
+  Racing Wheel L2: ""
+  Racing Wheel R2: ""
+  Racing Wheel Paddle L: ""
+  Racing Wheel Paddle R: ""
+  Combo Racing Wheel D-Pad Up: ""
+  Combo Racing Wheel D-Pad Right: ""
+  Combo Racing Wheel D-Pad Down: ""
+  Combo Racing Wheel D-Pad Left: ""
+  Combo Racing Wheel Throttle: ""
+  Combo Racing Wheel L1: ""
+  Combo Racing Wheel R1: ""
+  Combo Racing Wheel L2: ""
+  Combo Racing Wheel R2: ""
+  Combo Racing Wheel Paddle L: ""
+  Combo Racing Wheel Paddle R: ""
+  External Device: Disconnected
+Player 2:
+  Start: Mouse Button 6
+  Select: Mouse Button 7
+  Triangle: Mouse Button 8
+  Circle: Mouse Button 4
+  Cross: Mouse Button 5
+  Square: Mouse Button 3
+  Move: Mouse Button 2
+  T: Mouse Button 1
+  Combo: ""
+  Combo Start: ""
+  Combo Select: ""
+  Combo Triangle: ""
+  Combo Circle: ""
+  Combo Cross: ""
+  Combo Square: ""
+  Combo Move: ""
+  Combo T: ""
+  Sharpshooter Firing Mode 1: ""
+  Sharpshooter Firing Mode 2: ""
+  Sharpshooter Firing Mode 3: ""
+  Sharpshooter Trigger: ""
+  Sharpshooter Reload: ""
+  Combo Sharpshooter Firing Mode 1: ""
+  Combo Sharpshooter Firing Mode 2: ""
+  Combo Sharpshooter Firing Mode 3: ""
+  Combo Sharpshooter Trigger: ""
+  Combo Sharpshooter Reload: ""
+  Racing Wheel D-Pad Up: ""
+  Racing Wheel D-Pad Right: ""
+  Racing Wheel D-Pad Down: ""
+  Racing Wheel D-Pad Left: ""
+  Racing Wheel Throttle: ""
+  Racing Wheel L1: ""
+  Racing Wheel R1: ""
+  Racing Wheel L2: ""
+  Racing Wheel R2: ""
+  Racing Wheel Paddle L: ""
+  Racing Wheel Paddle R: ""
+  Combo Racing Wheel D-Pad Up: ""
+  Combo Racing Wheel D-Pad Right: ""
+  Combo Racing Wheel D-Pad Down: ""
+  Combo Racing Wheel D-Pad Left: ""
+  Combo Racing Wheel Throttle: ""
+  Combo Racing Wheel L1: ""
+  Combo Racing Wheel R1: ""
+  Combo Racing Wheel L2: ""
+  Combo Racing Wheel R2: ""
+  Combo Racing Wheel Paddle L: ""
+  Combo Racing Wheel Paddle R: ""
+  External Device: Disconnected
+Player 3:
+  Start: Mouse Button 6
+  Select: Mouse Button 7
+  Triangle: Mouse Button 8
+  Circle: Mouse Button 4
+  Cross: Mouse Button 5
+  Square: Mouse Button 3
+  Move: Mouse Button 2
+  T: Mouse Button 1
+  Combo: ""
+  Combo Start: ""
+  Combo Select: ""
+  Combo Triangle: ""
+  Combo Circle: ""
+  Combo Cross: ""
+  Combo Square: ""
+  Combo Move: ""
+  Combo T: ""
+  Sharpshooter Firing Mode 1: ""
+  Sharpshooter Firing Mode 2: ""
+  Sharpshooter Firing Mode 3: ""
+  Sharpshooter Trigger: ""
+  Sharpshooter Reload: ""
+  Combo Sharpshooter Firing Mode 1: ""
+  Combo Sharpshooter Firing Mode 2: ""
+  Combo Sharpshooter Firing Mode 3: ""
+  Combo Sharpshooter Trigger: ""
+  Combo Sharpshooter Reload: ""
+  Racing Wheel D-Pad Up: ""
+  Racing Wheel D-Pad Right: ""
+  Racing Wheel D-Pad Down: ""
+  Racing Wheel D-Pad Left: ""
+  Racing Wheel Throttle: ""
+  Racing Wheel L1: ""
+  Racing Wheel R1: ""
+  Racing Wheel L2: ""
+  Racing Wheel R2: ""
+  Racing Wheel Paddle L: ""
+  Racing Wheel Paddle R: ""
+  Combo Racing Wheel D-Pad Up: ""
+  Combo Racing Wheel D-Pad Right: ""
+  Combo Racing Wheel D-Pad Down: ""
+  Combo Racing Wheel D-Pad Left: ""
+  Combo Racing Wheel Throttle: ""
+  Combo Racing Wheel L1: ""
+  Combo Racing Wheel R1: ""
+  Combo Racing Wheel L2: ""
+  Combo Racing Wheel R2: ""
+  Combo Racing Wheel Paddle L: ""
+  Combo Racing Wheel Paddle R: ""
+  External Device: Disconnected
+Player 4:
+  Start: Mouse Button 6
+  Select: Mouse Button 7
+  Triangle: Mouse Button 8
+  Circle: Mouse Button 4
+  Cross: Mouse Button 5
+  Square: Mouse Button 3
+  Move: Mouse Button 2
+  T: Mouse Button 1
+  Combo: ""
+  Combo Start: ""
+  Combo Select: ""
+  Combo Triangle: ""
+  Combo Circle: ""
+  Combo Cross: ""
+  Combo Square: ""
+  Combo Move: ""
+  Combo T: ""
+  Sharpshooter Firing Mode 1: ""
+  Sharpshooter Firing Mode 2: ""
+  Sharpshooter Firing Mode 3: ""
+  Sharpshooter Trigger: ""
+  Sharpshooter Reload: ""
+  Combo Sharpshooter Firing Mode 1: ""
+  Combo Sharpshooter Firing Mode 2: ""
+  Combo Sharpshooter Firing Mode 3: ""
+  Combo Sharpshooter Trigger: ""
+  Combo Sharpshooter Reload: ""
+  Racing Wheel D-Pad Up: ""
+  Racing Wheel D-Pad Right: ""
+  Racing Wheel D-Pad Down: ""
+  Racing Wheel D-Pad Left: ""
+  Racing Wheel Throttle: ""
+  Racing Wheel L1: ""
+  Racing Wheel R1: ""
+  Racing Wheel L2: ""
+  Racing Wheel R2: ""
+  Racing Wheel Paddle L: ""
+  Racing Wheel Paddle R: ""
+  Combo Racing Wheel D-Pad Up: ""
+  Combo Racing Wheel D-Pad Right: ""
+  Combo Racing Wheel D-Pad Down: ""
+  Combo Racing Wheel D-Pad Left: ""
+  Combo Racing Wheel Throttle: ""
+  Combo Racing Wheel L1: ""
+  Combo Racing Wheel R1: ""
+  Combo Racing Wheel L2: ""
+  Combo Racing Wheel R2: ""
+  Combo Racing Wheel Paddle L: ""
+  Combo Racing Wheel Paddle R: ""
+  External Device: Disconnected
+·! 0:00:00.468232 {Gem Thread} cellGem: Starting thread
+·! 0:00:00.468855 GUI: gui_application: Creating new game window
+·! 0:00:00.468871 GUI: gui_application: game window geometry: x=0, y=0, w=2560, h=1080, screen=0, resize=0, manually=1
+·! 0:00:00.468907 CFG: Loading recording config from 'F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/recording.yml'
+·! 0:00:00.469098 GUI: Using recording config:
+Video:
+  Framerate: 30
+  Width: 1280
+  Height: 720
+  AVPixelFormat: 0
+  Video Codec: ""
+  AVCodecID: 12
+  Video Bitrate: 4000000
+  Max B-Frames: 2
+  Group of Pictures Size: 30
+Audio:
+  Audio Codec: ""
+  AVCodecID: 86018
+  Audio Bitrate: 192000
+·! 0:00:00.469549 {GDB Server} GDB: Started listening on '127.0.0.1:2345'.
+·! 0:00:00.471701 {cellAudio Thread} Cubeb: Using backend wasapi
+·! 0:00:00.471714 {cellAudio Thread} cellAudio: cellAudio initializing. Backend: Cubeb
+·! 0:00:00.471716 {cellAudio Thread} Cubeb: Trying to open default device
+·! 0:00:00.471717 {cellAudio Thread} Cubeb: Searching for default device
+·! 0:00:00.487890 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{086dc989-c606-4ea1-8cd3-1da9cbf69978}" (PREFERRED)
+	Name:	"Headphones (2- Arctis Nova 7)"
+	Group:	"USB\VID_1038&PID_2202&MI_00\7&1fe88594&0&0000"
+	Vendor:	"(
+·! 0:00:00.487898 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{42122191-4642-4d34-ae64-333cb898afed}"
+	Name:	"Realtek Digital Output (Realtek(R) Audio)"
+	Group:	"HDAUDIO\FUNC_01&VEN_10EC&DEV_0887&SUBSYS_1458A182&REV_1003
+·! 0:00:00.487900 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{6d466fa4-fbae-474e-92bc-c19fd4746de5}"
+	Name:	"Speakers (Realtek(R) Audio)"
+	Group:	"HDAUDIO\FUNC_01&VEN_10EC&DEV_0887&SUBSYS_1458A182&REV_1003\5&18339b10&0&
+·! 0:00:00.487902 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{d4f8c637-2eb4-4bfd-95e0-a04146061710}"
+	Name:	"Optix G24C (NVIDIA High Definition Audio)"
+	Group:	"HDAUDIO\FUNC_01&VEN_10DE&DEV_0093&SUBSYS_1462C757&REV_1001
+·! 0:00:00.487903 {cellAudio Thread} Cubeb: Found 4 possible output devices
+·! 0:00:00.487904 {cellAudio Thread} Cubeb: Found device '{0.0.0.00000000}.{086dc989-c606-4ea1-8cd3-1da9cbf69978}' with 2 channels
+·! 0:00:00.487905 {cellAudio Thread} Cubeb: Channel count is 2
+·! 0:00:00.490818 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:1912:default device period: 100000, minimum device period: 30000
+·! 0:00:00.490822 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:1927:Minimum latency in frames: 480
+·! 0:00:00.490847 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2617:(000001EAA0800BB0) Setup render: device=000001EAA2AB1B40
+·! 0:00:00.492083 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2333:Setup requested=[f=2 r=48000 c=2 l=3] mix=[f=2 r=48000 c=2 l=3]
+·! 0:00:00.498058 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2431:Buffer size is: 1056 for render
+
+·! 0:00:00.498266 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2668:Target sample rate: 48000
+·! 0:00:00.498274 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_resampler_internal.h:553:Input and output sample-rate match, target rate of 48000Hz
+·! 0:00:00.498397 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2898:Stream init successful (000001EAA0800BB0)
+·! 0:00:00.498819 {cellAudio Thread} Cubeb: Stream started
+·! 0:00:00.498933 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:3158:GetStreamLatency returned 0, using workaround.
+·! 0:00:00.498937 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:3166:Output latency 0 frames.
+·! 0:00:00.498939 {cellAudio Thread} cellAudio: Opened audio backend (sampling_rate=48000, sample_size=4, channels=2, layout=Stereo)
+·! 0:00:00.565539 GUI: Registering device notifications...
+·A 0:00:00.606148 RSX: Found Vulkan-compatible GPU: 'NVIDIA GeForce RTX 2060 SUPER' running on driver 617.14.0.0
+·! 0:00:00.613042 RSX: GPU/driver supports float16 data types natively. Using native float16_t variables if possible.
+·! 0:00:00.674513 RSX: 11 extensions loaded:
+·! 0:00:00.674519 RSX: ** Using VK_KHR_swapchain
+·! 0:00:00.674520 RSX: ** Using VK_EXT_custom_border_color
+·! 0:00:00.674521 RSX: ** Using VK_EXT_multi_draw
+·! 0:00:00.674521 RSX: ** Using VK_EXT_conditional_rendering
+·! 0:00:00.674522 RSX: ** Using VK_EXT_depth_range_unrestricted
+·! 0:00:00.674522 RSX: ** Using VK_EXT_external_memory_host
+·! 0:00:00.674523 RSX: ** Using VK_EXT_attachment_feedback_loop_layout
+·! 0:00:00.674523 RSX: ** Using VK_KHR_fragment_shader_barycentric
+·! 0:00:00.674524 RSX: ** Using VK_KHR_synchronization2
+·! 0:00:00.674524 RSX: ** Using VK_EXT_device_fault
+·! 0:00:00.674525 RSX: ** Using VK_EXT_provoking_vertex
+·! 0:00:00.674552 RSX: Detected 8220 MB of device local memory
+·! 0:00:00.674553 RSX: Detected 16345 MB of host coherent memory
+·! 0:00:00.674553 RSX: Detected 214 MB of BAR memory
+·! 0:00:00.674586 RSX: Vulkan: Renderer initialized on device 'NVIDIA GeForce RTX 2060 SUPER'
+·! 0:00:00.675642 RSX: Swapchain: present mode 0 in use.
+·! 0:00:00.675645 RSX: Swapchain: requesting full screen exclusive mode 0.
+·! 0:00:00.700060 RSX: Data heap fragment env buffer will attempt to use Re-BAR memory
+·! 0:00:00.707238 RSX: Data heap fragment texture params buffer will attempt to use Re-BAR memory
+·! 0:00:00.711829 RSX: Data heap vertex layout buffer will attempt to use Re-BAR memory
+·! 0:00:00.716269 RSX: Data heap fragment constants buffer will attempt to use Re-BAR memory
+·! 0:00:00.720654 RSX: Data heap raster env buffer will attempt to use Re-BAR memory
+·! 0:00:00.742939 RSX: Async pipeline compiler auto-selected 8 worker(s) for 16 host thread(s).
+·! 0:00:00.753953 {Pad Thread} Input: Using input configuration: 'Default' (override='')
+·! 0:00:00.753960 {Pad Thread} Input: Loading pad config (title_id='', config_file='Default', strict=0)
+·! 0:00:00.754100 {Pad Thread} Input: Loading input configuration: 'F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/input_configs/global/Default.yml'
+·! 0:00:00.756798 {Pad Thread} Input: Loading pad config (title_id='', config_file='Default', strict=0)
+·! 0:00:00.756887 {Pad Thread} Input: Loading input configuration: 'F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/input_configs/global/Default.yml'
+·! 0:00:00.760361 {Pad Thread} Input: Pad 0: device='XInput Pad #1', handler=XInput, VID=0x54c, PID=0x268, class_type=0x0, class_profile=0x0
+·! 0:00:00.760587 {Pad Thread} Input: Pad 0: config=
+Handler: XInput
+Device: "XInput Pad #1"
+Config:
+  Left Stick Left: LS X-
+  Left Stick Down: LS Y-
+  Left Stick Right: LS X+
+  Left Stick Up: LS Y+
+  Right Stick Left: RS X-
+  Right Stick Down: RS Y-
+  Right Stick Right: RS X+
+  Right Stick Up: RS Y+
+  Start: Start
+  Select: Back
+  PS Button: "Back&Start,Guide"
+  Square: X
+  Cross: A
+  Circle: B
+  Triangle: Y
+  Left: Left
+  Down: Down
+  Right: Right
+  Up: Up
+  R1: RB
+  R2: RT
+  R3: RS
+  L1: LB
+  L2: LT
+  L3: LS
+  IR Nose: ""
+  IR Tail: ""
+  IR Left: ""
+  IR Right: ""
+  Tilt Left: ""
+  Tilt Right: ""
+  Motion Sensor X:
+    Axis: ""
+    Mirrored: false
+    Shift: 0
+  Motion Sensor Y:
+    Axis: ""
+    Mirrored: false
+    Shift: 0
+  Motion Sensor Z:
+    Axis: ""
+    Mirrored: false
+    Shift: 0
+  Motion Sensor G:
+    Axis: ""
+    Mirrored: false
+    Shift: 0
+  Orientation Reset Button: ""
+  Orientation Enabled: false
+  Pressure Intensity Button: ""
+  Pressure Intensity Percent: 50
+  Pressure Intensity Toggle Mode: false
+  Pressure Intensity Deadzone: 0
+  Analog Limiter Button: ""
+  Analog Limiter Toggle Mode: false
+  Left Stick Multiplier: 100
+  Right Stick Multiplier: 100
+  Left Stick Deadzone: 7849
+  Right Stick Deadzone: 8689
+  Left Stick Anti-Deadzone: 4259
+  Right Stick Anti-Deadzone: 4259
+  Left Trigger Threshold: 30
+  Right Trigger Threshold: 30
+  Left Pad Squircling Factor: 4000
+  Right Pad Squircling Factor: 4000
+  Color Value R: 0
+  Color Value G: 0
+  Color Value B: 0
+  Blink LED when battery is below 20%: true
+  Use LED as a battery indicator: false
+  LED battery indicator brightness: 50
+  Player LED enabled: true
+  Large Vibration Motor Multiplier: 100
+  Small Vibration Motor Multiplier: 100
+  Switch Vibration Motors: false
+  Vibration Threshold: 63
+  Mouse Movement Mode: Relative
+  Mouse Deadzone X Axis: 60
+  Mouse Deadzone Y Axis: 60
+  Mouse Acceleration X Axis: 200
+  Mouse Acceleration Y Axis: 250
+  Left Stick Lerp Factor: 100
+  Right Stick Lerp Factor: 100
+  Analog Button Lerp Factor: 100
+  Trigger Lerp Factor: 100
+  Device Class Type: 0
+  Vendor ID: 1356
+  Product ID: 616
+Buddy Device: ""
+·! 0:00:00.760591 {Pad Thread} Input: Pad 1: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.760593 {Pad Thread} Input: Pad 2: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.760594 {Pad Thread} Input: Pad 3: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.760595 {Pad Thread} Input: Pad 4: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.760597 {Pad Thread} Input: Pad 5: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.760598 {Pad Thread} Input: Pad 6: device='Null', handler=Null, VID=0x0, PID=0x0, class_type=0x0, class_profile=0x0
+·! 0:00:00.760599 {Pad Thread} Input: set_mouse_and_keyboard: device=emulated
+·! 0:00:00.760602 {Pad Thread} Input: Stopping pad threads...
+·! 0:00:00.760603 {Pad Thread} Input: Pad threads stopped
+·S 0:00:00.760604 {Pad Thread} Input: The pad mode was changed to Single-threaded
+·W 0:00:00.762016 {RSX Replay} sys_memory: sys_memory_allocate(size=0x10100000, flags=0x400, alloc_addr=*0x10000)
+·! 0:00:00.762208 {RSX Replay} sys_memory: sys_memory_allocate(): Allocated 0x20000000 address (size=0x10100000)
+·W 0:00:00.881156 {RSX Replay} sys_rsx: sys_rsx_device_map(dev_addr=*0x10008, a2=*0x0, dev_id=0x8)
+·W 0:00:00.881207 {RSX Replay} sys_rsx: sys_rsx_device_map(): Mapped address 0x40000000
+·W 0:00:00.881208 {RSX Replay} sys_rsx: sys_rsx_memory_allocate(mem_handle=*0x10010, mem_addr=*0x10018, size=0xf900000, flags=0x0, a5=0x0, a6=0x0, a7=0x0)
+·W 0:00:01.127939 {RSX Replay} sys_rsx: sys_rsx_context_allocate(context_id=*0x10014, lpar_dma_control=*0x10020, lpar_driver_info=*0x10030, lpar_reports=*0x10028, mem_ctx=0x5a5a5a5b, system_mode=0x0)
+·W 0:00:01.127988 {RSX Replay} sys_rsx: sys_rsx_context_allocate(): Mapped address 0x40100000
+·W 0:00:01.128081 {RSX Replay} sys_event: sys_event_port_create(eport_id=*0x402012d0, port_type=1, name=0x0)
+·W 0:00:01.128085 {RSX Replay} sys_event: sys_event_queue_create(equeue_id=*0x402012d0, attr=*0x20000, ipc_key=0x0, size=32)
+·W 0:00:01.128088 {RSX Replay} sys_event: sys_event_port_connect_local(eport_id=0xe000000, equeue_id=0x8d000100)
+·W 0:00:01.128987 {RSX Replay} sys_rsx: sys_rsx_context_iomap(context_id=0x55555555, io=0x0, ea=0x20000000, size=0x10100000, flags=0xf000000000000800)
+·W 0:00:01.129070 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:01.129917 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x104, a3=0x0, a4=0x500000002d0, a5=0x14000de10000, a6=0x0)
+·W 0:00:01.129921 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x104, a3=0x1, a4=0x500000002d0, a5=0x14000e1a8000, a6=0x0)
+·W 0:00:01.129923 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x104, a3=0x2, a4=0x500000002d0, a5=0x14000e540000, a6=0x0)
+·W 0:00:01.129925 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x0, a4=0xde100010e8d0000, a5=0x140040158000, a6=0x0)
+·W 0:00:01.129926 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x1, a4=0xe8e00010eb50000, a5=0x10004004e000, a6=0x0)
+·W 0:00:01.129927 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x2, a4=0xeb600010f050000, a5=0x20004009e000, a6=0x0)
+·W 0:00:01.129928 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x3, a4=0xf0600010f2d0000, a5=0x8004004e000, a6=0x0)
+·W 0:00:01.129929 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x4, a4=0xf2e00010f320000, a5=0x80040008000, a6=0x0)
+·W 0:00:01.129930 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x5, a4=0xf3300010f350000, a5=0x40064004000, a6=0x0)
+·W 0:00:01.129931 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x6, a4=0xf3600010f3f0000, a5=0x80064012000, a6=0x0)
+·W 0:00:01.129932 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x7, a4=0xf4000010f670000, a5=0x10006404e000, a6=0x0)
+·W 0:00:01.129933 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x8, a4=0xf6800010f870000, a5=0x8004003e000, a6=0x0)
+·W 0:00:01.129933 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0x9, a4=0xcccccccd99990000, a5=0x0, a6=0x0)
+·E 0:00:01.129944 {RSX Replay} SYS: 'Unknown function' failed with 0x80010002 : size or pitch are 0 (size=3436052480, pitch=0) [1]
+·W 0:00:01.129946 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0xa, a4=0xcccccccd99990000, a5=0x0, a6=0x0)
+·E 0:00:01.129948 {RSX Replay} SYS: 'Unknown function' failed with 0x80010002 : size or pitch are 0 (size=3436052480, pitch=0) [2]
+·W 0:00:01.129948 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0xb, a4=0xcccccccd99990000, a5=0x0, a6=0x0)
+·E 0:00:01.129950 {RSX Replay} SYS: 'Unknown function' failed with 0x80010002 : size or pitch are 0 (size=3436052480, pitch=0) [3]
+·W 0:00:01.129951 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0xc, a4=0xcccccccd99990000, a5=0x0, a6=0x0)
+·W 0:00:01.129952 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0xd, a4=0xcccccccd99990000, a5=0x0, a6=0x0)
+·W 0:00:01.129954 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x300, a3=0xe, a4=0xcccccccd99990000, a5=0x0, a6=0x0)
+·W 0:00:01.129955 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x301, a3=0x0, a4=0x21010000c0, a5=0xf330000, a6=0x1000500600202000)
+·W 0:00:01.129956 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x301, a3=0x1, a4=0x2102000140, a5=0xc0000f360000, a6=0x1000500600202000)
+·W 0:00:01.129957 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x301, a3=0x2, a4=0x2104000280, a5=0x340000f400000, a6=0x1000500600202000)
+·W 0:00:01.129958 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x301, a3=0x3, a4=0x1104000400, a5=0xd40000f680000, a6=0x1000500000202000)
+·W 0:00:01.129959 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x301, a3=0x4, a4=0xccccccc1ccccccc0, a5=0xccccc000cccccccc, a6=0x0)
+·W 0:00:01.129961 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x301, a3=0x5, a4=0xccccccc1ccccccc0, a5=0xccccc000cccccccc, a6=0x0)
+·W 0:00:01.129962 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x301, a3=0x6, a4=0xccccccc1ccccccc0, a5=0xccccc000cccccccc, a6=0x0)
+·W 0:00:01.129963 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x301, a3=0x7, a4=0xccccccc1ccccccc0, a5=0xccccc000cccccccc, a6=0x0)
+·! 0:00:01.156111 {Performance Sensor} PERF: CPU Usage: Total: 8.7%, Cores: 12.6%, 12.6%, 0.1%, 0.1%, 3.2%, 3.2%, 3.2%, 0.1%, 6.3%, 78.1%, 6.3%, 3.2%, 0.1%, 0.1%, 3.2%, 6.3%, RAM Usage: 11147MB (Peak: 11147MB)
+·W 0:00:01.242743 {RSX [0x10002000]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.244035 {RSX [0x10002000]} RSX: Add program (vp id = 0, fp id = 1)
+·S 0:00:01.246565 {RSX.W4} RSX: Program compiled successfully
+·W 0:00:01.281253 {RSX [0x100030cc]} RSX: ROP reads from r0 without writing to it. Final value will be gathered.
+·! 0:00:01.284760 {RSX [0x100030cc]} RSX: Add program (vp id = 2, fp id = 3)
+·W 0:00:01.284972 {RSX [0x10003694]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.286745 {RSX [0x10003694]} RSX: Add program (vp id = 0, fp id = 4)
+·S 0:00:01.287707 {RSX.W8} RSX: Program compiled successfully
+·S 0:00:01.288953 {RSX.W1} RSX: Program compiled successfully
+·W 0:00:01.293267 {RSX [0x10003c24]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.308438 {RSX [0x10003c24]} RSX: Add program (vp id = 5, fp id = 6)
+·W 0:00:01.310951 {RSX [0x100066e4]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·W 0:00:01.310954 {RSX [0x100066e4]} RSX: ROP reads from h4 without writing to it. Final value will be gathered.
+·W 0:00:01.310955 {RSX [0x100066e4]} RSX: ROP reads from h6 without writing to it. Final value will be gathered.
+·! 0:00:01.313304 {RSX [0x100066e4]} RSX: Add program (vp id = 0, fp id = 7)
+·S 0:00:01.313506 {RSX.W2} RSX: Program compiled successfully
+·S 0:00:01.314960 {RSX.W3} RSX: Program compiled successfully
+·! 0:00:01.315192 {RSX [0x10006dac]} RSX: Add program (vp id = 0, fp id = 8)
+·W 0:00:01.315822 {RSX [0x100072e4]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·S 0:00:01.316666 {RSX.W4} RSX: Program compiled successfully
+·! 0:00:01.320880 {RSX [0x100072e4]} RSX: Add program (vp id = 0, fp id = 9)
+·W 0:00:01.321167 {RSX [0x10007dac]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.322239 {RSX [0x10007dac]} RSX: Add program (vp id = 0, fp id = 10)
+·S 0:00:01.322371 {RSX.W5} RSX: Program compiled successfully
+·S 0:00:01.322569 {RSX.W6} RSX: Program compiled successfully
+·W 0:00:01.329290 {RSX [0x1000854c]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.333784 {RSX [0x1000854c]} RSX: Add program (vp id = 11, fp id = 12)
+·S 0:00:01.337313 {RSX.W7} RSX: Program compiled successfully
+·W 0:00:01.350446 {RSX [0x10009400]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.353904 {RSX [0x10009400]} RSX: Add program (vp id = 13, fp id = 14)
+·S 0:00:01.356908 {RSX.W1} RSX: Program compiled successfully
+·W 0:00:01.360319 {RSX [0x1000994c]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.361573 {RSX [0x1000994c]} RSX: Add program (vp id = 15, fp id = 16)
+·S 0:00:01.363366 {RSX.W2} RSX: Program compiled successfully
+·W 0:00:01.370990 {RSX [0x10009cc8]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.376452 {RSX [0x10009cc8]} RSX: Add program (vp id = 17, fp id = 18)
+·S 0:00:01.379582 {RSX.W4} RSX: Program compiled successfully
+·W 0:00:01.385313 {RSX [0x1000af34]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.389592 {RSX [0x1000af34]} RSX: Add program (vp id = 19, fp id = 20)
+·S 0:00:01.392392 {RSX.W5} RSX: Program compiled successfully
+·W 0:00:01.401659 {RSX [0x1000bc10]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.405751 {RSX [0x1000bc10]} RSX: Add program (vp id = 21, fp id = 22)
+·W 0:00:01.410034 {RSX [0x1000c138]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.413277 {RSX [0x1000c138]} RSX: Add program (vp id = 0, fp id = 23)
+·W 0:00:01.414377 {RSX [0x1000c480]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·S 0:00:01.414516 {RSX.W7} RSX: Program compiled successfully
+·! 0:00:01.418477 {RSX [0x1000c480]} RSX: Add program (vp id = 0, fp id = 24)
+·W 0:00:01.419462 {RSX [0x1000c880]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·S 0:00:01.419750 {RSX.W8} RSX: Program compiled successfully
+·! 0:00:01.422800 {RSX [0x1000c880]} RSX: Add program (vp id = 0, fp id = 25)
+·S 0:00:01.423997 {RSX.W1} RSX: Program compiled successfully
+·W 0:00:01.429511 {RSX [0x1000cf24]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.433370 {RSX [0x1000cf24]} RSX: Add program (vp id = 26, fp id = 27)
+·S 0:00:01.435672 {RSX.W2} RSX: Program compiled successfully
+·W 0:00:01.444066 {RSX [0x1000dbe4]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.447554 {RSX [0x1000dbe4]} RSX: Add program (vp id = 28, fp id = 29)
+·S 0:00:01.449507 {RSX.W3} RSX: Program compiled successfully
+·W 0:00:01.478598 {RSX [0x1000e1bc]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.481460 {RSX [0x1000e1bc]} RSX: Add program (vp id = 0, fp id = 30)
+·S 0:00:01.482630 {RSX.W4} RSX: Program compiled successfully
+·W 0:00:01.483300 {RSX [0x1000e39c]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.485773 {RSX [0x1000e39c]} RSX: Add program (vp id = 0, fp id = 31)
+·S 0:00:01.486958 {RSX.W5} RSX: Program compiled successfully
+·W 0:00:01.487508 {RSX [0x1000e75c]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.490474 {RSX [0x1000e75c]} RSX: Add program (vp id = 0, fp id = 32)
+·W 0:00:01.490775 {RSX [0x1000e964]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.493159 {RSX [0x1000e964]} RSX: Add program (vp id = 0, fp id = 33)
+·S 0:00:01.494222 {RSX.W7} RSX: Program compiled successfully
+·W 0:00:01.495615 {RSX [0x1000ed24]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.498539 {RSX [0x1000ed24]} RSX: Add program (vp id = 0, fp id = 34)
+·W 0:00:01.499417 {RSX [0x1000ef04]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·S 0:00:01.499699 {RSX.W1} RSX: Program compiled successfully
+·! 0:00:01.502596 {RSX [0x1000ef04]} RSX: Add program (vp id = 0, fp id = 35)
+·W 0:00:01.502924 {RSX [0x1000f0e4]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·S 0:00:01.503750 {RSX.W2} RSX: Program compiled successfully
+·! 0:00:01.505534 {RSX [0x1000f0e4]} RSX: Add program (vp id = 0, fp id = 36)
+·W 0:00:01.506447 {RSX [0x1000f2c4]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·S 0:00:01.506645 {RSX.W3} RSX: Program compiled successfully
+·! 0:00:01.510205 {RSX [0x1000f2c4]} RSX: Add program (vp id = 0, fp id = 37)
+·W 0:00:01.510726 {RSX [0x1000f4dc]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·S 0:00:01.511910 {RSX.W4} RSX: Program compiled successfully
+·! 0:00:01.513391 {RSX [0x1000f4dc]} RSX: Add program (vp id = 0, fp id = 38)
+·S 0:00:01.515720 {RSX.W5} RSX: Program compiled successfully
+·W 0:00:01.517585 {RSX [0x1001021c]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.520013 {RSX [0x1001021c]} RSX: Add program (vp id = 0, fp id = 39)
+·W 0:00:01.522446 {RSX [0x100103fc]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.525065 {RSX [0x100103fc]} RSX: Add program (vp id = 0, fp id = 40)
+·W 0:00:01.525404 {RSX [0x100105dc]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·S 0:00:01.526245 {RSX.W7} RSX: Program compiled successfully
+·! 0:00:01.527906 {RSX [0x100105dc]} RSX: Add program (vp id = 0, fp id = 41)
+·S 0:00:01.529087 {RSX.W8} RSX: Program compiled successfully
+·W 0:00:01.529412 {RSX [0x10010d5c]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·W 0:00:01.529414 {RSX [0x10010d5c]} RSX: ROP reads from h4 without writing to it. Final value will be gathered.
+·! 0:00:01.539033 {RSX [0x10010d5c]} RSX: Add program (vp id = 0, fp id = 42)
+·S 0:00:01.542411 {RSX.W1} RSX: Program compiled successfully
+·W 0:00:01.543936 {RSX [0x10010fc4]} RSX: ROP reads from r0 without writing to it. Final value will be gathered.
+·! 0:00:01.545763 {RSX [0x10010fc4]} RSX: Add program (vp id = 43, fp id = 44)
+·W 0:00:01.546061 {RSX [0x100111b4]} RSX: ROP reads from r0 without writing to it. Final value will be gathered.
+·S 0:00:01.547168 {RSX.W2} RSX: Program compiled successfully
+·! 0:00:01.548347 {RSX [0x100111b4]} RSX: Add program (vp id = 43, fp id = 45)
+·W 0:00:01.549935 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·S 0:00:01.550062 {RSX.W3} RSX: Program compiled successfully
+·W 0:00:01.550209 {RSX [0x10011554]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.554266 {RSX [0x10011554]} RSX: Add program (vp id = 28, fp id = 46)
+·S 0:00:01.556208 {RSX.W4} RSX: Program compiled successfully
+·W 0:00:01.563124 {RSX [0x100118c8]} RSX: ROP reads from r0 without writing to it. Final value will be gathered.
+·! 0:00:01.567441 {RSX [0x100118c8]} RSX: Add program (vp id = 47, fp id = 48)
+·S 0:00:01.569836 {RSX.W5} RSX: Program compiled successfully
+·W 0:00:01.574049 {RSX [0x1001236c]} RSX: ROP reads from h0 without writing to it. Final value will be gathered.
+·! 0:00:01.576656 {RSX [0x1001236c]} RSX: Add program (vp id = 49, fp id = 50)
+·W 0:00:01.581587 {RSX [0x10012a28]} RSX: ROP reads from r0 without writing to it. Final value will be gathered.
+·! 0:00:01.583784 {RSX [0x10012a28]} RSX: Add program (vp id = 51, fp id = 52)
+·S 0:00:01.585565 {RSX.W7} RSX: Program compiled successfully
+·W 0:00:01.590632 {RSX [0x10013650]} D1: D1P watch list reloaded at 27701126386 (coverage 0)
+·W 0:00:01.597734 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:01.652387 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·! 0:00:01.656129 {Performance Sensor} PERF: CPU Usage: Total: 19.5%, Cores: 25.0%, 78.1%, 0.0%, 3.1%, 9.4%, 6.2%, 6.2%, 25.0%, 12.5%, 78.1%, 37.5%, 15.6%, 0.0%, 9.4%, 3.1%, 3.1%, RAM Usage: 11283MB (Peak: 11283MB)
+·W 0:00:01.670479 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·! 0:00:01.693850 {RSX [0x10013650]} RSX: Swapchain: present mode 0 in use.
+·! 0:00:01.693856 {RSX [0x10013650]} RSX: Swapchain: requesting full screen exclusive mode 0.
+·E 0:00:01.698080 {RSX [0x10013650]} RSX: Cannot invalidate a currently bound render target!
+·W 0:00:01.703588 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:01.746805 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:01.765792 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·S 0:00:01.788142 {RSX.W6} RSX: Program compiled successfully
+·S 0:00:01.790194 {RSX.W6} RSX: Program compiled successfully
+·S 0:00:01.791318 {RSX.W6} RSX: Program compiled successfully
+·S 0:00:01.792944 {RSX.W6} RSX: Program compiled successfully
+·W 0:00:01.831422 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:01.850003 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:01.895339 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:01.914290 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:01.957507 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:01.976455 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.018497 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.037141 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.079388 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.097840 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.139757 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.158483 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.200679 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.219177 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.260775 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.279334 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.320896 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.339513 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.381772 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.400681 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.443633 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.462475 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.503991 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.522671 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.564272 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.582853 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.624287 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.643000 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.684772 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.703156 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.744866 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.763332 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.804700 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.822983 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.864290 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.882658 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.924204 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:02.942813 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:02.984176 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.002958 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.045096 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.064597 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.112222 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.131740 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.179702 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.199444 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.246957 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.266601 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.314396 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.334288 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.381984 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.401954 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.449621 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.469684 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.517375 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.536870 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.587288 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.607053 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.655500 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.675211 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.726759 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.746409 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.798636 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.818601 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.870405 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.890310 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:03.942404 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:03.962015 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.013346 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.033237 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.084780 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.104409 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.155945 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.175651 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.227232 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.247349 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.298666 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.318578 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.370086 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.389760 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.440630 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.460489 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.511810 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.531725 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.583597 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.603453 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.654274 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.674137 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.726536 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.746309 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.795115 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.814958 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.864201 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.884203 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:04.933535 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:04.953414 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.002836 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.022628 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.071850 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.091848 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.141921 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.162058 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.213494 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.233267 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.284536 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.304461 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.356275 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.376140 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.427844 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.447916 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.499249 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.519116 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.570893 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.590819 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.642732 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.662568 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.713992 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.734265 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.786253 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.806433 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.857761 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.878247 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:05.931371 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:05.951446 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.004490 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.024683 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.078301 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.098396 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.150428 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.170072 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.220229 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.240267 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.290375 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.310439 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.360244 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.380137 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.430750 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.450817 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.501038 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.521514 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.571832 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.591688 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.641816 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.661888 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.715826 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.736051 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.788802 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.809213 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.861373 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.880904 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:06.934074 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:06.954094 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.007159 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.027748 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.080937 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.100938 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.154110 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.174143 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.224561 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.244820 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.295224 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.315514 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.366246 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.386177 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.436823 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.456878 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.507341 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.527540 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.577968 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.598219 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.649002 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.668864 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.722412 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.742618 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.795423 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.815286 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.868449 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.888441 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:07.941025 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:07.960603 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.013592 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.033808 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.087867 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.108477 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.165072 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.185709 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.237490 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.257372 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.308498 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.328528 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.379594 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.399329 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.456427 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.478495 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.540756 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.563181 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.625531 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.645354 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·! 0:00:08.656010 {Performance Sensor} PERF: CPU Usage: Total: 13.5%, Cores: 87.5%, 9.4%, 0.0%, 0.0%, 0.0%, 0.0%, 9.4%, 0.0%, 93.8%, 0.0%, 0.0%, 3.2%, 9.4%, 0.0%, 3.2%, 0.0%, RAM Usage: 11338MB (Peak: 11338MB)
+·W 0:00:08.695523 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.715517 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.766634 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.786655 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.837832 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.857820 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.908197 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.927966 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:08.978185 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:08.998120 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.048728 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.068800 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.119000 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.139053 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.188950 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.208753 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.258719 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.278940 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.331666 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.351630 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.401388 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.420782 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.470973 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.490933 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.541761 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.562119 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.616970 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.637302 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.691278 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.710978 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.763988 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.783658 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.835834 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.855817 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.908720 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:09.928471 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:09.980933 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.000621 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.053418 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.073322 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.125834 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.145997 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.199875 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.220148 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.272905 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.293408 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.348257 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.368579 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.421863 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.441799 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.497235 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.517454 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.570114 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.590154 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.643010 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.662815 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.715236 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.735066 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.786962 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.806708 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.859299 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.879452 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:10.931621 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:10.951653 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.004657 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.024799 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.077428 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.097572 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.151018 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.170718 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.222277 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.242461 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.293280 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.313120 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.363266 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.383330 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.433736 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.454014 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.505068 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.525153 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.576676 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.596850 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.648323 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.668533 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.721013 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.740717 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.793925 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.813914 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.865770 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.885584 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:11.937415 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:11.957300 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.009573 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.029965 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.082433 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.102710 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.156425 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.176353 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.228094 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.248024 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.298822 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.318674 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.370340 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.390910 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.443046 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.463608 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.516194 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.536233 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.586694 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.606930 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.659656 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.681570 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.747705 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.770302 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.834976 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.857517 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.908171 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.927734 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:12.978439 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:12.998406 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.048859 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.068581 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.119452 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.139317 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.190410 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.210030 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.261121 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.280719 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.331297 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.350956 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.402026 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.421680 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.472843 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.492407 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.543444 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.563186 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.614098 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.633876 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.684898 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.704580 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.755503 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.775267 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.826299 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.845967 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.898272 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.918701 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:13.969674 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:13.989369 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.040115 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.060083 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.111833 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.131771 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.182854 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.202504 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.251379 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.270697 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.320354 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.339921 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.388652 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.408621 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.457960 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.477839 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.527697 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.547570 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.597504 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.617314 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.666807 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.687023 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.737814 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.757717 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.808383 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.827980 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.878729 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.898661 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:14.950470 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:14.970365 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.022077 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.042037 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.095698 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.115732 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.168199 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.187935 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.239066 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.259131 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.310333 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.330311 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.381905 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.401069 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.452747 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.472787 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.523917 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.543973 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.595877 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.615646 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.667479 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.687344 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.737757 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.757575 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.807120 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.827245 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.876659 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.896447 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:15.946155 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:15.966137 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.015610 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.035308 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.085406 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.105490 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.155356 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.175709 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.227502 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.246896 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.298876 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.319116 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.370913 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.390826 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.443488 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.463579 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.515989 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.535748 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.587248 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.607460 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.660613 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.680670 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.731395 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.750880 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.800615 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.820539 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.870454 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.890232 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:16.940203 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:16.960452 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.011357 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.030681 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.081165 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.100921 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.150563 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.171123 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.221176 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.240787 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.291618 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.312045 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.367065 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.386752 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.438051 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.457921 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.509848 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.529596 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.581940 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.601771 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.654096 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.674039 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.725744 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.745721 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.795798 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.815899 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.865372 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.885098 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:17.934685 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:17.954789 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.004824 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.024979 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.075008 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.095162 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.155707 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.177913 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.238464 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.260613 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.317651 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.337317 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.388795 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.408576 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.459360 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.479259 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.531534 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.551029 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.601708 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.621723 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·! 0:00:18.655959 {Performance Sensor} PERF: CPU Usage: Total: 13.1%, Cores: 15.6%, 78.1%, 0.0%, 0.0%, 0.0%, 0.0%, 6.3%, 9.4%, 90.6%, 0.0%, 3.1%, 6.3%, 0.0%, 0.0%, 0.0%, 0.0%, RAM Usage: 11333MB (Peak: 11338MB)
+·W 0:00:18.673208 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.692951 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.744678 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.764598 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.815282 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.835245 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.885298 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.905390 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:18.956612 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:18.976549 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.026771 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.046716 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.097560 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.117908 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.168464 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.188635 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.238510 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.258866 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.311468 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.332020 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.384005 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.404195 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.456949 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.477326 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.529792 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.549470 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.602131 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.622128 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.677408 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.697348 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.749556 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.769588 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.822653 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.843238 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.894981 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.914918 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:19.967337 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:19.987096 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.039314 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.059297 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.111674 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.131973 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.185297 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.205147 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.257927 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.277847 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.330901 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.351006 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.404622 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.424754 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.476926 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.496982 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.549376 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.569724 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.621953 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·! 0:00:20.637593 {TID: 24328} SCREENSHOT: Taking screenshot (1280x720)
+·W 0:00:20.641984 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·S 0:00:20.669579 {TID: 24328} SCREENSHOT: Successfully saved screenshot to F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/screenshots/screenshot_2026_10_07_15_18_05.png
+·W 0:00:20.673287 {RSX [0x1000c138]} D1: D1MEM surface=37M texture=17M scratch=16M system=338M swapchain=0M device_local=167M host_visible=281M tex_unreleased=33 tex_mem=37M tex_tmp=7M rtt_active=24M rtt_invalidated=19 programs=+47/-0 dsets=85 released=0
+·W 0:00:20.696739 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.715730 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.770339 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.790891 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.844623 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.864554 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.916814 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:20.936696 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:20.990122 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.009939 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.061599 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.081165 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.133963 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.153894 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.207975 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.228074 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.280793 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.300727 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.351485 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.370898 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.421670 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.441069 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.491463 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.510798 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.562055 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.582466 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.634286 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.654636 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.705440 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.725311 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.777686 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.797965 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.852045 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.872133 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.924324 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:21.944803 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:21.998561 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.018569 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.071735 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.091188 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.145255 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.165358 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.218940 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.239028 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.292897 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.313219 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.366905 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.386893 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.441520 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.461076 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.512909 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.532799 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.585149 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.605025 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.656660 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.676697 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.729814 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.742550 {RSX [0x10013650]} D1: D1MEM surface=37M texture=17M scratch=16M system=339M swapchain=0M device_local=169M host_visible=282M tex_unreleased=24 tex_mem=37M tex_tmp=2M rtt_active=23M rtt_invalidated=19 programs=+48/-0 dsets=86 released=0
+·W 0:00:22.751899 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.813366 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.835684 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.896536 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.918871 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:22.967821 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:22.987599 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.036513 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.056252 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.109295 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.129021 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.178455 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.198219 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.247375 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.266898 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.317483 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.337600 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.388940 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.408784 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.460161 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.479974 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.531364 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.551179 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.602617 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.622405 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.674583 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.694660 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.746423 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.766831 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.816808 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.836534 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.885632 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.905727 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:23.955017 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:23.974913 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.024093 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.044133 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.093247 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.112825 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.162280 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.182016 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.231637 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.251188 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.302068 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.321913 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.374963 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.395614 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.447930 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.467782 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.519256 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.539027 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.590245 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.610290 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.662531 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.682465 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.735478 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.746110 {RSX [0x10013650]} D1: D1MEM surface=37M texture=17M scratch=16M system=339M swapchain=0M device_local=169M host_visible=282M tex_unreleased=24 tex_mem=37M tex_tmp=2M rtt_active=23M rtt_invalidated=19 programs=+48/-0 dsets=86 released=0
+·W 0:00:24.755600 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.804736 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.824312 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.873525 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.893492 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:24.942861 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:24.963174 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.012496 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.032340 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.081779 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.101053 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.151001 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.170734 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.221022 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.240936 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.291617 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.311081 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.362654 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.382786 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.435716 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.455940 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.507412 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.527615 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.579330 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.599306 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.650419 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.670485 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.723131 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.743707 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.795896 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.815928 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.866715 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.886613 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:25.937598 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:25.957818 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.007975 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.028046 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.077518 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.097735 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.147696 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.167425 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.216933 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.236639 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.286499 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.306350 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.358168 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.378036 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.430335 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.450214 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.502900 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.522959 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.576622 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.596749 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.649022 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.668934 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.721067 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.741149 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.793554 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.803883 {RSX [0x10013650]} D1: D1MEM surface=37M texture=17M scratch=16M system=339M swapchain=0M device_local=169M host_visible=282M tex_unreleased=24 tex_mem=37M tex_tmp=2M rtt_active=23M rtt_invalidated=19 programs=+48/-0 dsets=86 released=0
+·W 0:00:26.813387 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.863275 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.883102 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:26.933439 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:26.955312 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.015909 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.038031 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.098527 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.120817 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.174094 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.194031 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.243059 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.262698 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.312931 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.332907 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.383680 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.403600 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.454298 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.474296 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.525530 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.545483 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.597200 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.617201 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.667852 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.687874 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.739840 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.759551 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.809911 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.829730 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.879175 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.898950 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:27.949327 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:27.969094 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.019048 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.038877 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.088838 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.109098 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.158964 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.178806 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.228707 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.248539 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.297785 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.317842 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.369548 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.389512 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.441778 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.461267 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.513890 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.533972 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.587083 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.607158 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·! 0:00:28.655908 {Performance Sensor} PERF: CPU Usage: Total: 16.6%, Cores: 40.6%, 53.1%, 0.0%, 0.0%, 0.0%, 0.0%, 6.3%, 3.1%, 43.8%, 56.3%, 28.1%, 25.0%, 6.3%, 3.1%, 0.0%, 0.0%, RAM Usage: 11335MB (Peak: 11338MB)
+·W 0:00:28.659507 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.679331 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.731068 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.751009 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.802902 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.813391 {RSX [0x10013650]} D1: D1MEM surface=37M texture=17M scratch=16M system=339M swapchain=0M device_local=169M host_visible=282M tex_unreleased=24 tex_mem=37M tex_tmp=2M rtt_active=23M rtt_invalidated=19 programs=+48/-0 dsets=86 released=0
+·W 0:00:28.823193 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.879062 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.898928 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:28.951103 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:28.971087 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.023576 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.043782 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.096860 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.117475 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.169089 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.188868 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.242156 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.262149 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.313148 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.332884 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.382144 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.402052 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.451898 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.472262 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.522187 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.542450 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.592931 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.613153 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.662464 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.682287 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.731823 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.751976 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.801458 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.821157 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.873256 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.893393 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:29.946321 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:29.966530 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.022943 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.042753 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.096113 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.115952 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.168970 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.189140 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.241701 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.262359 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.315018 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.335038 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.385760 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.405695 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.456672 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.476849 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.528581 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.549013 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.603590 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.624259 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.678872 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.699483 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.756486 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.778721 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.853183 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.866375 {RSX [0x10013650]} D1: D1MEM surface=37M texture=17M scratch=16M system=339M swapchain=0M device_local=169M host_visible=282M tex_unreleased=24 tex_mem=37M tex_tmp=2M rtt_active=23M rtt_invalidated=19 programs=+48/-0 dsets=86 released=0
+·W 0:00:30.876042 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:30.943364 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:30.966795 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.026406 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.047067 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.106088 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.126422 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.181213 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.201132 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.255172 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.275312 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.334012 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.355013 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.409907 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·! 0:00:31.425676 {TID: 19216} SCREENSHOT: Taking screenshot (1280x720)
+·W 0:00:31.429826 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·S 0:00:31.457631 {TID: 19216} SCREENSHOT: Successfully saved screenshot to F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/screenshots/screenshot_2026_10_07_15_18_16.png
+·W 0:00:31.486334 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.504964 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.560387 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.580607 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.633184 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.652777 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.705123 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.724919 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
+·W 0:00:31.776670 {RSX [0x10011554]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
+·W 0:00:31.796560 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)

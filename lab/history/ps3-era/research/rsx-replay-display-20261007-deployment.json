@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-07T13:43:47.6090637Z",
+  "idle_verified": true,
+  "base_sha256": "430167A250B8C98DD04B630C651019FBCD7A76FCCF5D9B610F8B6E02D9FB2433",
+  "backup": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.before-rsx-replay-display-20261007.exe",
+  "deployed_sha256": "CC73A62D8A079FCA2CA3E995647C468485BB6095C548A95596DE4E73A6C90397",
+  "scope": "Replay display fallback only, atop replay null-page repair"
+}

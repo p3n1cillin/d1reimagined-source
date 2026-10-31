@@ -1,0 +1,10 @@
+{
+  "run": "FINAL124_JOIN220",
+  "started_utc": "2026-10-08T22:55:44.913417+00:00",
+  "status": "stopped",
+  "radius": 1.5,
+  "final_radius": 1.5,
+  "continue_breach": true,
+  "reason": "route time budget exhausted",
+  "finished_utc": "2026-10-08T23:04:06.184997+00:00"
+}

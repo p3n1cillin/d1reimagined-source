@@ -1,0 +1,15 @@
+{
+  "utc": "2026-10-08T21:52:32.5071286Z",
+  "source_base": "28455edb058faf0566a2f52cdb83e683b39a62bb",
+  "source_clean": false,
+  "source_status": [
+    " M server/player_db.py",
+    " M server/test_player_db.py",
+    "?? scripts/rpcs3_final124_loot.py",
+    "?? scripts/test_rpcs3_final124_loot.py"
+  ],
+  "change": "Backend ownership fixes and new read-only loot probe under test; no mission/renderer change. Unarmed starter with two synthetic loot records, sources3/5. No position cache, native grant or pickup acceptance claimed.",
+  "trace": "# JOIN217: read-only loot prerequisites; no equipped rifle fixture.\n2b36f8 24 if=m4:2==0xe0e r4:56 r6:48\n2b3240 24 if=m5:2==0xe0e r5:56 r6:48\n2b279c 8 r3:32\n2b2a60 8 r3:32\n2b2f74 8 r3:48\n472518 8 r3:24\n214478 8 r3+0x110:16\n13f068 8 if=lr==0x2145d0\n",
+  "overlay_sha256": "078D73FD00BE0031F4FACFFBC590B936D6BC51D1C8910D87199590116BCCC1EE",
+  "launch_sha256": "A8F1F7443E9F0A3121A11BCC596FB498D96C43C9D8DF881F1D29BC03DF1851A8"
+}

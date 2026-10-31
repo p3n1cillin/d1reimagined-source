@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-07T17:30:06.0318520Z",
+  "prior_owned_closed": true,
+  "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "source_commit": "7b159d776b1a53a9afccd0cdbd9b50b08da13df7",
+  "source_dirty": [
+    "?? scripts/rpcs3_final124_session.py",
+    "?? scripts/test_rpcs3_final124_session.py"
+  ],
+  "probe": "Automatic owned read-only timeline: corrected slot-map handle and native datum resolution; 440seconds at0.25second interval before teleport",
+  "scope": "Same 60second baseline and eight-minute native checkpoint; no protocol/renderer/game change yet"
+}

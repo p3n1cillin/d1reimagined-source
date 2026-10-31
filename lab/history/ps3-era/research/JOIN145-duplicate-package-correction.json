@@ -1,0 +1,18 @@
+{
+  "clip_id": "<lab-pc>-20261006T082350-35a26ff986fc4d87a5428cdef765c812",
+  "reason": "A retried interrupted segment appeared twice; verified-segment deduplication now selects it once.",
+  "prior_destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\06\\<lab-pc>-20261006T082350-35a26ff986fc4d87a5428cdef765c812.ready",
+  "preserved_destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\06\\<lab-pc>-20261006T082350-35a26ff986fc4d87a5428cdef765c812.superseded",
+  "prior_state": {
+    "status": "SUBMITTED",
+    "attempts": 0,
+    "next_attempt": 0,
+    "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\06\\<lab-pc>-20261006T082350-35a26ff986fc4d87a5428cdef765c812.ready",
+    "updated_at": "2026-10-06T08:23:53.159064+00:00",
+    "automatic_game_source": true,
+    "transfer_started_at": "2026-10-06T08:23:52.027798+00:00",
+    "submitted_at": "2026-10-06T08:23:53.153413+00:00",
+    "error": null
+  },
+  "original_local_and_NAS_hashes_verified": true
+}

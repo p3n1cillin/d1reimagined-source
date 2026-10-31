@@ -1,0 +1,9 @@
+# JOIN217: read-only loot prerequisites; no equipped rifle fixture.
+2b36f8 24 if=m4:2==0xe0e r4:56 r6:48
+2b3240 24 if=m5:2==0xe0e r5:56 r6:48
+2b279c 8 r3:32
+2b2a60 8 r3:32
+2b2f74 8 r3:48
+472518 8 r3:24
+214478 8 r3+0x110:16
+13f068 8 if=lr==0x2145d0

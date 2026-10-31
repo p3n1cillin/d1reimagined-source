@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-07T13:43:50.0763478Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 10400,
+    "startTimeUtcTicks": "639269774296495917",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "capture_sha256": "c5ae36b0720aef631baba6ecd25cad3e52ce3a5dee8ee062bbdb451da852462c",
+  "capture_build": "714e432f39969b3d19cd585e40963e8ee8670208d9bc7ea853e4e93324ebba6b",
+  "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "screenshots": [],
+  "native_full_parse": "NOT VERIFIED",
+  "visual_comparison": "NOT RUN",
+  "graphics": "NOT ACCEPTED",
+  "owned_closed": true,
+  "global_restored": true,
+  "title_unchanged": true,
+  "errors": [
+    "Replay process exited during startup"
+  ]
+}

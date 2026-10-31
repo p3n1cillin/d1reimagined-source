@@ -1,0 +1,44 @@
+{
+  "at_utc": "2026-10-08T09:16:12.4794064Z",
+  "base": "7bedf8e5df854bac79633baf242cc6110957a5f8",
+  "dirty": [
+    " M missions/a_guardian_rises.json",
+    " M scripts/d1_incident_summary.py",
+    " M server/bap_server.py",
+    " M server/mission_script.py",
+    " M server/test_bap_server.py",
+    " M server/test_mission_script.py",
+    "?? scripts/rpcs3_final124_performance.py",
+    "?? scripts/test_rpcs3_final124_performance.py",
+    "?? server/incident_codec.py",
+    "?? server/test_cinematic_completion.py"
+  ],
+  "files": [
+    {
+      "file": "server/bap_server.py",
+      "sha256": "f8599b00a117a1981f06a6232faf9535bdb7a9892d79eb1313d46bc6ef2c2fcb",
+      "private_copy": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN187-tested-source\\bap_server.py"
+    },
+    {
+      "file": "server/mission_script.py",
+      "sha256": "e80555dc7875d59a3c25e0cd63ffeea0a425dfdfb11ad5be8ee1e21b1327c392",
+      "private_copy": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN187-tested-source\\mission_script.py"
+    },
+    {
+      "file": "server/incident_codec.py",
+      "sha256": "de02def1d8675e452ba763a8a0a1223342505a8748acd01b3626774fd6777f0e",
+      "private_copy": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN187-tested-source\\incident_codec.py"
+    },
+    {
+      "file": "scripts/rpcs3_final124_performance.py",
+      "sha256": "7003f655d9b2be5a23f6153b0c1d85780b6cb9b121d858aca34fa8956d728505",
+      "private_copy": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN187-tested-source\\rpcs3_final124_performance.py"
+    },
+    {
+      "file": "missions/a_guardian_rises.json",
+      "sha256": "0fa9e7a68d02b329a0375980adc2fcfe29b65e29be1176ddac5275cb7f673b83",
+      "private_copy": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN187-tested-source\\a_guardian_rises.json"
+    }
+  ],
+  "scope": "Uncommitted completion-driven production recipe, original first start20; scene/visibility acceptance pending."
+}

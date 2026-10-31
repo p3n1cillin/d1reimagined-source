@@ -1,0 +1,6 @@
+# JOIN193: cinematic cast gear acquisition (read-only call watches)
+42f3a0 40
+42edb4 60
+2d184c 40
+2e9124 40
+42b51c 20

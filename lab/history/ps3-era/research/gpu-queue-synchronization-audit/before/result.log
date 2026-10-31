@@ -1,0 +1,49 @@
+PASS submission preserves its complete batch
+PASS submission owns the queue lock
+PASS successful submission flushes exactly once after driver return
+PASS successful submission releases the queue lock
+PASS submission preserves its complete batch
+PASS submission owns the queue lock
+PASS successful submission flushes exactly once after driver return
+PASS successful submission releases the queue lock
+FAIL submission propagates exact API failure (-1)
+FAIL failed submission does not flush the fence (-1)
+PASS failure handler runs after releasing queue lock (-1)
+PASS independent submission can follow a failure (-1)
+FAIL submission propagates exact API failure (-2)
+FAIL failed submission does not flush the fence (-2)
+PASS failure handler runs after releasing queue lock (-2)
+PASS independent submission can follow a failure (-2)
+FAIL submission propagates exact API failure (-4)
+FAIL failed submission does not flush the fence (-4)
+PASS failure handler runs after releasing queue lock (-4)
+PASS independent submission can follow a failure (-4)
+PASS null fence is refused before any API call or lock
+PASS submission exception preserves failure and fence state
+FAIL submission exception releases queue lock
+PASS presentation preserves result and semaphore/image batch
+FAIL presentation prevents concurrent queue submission
+PASS presentation releases lock on every returned result
+PASS presentation preserves result and semaphore/image batch
+FAIL presentation prevents concurrent queue submission
+PASS presentation releases lock on every returned result
+PASS presentation preserves result and semaphore/image batch
+FAIL presentation prevents concurrent queue submission
+PASS presentation releases lock on every returned result
+PASS presentation preserves result and semaphore/image batch
+FAIL presentation prevents concurrent queue submission
+PASS presentation releases lock on every returned result
+PASS presentation preserves result and semaphore/image batch
+FAIL presentation prevents concurrent queue submission
+PASS presentation releases lock on every returned result
+PASS presentation preserves result and semaphore/image batch
+FAIL presentation prevents concurrent queue submission
+PASS presentation releases lock on every returned result
+PASS presentation preserves result and semaphore/image batch
+FAIL presentation prevents concurrent queue submission
+PASS presentation releases lock on every returned result
+PASS presentation preserves result and semaphore/image batch
+FAIL presentation prevents concurrent queue submission
+PASS presentation releases lock on every returned result
+PASS presentation exception releases queue lock
+48 queue synchronization checks, 15 failed

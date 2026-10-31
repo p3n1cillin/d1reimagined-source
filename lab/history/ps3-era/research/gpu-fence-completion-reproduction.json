@@ -1,0 +1,8 @@
+{
+  "patch_sha256": "1b01e2e954aaff516853b0966aa47939db2cf76ddf4cd92ff8761fc63b0cc1d1",
+  "source_matches_applied_patch": {
+    "rpcs3/Emu/RSX/VK/VKGSRenderTypes.hpp": true,
+    "rpcs3/Emu/RSX/VK/VKPresent.cpp": true,
+    "rpcs3/Emu/RSX/VK/VKTextureCache.cpp": true
+  }
+}

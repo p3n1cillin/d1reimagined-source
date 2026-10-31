@@ -1,0 +1,7 @@
+{
+  "apply_check": "PASS",
+  "apply": "PASS",
+  "matches_actual_source_normalized": true,
+  "patch_sha256": "f8c1b6bcd6c45abf0bed4b06fcea3113cc53862e19f7a18179779af9e90f19ac",
+  "scope": "Isolated replay initialization change only; native replay pending."
+}

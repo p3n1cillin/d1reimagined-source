@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-08T13:38:02.1703413Z",
+  "client": {
+    "tag": "rpcs3",
+    "id": 24860,
+    "startTimeUtcTicks": "639270630570516117",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "key": "Space",
+  "hold_ms": 400,
+  "last_inspected_image": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\BLES01857\\BLES01857_screenshot_2026_10_08_14_37_11.png",
+  "purpose": "Nav reproduction after native performances completed; register watch armed"
+}

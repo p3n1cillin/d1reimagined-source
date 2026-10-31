@@ -1,0 +1,14 @@
+{
+  "run": "FINAL124_JOIN182",
+  "started_utc": "2026-10-08T07:43:15.940317+00:00",
+  "status": "route_reached",
+  "radius": 1.5,
+  "final_radius": 0.25,
+  "continue_breach": false,
+  "final_xyz": [
+    353.6536865234375,
+    -796.4932250976562,
+    13.99747371673584
+  ],
+  "finished_utc": "2026-10-08T07:45:29.108417+00:00"
+}

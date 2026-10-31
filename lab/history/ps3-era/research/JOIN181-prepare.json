@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-08T07:16:19.0885581Z",
+  "source_commit": "87c7e83acfcffd48d1ff2a1bef09f550aa81d6ae",
+  "data_commit": "7893dea856fdd3cebd4467b89654636a86007426",
+  "source_clean": true,
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "mission_candidate_sha256": "1767a7d796edb1e92220cf8d619a9c5b9da44f21df4504734a9a1558f60fcdf4",
+  "trace": "# JOIN181: bounded read-only objective and marker materialization watches.\n3a68c0 64 r3:16\n57b4ec 24 r3:48\n57b3cc 24 if=lr==0x57b730 r3:48 r5:64\n",
+  "scope": "Private native marker-registration/visibility candidate. Same C5, backend and fixture. No renderer build, guest writes, casting/timing change or presentation success claimed."
+}

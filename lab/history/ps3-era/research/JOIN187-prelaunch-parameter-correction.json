@@ -1,0 +1,4 @@
+{
+  "at_utc": "2026-10-08T09:17:15.1237672Z",
+  "result": "AfterMatchSeconds 0 rejected by declared minimum5 before stack launch. Finally restored configuration but null ownership check masked original error. Preserved unlaunched wrapper/control, restored planned diagnostic markers and corrected delay5."
+}

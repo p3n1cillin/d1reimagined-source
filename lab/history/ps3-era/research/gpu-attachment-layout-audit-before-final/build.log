@@ -1,0 +1,19 @@
+attachment-layout-audit.cpp
+attachment-layout-audit.cpp(93): warning C4201: nonstandard extension used: nameless struct/union
+F:\VS\BuildTools\VC\Tools\MSVC\14.51.36231\include\numeric(570): warning C4244: '=': conversion from 'int' to '_Ty', possible loss of data
+        with
+        [
+            _Ty=unsigned char
+        ]
+F:\VS\BuildTools\VC\Tools\MSVC\14.51.36231\include\numeric(570): note: the template instantiation context (the oldest one first) is
+attachment-layout-audit.cpp(366): note: see reference to function template instantiation 'void std::iota<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,int>(_FwdIt,_FwdIt,int)' being compiled
+        with
+        [
+            _Ty=u8,
+            _FwdIt=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<u8>>>
+        ]
+F:\VS\BuildTools\VC\Tools\MSVC\14.51.36231\include\numeric(578): warning C4244: '=': conversion from '_Ty' to 'unsigned char', possible loss of data
+        with
+        [
+            _Ty=int
+        ]

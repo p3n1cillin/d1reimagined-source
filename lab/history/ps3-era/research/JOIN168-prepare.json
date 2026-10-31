@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-07T14:10:40.7014286Z",
+  "prior_owned_closed": true,
+  "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "source_commit": "09dc8097ff6173c3c59d5af09a4642190d6118f7",
+  "data_commit": "3a3c9a0b3ea506f0b94cf600e5882e0af30c26f5",
+  "baseline_seconds": 60,
+  "inspection_seconds": 600,
+  "title_global_watch_original": true,
+  "depth_candidate": true,
+  "ring": false,
+  "scope": "Native kept-stack handoff verification and earlier outdoor capture; not equivalent180/500/600-second comparison",
+  "request_automatic": false
+}

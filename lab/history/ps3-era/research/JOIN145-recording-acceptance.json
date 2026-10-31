@@ -1,0 +1,22 @@
+{
+  "run": "FINAL124_JOIN145",
+  "controlled_native_interruption": true,
+  "strict_decode_exit": 0,
+  "strict_decode_error": "",
+  "decoded_frames": 688,
+  "contains_audio": true,
+  "decoded_duration_seconds": 23.83,
+  "original_unchanged": true,
+  "finished_trailer_present": false,
+  "source_recovery": {
+    "retained_bytes": 1808249,
+    "original_bytes": 1835028,
+    "discarded_tail_bytes": 26779,
+    "method": "complete MOV/MP4 fragments",
+    "source_sha256": "ee2ed70ac8074e48af4d0d65f9cca75e854bd253468eb4afce5a62465d2c8d6d",
+    "retained_sha256": "d3d3137e09b9f10fd282ea52a06d02024e76f1b8f4b56c7dc2c5d10cbe41bba1"
+  },
+  "prior_import_time": "2026-10-06T08:22:28.263683+00:00",
+  "recording_observed_at": "2026-10-06T08:14:57.249981+00:00",
+  "correction_reason": "Use the recovered recording end, rather than delayed import time, for footage selection."
+}

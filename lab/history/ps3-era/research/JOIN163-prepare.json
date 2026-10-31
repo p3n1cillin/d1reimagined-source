@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-07T08:54:46.7167494Z",
+  "build": "ef67aa5cf3c015de130cef958f1abfe345bd92a74964e2c20515e35e238f7645",
+  "ring_off_from_boot": true,
+  "arm_trigger": "Current run sent mm rsp and exact client/layer verified",
+  "post_match_seconds": 500,
+  "comparison_phases": 11,
+  "additional_late_dismiss_body_world_phases": 9,
+  "scope": "Controlled trace, previous trace-off fault reproduced; combined rendering still known broken"
+}

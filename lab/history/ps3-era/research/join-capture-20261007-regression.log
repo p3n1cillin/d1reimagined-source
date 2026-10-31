@@ -1,0 +1,7 @@
+PASS successful child preserves one result
+PASS literal argument survives native boundary
+PASS failed screenshot prevents subsequent completion
+PASS child exit identifies failed step
+PASS later success replaces stale native failure status
+PASS join runner syntax
+All six isolated native capture checks passed.

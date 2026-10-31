@@ -1,0 +1,7 @@
+# JOIN210: prop creation/command dispatch and result; no guest writes.
+214478 24 r4+0:64
+13f068 24 if=lr==0x2145d0 r4+0:128
+2145d0 24 r1+0x70:4
+2151d0 16 r3+0:16 r4+0:8
+214254 20 r3+0:16 r4+0:32 r5+0:40
+290af8 24 if=lr==0x214458 r3+0:32 r4+0:32 r5+0:32

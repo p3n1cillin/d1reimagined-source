@@ -1,0 +1,351 @@
+{
+  "at": "2026-10-08T08:55:25.865081+00:00",
+  "run": "FINAL124_JOIN185",
+  "session": {
+    "samples": 1278,
+    "pairs": {
+      "(113, -1, 0)": 1278
+    },
+    "session_states": {
+      "6": 1278
+    },
+    "pointer_recheck_failures": 0
+  },
+  "native_log": {
+    "vuid_lines": 0,
+    "device_loss_lines": 0,
+    "fatal_lines": 0,
+    "last_timestamp": [
+      "0:08:20.334110"
+    ]
+  },
+  "media": {
+    "segments": 17,
+    "indexed": 16,
+    "inventory": [
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\48e0520e702048c29a01707431a1dcc1.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:45:49.7542085+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:45:18.7227902+00:00",
+          "ended_at": "2026-10-08T08:45:49.7542085+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_45_19.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:45:49.3987579+00:00"
+        },
+        "indexed": false
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\43dd027bda9b455f9ee37c3c812e7b18.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:46:20.2500948+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:45:49.7725749+00:00",
+          "ended_at": "2026-10-08T08:46:20.2500948+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_45_49.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:46:20.1867425+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\78297c03f36b43bea06743ad427b1c8a.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:46:50.5881381+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:46:20.2632596+00:00",
+          "ended_at": "2026-10-08T08:46:50.5881381+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_46_20.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:46:50.5248767+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\ffb02feaff0e4b65a509510c5a25a7d7.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:47:20.8995256+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:46:50.5969514+00:00",
+          "ended_at": "2026-10-08T08:47:20.8995256+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_46_50.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:47:20.8362969+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\9805cf48f28b414397d2ba4683251977.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:47:51.2572215+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:47:20.9113637+00:00",
+          "ended_at": "2026-10-08T08:47:51.2572215+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_47_20.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:47:51.1938546+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\ebe36842c43b4515bffafbde28271038.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:48:21.6077808+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:47:51.2682898+00:00",
+          "ended_at": "2026-10-08T08:48:21.6077808+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_47_51.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:48:21.5444532+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\efa986d38e4742a4a61c26aa81726062.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:48:51.9201099+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:48:21.6165503+00:00",
+          "ended_at": "2026-10-08T08:48:51.9201099+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_48_21.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:48:51.8571074+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\82dcdc53005b4bae913c1fac4fdccc89.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:49:22.2621677+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:48:51.9315348+00:00",
+          "ended_at": "2026-10-08T08:49:22.2621677+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_48_51.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:49:22.1984906+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\6ba2baa2426c4db9ac6f81cafe03d5bf.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:49:52.5557219+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:49:22.2736365+00:00",
+          "ended_at": "2026-10-08T08:49:52.5557219+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_49_22.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:49:52.4922544+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\1d73bc7973b445d5a363b44696ab3141.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:50:22.9233473+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:49:52.5672843+00:00",
+          "ended_at": "2026-10-08T08:50:22.9233473+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_49_52.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:50:22.8448892+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\be567215c441499dbd92358fb5b6ced8.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:50:53.2569489+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:50:22.9325693+00:00",
+          "ended_at": "2026-10-08T08:50:53.2569489+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_50_22.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:50:53.1933446+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\8415ca78156c4c65ba9ae0df273c0226.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:51:23.6096244+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:50:53.2893352+00:00",
+          "ended_at": "2026-10-08T08:51:23.6096244+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_50_53.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:51:23.5461871+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\de10783faaf74e2691dd47a081632ff9.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:51:53.9615999+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:51:23.6184863+00:00",
+          "ended_at": "2026-10-08T08:51:53.9615999+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_51_23.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:51:53.8981018+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\f147d4949f83481686f1684af598bd18.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:52:24.2937289+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:51:53.9720654+00:00",
+          "ended_at": "2026-10-08T08:52:24.2937289+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_51_53.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:52:24.2306329+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\85b3e28b7c2548f4b8a5d3bafec167a1.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:52:54.6307649+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:52:24.3086285+00:00",
+          "ended_at": "2026-10-08T08:52:54.6307649+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_52_24.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:52:54.5678965+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\baaa5a22567946cbba18f7644bb8362e.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:53:24.9639110+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:52:54.6440527+00:00",
+          "ended_at": "2026-10-08T08:53:24.9639110+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_52_54.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:53:24.9005366+00:00"
+        },
+        "indexed": true
+      },
+      {
+        "sidecar": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\native-segments\\df26b4b783bb4101b5dbbfe87e026e2d.json",
+        "data": {
+          "closure_observed_at": "2026-10-08T08:53:30.6955053+00:00",
+          "run": "FINAL124_JOIN185",
+          "source": "RPCS3 native game/audio",
+          "recorded_at": "2026-10-08T08:53:24.9743216+00:00",
+          "ended_at": "2026-10-08T08:53:30.6955053+00:00",
+          "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_53_25.mp4",
+          "ownership": {
+            "tag": "rpcs3",
+            "id": 20396,
+            "startTimeUtcTicks": "639270459099609866",
+            "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+          },
+          "stop_requested_at": "2026-10-08T08:53:30.6323624+00:00"
+        },
+        "indexed": true
+      }
+    ]
+  }
+}

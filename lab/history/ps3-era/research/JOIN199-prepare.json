@@ -1,0 +1,8 @@
+{
+  "at_utc": "2026-10-08T13:30:50.7886169Z",
+  "source_base": "4f18e36201ee3d0517536b482c474ba5e5ed22c0",
+  "source_clean": true,
+  "change": "Private peer/select equipped Ghost slot +0xa=42; Ghost channel 15/cosmetic index 1 candidate; Ghost arrangement 2706 or renderer change.",
+  "overlay_sha256": "5dcfe28c965186cc2fad56bffa83925c10c7e68c9ed3b2dca7f0b8108ed11302",
+  "trace": "# JOIN199: appearance=42, arrangement=2706 plus private Ghost channel 15/cosmetic index 1; distinguish unit, override, cache.\r\n71ec90 16 r3:48\r\n71edcc 16 r1+0x74:4 r26:12\r\n71ed90 16 r1+0x84:8\r\n2a65a8 16 if=lr==0x71ee38 r3:4\r\n42fa70 8 r20:824\r\n71ee68 16 r1+0x7c:4 r23:4\r\n2d184c 8 r5:260\r\n2d1880 8 r1+0x70:4\r\n42fae0 8 r20:824\r\nc67e8 12 if=lr==0x42fa78 r3:12\r\n42b51c 4 r3:208\n"
+}

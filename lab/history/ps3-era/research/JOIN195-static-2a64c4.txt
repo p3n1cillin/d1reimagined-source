@@ -1,0 +1,58 @@
+002a64c4  3c8001ab  lis      r4, 0x1ab
+002a64c8  3ca00189  lis      r5, 0x189
+002a64cc  80c45150  lwz      r6, 0x5150(r4)
+002a64d0  80a56d50  lwz      r5, 0x6d50(r5)
+002a64d4  2c060000  cmpwi    r6, 0
+002a64d8  40820058  bne      0x2a6530
+002a64dc  80630000  lwz      r3, 0(r3)
+002a64e0  80e50000  lwz      r7, 0(r5)
+002a64e4  7c666e70  srawi    r6, r3, 0xd
+002a64e8  546304fe  clrlwi   r3, r3, 0x13
+002a64ec  54c874be  srwi     r8, r6, 0x12
+002a64f0  610803ff  ori      r8, r8, 0x3ff
+002a64f4  7d063038  and      r6, r8, r6
+002a64f8  54c63032  slwi     r6, r6, 6
+002a64fc  7cc73014  addc     r6, r7, r6
+002a6500  78c60020  clrldi   r6, r6, 0x20
+002a6504  80e60030  lwz      r7, 0x30(r6)
+002a6508  7c6339d6  mullw    r3, r3, r7
+002a650c  80e60010  lwz      r7, 0x10(r6)
+002a6510  80c60034  lwz      r6, 0x34(r6)
+002a6514  7c671814  addc     r3, r7, r3
+002a6518  78670020  clrldi   r7, r3, 0x20
+002a651c  80e70008  lwz      r7, 8(r7)
+002a6520  7ce63038  and      r6, r7, r6
+002a6524  7cc61810  subfc    r6, r6, r3
+002a6528  78c60020  clrldi   r6, r6, 0x20
+002a652c  90c45150  stw      r6, 0x5150(r4)
+002a6530  30645150  addic    r3, r4, 0x5150
+002a6534  808300b4  lwz      r4, 0xb4(r3)
+002a6538  2c040000  cmpwi    r4, 0
+002a653c  40820058  bne      0x2a6594
+002a6540  80860178  lwz      r4, 0x178(r6)
+002a6544  80a50000  lwz      r5, 0(r5)
+002a6548  7c866e70  srawi    r6, r4, 0xd
+002a654c  548404fe  clrlwi   r4, r4, 0x13
+002a6550  54c774be  srwi     r7, r6, 0x12
+002a6554  60e703ff  ori      r7, r7, 0x3ff
+002a6558  7ce63038  and      r6, r7, r6
+002a655c  54c63032  slwi     r6, r6, 6
+002a6560  7ca53014  addc     r5, r5, r6
+002a6564  78a50020  clrldi   r5, r5, 0x20
+002a6568  80c50030  lwz      r6, 0x30(r5)
+002a656c  7c8431d6  mullw    r4, r4, r6
+002a6570  80c50010  lwz      r6, 0x10(r5)
+002a6574  80a50034  lwz      r5, 0x34(r5)
+002a6578  7c862014  addc     r4, r6, r4
+002a657c  78860020  clrldi   r6, r4, 0x20
+002a6580  80c60008  lwz      r6, 8(r6)
+002a6584  7cc52838  and      r5, r6, r5
+002a6588  7c852010  subfc    r4, r5, r4
+002a658c  78840020  clrldi   r4, r4, 0x20
+002a6590  908300b4  stw      r4, 0xb4(r3)
+002a6594  38600000  li       r3, 0
+002a6598  2c040000  cmpwi    r4, 0
+002a659c  41820008  beq      0x2a65a4
+002a65a0  30640004  addic    r3, r4, 4
+002a65a4  4e800020  blr      
+002a65a8  7c0802a6  mflr     r0

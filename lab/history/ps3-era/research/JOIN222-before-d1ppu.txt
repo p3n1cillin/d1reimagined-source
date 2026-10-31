@@ -1,0 +1,7 @@
+# JOIN118 candidate peer/select armour arrangements from the final asset library
+7201ec 12 r28+0x610:4
+72027c 12 r3+0x198:160 r3+0x5f0:288
+720280 12 r29+0:24 r29+0x180:160
+46ed4c 12 r8+0x1e8:288
+46f05c 24
+46f09c 24 r24+0:32

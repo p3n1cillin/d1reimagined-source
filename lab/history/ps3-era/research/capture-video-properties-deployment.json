@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-06T18:44:03.5406904Z",
+  "before": {
+    "tag": "content-monitor",
+    "id": 1448,
+    "startTimeUtcTicks": "639268949169943551",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "after": {
+    "tag": "content-monitor",
+    "id": 4024,
+    "startTimeUtcTicks": "639269090435093550",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "old_closed": true,
+  "new_alive": true,
+  "reason": "Deploy tested automatic input-stream metadata and recorder/input phases while no game is active"
+}

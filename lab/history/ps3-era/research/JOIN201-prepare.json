@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-08T14:31:39.7715652Z",
+  "source_base": "7c2cc9c4e49e977c3d576c2d3e097bf0a92710ed",
+  "source_clean": true,
+  "server_sha256": "0FBB1A702BAC778EB988E938A3369F9459E51393143946656B48B1C13A87F24F",
+  "tested_source_diff_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+  "change": "Private gear file: Titan starter kit plus Generalist appearance 0 and dye 15/2493 from its art record; committed server, unchanged renderer and mission.",
+  "trace": "# JOIN201: art-record Ghost appearance 0 and dye 15/2493; verify unit/cache resolution and Nav null component.\n71ec90 12 r3:48\n71edcc 12 r1+0x74:4\n2d1880 8 r1+0x70:4\n42fae0 4 r20:824\n1fb3c8 8 if=r4==0x0 if=lr==0x2ff330\n"
+}

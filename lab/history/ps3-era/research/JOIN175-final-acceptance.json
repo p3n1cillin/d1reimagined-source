@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-07T22:51:30.719694+00:00",
+  "run": "JOIN175",
+  "samples": 1156,
+  "span": [
+    "2026-10-07T20:06:44.451314+00:00",
+    "2026-10-07T20:14:04.210423+00:00"
+  ],
+  "idle112": {
+    "count": 0,
+    "span": null
+  },
+  "loaded_inactive": 548,
+  "session_states": {
+    "6": 1150,
+    "3": 5,
+    "5": 1
+  },
+  "context_errors": 0,
+  "recheck_errors": 0,
+  "watch_counts": {
+    "0x48e7f0": 16,
+    "0x4797b8": 16,
+    "0xd0fcc": 16
+  },
+  "producer_hooks": [],
+  "wire": [
+    "2026-10-07T21:05:28.714 [20261007-210527-332018] c->ah not host 0x1 type 21 len 163 body e7d7e5e4dfb1b0b0b7b2b0b2b6dfb2b1b0b3b1b5dfb0b0b0b0b0b1c0f0f3b3c0d5f3e5f2c0c5b0c4b5b5c5b2b7b2c6b9b08080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080a9bbfcf2a1e23a771ce79e19a401202afc0000000e00000007c1aabc4e5f20000000",
+    "2026-10-07T21:05:29.350 [20261007-210527-332018] c->ah not host 0x1 type 21 len 10 body c4000000000000000400",
+    "2026-10-07T21:05:44.618 [20261007-210527-332018] c->ah not host 0x1 type 21 len 13 body a8e502393b8b000000e2a405a0",
+    "2026-10-07T21:05:44.619 [20261007-210527-332018] client slice set: target 113:0x811c9dc5, state 4, peer byte 1",
+    "2026-10-07T21:05:57.748 [20261007-210527-332018] c->ah not host 0x1 type 21 len 22 body b1ca04727716000001c5480102393b8afffffffea120",
+    "2026-10-07T21:05:57.749 [20261007-210527-332018] client slice set: current 113:0x811c9dc5, target -1:0x811c9dc5, state 0",
+    "2026-10-07T21:08:19.609 [20261007-210527-332018] world state: teleport request -> slice set 112:0x811c9dc5 (state 1)",
+    "2026-10-07T21:10:21.445 [20261007-210527-332018] [WinError 10054] An existing connection was forcibly closed by the remote host2026-10-07T21:10:21.464 [20261007-211021-464178] connection from 127.0.0.1:62493",
+    "2026-10-07T21:10:22.730 [20261007-211021-464178] c->ah not host 0x1 type 21 len 163 body e7d7e5e4dfb1b0b0b7b2b0b2b6dfb2b1b0b3b1b5dfb0b0b0b0b0b1c0f0f3b3c0d5f3e5f2c0c5b0c4b5b5c5b2b7b2c6b9b08080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080a9bbfcf2a1e23a771ce79e19a401202afc0000000e00000007c1aabc4e5f20000000",
+    "2026-10-07T21:10:22.921 [20261007-211021-464178] c->ah not host 0x1 type 21 len 10 body c4000000000000000400",
+    "2026-10-07T21:10:23.203 [20261007-211021-464178] c->ah not host 0x1 type 21 len 13 body a8e502393b8b000000e2a405a0",
+    "2026-10-07T21:10:23.204 [20261007-211021-464178] client slice set: target 113:0x811c9dc5, state 4, peer byte 1",
+    "2026-10-07T21:10:44.084 [20261007-211021-464178] c->ah not host 0x1 type 21 len 22 body b1ca04727716000001c5480102393b8afffffffea120",
+    "2026-10-07T21:10:45.723 [20261007-211021-464178] client slice set: current 113:0x811c9dc5, target -1:0x811c9dc5, state 0",
+    "2026-10-07T21:12:51.767 [20261007-211021-464178] world state: teleport request -> slice set 112:0x811c9dc5 (state 1)",
+    "2026-10-07T21:14:43.588 [20261007-211021-464178] [WinError 10054] An existing connection was forcibly closed by the remote host"
+  ],
+  "validation_ids": 0,
+  "device_loss": 0,
+  "fatal_entries": 0,
+  "cleanup": {
+    "at": "2026-10-07T20:14:43.9579014Z",
+    "fixture_completed": true,
+    "all_owned_closed": true,
+    "title_unchanged": true,
+    "watch_unchanged": true,
+    "input": "Handler: XInput",
+    "active_controls": [],
+    "shared_rpcn_preserved": true,
+    "errors": []
+  },
+  "scope": "Non-atomic guest session sampling and actual host receipt. Fixed-size consumer/encoder watches only prove matching sizes when they emit; unhit watches must not imply a failed path. Mission control/combat/completion and combined graphics remain unaccepted."
+}

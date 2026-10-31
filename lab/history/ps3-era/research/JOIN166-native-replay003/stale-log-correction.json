@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-07T13:45:04.9432936Z",
+  "native_snapshot_last_write_at": "2026-10-07T13:43:50.0358259Z",
+  "owned_replay_start_at": "2026-10-07T13:43:49.6495917Z",
+  "native_snapshot_current": false,
+  "scope": "Snapshot contains previous replay002 output; do not attribute its lines to003. No003 output/frame accepted. Private wrapper now waits for exact executable identity and rejects stale logs."
+}

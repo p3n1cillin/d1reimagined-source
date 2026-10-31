@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-09T14:45:15.7846441Z",
+  "source_base": "d0ffccda51a9d632db945c2c18a3fd6c439eac91",
+  "source_clean": false,
+  "source_status": [],
+  "change": "Committed source (d0ffccd): mission rifle drop and grant, Breach Fallen 30 s after the rifle trigger. Aimed-fire helper with diagnostics, recorded. No control lines or guest writes.",
+  "trace": "# JOIN236: mission-announced starter rifle (no private overlay or control event); pickup path watches.\n5aede4 6 r4:24\n2b2a60 6 r3:128\n2b36f8 400 if=m4:2==0xe0e r4:56\n2b2c00 12 r3:64\n472518 12 r3:64\n",
+  "launch_sha256": "7F3C7DC6A6BBEAFE0EBEC401C2B10737BE6D3F7E37E91CCAD26BA5EAC6145068"
+}

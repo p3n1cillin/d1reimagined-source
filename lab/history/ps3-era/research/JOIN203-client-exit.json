@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-08T15:23:34.605492+00:00",
+  "client": {
+    "tag": "rpcs3",
+    "id": 20200,
+    "startTimeUtcTicks": "639270687326812648",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "exit_code": 4294967295,
+  "exit_code_hex": "0xffffffff"
+}

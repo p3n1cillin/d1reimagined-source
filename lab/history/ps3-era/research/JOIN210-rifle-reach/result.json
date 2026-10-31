@@ -1,0 +1,14 @@
+{
+  "utc": "2026-10-08T18:41:33.623424+00:00",
+  "run": "JOIN210",
+  "scope": "ordinary guarded input; read-only guest memory",
+  "status": "completed",
+  "xyz": [
+    410.31195068359375,
+    -794.3365478515625,
+    18.37220573425293
+  ],
+  "entity": "0x602c3f00",
+  "yaw": -2.076650452481006,
+  "finished_utc": "2026-10-08T18:41:43.975726+00:00"
+}

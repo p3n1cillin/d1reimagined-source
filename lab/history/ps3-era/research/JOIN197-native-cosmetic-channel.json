@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-08T13:21:14.523914+00:00",
+  "atomic": false,
+  "cache_address": "0x1ab51b8",
+  "cache_pointer": "0x700ef3a0",
+  "returned_table_pointer": "0x700ef3a4",
+  "table": "0000002000010203040506090a0b0c0d0f0e0601000205030415000040400000",
+  "ghost_cosmetic_channel": 15,
+  "cache_unchanged": true,
+  "table_unchanged": true,
+  "code_checks": [
+    {
+      "address": "0x2a4c84",
+      "matches_elf": true
+    },
+    {
+      "address": "0x71ed80",
+      "matches_elf": true
+    }
+  ]
+}

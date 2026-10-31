@@ -1,0 +1,22 @@
+{
+  "patch_sha256": "c93a2e69d170e1e927fefcbdffac8365dbff1af6e9f9d1eaca7ce79a3f704fc2",
+  "source_matches_applied_patch": {
+    "rpcs3/Emu/RSX/d1diag.h": true,
+    "rpcs3/Emu/RSX/VK/VKGSRenderTypes.hpp": true,
+    "rpcs3/Emu/RSX/VK/VKCommandStream.cpp": true,
+    "rpcs3/Emu/RSX/VK/VKResourceManager.h": true,
+    "rpcs3/Emu/RSX/VK/vkutils/descriptors.cpp": true,
+    "rpcs3/Emu/RSX/VK/vkutils/shared.cpp": true,
+    "rpcs3/Emu/RSX/Common/descriptor_lifetime_ring.h": true
+  },
+  "actual_source_sha256": {
+    "rpcs3/Emu/RSX/d1diag.h": "4fbb640c4a172f55f6eb4384e2dccb17b6027768e1e1cdb45b9b2f0b31dee5bb",
+    "rpcs3/Emu/RSX/VK/VKGSRenderTypes.hpp": "f5b7069f5da366df42728c8ff332ba8e9e6a0e0af6f6237a333015efe869b61d",
+    "rpcs3/Emu/RSX/VK/VKCommandStream.cpp": "35171d62d0fd3c65f0f843ede83a94024c33715e3b953379383427101379cd3e",
+    "rpcs3/Emu/RSX/VK/VKResourceManager.h": "133f901adb560179585728a0b41a39be1fbe9f2d87454e65bb7a400ea006a795",
+    "rpcs3/Emu/RSX/VK/vkutils/descriptors.cpp": "77ce54c50fa4ea6ef9db6cfde2ff3b88c9813b943f0e2d56a400e349dbfde0db",
+    "rpcs3/Emu/RSX/VK/vkutils/shared.cpp": "6258e4ba1344569023eb649c7682db7f08e77f0ddd77951de8b83529d0261a8d",
+    "rpcs3/Emu/RSX/Common/descriptor_lifetime_ring.h": "9a40a4fc75e1670bbb5893b64b43dbf30b94b433ef4e151b30543b852dfdb08a"
+  },
+  "scope": "Only the bounded ring increment against the exact private baseline; unrelated renderer work excluded."
+}

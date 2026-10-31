@@ -1,0 +1,9 @@
+# JOIN196: appearance-only; distinguish Ghost unit, cosmetic override, and returned cache ID.
+71ec90 16 r3:48
+71edcc 16 r1+0x74:4 r26:12
+42fa70 8 r20:824
+2d184c 8 r5:260
+2d1880 8 r1+0x70:4
+42fae0 8 r20:824
+c67e8 12 if=lr==0x42fa78 r3:12
+42b51c 4 r3:208

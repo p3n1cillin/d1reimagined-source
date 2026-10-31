@@ -1,0 +1,2 @@
+fence-completion-audit.cpp
+fence\fence-completion-audit.cpp(123): warning C4244: 'argument': conversion from 'u64' to 'int', possible loss of data

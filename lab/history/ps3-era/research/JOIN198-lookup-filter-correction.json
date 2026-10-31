@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-08T13:25:42.0711876Z",
+  "old_hash": "5DC235A490240D73C504119AEF34B5E1E0FE04E9093D6B0FCF88295D7A70EEC9",
+  "new_hash": "33E487BD647F2D0E5A948D050AF7B6D99BC7E7FA3FCA81E95849D863C9401C04",
+  "reason": "Preserve cosmetic lookup budget for Ghost caller rather than armour lookups",
+  "guest_memory_writes": false,
+  "line": "2a65a8 16 if=lr==0x71ee38 r3:4"
+}

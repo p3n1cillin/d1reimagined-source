@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-07T20:18:45.263531+00:00",
+  "snapshot": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN175-pre-stop-native.log",
+  "scope": "Bounded entry observations; equal initialized body pointer/length and record prefix correlate the queue with header encoding. Entry-only generic encoder has no native return hook; actual factory return is separately watched. No socket receipt or gameplay proof.",
+  "watch_counts": {
+    "0x48e7f0": 16,
+    "0x4797b8": 16,
+    "0xd0fcc": 16
+  },
+  "correlations": [],
+  "generic_encoder_entries": []
+}

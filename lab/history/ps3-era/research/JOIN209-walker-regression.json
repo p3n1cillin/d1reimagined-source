@@ -1,0 +1,16 @@
+[
+  {
+    "scope": "prior",
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "output": "F\n======================================================================\nFAIL: test_close_goal_keeps_moving_until_a_slow_pad_poll_consumes_input (precision_tests.WalkerPrecision.test_close_goal_keeps_moving_until_a_slow_pad_poll_consumes_input)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"F:\\d1\\d1xenia\\scripts\\test_d1_walker.py\", line 176, in test_close_goal_keeps_moving_until_a_slow_pad_poll_consumes_input\n    self.assertTrue(walker.go((1.5, 0.0), radius=1.0, budget=2.0))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nFAILED (failures=1)\n"
+  },
+  {
+    "scope": "candidate",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n"
+  }
+]

@@ -1,0 +1,4 @@
+descriptor-allocation-audit.cpp
+descriptor-allocation-audit.cpp(169): warning C4267: '=': conversion from 'size_t' to 'u32', possible loss of data
+descriptor-allocation-audit.cpp(333): warning C4267: '=': conversion from 'size_t' to 'u32', possible loss of data
+descriptor-allocation-audit.cpp(353): warning C4267: '=': conversion from 'size_t' to 'u32', possible loss of data

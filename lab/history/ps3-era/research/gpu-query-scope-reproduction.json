@@ -1,0 +1,8 @@
+{
+  "patch_sha256": "b853955fd0b00ad410d38371b51837b154fddfd80f9f664298595bdd0fe1ca95",
+  "compiled_source_matches_applied_patch": {
+    "rpcs3/Emu/RSX/VK/VKHelpers.cpp": true,
+    "rpcs3/Emu/RSX/VK/VKDraw.cpp": true,
+    "rpcs3/Emu/RSX/VK/VKGSRender.cpp": true
+  }
+}

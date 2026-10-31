@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-07T19:02:58.443061+00:00",
+  "transport_mapper": {
+    "object": "0x1adb2f4",
+    "vtable": "0x13ed518",
+    "methods": {
+      "0x8": {
+        "descriptor": "0x185e4b8",
+        "entry": "0x82db0"
+      },
+      "0xc": {
+        "descriptor": "0x185e3f8",
+        "entry": "0x7ddb0"
+      },
+      "0x10": {
+        "descriptor": "0x185e400",
+        "entry": "0xa6220"
+      },
+      "0x18": {
+        "descriptor": "0x185e410",
+        "entry": "0x7ddb0"
+      }
+    }
+  },
+  "codec": {
+    "object": "0x1ad5ed0",
+    "vtable": "0x13ea298",
+    "methods": {
+      "0x4": {
+        "descriptor": "0x1859208",
+        "entry": "0x25ad8"
+      },
+      "0x8": {
+        "descriptor": "0x1859210",
+        "entry": "0x478ed8"
+      },
+      "0x14": {
+        "descriptor": "0x1858b08",
+        "entry": "0x27000"
+      },
+      "0x1c": {
+        "descriptor": "0x1858b18",
+        "entry": "0x7ddb0"
+      }
+    }
+  },
+  "queue_fields_114_124": "00860000000008000000013e0000000000000000",
+  "scope": "Exactly owned non-atomic runtime tables for kind17; methods still require actual call evidence."
+}

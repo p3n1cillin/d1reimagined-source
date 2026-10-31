@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-07T23:53:59.1444892Z",
+  "exact_client_alive": true,
+  "helpers_closed": true,
+  "watch_leases_restored_semantically": true,
+  "watch_byte_identity": false,
+  "watch_difference": "9 CRLF line endings from normalized Python text IO; directives match exactly. Wrapper restores original backup bytes.",
+  "capture_armed": false,
+  "finish_requested": true
+}

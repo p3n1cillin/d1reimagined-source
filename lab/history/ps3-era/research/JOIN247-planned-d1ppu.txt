@@ -1,0 +1,3 @@
+# JOIN247: universe flag 2847 = false. Gate evaluations of 2847 and the dialog-side caller 0x48a570.
+c5be34 40 if=r4==2847 r3:4
+48a570 30 r3:64 r4:64 r5:32

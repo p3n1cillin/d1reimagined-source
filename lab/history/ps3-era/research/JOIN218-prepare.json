@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-08T22:22:40.1114694Z",
+  "source_base": "578ad601ad6773bc35ce2294139aff8798a0a284",
+  "source_clean": true,
+  "source_status": [],
+  "change": "Native incident resource metadata and callback registration investigation; unmodified starter, no new mission/renderer change or incident injection.",
+  "trace": "# JOIN218: native incident resources and client callbacks, read-only.\n12f2e8 12 r4:96\n5aea30 12 r4:64 r4+0x130:24\n5aede4 12 r4:24\n5aebc4 12 r3:24 r4:24\n5aec08 12 r3:24 r4:24\n5aec3c 12 r3:24 r4:24\n467ea0 12 r4:24\n2b279c 12 r3:32\n2b2a60 12 r3:32\n2b2f74 12 r3:48\n472518 12 r3:24\n",
+  "launch_sha256": "637477A03129468DF462330145603A7C495A00E805E25325D0199667928057B3"
+}

@@ -1,0 +1,4 @@
+{
+  "at_utc": "2026-10-08T09:16:27.1808816Z",
+  "result": "Wrapper refused existing JOIN186 control file before entering launch try block; no native/services launched. Preserved failed wrapper and corrected all run names before retry."
+}

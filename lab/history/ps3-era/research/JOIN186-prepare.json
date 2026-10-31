@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-08T09:01:58.3021600Z",
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "source_base": "7bedf8e5df854bac79633baf242cc6110957a5f8",
+  "source_clean": false,
+  "change": "Private mission removes fixed revival stops/teleport for authored-completion diagnosis; production mission unchanged.",
+  "candidate_sha256": "b05033f41be8676074faacedf532f034489784a73178ad7d7b1aa5418874e6c2",
+  "probe_sha256": "7003f655d9b2be5a23f6153b0c1d85780b6cb9b121d858aca34fa8956d728505",
+  "trace": "# JOIN186: bounded cinematic dispatch only; static call-site returns verified.\n580928 4 r3:448\n425654 4 if=lr==0x580a3c r3:4\n425120 4 if=lr==0x42567c r3:4\n42478c 4 if=lr==0x425694 r3:32\n42c060 96 r3:208\n42afec 96 r3:208\n42b51c 256 r3:32 r4:192\n580640 12 r3:448 r4:4\n",
+  "scope": "C5 native diagnostics; manual handover must be labelled, no production playback acceptance claimed."
+}

@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-07T22:55:40.0108973Z",
+  "source_commit": "2e327654445a54397d340e673a3f5175e77f74e3",
+  "backend_sha256": "40249994FA77B7972D7B3BB73B511C7781E91F58AD3826C783D3176E3092D1D8",
+  "renderer_sha256": "C5BC7F5786835302DAFE3265549E2052D3265DF7025FC997BC6249E3647FE7CF",
+  "scope": "Repeat shipped routine-console repair with same Titan/highway fixture and C5 renderer. Inspect native dialog, then owned Cross; after actual idle112 plus inspected HUD/control state, test visible movement and character/world fidelity. No synthetic ACK or protocol reset."
+}

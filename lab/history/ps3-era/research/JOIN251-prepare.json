@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-09T20:58:04.1529879Z",
+  "source_base": "bb55871b71620a0800f94f5f6cc4a7b6818e20aa",
+  "source_clean": false,
+  "source_status": [
+    " M notes/checkpoint-2026-10-09-mission.md",
+    " M notes/guardian-rises-reference-script.md",
+    " M scripts/Invoke-Final124Join.ps1"
+  ],
+  "change": "Universe flag override 2857=1 (false). JOIN250 traced the urgent dialog to the MOTD selector 0x48a570 (entry 0x70092668, unlock expression at +0x1c, time slot 12, cooldown 300 s) and the enqueue in 0x86ae1c; if content indexes map linearly (0x525->0xb1f) the urgent index 0x52f is runtime 0xb29. The drive also reads the live expression. Read-only watches. Same mission drive. Committed source bb55871. No control lines or guest writes.",
+  "trace": "# JOIN251: universe 2857 = false; urgent entry selection and enqueue.\r\n48a2e0 30 r3:16 r4:64\r\n753430 20 r3:16\r\nc5be34 20 if=r4==2857 r3:4\n",
+  "launch_sha256": "82F96476DEC691C86040F0A73BD52F4A54B6E8799AD1029BC09C5136A0627D5B"
+}

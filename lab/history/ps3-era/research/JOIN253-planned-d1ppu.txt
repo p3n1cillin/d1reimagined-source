@@ -1,0 +1,1 @@
+# JOIN253: no watches. Objectives start at state 5 (no NEW MISSION banner); dialog flags off by default.

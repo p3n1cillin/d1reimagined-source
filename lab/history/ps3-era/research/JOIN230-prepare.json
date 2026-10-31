@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-09T10:51:20.9872109Z",
+  "source_base": "196377f2d9e92fe2062edfdee4ae03a7f2f8de7f",
+  "source_clean": false,
+  "source_status": [
+    " M scripts/Invoke-Final124Join.ps1",
+    " M server/bap_server.py",
+    " M server/test_bap_server.py"
+  ],
+  "change": "Account flags A1262-A1327 false (--self-flags 2|1@A1262-1327; MOTD and urgent dialog unlock flags), universe overrides back to 3390/309. Otherwise as JOIN229: unarmed starter, mission-announced rifle, service-601 grant. No private overlay, control incident or guest writes.",
+  "trace": "# JOIN230: mission-announced starter rifle (no private overlay or control event); pickup path watches.\n5aede4 6 r4:24\n2b2a60 6 r3:128\n2b36f8 400 if=m4:2==0xe0e r4:56\n2b2c00 12 r3:64\n472518 12 r3:64\n",
+  "launch_sha256": "57F28736C804882D0B71A8C00AFFC543DAD551C82A29E06945F7338C208273F9"
+}

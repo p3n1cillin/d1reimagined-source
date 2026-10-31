@@ -1,0 +1,273 @@
+{
+  "at": "2026-10-07T08:11:00.940428+00:00",
+  "run": "FINAL124_JOIN160",
+  "retention_checks": [
+    {
+      "segment": "4f885f168beb48b7a50af1302ad19641",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_52_41.mp4",
+      "recorded_at": "2026-10-07T07:52:41.8873129+00:00",
+      "bytes": 2638940,
+      "original_retained": true,
+      "sha256": "2db50fc86e21ef241a5644aaa570d64fbe9e0966cbffa7ab4e9679e9b7d8d183",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "6f35798e244941aa90a19dea07413470",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_53_12.mp4",
+      "recorded_at": "2026-10-07T07:53:12.1414106+00:00",
+      "bytes": 3101823,
+      "original_retained": true,
+      "sha256": "4807cef518ce30ccfd4f4ef9f2253274518470751590f74c4bf947383ac0731f",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "b89fba20ad834a7d8e6f6591eea51aa4",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_53_42.mp4",
+      "recorded_at": "2026-10-07T07:53:42.4353937+00:00",
+      "bytes": 2548209,
+      "original_retained": true,
+      "sha256": "8f5a1d16bcf381fa258b1c338f958083824e681f1d11922f7ae0797f6b1be017",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "89b818aaca1f40838914cf6f128fc3b3",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_54_12.mp4",
+      "recorded_at": "2026-10-07T07:54:12.7080961+00:00",
+      "bytes": 3092780,
+      "original_retained": true,
+      "sha256": "b35967b48a5a0c5aad58e963216bc92d973e51945372abfc8b26aca65259365a",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "980197d8bc284e5f8860b8ca9383086b",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_54_43.mp4",
+      "recorded_at": "2026-10-07T07:54:43.0129845+00:00",
+      "bytes": 2226907,
+      "original_retained": true,
+      "sha256": "0176a2205cc3888c54f742fdf4c3419ba3daf8b6d422f326df06b0a77b3584e7",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "758a781a94864afebf16fe5dfc3d938d",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_55_13.mp4",
+      "recorded_at": "2026-10-07T07:55:13.3108492+00:00",
+      "bytes": 2360660,
+      "original_retained": true,
+      "sha256": "a71d982d1a6a3bd340378d9eb0b478670db0b6c1fc91eeeab5761449604f5be1",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "6dd79b8e721f44a48d7c859637c58012",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_55_44.mp4",
+      "recorded_at": "2026-10-07T07:55:43.9749714+00:00",
+      "bytes": 7583320,
+      "original_retained": true,
+      "sha256": "873964e0044cad45f883a9406be7c62bec896cc7ec81d6ab73febb320233dfcd",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "923991b7c8034549b620c98752817d5a",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_56_20.mp4",
+      "recorded_at": "2026-10-07T07:56:20.6494673+00:00",
+      "bytes": 5650142,
+      "original_retained": true,
+      "sha256": "424cb62ca40a0536b5127b237252e8b0fe40765b238e75f78388eb6d2da04e1e",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "cfc22e09ad304f3aacffe2fd265b4fc0",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_56_54.mp4",
+      "recorded_at": "2026-10-07T07:56:54.7205401+00:00",
+      "bytes": 1408040,
+      "original_retained": true,
+      "sha256": "f21ef0de5c10a600ac4a3d5a94e516b127561d4f0a280a69a22d17212d22356b",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "8a49bfa245114c408c6e8812a783ad86",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_57_25.mp4",
+      "recorded_at": "2026-10-07T07:57:25.3387280+00:00",
+      "bytes": 2359044,
+      "original_retained": true,
+      "sha256": "1abcbb02908cb4950ec45e0f84c28e7d2728eb62596cd7fa608ee89701defd34",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "6261eb39c3314f64a819f36996277ae2",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_57_57.mp4",
+      "recorded_at": "2026-10-07T07:57:57.7406343+00:00",
+      "bytes": 1148332,
+      "original_retained": true,
+      "sha256": "0c4e6df10f7bd980d26254bc22067b8e30cff69f9c4554f1dd9c6df09b7a07fe",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "026ce4d1670d4ff3911633d677525a8c",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_58_31.mp4",
+      "recorded_at": "2026-10-07T07:58:31.8512586+00:00",
+      "bytes": 1126772,
+      "original_retained": true,
+      "sha256": "707f2a754141cbe7e11842f577fc93dde667c84786de4d3633779e36a5529eed",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "c566b9f409d34359856e40f0fc8404bc",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_59_05.mp4",
+      "recorded_at": "2026-10-07T07:59:05.6734915+00:00",
+      "bytes": 1008071,
+      "original_retained": true,
+      "sha256": "f03fe2460eaac7ee05ba93b72e78e96c715da332e5d1603aa53c9deb5ca6f661",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "7d0a98d71e174feda3eacd4a0aa4d18e",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_59_35.mp4",
+      "recorded_at": "2026-10-07T07:59:35.9357688+00:00",
+      "bytes": 2892901,
+      "original_retained": true,
+      "sha256": "b4437eff8c14eae616ae892687c4031e713b54577650f84dad396a47c44f43e9",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "6c21709fb5f34143b50a445214549f3a",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_00_13.mp4",
+      "recorded_at": "2026-10-07T08:00:13.1866992+00:00",
+      "bytes": 6324912,
+      "original_retained": true,
+      "sha256": "816131c9594a7171c3f942ac552370b560e788205335ff18b7ec83e1539d7712",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "27d1fd84bc2b48b5957b92401ddaafa7",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_00_47.mp4",
+      "recorded_at": "2026-10-07T08:00:44.6897885+00:00",
+      "bytes": 4875645,
+      "original_retained": true,
+      "sha256": "ee027e32636d4deb581193b6ba92a5d9813a573d7e3bb93c405e1eafd6e42762",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "dfe85a4328c4424b8b557d175749483a",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_01_24.mp4",
+      "recorded_at": "2026-10-07T08:01:24.7855893+00:00",
+      "bytes": 3392895,
+      "original_retained": true,
+      "sha256": "9871f44622fecea7a25dba6327294fa77d9cd5f4485748dfedc4641678a68895",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "ce4a65c9eea64dbdaf45528eec96c9c8",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_01_57.mp4",
+      "recorded_at": "2026-10-07T08:01:57.5969014+00:00",
+      "bytes": 1411961,
+      "original_retained": true,
+      "sha256": "e4a43e31f35e8be16a304304918672969d5061862b8bc7a67f6143dcfae03db1",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "62e58b3c809243feb18f114c71aa1826",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_02_33.mp4",
+      "recorded_at": "2026-10-07T08:02:33.4316575+00:00",
+      "bytes": 845017,
+      "original_retained": true,
+      "sha256": "d6e410d5f3fbcfb49b6edc6a442c5d15c621b19fef2cb0aacffb01a70c15e0e3",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "6e5cf6d1a190427898caecbf33dcf540",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_03_06.mp4",
+      "recorded_at": "2026-10-07T08:03:06.7014484+00:00",
+      "bytes": 1184932,
+      "original_retained": true,
+      "sha256": "b83abfdbb99f4cb1883e3c2ff51886eea5dddca8c1152d219367443a5575d916",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "fd2ef374769f48459f32cc41c2ab237b",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_03_38.mp4",
+      "recorded_at": "2026-10-07T08:03:38.6718061+00:00",
+      "bytes": 1384173,
+      "original_retained": true,
+      "sha256": "392dde9b3b8faae85490ca5d94c676453f046c039145b01b9aeb253c3bc950a3",
+      "hash_matches_index": true
+    },
+    {
+      "segment": "f732831b298f460a90e7b07633e70899",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_04_08.mp4",
+      "recorded_at": "2026-10-07T08:04:08.8537325+00:00",
+      "bytes": 2005935,
+      "original_retained": true,
+      "sha256": "92d07adfcc261bfed8c3d4e40a6b282173a2001658d5f232b3d90744bb6471cc",
+      "hash_matches_index": true
+    }
+  ],
+  "unindexed": [
+    {
+      "segment": "b94a6f8c38764cd6bba053783f42214b",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_08_52_11.mp4",
+      "recorded_at": "2026-10-07T07:52:11.1870123+00:00",
+      "source_exists": true,
+      "failure": {
+        "error": "Recording failed full decode or has no usable duration",
+        "next_attempt": 1791360849.502564
+      }
+    }
+  ],
+  "video_inspection": [
+    {
+      "segment": "fd2ef374769f48459f32cc41c2ab237b",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_03_38.mp4",
+      "recorded_at": "2026-10-07T08:03:38.6718061+00:00",
+      "media": {
+        "duration_seconds": 30.09,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 26.95,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      },
+      "full_decode": "PASS",
+      "frames": [
+        "fd2ef374769f48459f32cc41c2ab237b-01.png",
+        "fd2ef374769f48459f32cc41c2ab237b-02.png",
+        "fd2ef374769f48459f32cc41c2ab237b-03.png",
+        "fd2ef374769f48459f32cc41c2ab237b-04.png",
+        "fd2ef374769f48459f32cc41c2ab237b-05.png",
+        "fd2ef374769f48459f32cc41c2ab237b-06.png"
+      ]
+    },
+    {
+      "segment": "f732831b298f460a90e7b07633e70899",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_09_04_08.mp4",
+      "recorded_at": "2026-10-07T08:04:08.8537325+00:00",
+      "media": {
+        "duration_seconds": 31.21,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 22.89,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      },
+      "full_decode": "PASS",
+      "frames": [
+        "f732831b298f460a90e7b07633e70899-01.png",
+        "f732831b298f460a90e7b07633e70899-02.png",
+        "f732831b298f460a90e7b07633e70899-03.png",
+        "f732831b298f460a90e7b07633e70899-04.png",
+        "f732831b298f460a90e7b07633e70899-05.png",
+        "f732831b298f460a90e7b07633e70899-06.png"
+      ]
+    }
+  ],
+  "scope": "Untouched originals retained; full decoding and private sampled-frame QA of final two segments. No repair, cut, re-encode or publication."
+}

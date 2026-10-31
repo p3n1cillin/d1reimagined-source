@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-08T13:50:29.1959885Z",
+  "client": {
+    "tag": "rpcs3",
+    "id": 25116,
+    "startTimeUtcTicks": "639270638014098464",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "key": "Space",
+  "hold_ms": 400,
+  "last_inspected_image": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\BLES01857\\BLES01857_screenshot_2026_10_08_14_49_49.png",
+  "purpose": "Nav reproduction in production-default run after native handover"
+}

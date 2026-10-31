@@ -1,0 +1,87 @@
+{
+  "checked_at": "2026-10-07T23:09:23.485576+00:00",
+  "run": "JOIN177",
+  "source_commit": "2e327654445a54397d340e673a3f5175e77f74e3",
+  "data_commit": "5f46373163243311c25e3762b3c5f17ebbbce6ad",
+  "sample_count": 1749,
+  "non_atomic": true,
+  "first_utc": "2026-10-07T22:59:46.278390+00:00",
+  "last_utc": "2026-10-07T23:07:06.106572+00:00",
+  "idle112_count": 1398,
+  "first_idle112_utc": "2026-10-07T23:01:14.559234+00:00",
+  "last_idle112_utc": "2026-10-07T23:07:06.106572+00:00",
+  "states": {
+    "6": 1749
+  },
+  "top_level_errors": 0,
+  "pointer_recheck_failures": 0,
+  "route": {
+    "run": "FINAL124_JOIN177",
+    "started_utc": "2026-10-07T23:06:08.871092+00:00",
+    "status": "stopped",
+    "reason": "route time budget exhausted",
+    "finished_utc": "2026-10-07T23:06:55.988491+00:00"
+  },
+  "movement": {
+    "first": [
+      383.1056823730469,
+      -961.8464965820312,
+      12.677810668945312
+    ],
+    "last": [
+      341.0318603515625,
+      -903.132568359375,
+      4.177393913269043
+    ],
+    "last_utc": "2026-10-07T23:06:55.785619+00:00",
+    "straight_line_distance": 72.73093531538665,
+    "scope": "Actual guarded position changes and inspected outdoor camera; route stopped at 45-second budget. No Breach or mission completion."
+  },
+  "inspected_images": [
+    "BLES01857_screenshot_2026_10_08_00_01_42.png",
+    "BLES01857_screenshot_2026_10_08_00_02_36.png",
+    "BLES01857_screenshot_2026_10_08_00_06_23.png",
+    "BLES01857_screenshot_2026_10_08_00_07_10.png",
+    "BLES01857_screenshot_2026_10_08_00_07_19.png",
+    "BLES01857_screenshot_2026_10_08_00_07_34.png"
+  ],
+  "graphics": "NOT ACCEPTED: earlier black/green outdoor frame persists. Later bright outdoor frames and armoured Titan model are single-frame observations, not a combined fidelity pass.",
+  "character": "Start menu renders armoured full-body Titan and armour icons after model loading; guest profile values remain zero. No original-reference fidelity or persistence test.",
+  "capture": {
+    "at": "2026-10-07T23:07:47.9499194Z",
+    "capture_saved": false,
+    "scope": "Bounded diagnostic checkpoint ended without a verified RSX capture; no capture or graphics success claimed."
+  },
+  "capture_attempt": "Arming attempted after bounded cleanup. Ownership check rejected it before marker creation; no RSX capture or renderer replay.",
+  "native_counts": {
+    "VUID": 0,
+    "device_loss": 0,
+    "fatal": 0,
+    "fatal_method": "RPCS3 fatal severity at line start ^\u00b7F[ \\t]; previous broad word-match counted configuration text and was corrected before use."
+  },
+  "core_layer": {
+    "at": "2026-10-07T23:07:48.0063525Z",
+    "client_alive": true,
+    "layer": {
+      "ModuleName": "VkLayer_khronos_validation.dll",
+      "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+    }
+  },
+  "cleanup": {
+    "at": "2026-10-07T23:07:48.8103369Z",
+    "fixture_completed": true,
+    "all_owned_closed": true,
+    "title_unchanged": true,
+    "watch_unchanged": true,
+    "input": "Handler: XInput",
+    "active_controls": [],
+    "shared_rpcn_preserved": true,
+    "errors": []
+  },
+  "video_full_decode": "NOT RUN for JOIN177 at this checkpoint",
+  "reporting_timezone": "Europe/London",
+  "event_date_note": "Run begins 7 October UK; mission movement and armour menu occur 8 October UK while UTC is still 7 October.",
+  "late_evidence": "Keep original times and roll into next eligible daily edition; October7 report already immutable/delivered.",
+  "context_errors": 0,
+  "context_recheck_failures": 0
+}

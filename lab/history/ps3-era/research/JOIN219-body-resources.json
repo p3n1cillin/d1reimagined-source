@@ -1,0 +1,88 @@
+{
+  "utc": "2026-10-08T22:44:06.164356+00:00",
+  "atomic": false,
+  "resources": [
+    {
+      "global": "0x18df3c4",
+      "pointer": "0x1ab4170",
+      "words": [
+        "0x80800cb6",
+        "0x1165d30",
+        "0x1bca7a8",
+        "0x18e4920"
+      ]
+    },
+    {
+      "global": "0x18df410",
+      "pointer": "0x1ab43b0",
+      "words": [
+        "0x80800792",
+        "0x117f968",
+        "0x1bd7738",
+        "0x18e4a40"
+      ]
+    }
+  ],
+  "selector1_adapter_words": [
+    "0x13e97d8",
+    "0x13e6e88",
+    "0x13e97c8",
+    "0x13e9818",
+    "0x13e9828",
+    "0x13e96d8",
+    "0x13e6cb0",
+    "0x1ad5ac0",
+    "0x13e9718",
+    "0x13e9840",
+    "0x13e6cb0",
+    "0x1ad5ad0",
+    "0x13e9880",
+    "0x13e9890",
+    "0x13e6cb0",
+    "0x1ad5ae0",
+    "0x13e98d0",
+    "0x13ecfe8",
+    "0x13e6cb0",
+    "0x1ad5af0"
+  ],
+  "nested": [
+    {
+      "offset": 8,
+      "vtable": "0x13e97c8",
+      "functions": [
+        "0xe589a8",
+        "0x4662b8",
+        null,
+        null,
+        "0x1da238",
+        "0x26f8a8",
+        "0x7ddb0",
+        "0x26d794",
+        "0x26d7d0",
+        "0x26da80",
+        "0x466b14",
+        "0x26fe18",
+        "0x26de94"
+      ]
+    },
+    {
+      "offset": 16,
+      "vtable": "0x13e9828",
+      "functions": [
+        "0x466804",
+        "0x466834",
+        "0x466864",
+        null,
+        null,
+        null,
+        "0x7ddb0",
+        "0xe27d84",
+        "0x7ddb0",
+        "0xe5b3ec",
+        "0x4686d4",
+        "0x4686fc",
+        "0xa6220"
+      ]
+    }
+  ]
+}

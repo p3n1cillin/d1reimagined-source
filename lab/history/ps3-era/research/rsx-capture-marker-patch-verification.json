@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-07T12:30:46.218455+00:00",
+  "sha256": "713b35612d9ab5f531efb28af38c8bcfdb6d4a298ff31e613a09a75cb764cfe4",
+  "apply_check": "PASS",
+  "reproduces_actual_source_with_normalized_newlines": true,
+  "scope": "One VKPresent diagnostic increment against preserved pre-marker source. First fixture failed on CRLF patch; LF patch applies. Git checkout converts line endings, so source comparison normalizes line endings."
+}

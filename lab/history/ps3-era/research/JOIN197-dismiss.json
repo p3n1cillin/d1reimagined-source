@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-08T13:11:59.3667397Z",
+  "client": {
+    "tag": "rpcs3",
+    "id": 25344,
+    "startTimeUtcTicks": "639270616157490082",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "input": "Cross 400 ms",
+  "reason": "Urgent message inspected in 14_10_35 native frame"
+}

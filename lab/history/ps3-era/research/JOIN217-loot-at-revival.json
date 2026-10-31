@@ -1,0 +1,51 @@
+{
+  "build": "BLES01857 01.24",
+  "atomic": false,
+  "captured_utc": "2026-10-08T21:57:51.696756+00:00",
+  "manager": "0x600b8f20",
+  "self_character": "0x600eaba8",
+  "character_id": "0x0a3d4a2c8fbea6ba",
+  "current_world_id": 14,
+  "world_controller": "0x60155c80",
+  "world_handle": "0x00000071",
+  "cache_start": 0,
+  "cache_count": 0,
+  "cache": [],
+  "records": [
+    {
+      "slot": 0,
+      "item_index": 3598,
+      "source_kind": 3,
+      "word_04": 1,
+      "nonce_key": 1,
+      "nonce_id": "0x0a3d000000002170",
+      "nonce_word_10": 1,
+      "unit_reference": [
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "ring_matches": [],
+      "slot_match": null,
+      "world_spawn_source": true,
+      "position_matches_current_world": false
+    },
+    {
+      "slot": 1,
+      "item_index": 3598,
+      "source_kind": 5,
+      "word_04": 1,
+      "nonce_key": 2,
+      "nonce_id": "0x0a3d000000002171",
+      "nonce_word_10": 1,
+      "unit_reference": [
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "ring_matches": [],
+      "slot_match": null,
+      "world_spawn_source": true,
+      "position_matches_current_world": false
+    }
+  ],
+  "scope": "Read-only prerequisites; unit occupancy, visible loot and successful grants are not verified."
+}

@@ -1,0 +1,76 @@
+{
+  "utc": "2026-10-08T22:39:57.208417+00:00",
+  "run": "JOIN218",
+  "native_source_base": "578ad601ad6773bc35ce2294139aff8798a0a284",
+  "documented_and_pushed_source": "e5c05bc0e48073d7dce6ff7b683cd40d291bc381",
+  "source_clean": true,
+  "schema_change": false,
+  "native_injection": false,
+  "guest_memory_writes": false,
+  "new_gameplay_acceptance": false,
+  "catalog_records": 3083,
+  "correction": "Script-event global is 0x18dee3c, not 0x18eee3c; correct codec 0x80800c0a already present. Earlier private missing-codec inference withdrawn.",
+  "native_callback_hits": {
+    "5aea30": 5,
+    "12f2e8": 0,
+    "5aede4": 0,
+    "5aebc4": 0,
+    "5aec08": 0,
+    "5aec3c": 0,
+    "467ea0": 0,
+    "2b279c": 0,
+    "2b2a60": 0,
+    "2b2f74": 0,
+    "472518": 0
+  },
+  "tests": {
+    "scripts": {
+      "count": 176,
+      "seconds": 1.055,
+      "result": "PASS"
+    },
+    "server": {
+      "count": 202,
+      "result": "PASS at prior 578ad60 checkpoint; unchanged here"
+    }
+  },
+  "closed_utc": "2026-10-08T22:31:18.2143049Z",
+  "closed_exact_identities": 9,
+  "restored_hashes": 3,
+  "files": {
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN218-prepare.json": {
+      "bytes": 715,
+      "sha256": "d1aa8e7d2f1a618e828208a987867517ccd9e461f5489a5631abb760247bfffb"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN218-incident-resources.json": {
+      "bytes": 5485,
+      "sha256": "9a788fad16823e0c2e73beb37d8b015a0161ca4c268f88a1d4eae19655f9ef53"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN218-incident-database-verified.json": {
+      "bytes": 2082,
+      "sha256": "af393a5e9b4e7332f0d30122373f48d65bf84200ede76951f34e9c1a28db93ab"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN218-incident-tag.json": {
+      "bytes": 1225,
+      "sha256": "288af113e0f72731c992250f3d4e953bf16749abda1db886a682754b08dbe71b"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN218-incident-catalog-report.json": {
+      "bytes": 846317,
+      "sha256": "841d6e7ae3a51bd0771ce6b843f4888831ed7c6ed1d2d774a0d4cbb1d33b3d74"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN218-independent-closure-verified.json": {
+      "bytes": 3112,
+      "sha256": "3948299d4df1b31a6b22e3ea08eb2623bfc6f0c3504ef24bde65551630657b9c"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN218-cleanup-result.json": {
+      "bytes": 269,
+      "sha256": "23443ea09771e4475727d4473925c0db13b15a7e0b9d4becab4f41188be7d610"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN218-pre-stop-native.log": {
+      "bytes": 20724357,
+      "sha256": "37012ba7f2292b56944772686f9c162de0fb8eef059b07601cb093c8753afb01"
+    }
+  },
+  "limits": "Catalog hashes/selectors only. Event names, auxiliary fields, loot body/nonce/world position, pickup, ammo/damage, combat, lighting and combined graphics remain unaccepted. Black loading screenshot is not gameplay evidence. No new useful clip or NAS transfer claimed. Preserve partial failed database JSON as diagnostic; only verified database JSON is cited.",
+  "reporting": "Oct 8 delivered package immutable. JOIN205+ late evidence belongs in next consolidated report with actual event dates."
+}

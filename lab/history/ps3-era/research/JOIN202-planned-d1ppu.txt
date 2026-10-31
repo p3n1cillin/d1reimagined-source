@@ -1,0 +1,6 @@
+# JOIN202: committed starter Ghost default; repeat of the JOIN201 resurrection exit with exit-code watcher.
+71ec90 12 r3:48
+71edcc 12 r1+0x74:4
+2d1880 8 r1+0x70:4
+42fae0 4 r20:824
+1fb3c8 8 if=r4==0x0 if=lr==0x2ff330

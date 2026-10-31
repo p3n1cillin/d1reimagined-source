@@ -1,0 +1,14 @@
+{
+  "started_utc": "2026-10-07T23:48:01.999435+00:00",
+  "finished_utc": "2026-10-07T23:51:02.184634+00:00",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 11212,
+    "startTimeUtcTicks": "639270131441432008",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "samples": 685,
+  "fresh_player_samples": 673,
+  "error": null,
+  "scope": "Read-only, non-atomic observation; fresh hook required for every reported position."
+}

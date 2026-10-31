@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-08T10:42:23.9945569Z",
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "source_commit": "2e02e29144c629f9329a0c8b86840ccd23f3df5e",
+  "source_clean": false,
+  "uncommitted": "mission object table adds seq_d_o2_10/20/30, seq_fallen_above, trig_fallen_above (no new rules)",
+  "scope": "Play seq_d_o2_10 and seq_d_o2_30 by control while the player is inside tv_flashlight; look for the torch and dialogue."
+}

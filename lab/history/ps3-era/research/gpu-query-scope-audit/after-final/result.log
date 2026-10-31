@@ -1,0 +1,30 @@
+PASS outside query ends in its matching scope driver=2 strict=0
+PASS query completion preserves results and clears flags driver=2 strict=0
+PASS query spanning attachment changes has matching scope driver=2 strict=0
+PASS outside query ends in its matching scope driver=2 strict=1
+PASS query completion preserves results and clears flags driver=2 strict=1
+PASS query spanning attachment changes has matching scope driver=2 strict=1
+PASS outside query ends in its matching scope driver=0 strict=0
+PASS query completion preserves results and clears flags driver=0 strict=0
+PASS query spanning attachment changes has matching scope driver=0 strict=0
+PASS outside query ends in its matching scope driver=0 strict=1
+PASS query completion preserves results and clears flags driver=0 strict=1
+PASS query spanning attachment changes has matching scope driver=0 strict=1
+PASS outside query ends in its matching scope driver=3 strict=0
+PASS query completion preserves results and clears flags driver=3 strict=0
+PASS query spanning attachment changes has matching scope driver=3 strict=0
+PASS outside query ends in its matching scope driver=3 strict=1
+PASS query completion preserves results and clears flags driver=3 strict=1
+PASS query spanning attachment changes has matching scope driver=3 strict=1
+PASS outside query ends in its matching scope driver=13 strict=0
+PASS query completion preserves results and clears flags driver=13 strict=0
+PASS query spanning attachment changes has matching scope driver=13 strict=0
+PASS outside query ends in its matching scope driver=13 strict=1
+PASS query completion preserves results and clears flags driver=13 strict=1
+PASS query spanning attachment changes has matching scope driver=13 strict=1
+PASS query without draws adds no query or render-pass commands
+PASS flush cleanup ends query and preserves the logical task
+PASS rearmed query retains both indices and matching end scopes
+PASS cleanup without an open query leaves render pass untouched
+PASS wrong logical query cannot alter active state
+29 query scope checks, 0 failed

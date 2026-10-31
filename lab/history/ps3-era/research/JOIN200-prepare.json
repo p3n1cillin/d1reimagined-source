@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-08T13:43:14.8004315Z",
+  "source_base": "4f18e36201ee3d0517536b482c474ba5e5ed22c0",
+  "source_clean": false,
+  "server_sha256": "A929C8B619B76F02096DBE7AF4C52D6E9D91C36EA63BBB263D5E7ABFC8C60681",
+  "tested_source_diff_sha256": "466CB02EA42DB8D77D6C80D388762DFE0E8F0AEA566F07B9E790A78E2F7C6A41",
+  "change": "Production Generalist appearance 42; no profile overlay, no default arrangement/cosmetic, unchanged renderer and mission.",
+  "trace": "# JOIN200: public appearance default only; verify normal service path and null component before Nav crash.\n71ec90 12 r3:48\n71edcc 12 r1+0x74:4\n2d1880 8 r1+0x70:4\n42fae0 4 r20:824\n1fb3c8 8 if=r4==0x0 if=lr==0x2ff330\n"
+}

@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-07T23:38:57.4777644Z",
+  "source_commit": "2f522160b4f057279ef1f38a55c041242b466b8f",
+  "route_sha256": "d75b6f747326a54fdd8ae827e35ae2e284edbbcb569ed2daeca02bc0bf21bf31",
+  "tested_uncommitted_change": "Optional final-point radius only; defaults/intermediate route and transition guards preserved;29regressions plus4CLI invalid checksPASS.",
+  "backend_sha256": "40249994fa77b7972d7b3bb73b511c7781e91f58ad3826c783d3176e3092d1d8",
+  "renderer_sha256": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "scope": "Same Titan/highway/backend/C5. Test final-radius0.25 at canonical endpoint, observe fresh player position through host-protocol handover. No guest writes or renderer build."
+}

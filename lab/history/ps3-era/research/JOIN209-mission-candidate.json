@@ -1,0 +1,7 @@
+{
+  "utc": "2026-10-08T17:45:09.5880030Z",
+  "source_base": "694b183b2851d28bb79d9dcdc51cc0d9756b2093",
+  "mission_sha256": "DBBE9872D18ECE513EC14B74E3A31E9F55F7430CA72FD888C3E534D0770F86F7",
+  "mission_diff_sha256": "64660CC4E60486C2B98099821048C7DC940A6808C99E7E738CBA1668122C7A22",
+  "change": "Spawn correct activity o_weapon at rifle cue, no unused distant chest. Native visible rifle/pickup remains unaccepted."
+}

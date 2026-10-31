@@ -1,0 +1,51 @@
+0057a70c  7c0802a6  mflr     r0
+0057a710  4881e311  bl       0xd98a20  ; 0xd98a20
+0057a714  f821ff71  stdu     r1, -0x90(r1)
+0057a718  f80100a0  std      r0, 0xa0(r1)
+0057a71c  607f0000  ori      r31, r3, 0
+0057a720  4bffffc9  bl       0x57a6e8  ; 0x57a6e8
+0057a724  7be70022  rldicl   r7, r31, 0x20, 0x20
+0057a728  607e0000  ori      r30, r3, 0
+0057a72c  63e60000  ori      r6, r31, 0
+0057a730  39000000  li       r8, 0
+0057a734  90e10070  stw      r7, 0x70(r1)
+0057a738  611f0000  ori      r31, r8, 0
+0057a73c  90c10074  stw      r6, 0x74(r1)
+0057a740  809e0000  lwz      r4, 0(r30)
+0057a744  38a0ffff  li       r5, -1
+0057a748  2c040000  cmpwi    r4, 0
+0057a74c  40810080  ble      0x57a7cc
+0057a750  81230014  lwz      r9, 0x14(r3)
+0057a754  7d293810  subfc    r9, r9, r7
+0057a758  2c090000  cmpwi    r9, 0
+0057a75c  40820018  bne      0x57a774
+0057a760  81230018  lwz      r9, 0x18(r3)
+0057a764  7c064800  cmpw     r6, r9
+0057a768  4082000c  bne      0x57a774
+0057a76c  61050000  ori      r5, r8, 0
+0057a770  48000014  b        0x57a784  ; 0x57a784
+0057a774  31080001  addic    r8, r8, 1
+0057a778  30630430  addic    r3, r3, 0x430
+0057a77c  7c082000  cmpw     r8, r4
+0057a780  4180ffd0  blt      0x57a750
+0057a784  2c05ffff  cmpwi    r5, -1
+0057a788  41820044  beq      0x57a7cc
+0057a78c  7cc52010  subfc    r6, r5, r4
+0057a790  30c6ffff  addic    r6, r6, -1
+0057a794  2c060000  cmpwi    r6, 0
+0057a798  4081002c  ble      0x57a7c4
+0057a79c  1c650430  mulli    r3, r5, 0x430
+0057a7a0  1ca60430  mulli    r5, r6, 0x430
+0057a7a4  7c7e1814  addc     r3, r30, r3
+0057a7a8  78a50020  clrldi   r5, r5, 0x20
+0057a7ac  30830010  addic    r4, r3, 0x10
+0057a7b0  30c30440  addic    r6, r3, 0x440
+0057a7b4  78830020  clrldi   r3, r4, 0x20
+0057a7b8  78c40020  clrldi   r4, r6, 0x20
+0057a7bc  48424189  bl       0x99e944  ; 0x99e944
+0057a7c0  809e0000  lwz      r4, 0(r30)
+0057a7c4  3064ffff  addic    r3, r4, -1
+0057a7c8  907e0000  stw      r3, 0(r30)
+0057a7cc  93fe2224  stw      r31, 0x2224(r30)
+0057a7d0  38210090  addi     r1, r1, 0x90
+0057a7d4  4881e2b0  b        0xd98a84  ; 0xd98a84

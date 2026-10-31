@@ -1,0 +1,4 @@
+# JOIN180: real follow-player request and target registration, bounded read-only traces.
+352138 24 if=lr==0x352f8c r3+0x130:24 r3+0x1d0:8 r6:4
+3374c8 16 if=lr==0x3522c8
+337364 16 if=lr==0x3374d8

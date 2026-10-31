@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-08T16:00:16.0224944Z",
+  "source_base": "d26acbb6ec0e7e8609b652d55ccfcb09f04a6b69",
+  "source_clean": false,
+  "server_sha256": "BD1CB362569105FC127646154C25B89CF7BD19B197D59ADDC3AA07A41506725E",
+  "tested_source_diff_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+  "change": "Committed starter default; mission adds uncommitted aliases only (o2_40/50/80/90, Breach light props, chest); dialogue and props sent by manual control; unchanged renderer; host exit-code watcher.",
+  "trace": "# JOIN204: committed starter Ghost default; repeat of the JOIN203 resurrection exit with exit-code watcher.\n71ec90 12 r3:48\n71edcc 12 r1+0x74:4\n2d1880 8 r1+0x70:4\n42fae0 4 r20:824\n1fb3c8 8 if=r4==0x0 if=lr==0x2ff330\n"
+}

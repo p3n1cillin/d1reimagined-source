@@ -1,0 +1,17 @@
+{
+  "started_utc": "2026-10-08T00:16:18.585829+00:00",
+  "scope": "Ordinary pad input on the fresh naturally crossed actor; 30-second bounded corridor; no guest writes or manual host teleport.",
+  "entity": "0x602c3300",
+  "start_xyz": [
+    354.6144714355469,
+    -796.2484130859375,
+    14.094511985778809
+  ],
+  "recorded_corridor_reached": true,
+  "final_xyz": [
+    387.5743408203125,
+    -801.931396484375,
+    16.646408081054688
+  ],
+  "finished_utc": "2026-10-08T00:16:38.382665+00:00"
+}

@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-08T08:50:50.2586545+00:00",
+  "client": {
+    "tag": "rpcs3",
+    "id": 20396,
+    "startTimeUtcTicks": "639270459099609866",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "action": "Dismiss inspected urgent dialog; third-person completed while obscured. No clean third-person visual acceptance."
+}

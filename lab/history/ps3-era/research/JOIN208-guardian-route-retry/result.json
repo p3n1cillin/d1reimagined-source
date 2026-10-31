@@ -1,0 +1,10 @@
+{
+  "run": "FINAL124_JOIN208",
+  "started_utc": "2026-10-08T17:39:00.796860+00:00",
+  "status": "stopped",
+  "radius": 1.5,
+  "final_radius": 0.7,
+  "continue_breach": true,
+  "reason": "player position jumped; respawn requires a fresh route",
+  "finished_utc": "2026-10-08T17:40:58.685609+00:00"
+}

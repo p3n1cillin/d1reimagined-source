@@ -1,0 +1,51 @@
+{
+  "utc": "2026-10-07T19:38:50.561078+00:00",
+  "scope": "Owned non-atomic runtime table; codec index8 selected by actual kind17 mapper, correcting earlier codec17 inspection",
+  "codec": {
+    "object": "0x1ad5e9c",
+    "vtable": "0x13e9f78",
+    "methods": {
+      "0x0": {
+        "descriptor": "0x1858f70",
+        "entry": "0x82db0"
+      },
+      "0x4": {
+        "descriptor": "0x1858f78",
+        "entry": "0x7fce0"
+      },
+      "0x8": {
+        "descriptor": "0x1858f80",
+        "entry": "0x47837c"
+      },
+      "0xc": {
+        "descriptor": "0x1858f88",
+        "entry": "0x47844c"
+      },
+      "0x10": {
+        "descriptor": "0x1858f90",
+        "entry": "0x476a0c"
+      },
+      "0x14": {
+        "descriptor": "0x1858f98",
+        "entry": "0x478544"
+      },
+      "0x18": {
+        "descriptor": "0x1858fa0",
+        "entry": "0x4780c4"
+      },
+      "0x1c": {
+        "descriptor": "0x1858b18",
+        "entry": "0x7ddb0"
+      }
+    }
+  },
+  "queue": {
+    "fields114": "0086000000000800000003510000000000000000",
+    "consumed2124": 0,
+    "inner": "0x30630518"
+  },
+  "inner_queue": {
+    "fields1830": "00000020000000020000000000000000",
+    "flags10f8": 8
+  }
+}

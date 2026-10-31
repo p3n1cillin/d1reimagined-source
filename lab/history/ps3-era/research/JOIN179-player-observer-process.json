@@ -1,0 +1,6 @@
+{
+  "id": 19756,
+  "startTimeUtcTicks": "639270136817039282",
+  "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+  "commandLine": "\"%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe\" F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\observe-owned-player179.py F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\FINAL124_JOIN179-processes.json F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN179-player-handover 180"
+}

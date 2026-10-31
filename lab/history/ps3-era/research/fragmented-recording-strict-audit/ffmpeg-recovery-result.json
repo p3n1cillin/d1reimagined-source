@@ -1,0 +1,63 @@
+{
+  "options_from_actual_source": {
+    "movflags": "frag_keyframe+empty_moov+default_base_moof",
+    "frag_duration": "1000000"
+  },
+  "results": [
+    {
+      "format": "mov",
+      "prefix_recovery": {
+        "retained_bytes": 676750,
+        "original_bytes": 786452,
+        "discarded_tail_bytes": 109702,
+        "method": "complete MOV/MP4 fragments"
+      },
+      "original_unchanged": true,
+      "interrupted_decode": {
+        "exit": 0,
+        "frames": 120,
+        "seconds": 4.010667,
+        "error": ""
+      },
+      "remux_exit": 0,
+      "remux_decode": {
+        "exit": 0,
+        "frames": 120,
+        "seconds": 4.010667,
+        "error": ""
+      }
+    },
+    {
+      "format": "mp4",
+      "prefix_recovery": {
+        "retained_bytes": 676695,
+        "original_bytes": 786460,
+        "discarded_tail_bytes": 109765,
+        "method": "complete MOV/MP4 fragments"
+      },
+      "original_unchanged": true,
+      "interrupted_decode": {
+        "exit": 0,
+        "frames": 120,
+        "seconds": 4.010667,
+        "error": ""
+      },
+      "remux_exit": 0,
+      "remux_decode": {
+        "exit": 0,
+        "frames": 120,
+        "seconds": 4.010667,
+        "error": ""
+      }
+    },
+    {
+      "normal_writer_exit": 0,
+      "normal_decode": {
+        "exit": 0,
+        "frames": 90,
+        "seconds": 3.029333,
+        "error": ""
+      }
+    }
+  ]
+}

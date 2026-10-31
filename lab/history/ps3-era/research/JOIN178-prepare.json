@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-07T23:11:45.2347880Z",
+  "source_commit": "2e327654445a54397d340e673a3f5175e77f74e3",
+  "renderer_sha256": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "backend_sha256": "40249994fa77b7972d7b3bb73b511c7781e91f58ad3826c783d3176e3092d1d8",
+  "previous_owned_closed": true,
+  "scope": "Same Titan/highway and shipped routine-console fix. Extend checkpoint to 600seconds; route toward Breach using consumed pad inputs/read-only memory. Capture only while exact native owner is live. No build or guest-memory writes."
+}

@@ -1,0 +1,11 @@
+# JOIN173: verified 01.24 function entries, subtype21 and deterministic gates/results
+48e7f0 80 if=r5==0x15
+47676c 80 if=m6+1:4==0x15 r6:13
+479fa8 80 if=m6+1:4==0x15 r6:13
+47b7ec 80 u if=lr==0x4767f0 if=m28+1:4==0x15 r28:13 r3+0x8c:4
+8c6d4c 80 u if=lr==0x47a010 if=m30+1:4==0x15 r30:13 r3+0x10f8:4
+927f44 80 if=lr==0x47a1b4 if=m30+1:4==0x15 r30:13 r3:16
+4797b8 80 if=lr==0x47a1fc if=m6+1:4==0x15 r6:13
+c03b60 80 if=lr==0x47a208 if=r24==0 if=m30+1:4==0x15 r30:13
+d98a54 80 u if=r26==0x11 if=m28+1:4==0x15 r28:13
+d98a58 80 u if=r28==0x11 if=m30+1:4==0x15 r30:13

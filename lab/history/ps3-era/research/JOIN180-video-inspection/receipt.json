@@ -1,0 +1,117 @@
+{
+  "at": "2026-10-08T00:20:23.618334+00:00",
+  "run": "FINAL124_JOIN180",
+  "retention_checks": [
+    {
+      "segment": "3a5922b984754e1a9d46b16d6cd10b85",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_05_21.mp4",
+      "recorded_at": "2026-10-08T00:05:21.1934782+00:00",
+      "bytes": 2760722,
+      "sha256": "6aa167f80f72361710be97f73f3c1876f7bf4257bb3d5314dc28697678870d55",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "b43f4016c88f4c76a1842f40c41e50a9",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_05_51.mp4",
+      "recorded_at": "2026-10-08T00:05:51.5664430+00:00",
+      "bytes": 4135681,
+      "sha256": "c577eeafefb7fc96bcae05b52bb762240beb8e1046b42d4ab97b668bdb2bb747",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "8212bbf62cc94d7c8d79c2e96abfad0d",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_06_21.mp4",
+      "recorded_at": "2026-10-08T00:06:21.9728575+00:00",
+      "bytes": 2836015,
+      "sha256": "070de04fcbff6967c3543608b7647cf68e229cf83af866f6ab0c8abcaac1c860",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    }
+  ],
+  "unindexed": [
+    {
+      "segment": "e0949ffb459e4ce79a712daf0a79e9cc",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_06_52.mp4",
+      "recorded_at": "2026-10-08T00:06:52.2880355+00:00",
+      "original_present": true,
+      "failure": {
+        "error": "[WinError 2] The system cannot find the file specified: 'F:\\\\d1\\\\<pc>-import\\\\d1xenia\\\\local\\\\content-capture\\\\buffer\\\\d048d3eeb6ff4ccd9e2fcbaa7443aff8.mp4'",
+        "next_attempt": 1791419102.2604454
+      }
+    },
+    {
+      "segment": "f282412c69e64c9aba9ae978b2c941bc",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_04_50.mp4",
+      "recorded_at": "2026-10-08T00:04:50.3283517+00:00",
+      "original_present": true,
+      "failure": {
+        "error": "Recording failed full decode or has no usable duration",
+        "next_attempt": 1791418829.5171041
+      }
+    }
+  ],
+  "video_inspection": [
+    {
+      "segment": "b43f4016c88f4c76a1842f40c41e50a9",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_05_51.mp4",
+      "recorded_at": "2026-10-08T00:05:51.5664430+00:00",
+      "original_media": {
+        "duration_seconds": 30.31,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 29.97,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      },
+      "original_full_decode": "PASS",
+      "frames": [
+        "b43f4016c88f4c76a1842f40c41e50a9-01.png",
+        "b43f4016c88f4c76a1842f40c41e50a9-02.png",
+        "b43f4016c88f4c76a1842f40c41e50a9-03.png",
+        "b43f4016c88f4c76a1842f40c41e50a9-04.png",
+        "b43f4016c88f4c76a1842f40c41e50a9-05.png",
+        "b43f4016c88f4c76a1842f40c41e50a9-06.png"
+      ],
+      "sampled_file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_05_51.mp4"
+    },
+    {
+      "segment": "8212bbf62cc94d7c8d79c2e96abfad0d",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_06_21.mp4",
+      "recorded_at": "2026-10-08T00:06:21.9728575+00:00",
+      "original_media": {
+        "duration_seconds": 30.22,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 27.35,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      },
+      "original_full_decode": "PASS",
+      "frames": [
+        "8212bbf62cc94d7c8d79c2e96abfad0d-01.png",
+        "8212bbf62cc94d7c8d79c2e96abfad0d-02.png",
+        "8212bbf62cc94d7c8d79c2e96abfad0d-03.png",
+        "8212bbf62cc94d7c8d79c2e96abfad0d-04.png",
+        "8212bbf62cc94d7c8d79c2e96abfad0d-05.png",
+        "8212bbf62cc94d7c8d79c2e96abfad0d-06.png"
+      ],
+      "sampled_file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_06_21.mp4"
+    }
+  ],
+  "scope": "Untouched originals and truthful decode outcomes; existing recovered derivative copied unchanged when available. Private sampled QA only."
+}

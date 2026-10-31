@@ -1,0 +1,10 @@
+{
+  "at_utc": "2026-10-08T09:11:54.7101953Z",
+  "identity": {
+    "tag": "performance-probe",
+    "id": 1032,
+    "startTimeUtcTicks": "639270470254009115",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "exact_owned_alive": false
+}

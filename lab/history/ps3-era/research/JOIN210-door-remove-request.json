@@ -1,0 +1,5 @@
+{
+  "utc": "2026-10-08T18:35:02.3504468Z",
+  "control": "{\"set\":{\"o_breach_doors_lights\":{\"0\":2,\"4\":false,\"8\":{\"0\":2166136261,\"4\":-1,\"6\":-1}}}}",
+  "scope": "Manual lifecycle diagnostic. Remove doors/light unit at same guarded player position; no guest writes/teleport."
+}

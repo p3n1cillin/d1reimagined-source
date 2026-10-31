@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-08T19:18:13.3088783Z",
+  "source_base": "35011135e2bc88530f36d7cd48f96d444ed28647",
+  "source_clean": false,
+  "server_sha256": "BD1CB362569105FC127646154C25B89CF7BD19B197D59ADDC3AA07A41506725E",
+  "tested_source_diff_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+  "change": "Uncommitted mission: automatic Breach chain sends the JOIN210 prop activation (typed 0x8080279a, channels 0-2 at 1/1/1.0) 2 s after creating the props; no control lines; walk to the rifle.",
+  "trace": "# JOIN211: automatic Breach chain with prop activation; no control lines.\n214478 24 r3+0x110:16\n13f068 24 if=lr==0x2145d0\n"
+}

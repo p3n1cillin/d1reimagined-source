@@ -1,0 +1,7 @@
+{
+  "started_at": "2026-10-07T12:28:11.2445735Z",
+  "finished_at": "2026-10-07T12:28:20.8863274Z",
+  "exit_code": 0,
+  "executable_sha256": "714e432f39969b3d19cd585e40963e8ee8670208d9bc7ea853e4e93324ebba6b",
+  "scope": "Incremental Release verification of one-shot native RSX capture marker; no graphics fix claim"
+}

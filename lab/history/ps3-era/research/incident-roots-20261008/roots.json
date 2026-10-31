@@ -1,0 +1,62 @@
+{
+  "hashes": {
+    "item_loot": "0xbf9e44a5",
+    "actor_killed": "0xc293d0ae",
+    "player_entered_trigger": "0xa0efc7f"
+  },
+  "corrected_resource_globals": [
+    {
+      "address": "0x18dedc4",
+      "elf_value": "0x1aabbf0",
+      "code": [
+        {
+          "pc": "0x27499c",
+          "function": "0x27492c"
+        },
+        {
+          "pc": "0xe2ea28",
+          "function": "0xe2e9ec"
+        },
+        {
+          "pc": "0xe2eb10",
+          "function": "0xe2e9ec"
+        }
+      ]
+    },
+    {
+      "address": "0x18dee3c",
+      "elf_value": "0x1aabfb0",
+      "code": [
+        {
+          "pc": "0xe2f26c",
+          "function": "0xe2f230"
+        },
+        {
+          "pc": "0xe2f350",
+          "function": "0xe2f230"
+        }
+      ]
+    },
+    {
+      "address": "0x18ded3c",
+      "elf_value": "0x1aaac30",
+      "code": [
+        {
+          "pc": "0x28a554",
+          "function": "0x28a520"
+        }
+      ]
+    },
+    {
+      "address": "0x18ded40",
+      "elf_value": "0x1aaac60",
+      "code": [
+        {
+          "pc": "0x276408",
+          "function": "0x276390"
+        }
+      ]
+    }
+  ],
+  "named": []
+}

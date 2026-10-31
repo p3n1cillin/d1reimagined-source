@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-08T13:18:59.8401008Z",
+  "old_hash": "6C16BD309B1344B357BD3C4780050D23DB82492651729D7DCE9A6E450FD6C6B2",
+  "new_hash": "A9E36C346C4FF415AB1D7465C75FB465A03850D37311CE4D29C75D940068A3BE",
+  "lines": [
+    "71ed90 16 r1+0x84:8",
+    "2a4d88 16 r3:32"
+  ],
+  "reason": "Return block probes for actual class cosmetic table; arbitrary instruction watch coverage is not established.",
+  "guest_memory_writes": false
+}

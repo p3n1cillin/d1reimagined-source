@@ -1,0 +1,7 @@
+# JOIN182: bounded read-only marker and cinematic entry watches.
+3a68c0 256 r3:16
+57b4ec 64 if=r6==0x150 r3:112
+57b3cc 64 if=lr==0x57b730 r3:48 r5:64
+580928 16 r3:448
+425654 32 r3:4
+425120 32 r3:4

@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-08T13:35:42.4245468Z",
+  "client": {
+    "tag": "rpcs3",
+    "id": 24860,
+    "startTimeUtcTicks": "639270630570516117",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "key": "X",
+  "hold_ms": 800,
+  "inspected_image": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\BLES01857\\BLES01857_screenshot_2026_10_08_14_35_19.png",
+  "purpose": "Retry visually confirmed urgent message; initial dismissal not consumed"
+}

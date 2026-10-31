@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-09T19:37:24.8591330Z",
+  "source_base": "bb55871b71620a0800f94f5f6cc4a7b6818e20aa",
+  "source_clean": false,
+  "source_status": [],
+  "change": "Read-only census of the unlock-expression evaluator 0xc5cbcc (distinct expressions) and the flag test 0xc5be34 (sanity, indexes 1327 and 101) to find how the urgent dialog gate is evaluated. Baseline flags (JOIN245 C1262-1327 false did not remove the dialog). Same mission drive. Committed source bb55871. No control lines or guest writes.",
+  "trace": "# JOIN246: unlock-expression census (urgent/MOTD dialog gate). Sanity hits on the flag test, its index 1327/101 calls, and each distinct evaluated expression.\r\nc5be34 4 r3:4\r\nc5be34 20 if=r4==1327 r3:4\r\nc5be34 20 if=r4==101 r3:4\r\nc5cbcc 20 if=m4+0x20:4==0x0100052f r3:4 r4:48\r\nc5cbcc 80 u r4:48\n",
+  "launch_sha256": "376BD31CA1B22978C1058A090BF4E753585551CB7364043B698E5FD1BBF5FF65"
+}

@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-06T14:59:38.4388701Z",
+  "held_lock_started_utc": "2026-10-06T14:54:11.386902Z",
+  "held_lock_released_utc": "2026-10-06T14:54:17.387362Z",
+  "monitor_identity": {
+    "tag": "content-monitor",
+    "id": 1448,
+    "startTimeUtcTicks": "639268949169943551",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "monitor_alive": true,
+  "recorder_identity": {
+    "tag": "native-recorder",
+    "id": 21056,
+    "startTimeUtcTicks": "639268951129528384",
+    "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+  },
+  "recorder_alive": true,
+  "status": {
+    "CONTENT_CAPTURE_ENABLED": true,
+    "DEVELOPMENT_MACHINE_ID": "<lab-pc>",
+    "LOCAL_OUTBOX_COUNT": 0,
+    "LOCAL_REVIEW_COUNT": 0,
+    "LAST_SUCCESSFUL_TRANSFER": "2026-10-06T14:25:04.074414+01:00",
+    "CURRENT_DEVBLOG": null,
+    "CURRENT_SESSION": "renderer-and-inventory-restoration",
+    "AVAILABLE_BUFFER_SPACE": 1229983469568,
+    "NAS_CONNECTED": true,
+    "updated_at": "2026-10-06T15:59:35.342064+01:00",
+    "RECORDER_STATUS": "RECORDING",
+    "ACTIVE_RUN": "FINAL124_JOIN153",
+    "RECORDER_EXIT": null,
+    "MONITOR_ERROR": null,
+    "SAMPLE_STATUS": "AVAILABLE",
+    "SAMPLE_ERROR": null,
+    "PROCESSING_ERROR": null,
+    "STATUS_UPDATE_DEFERRED": false,
+    "STATUS_UPDATE_ERROR": null
+  },
+  "scope": "Recording continued through six-second status-file contention; earlier coverage is missing."
+}

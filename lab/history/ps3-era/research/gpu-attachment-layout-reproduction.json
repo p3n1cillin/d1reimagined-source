@@ -1,0 +1,6 @@
+{
+  "patch_sha256": "81d44a20718a516672fe96b56b7b05fbb29aacc287414ce4116a2f7f6150144d",
+  "source_matches_applied_patch": {
+    "rpcs3/Emu/RSX/VK/VKDraw.cpp": true
+  }
+}

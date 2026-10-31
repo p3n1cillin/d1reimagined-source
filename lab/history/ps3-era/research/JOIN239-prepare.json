@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-09T15:41:17.2545923Z",
+  "source_base": "d0ffccda51a9d632db945c2c18a3fd6c439eac91",
+  "source_clean": false,
+  "source_status": [],
+  "change": "Committed source (d0ffccd). Recorder helper activates the game window for F11 (confirmed from the shortcut log line); aimed-fire helper with a 60 s entity window. Mission rifle, grant and Breach Fallen. No control lines or guest writes.",
+  "trace": "# JOIN239: mission-announced starter rifle (no private overlay or control event); pickup path watches.\n5aede4 6 r4:24\n2b2a60 6 r3:128\n2b36f8 400 if=m4:2==0xe0e r4:56\n2b2c00 12 r3:64\n472518 12 r3:64\n",
+  "launch_sha256": "7AD65713AA97B33C36FC25E793DBA9702C9D1D6C578BDCABF7FBC18F184B2D0B"
+}

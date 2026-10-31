@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-07T07:51:54.4024894Z",
+  "runtime_sha256": "4706856A73901B1555D03AF7A4F1F854B4A2950FBDED89D9F51B140EC71F94A5",
+  "depth_candidate_enabled": true,
+  "descriptor_trace_enabled": false,
+  "input_hold_ms": 800,
+  "extra_dismisses": 2,
+  "body_repeat_frames": 2,
+  "capture_tests": 82,
+  "scope": "New descriptor allocation cache increment, realistic trace-off repeat plus repeated character frames; no graphics acceptance yet"
+}

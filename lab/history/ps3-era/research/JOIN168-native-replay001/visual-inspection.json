@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-07T14:23:00.1871434Z",
+  "screenshots": [
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_07_15_18_05.png",
+      "at": "2026-10-07T14:18:05.6292355Z",
+      "bytes": 16468,
+      "sha256": "ed6d7f3a32cfb159b43d7360b4dbcd1d38e1005f3f6640885a518b335f3c3be3",
+      "actually_inspected": true,
+      "observed": "Loading UI with small lower-right loading symbol; not the earlier outdoor reference. Matching outdoor replay and black/green reproduction unverified."
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_07_15_18_16.png",
+      "at": "2026-10-07T14:18:16.4170401Z",
+      "bytes": 16468,
+      "sha256": "f5b172aec3df31dd5d43fb51d319e9506a3e3faa39747097fc29dfa9b00f5381",
+      "actually_inspected": true,
+      "observed": "Loading UI with small lower-right loading symbol; not the earlier outdoor reference. Matching outdoor replay and black/green reproduction unverified."
+    }
+  ],
+  "native_full_parse": "PASS: native parser reaches rendered output",
+  "scope": "Private loading UI control; original process.json requested outdoor-control scope is superseded by this actual visual inspection.",
+  "matching_outdoor_frame": "NOT VERIFIED",
+  "graphics": "NOT ACCEPTED"
+}
