@@ -16,6 +16,8 @@
 
 Experimental, independent Destiny 1 preservation research and original local service implementation. **The complete game is not playable.** This consolidated repository includes local service stand-ins, protocol experiments, mission rules, diagnostic tools, scoped emulator patches and regression tests.
 
+**Built on other people's work.** Most of the PS4 work comes from **aknumbers'** [Destiny 1 Preservation Project](https://gitlab.com/aknumbers), and the game runs on the [shadPS4](https://github.com/shadps4-emu/shadPS4) emulator. Everyone whose work this project uses is credited in [CREDITS.md](CREDITS.md).
+
 ## Get involved
 
 - **Star the repository:** it costs nothing, and stars are how other Destiny players find the project on GitHub.
@@ -29,8 +31,8 @@ Experimental, independent Destiny 1 preservation research and original local ser
 The active target is **PlayStation 4 CUSA00219 version 01.33** (internal build 56578, the final PS4 patch) with [the project's shadPS4 build](https://github.com/p3n1cillin/d1reimagined-shadps4).
 Earlier work pinned 01.29; its addresses are kept as a reference for locating the same code in 01.33.
 The [PS4 source tree](ps4/README.md) now includes the Rust services, protocol
-libraries, diagnostic tools, canonical harness and generators from the supplied
-preservation project, with the latest preparation and content-reader fixes.
+libraries, diagnostic tools, canonical harness and generators from aknumbers'
+[Destiny 1 Preservation Project](CREDITS.md#aknumbers-the-destiny-1-preservation-project), with the latest preparation and content-reader fixes.
 The retained PlayStation 3 implementation targets version 01.24 with RPCS3.
 See [current results and contribution priorities](docs/STATUS.md). The first
 mission, A Guardian Rises, now runs from the Cosmodrome through the Divide and
@@ -88,7 +90,7 @@ reports go privately via [SECURITY.md](SECURITY.md).
 
 ## Licence and third-party rights
 
-Original project source is offered under GPL-2.0-only unless a file carries a different existing licence notice, including GPL-2.0-or-later annotations. See LICENSE and THIRD_PARTY_NOTICES.md. Preserve upstream copyright and licence notices when applying patches. Source licensing does not cover Destiny assets, executables, firmware, trademarks or third-party binaries. Imported `data/` payloads retain their original ownership and are not relicensed by the project source licence.
+Original project source is offered under GPL-2.0-only unless a file carries a different existing licence notice, including GPL-2.0-or-later annotations. See LICENSE and THIRD_PARTY_NOTICES.md, and [CREDITS.md](CREDITS.md) for whose work is used. Preserve upstream copyright and licence notices when applying patches. Source licensing does not cover Destiny assets, executables, firmware, trademarks or third-party binaries. Imported `data/` payloads retain their original ownership and are not relicensed by the project source licence.
 
 D1 Reimagined is not affiliated with or endorsed by Bungie, Sony Interactive Entertainment, or RPCS3. Destiny and associated names and assets belong to their respective rights holders. There is no warranty, compatibility promise, legal immunity or announced playable release.
 
