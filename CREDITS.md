@@ -81,6 +81,8 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
     loot/item grants;
   - Windows CI for the Python tests;
   - the d1-oracle test guards.
+- **[DeRveXx](https://github.com/DeRveXx)**: pad testing on the PS4 route, and the trigger deadzone
+  for Hall-effect pads (`shadps4-input-kbm.ini`).
 - **Dependabot**: dependency updates.
 - **AI assistance:** much of the code and documentation was written with AI assistants, under the
   maintainer's direction:
