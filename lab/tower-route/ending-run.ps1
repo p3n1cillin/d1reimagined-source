@@ -69,8 +69,8 @@ $jobs = @(
     "bash $S/$Postgame $Name $($Scoreboard -replace '\\','/') > $Cf/$Name/postgame.log 2>&1"
 )
 if (-not $NoRecord) { $jobs += "bash $S/capture51.sh $Name > $Cf/$Name/capture.log 2>&1" }
-# continue-hold.sh waits for the capture tour to finish, so it needs the recording.
-if (-not $NoContinue -and -not $NoRecord) { $jobs += "bash $S/continue-hold.sh $Name > $Cf/$Name/continue.log 2>&1" }
+# continue-hold.sh waits for the capture tour to finish; with -NoRecord there is none to wait for.
+if (-not $NoContinue) { $jobs += "bash $S/continue-hold.sh $Name$(if ($NoRecord) { ' --no-record' }) > $Cf/$Name/continue.log 2>&1" }
 # Start-Process joins ArgumentList unquoted, so the script must be one quoted argument (the jobs hold no double quotes).
 foreach ($j in $jobs) { Start-Process $Bash -WindowStyle Hidden -ArgumentList "-c `"$j`"" | Out-Null }
 "$Name launched at $(Get-Date -Format HH:mm:ss); logs in $C\$Name (replay-console, chain, postgame, capture, continue)"
