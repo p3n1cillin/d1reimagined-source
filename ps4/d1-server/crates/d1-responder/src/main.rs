@@ -3661,13 +3661,17 @@ async fn main() -> Result<()> {
                                                                         // nothing); the client's encoder gives the zero object the
                                                                         // same five bytes as 701's. That only accepts the request:
                                                                         // the price and the item must still arrive as family-4
-                                                                        // changes. Request 0x80801777 (901) = {u8 @0, i16 @2, u64 @8}.
+                                                                        // changes. Request 0x80801777 (901) = {u8 @0, i16 @2, u64 @8};
+                                                                        // 0x80801734 (903) = {{bool @0, u64 @8, i16 @0x10}, i32 @0x18,
+                                                                        // u8 @0x1C}. The names are the service table's FNV-1 hashes.
                                                                         let req = plain.get(8..).unwrap_or(&[]);
                                                                         warn!("      ⭐ VENDOR {} ({}B request): {}",
                                                                               if id == 901 { "BUY (901)" } else { "SELL (903)" }, req.len(),
                                                                               req.iter().map(|x| format!("{x:02x}")).collect::<String>());
                                                                         if id == 901 {
                                                                             vendor::on_buy(req.to_vec());
+                                                                        } else {
+                                                                            vendor::on_sell(req.to_vec());
                                                                         }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 104 {
