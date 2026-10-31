@@ -3686,6 +3686,24 @@ async fn main() -> Result<()> {
                                                                               b.len(),
                                                                               b.iter().map(|x| format!("{x:02x}")).collect::<String>());
                                                                         Some(b)
+                                                                    } else if (402..=405).contains(&id) {
+                                                                        // 402 (item move with a count), 403 inventory_equip_item,
+                                                                        // 404 inventory_unequip_item, 405 inventory_transfer_item.
+                                                                        // Responses 0x80801953 / 0x80801834 / 0x808018AB / 0x80801719
+                                                                        // are each the 0x80801796 result composite alone; the client's
+                                                                        // own encoder gives the zero object `18 00 00 00 00` for all
+                                                                        // four (`d1-oracle message --tag <rsp> --msgid <id>`), the same
+                                                                        // five bytes as 701/901. Before this arm they fell through to
+                                                                        // the padded default, a message id with no object - the shape
+                                                                        // that made 104 fail to decode. This only ACCEPTS the request;
+                                                                        // the move itself is not yet applied to the served profile.
+                                                                        let req = plain.get(8..).unwrap_or(&[]);
+                                                                        warn!("      ⭐ ITEM {} ({}B request): {} -> accepted",
+                                                                              match id { 402 => "MOVE (402)", 403 => "EQUIP (403)",
+                                                                                         404 => "UNEQUIP (404)", _ => "TRANSFER (405)" },
+                                                                              req.len(),
+                                                                              req.iter().map(|x| format!("{x:02x}")).collect::<String>());
+                                                                        Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 901 || id == 903 {
                                                                         // 901 vendor_buy_item / 903 vendor_sell_item. Responses
                                                                         // 0x80801888 and 0x8080183A both lead with the 0x80801796
