@@ -158,7 +158,7 @@ def main():
             if s is None: time.sleep(0.15); continue
             me, yaw, pitch = s
             W.scan(me)
-            img = fight.grab(os.path.join(a.shots, f'c-{k:03d}.png') if a.shots else os.path.join(HERE, 'c2.png'))
+            img = fight.grab(os.path.join(a.shots, f'c-{k:03d}.png') if a.shots else str(routepaths.probes() / 'c2.png'))
             h = hp.health(img); plates = pl.plates(img)
             objs = W.positions()
             # 1. Match each visible plate to the enemy object along its bearing.
