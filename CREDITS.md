@@ -7,7 +7,7 @@ says what of theirs the project uses. Licence details are in [LICENSE](LICENSE),
 ## aknumbers: the Destiny 1 Preservation Project
 
 Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Project
-([gitlab.com/aknumbers](https://gitlab.com/aknumbers)).
+([gitlab.com/aknumbers/d1preservation](https://gitlab.com/aknumbers/d1preservation), GPL-2.0-or-later).
 
 - The [`ps4/`](ps4/README.md) tree is their source, from the `d1preservation-main` snapshot of
   11 August 2026, with this project's preparation and content-reader fixes on top.
@@ -49,6 +49,11 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
 - **Bungie engineers' public talks**, used to understand the activity-host model:
   - Justin Truman, "Shared World Shooter: Destiny's Networked Mission Architecture" (GDC 2015).
   - David Aldridge, "I Shot You First: Networking the Gameplay of Halo: Reach" (GDC 2011).
+- **[isinternets](https://github.com/isinternets)**: [Dawn](https://github.com/isinternets/Dawn), a
+  Destiny 2 server emulator (GPL-3.0). It was read as a reference only, never run or copied. Its
+  New Light mission is Destiny 2's remake of A Guardian Rises, and it suggested mechanisms to check
+  on 56578 (squads, dropships, checkpoints); see
+  [`notes/ps4-56578-continuation-2026-10-27.md`](notes/ps4-56578-continuation-2026-10-27.md).
 - **The people behind [RPCS3 issue #12802](https://github.com/RPCS3/rpcs3/issues/12802)**. They
   showed Destiny reaching character select against private servers.
 
@@ -65,8 +70,8 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
 - **[FFmpeg](https://ffmpeg.org/)**, for capture and video work.
 - **Oodle, by RAD Game Tools**: the user-supplied decompression library the package readers load. It
   is not included here.
-- **Python packages:** [cryptography](https://cryptography.io/), [NumPy](https://numpy.org/) and
-  [Pillow](https://python-pillow.org/), listed in `requirements.txt`.
+- **Python packages:** [cryptography](https://cryptography.io/), [NumPy](https://numpy.org/),
+  [Pillow](https://python-pillow.org/) and Capstone's Python bindings, listed in `requirements.txt`.
 
 ## Contributors
 
@@ -77,8 +82,10 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
   - Windows CI for the Python tests;
   - the d1-oracle test guards.
 - **Dependabot**: dependency updates.
-- **AI assistance:** much of the code and documentation was written with Anthropic's Claude, under
-  the maintainer's direction. Those commits carry `Co-Authored-By` trailers.
+- **AI assistance:** much of the code and documentation was written with AI assistants, under the
+  maintainer's direction:
+  - Anthropic's Claude. Its commits are authored as Claude or carry `Co-Authored-By` trailers.
+  - OpenAI's Codex, for audits and research passes. Its work is named in the commit messages.
 
 ## Rights holders
 
