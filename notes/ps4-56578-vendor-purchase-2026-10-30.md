@@ -88,6 +88,23 @@ The responder now applies a 901 itself when `D1_VENDOR_SALES` names the sale tab
 
 The account it builds for a purchase is byte-identical to the one the client accepted in sense69.
 
+## The item-action dispatcher (31 October)
+
+`0xA29D30` sends every vendor and inventory item action. It picks the service from the action type at its
+object's `+0x74` (0–14, jump table `0xA2A214`):
+
+| Action | Service |
+|---|---|
+| 0 | 901 `vendor_buy_item` (builder `0x27F530`: vendor `[+0x60]`, sale `[+0x54]`) |
+| 1 | 903 `vendor_sell_item` (`0x552FC0` → builder `0x27F7D0`: instanced flag, instance, content index or -1, `[+0x6C]`, vendor `[+0x60]`) |
+| 3, 4, 8, 9, 11, 12 | 402 |
+| 5 / 6 / 7 | 403 `inventory_equip_item` / 404 `inventory_unequip_item` / 405 `inventory_transfer_item` |
+| 10 | 904 `vendor_interact` |
+| 13 | none |
+
+Action 14 takes another path (`0xA07C20`). It is not yet known which screen sets action 1, so no run has
+sent a 903 yet. The responder decodes and logs one if it comes (#144).
+
 ## Still open
 
 - What the 901 request's u64 is.
