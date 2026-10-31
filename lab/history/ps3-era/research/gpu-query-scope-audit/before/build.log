@@ -1,0 +1,6 @@
+query-scope-audit.cpp
+before\query-scope-audit.cpp(341): error C2065: 'closures': undeclared identifier
+before\query-scope-audit.cpp(343): error C2065: 'closures': undeclared identifier
+before\query-scope-audit.cpp(343): error C2660: 'check': function does not take 1 arguments
+before\query-scope-audit.cpp(310): note: see declaration of 'check'
+before\query-scope-audit.cpp(343): note: while trying to match the argument list '(const char [58])'

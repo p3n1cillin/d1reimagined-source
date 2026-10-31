@@ -1,0 +1,59 @@
+{
+  "scope": "read-only non-atomic creator-handle sample; pose offset requires native-layout confirmation",
+  "registry_unchanged": true,
+  "unit_pool_unchanged": true,
+  "units": [
+    {
+      "unit_asset": "0x80ccb1dc",
+      "creation_bytes": "80ccb1dc0000000c8080090600000000000000000000000000000000bf80000043c664c2c43f87c34195e0123f800000ffffffffffffffff0000000000000000ffffffffffffffffffffffffffffffff00000000ffffffff000000003f800000ffffffff811c9dc58003000000000000ec84bca43f9883450000000c00000000",
+      "datum": "0x5bfb82c6",
+      "index": 710,
+      "unit_bank_matches": true,
+      "unit_index_in_range": true,
+      "unit_mask_bit": true,
+      "row": "4b3576b70008402008a4ffff5bfb82c6ffffffff00000000ffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffff0000000105fac99243c664c2c43f87c34195e0120000000080aad74600000050808003460000000000fba1d12bfb610affffffff00000000ec84bca43f988345ffffffff0000ffff000000000000000000000000bf80000043c664c2c43f87c34195e0123f800000000000000000000000000000bf80000043c664c2c43f87c34195e0123f800000",
+      "entity_datum": "0xffffffff",
+      "row_unchanged": true,
+      "membership_unchanged": true
+    },
+    {
+      "unit_asset": "0x80cb82a0",
+      "creation_bytes": "80cb82a00000000c80800906000000000000000000000000bf3504f33f3504f343cdcdc2c44c2b4dc11d54dc3f800000ffffffffffffffff0000000000000000ffffffffffffffffffffffffffffffff00000000ffffffff000000003f800000ffffffff811c9dc580030000000000007e1b7a3a8e73b79f0000000c00000000",
+      "datum": "0x2afb82c8",
+      "index": 712,
+      "unit_bank_matches": true,
+      "unit_index_in_range": true,
+      "unit_mask_bit": true,
+      "row": "a0539d550009c02008feff012afb82c8ffffffff00000000ffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffff000001e557fac99843cdcdc2c44c2b4dc11d54d842b791fa80aad74600000050808003460000000072fba1d35bfb610cffffffff000000007e1b7a3a8e73b79fffffffff0000ffff0000000000000000bf3504f33f3504f343cdcdc2c44c2b4dc11d54dc3f8000000000000000000000bf3504f33f3504f343cdcdc2c44c2b4dc11d54dc3f800000",
+      "entity_datum": "0xffffffff",
+      "row_unchanged": true,
+      "membership_unchanged": true
+    },
+    {
+      "unit_asset": "0x80cc0528",
+      "creation_bytes": "80cc05280000000c80800906000000000000000000000000bf3504f23f3504f443cd0d30c4452f7b418cc0603f800000ffffffffffffffff0000000000000000ffffffffffffffffffffffffffffffff00000000ffffffff000000003f800000ffffffff811c9dc58003000000000000bb227224d85f77d40000000c00000000",
+      "datum": "0x3dfb82c9",
+      "index": 713,
+      "unit_bank_matches": true,
+      "unit_index_in_range": true,
+      "unit_mask_bit": true,
+      "row": "59922f7b000840200829ffff3dfb82c9ffffffff00000000ffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffff0000000121fac9a443cd0d30c4452f7b418cc0600000000080aad74600000050808003460000000035fba1d469fb610dffffffff00000000bb227224d85f77d4ffffffff0000ffff0000000000000000bf3504f23f3504f443cd0d30c4452f7b418cc0603f8000000000000000000000bf3504f23f3504f443cd0d30c4452f7b418cc0603f800000",
+      "entity_datum": "0xffffffff",
+      "row_unchanged": true,
+      "membership_unchanged": true
+    },
+    {
+      "unit_asset": "0x80cb828c",
+      "creation_bytes": "80cb828c0000000c8080090600000000bed53633bf0aac3fbf29cf41be9c474143cd527dc446989c418dc8cd3f800000ffffffffffffffff0000000000000000ffffffffffffffffffffffffffffffff00000000ffffffff000000003f800000ffffffff811c9dc5800300000000000078c63d85b05f84d80000000000000000",
+      "datum": "0x70fb82cb",
+      "index": 715,
+      "unit_bank_matches": true,
+      "unit_index_in_range": true,
+      "unit_mask_bit": true,
+      "row": "acb627e1000800200123ffff70fb82cbffffffff00000000ffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffff0000000178fac9aa43cd5d41c4469840418f46353f04f23f80aad7460000005080800346000000005efba1d629fb610fffffffff0000000078c63d85b05f84d8ffffffff0000ffffbed53633bf0aac3fbf29cf41be9c474143cd527dc446989c418dc8cd3f800000bed53633bf0aac3fbf29cf41be9c474143cd527dc446989c418dc8cd3f800000",
+      "entity_datum": "0xffffffff",
+      "row_unchanged": true,
+      "membership_unchanged": true
+    }
+  ]
+}

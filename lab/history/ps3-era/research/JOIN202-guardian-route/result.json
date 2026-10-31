@@ -1,0 +1,10 @@
+{
+  "run": "FINAL124_JOIN202",
+  "started_utc": "2026-10-08T14:51:52.964537+00:00",
+  "status": "stopped",
+  "radius": 1.5,
+  "final_radius": 0.25,
+  "continue_breach": true,
+  "reason": "client slice changed: current (24, 1754485874), target (112, 2166136261), native current (24, 1754485874), native target (112, 2166136261)",
+  "finished_utc": "2026-10-08T14:54:03.858022+00:00"
+}

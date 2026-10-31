@@ -1,0 +1,12 @@
+{
+  "at_utc": "2026-10-08T12:22:46.3417409Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 24060,
+    "startTimeUtcTicks": "639270586790225095",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "input": "Cross400ms",
+  "image": "BLES01857_screenshot_2026_10_08_13_22_22.png",
+  "reason": "Model inspected urgent dialog. Third-person beginning is obscured; subsequent visible shots assessed separately."
+}

@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-07T14:23:00.1871434Z",
+  "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN168-native-replay001\\pre-stop-native.log",
+  "source_sha256": "2067f245501fcff812b7cc1903a405ebdee38cd6775a5efa98a58bc8c1c3046a",
+  "validation_ids": [],
+  "device_lost": 0,
+  "last_native_line": "·W 0:00:31.796560 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)",
+  "scope": "Bounded native replay of this one capture. Actual images show loading UI; matching outdoor scene not accepted."
+}

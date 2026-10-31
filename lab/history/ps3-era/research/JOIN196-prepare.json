@@ -1,0 +1,8 @@
+{
+  "at_utc": "2026-10-08T12:50:48.6312728Z",
+  "source_base": "4f18e36201ee3d0517536b482c474ba5e5ed22c0",
+  "source_clean": true,
+  "change": "Private peer/select equipped Ghost slot +0xa=42; no model arrangement override; distinguish unit/cosmetic/cache; no renderer change.",
+  "overlay_sha256": "bcd7dd4179b7b611b2b82e1bf8ee5b35234cf102203c03b6ad637b0c5b6f0f67",
+  "trace": "# JOIN196: appearance-only; distinguish Ghost unit, cosmetic override, and returned cache ID.\r\n71ec90 16 r3:48\r\n71edcc 16 r1+0x74:4 r26:12\r\n42fa70 8 r20:824\r\n2d184c 8 r5:260\r\n2d1880 8 r1+0x70:4\r\n42fae0 8 r20:824\r\nc67e8 12 if=lr==0x42fa78 r3:12\r\n42b51c 4 r3:208\n"
+}

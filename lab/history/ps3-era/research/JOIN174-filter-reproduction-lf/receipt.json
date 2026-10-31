@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-07T19:48:56.273895+00:00",
+  "git_apply_check_whitespace": "PASS",
+  "normalized_files_reproduced": {
+    "rpcs3/Emu/RSX/d1diag.h": true,
+    "rpcs3/Emu/Cell/PPUThread.cpp": true,
+    "rpcs3/Emu/RSX/Common/ppu_watch_filter.h": true
+  },
+  "supersedes": "JOIN174-filter-reproduction: initial fixture wrote CRLF through Windows text IO; LF fixture matches Git patch context. Both failed fixture and original renderer files preserved."
+}

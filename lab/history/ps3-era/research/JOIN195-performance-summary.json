@@ -1,0 +1,358 @@
+{
+  "samples": 1195,
+  "read_errors": 0,
+  "failed_rechecks": 0,
+  "transitions": [
+    {
+      "utc": "2026-10-08T12:28:16.364125+00:00",
+      "state": [],
+      "slot_resource_at_14": []
+    },
+    {
+      "utc": "2026-10-08T12:28:26.901576+00:00",
+      "state": [],
+      "slot_resource_at_14": [
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:30:36.310260+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:30:57.038212+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:31:00.045248+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          0
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:31:39.157527+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:31:45.676869+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          2
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:31:51.204347+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          3
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:31:56.218421+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          4
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:32:02.237273+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          5
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:32:10.929681+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          6
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:32:15.039141+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          7
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:32:23.563336+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          8
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:32:39.106258+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:32:48.134867+00:00",
+      "state": [
+        [
+          null,
+          null,
+          0
+        ],
+        [
+          null,
+          null,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:33:35.495241+00:00",
+      "state": [
+        [
+          null,
+          null,
+          -1
+        ],
+        [
+          null,
+          null,
+          -1
+        ]
+      ],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    },
+    {
+      "utc": "2026-10-08T12:33:43.015678+00:00",
+      "state": [],
+      "slot_resource_at_14": [
+        "80a6a008",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff",
+        "ffffffff"
+      ]
+    }
+  ]
+}

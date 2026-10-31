@@ -1,0 +1,8 @@
+{
+  "patch_sha256": "8e48474a6ddeb24ba2405a94c479fc7be87fd41108ef15c07c62ebe88ff27aa4",
+  "compiled_source_matches_applied_patch": {
+    "rpcs3/Emu/RSX/VK/VKCommandStream.cpp": true,
+    "rpcs3/Emu/RSX/VK/VKHelpers.h": true,
+    "rpcs3/Emu/RSX/VK/vkutils/swapchain.cpp": true
+  }
+}

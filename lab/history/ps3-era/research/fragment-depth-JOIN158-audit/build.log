@@ -1,0 +1,4 @@
+fragment-depth-audit.cpp
+fragment-depth-audit.cpp(93): warning C4201: nonstandard extension used: nameless struct/union
+fragment-depth-audit.cpp(112): warning C4201: nonstandard extension used: nameless struct/union
+fragment-depth-audit.cpp(148): warning C4245: '=': conversion from 'int' to 'u32', signed/unsigned mismatch

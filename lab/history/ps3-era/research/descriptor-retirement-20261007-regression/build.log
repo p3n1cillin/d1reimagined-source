@@ -1,0 +1,12 @@
+descriptor-retirement-audit.cpp
+descriptor-retirement-audit.cpp(46): error C2039: 'descriptor_logging': is not a member of 'd1diag'
+descriptor-retirement-audit.cpp(16): note: see declaration of 'd1diag'
+descriptor-retirement-audit.cpp(46): error C3861: 'descriptor_logging': identifier not found
+descriptor-retirement-audit.cpp(48): error C2065: 'd1_log': undeclared identifier
+descriptor-retirement-audit.cpp(49): error C2039: 'bit_cast': is not a member of 'std'
+F:\VS\BuildTools\VC\Tools\MSVC\14.51.36231\include\mutex(29): note: see declaration of 'std'
+descriptor-retirement-audit.cpp(49): error C2275: 'u64': expected an expression instead of a type
+descriptor-retirement-audit.cpp(49): error C2039: 'bit_cast': is not a member of 'std'
+F:\VS\BuildTools\VC\Tools\MSVC\14.51.36231\include\mutex(29): note: see declaration of 'std'
+descriptor-retirement-audit.cpp(49): error C2275: 'u64': expected an expression instead of a type
+descriptor-retirement-audit.cpp(49): error C2065: 'm_current_pool_handle': undeclared identifier

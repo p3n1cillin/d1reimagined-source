@@ -1,0 +1,170 @@
+{
+  "captured_utc": "2026-10-07T15:07:13.476582+00:00",
+  "build": "BLES01857 01.24",
+  "atomic": false,
+  "bootflow_object": "0x3073e580",
+  "current": 36,
+  "name": "activity:in_world",
+  "subcurrent": 0,
+  "target": 36,
+  "subtarget": 0,
+  "stage_object": "0x01abf188",
+  "stage_fields_30_3f": "0100000000000000ffffffffffffffff",
+  "stage_word_30": 16777216,
+  "stage_word_34": 0,
+  "stage_state_30": null,
+  "stage_state_34": null,
+  "resources": [
+    {
+      "slot": 0,
+      "name": "none",
+      "state": 0,
+      "handle": "0xffffffff",
+      "extra": "0xffffffff"
+    },
+    {
+      "slot": 1,
+      "name": "owc_client_startup",
+      "state": 0,
+      "handle": "0xffffffff",
+      "extra": "0xffffffff"
+    },
+    {
+      "slot": 2,
+      "name": "client_bootstrap_unpatchable",
+      "state": 0,
+      "handle": "0xffffffff",
+      "extra": "0xffffffff"
+    },
+    {
+      "slot": 3,
+      "name": "client_bootstrap_patchable",
+      "state": 2,
+      "handle": "0xffffffff",
+      "extra": "0x80ae4000"
+    },
+    {
+      "slot": 4,
+      "name": "client_startup_globals",
+      "state": 2,
+      "handle": "0xffffffff",
+      "extra": "0x80b1a000"
+    },
+    {
+      "slot": 5,
+      "name": "client_development_fallback",
+      "state": 0,
+      "handle": "0xffffffff",
+      "extra": "0xffffffff"
+    },
+    {
+      "slot": 6,
+      "name": "investment_assets",
+      "state": 2,
+      "handle": "0xffffffff",
+      "extra": "0x80a6a000"
+    },
+    {
+      "slot": 7,
+      "name": "investment_globals",
+      "state": 2,
+      "handle": "0xffffffff",
+      "extra": "0x80a58000"
+    }
+  ],
+  "resource_pending_count": 0,
+  "asset_readiness": {
+    "auxiliary_address": "0x30751900",
+    "auxiliary_raw_80_87": "000000070000001e",
+    "mode_80": 7,
+    "auxiliary_word_84": 30,
+    "table_address": "0x01b558f0",
+    "table_raw": "000100050002001a002a00aa006a012a022a042a000000018081400001b5ef0001b55b10808140000000000000000003808a000001b5ef1401b55b28808a000000000000000000058083000001b5efc801b55b588083000000000000000000088085a00001b5ef5001b55b408085a00000000000000000000000000000000000000000000000000000000000000000040000000100000003000000050000000800000000000000040000000000000003ffffffff00020aa80000012a000000070000001e0000001e00000008ffffffff0000000000000000ffffffff0000000001b5ef2801b55af801000000",
+    "initialized_flag_e8": 1,
+    "mode_masks": [
+      1,
+      5,
+      2,
+      26,
+      42,
+      170,
+      106,
+      298,
+      554,
+      1066
+    ],
+    "readiness_mask_ba": 298,
+    "required_mode_mask": 298,
+    "missing_mode_mask": 0,
+    "poll_ready": true,
+    "descriptor_count_8c": 4,
+    "descriptor_start_ac": 3,
+    "requested_count_a4": 4,
+    "control_word_a8": 0,
+    "loading_word_b0": -1,
+    "descriptors": [
+      {
+        "index": 0,
+        "offset": "0x14",
+        "bit_index": 1,
+        "content_handle": "0x80814000",
+        "loaded_pointer": "0x01b5ef00",
+        "allocation_pointer": "0x01b55b10",
+        "word_10": "0x80814000",
+        "byte_14": 0
+      },
+      {
+        "index": 1,
+        "offset": "0x2c",
+        "bit_index": 3,
+        "content_handle": "0x808a0000",
+        "loaded_pointer": "0x01b5ef14",
+        "allocation_pointer": "0x01b55b28",
+        "word_10": "0x808a0000",
+        "byte_14": 0
+      },
+      {
+        "index": 2,
+        "offset": "0x44",
+        "bit_index": 5,
+        "content_handle": "0x80830000",
+        "loaded_pointer": "0x01b5efc8",
+        "allocation_pointer": "0x01b55b58",
+        "word_10": "0x80830000",
+        "byte_14": 0
+      },
+      {
+        "index": 3,
+        "offset": "0x5c",
+        "bit_index": 8,
+        "content_handle": "0x8085a000",
+        "loaded_pointer": "0x01b5ef50",
+        "allocation_pointer": "0x01b55b40",
+        "word_10": "0x8085a000",
+        "byte_14": 0
+      }
+    ],
+    "descriptors_truncated": false
+  },
+  "stage_unchanged_during_sample": true,
+  "finished_utc": "2026-10-07T15:07:13.477081+00:00",
+  "world": {
+    "engine": "0x3073e780",
+    "engine_state_89": 0,
+    "controllers": [
+      {
+        "index": 1,
+        "selector": 0,
+        "address": "0x30662368",
+        "status_8fec": 0
+      },
+      {
+        "index": 2,
+        "selector": 1,
+        "address": "0x3067d670",
+        "status_8fec": 0
+      }
+    ]
+  },
+  "reader": "owned Windows process (no pause)"
+}

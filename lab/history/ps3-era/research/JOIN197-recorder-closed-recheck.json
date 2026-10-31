@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-08T13:26:42.3187492Z",
+  "identity": {
+    "tag": "native-recorder",
+    "id": 11208,
+    "startTimeUtcTicks": "639270616238619547",
+    "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+  },
+  "exact_owned_alive": false,
+  "scope": "Explicit recorder identity recheck; wrapper object is not a process identity"
+}

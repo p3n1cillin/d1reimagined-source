@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-08T13:58:38.677335+00:00",
+  "base": "4f18e36",
+  "tests": 16,
+  "distinct_failing_methods": [
+    "test_appearance_and_arrangement_can_be_supplied_independently",
+    "test_appearance_survives_actual_final_peer_and_select_schema",
+    "test_appearance_wire_matches_independent_bit_pattern",
+    "test_custom_appearance_signed_range_and_explicit_starter_override",
+    "test_explicit_appearance_is_separate_from_shell_arrangement"
+  ],
+  "scope": "Final appearance tests against prior server loaded in isolated module; no native test or guest writes."
+}

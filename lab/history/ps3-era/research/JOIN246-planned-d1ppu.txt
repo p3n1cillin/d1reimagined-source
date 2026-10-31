@@ -1,0 +1,6 @@
+# JOIN246: unlock-expression census (urgent/MOTD dialog gate). Sanity hits on the flag test, its index 1327/101 calls, and each distinct evaluated expression.
+c5be34 4 r3:4
+c5be34 20 if=r4==1327 r3:4
+c5be34 20 if=r4==101 r3:4
+c5cbcc 20 if=m4+0x20:4==0x0100052f r3:4 r4:48
+c5cbcc 80 u r4:48

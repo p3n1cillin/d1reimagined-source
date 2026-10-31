@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-07T12:35:33.0298643Z",
+  "new_sha256": "714e432f39969b3d19cd585e40963e8ee8670208d9bc7ea853e4e93324ebba6b",
+  "prior_sha256": "ef67aa5cf3c015de130cef958f1abfe345bd92a74964e2c20515e35e238f7645",
+  "backup": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.before-rsx-capture-marker-20261007.exe",
+  "native_idle_verified": true,
+  "scope": "Only one-shot native RSX capture request increment; existing rendering and SPU colour behavior preserved"
+}

@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-08T13:26:09.7406465Z",
+  "client": {
+    "tag": "rpcs3",
+    "id": 4928,
+    "startTimeUtcTicks": "639270625594585621",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "key": "X",
+  "hold_ms": 400,
+  "inspected_image": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\BLES01857\\BLES01857_screenshot_2026_10_08_14_25_39.png",
+  "purpose": "Dismiss visually confirmed urgent message before revival"
+}

@@ -1,0 +1,46 @@
+ppu-watch-filter-audit.cpp
+PASS register equality
+PASS full 64-bit register value
+PASS memory offset and big-endian width
+PASS memory default offset
+PASS maximum memory offset
+PASS if=r0==21
+PASS if=r2==21
+PASS if=m0:4==21
+PASS if=m2:4==21
+PASS if=r32==21
+PASS if=r-1==21
+PASS if=r5==21tail
+PASS if=r5==+21
+PASS if=r5==0x
+PASS if=r5==18446744073709551616
+PASS if=r5+1==21
+PASS if=r5:4==21
+PASS if=m6==21
+PASS if=m6:3==21
+PASS if=m6:0==21
+PASS if=m6:1==256
+PASS if=m6+4294967296:4==21
+PASS if=m6+1:4==21==21
+PASS if=m6:4+1==21
+PASS if=m6+:4==21
+PASS routine traffic cannot exhaust or disarm target watch
+PASS rejected traffic does not populate unique keys
+PASS first target consumes one hit
+PASS accepted duplicate preserves remaining budget
+PASS last distinct target logs and disarms
+PASS all filters must match
+PASS unaligned big-endian subtype header matches
+PASS little-endian interpretation is rejected
+PASS unreadable filter is skipped without reading or spending budget
+PASS offset overflow cannot wrap to guest zero
+PASS memory width cannot wrap across guest address limit
+PASS guest pointers use low 32 bits
+PASS r1 filters use live translated-entry stack pointer
+PASS invalid predicate rejects entire line
+PASS ordinary watch retains existing hit budget
+PASS ordinary unique watch still includes caller LR
+PASS coverage retains one-hit behavior
+PASS coverage reload clears coverage masks
+PASS orphan mask is disarmed
+44 PPU watch checks, 0 failed

@@ -1,0 +1,5 @@
+descriptor-timeline-audit.cpp
+trace\descriptor-timeline-audit.cpp(143): warning C4456: declaration of 'first' hides previous local declaration
+trace\descriptor-timeline-audit.cpp(122): note: see declaration of 'first'
+trace\descriptor-timeline-audit.cpp(148): warning C4456: declaration of 'second' hides previous local declaration
+trace\descriptor-timeline-audit.cpp(122): note: see declaration of 'second'

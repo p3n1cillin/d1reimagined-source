@@ -1,0 +1,322 @@
+{
+  "schema_handle": "0x8080097d",
+  "counters": {
+    "lines": 15909,
+    "oversized_lines": 0,
+    "incident_messages": 8,
+    "decoded_messages": 8,
+    "malformed_incidents": 0,
+    "untracked_type_messages": 0,
+    "untracked_chain_messages": 0
+  },
+  "ah_message_counts": {
+    "3": 4,
+    "6": 5,
+    "15": 7698,
+    "17": 8,
+    "18": 8,
+    "20": 4,
+    "21": 17,
+    "32": 4,
+    "36": 7,
+    "37": 5,
+    "47": 4
+  },
+  "ah_messages": [
+    {
+      "type": 3,
+      "messages": 4,
+      "first": "2026-10-07T13:40:57.040",
+      "last": "2026-10-07T13:55:28.073"
+    },
+    {
+      "type": 6,
+      "messages": 5,
+      "first": "2026-10-07T13:41:18.260",
+      "last": "2026-10-07T13:55:59.354"
+    },
+    {
+      "type": 15,
+      "messages": 7698,
+      "first": "2026-10-07T13:40:57.140",
+      "last": "2026-10-07T13:57:14.027"
+    },
+    {
+      "type": 17,
+      "messages": 8,
+      "first": "2026-10-07T13:40:57.112",
+      "last": "2026-10-07T13:55:37.407"
+    },
+    {
+      "type": 18,
+      "messages": 8,
+      "first": "2026-10-07T13:42:00.495",
+      "last": "2026-10-07T13:56:45.960"
+    },
+    {
+      "type": 20,
+      "messages": 4,
+      "first": "2026-10-07T13:41:17.378",
+      "last": "2026-10-07T13:55:28.712"
+    },
+    {
+      "type": 21,
+      "messages": 17,
+      "first": "2026-10-07T13:40:57.206",
+      "last": "2026-10-07T13:55:37.459"
+    },
+    {
+      "type": 32,
+      "messages": 4,
+      "first": "2026-10-07T13:40:57.213",
+      "last": "2026-10-07T13:55:28.697"
+    },
+    {
+      "type": 36,
+      "messages": 7,
+      "first": "2026-10-07T13:41:17.376",
+      "last": "2026-10-07T13:55:28.710"
+    },
+    {
+      "type": 37,
+      "messages": 5,
+      "first": "2026-10-07T13:40:57.114",
+      "last": "2026-10-07T13:55:28.705"
+    },
+    {
+      "type": 47,
+      "messages": 4,
+      "first": "2026-10-07T13:42:28.714",
+      "last": "2026-10-07T13:52:23.000"
+    }
+  ],
+  "all_incidents": {
+    "messages": 8,
+    "first": "2026-10-07T13:42:00.495",
+    "last": "2026-10-07T13:56:45.960",
+    "interval_seconds": {
+      "samples": 7,
+      "min": 0.018,
+      "max": 262.933,
+      "mean": 126.49499999999999,
+      "nonmonotonic": 0
+    },
+    "body_lengths": {
+      "53": 8
+    },
+    "body_variants": {
+      "distinct": 3,
+      "distinct_at_least": 3,
+      "untracked_observations": 0,
+      "digests": {
+        "0def7f83ea4d6d1c177372a285f687a3b0b5a3dc8e6ee68c39616daa5aaf69b3": 4,
+        "4d3935fcd364f3ec6d61fe3e3778520bcb5e4b163eb5b59577cf577b21ac9de6": 2,
+        "cc7fde3e3b3be86b1f17fc98fe788ab99dddb7c7f964549832c3c13c4a250b69": 2
+      }
+    },
+    "body_after_leading_u32_variants": {
+      "distinct": 3,
+      "distinct_at_least": 3,
+      "untracked_observations": 0,
+      "digests": {
+        "0a8d654d868d87e092cb6ff0cbc0fb540945f78bb848eb88d5d91a78936e3fbd": 2,
+        "8061df265f3d327e6796450c67b758c1170cfad03ecc98af5555488eec9fb5c5": 2,
+        "be4f500ff8c81fe99acbdbd7ffef50e39cec3959273c015c76deb25e9557a711": 4
+      }
+    },
+    "leading_u32_variants": {
+      "distinct": 3,
+      "distinct_at_least": 3,
+      "untracked_observations": 0,
+      "digests": {
+        "551bfe084ea23bd3efa0f7102f619255519fed5e9bc070d3fea40091a94a0599": 2,
+        "a8870065e502a681f3d02f11ac162373deaf895419376f93958041b8eea93c97": 4,
+        "f4b565ba30fd5c89ddf3636cfcc13e1cf24baebeeb2b13649fac37dba42f270d": 2
+      }
+    }
+  },
+  "types": [
+    {
+      "type": 734,
+      "occurrences": 2,
+      "messages": 2,
+      "first": "2026-10-07T13:45:30.744",
+      "last": "2026-10-07T13:50:12.270",
+      "interval_seconds": {
+        "samples": 1,
+        "min": 281.526,
+        "max": 281.526,
+        "mean": 281.526,
+        "nonmonotonic": 0
+      },
+      "body_lengths": {
+        "53": 2
+      },
+      "body_variants": {
+        "distinct": 1,
+        "distinct_at_least": 1,
+        "untracked_observations": 0,
+        "digests": {
+          "4d3935fcd364f3ec6d61fe3e3778520bcb5e4b163eb5b59577cf577b21ac9de6": 2
+        }
+      },
+      "body_after_leading_u32_variants": {
+        "distinct": 1,
+        "distinct_at_least": 1,
+        "untracked_observations": 0,
+        "digests": {
+          "8061df265f3d327e6796450c67b758c1170cfad03ecc98af5555488eec9fb5c5": 2
+        }
+      },
+      "leading_u32_variants": {
+        "distinct": 1,
+        "distinct_at_least": 1,
+        "untracked_observations": 0,
+        "digests": {
+          "551bfe084ea23bd3efa0f7102f619255519fed5e9bc070d3fea40091a94a0599": 2
+        }
+      }
+    },
+    {
+      "type": 2120,
+      "occurrences": 6,
+      "messages": 6,
+      "first": "2026-10-07T13:42:00.495",
+      "last": "2026-10-07T13:56:45.960",
+      "interval_seconds": {
+        "samples": 5,
+        "min": 119.137,
+        "max": 262.933,
+        "mean": 177.09300000000002,
+        "nonmonotonic": 0
+      },
+      "body_lengths": {
+        "53": 6
+      },
+      "body_variants": {
+        "distinct": 2,
+        "distinct_at_least": 2,
+        "untracked_observations": 0,
+        "digests": {
+          "0def7f83ea4d6d1c177372a285f687a3b0b5a3dc8e6ee68c39616daa5aaf69b3": 4,
+          "cc7fde3e3b3be86b1f17fc98fe788ab99dddb7c7f964549832c3c13c4a250b69": 2
+        }
+      },
+      "body_after_leading_u32_variants": {
+        "distinct": 2,
+        "distinct_at_least": 2,
+        "untracked_observations": 0,
+        "digests": {
+          "0a8d654d868d87e092cb6ff0cbc0fb540945f78bb848eb88d5d91a78936e3fbd": 2,
+          "be4f500ff8c81fe99acbdbd7ffef50e39cec3959273c015c76deb25e9557a711": 4
+        }
+      },
+      "leading_u32_variants": {
+        "distinct": 2,
+        "distinct_at_least": 2,
+        "untracked_observations": 0,
+        "digests": {
+          "a8870065e502a681f3d02f11ac162373deaf895419376f93958041b8eea93c97": 4,
+          "f4b565ba30fd5c89ddf3636cfcc13e1cf24baebeeb2b13649fac37dba42f270d": 2
+        }
+      }
+    }
+  ],
+  "chains": [
+    {
+      "types": [
+        734
+      ],
+      "messages": 2,
+      "first": "2026-10-07T13:45:30.744",
+      "last": "2026-10-07T13:50:12.270",
+      "interval_seconds": {
+        "samples": 1,
+        "min": 281.526,
+        "max": 281.526,
+        "mean": 281.526,
+        "nonmonotonic": 0
+      },
+      "body_lengths": {
+        "53": 2
+      },
+      "body_variants": {
+        "distinct": 1,
+        "distinct_at_least": 1,
+        "untracked_observations": 0,
+        "digests": {
+          "4d3935fcd364f3ec6d61fe3e3778520bcb5e4b163eb5b59577cf577b21ac9de6": 2
+        }
+      },
+      "body_after_leading_u32_variants": {
+        "distinct": 1,
+        "distinct_at_least": 1,
+        "untracked_observations": 0,
+        "digests": {
+          "8061df265f3d327e6796450c67b758c1170cfad03ecc98af5555488eec9fb5c5": 2
+        }
+      },
+      "leading_u32_variants": {
+        "distinct": 1,
+        "distinct_at_least": 1,
+        "untracked_observations": 0,
+        "digests": {
+          "551bfe084ea23bd3efa0f7102f619255519fed5e9bc070d3fea40091a94a0599": 2
+        }
+      }
+    },
+    {
+      "types": [
+        2120
+      ],
+      "messages": 6,
+      "first": "2026-10-07T13:42:00.495",
+      "last": "2026-10-07T13:56:45.960",
+      "interval_seconds": {
+        "samples": 5,
+        "min": 119.137,
+        "max": 262.933,
+        "mean": 177.09300000000002,
+        "nonmonotonic": 0
+      },
+      "body_lengths": {
+        "53": 6
+      },
+      "body_variants": {
+        "distinct": 2,
+        "distinct_at_least": 2,
+        "untracked_observations": 0,
+        "digests": {
+          "0def7f83ea4d6d1c177372a285f687a3b0b5a3dc8e6ee68c39616daa5aaf69b3": 4,
+          "cc7fde3e3b3be86b1f17fc98fe788ab99dddb7c7f964549832c3c13c4a250b69": 2
+        }
+      },
+      "body_after_leading_u32_variants": {
+        "distinct": 2,
+        "distinct_at_least": 2,
+        "untracked_observations": 0,
+        "digests": {
+          "0a8d654d868d87e092cb6ff0cbc0fb540945f78bb848eb88d5d91a78936e3fbd": 2,
+          "be4f500ff8c81fe99acbdbd7ffef50e39cec3959273c015c76deb25e9557a711": 4
+        }
+      },
+      "leading_u32_variants": {
+        "distinct": 2,
+        "distinct_at_least": 2,
+        "untracked_observations": 0,
+        "digests": {
+          "a8870065e502a681f3d02f11ac162373deaf895419376f93958041b8eea93c97": 4,
+          "f4b565ba30fd5c89ddf3636cfcc13e1cf24baebeeb2b13649fac37dba42f270d": 2
+        }
+      }
+    }
+  ],
+  "limits": {
+    "line_chars": 65536,
+    "payload_bytes": 8192,
+    "types": 256,
+    "chains": 64,
+    "digests_per_group": 512
+  },
+  "interpretation": "Repeated IDs or bodies do not prove retransmission, acknowledgement, or disconnect cause."
+}

@@ -1,0 +1,41 @@
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\recordings\BLES01857\BLES01857_recording_2026_10_07_10_43_20.mp4':
+  Metadata:
+    major_brand     : qt  
+    minor_version   : 512
+    compatible_brands: qt  
+    encoder         : Lavf62.12.101
+  Duration: 00:00:35.73, start: 0.000000, bitrate: 2699 kb/s
+  Stream #0:0[0x1]: Video: mpeg4 (Advanced Simple Profile) (mp4v / 0x7634706D), yuv420p, 1280x720 [SAR 1:1 DAR 16:9], 2753 kb/s, 10.53 fps, 30 tbr, 15360 tbn (default)
+      Metadata:
+        handler_name    : VideoHandler
+        vendor_id       : FFMP
+  Stream #0:1[0x2]: Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 2 kb/s (default)
+      Metadata:
+        handler_name    : SoundHandler
+        vendor_id       : [0][0][0][0]
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg4 (native) -> wrapped_avframe (native))
+  Stream #0:1 -> #0:1 (aac (native) -> pcm_s16le (native))
+Output #0, null, to 'pipe:':
+  Metadata:
+    major_brand     : qt  
+    minor_version   : 512
+    compatible_brands: qt  
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(progressive), 1280x720 [SAR 1:1 DAR 16:9], q=2-31, 200 kb/s, 30 fps, 30 tbn (default)
+      Metadata:
+        handler_name    : VideoHandler
+        vendor_id       : FFMP
+        encoder         : Lavc61.19.100 wrapped_avframe
+  Stream #0:1: Audio: pcm_s16le, 48000 Hz, stereo, s16, 1536 kb/s (default)
+      Metadata:
+        handler_name    : SoundHandler
+        vendor_id       : [0][0][0][0]
+        encoder         : Lavc61.19.100 pcm_s16le
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001ab59b4fec0] Packet corrupt (stream = 0, dts = 532480).
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 000001ab59b4fac0] corrupt input packet in stream 0
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 000001ab59b4fac0] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 000001ab59b4fac0] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[out#0/null @ 000001ab59b796c0] video:158KiB audio:6500KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=  367 fps=0.0 q=-0.0 Lsize=N/A time=00:00:34.67 bitrate=N/A speed= 217x    
+Conversion failed!

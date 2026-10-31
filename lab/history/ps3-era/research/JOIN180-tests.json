@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-08T00:05:29.360389+00:00",
+  "unit_tests": 29,
+  "unit_result": "PASS",
+  "continuation_constraint_checks": [
+    {
+      "arguments": [
+        "--continue-breach"
+      ],
+      "exit_code": 2,
+      "rejected_before_native_access": true
+    },
+    {
+      "arguments": [
+        "--continue-breach",
+        "--allow-breach-preload",
+        "--route",
+        "F:\\d1\\d1xenia\\missions\\routes\\breach.json"
+      ],
+      "exit_code": 2,
+      "rejected_before_native_access": true
+    }
+  ],
+  "no_output_created": true,
+  "scope": "Source CPU regressions and real invalid-option CLI checks; native continuation acceptance pending."
+}

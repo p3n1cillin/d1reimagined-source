@@ -1,0 +1,22 @@
+[
+  {
+    "file": "rpcs3/Emu/RSX/VK/vkutils/device.h",
+    "normalized_match": true
+  },
+  {
+    "file": "rpcs3/Emu/RSX/VK/vkutils/device.cpp",
+    "normalized_match": true
+  },
+  {
+    "file": "rpcs3/Emu/RSX/VK/vkutils/commands.h",
+    "normalized_match": true
+  },
+  {
+    "file": "rpcs3/Emu/RSX/VK/vkutils/commands.cpp",
+    "normalized_match": true
+  },
+  {
+    "file": "rpcs3/Emu/RSX/VK/VKTextureCache.cpp",
+    "normalized_match": true
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-07T13:36:11.4644771Z",
+  "idle_verified": true,
+  "base_sha256": "714E432F39969B3D19CD585E40963E8EE8670208D9BC7EA853E4E93324EBBA6B",
+  "backup": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.before-rsx-replay-context-20261007.exe",
+  "deployed_sha256": "430167A250B8C98DD04B630C651019FBCD7A76FCCF5D9B610F8B6E02D9FB2433",
+  "patch": "rpcs3-native-rsx-replay-context.patch",
+  "scope": "Replay context only; native graphics repair not accepted"
+}

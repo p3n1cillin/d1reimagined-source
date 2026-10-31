@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-07T23:25:48.4878834Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 17360,
+    "startTimeUtcTicks": "639270123485109293",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "capture_sha256": "7d5743c0eaca38ec4df1f30ccc8c4d048eb5509baa6092cac1ea379e0865b93e",
+  "capture_build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "change": "Same C5 native build; existing replay context/display repairs retained; no new renderer change",
+  "global_before_sha256": "71C7E08939860F78C12A53D095DDC1CCD1525A46D1493714DEE6F9F85D229AB9",
+  "global_replay_sha256": "22C081E2680A9F81C565860262232AF1296EBEA2831849338BA79BD6E7C2350B",
+  "depth_fingerprints": true,
+  "ring": false,
+  "scope": "Private captured native frame; current captured scene and replay must be visually inspected. No live PPU/SPU/backend replay or gameplay acceptance."
+}

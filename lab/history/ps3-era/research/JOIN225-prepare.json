@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-09T08:46:54.8758235Z",
+  "source_base": "ed1014e27a4110d287fd41e085142dd9aec531ea",
+  "source_clean": false,
+  "source_status": [
+    " M server/bap_server.py",
+    "?? server/test_loot_claim.py"
+  ],
+  "change": "Service-601 grant with self and peer updates under test (uncommitted): a matching claim clears the pending slot, equips the item with its art (Khvostov slot 6), then publishes self and peer (family 0) deltas. Private unarmed starter and synthetic pending rifle; explicit selector-2 event (recipient 1, world 3) in the Breach. No guest writes.",
+  "trace": "# JOIN225: Breach rifle event (world 3), walk onto it; service-601 grant and self update.\n5aede4 6 r4:24\n2b2a60 6 r3:128\n2b36f8 400 if=m4:2==0xe0e r4:56\n2b2c00 12 r3:64\n472518 12 r3:64\n",
+  "launch_sha256": "1E2525027A6532144E92D360AA13F4ED0180A4CF5522A6BF42DA7AF904BA0018"
+}

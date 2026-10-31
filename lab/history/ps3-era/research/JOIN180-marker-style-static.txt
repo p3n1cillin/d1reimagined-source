@@ -1,0 +1,34 @@
+003a67ac  3c800189  lis      r4, 0x189
+003a67b0  80a30000  lwz      r5, 0(r3)
+003a67b4  7ca66e70  srawi    r6, r5, 0xd
+003a67b8  54a504fe  clrlwi   r5, r5, 0x13
+003a67bc  54c774be  srwi     r7, r6, 0x12
+003a67c0  80846d50  lwz      r4, 0x6d50(r4)
+003a67c4  60e703ff  ori      r7, r7, 0x3ff
+003a67c8  7ce63038  and      r6, r7, r6
+003a67cc  80840000  lwz      r4, 0(r4)
+003a67d0  54c63032  slwi     r6, r6, 6
+003a67d4  7c843014  addc     r4, r4, r6
+003a67d8  80c30004  lwz      r6, 4(r3)
+003a67dc  78840020  clrldi   r4, r4, 0x20
+003a67e0  80e40030  lwz      r7, 0x30(r4)
+003a67e4  7ca539d6  mullw    r5, r5, r7
+003a67e8  80e40010  lwz      r7, 0x10(r4)
+003a67ec  80840034  lwz      r4, 0x34(r4)
+003a67f0  7ca72814  addc     r5, r7, r5
+003a67f4  8063011c  lwz      r3, 0x11c(r3)
+003a67f8  78a70020  clrldi   r7, r5, 0x20
+003a67fc  80e70008  lwz      r7, 8(r7)
+003a6800  7ce42038  and      r4, r7, r4
+003a6804  7c842810  subfc    r4, r4, r5
+003a6808  786526e4  sldi     r5, r3, 4
+003a680c  7c843014  addc     r4, r4, r6
+003a6810  78631764  sldi     r3, r3, 2
+003a6814  78840020  clrldi   r4, r4, 0x20
+003a6818  7c651814  addc     r3, r5, r3
+003a681c  80a40048  lwz      r5, 0x48(r4)
+003a6820  7c842814  addc     r4, r4, r5
+003a6824  7c641814  addc     r3, r4, r3
+003a6828  30630058  addic    r3, r3, 0x58
+003a682c  78630020  clrldi   r3, r3, 0x20
+003a6830  4e800020  blr      

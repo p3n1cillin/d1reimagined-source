@@ -1,0 +1,8 @@
+{
+  "utc": "2026-10-08T23:01:12.801984+00:00",
+  "phase": 1,
+  "world_before": 14,
+  "body_world": 3,
+  "cache_before": 0,
+  "scope": "Explicit synthetic cache-recording event after native starter verification. May record a different-world position; not a pickup/grant."
+}

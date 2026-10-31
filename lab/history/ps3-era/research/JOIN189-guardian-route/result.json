@@ -1,0 +1,10 @@
+{
+  "run": "FINAL124_JOIN189",
+  "started_utc": "2026-10-08T10:19:01.888352+00:00",
+  "status": "stopped",
+  "radius": 1.5,
+  "final_radius": 0.25,
+  "continue_breach": true,
+  "reason": "mission is loading or leaving: stage 36, engine 0",
+  "finished_utc": "2026-10-08T10:20:17.965427+00:00"
+}

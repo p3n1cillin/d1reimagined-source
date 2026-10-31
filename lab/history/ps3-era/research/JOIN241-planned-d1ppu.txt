@@ -1,0 +1,5 @@
+# JOIN241: unlock-expression flag tests for the urgent/MOTD dialogs (index 101, 0, 1327).
+c5be34 60 if=r4==101 r3:16
+c5be34 60 if=r4==1327 r3:16
+c5be34 30 if=r4==0 if=lr==0xc5cc78 r3:16
+c5cbcc 20 if=m4:4==1 r4:48

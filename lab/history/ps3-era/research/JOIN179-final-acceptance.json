@@ -1,0 +1,404 @@
+{
+  "at": "2026-10-07T23:55:44.497114+00:00",
+  "run": "JOIN179",
+  "session_samples": 2572,
+  "session_states": {
+    "6": 2572
+  },
+  "idle112": 480,
+  "active24": 1268,
+  "idle24": 0,
+  "sample_first_utc": "2026-10-07T23:43:12.925267+00:00",
+  "sample_last_utc": "2026-10-07T23:53:59.271260+00:00",
+  "pointer_recheck_failures": 0,
+  "context_lookup_failures": 0,
+  "context_state_recheck_failures": 0,
+  "player_changes": [
+    {
+      "utc": "2026-10-07T23:48:02.539296+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        354.3050537109375,
+        -796.1600341796875,
+        14.100211143493652
+      ],
+      "state": {
+        "current": 36,
+        "engine": 3,
+        "stable": true,
+        "native_slice_current": [
+          112,
+          2166136261
+        ],
+        "native_slice_target": [
+          24,
+          1754485874
+        ]
+      }
+    },
+    {
+      "utc": "2026-10-07T23:48:45.247961+00:00",
+      "entity": "0x602cd380",
+      "xyz": [
+        324.4446105957031,
+        -795.6360473632812,
+        14.101841926574707
+      ],
+      "state": {
+        "current": 36,
+        "engine": 3,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": [
+          112,
+          1754485874
+        ]
+      }
+    }
+  ],
+  "native_VUID_count": 0,
+  "native_device_loss_count": 0,
+  "native_fatal_lines": 0,
+  "scope": "Native non-atomic reads, guarded pad input and explicit host experiment. Automatic handoff and combined graphics fail acceptance. No full-game acceptance.",
+  "route": {
+    "run": "FINAL124_JOIN179",
+    "started_utc": "2026-10-07T23:45:45.679253+00:00",
+    "status": "route_reached",
+    "radius": 1.5,
+    "final_radius": 0.25,
+    "final_xyz": [
+      353.81219482421875,
+      -796.3140869140625,
+      14.127391815185547
+    ],
+    "finished_utc": "2026-10-07T23:47:52.978927+00:00"
+  },
+  "continuation": {
+    "started_utc": "2026-10-07T23:50:20.516033+00:00",
+    "scope": "Ordinary pad input on fresh post-teleport actor, bounded corridor and 25 seconds; no guest writes.",
+    "entity": "0x602cd380",
+    "start_xyz": [
+      324.4447021484375,
+      -795.6361083984375,
+      14.101853370666504
+    ],
+    "endpoint_reached": true,
+    "final_xyz": [
+      353.60784912109375,
+      -796.396728515625,
+      14.100251197814941
+    ],
+    "finished_utc": "2026-10-07T23:50:31.974724+00:00"
+  },
+  "doorway": {
+    "started_utc": "2026-10-07T23:51:33.268732+00:00",
+    "scope": "Ordinary pad input on fresh post-teleport actor, bounded corridor and 25 seconds; no guest writes.",
+    "entity": "0x602cd380",
+    "start_xyz": [
+      353.88330078125,
+      -796.36328125,
+      14.074560165405273
+    ],
+    "endpoint_reached": true,
+    "final_xyz": [
+      356.1282043457031,
+      -796.3821411132812,
+      14.07438850402832
+    ],
+    "finished_utc": "2026-10-07T23:51:34.764758+00:00"
+  },
+  "cleanup": {
+    "at": "2026-10-07T23:54:00.1705014Z",
+    "fixture_completed": true,
+    "all_owned_closed": true,
+    "title_unchanged": true,
+    "watch_unchanged": true,
+    "input": "Handler: XInput",
+    "active_controls": [],
+    "shared_rpcn_preserved": true,
+    "errors": []
+  },
+  "rsx": {
+    "at": "2026-10-07T23:53:59.3498476Z",
+    "capture_saved": false,
+    "scope": "Bounded diagnostic checkpoint ended without a verified RSX capture; no capture or graphics success claimed."
+  },
+  "last_old_player_before_request": {
+    "utc": "2026-10-07T23:48:37.915520+00:00",
+    "entity": "0x602c3300",
+    "xyz": [
+      354.3044128417969,
+      -796.1596069335938,
+      14.100346565246582
+    ],
+    "state": {
+      "current": 36,
+      "engine": 3,
+      "stable": true,
+      "native_slice_current": [
+        112,
+        2166136261
+      ],
+      "native_slice_target": [
+        24,
+        1754485874
+      ]
+    }
+  },
+  "replacement_displacement": 29.86439195824346,
+  "old_address_during_transition": [
+    {
+      "utc": "2026-10-07T23:48:39.476353+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        354.3057861328125,
+        -796.1607666015625,
+        14.099946975708008
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          112,
+          2166136261
+        ],
+        "native_slice_target": [
+          24,
+          1754485874
+        ]
+      },
+      "hook_age": 7.999988156370819e-07
+    },
+    {
+      "utc": "2026-10-07T23:48:39.738188+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        354.3057861328125,
+        -796.1607666015625,
+        14.099946975708008
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          -1,
+          2166136261
+        ],
+        "native_slice_target": [
+          24,
+          1754485874
+        ]
+      },
+      "hook_age": 0.26183299999684095
+    },
+    {
+      "utc": "2026-10-07T23:48:39.998295+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        354.3057861328125,
+        -796.1607666015625,
+        14.099946975708008
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          -1,
+          2166136261
+        ],
+        "native_slice_target": [
+          24,
+          1754485874
+        ]
+      },
+      "hook_age": 0.5219421000001603
+    },
+    {
+      "utc": "2026-10-07T23:48:40.262937+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        506.2581787109375,
+        -730.6927490234375,
+        14.135332107543945
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": null
+      },
+      "hook_age": 0.7865837999997893
+    },
+    {
+      "utc": "2026-10-07T23:48:40.524713+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        506.2581787109375,
+        -730.6927490234375,
+        14.135332107543945
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": null
+      },
+      "hook_age": 1.0483593999961158
+    },
+    {
+      "utc": "2026-10-07T23:48:40.787821+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        506.2581787109375,
+        -730.6927490234375,
+        14.135332107543945
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": null
+      },
+      "hook_age": 1.3114631999997073
+    },
+    {
+      "utc": "2026-10-07T23:48:41.050198+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        506.2581787109375,
+        -730.6927490234375,
+        14.135332107543945
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": null
+      },
+      "hook_age": 1.5738444999951753
+    },
+    {
+      "utc": "2026-10-07T23:48:41.315312+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        506.2581787109375,
+        -730.6927490234375,
+        14.135332107543945
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": null
+      },
+      "hook_age": 1.8389590999940992
+    },
+    {
+      "utc": "2026-10-07T23:48:41.578255+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        506.2581787109375,
+        -730.6927490234375,
+        14.135332107543945
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": null
+      },
+      "hook_age": 2.1019006999995327
+    },
+    {
+      "utc": "2026-10-07T23:48:41.840487+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        506.2581787109375,
+        -730.6927490234375,
+        14.135332107543945
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": null
+      },
+      "hook_age": 2.364133299997775
+    },
+    {
+      "utc": "2026-10-07T23:48:42.101652+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        506.2581787109375,
+        -730.6927490234375,
+        14.135332107543945
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": null
+      },
+      "hook_age": 2.62529729999369
+    },
+    {
+      "utc": "2026-10-07T23:48:42.365499+00:00",
+      "entity": "0x602c3300",
+      "xyz": [
+        506.2581787109375,
+        -730.6927490234375,
+        14.135332107543945
+      ],
+      "state": {
+        "current": 36,
+        "engine": 6,
+        "stable": true,
+        "native_slice_current": [
+          24,
+          1754485874
+        ],
+        "native_slice_target": null
+      },
+      "hook_age": 2.8891452999960165
+    }
+  ],
+  "old_address_transition_scope": "Old-address reads during phase6 are not accepted as the current player's position. The observer is non-atomic and a recent hook cannot prove unit lifetime through respawn."
+}

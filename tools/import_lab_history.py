@@ -14,6 +14,7 @@ Everything used to get the project this far belongs in the repository, except:
 SOURCE is a folder of dated working folders; each lands at DEST/<name> with the same layout.
 """
 import argparse
+import fnmatch
 import os
 import re
 import shutil
@@ -123,10 +124,15 @@ def main():
     ap.add_argument('source')
     ap.add_argument('dest')
     ap.add_argument('--dry-run', action='store_true')
+    # Top-level folders of SOURCE to leave out (shell-style patterns), e.g. copies of other projects'
+    # source trees, or metadata extracted from game updates.
+    ap.add_argument('--exclude', action='append', default=[])
     a = ap.parse_args()
     counts, sizes, held = {}, {}, []
     for top, dirs, files in os.walk(a.source):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+        if os.path.normpath(top) == os.path.normpath(a.source):
+            dirs[:] = [d for d in dirs if not any(fnmatch.fnmatch(d, p) for p in a.exclude)]
         for name in files:
             path = os.path.join(top, name)
             rel = os.path.relpath(path, a.source)

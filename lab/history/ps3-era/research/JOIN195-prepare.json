@@ -1,0 +1,8 @@
+{
+  "at_utc": "2026-10-08T12:27:02.6329062Z",
+  "source_base": "4f18e36201ee3d0517536b482c474ba5e5ed22c0",
+  "source_clean": true,
+  "change": "Private peer/select equipped Ghost slot +0xa=42; model arrangement=2706; no renderer change.",
+  "overlay_sha256": "3b512afc37f6b504a4c9ad1c7b7540276f52f126f231f046c9ee7028c3aeba02",
+  "trace": "# JOIN195: appearance-only candidate, exact profile-to-Ghost-cache reads\n42f144 12 r6:560\n71ec90 32 r3:48 r4:32 r5:12\n2a66dc 48 if=lr==0x71eda0 r3:4\n2d184c 12 r5:12\n2086d8 20 if=lr==0x71edd0 r4:640 r5:4\n2d4ed0 12 r3:12 r4:260\n42edb4 20 r4:12\n2e9124 24 r5:128\n42b51c 4 r3:208\n"
+}

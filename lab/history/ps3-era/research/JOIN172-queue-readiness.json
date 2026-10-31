@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-07T18:17:10.303962+00:00",
+  "queue_object": "0x3063aea8",
+  "queue_enable_8c": 1,
+  "inner": "0x30630518",
+  "inner_connection_state_10f8": 8,
+  "scope": "Non-atomic owned memory read. Queue gate returns true/reject when +8c is0; readiness returns true only when connection state is8. Not sampled at the earlier send."
+}

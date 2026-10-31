@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-07T15:11:21.5255143Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 20696,
+    "startTimeUtcTicks": "639269821117399931",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "address": "0x355d54",
+  "hit_limit": 24,
+  "reason": "Actual native first transition remains loaded but inactive and client resets AH session. Observe exact category/reason/caller during the second handover; no guest memory writes.",
+  "before_sha256": "442847e5847064f2d570943381caa88dfd66e9dc212ffd299d9ac6d2f1edd4b6",
+  "armed_sha256": "2bda60e99964a7026b9e7ac81305386d7e269738c1aa4f33d87ce385a84d7b0e"
+}

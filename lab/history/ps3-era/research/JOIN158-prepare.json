@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-06T19:45:21.4139062Z",
+  "runtime_sha256": "55EFC9072019124BE3E880CA8C881339D057390C47D3BF77C799CCB6DE920259",
+  "depth_candidate_enabled": true,
+  "depth_predicate_checks": 20,
+  "parser_checks": 12,
+  "source_behavior": "Existing guarded depth-only candidate; current synchronization/attachment fixes retained",
+  "trace_enabled": false,
+  "checkpoint_enabled": true,
+  "opening_skip": true,
+  "later_phases": 7
+}

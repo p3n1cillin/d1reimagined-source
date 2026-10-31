@@ -1,0 +1,6 @@
+# JOIN208: capture the actual prop/unit creation arguments and returned datum.
+214478 24 if=lr==0x215bfc r4+0:64
+13f068 24 if=lr==0x2145d0 r4+0:128
+2145d0 24
+# guardian route: fresh player only
+138e24 60512

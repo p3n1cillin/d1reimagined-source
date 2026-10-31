@@ -1,0 +1,42 @@
+{
+  "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\descriptor-negative-result-fixture.log",
+  "trace_counts": {
+    "tag": 1,
+    "submit": 1,
+    "completed": 1
+  },
+  "cap_reached": false,
+  "last_trace": {
+    "line": 3,
+    "message": "completed path=wait eid=12 cmd=0000000000000042 fence=0000000000000043"
+  },
+  "descriptor_failures": [
+    {
+      "validation_line": 4,
+      "validation": "vkResetDescriptorPool(): descriptorPool can't be called on VkDescriptorPool 0x44 that is currently in use by VkCommandBuffer 0x42.",
+      "pool": "0000000000000044",
+      "pending_command": "0000000000000042",
+      "last_tag": {
+        "eid": 12,
+        "cmd": "0000000000000042",
+        "fence": "0000000000000043",
+        "tag_line": 1,
+        "completed": false
+      },
+      "last_submission": {
+        "eid": 12,
+        "cmd": "0000000000000042",
+        "fence": "0000000000000043",
+        "tag_line": 1,
+        "completed": true,
+        "order": 7,
+        "queue": "0000000000000041",
+        "result": -4,
+        "submit_line": 2,
+        "completion_line": 3
+      },
+      "highest_completed_same_queue": null
+    }
+  ],
+  "scope": "Private handle correlation; hypotheses require native validation. No visual acceptance."
+}

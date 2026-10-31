@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-09T12:59:38.2904271Z",
+  "source_base": "c0c9a7a9c4ad7425c4c2b9b23e0af8c9685e3b5a",
+  "source_clean": false,
+  "source_status": [],
+  "change": "Committed mission (fe1d77f): mission rifle drop and grant, Breach Fallen 30 s after the rifle trigger. Aimed-fire helper turns toward the nearest moving non-player entity (0x138e24 hook pointers, position +0x40) and fires R1. No control lines, private overlay or guest writes.",
+  "trace": "# JOIN233: mission-announced starter rifle (no private overlay or control event); pickup path watches.\n5aede4 6 r4:24\n2b2a60 6 r3:128\n2b36f8 400 if=m4:2==0xe0e r4:56\n2b2c00 12 r3:64\n472518 12 r3:64\n",
+  "launch_sha256": "B4E2415DDEEFA80AFBD1877CDA590FC81D660BFDB0D40D61C765E4C0AD2488CD"
+}

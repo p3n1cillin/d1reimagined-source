@@ -1,0 +1,9 @@
+# JOIN221 fifth phase: list executor for type-0x19 commands.
+27d744 6 if=r3==25 r5:128
+27cbb8 4 if=lr==0x1f6fe4 if=m4:1==0x19 r3:32 r4:32
+27d600 8 if=m3:1==0x19 r3:64
+27cb58 8 if=m3:1==0x19 r3:32
+9308dc 4 r3:32
+92ff24 4
+5aede4 12 r4:24
+2b2a60 12 r3:128

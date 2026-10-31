@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-07T13:37:04.5331749Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 17148,
+    "startTimeUtcTicks": "639269769933796606",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "capture_sha256": "c5ae36b0720aef631baba6ecd25cad3e52ce3a5dee8ee062bbdb451da852462c",
+  "capture_build": "714e432f39969b3d19cd585e40963e8ee8670208d9bc7ea853e4e93324ebba6b",
+  "build": "430167a250b8c98dd04b630c651019fbcd7a76fccf5d9b610f8b6e02d9fb2433",
+  "screenshots": [
+    {
+      "sample": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_07_14_36_53.png",
+      "at": "2026-10-07T13:36:53.4249927Z",
+      "bytes": 5458,
+      "sha256": "1ef2cd87457686c177c98070f0c9be68f92ccae3df144f2b2be9059e8462cdef",
+      "core_layer": [
+        {
+          "ModuleName": "VkLayer_khronos_validation.dll",
+          "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+        }
+      ]
+    },
+    {
+      "sample": 2,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_07_14_37_03.png",
+      "at": "2026-10-07T13:37:03.9159864Z",
+      "bytes": 5458,
+      "sha256": "0a8acc9239ee59c0ab999a60e0a6013eda6ef49114a063beb32d493267a8f13b",
+      "core_layer": [
+        {
+          "ModuleName": "VkLayer_khronos_validation.dll",
+          "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+        }
+      ]
+    }
+  ],
+  "native_full_parse": "Native parser reached rendered output; visual inspection pending",
+  "visual_comparison": "NOT RUN",
+  "graphics": "NOT ACCEPTED",
+  "owned_closed": true,
+  "global_restored": true,
+  "title_unchanged": true,
+  "errors": []
+}

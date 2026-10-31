@@ -1,0 +1,13 @@
+{
+  "files": [
+    "rpcs3/Emu/RSX/VK/VKCompute.cpp",
+    "rpcs3/Emu/RSX/VK/VKDraw.cpp",
+    "rpcs3/Emu/RSX/VK/vkutils/commands.cpp",
+    "rpcs3/Emu/RSX/VK/vkutils/commands.h",
+    "rpcs3/Emu/RSX/VK/vkutils/device.cpp",
+    "rpcs3/Emu/RSX/VK/vkutils/device.h",
+    "rpcs3/Emu/RSX/VK/vkutils/shared.cpp"
+  ],
+  "patch_applies": true,
+  "normalized_text_matches_compiled_source": true
+}

@@ -1,0 +1,12 @@
+{
+  "at_utc": "2026-10-08T09:10:32.5983118Z",
+  "client": {
+    "tag": "rpcs3",
+    "id": 3320,
+    "startTimeUtcTicks": "639270469541118409",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "input": "Cross 400 ms",
+  "observed_image": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\BLES01857\\BLES01857_screenshot_2026_10_08_10_09_43.png",
+  "reason": "Model inspected urgent dialog; dismissal occurs after both performance completions, so visible cinematic acceptance is invalid."
+}

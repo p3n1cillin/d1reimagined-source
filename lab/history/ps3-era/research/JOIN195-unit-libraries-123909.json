@@ -1,0 +1,170 @@
+{
+  "utc": "2026-10-08T12:39:09.619510+00:00",
+  "atomic": false,
+  "count": 5,
+  "libraries": [
+    {
+      "index": 0,
+      "handle": "0x80ae4000",
+      "address": "0x700138d0",
+      "count": 2,
+      "matches": [],
+      "ascending_unsigned": true,
+      "inversions": [],
+      "native_binary_search": [
+        {
+          "index": 1,
+          "name": "0x4817d638"
+        },
+        {
+          "index": 0,
+          "name": "0x3d2419b0"
+        }
+      ],
+      "binary_result": null,
+      "entries_sha256": "8247575c35eca87100db6098256c8ba6f40aaffe2bc24f0a19265742171378a5",
+      "header_unchanged": true
+    },
+    {
+      "index": 1,
+      "handle": "0x80b1a000",
+      "address": "0x70361ec0",
+      "count": 20,
+      "matches": [],
+      "ascending_unsigned": true,
+      "inversions": [],
+      "native_binary_search": [
+        {
+          "index": 10,
+          "name": "0x828da96e"
+        },
+        {
+          "index": 5,
+          "name": "0x3baad9fb"
+        },
+        {
+          "index": 2,
+          "name": "0x2603ea13"
+        },
+        {
+          "index": 1,
+          "name": "0x25aeb41a"
+        },
+        {
+          "index": 0,
+          "name": "0x1a379a19"
+        }
+      ],
+      "binary_result": null,
+      "entries_sha256": "e3bb72f2ce4f34dce5ce77ed2358194bb3ef722c49037c3bfff5a73e211024d5",
+      "header_unchanged": true
+    },
+    {
+      "index": 2,
+      "handle": "0x80a7d644",
+      "address": "0x7196bbf0",
+      "count": 9526,
+      "matches": [
+        {
+          "index": 433,
+          "resource": "0x80a6a008"
+        }
+      ],
+      "ascending_unsigned": true,
+      "inversions": [],
+      "native_binary_search": [
+        {
+          "index": 4763,
+          "name": "0x7f81f0c4"
+        },
+        {
+          "index": 2381,
+          "name": "0x41ca5f8b"
+        },
+        {
+          "index": 1190,
+          "name": "0x2027bf9f"
+        },
+        {
+          "index": 595,
+          "name": "0xf858d28"
+        },
+        {
+          "index": 297,
+          "name": "0x82325b8"
+        },
+        {
+          "index": 446,
+          "name": "0xb8ebb09"
+        },
+        {
+          "index": 372,
+          "name": "0x9c06ca4"
+        },
+        {
+          "index": 409,
+          "name": "0xaa3fef7"
+        },
+        {
+          "index": 428,
+          "name": "0xb18eac1"
+        },
+        {
+          "index": 437,
+          "name": "0xb3eaef6"
+        },
+        {
+          "index": 433,
+          "name": "0xb30b1ec"
+        }
+      ],
+      "binary_result": {
+        "index": 433,
+        "resource": "0x80a6a008"
+      },
+      "entries_sha256": "b44dcf5adba628f016f4d56668da29b567fb4c5b4d2c839277d4b10af198c60e",
+      "header_unchanged": true
+    },
+    {
+      "index": 3,
+      "handle": "0x80cda004",
+      "address": "0x728fa090",
+      "count": 2,
+      "matches": [],
+      "ascending_unsigned": true,
+      "inversions": [],
+      "native_binary_search": [
+        {
+          "index": 1,
+          "name": "0xc6b22d98"
+        },
+        {
+          "index": 0,
+          "name": "0x1e68b047"
+        }
+      ],
+      "binary_result": null,
+      "entries_sha256": "ae76af327c2e8e90339f7b4bf8ad8a0e828caa9e23286eadfa598472cf25a47b",
+      "header_unchanged": true
+    },
+    {
+      "index": 4,
+      "handle": "0x80cb8026",
+      "address": "0x721d3fb0",
+      "count": 1,
+      "matches": [],
+      "ascending_unsigned": true,
+      "inversions": [],
+      "native_binary_search": [
+        {
+          "index": 0,
+          "name": "0xad1166cb"
+        }
+      ],
+      "binary_result": null,
+      "entries_sha256": "5adc731068141e5ef3b9083505a1ae8f5b7f8fd34ad605fc455a96f22ae438ac",
+      "header_unchanged": true
+    }
+  ],
+  "rechecks_pass": true
+}

@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-07T07:28:23.4845330Z",
+  "runtime_sha256": "55EFC9072019124BE3E880CA8C881339D057390C47D3BF77C799CCB6DE920259",
+  "depth_candidate_enabled": true,
+  "descriptor_arm_after_start_seconds": 120,
+  "input_hold_ms": 800,
+  "extra_dismisses": 2,
+  "scope": "Repeat current candidate with pre-failure trace and longer menu inputs; no new renderer code"
+}

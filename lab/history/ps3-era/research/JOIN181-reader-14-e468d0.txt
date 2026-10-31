@@ -1,0 +1,28 @@
+00e468d0  7c0802a6  mflr     r0
+00e468d4  4825b8c9  bl       0x10a219c  ; 0x10a219c
+00e468d8  f821ff61  stdu     r1, -0xa0(r1)
+00e468dc  f80100b0  std      r0, 0xb0(r1)
+00e468e0  3c8000e4  lis      r4, 0xe4
+00e468e4  3ca0013e  lis      r5, 0x13e
+00e468e8  3924ffe8  addi     r9, r4, -0x18
+00e468ec  607f0000  ori      r31, r3, 0
+00e468f0  308571c8  addic    r4, r5, 0x71c8
+00e468f4  60c30000  ori      r3, r6, 0
+00e468f8  38e00010  li       r7, 0x10
+00e468fc  c0290000  lfs      f1, 0(r9)
+00e46900  39000013  li       r8, 0x13
+00e46904  c0490004  lfs      f2, 4(r9)
+00e46908  4bda8c51  bl       0xbef558  ; 0xbef558
+00e4690c  38a00070  li       r5, 0x70
+00e46910  38c00080  li       r6, 0x80
+00e46914  30810080  addic    r4, r1, 0x80
+00e46918  63e30000  ori      r3, r31, 0
+00e4691c  7c4509ce  stvx     v2, r5, r1
+00e46920  38a00010  li       r5, 0x10
+00e46924  7c4609ce  stvx     v2, r6, r1
+00e46928  4bb57a59  bl       0x99e380  ; 0x99e380
+00e4692c  382100a0  addi     r1, r1, 0xa0
+00e46930  4825b8d0  b        0x10a2200  ; 0x10a2200
+00e46934  60000000  nop      
+00e46938  60000000  nop      
+00e4693c  60000000  nop      

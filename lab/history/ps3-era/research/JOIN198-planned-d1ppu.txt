@@ -1,0 +1,12 @@
+# JOIN198: appearance=42 plus private Ghost channel 15/cosmetic index 1; distinguish unit, override, cache.
+71ec90 16 r3:48
+71edcc 16 r1+0x74:4 r26:12
+71ed90 16 r1+0x84:8
+2a65a8 16 r3:4
+42fa70 8 r20:824
+71ee68 16 r1+0x7c:4 r23:4
+2d184c 8 r5:260
+2d1880 8 r1+0x70:4
+42fae0 8 r20:824
+c67e8 12 if=lr==0x42fa78 r3:12
+42b51c 4 r3:208

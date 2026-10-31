@@ -1,0 +1,13 @@
+# JOIN221 second phase: gates filtered to the incident path's 0x27d744 frame (r1 0xd010c960).
+27d744 6 if=r3==25 r5:128
+12f9d4 6 if=lr==0x27d774 if=r1==0xd010c960
+bee3a8 6 if=lr==0x27d798 if=r1==0xd010c960
+1db184 6 if=lr==0x27d7b8 if=r1==0xd010c960 r3:32 r4:64
+bee5ec 6 if=lr==0x27d7c8 if=r1==0xd010c960
+bee268 6 if=lr==0x27d7d8 if=r1==0xd010c960 r3:64
+1f6ec8 6 if=lr==0x27d864 if=r1==0xd010c960
+99e380 6 if=lr==0x27d8a4 if=r1==0xd010c960
+1f6f88 6 if=lr==0x27d8ac if=r1==0xd010c960 r3:32
+5aede4 12 r4:24
+2b2a60 12 r3:128
+472518 12 r3:24

@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-08T20:04:37.1297909Z",
+  "source_base": "67b68a1059a82a1bf5638da7ec66b034b47ae17f",
+  "source_clean": true,
+  "server_sha256": "BD1CB362569105FC127646154C25B89CF7BD19B197D59ADDC3AA07A41506725E",
+  "tested_source_diff_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+  "change": "Repeat of JOIN212 (source 67b68a1, automatic Breach chain) with an extra Cross 8 s after slice 112 to dismiss a Message of the Day dialog; hold Square (Z) at the rifle chest.",
+  "trace": "# JOIN213: automatic Breach chain; hold Square (Z) at the rifle chest.\n214478 24 r3+0x110:16\n13f068 24 if=lr==0x2145d0\n"
+}

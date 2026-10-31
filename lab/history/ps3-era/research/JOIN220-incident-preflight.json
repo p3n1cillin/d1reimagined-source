@@ -1,0 +1,63 @@
+{
+  "utc": "2026-10-08T22:50:46.749084+00:00",
+  "mission_timed": 1,
+  "mission_reactive": 58,
+  "body_codec": "0x80800cb6",
+  "payload_selector": 2,
+  "catalog_index": 1504,
+  "bits": 570,
+  "body_bytes": 72,
+  "envelope_bytes": 76,
+  "body_sha256": "f8fd743e1def4c3c1ae9c4b53bb653ef5f85cb97b32bdb8612c61e543cfcc48f",
+  "values": {
+    "0": {
+      "0": 1,
+      "8": {
+        "0": 1,
+        "8": 737745913958637936
+      }
+    },
+    "24": {
+      "0": null
+    },
+    "96": [
+      410.644,
+      -794.385,
+      17.723
+    ],
+    "112": 3
+  },
+  "decoded": {
+    "0": {
+      "0": 1,
+      "8": {
+        "0": 1,
+        "8": 737745913958637936
+      }
+    },
+    "24": {
+      "0": -1,
+      "8": false,
+      "9": false,
+      "10": false,
+      "11": 0,
+      "12": 0,
+      "16": 0,
+      "20": 0,
+      "24": 0,
+      "32": 0,
+      "40": 0,
+      "48": 0,
+      "49": 0,
+      "56": 0
+    },
+    "88": 0,
+    "96": [
+      410.6440124511719,
+      -794.385009765625,
+      17.722999572753906
+    ],
+    "112": 3
+  },
+  "scope": "Schema preflight and synthetic candidate only, native insertion/pickup NOT RUN; event name and original reward nonce unverified."
+}

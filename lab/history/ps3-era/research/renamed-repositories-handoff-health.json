@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-06T19:11:53.6328080Z",
+  "source_head": "a5a437e1a88494741b550c352fbf61e1ff3ede01",
+  "data_head": "f8e4a86662fd15a19536db9eeea7fde0fdad7e79",
+  "owned_join156_remaining": 0,
+  "observer_alive": true,
+  "runtime_sha256": "5d94e44f96007beb94a9b542b7283056533b553e863de573c8857636098e0735",
+  "candidate_sha256": "55efc9072019124be3e880ca8c881339d057390c47d3bf77c799ccb6de920259",
+  "capture": {
+    "CONTENT_CAPTURE_ENABLED": true,
+    "DEVELOPMENT_MACHINE_ID": "<lab-pc>",
+    "LOCAL_OUTBOX_COUNT": 0,
+    "LOCAL_REVIEW_COUNT": 0,
+    "LAST_SUCCESSFUL_TRANSFER": "2026-10-06T18:55:22.047152+01:00",
+    "CURRENT_DEVBLOG": null,
+    "CURRENT_SESSION": "renderer-and-inventory-restoration",
+    "AVAILABLE_BUFFER_SPACE": 1228949422080,
+    "NAS_CONNECTED": true,
+    "updated_at": "2026-10-06T20:11:53.307286+01:00",
+    "RECORDER_STATUS": "IDLE",
+    "ACTIVE_RUN": null,
+    "RECORDER_EXIT": null,
+    "MONITOR_ERROR": null,
+    "SAMPLE_STATUS": "AVAILABLE",
+    "SAMPLE_ERROR": null,
+    "PROCESSING_ERROR": null,
+    "STATUS_UPDATE_DEFERRED": false,
+    "STATUS_UPDATE_ERROR": null,
+    "AVAILABLE_NAS_SPACE": 536707203072,
+    "NAS_TRANSFER_REQUIRED_BYTES": 19798,
+    "NAS_CAPACITY_ERROR": null
+  }
+}

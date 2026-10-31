@@ -1,0 +1,15 @@
+{
+  "utc": "2026-10-08T22:52:33.9540176Z",
+  "source_base": "e5c05bc0e48073d7dce6ff7b683cd40d291bc381",
+  "source_clean": false,
+  "source_status": [
+    " M server/bap_server.py",
+    " M server/incident_codec.py",
+    " M server/investment.py",
+    "?? server/test_incident_encoding.py",
+    "?? server/test_investment_tag_reference.py"
+  ],
+  "change": "Null dynamic-tag-reference encoding and explicit bounded host-incident control under test. Private unarmed starter with one synthetic pending rifle, selector2 catalogindex1504 body80800cb6. No production mission/renderer changes or guest writes; no pickup acceptance yet.",
+  "trace": "# JOIN220: explicit host incident to native loot-cache path, synthetic fixture.\r\n12f2e8 12 r4:96\r\n2700a4 12 r5:32 r5+0xd4:16\r\n5aede4 12 r4:24\r\n2b2a60 12 r3:128\r\n2b2f74 12 r3:48\r\n2b36f8 24 if=m4:2==0xe0e r4:56 r6:48\r\n2b3240 24 if=m5:2==0xe0e r5:56 r6:48\r\n472518 12 r3:24\n",
+  "launch_sha256": "326ACEA39C81B1151083A95A4F55D886AF5A1171A645664AC5D411850EEFDDB5"
+}

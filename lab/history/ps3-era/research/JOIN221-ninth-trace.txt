@@ -1,0 +1,8 @@
+# JOIN221 ninth phase: incident interface role gate 0x1ca6a4 and forwarding 0x1cb0b0.
+27d744 3 if=r3==25
+5aee80 4 if=lr==0x1cae5c r4:32
+1ca6a4 4 if=lr==0x5aee98
+1cb0b0 4 if=lr==0x5aeec0 r3:16 r4:32
+5aede4 12 r4:24
+5aea30 12 r4:24
+2b2a60 12 r3:128

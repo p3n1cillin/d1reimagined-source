@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-09T20:19:27.1501075Z",
+  "source_base": "bb55871b71620a0800f94f5f6cc4a7b6818e20aa",
+  "source_clean": false,
+  "source_status": [],
+  "change": "Read-only watches on the UI dialog show path: 0x752a14 (show by hash, pushes via 0x758bf4 onto the queue at 0x1b3a3ec) and 0x7529d4/0x758a9c. JOIN248 memory scans found the urgent tag 0x80a58505 in that queue block after the grant. Baseline flags; same mission drive. Committed source bb55871. No control lines or guest writes.",
+  "trace": "# JOIN249: UI dialog show calls (queue 0x1b3a3ec) with chains, to name what raises the urgent dialog.\r\n752a14 40 r3:32 r4:32 r5:32 r6:32\r\n7529d4 40 r3:32 r4:32 r5:32 r6:32 r7:32\r\n758bf4 40 r3:32 r4:32 r5:32 r6:32 r7:32\r\n758a9c 40 r3:32 r4:32 r5:32 r6:32 r7:32\n",
+  "launch_sha256": "CEF3471C8206E802BE6542CAB648901F4E69F460F14309244891430A1F809526"
+}

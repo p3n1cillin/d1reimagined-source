@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-07T09:30:27.2066641Z",
+  "build": "ef67aa5cf3c015de130cef958f1abfe345bd92a74964e2c20515e35e238f7645",
+  "source_commit": "dfbf5cae73f0d8f0c00cc9a672bd6de3f95f5790",
+  "source_dirty": false,
+  "ring_off_from_boot": true,
+  "planned_arm_seconds_after_match_observation": 240,
+  "pre_arm_reset_counts_required": true,
+  "checked_native_capture_gate": true,
+  "post_match_seconds": 500,
+  "comparison_phases": 11,
+  "extra_late_phases": 9,
+  "scope": "Delayed diagnostic arm; no new renderer repair or combined graphics acceptance claimed"
+}

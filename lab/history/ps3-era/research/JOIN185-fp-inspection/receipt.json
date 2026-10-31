@@ -1,0 +1,50 @@
+{
+  "utc": "2026-10-08T09:04:16.277962+00:00",
+  "reports": [
+    {
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_50_53.mp4",
+      "verification": {
+        "duration_seconds": 30.23,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 10.48,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      }
+    },
+    {
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_09_51_23.mp4",
+      "verification": {
+        "duration_seconds": 30.26,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 9.7,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      }
+    }
+  ],
+  "frames": [
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\0-4.png",
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\0-10.png",
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\0-16.png",
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\0-22.png",
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\0-28.png",
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\1-4.png",
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\1-10.png",
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\1-16.png",
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\1-22.png",
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN185-fp-inspection\\1-28.png"
+  ],
+  "scope": "Private engineering frame sampling; originals untouched. Not clean publication footage."
+}

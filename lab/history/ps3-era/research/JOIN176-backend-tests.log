@@ -1,0 +1,14 @@
+...................................................................................F....
+======================================================================
+FAIL: test_target_sent_before_live_teleport_completes_on_state_only_arrival (test_bap_teleport_delta.TeleportDeltaSession.test_target_sent_before_live_teleport_completes_on_state_only_arrival)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\d1\d1xenia\server\test_bap_teleport_delta.py", line 93, in test_target_sent_before_live_teleport_completes_on_state_only_arrival
+    self.assertTrue(finished, later)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: [] is not true : [{'zone': 112, 'target': 24, 'teleport': [1, 24, 1754485874], 'version': 3}, {'zone': 112, 'target': 24, 'teleport': [1, 24, 1754485874], 'version': 3}, {'zone': 112, 'target': 24, 'teleport': [1, 24, 1754485874], 'version': 3}]
+
+----------------------------------------------------------------------
+Ran 88 tests in 14.247s
+
+FAILED (failures=1)

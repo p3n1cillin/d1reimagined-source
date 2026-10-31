@@ -1,0 +1,8 @@
+# JOIN194: appearance-only candidate, exact profile-to-Ghost-cache reads
+42f144 12 r6:560
+71ec90 32 r3:48 r4:32 r5:12
+2a66dc 48 if=lr==0x71eda0 r3:4
+2d184c 12 r5:12
+42edb4 20 r4:12
+2e9124 24 r5:128
+42b51c 4 r3:208

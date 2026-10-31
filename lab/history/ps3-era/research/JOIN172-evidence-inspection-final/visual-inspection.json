@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-07T18:31:20.500840+00:00",
+  "run": "FINAL124_JOIN172",
+  "inspected_frames": [
+    {
+      "file": "e2bde2a0bc5b4868b22b7d6fcae952d0-01.png",
+      "observation": "Outdoor cinematic horizon behind urgent dialog; native recording-path notice"
+    },
+    {
+      "file": "e2bde2a0bc5b4868b22b7d6fcae952d0-06.png",
+      "observation": "Outdoor highway/cars/tree behind urgent dialog"
+    },
+    {
+      "file": "3901b67cd46d41ca88a1a590bc367b0a-04.png",
+      "observation": "Cinematic view of cars, urgent dialog persists"
+    }
+  ],
+  "scope": "Actually inspected private original-video QA samples after reconnect; no character/control/combined graphics proof, no useful new gameplay media supplied to production, originals unchanged."
+}

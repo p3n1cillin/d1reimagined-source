@@ -1,0 +1,10 @@
+{
+  "run": "FINAL124_JOIN251",
+  "started_utc": "2026-10-09T21:04:54.486002+00:00",
+  "status": "stopped",
+  "radius": 1.5,
+  "final_radius": 0.25,
+  "continue_breach": true,
+  "reason": "owned emulator or game window has exited",
+  "finished_utc": "2026-10-09T21:05:59.078728+00:00"
+}

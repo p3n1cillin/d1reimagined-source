@@ -1,0 +1,12 @@
+{
+  "at_utc": "2026-10-08T12:31:16.1169945Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 16772,
+    "startTimeUtcTicks": "639270592587013161",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "input": "Cross400ms",
+  "image": "BLES01857_screenshot_2026_10_08_13_30_50.png",
+  "reason": "Inspected urgent dialog. Later cinematic shots can now be assessed; opening few seconds remain obscured."
+}

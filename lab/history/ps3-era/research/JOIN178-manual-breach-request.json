@@ -1,0 +1,38 @@
+{
+  "utc": "2026-10-07T23:22:17.063428+00:00",
+  "run": "JOIN178",
+  "state": {
+    "current": 36,
+    "engine": 3,
+    "stable": true,
+    "native_slice_current": [
+      112,
+      2166136261
+    ],
+    "native_slice_target": [
+      24,
+      1754485874
+    ]
+  },
+  "route_result": {
+    "run": "FINAL124_JOIN178",
+    "started_utc": "2026-10-07T23:18:06.749811+00:00",
+    "status": "route_reached",
+    "final_xyz": [
+      352.5052185058594,
+      -796.57568359375,
+      14.096423149108887
+    ],
+    "finished_utc": "2026-10-07T23:20:10.970690+00:00"
+  },
+  "entity": "0x602c3300",
+  "position": [
+    352.8676452636719,
+    -796.523193359375,
+    14.070785522460938
+  ],
+  "request": {
+    "teleport": "24:0x68935472"
+  },
+  "scope": "Manual existing host-protocol handoff at actual route endpoint, after fresh owned native target24 and engine3. Not a synthetic ACK, guest-memory write or automatic mission fix."
+}

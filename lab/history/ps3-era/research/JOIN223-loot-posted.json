@@ -1,0 +1,70 @@
+{
+  "build": "BLES01857 01.24",
+  "atomic": false,
+  "captured_utc": "2026-10-09T08:13:31.176676+00:00",
+  "manager": "0x600b8f20",
+  "self_character": "0x600eaba8",
+  "character_id": "0x0a3d4a2c8fbea6ba",
+  "current_world_id": 14,
+  "world_controller": "0x60155c80",
+  "world_handle": "0x00000070",
+  "cache_start": 0,
+  "cache_count": 1,
+  "cache": [
+    {
+      "cache_index": 0,
+      "nonce_key": 1,
+      "nonce_id": "0x0a3d000000002170",
+      "position": [
+        410.6440124511719,
+        -794.385009765625,
+        17.722999572753906,
+        1.0
+      ],
+      "world_id": 14
+    }
+  ],
+  "records": [
+    {
+      "slot": 0,
+      "item_index": 3598,
+      "source_kind": 3,
+      "word_04": 1,
+      "nonce_key": 1,
+      "nonce_id": "0x0a3d000000002170",
+      "nonce_word_10": 1,
+      "unit_reference": [
+        "0xed3763f5",
+        "0x7afb81c1"
+      ],
+      "ring_matches": [
+        {
+          "cache_index": 0,
+          "nonce_key": 1,
+          "nonce_id": "0x0a3d000000002170",
+          "position": [
+            410.6440124511719,
+            -794.385009765625,
+            17.722999572753906,
+            1.0
+          ],
+          "world_id": 14
+        }
+      ],
+      "slot_match": {
+        "nonce_key": 1,
+        "nonce_id": "0x0a3d000000002170",
+        "position": [
+          410.6440124511719,
+          -794.385009765625,
+          17.722999572753906,
+          1.0
+        ],
+        "world_id": 14
+      },
+      "world_spawn_source": true,
+      "position_matches_current_world": true
+    }
+  ],
+  "scope": "Read-only prerequisites; unit occupancy, visible loot and successful grants are not verified."
+}

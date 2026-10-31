@@ -1,0 +1,315 @@
+{
+  "at": "2026-10-07T18:24:47.824575+00:00",
+  "run": "FINAL124_JOIN172",
+  "retention_checks": [
+    {
+      "segment": "1256603971ee4f42b4f48ba58ad85548",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_08_43.mp4",
+      "recorded_at": "2026-10-07T18:08:43.1699114+00:00",
+      "bytes": 1728276,
+      "sha256": "b6f066bbd7c468a08cd349e1e1027ee78ab4d3b9ad3a6d1f83fe4cdd9338f848",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "d23634d991d3417eaf0bd469a503832d",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_09_13.mp4",
+      "recorded_at": "2026-10-07T18:09:13.4737510+00:00",
+      "bytes": 3946839,
+      "sha256": "257afc6ba2afddd43652eabb06fa82923d3391a81c52ceab5726dd213247f7d7",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "73d7adc3c344414b87cbb4fa6aff5cd7",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_09_43.mp4",
+      "recorded_at": "2026-10-07T18:09:43.7793562+00:00",
+      "bytes": 2925152,
+      "sha256": "35ba44dd5a6ab2084bee1e730c9fb42916ece679bd18c751e6958d3cb48f3030",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "5c791d70f768467a8ccae3ff3aabd56c",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_10_14.mp4",
+      "recorded_at": "2026-10-07T18:10:14.0929741+00:00",
+      "bytes": 2855691,
+      "sha256": "ec355c0eeadcce6c5837163ee8dc55ea9880989ba24526ef12a906116e5a89f1",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "992a1bc3bc294e998f71d4a0331daaf3",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_10_44.mp4",
+      "recorded_at": "2026-10-07T18:10:44.4060061+00:00",
+      "bytes": 2294365,
+      "sha256": "b22776fbe3a6deb05ca487005a645c3faa48f4708131c2adc608b6ed036011fd",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "1ea3f2ee341c41a896dfabf02cc0e0b1",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_11_14.mp4",
+      "recorded_at": "2026-10-07T18:11:14.7191332+00:00",
+      "bytes": 1608621,
+      "sha256": "2de93307a303ee5d5947775ba520800a7c301946e4f7ee134686fb5d84293980",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "f550662501894932b8fa7b5449877bb4",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_11_45.mp4",
+      "recorded_at": "2026-10-07T18:11:45.2033902+00:00",
+      "bytes": 1802632,
+      "sha256": "d176b079a370df6fd88c2f4a494823cd9c62e8a5c37188a05e73d5586b44c65c",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "30801bd3f1bb4bbb9cd5bce832dc4373",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_12_18.mp4",
+      "recorded_at": "2026-10-07T18:12:18.6410108+00:00",
+      "bytes": 1818439,
+      "sha256": "6128f95185565fd74a5ce57e570d2d8924b2889b3e915a175ab28ac9088c99c7",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "6dc428a8166b4e918b3c504091952ecb",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_12_52.mp4",
+      "recorded_at": "2026-10-07T18:12:52.4080598+00:00",
+      "bytes": 1772693,
+      "sha256": "fd605d5961cc02b449c4cd9eca35ea6c3f9cc903a666489d5aea8aea186245ef",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "a86d46c29d52496bb88c8b59da6c3297",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_13_22.mp4",
+      "recorded_at": "2026-10-07T18:13:22.6478217+00:00",
+      "bytes": 1996334,
+      "sha256": "95f749d9dbf5016353f165ee1e2278c2e24657d987438d0a1c65fffa0bff5acd",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "ec0f3442b0b649e3917c0c628daf862f",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_13_53.mp4",
+      "recorded_at": "2026-10-07T18:13:53.0123588+00:00",
+      "bytes": 1914493,
+      "sha256": "72e717c3f93a6ea04f770f984572003faa2e224fe86d47b451da670432b7ac51",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "34b61e0e84cf46d78d84618c212e6d57",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_14_27.mp4",
+      "recorded_at": "2026-10-07T18:14:27.5576045+00:00",
+      "bytes": 1902877,
+      "sha256": "2ad0269543aff86bee75adb234522fed17c0c6fc60e046db0bfafeac8ef34a16",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "c93c8e18d6604a1487088a921bb2ea42",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_14_58.mp4",
+      "recorded_at": "2026-10-07T18:14:58.6144216+00:00",
+      "bytes": 2256458,
+      "sha256": "a82f438d1f0008f476b4685b271cbe313b81e52a313f09680c198c7af47f8dbc",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "dab741be28dd4026b1ab34f89c146649",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_15_32.mp4",
+      "recorded_at": "2026-10-07T18:15:32.2856806+00:00",
+      "bytes": 5470836,
+      "sha256": "92f4a1097f7407412b7670a9ed6ce5a5ae8c07c36ce013ec2ad32edbf4808ce7",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "a85c6edbacc44ab69880e1f8c9e69bd0",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_16_02.mp4",
+      "recorded_at": "2026-10-07T18:16:02.9324762+00:00",
+      "bytes": 6081367,
+      "sha256": "74a114f74d4885fa05dd4b37b36f70c2dfcacece9177b8363fadcf78c9a49104",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "2ddaaf5318bb441f8d3258eb7b8a0b6a",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_16_34.mp4",
+      "recorded_at": "2026-10-07T18:16:34.9153067+00:00",
+      "bytes": 2033815,
+      "sha256": "ed4820606ef86ee1498b7bf6a6757a8d22d0af368d4a7ac49f887c8bf7e3f61d",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "3e944b02505648c2a46d82704c4097e7",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_17_19.mp4",
+      "recorded_at": "2026-10-07T18:17:19.3573567+00:00",
+      "bytes": 1388738,
+      "sha256": "5efc928398584a235f2fdb07404eaff38f0f9a677f0da39658ea83d026795f71",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "966a8d4eb71e4a96950ac56693154d23",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_17_49.mp4",
+      "recorded_at": "2026-10-07T18:17:49.5737888+00:00",
+      "bytes": 1141671,
+      "sha256": "3172bee658a75500d5a8209b53905187effcc71d5e2c3a6a2a056ad7278c4d51",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "65ca43a295fc4342b9c64b9bdf8e99c9",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_18_21.mp4",
+      "recorded_at": "2026-10-07T18:18:21.4886321+00:00",
+      "bytes": 1397315,
+      "sha256": "1ecf3709964808e3be2f39fd5df6732ee9c7d8f24fe7826c9ab9f7775d13930e",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "a8692c758377496a87a321d927344ad8",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_18_51.mp4",
+      "recorded_at": "2026-10-07T18:18:51.7802919+00:00",
+      "bytes": 1831716,
+      "sha256": "5533a634094c75c217ba8af22f83d947993d5d7c8b9a484a8ae145f476894c5d",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "e2bde2a0bc5b4868b22b7d6fcae952d0",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_19_22.mp4",
+      "recorded_at": "2026-10-07T18:19:21.9890738+00:00",
+      "bytes": 6008490,
+      "sha256": "a46c927f0f7e1907202d7184a6797daab955c0d0d2278e6d955d8d9312ff6164",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    },
+    {
+      "segment": "3901b67cd46d41ca88a1a590bc367b0a",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_19_52.mp4",
+      "recorded_at": "2026-10-07T18:19:52.3392300+00:00",
+      "bytes": 3947743,
+      "sha256": "02028761314dd0e15ac4be2b766c48c4d8cccd1f6535c0c9cfc4facbaa106d26",
+      "hash_matches_index": true,
+      "original_retained": true,
+      "source_recovery": null
+    }
+  ],
+  "unindexed": [
+    {
+      "segment": "40cfe4d2d08446d994e2acfafc7265e5",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_07_42.mp4",
+      "recorded_at": "2026-10-07T18:07:42.6096625+00:00",
+      "original_present": true,
+      "failure": {
+        "error": "Recording failed full decode or has no usable duration",
+        "next_attempt": 1791397724.2610495
+      }
+    },
+    {
+      "segment": "5e7aa7a42c2748de87d370dd0b66a695",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_08_12.mp4",
+      "recorded_at": "2026-10-07T18:08:12.9109603+00:00",
+      "original_present": true,
+      "failure": {
+        "error": "Recording failed full decode or has no usable duration",
+        "next_attempt": 1791397480.9911587
+      }
+    },
+    {
+      "segment": "87cdc86a157143858528244024fa10f7",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_07_12.mp4",
+      "recorded_at": "2026-10-07T18:07:11.1507677+00:00",
+      "original_present": true,
+      "failure": {
+        "error": "Recording failed full decode or has no usable duration",
+        "next_attempt": 1791397519.1021178
+      }
+    }
+  ],
+  "video_inspection": [
+    {
+      "segment": "e2bde2a0bc5b4868b22b7d6fcae952d0",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_19_22.mp4",
+      "recorded_at": "2026-10-07T18:19:21.9890738+00:00",
+      "original_media": {
+        "duration_seconds": 30.3,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 14.1,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      },
+      "original_full_decode": "PASS",
+      "frames": [
+        "e2bde2a0bc5b4868b22b7d6fcae952d0-01.png",
+        "e2bde2a0bc5b4868b22b7d6fcae952d0-02.png",
+        "e2bde2a0bc5b4868b22b7d6fcae952d0-03.png",
+        "e2bde2a0bc5b4868b22b7d6fcae952d0-04.png",
+        "e2bde2a0bc5b4868b22b7d6fcae952d0-05.png",
+        "e2bde2a0bc5b4868b22b7d6fcae952d0-06.png"
+      ],
+      "sampled_file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_19_22.mp4"
+    },
+    {
+      "segment": "3901b67cd46d41ca88a1a590bc367b0a",
+      "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_19_52.mp4",
+      "recorded_at": "2026-10-07T18:19:52.3392300+00:00",
+      "original_media": {
+        "duration_seconds": 18.29,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 12.41,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      },
+      "original_full_decode": "PASS",
+      "frames": [
+        "3901b67cd46d41ca88a1a590bc367b0a-01.png",
+        "3901b67cd46d41ca88a1a590bc367b0a-02.png",
+        "3901b67cd46d41ca88a1a590bc367b0a-03.png",
+        "3901b67cd46d41ca88a1a590bc367b0a-04.png"
+      ],
+      "sampled_file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_07_19_19_52.mp4"
+    }
+  ],
+  "scope": "Untouched originals and truthful decode outcomes; existing recovered derivative copied unchanged when available. Private sampled QA only."
+}

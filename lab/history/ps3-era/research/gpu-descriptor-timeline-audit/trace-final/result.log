@@ -1,0 +1,18 @@
+PASS default trace is disabled
+PASS missing marker keeps trace disabled
+PASS first eligible check polls the exact private marker once
+PASS marker polling is throttled
+PASS next poll arms the trace
+PASS concurrent callers share exactly one process budget
+PASS exhaustion is reported exactly once
+PASS concurrent records do not poll the filesystem again
+PASS removing the marker disables logging
+PASS reactivation cannot reset the process budget
+PASS concurrent ordinal reservations are unique and contiguous
+PASS later submissions retain monotonic order
+PASS read-only diagnostic identity retains the original pointer
+PASS identity inspection does not destroy the resource
+PASS move transfers identity without changing ownership
+PASS moved resource is destroyed exactly once
+PASS moved-from disposal cannot destroy the resource twice
+17 descriptor diagnostic checks, 0 failed

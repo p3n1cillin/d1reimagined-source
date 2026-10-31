@@ -1,0 +1,65 @@
+{
+  "utc": "2026-10-08T09:00:50.398566+00:00",
+  "rows": [
+    {
+      "timestamp": "2026-10-08T09:48:27.947",
+      "incident_types": [
+        2120
+      ],
+      "matches": [
+        false,
+        false
+      ],
+      "expected": [
+        false,
+        false
+      ],
+      "pass": true
+    },
+    {
+      "timestamp": "2026-10-08T09:50:10.441",
+      "incident_types": [
+        734
+      ],
+      "matches": [
+        true,
+        false
+      ],
+      "expected": [
+        true,
+        false
+      ],
+      "pass": true
+    },
+    {
+      "timestamp": "2026-10-08T09:50:51.347",
+      "incident_types": [
+        2120
+      ],
+      "matches": [
+        false,
+        false
+      ],
+      "expected": [
+        false,
+        false
+      ],
+      "pass": true
+    },
+    {
+      "timestamp": "2026-10-08T09:51:47.047",
+      "incident_types": [
+        734
+      ],
+      "matches": [
+        false,
+        true
+      ],
+      "expected": [
+        false,
+        true
+      ],
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+# JOIN179: all type21 initialized producer prefixes; encoder/consumer37-byte scope only.
+48e7f0 80 if=r5==0x15
+4797b8 80 if=lr==0x47a1fc if=m6+1:4==0x15 r6:13 r8:13 r3+0x114:20
+d0fcc 80 if=lr==0x479ae0 if=r25==0x11 if=m24+1:4==0x15 r24:13 r26+0x114:20
+2bb60 80 if=lr==0x479d14 if=m5+1:4==0x15 r5:13 r26+0x114:20 r1+0x70:24
+82db0 20 if=lr==0x47a76c if=m26+4:4==0x11 if=m26+0xc:4==37 r26:24 r26+0x18:88 r28+0x114:20
+5b2610 20 if=lr==0x8c5e18 if=m1+0x70:4==37 r5:14 r1+0x70:8
+8c8220 20 if=lr==0x5b26b0 if=m1+0x100:4==37 r3:14 r4:14
+d98a68 20 if=lr==0x5b26dc if=m1+0x70:4==37 r30:14 r1+0x70:8

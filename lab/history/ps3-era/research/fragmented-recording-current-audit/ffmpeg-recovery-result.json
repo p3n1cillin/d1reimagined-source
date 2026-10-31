@@ -1,0 +1,49 @@
+{
+  "options_from_actual_source": {
+    "movflags": "frag_keyframe+empty_moov+default_base_moof",
+    "frag_duration": "1000000"
+  },
+  "results": [
+    {
+      "format": "mov",
+      "interrupted_decode": {
+        "exit": 0,
+        "frames": 145,
+        "seconds": 4.010667,
+        "error": "[mov,mp4,m4a,3gp,3g2,mj2 @ 000001c3be1ff7c0] stream 0, offset 0xc0424: partial file\n[mpeg4 @ 000001c3be313980] ac-tex damaged at 12 8\n[mpeg4 @ 000001c3be313980] Error at MB: 180\n"
+      },
+      "remux_exit": 0,
+      "remux_decode": {
+        "exit": 0,
+        "frames": 145,
+        "seconds": 4.010667,
+        "error": "[mpeg4 @ 00000232e34828c0] ac-tex damaged at 12 8\n[mpeg4 @ 00000232e34828c0] Error at MB: 180\n"
+      }
+    },
+    {
+      "format": "mp4",
+      "interrupted_decode": {
+        "exit": 0,
+        "frames": 145,
+        "seconds": 4.010667,
+        "error": "[mov,mp4,m4a,3gp,3g2,mj2 @ 00000177c5bef7c0] stream 0, offset 0xc03ed: partial file\n[mpeg4 @ 00000177c5d1b700] ac-tex damaged at 12 8\n[mpeg4 @ 00000177c5d1b700] Error at MB: 180\n"
+      },
+      "remux_exit": 0,
+      "remux_decode": {
+        "exit": 0,
+        "frames": 145,
+        "seconds": 4.010667,
+        "error": "[mpeg4 @ 0000022b05bd28c0] ac-tex damaged at 12 8\n[mpeg4 @ 0000022b05bd28c0] Error at MB: 180\n"
+      }
+    },
+    {
+      "normal_writer_exit": 0,
+      "normal_decode": {
+        "exit": 0,
+        "frames": 90,
+        "seconds": 3.029333,
+        "error": ""
+      }
+    }
+  ]
+}

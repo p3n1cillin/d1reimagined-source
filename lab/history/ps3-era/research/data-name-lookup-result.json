@@ -1,0 +1,14 @@
+[
+  {
+    "pass": true,
+    "case": "missing returns current canonical name"
+  },
+  {
+    "pass": true,
+    "case": "legacy checkout fallback"
+  },
+  {
+    "pass": true,
+    "case": "current name preferred when both exist"
+  }
+]

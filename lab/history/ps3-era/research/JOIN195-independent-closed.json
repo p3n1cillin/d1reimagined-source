@@ -1,0 +1,123 @@
+{
+  "at": "2026-10-08T12:41:24.4079818Z",
+  "checks": [
+    {
+      "identity": {
+        "tag": "dns",
+        "id": 22076,
+        "startTimeUtcTicks": "639270592551209525",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "stun",
+        "id": 22460,
+        "startTimeUtcTicks": "639270592551462282",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "signon",
+        "id": 9104,
+        "startTimeUtcTicks": "639270592551602918",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "lobby",
+        "id": 18960,
+        "startTimeUtcTicks": "639270592555875246",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "bap",
+        "id": 7568,
+        "startTimeUtcTicks": "639270592556484885",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "rpcs3",
+        "id": 16772,
+        "startTimeUtcTicks": "639270592587013161",
+        "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "gdbd",
+        "id": 24400,
+        "startTimeUtcTicks": "639270592629036714",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "proxy",
+        "id": 23956,
+        "startTimeUtcTicks": "639270594104461676",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "session-probe",
+        "id": 24568,
+        "startTimeUtcTicks": "639270594391949211",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "native-recorder",
+        "id": 23580,
+        "startTimeUtcTicks": "639270592667421648",
+        "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "performance-probe",
+        "id": 2648,
+        "startTimeUtcTicks": "639270592961845872",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    }
+  ],
+  "all_exact_owned_closed": true,
+  "configuration": [
+    {
+      "name": "title",
+      "sha256": "22C081E2680A9F81C565860262232AF1296EBEA2831849338BA79BD6E7C2350B",
+      "unchanged": true
+    },
+    {
+      "name": "global",
+      "sha256": "71C7E08939860F78C12A53D095DDC1CCD1525A46D1493714DEE6F9F85D229AB9",
+      "unchanged": true
+    },
+    {
+      "name": "watch",
+      "sha256": "442847E5847064F2D570943381CAA88DFD66E9DC212FFD299D9AC6D2F1EDD4B6",
+      "unchanged": true
+    }
+  ],
+  "all_hashes_match": true
+}

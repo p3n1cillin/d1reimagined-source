@@ -1,0 +1,1 @@
+# JOIN248: no watches. Read-only guest memory scans while the urgent dialog is shown (world entry, after the grant).

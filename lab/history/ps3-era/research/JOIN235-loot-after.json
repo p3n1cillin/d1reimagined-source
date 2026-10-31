@@ -1,0 +1,29 @@
+{
+  "build": "BLES01857 01.24",
+  "atomic": false,
+  "captured_utc": "2026-10-09T13:56:39.218968+00:00",
+  "manager": "0x600b8f20",
+  "self_character": "0x600eaba8",
+  "character_id": "0x0a3d4a2c8fbea6ba",
+  "current_world_id": 3,
+  "world_controller": "0x60155c80",
+  "world_handle": "0x00000018",
+  "cache_start": 0,
+  "cache_count": 1,
+  "cache": [
+    {
+      "cache_index": 0,
+      "nonce_key": 1,
+      "nonce_id": "0x0a3d0000827dbaf0",
+      "position": [
+        410.6440124511719,
+        -794.385009765625,
+        17.722999572753906,
+        1.0
+      ],
+      "world_id": 3
+    }
+  ],
+  "records": [],
+  "scope": "Read-only prerequisites; unit occupancy, visible loot and successful grants are not verified."
+}

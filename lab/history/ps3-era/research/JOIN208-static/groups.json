@@ -1,0 +1,4669 @@
+[
+  {
+    "key": "0x992bb471",
+    "tag": "0x80cb8165",
+    "bytes": 5667,
+    "header": "00001623b22417ae992bb471002b00320000005d0000001c80cc052f00000008000003100000000000000000808001840000005d808007d3000000000000000004000000000005280600000000000551060000000000057e20000000000005ae05000000000005e305000000000006190400000000000651200000000000066a",
+    "arrays": [
+      {
+        "field": "0x10",
+        "count": 93,
+        "offset": "0x40",
+        "class": "0x808007d3",
+        "first": "04000000000005280600000000000551060000000000057e20000000000005ae05000000000005e305000000000006190400000000000651200000000000066a"
+      },
+      {
+        "field": "0x1c",
+        "count": 8,
+        "offset": "0x340",
+        "class": "0x808005e9",
+        "first": "ffffffff14173cc60000002080aad87f00000004000000bcffffffff36d0e1150000002080aad87f00000008000000d4ffffffff420d62e90000002080aad87f"
+      }
+    ],
+    "objects": [
+      {
+        "index": 0,
+        "kind": 4,
+        "name": "cosmo_m0_phase00_highway_intro.skeleton_static_1"
+      },
+      {
+        "index": 1,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res._cinematic"
+      },
+      {
+        "index": 2,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp._cinematic"
+      },
+      {
+        "index": 3,
+        "kind": 32,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_objective"
+      },
+      {
+        "index": 4,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._incoming_sequence"
+      },
+      {
+        "index": 5,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._completion_sequence"
+      },
+      {
+        "index": 6,
+        "kind": 4,
+        "name": "cosmo_m0_phase01_breach.o_weapon"
+      },
+      {
+        "index": 7,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_objective"
+      },
+      {
+        "index": 8,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._incoming_sequence"
+      },
+      {
+        "index": 9,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._completion_sequence"
+      },
+      {
+        "index": 10,
+        "kind": 6,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+      },
+      {
+        "index": 11,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_objective"
+      },
+      {
+        "index": 12,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._incoming_sequence"
+      },
+      {
+        "index": 13,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._completion_sequence"
+      },
+      {
+        "index": 14,
+        "kind": 32,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_objective"
+      },
+      {
+        "index": 15,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._incoming_sequence"
+      },
+      {
+        "index": 16,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._completion_sequence"
+      },
+      {
+        "index": 17,
+        "kind": 32,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._player_objective"
+      },
+      {
+        "index": 18,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._incoming_sequence"
+      },
+      {
+        "index": 19,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._completion_sequence"
+      },
+      {
+        "index": 20,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_objective"
+      },
+      {
+        "index": 21,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._incoming_sequence"
+      },
+      {
+        "index": 22,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._completion_sequence"
+      },
+      {
+        "index": 23,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_objective"
+      },
+      {
+        "index": 24,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._incoming_sequence"
+      },
+      {
+        "index": 25,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._completion_sequence"
+      },
+      {
+        "index": 26,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._player_objective"
+      },
+      {
+        "index": 27,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._incoming_sequence"
+      },
+      {
+        "index": 28,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._completion_sequence"
+      },
+      {
+        "index": 29,
+        "kind": 6,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto._cinematic"
+      },
+      {
+        "index": 30,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_trigger"
+      },
+      {
+        "index": 31,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab"
+      },
+      {
+        "index": 32,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab_1"
+      },
+      {
+        "index": 33,
+        "kind": 28,
+        "name": "cosmo_m0_phase00_highway.pm_in_wall"
+      },
+      {
+        "index": 34,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_trigger"
+      },
+      {
+        "index": 35,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_trigger"
+      },
+      {
+        "index": 36,
+        "kind": 30,
+        "name": "cosmo_m0_phase01_breach.tg_m0_gating"
+      },
+      {
+        "index": 37,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._player_trigger"
+      },
+      {
+        "index": 38,
+        "kind": 29,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_trigger"
+      },
+      {
+        "index": 39,
+        "kind": 29,
+        "name": "cosmo_m0_phase02_graveyard.pt_obj_backup_adv"
+      },
+      {
+        "index": 40,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_trigger"
+      },
+      {
+        "index": 41,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_trigger"
+      },
+      {
+        "index": 42,
+        "kind": 29,
+        "name": "pt_first_obj"
+      },
+      {
+        "index": 43,
+        "kind": 60,
+        "name": "cosmo_m0_phase02_graveyard"
+      },
+      {
+        "index": 44,
+        "kind": 58,
+        "name": "cosmo_m0_phase02_graveyard.tv_obj_backup_adv"
+      },
+      {
+        "index": 45,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04"
+      },
+      {
+        "index": 46,
+        "kind": 44,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._nav_point"
+      },
+      {
+        "index": 47,
+        "kind": 60,
+        "name": "cosmo_m0_phase01_breach"
+      },
+      {
+        "index": 48,
+        "kind": 58,
+        "name": "tv_first_obj"
+      },
+      {
+        "index": 49,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.tv_obj_investigate_wall"
+      },
+      {
+        "index": 50,
+        "kind": 60,
+        "name": "cosmo_m0_phase03_hangar"
+      },
+      {
+        "index": 51,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.tv_obj_m0_m04b"
+      },
+      {
+        "index": 52,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.ap_obj_m0_m04b"
+      },
+      {
+        "index": 53,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar"
+      },
+      {
+        "index": 54,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.sv_m0_gating"
+      },
+      {
+        "index": 55,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall"
+      },
+      {
+        "index": 56,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway"
+      },
+      {
+        "index": 57,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._nav_point"
+      },
+      {
+        "index": 58,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a"
+      },
+      {
+        "index": 59,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._trigger_volume"
+      },
+      {
+        "index": 60,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._nav_point"
+      },
+      {
+        "index": 61,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._trigger_volume"
+      },
+      {
+        "index": 62,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab"
+      },
+      {
+        "index": 63,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab_1"
+      },
+      {
+        "index": 64,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b"
+      },
+      {
+        "index": 65,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._nav_point"
+      },
+      {
+        "index": 66,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr"
+      },
+      {
+        "index": 67,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._trigger[0]"
+      },
+      {
+        "index": 68,
+        "kind": 60,
+        "name": "cosmo_m0_phase04_outro"
+      },
+      {
+        "index": 69,
+        "kind": 59,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto"
+      },
+      {
+        "index": 70,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_in_wall"
+      },
+      {
+        "index": 71,
+        "kind": 55,
+        "name": "cosmo_m0_phase00_highway.breach"
+      },
+      {
+        "index": 72,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon"
+      },
+      {
+        "index": 73,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1"
+      },
+      {
+        "index": 74,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._trigger_volume"
+      },
+      {
+        "index": 75,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res"
+      },
+      {
+        "index": 76,
+        "kind": 55,
+        "name": "cosmo_m0_phase01_breach.graveyard"
+      },
+      {
+        "index": 77,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._trigger_volume"
+      },
+      {
+        "index": 78,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._nav_point"
+      },
+      {
+        "index": 79,
+        "kind": 60,
+        "name": "cosmo_m0_phase01b_breach"
+      },
+      {
+        "index": 80,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard"
+      },
+      {
+        "index": 81,
+        "kind": 55,
+        "name": "cosmo_m0_phase01b_breach.graveyard"
+      },
+      {
+        "index": 82,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway_intro"
+      },
+      {
+        "index": 83,
+        "kind": 61,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._object"
+      },
+      {
+        "index": 84,
+        "kind": 58,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._trigger_volume"
+      },
+      {
+        "index": 85,
+        "kind": 55,
+        "name": "cosmo_m0_phase03_hangar.hangar"
+      },
+      {
+        "index": 86,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp"
+      },
+      {
+        "index": 87,
+        "kind": 44,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._nav_point"
+      },
+      {
+        "index": 88,
+        "kind": 44,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._nav_point"
+      },
+      {
+        "index": 89,
+        "kind": 59,
+        "name": "globals"
+      },
+      {
+        "index": 90,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.globals"
+      },
+      {
+        "index": 91,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.globals"
+      },
+      {
+        "index": 92,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.globals"
+      }
+    ]
+  },
+  {
+    "key": "0xfc0e45a3",
+    "tag": "0x80cb8167",
+    "bytes": 7637,
+    "header": "00001dd5b22417aefc0e45a3008d0067000000f40000001c80a5e9f000000002000007d0000000000000000080800184000000f4808007d300000000000000000400000000000a740400000000000a7d0400000000000a8b0400000000000a970400000000000a9f0400000000000aae0400000000000abb0400000000000ac5",
+    "arrays": [
+      {
+        "field": "0x10",
+        "count": 244,
+        "offset": "0x40",
+        "class": "0x808007d3",
+        "first": "0400000000000a740400000000000a7d0400000000000a8b0400000000000a970400000000000a9f0400000000000aae0400000000000abb0400000000000ac5"
+      },
+      {
+        "field": "0x1c",
+        "count": 2,
+        "offset": "0x800",
+        "class": "0x808005e9",
+        "first": "ffffffff811c9dc50000002080cb820c000000090000002c00000003811c9dc500000020ffffffff000000880000005400000000000000000000000080800184"
+      }
+    ],
+    "objects": [
+      {
+        "index": 0,
+        "kind": 4,
+        "name": "o_breach_control"
+      },
+      {
+        "index": 1,
+        "kind": 4,
+        "name": "o_breach_doors_lights"
+      },
+      {
+        "index": 2,
+        "kind": 4,
+        "name": "o_breach_doors_exit"
+      },
+      {
+        "index": 3,
+        "kind": 4,
+        "name": "o_breach_cables"
+      },
+      {
+        "index": 4,
+        "kind": 4,
+        "name": "o_breach_gating_lights"
+      },
+      {
+        "index": 5,
+        "kind": 4,
+        "name": "o_breach_gating_back"
+      },
+      {
+        "index": 6,
+        "kind": 4,
+        "name": "o_breach_nut_back"
+      },
+      {
+        "index": 7,
+        "kind": 4,
+        "name": "o_chest_primary_weapon"
+      },
+      {
+        "index": 8,
+        "kind": 4,
+        "name": "o_device_invis_light"
+      },
+      {
+        "index": 9,
+        "kind": 4,
+        "name": "o_floor_grate_1a"
+      },
+      {
+        "index": 10,
+        "kind": 4,
+        "name": "o_floor_grate_1b"
+      },
+      {
+        "index": 11,
+        "kind": 4,
+        "name": "o_floor_grate_2a"
+      },
+      {
+        "index": 12,
+        "kind": 4,
+        "name": "o_floor_grate_2b"
+      },
+      {
+        "index": 13,
+        "kind": 4,
+        "name": "o_fallen_tripwire_1"
+      },
+      {
+        "index": 14,
+        "kind": 4,
+        "name": "o_fallen_tripwire_2"
+      },
+      {
+        "index": 15,
+        "kind": 4,
+        "name": "o_fallen_tripwire_3"
+      },
+      {
+        "index": 16,
+        "kind": 4,
+        "name": "o_fallen_tripwire_4"
+      },
+      {
+        "index": 17,
+        "kind": 4,
+        "name": "o_fallen_tripwire_5"
+      },
+      {
+        "index": 18,
+        "kind": 4,
+        "name": "o_fallen_tripwire_6"
+      },
+      {
+        "index": 19,
+        "kind": 4,
+        "name": "o_fallen_tripwire_7"
+      },
+      {
+        "index": 20,
+        "kind": 3,
+        "name": "obj_breach_fallen01"
+      },
+      {
+        "index": 21,
+        "kind": 1,
+        "name": "sq_fallen_first_vandal"
+      },
+      {
+        "index": 22,
+        "kind": 1,
+        "name": "sq_fallen_bouncedown_a"
+      },
+      {
+        "index": 23,
+        "kind": 2,
+        "name": "sq_fallen_bouncedown_a__vandal_blade"
+      },
+      {
+        "index": 24,
+        "kind": 1,
+        "name": "sq_fallen_bouncedown_c"
+      },
+      {
+        "index": 25,
+        "kind": 2,
+        "name": "sq_fallen_bouncedown_c__vandal_blade"
+      },
+      {
+        "index": 26,
+        "kind": 1,
+        "name": "sq_fallen_wall_l_a"
+      },
+      {
+        "index": 27,
+        "kind": 2,
+        "name": "sq_fallen_wall_l_a__dreg"
+      },
+      {
+        "index": 28,
+        "kind": 1,
+        "name": "sq_fallen_floor_a"
+      },
+      {
+        "index": 29,
+        "kind": 2,
+        "name": "sq_fallen_floor_a__dreg"
+      },
+      {
+        "index": 30,
+        "kind": 1,
+        "name": "sq_fallen_floor_b"
+      },
+      {
+        "index": 31,
+        "kind": 2,
+        "name": "sq_fallen_floor_b__dreg"
+      },
+      {
+        "index": 32,
+        "kind": 1,
+        "name": "sq_fallen_wall_r_b"
+      },
+      {
+        "index": 33,
+        "kind": 2,
+        "name": "sq_fallen_wall_r_b__dreg"
+      },
+      {
+        "index": 34,
+        "kind": 1,
+        "name": "sq_fallen_wall_l_b"
+      },
+      {
+        "index": 35,
+        "kind": 2,
+        "name": "sq_fallen_wall_l_b__dreg"
+      },
+      {
+        "index": 36,
+        "kind": 1,
+        "name": "sq_fallen_dropdown_c"
+      },
+      {
+        "index": 37,
+        "kind": 2,
+        "name": "sq_fallen_dropdown_c__dreg"
+      },
+      {
+        "index": 38,
+        "kind": 1,
+        "name": "sq_fallen_wall_l_c"
+      },
+      {
+        "index": 39,
+        "kind": 2,
+        "name": "sq_fallen_wall_l_c__dreg"
+      },
+      {
+        "index": 40,
+        "kind": 1,
+        "name": "sq_fallen_floor_c"
+      },
+      {
+        "index": 41,
+        "kind": 2,
+        "name": "sq_fallen_floor_c__dreg"
+      },
+      {
+        "index": 42,
+        "kind": 1,
+        "name": "sq_fallen_dropdown_e"
+      },
+      {
+        "index": 43,
+        "kind": 2,
+        "name": "sq_fallen_dropdown_e__dreg"
+      },
+      {
+        "index": 44,
+        "kind": 1,
+        "name": "sq_fallen_dropdown_f"
+      },
+      {
+        "index": 45,
+        "kind": 2,
+        "name": "sq_fallen_dropdown_f__dreg"
+      },
+      {
+        "index": 46,
+        "kind": 2,
+        "name": "sq_fallen_dropdown_f__dreg1"
+      },
+      {
+        "index": 47,
+        "kind": 1,
+        "name": "sq_fallen_floor_f"
+      },
+      {
+        "index": 48,
+        "kind": 2,
+        "name": "sq_fallen_floor_f__dreg"
+      },
+      {
+        "index": 49,
+        "kind": 1,
+        "name": "sq_fallen_wall_r_f"
+      },
+      {
+        "index": 50,
+        "kind": 2,
+        "name": "sq_fallen_wall_r_f__dreg"
+      },
+      {
+        "index": 51,
+        "kind": 1,
+        "name": "sq_fallen_dropdown_g"
+      },
+      {
+        "index": 52,
+        "kind": 2,
+        "name": "sq_fallen_dropdown_g__dreg"
+      },
+      {
+        "index": 53,
+        "kind": 1,
+        "name": "sq_fallen_wall_l_g"
+      },
+      {
+        "index": 54,
+        "kind": 2,
+        "name": "sq_fallen_wall_l_g__dreg"
+      },
+      {
+        "index": 55,
+        "kind": 1,
+        "name": "sq_fallen_h"
+      },
+      {
+        "index": 56,
+        "kind": 1,
+        "name": "sq_fallen_1c"
+      },
+      {
+        "index": 57,
+        "kind": 2,
+        "name": "sq_fallen_1c__dreg"
+      },
+      {
+        "index": 58,
+        "kind": 1,
+        "name": "sq_fallen_2"
+      },
+      {
+        "index": 59,
+        "kind": 2,
+        "name": "sq_fallen_2__dreg_a"
+      },
+      {
+        "index": 60,
+        "kind": 2,
+        "name": "sq_fallen_2__dreg_b"
+      },
+      {
+        "index": 61,
+        "kind": 2,
+        "name": "sq_fallen_2__dreg_c"
+      },
+      {
+        "index": 62,
+        "kind": 1,
+        "name": "sq_fallen_bridge"
+      },
+      {
+        "index": 63,
+        "kind": 1,
+        "name": "sq_fallen_sniper"
+      },
+      {
+        "index": 64,
+        "kind": 1,
+        "name": "sq_fallen_garage_obj"
+      },
+      {
+        "index": 65,
+        "kind": 2,
+        "name": "sq_fallen_garage_obj__dreg1"
+      },
+      {
+        "index": 66,
+        "kind": 2,
+        "name": "sq_fallen_garage_obj__dreg2"
+      },
+      {
+        "index": 67,
+        "kind": 2,
+        "name": "sq_fallen_garage_obj__dreg3"
+      },
+      {
+        "index": 68,
+        "kind": 1,
+        "name": "sq_fallen_garage_melee"
+      },
+      {
+        "index": 69,
+        "kind": 2,
+        "name": "sq_fallen_garage_melee__dreg1"
+      },
+      {
+        "index": 70,
+        "kind": 2,
+        "name": "sq_fallen_garage_melee__dreg2"
+      },
+      {
+        "index": 71,
+        "kind": 2,
+        "name": "sq_fallen_garage_melee__dreg3"
+      },
+      {
+        "index": 72,
+        "kind": 1,
+        "name": "sq_fallen_garage_vandals_2"
+      },
+      {
+        "index": 73,
+        "kind": 2,
+        "name": "sq_fallen_garage_vandals_2__vandal_2"
+      },
+      {
+        "index": 74,
+        "kind": 1,
+        "name": "sq_fallen_garage_vandals_3"
+      },
+      {
+        "index": 75,
+        "kind": 2,
+        "name": "sq_fallen_garage_vandals_3__vandal_3"
+      },
+      {
+        "index": 76,
+        "kind": 1,
+        "name": "sq_fallen_garage_exit"
+      },
+      {
+        "index": 77,
+        "kind": 1,
+        "name": "sq_fallen_nest1"
+      },
+      {
+        "index": 78,
+        "kind": 2,
+        "name": "sq_fallen_nest1__dropper1"
+      },
+      {
+        "index": 79,
+        "kind": 2,
+        "name": "sq_fallen_nest1__crawler1"
+      },
+      {
+        "index": 80,
+        "kind": 2,
+        "name": "sq_fallen_nest1__crawler5"
+      },
+      {
+        "index": 81,
+        "kind": 2,
+        "name": "sq_fallen_nest1__crawler2"
+      },
+      {
+        "index": 82,
+        "kind": 2,
+        "name": "sq_fallen_nest1__crawler3"
+      },
+      {
+        "index": 83,
+        "kind": 2,
+        "name": "sq_fallen_nest1__crawler4"
+      },
+      {
+        "index": 84,
+        "kind": 2,
+        "name": "sq_fallen_nest1__swinger1"
+      },
+      {
+        "index": 85,
+        "kind": 2,
+        "name": "sq_fallen_nest1__runner1"
+      },
+      {
+        "index": 86,
+        "kind": 1,
+        "name": "sq_fallen_nest2"
+      },
+      {
+        "index": 87,
+        "kind": 2,
+        "name": "sq_fallen_nest2__crawler6"
+      },
+      {
+        "index": 88,
+        "kind": 2,
+        "name": "sq_fallen_nest2__crawler7"
+      },
+      {
+        "index": 89,
+        "kind": 2,
+        "name": "sq_fallen_nest2__runner3"
+      },
+      {
+        "index": 90,
+        "kind": 2,
+        "name": "sq_fallen_nest2__runner4"
+      },
+      {
+        "index": 91,
+        "kind": 2,
+        "name": "sq_fallen_nest2__crawler8"
+      },
+      {
+        "index": 92,
+        "kind": 2,
+        "name": "sq_fallen_nest2__shank1"
+      },
+      {
+        "index": 93,
+        "kind": 2,
+        "name": "sq_fallen_nest2__shank2"
+      },
+      {
+        "index": 94,
+        "kind": 1,
+        "name": "sq_nux_ghost"
+      },
+      {
+        "index": 95,
+        "kind": 2,
+        "name": "sq_nux_ghost__ghost"
+      },
+      {
+        "index": 96,
+        "kind": 5,
+        "name": "seq_fallen_intro_vandal_drop"
+      },
+      {
+        "index": 97,
+        "kind": 5,
+        "name": "seq_breach_fallen_grate_intro"
+      },
+      {
+        "index": 98,
+        "kind": 5,
+        "name": "seq_fallen_vault_left"
+      },
+      {
+        "index": 99,
+        "kind": 5,
+        "name": "seq_fallen_vault_right"
+      },
+      {
+        "index": 100,
+        "kind": 5,
+        "name": "seq_breach_fallen_drop"
+      },
+      {
+        "index": 101,
+        "kind": 24,
+        "name": "ho_ghostlight"
+      },
+      {
+        "index": 102,
+        "kind": 29,
+        "name": "pt_mission01_complete"
+      },
+      {
+        "index": 103,
+        "kind": 29,
+        "name": "pt_mission02_complete"
+      },
+      {
+        "index": 104,
+        "kind": 29,
+        "name": "pt_tripmines"
+      },
+      {
+        "index": 105,
+        "kind": 29,
+        "name": "pt_bubble"
+      },
+      {
+        "index": 106,
+        "kind": 29,
+        "name": "pt_fallen_vandal_spawn"
+      },
+      {
+        "index": 107,
+        "kind": 29,
+        "name": "pt_fallen_3_spawn"
+      },
+      {
+        "index": 108,
+        "kind": 29,
+        "name": "pt_fallen_1b_spawn"
+      },
+      {
+        "index": 109,
+        "kind": 29,
+        "name": "pt_fallen_b_spawn"
+      },
+      {
+        "index": 110,
+        "kind": 29,
+        "name": "pt_fallen_c_spawn"
+      },
+      {
+        "index": 111,
+        "kind": 29,
+        "name": "pt_fallen_melee"
+      },
+      {
+        "index": 112,
+        "kind": 29,
+        "name": "pt_fallen_arena_spawn"
+      },
+      {
+        "index": 113,
+        "kind": 29,
+        "name": "pt_bridge"
+      },
+      {
+        "index": 114,
+        "kind": 29,
+        "name": "pt_corr_spawn_b"
+      },
+      {
+        "index": 115,
+        "kind": 29,
+        "name": "pt_corr_spawn_b_melee"
+      },
+      {
+        "index": 116,
+        "kind": 29,
+        "name": "pt_corr_spawn_b_rear"
+      },
+      {
+        "index": 117,
+        "kind": 29,
+        "name": "pt_garage_fallback"
+      },
+      {
+        "index": 118,
+        "kind": 29,
+        "name": "pt_fallen_vandal_fallback"
+      },
+      {
+        "index": 119,
+        "kind": 29,
+        "name": "pt_exit"
+      },
+      {
+        "index": 120,
+        "kind": 29,
+        "name": "pt_nux_ghost_light_up_start"
+      },
+      {
+        "index": 121,
+        "kind": 29,
+        "name": "pt_nux_ghost_light_up_continue"
+      },
+      {
+        "index": 122,
+        "kind": 29,
+        "name": "pt_nux_first_fallen_wall_climb"
+      },
+      {
+        "index": 123,
+        "kind": 28,
+        "name": "pm_nux_ghost_light_up_fly_to_gun"
+      },
+      {
+        "index": 124,
+        "kind": 33,
+        "name": "of_ghostlight"
+      },
+      {
+        "index": 125,
+        "kind": 40,
+        "name": "nux_ghost"
+      },
+      {
+        "index": 126,
+        "kind": 40,
+        "name": "dropper1"
+      },
+      {
+        "index": 127,
+        "kind": 40,
+        "name": "crawler1"
+      },
+      {
+        "index": 128,
+        "kind": 40,
+        "name": "crawler2"
+      },
+      {
+        "index": 129,
+        "kind": 40,
+        "name": "crawler3"
+      },
+      {
+        "index": 130,
+        "kind": 40,
+        "name": "crawler4"
+      },
+      {
+        "index": 131,
+        "kind": 40,
+        "name": "crawler5"
+      },
+      {
+        "index": 132,
+        "kind": 40,
+        "name": "swinger1"
+      },
+      {
+        "index": 133,
+        "kind": 40,
+        "name": "runner1"
+      },
+      {
+        "index": 134,
+        "kind": 40,
+        "name": "crawler6"
+      },
+      {
+        "index": 135,
+        "kind": 40,
+        "name": "crawler7"
+      },
+      {
+        "index": 136,
+        "kind": 40,
+        "name": "runner3"
+      },
+      {
+        "index": 137,
+        "kind": 40,
+        "name": "runner4"
+      },
+      {
+        "index": 138,
+        "kind": 40,
+        "name": "crawler8"
+      },
+      {
+        "index": 139,
+        "kind": 40,
+        "name": "shank1"
+      },
+      {
+        "index": 140,
+        "kind": 40,
+        "name": "shank2"
+      },
+      {
+        "index": 141,
+        "kind": 41,
+        "name": "fa_e3_entry"
+      },
+      {
+        "index": 142,
+        "kind": 41,
+        "name": "fa_e3_entry_search"
+      },
+      {
+        "index": 143,
+        "kind": 41,
+        "name": "fa_e3_entry_small"
+      },
+      {
+        "index": 144,
+        "kind": 41,
+        "name": "fa_e3_balcony_front"
+      },
+      {
+        "index": 145,
+        "kind": 41,
+        "name": "fa_e3_balcony_rear"
+      },
+      {
+        "index": 146,
+        "kind": 41,
+        "name": "fa_e3_mid_big"
+      },
+      {
+        "index": 147,
+        "kind": 41,
+        "name": "fa_e3_mid_left"
+      },
+      {
+        "index": 148,
+        "kind": 41,
+        "name": "fa_e3_mid_right"
+      },
+      {
+        "index": 149,
+        "kind": 41,
+        "name": "fa_e3_mid"
+      },
+      {
+        "index": 150,
+        "kind": 41,
+        "name": "fa_e3_rear"
+      },
+      {
+        "index": 151,
+        "kind": 41,
+        "name": "fa_e3_rear_small"
+      },
+      {
+        "index": 152,
+        "kind": 41,
+        "name": "fa_e3_exit"
+      },
+      {
+        "index": 153,
+        "kind": 41,
+        "name": "fa_obj"
+      },
+      {
+        "index": 154,
+        "kind": 41,
+        "name": "fa_bridge_rear_only"
+      },
+      {
+        "index": 155,
+        "kind": 41,
+        "name": "firingarea"
+      },
+      {
+        "index": 156,
+        "kind": 41,
+        "name": "firingarea_1"
+      },
+      {
+        "index": 157,
+        "kind": 58,
+        "name": "tv_fallen_1b_spawn"
+      },
+      {
+        "index": 158,
+        "kind": 58,
+        "name": "tv_fallen_3_spawn"
+      },
+      {
+        "index": 159,
+        "kind": 58,
+        "name": "tv_fallen_b_spawn"
+      },
+      {
+        "index": 160,
+        "kind": 58,
+        "name": "tv_fallen_c_spawn"
+      },
+      {
+        "index": 161,
+        "kind": 58,
+        "name": "tv_fallen_melee"
+      },
+      {
+        "index": 162,
+        "kind": 58,
+        "name": "tv_fallen_arena_spawn"
+      },
+      {
+        "index": 163,
+        "kind": 58,
+        "name": "tv_bridge"
+      },
+      {
+        "index": 164,
+        "kind": 58,
+        "name": "tv_corr_spawn_b"
+      },
+      {
+        "index": 165,
+        "kind": 58,
+        "name": "tv_corr_spawn_b_melee"
+      },
+      {
+        "index": 166,
+        "kind": 58,
+        "name": "tv_corr_spawn_b_rear"
+      },
+      {
+        "index": 167,
+        "kind": 58,
+        "name": "tv_fallen_vandal_spawn"
+      },
+      {
+        "index": 168,
+        "kind": 58,
+        "name": "tv_mission01_complete"
+      },
+      {
+        "index": 169,
+        "kind": 58,
+        "name": "tv_mission02_complete"
+      },
+      {
+        "index": 170,
+        "kind": 58,
+        "name": "tv_garage_fallback"
+      },
+      {
+        "index": 171,
+        "kind": 58,
+        "name": "tv_fallen_vandal_fallback"
+      },
+      {
+        "index": 172,
+        "kind": 58,
+        "name": "tv_exit"
+      },
+      {
+        "index": 173,
+        "kind": 58,
+        "name": "tv_nux_ghost_light_up_start"
+      },
+      {
+        "index": 174,
+        "kind": 58,
+        "name": "tv_nux_ghost_light_up_continue"
+      },
+      {
+        "index": 175,
+        "kind": 58,
+        "name": "tv_tripmines"
+      },
+      {
+        "index": 176,
+        "kind": 58,
+        "name": "tv_nux_first_fallen_wall_climb"
+      },
+      {
+        "index": 177,
+        "kind": 58,
+        "name": "tv_nux_ghost_light_up_fly_to_gun"
+      },
+      {
+        "index": 178,
+        "kind": 58,
+        "name": "killvolume"
+      },
+      {
+        "index": 179,
+        "kind": 58,
+        "name": "killvolume_2"
+      },
+      {
+        "index": 180,
+        "kind": 58,
+        "name": "sov_breach"
+      },
+      {
+        "index": 181,
+        "kind": 45,
+        "name": "ps_fallen_1"
+      },
+      {
+        "index": 182,
+        "kind": 45,
+        "name": "ps_garage_fallen_1"
+      },
+      {
+        "index": 183,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_22"
+      },
+      {
+        "index": 184,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_23"
+      },
+      {
+        "index": 185,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_24"
+      },
+      {
+        "index": 186,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_25"
+      },
+      {
+        "index": 187,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_26"
+      },
+      {
+        "index": 188,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_27"
+      },
+      {
+        "index": 189,
+        "kind": 58,
+        "name": "[killVolume_1]"
+      },
+      {
+        "index": 190,
+        "kind": 58,
+        "name": "[killVolume_2]"
+      },
+      {
+        "index": 191,
+        "kind": 58,
+        "name": "[killVolume_3]"
+      },
+      {
+        "index": 192,
+        "kind": 58,
+        "name": "[killVolume_4]"
+      },
+      {
+        "index": 193,
+        "kind": 58,
+        "name": "[killVolume_5]"
+      },
+      {
+        "index": 194,
+        "kind": 55,
+        "name": "breach"
+      },
+      {
+        "index": 195,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_1"
+      },
+      {
+        "index": 196,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_2"
+      },
+      {
+        "index": 197,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_3"
+      },
+      {
+        "index": 198,
+        "kind": 43,
+        "name": "sg_garage_vandals"
+      },
+      {
+        "index": 199,
+        "kind": 43,
+        "name": "sg_garage_all"
+      },
+      {
+        "index": 200,
+        "kind": 43,
+        "name": "sg_drop_downs_melee"
+      },
+      {
+        "index": 201,
+        "kind": 43,
+        "name": "sg_drop_downs_a"
+      },
+      {
+        "index": 202,
+        "kind": 43,
+        "name": "sg_drop_downs_b"
+      },
+      {
+        "index": 203,
+        "kind": 43,
+        "name": "sg_drop_downs_c"
+      },
+      {
+        "index": 204,
+        "kind": 43,
+        "name": "sg_drop_downs_f"
+      },
+      {
+        "index": 205,
+        "kind": 43,
+        "name": "sg_drop_downs_g"
+      },
+      {
+        "index": 206,
+        "kind": 43,
+        "name": "sg_arena_one"
+      },
+      {
+        "index": 207,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_4"
+      },
+      {
+        "index": 208,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_5"
+      },
+      {
+        "index": 209,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_6"
+      },
+      {
+        "index": 210,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_7"
+      },
+      {
+        "index": 211,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_8"
+      },
+      {
+        "index": 212,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_9"
+      },
+      {
+        "index": 213,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_10"
+      },
+      {
+        "index": 214,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_11"
+      },
+      {
+        "index": 215,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_12"
+      },
+      {
+        "index": 216,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_13"
+      },
+      {
+        "index": 217,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_14"
+      },
+      {
+        "index": 218,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_15"
+      },
+      {
+        "index": 219,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_16"
+      },
+      {
+        "index": 220,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_17"
+      },
+      {
+        "index": 221,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_18"
+      },
+      {
+        "index": 222,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_19"
+      },
+      {
+        "index": 223,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_20"
+      },
+      {
+        "index": 224,
+        "kind": 42,
+        "name": "__influencer_firing_area_set_21"
+      },
+      {
+        "index": 225,
+        "kind": 41,
+        "name": "fa_corr_1_all"
+      },
+      {
+        "index": 226,
+        "kind": 41,
+        "name": "fa_corr_1_front"
+      },
+      {
+        "index": 227,
+        "kind": 41,
+        "name": "fa_corr_1_mid"
+      },
+      {
+        "index": 228,
+        "kind": 41,
+        "name": "fa_corr_1_mid_fallback"
+      },
+      {
+        "index": 229,
+        "kind": 41,
+        "name": "fa_corr_1_rear"
+      },
+      {
+        "index": 230,
+        "kind": 41,
+        "name": "fa_corr_1_rear_fallback"
+      },
+      {
+        "index": 231,
+        "kind": 41,
+        "name": "fa_corr_1_rear_vandal"
+      },
+      {
+        "index": 232,
+        "kind": 41,
+        "name": "fa_vandal_drop"
+      },
+      {
+        "index": 233,
+        "kind": 41,
+        "name": "fa_vandal_approach"
+      },
+      {
+        "index": 234,
+        "kind": 41,
+        "name": "fa_overlook"
+      },
+      {
+        "index": 235,
+        "kind": 41,
+        "name": "fa_bridge_front"
+      },
+      {
+        "index": 236,
+        "kind": 41,
+        "name": "fa_bridge_right"
+      },
+      {
+        "index": 237,
+        "kind": 41,
+        "name": "fa_bridge_rear"
+      },
+      {
+        "index": 238,
+        "kind": 41,
+        "name": "fa_corr_2_all"
+      },
+      {
+        "index": 239,
+        "kind": 41,
+        "name": "fa_corr_2_front"
+      },
+      {
+        "index": 240,
+        "kind": 41,
+        "name": "fa_corr_2_mid"
+      },
+      {
+        "index": 241,
+        "kind": 41,
+        "name": "fa_corr_2_rear"
+      },
+      {
+        "index": 242,
+        "kind": 41,
+        "name": "fa_corr_2_rear_fallback"
+      },
+      {
+        "index": 243,
+        "kind": 59,
+        "name": "globals"
+      }
+    ]
+  },
+  {
+    "key": "0x992bb471",
+    "tag": "0x80cb83dd",
+    "bytes": 5699,
+    "header": "00001643b22417ae992bb471002b00320000005d0000001c80cc052f00000009000003100000000000000000808001840000005d808007d3000000000000000004000000000005480600000000000571060000000000059e20000000000005ce050000000000060305000000000006390400000000000671200000000000068a",
+    "arrays": [
+      {
+        "field": "0x10",
+        "count": 93,
+        "offset": "0x40",
+        "class": "0x808007d3",
+        "first": "04000000000005480600000000000571060000000000059e20000000000005ce050000000000060305000000000006390400000000000671200000000000068a"
+      },
+      {
+        "field": "0x1c",
+        "count": 9,
+        "offset": "0x340",
+        "class": "0x808005e9",
+        "first": "ffffffff14173cc60000002080aad87f00000004000000ccffffffff36d0e1150000002080aad87f00000008000000e4ffffffff420d62e90000002080aad87f"
+      }
+    ],
+    "objects": [
+      {
+        "index": 0,
+        "kind": 4,
+        "name": "cosmo_m0_phase00_highway_intro.skeleton_static_1"
+      },
+      {
+        "index": 1,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res._cinematic"
+      },
+      {
+        "index": 2,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp._cinematic"
+      },
+      {
+        "index": 3,
+        "kind": 32,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_objective"
+      },
+      {
+        "index": 4,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._incoming_sequence"
+      },
+      {
+        "index": 5,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._completion_sequence"
+      },
+      {
+        "index": 6,
+        "kind": 4,
+        "name": "cosmo_m0_phase01_breach.o_weapon"
+      },
+      {
+        "index": 7,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_objective"
+      },
+      {
+        "index": 8,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._incoming_sequence"
+      },
+      {
+        "index": 9,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._completion_sequence"
+      },
+      {
+        "index": 10,
+        "kind": 6,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+      },
+      {
+        "index": 11,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_objective"
+      },
+      {
+        "index": 12,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._incoming_sequence"
+      },
+      {
+        "index": 13,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._completion_sequence"
+      },
+      {
+        "index": 14,
+        "kind": 32,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_objective"
+      },
+      {
+        "index": 15,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._incoming_sequence"
+      },
+      {
+        "index": 16,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._completion_sequence"
+      },
+      {
+        "index": 17,
+        "kind": 32,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._player_objective"
+      },
+      {
+        "index": 18,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._incoming_sequence"
+      },
+      {
+        "index": 19,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._completion_sequence"
+      },
+      {
+        "index": 20,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_objective"
+      },
+      {
+        "index": 21,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._incoming_sequence"
+      },
+      {
+        "index": 22,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._completion_sequence"
+      },
+      {
+        "index": 23,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_objective"
+      },
+      {
+        "index": 24,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._incoming_sequence"
+      },
+      {
+        "index": 25,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._completion_sequence"
+      },
+      {
+        "index": 26,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._player_objective"
+      },
+      {
+        "index": 27,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._incoming_sequence"
+      },
+      {
+        "index": 28,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._completion_sequence"
+      },
+      {
+        "index": 29,
+        "kind": 6,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto._cinematic"
+      },
+      {
+        "index": 30,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_trigger"
+      },
+      {
+        "index": 31,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab"
+      },
+      {
+        "index": 32,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab_1"
+      },
+      {
+        "index": 33,
+        "kind": 28,
+        "name": "cosmo_m0_phase00_highway.pm_in_wall"
+      },
+      {
+        "index": 34,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_trigger"
+      },
+      {
+        "index": 35,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_trigger"
+      },
+      {
+        "index": 36,
+        "kind": 30,
+        "name": "cosmo_m0_phase01_breach.tg_m0_gating"
+      },
+      {
+        "index": 37,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._player_trigger"
+      },
+      {
+        "index": 38,
+        "kind": 29,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_trigger"
+      },
+      {
+        "index": 39,
+        "kind": 29,
+        "name": "cosmo_m0_phase02_graveyard.pt_obj_backup_adv"
+      },
+      {
+        "index": 40,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_trigger"
+      },
+      {
+        "index": 41,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_trigger"
+      },
+      {
+        "index": 42,
+        "kind": 29,
+        "name": "pt_first_obj"
+      },
+      {
+        "index": 43,
+        "kind": 60,
+        "name": "cosmo_m0_phase02_graveyard"
+      },
+      {
+        "index": 44,
+        "kind": 58,
+        "name": "cosmo_m0_phase02_graveyard.tv_obj_backup_adv"
+      },
+      {
+        "index": 45,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04"
+      },
+      {
+        "index": 46,
+        "kind": 44,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._nav_point"
+      },
+      {
+        "index": 47,
+        "kind": 60,
+        "name": "cosmo_m0_phase01_breach"
+      },
+      {
+        "index": 48,
+        "kind": 58,
+        "name": "tv_first_obj"
+      },
+      {
+        "index": 49,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.tv_obj_investigate_wall"
+      },
+      {
+        "index": 50,
+        "kind": 60,
+        "name": "cosmo_m0_phase03_hangar"
+      },
+      {
+        "index": 51,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.tv_obj_m0_m04b"
+      },
+      {
+        "index": 52,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.ap_obj_m0_m04b"
+      },
+      {
+        "index": 53,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar"
+      },
+      {
+        "index": 54,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.sv_m0_gating"
+      },
+      {
+        "index": 55,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall"
+      },
+      {
+        "index": 56,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway"
+      },
+      {
+        "index": 57,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._nav_point"
+      },
+      {
+        "index": 58,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a"
+      },
+      {
+        "index": 59,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._trigger_volume"
+      },
+      {
+        "index": 60,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._nav_point"
+      },
+      {
+        "index": 61,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._trigger_volume"
+      },
+      {
+        "index": 62,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab"
+      },
+      {
+        "index": 63,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab_1"
+      },
+      {
+        "index": 64,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b"
+      },
+      {
+        "index": 65,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._nav_point"
+      },
+      {
+        "index": 66,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr"
+      },
+      {
+        "index": 67,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._trigger[0]"
+      },
+      {
+        "index": 68,
+        "kind": 60,
+        "name": "cosmo_m0_phase04_outro"
+      },
+      {
+        "index": 69,
+        "kind": 59,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto"
+      },
+      {
+        "index": 70,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_in_wall"
+      },
+      {
+        "index": 71,
+        "kind": 55,
+        "name": "cosmo_m0_phase00_highway.breach"
+      },
+      {
+        "index": 72,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon"
+      },
+      {
+        "index": 73,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1"
+      },
+      {
+        "index": 74,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._trigger_volume"
+      },
+      {
+        "index": 75,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res"
+      },
+      {
+        "index": 76,
+        "kind": 55,
+        "name": "cosmo_m0_phase01_breach.graveyard"
+      },
+      {
+        "index": 77,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._trigger_volume"
+      },
+      {
+        "index": 78,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._nav_point"
+      },
+      {
+        "index": 79,
+        "kind": 60,
+        "name": "cosmo_m0_phase01b_breach"
+      },
+      {
+        "index": 80,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard"
+      },
+      {
+        "index": 81,
+        "kind": 55,
+        "name": "cosmo_m0_phase01b_breach.graveyard"
+      },
+      {
+        "index": 82,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway_intro"
+      },
+      {
+        "index": 83,
+        "kind": 61,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._object"
+      },
+      {
+        "index": 84,
+        "kind": 58,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._trigger_volume"
+      },
+      {
+        "index": 85,
+        "kind": 55,
+        "name": "cosmo_m0_phase03_hangar.hangar"
+      },
+      {
+        "index": 86,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp"
+      },
+      {
+        "index": 87,
+        "kind": 44,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._nav_point"
+      },
+      {
+        "index": 88,
+        "kind": 44,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._nav_point"
+      },
+      {
+        "index": 89,
+        "kind": 59,
+        "name": "globals"
+      },
+      {
+        "index": 90,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.globals"
+      },
+      {
+        "index": 91,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.globals"
+      },
+      {
+        "index": 92,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.globals"
+      }
+    ]
+  },
+  {
+    "key": "0x992bb471",
+    "tag": "0x80cb8683",
+    "bytes": 5595,
+    "header": "000015dbb22417ae992bb471002b00320000005d0000001c80cc052f00000007000003100000000000000000808001840000005d808007d3000000000000000004000000000004e0060000000000050906000000000005362000000000000566050000000000059b05000000000005d104000000000006092000000000000622",
+    "arrays": [
+      {
+        "field": "0x10",
+        "count": 93,
+        "offset": "0x40",
+        "class": "0x808007d3",
+        "first": "04000000000004e0060000000000050906000000000005362000000000000566050000000000059b05000000000005d104000000000006092000000000000622"
+      },
+      {
+        "field": "0x1c",
+        "count": 7,
+        "offset": "0x340",
+        "class": "0x808005e9",
+        "first": "ffffffff14173cc60000002080aad87f000000040000009cffffffff36d0e1150000002080aad87f00000008000000b4ffffffff420d62e90000002080aad87f"
+      }
+    ],
+    "objects": [
+      {
+        "index": 0,
+        "kind": 4,
+        "name": "cosmo_m0_phase00_highway_intro.skeleton_static_1"
+      },
+      {
+        "index": 1,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res._cinematic"
+      },
+      {
+        "index": 2,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp._cinematic"
+      },
+      {
+        "index": 3,
+        "kind": 32,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_objective"
+      },
+      {
+        "index": 4,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._incoming_sequence"
+      },
+      {
+        "index": 5,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._completion_sequence"
+      },
+      {
+        "index": 6,
+        "kind": 4,
+        "name": "cosmo_m0_phase01_breach.o_weapon"
+      },
+      {
+        "index": 7,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_objective"
+      },
+      {
+        "index": 8,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._incoming_sequence"
+      },
+      {
+        "index": 9,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._completion_sequence"
+      },
+      {
+        "index": 10,
+        "kind": 6,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+      },
+      {
+        "index": 11,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_objective"
+      },
+      {
+        "index": 12,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._incoming_sequence"
+      },
+      {
+        "index": 13,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._completion_sequence"
+      },
+      {
+        "index": 14,
+        "kind": 32,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_objective"
+      },
+      {
+        "index": 15,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._incoming_sequence"
+      },
+      {
+        "index": 16,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._completion_sequence"
+      },
+      {
+        "index": 17,
+        "kind": 32,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._player_objective"
+      },
+      {
+        "index": 18,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._incoming_sequence"
+      },
+      {
+        "index": 19,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._completion_sequence"
+      },
+      {
+        "index": 20,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_objective"
+      },
+      {
+        "index": 21,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._incoming_sequence"
+      },
+      {
+        "index": 22,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._completion_sequence"
+      },
+      {
+        "index": 23,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_objective"
+      },
+      {
+        "index": 24,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._incoming_sequence"
+      },
+      {
+        "index": 25,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._completion_sequence"
+      },
+      {
+        "index": 26,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._player_objective"
+      },
+      {
+        "index": 27,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._incoming_sequence"
+      },
+      {
+        "index": 28,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._completion_sequence"
+      },
+      {
+        "index": 29,
+        "kind": 6,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto._cinematic"
+      },
+      {
+        "index": 30,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_trigger"
+      },
+      {
+        "index": 31,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab"
+      },
+      {
+        "index": 32,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab_1"
+      },
+      {
+        "index": 33,
+        "kind": 28,
+        "name": "cosmo_m0_phase00_highway.pm_in_wall"
+      },
+      {
+        "index": 34,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_trigger"
+      },
+      {
+        "index": 35,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_trigger"
+      },
+      {
+        "index": 36,
+        "kind": 30,
+        "name": "cosmo_m0_phase01_breach.tg_m0_gating"
+      },
+      {
+        "index": 37,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._player_trigger"
+      },
+      {
+        "index": 38,
+        "kind": 29,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_trigger"
+      },
+      {
+        "index": 39,
+        "kind": 29,
+        "name": "cosmo_m0_phase02_graveyard.pt_obj_backup_adv"
+      },
+      {
+        "index": 40,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_trigger"
+      },
+      {
+        "index": 41,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_trigger"
+      },
+      {
+        "index": 42,
+        "kind": 29,
+        "name": "pt_first_obj"
+      },
+      {
+        "index": 43,
+        "kind": 60,
+        "name": "cosmo_m0_phase02_graveyard"
+      },
+      {
+        "index": 44,
+        "kind": 58,
+        "name": "cosmo_m0_phase02_graveyard.tv_obj_backup_adv"
+      },
+      {
+        "index": 45,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04"
+      },
+      {
+        "index": 46,
+        "kind": 44,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._nav_point"
+      },
+      {
+        "index": 47,
+        "kind": 60,
+        "name": "cosmo_m0_phase01_breach"
+      },
+      {
+        "index": 48,
+        "kind": 58,
+        "name": "tv_first_obj"
+      },
+      {
+        "index": 49,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.tv_obj_investigate_wall"
+      },
+      {
+        "index": 50,
+        "kind": 60,
+        "name": "cosmo_m0_phase03_hangar"
+      },
+      {
+        "index": 51,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.tv_obj_m0_m04b"
+      },
+      {
+        "index": 52,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.ap_obj_m0_m04b"
+      },
+      {
+        "index": 53,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar"
+      },
+      {
+        "index": 54,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.sv_m0_gating"
+      },
+      {
+        "index": 55,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall"
+      },
+      {
+        "index": 56,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway"
+      },
+      {
+        "index": 57,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._nav_point"
+      },
+      {
+        "index": 58,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a"
+      },
+      {
+        "index": 59,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._trigger_volume"
+      },
+      {
+        "index": 60,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._nav_point"
+      },
+      {
+        "index": 61,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._trigger_volume"
+      },
+      {
+        "index": 62,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab"
+      },
+      {
+        "index": 63,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab_1"
+      },
+      {
+        "index": 64,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b"
+      },
+      {
+        "index": 65,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._nav_point"
+      },
+      {
+        "index": 66,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr"
+      },
+      {
+        "index": 67,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._trigger[0]"
+      },
+      {
+        "index": 68,
+        "kind": 60,
+        "name": "cosmo_m0_phase04_outro"
+      },
+      {
+        "index": 69,
+        "kind": 59,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto"
+      },
+      {
+        "index": 70,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_in_wall"
+      },
+      {
+        "index": 71,
+        "kind": 55,
+        "name": "cosmo_m0_phase00_highway.breach"
+      },
+      {
+        "index": 72,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon"
+      },
+      {
+        "index": 73,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1"
+      },
+      {
+        "index": 74,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._trigger_volume"
+      },
+      {
+        "index": 75,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res"
+      },
+      {
+        "index": 76,
+        "kind": 55,
+        "name": "cosmo_m0_phase01_breach.graveyard"
+      },
+      {
+        "index": 77,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._trigger_volume"
+      },
+      {
+        "index": 78,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._nav_point"
+      },
+      {
+        "index": 79,
+        "kind": 60,
+        "name": "cosmo_m0_phase01b_breach"
+      },
+      {
+        "index": 80,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard"
+      },
+      {
+        "index": 81,
+        "kind": 55,
+        "name": "cosmo_m0_phase01b_breach.graveyard"
+      },
+      {
+        "index": 82,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway_intro"
+      },
+      {
+        "index": 83,
+        "kind": 61,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._object"
+      },
+      {
+        "index": 84,
+        "kind": 58,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._trigger_volume"
+      },
+      {
+        "index": 85,
+        "kind": 55,
+        "name": "cosmo_m0_phase03_hangar.hangar"
+      },
+      {
+        "index": 86,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp"
+      },
+      {
+        "index": 87,
+        "kind": 44,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._nav_point"
+      },
+      {
+        "index": 88,
+        "kind": 44,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._nav_point"
+      },
+      {
+        "index": 89,
+        "kind": 59,
+        "name": "globals"
+      },
+      {
+        "index": 90,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.globals"
+      },
+      {
+        "index": 91,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.globals"
+      },
+      {
+        "index": 92,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.globals"
+      }
+    ]
+  },
+  {
+    "key": "0x992bb471",
+    "tag": "0x80cb8701",
+    "bytes": 5171,
+    "header": "00001433b22417ae992bb471002b00320000005d0000001c80cc052f00000001000003100000000000000000808001840000005d808007d3000000000000000004000000000003380600000000000361060000000000038e20000000000003be05000000000003f305000000000004290400000000000461200000000000047a",
+    "arrays": [
+      {
+        "field": "0x10",
+        "count": 93,
+        "offset": "0x40",
+        "class": "0x808007d3",
+        "first": "04000000000003380600000000000361060000000000038e20000000000003be05000000000003f305000000000004290400000000000461200000000000047a"
+      },
+      {
+        "field": "0x1c",
+        "count": 1,
+        "offset": "0x340",
+        "class": "0x808005e9",
+        "first": "ffffffff439d9d220000002080cb8703000000010000000c00000000808001840000000180804222000000000000000080cb870280800065000010b7636f736d"
+      }
+    ],
+    "objects": [
+      {
+        "index": 0,
+        "kind": 4,
+        "name": "cosmo_m0_phase00_highway_intro.skeleton_static_1"
+      },
+      {
+        "index": 1,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res._cinematic"
+      },
+      {
+        "index": 2,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp._cinematic"
+      },
+      {
+        "index": 3,
+        "kind": 32,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_objective"
+      },
+      {
+        "index": 4,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._incoming_sequence"
+      },
+      {
+        "index": 5,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._completion_sequence"
+      },
+      {
+        "index": 6,
+        "kind": 4,
+        "name": "cosmo_m0_phase01_breach.o_weapon"
+      },
+      {
+        "index": 7,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_objective"
+      },
+      {
+        "index": 8,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._incoming_sequence"
+      },
+      {
+        "index": 9,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._completion_sequence"
+      },
+      {
+        "index": 10,
+        "kind": 6,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+      },
+      {
+        "index": 11,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_objective"
+      },
+      {
+        "index": 12,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._incoming_sequence"
+      },
+      {
+        "index": 13,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._completion_sequence"
+      },
+      {
+        "index": 14,
+        "kind": 32,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_objective"
+      },
+      {
+        "index": 15,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._incoming_sequence"
+      },
+      {
+        "index": 16,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._completion_sequence"
+      },
+      {
+        "index": 17,
+        "kind": 32,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._player_objective"
+      },
+      {
+        "index": 18,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._incoming_sequence"
+      },
+      {
+        "index": 19,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._completion_sequence"
+      },
+      {
+        "index": 20,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_objective"
+      },
+      {
+        "index": 21,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._incoming_sequence"
+      },
+      {
+        "index": 22,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._completion_sequence"
+      },
+      {
+        "index": 23,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_objective"
+      },
+      {
+        "index": 24,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._incoming_sequence"
+      },
+      {
+        "index": 25,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._completion_sequence"
+      },
+      {
+        "index": 26,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._player_objective"
+      },
+      {
+        "index": 27,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._incoming_sequence"
+      },
+      {
+        "index": 28,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._completion_sequence"
+      },
+      {
+        "index": 29,
+        "kind": 6,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto._cinematic"
+      },
+      {
+        "index": 30,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_trigger"
+      },
+      {
+        "index": 31,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab"
+      },
+      {
+        "index": 32,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab_1"
+      },
+      {
+        "index": 33,
+        "kind": 28,
+        "name": "cosmo_m0_phase00_highway.pm_in_wall"
+      },
+      {
+        "index": 34,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_trigger"
+      },
+      {
+        "index": 35,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_trigger"
+      },
+      {
+        "index": 36,
+        "kind": 30,
+        "name": "cosmo_m0_phase01_breach.tg_m0_gating"
+      },
+      {
+        "index": 37,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._player_trigger"
+      },
+      {
+        "index": 38,
+        "kind": 29,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_trigger"
+      },
+      {
+        "index": 39,
+        "kind": 29,
+        "name": "cosmo_m0_phase02_graveyard.pt_obj_backup_adv"
+      },
+      {
+        "index": 40,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_trigger"
+      },
+      {
+        "index": 41,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_trigger"
+      },
+      {
+        "index": 42,
+        "kind": 29,
+        "name": "pt_first_obj"
+      },
+      {
+        "index": 43,
+        "kind": 60,
+        "name": "cosmo_m0_phase02_graveyard"
+      },
+      {
+        "index": 44,
+        "kind": 58,
+        "name": "cosmo_m0_phase02_graveyard.tv_obj_backup_adv"
+      },
+      {
+        "index": 45,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04"
+      },
+      {
+        "index": 46,
+        "kind": 44,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._nav_point"
+      },
+      {
+        "index": 47,
+        "kind": 60,
+        "name": "cosmo_m0_phase01_breach"
+      },
+      {
+        "index": 48,
+        "kind": 58,
+        "name": "tv_first_obj"
+      },
+      {
+        "index": 49,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.tv_obj_investigate_wall"
+      },
+      {
+        "index": 50,
+        "kind": 60,
+        "name": "cosmo_m0_phase03_hangar"
+      },
+      {
+        "index": 51,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.tv_obj_m0_m04b"
+      },
+      {
+        "index": 52,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.ap_obj_m0_m04b"
+      },
+      {
+        "index": 53,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar"
+      },
+      {
+        "index": 54,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.sv_m0_gating"
+      },
+      {
+        "index": 55,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall"
+      },
+      {
+        "index": 56,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway"
+      },
+      {
+        "index": 57,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._nav_point"
+      },
+      {
+        "index": 58,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a"
+      },
+      {
+        "index": 59,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._trigger_volume"
+      },
+      {
+        "index": 60,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._nav_point"
+      },
+      {
+        "index": 61,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._trigger_volume"
+      },
+      {
+        "index": 62,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab"
+      },
+      {
+        "index": 63,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab_1"
+      },
+      {
+        "index": 64,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b"
+      },
+      {
+        "index": 65,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._nav_point"
+      },
+      {
+        "index": 66,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr"
+      },
+      {
+        "index": 67,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._trigger[0]"
+      },
+      {
+        "index": 68,
+        "kind": 60,
+        "name": "cosmo_m0_phase04_outro"
+      },
+      {
+        "index": 69,
+        "kind": 59,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto"
+      },
+      {
+        "index": 70,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_in_wall"
+      },
+      {
+        "index": 71,
+        "kind": 55,
+        "name": "cosmo_m0_phase00_highway.breach"
+      },
+      {
+        "index": 72,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon"
+      },
+      {
+        "index": 73,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1"
+      },
+      {
+        "index": 74,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._trigger_volume"
+      },
+      {
+        "index": 75,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res"
+      },
+      {
+        "index": 76,
+        "kind": 55,
+        "name": "cosmo_m0_phase01_breach.graveyard"
+      },
+      {
+        "index": 77,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._trigger_volume"
+      },
+      {
+        "index": 78,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._nav_point"
+      },
+      {
+        "index": 79,
+        "kind": 60,
+        "name": "cosmo_m0_phase01b_breach"
+      },
+      {
+        "index": 80,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard"
+      },
+      {
+        "index": 81,
+        "kind": 55,
+        "name": "cosmo_m0_phase01b_breach.graveyard"
+      },
+      {
+        "index": 82,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway_intro"
+      },
+      {
+        "index": 83,
+        "kind": 61,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._object"
+      },
+      {
+        "index": 84,
+        "kind": 58,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._trigger_volume"
+      },
+      {
+        "index": 85,
+        "kind": 55,
+        "name": "cosmo_m0_phase03_hangar.hangar"
+      },
+      {
+        "index": 86,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp"
+      },
+      {
+        "index": 87,
+        "kind": 44,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._nav_point"
+      },
+      {
+        "index": 88,
+        "kind": 44,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._nav_point"
+      },
+      {
+        "index": 89,
+        "kind": 59,
+        "name": "globals"
+      },
+      {
+        "index": 90,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.globals"
+      },
+      {
+        "index": 91,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.globals"
+      },
+      {
+        "index": 92,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.globals"
+      }
+    ]
+  },
+  {
+    "key": "0x992bb471",
+    "tag": "0x80cb8ce4",
+    "bytes": 5667,
+    "header": "00001623b22417ae992bb471002b00320000005d0000001c80cc052f00000008000003100000000000000000808001840000005d808007d3000000000000000004000000000005280600000000000551060000000000057e20000000000005ae05000000000005e305000000000006190400000000000651200000000000066a",
+    "arrays": [
+      {
+        "field": "0x10",
+        "count": 93,
+        "offset": "0x40",
+        "class": "0x808007d3",
+        "first": "04000000000005280600000000000551060000000000057e20000000000005ae05000000000005e305000000000006190400000000000651200000000000066a"
+      },
+      {
+        "field": "0x1c",
+        "count": 8,
+        "offset": "0x340",
+        "class": "0x808005e9",
+        "first": "ffffffff14173cc60000002080aad87f00000004000000bcffffffff36d0e1150000002080aad87f00000008000000d4ffffffff420d62e90000002080aad87f"
+      }
+    ],
+    "objects": [
+      {
+        "index": 0,
+        "kind": 4,
+        "name": "cosmo_m0_phase00_highway_intro.skeleton_static_1"
+      },
+      {
+        "index": 1,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res._cinematic"
+      },
+      {
+        "index": 2,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp._cinematic"
+      },
+      {
+        "index": 3,
+        "kind": 32,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_objective"
+      },
+      {
+        "index": 4,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._incoming_sequence"
+      },
+      {
+        "index": 5,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._completion_sequence"
+      },
+      {
+        "index": 6,
+        "kind": 4,
+        "name": "cosmo_m0_phase01_breach.o_weapon"
+      },
+      {
+        "index": 7,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_objective"
+      },
+      {
+        "index": 8,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._incoming_sequence"
+      },
+      {
+        "index": 9,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._completion_sequence"
+      },
+      {
+        "index": 10,
+        "kind": 6,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+      },
+      {
+        "index": 11,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_objective"
+      },
+      {
+        "index": 12,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._incoming_sequence"
+      },
+      {
+        "index": 13,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._completion_sequence"
+      },
+      {
+        "index": 14,
+        "kind": 32,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_objective"
+      },
+      {
+        "index": 15,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._incoming_sequence"
+      },
+      {
+        "index": 16,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._completion_sequence"
+      },
+      {
+        "index": 17,
+        "kind": 32,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._player_objective"
+      },
+      {
+        "index": 18,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._incoming_sequence"
+      },
+      {
+        "index": 19,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._completion_sequence"
+      },
+      {
+        "index": 20,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_objective"
+      },
+      {
+        "index": 21,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._incoming_sequence"
+      },
+      {
+        "index": 22,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._completion_sequence"
+      },
+      {
+        "index": 23,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_objective"
+      },
+      {
+        "index": 24,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._incoming_sequence"
+      },
+      {
+        "index": 25,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._completion_sequence"
+      },
+      {
+        "index": 26,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._player_objective"
+      },
+      {
+        "index": 27,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._incoming_sequence"
+      },
+      {
+        "index": 28,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._completion_sequence"
+      },
+      {
+        "index": 29,
+        "kind": 6,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto._cinematic"
+      },
+      {
+        "index": 30,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_trigger"
+      },
+      {
+        "index": 31,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab"
+      },
+      {
+        "index": 32,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab_1"
+      },
+      {
+        "index": 33,
+        "kind": 28,
+        "name": "cosmo_m0_phase00_highway.pm_in_wall"
+      },
+      {
+        "index": 34,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_trigger"
+      },
+      {
+        "index": 35,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_trigger"
+      },
+      {
+        "index": 36,
+        "kind": 30,
+        "name": "cosmo_m0_phase01_breach.tg_m0_gating"
+      },
+      {
+        "index": 37,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._player_trigger"
+      },
+      {
+        "index": 38,
+        "kind": 29,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_trigger"
+      },
+      {
+        "index": 39,
+        "kind": 29,
+        "name": "cosmo_m0_phase02_graveyard.pt_obj_backup_adv"
+      },
+      {
+        "index": 40,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_trigger"
+      },
+      {
+        "index": 41,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_trigger"
+      },
+      {
+        "index": 42,
+        "kind": 29,
+        "name": "pt_first_obj"
+      },
+      {
+        "index": 43,
+        "kind": 60,
+        "name": "cosmo_m0_phase02_graveyard"
+      },
+      {
+        "index": 44,
+        "kind": 58,
+        "name": "cosmo_m0_phase02_graveyard.tv_obj_backup_adv"
+      },
+      {
+        "index": 45,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04"
+      },
+      {
+        "index": 46,
+        "kind": 44,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._nav_point"
+      },
+      {
+        "index": 47,
+        "kind": 60,
+        "name": "cosmo_m0_phase01_breach"
+      },
+      {
+        "index": 48,
+        "kind": 58,
+        "name": "tv_first_obj"
+      },
+      {
+        "index": 49,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.tv_obj_investigate_wall"
+      },
+      {
+        "index": 50,
+        "kind": 60,
+        "name": "cosmo_m0_phase03_hangar"
+      },
+      {
+        "index": 51,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.tv_obj_m0_m04b"
+      },
+      {
+        "index": 52,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.ap_obj_m0_m04b"
+      },
+      {
+        "index": 53,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar"
+      },
+      {
+        "index": 54,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.sv_m0_gating"
+      },
+      {
+        "index": 55,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall"
+      },
+      {
+        "index": 56,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway"
+      },
+      {
+        "index": 57,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._nav_point"
+      },
+      {
+        "index": 58,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a"
+      },
+      {
+        "index": 59,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._trigger_volume"
+      },
+      {
+        "index": 60,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._nav_point"
+      },
+      {
+        "index": 61,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._trigger_volume"
+      },
+      {
+        "index": 62,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab"
+      },
+      {
+        "index": 63,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab_1"
+      },
+      {
+        "index": 64,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b"
+      },
+      {
+        "index": 65,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._nav_point"
+      },
+      {
+        "index": 66,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr"
+      },
+      {
+        "index": 67,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._trigger[0]"
+      },
+      {
+        "index": 68,
+        "kind": 60,
+        "name": "cosmo_m0_phase04_outro"
+      },
+      {
+        "index": 69,
+        "kind": 59,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto"
+      },
+      {
+        "index": 70,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_in_wall"
+      },
+      {
+        "index": 71,
+        "kind": 55,
+        "name": "cosmo_m0_phase00_highway.breach"
+      },
+      {
+        "index": 72,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon"
+      },
+      {
+        "index": 73,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1"
+      },
+      {
+        "index": 74,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._trigger_volume"
+      },
+      {
+        "index": 75,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res"
+      },
+      {
+        "index": 76,
+        "kind": 55,
+        "name": "cosmo_m0_phase01_breach.graveyard"
+      },
+      {
+        "index": 77,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._trigger_volume"
+      },
+      {
+        "index": 78,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._nav_point"
+      },
+      {
+        "index": 79,
+        "kind": 60,
+        "name": "cosmo_m0_phase01b_breach"
+      },
+      {
+        "index": 80,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard"
+      },
+      {
+        "index": 81,
+        "kind": 55,
+        "name": "cosmo_m0_phase01b_breach.graveyard"
+      },
+      {
+        "index": 82,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway_intro"
+      },
+      {
+        "index": 83,
+        "kind": 61,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._object"
+      },
+      {
+        "index": 84,
+        "kind": 58,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._trigger_volume"
+      },
+      {
+        "index": 85,
+        "kind": 55,
+        "name": "cosmo_m0_phase03_hangar.hangar"
+      },
+      {
+        "index": 86,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp"
+      },
+      {
+        "index": 87,
+        "kind": 44,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._nav_point"
+      },
+      {
+        "index": 88,
+        "kind": 44,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._nav_point"
+      },
+      {
+        "index": 89,
+        "kind": 59,
+        "name": "globals"
+      },
+      {
+        "index": 90,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.globals"
+      },
+      {
+        "index": 91,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.globals"
+      },
+      {
+        "index": 92,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.globals"
+      }
+    ]
+  },
+  {
+    "key": "0x992bb471",
+    "tag": "0x80cb8d51",
+    "bytes": 5235,
+    "header": "00001473b22417ae992bb471002b00320000005d0000001c80cc052f00000002000003100000000000000000808001840000005d808007d30000000000000000040000000000037806000000000003a106000000000003ce20000000000003fe0500000000000433050000000000046904000000000004a120000000000004ba",
+    "arrays": [
+      {
+        "field": "0x10",
+        "count": 93,
+        "offset": "0x40",
+        "class": "0x808007d3",
+        "first": "040000000000037806000000000003a106000000000003ce20000000000003fe0500000000000433050000000000046904000000000004a120000000000004ba"
+      },
+      {
+        "field": "0x1c",
+        "count": 2,
+        "offset": "0x340",
+        "class": "0x808005e9",
+        "first": "ffffffff00bc0bb10000002080cb8d55000000020000002c0000000e00bc0bb100000020ffffffff000000010000003400000000000000000000000080800184"
+      }
+    ],
+    "objects": [
+      {
+        "index": 0,
+        "kind": 4,
+        "name": "cosmo_m0_phase00_highway_intro.skeleton_static_1"
+      },
+      {
+        "index": 1,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res._cinematic"
+      },
+      {
+        "index": 2,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp._cinematic"
+      },
+      {
+        "index": 3,
+        "kind": 32,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_objective"
+      },
+      {
+        "index": 4,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._incoming_sequence"
+      },
+      {
+        "index": 5,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._completion_sequence"
+      },
+      {
+        "index": 6,
+        "kind": 4,
+        "name": "cosmo_m0_phase01_breach.o_weapon"
+      },
+      {
+        "index": 7,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_objective"
+      },
+      {
+        "index": 8,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._incoming_sequence"
+      },
+      {
+        "index": 9,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._completion_sequence"
+      },
+      {
+        "index": 10,
+        "kind": 6,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+      },
+      {
+        "index": 11,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_objective"
+      },
+      {
+        "index": 12,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._incoming_sequence"
+      },
+      {
+        "index": 13,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._completion_sequence"
+      },
+      {
+        "index": 14,
+        "kind": 32,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_objective"
+      },
+      {
+        "index": 15,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._incoming_sequence"
+      },
+      {
+        "index": 16,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._completion_sequence"
+      },
+      {
+        "index": 17,
+        "kind": 32,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._player_objective"
+      },
+      {
+        "index": 18,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._incoming_sequence"
+      },
+      {
+        "index": 19,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._completion_sequence"
+      },
+      {
+        "index": 20,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_objective"
+      },
+      {
+        "index": 21,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._incoming_sequence"
+      },
+      {
+        "index": 22,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._completion_sequence"
+      },
+      {
+        "index": 23,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_objective"
+      },
+      {
+        "index": 24,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._incoming_sequence"
+      },
+      {
+        "index": 25,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._completion_sequence"
+      },
+      {
+        "index": 26,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._player_objective"
+      },
+      {
+        "index": 27,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._incoming_sequence"
+      },
+      {
+        "index": 28,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._completion_sequence"
+      },
+      {
+        "index": 29,
+        "kind": 6,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto._cinematic"
+      },
+      {
+        "index": 30,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_trigger"
+      },
+      {
+        "index": 31,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab"
+      },
+      {
+        "index": 32,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab_1"
+      },
+      {
+        "index": 33,
+        "kind": 28,
+        "name": "cosmo_m0_phase00_highway.pm_in_wall"
+      },
+      {
+        "index": 34,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_trigger"
+      },
+      {
+        "index": 35,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_trigger"
+      },
+      {
+        "index": 36,
+        "kind": 30,
+        "name": "cosmo_m0_phase01_breach.tg_m0_gating"
+      },
+      {
+        "index": 37,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._player_trigger"
+      },
+      {
+        "index": 38,
+        "kind": 29,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_trigger"
+      },
+      {
+        "index": 39,
+        "kind": 29,
+        "name": "cosmo_m0_phase02_graveyard.pt_obj_backup_adv"
+      },
+      {
+        "index": 40,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_trigger"
+      },
+      {
+        "index": 41,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_trigger"
+      },
+      {
+        "index": 42,
+        "kind": 29,
+        "name": "pt_first_obj"
+      },
+      {
+        "index": 43,
+        "kind": 60,
+        "name": "cosmo_m0_phase02_graveyard"
+      },
+      {
+        "index": 44,
+        "kind": 58,
+        "name": "cosmo_m0_phase02_graveyard.tv_obj_backup_adv"
+      },
+      {
+        "index": 45,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04"
+      },
+      {
+        "index": 46,
+        "kind": 44,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._nav_point"
+      },
+      {
+        "index": 47,
+        "kind": 60,
+        "name": "cosmo_m0_phase01_breach"
+      },
+      {
+        "index": 48,
+        "kind": 58,
+        "name": "tv_first_obj"
+      },
+      {
+        "index": 49,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.tv_obj_investigate_wall"
+      },
+      {
+        "index": 50,
+        "kind": 60,
+        "name": "cosmo_m0_phase03_hangar"
+      },
+      {
+        "index": 51,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.tv_obj_m0_m04b"
+      },
+      {
+        "index": 52,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.ap_obj_m0_m04b"
+      },
+      {
+        "index": 53,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar"
+      },
+      {
+        "index": 54,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.sv_m0_gating"
+      },
+      {
+        "index": 55,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall"
+      },
+      {
+        "index": 56,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway"
+      },
+      {
+        "index": 57,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._nav_point"
+      },
+      {
+        "index": 58,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a"
+      },
+      {
+        "index": 59,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._trigger_volume"
+      },
+      {
+        "index": 60,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._nav_point"
+      },
+      {
+        "index": 61,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._trigger_volume"
+      },
+      {
+        "index": 62,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab"
+      },
+      {
+        "index": 63,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab_1"
+      },
+      {
+        "index": 64,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b"
+      },
+      {
+        "index": 65,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._nav_point"
+      },
+      {
+        "index": 66,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr"
+      },
+      {
+        "index": 67,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._trigger[0]"
+      },
+      {
+        "index": 68,
+        "kind": 60,
+        "name": "cosmo_m0_phase04_outro"
+      },
+      {
+        "index": 69,
+        "kind": 59,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto"
+      },
+      {
+        "index": 70,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_in_wall"
+      },
+      {
+        "index": 71,
+        "kind": 55,
+        "name": "cosmo_m0_phase00_highway.breach"
+      },
+      {
+        "index": 72,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon"
+      },
+      {
+        "index": 73,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1"
+      },
+      {
+        "index": 74,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._trigger_volume"
+      },
+      {
+        "index": 75,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res"
+      },
+      {
+        "index": 76,
+        "kind": 55,
+        "name": "cosmo_m0_phase01_breach.graveyard"
+      },
+      {
+        "index": 77,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._trigger_volume"
+      },
+      {
+        "index": 78,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._nav_point"
+      },
+      {
+        "index": 79,
+        "kind": 60,
+        "name": "cosmo_m0_phase01b_breach"
+      },
+      {
+        "index": 80,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard"
+      },
+      {
+        "index": 81,
+        "kind": 55,
+        "name": "cosmo_m0_phase01b_breach.graveyard"
+      },
+      {
+        "index": 82,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway_intro"
+      },
+      {
+        "index": 83,
+        "kind": 61,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._object"
+      },
+      {
+        "index": 84,
+        "kind": 58,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._trigger_volume"
+      },
+      {
+        "index": 85,
+        "kind": 55,
+        "name": "cosmo_m0_phase03_hangar.hangar"
+      },
+      {
+        "index": 86,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp"
+      },
+      {
+        "index": 87,
+        "kind": 44,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._nav_point"
+      },
+      {
+        "index": 88,
+        "kind": 44,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._nav_point"
+      },
+      {
+        "index": 89,
+        "kind": 59,
+        "name": "globals"
+      },
+      {
+        "index": 90,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.globals"
+      },
+      {
+        "index": 91,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.globals"
+      },
+      {
+        "index": 92,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.globals"
+      }
+    ]
+  },
+  {
+    "key": "0x992bb471",
+    "tag": "0x80cb90b3",
+    "bytes": 5543,
+    "header": "000015a7b22417ae992bb471002b00320000005d0000001c80cc052f00000006000003100000000000000000808001840000005d808007d3000000000000000004000000000004ac06000000000004d5060000000000050220000000000005320500000000000567050000000000059d04000000000005d520000000000005ee",
+    "arrays": [
+      {
+        "field": "0x10",
+        "count": 93,
+        "offset": "0x40",
+        "class": "0x808007d3",
+        "first": "04000000000004ac06000000000004d5060000000000050220000000000005320500000000000567050000000000059d04000000000005d520000000000005ee"
+      },
+      {
+        "field": "0x1c",
+        "count": 6,
+        "offset": "0x340",
+        "class": "0x808005e9",
+        "first": "ffffffff14173cc60000002080aad87f000000040000008cffffffff36d0e1150000002080aad87f00000008000000a4ffffffff420d62e90000002080aad87f"
+      }
+    ],
+    "objects": [
+      {
+        "index": 0,
+        "kind": 4,
+        "name": "cosmo_m0_phase00_highway_intro.skeleton_static_1"
+      },
+      {
+        "index": 1,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res._cinematic"
+      },
+      {
+        "index": 2,
+        "kind": 6,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp._cinematic"
+      },
+      {
+        "index": 3,
+        "kind": 32,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_objective"
+      },
+      {
+        "index": 4,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._incoming_sequence"
+      },
+      {
+        "index": 5,
+        "kind": 5,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._completion_sequence"
+      },
+      {
+        "index": 6,
+        "kind": 4,
+        "name": "cosmo_m0_phase01_breach.o_weapon"
+      },
+      {
+        "index": 7,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_objective"
+      },
+      {
+        "index": 8,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._incoming_sequence"
+      },
+      {
+        "index": 9,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._completion_sequence"
+      },
+      {
+        "index": 10,
+        "kind": 6,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._cinematic"
+      },
+      {
+        "index": 11,
+        "kind": 32,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_objective"
+      },
+      {
+        "index": 12,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._incoming_sequence"
+      },
+      {
+        "index": 13,
+        "kind": 5,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._completion_sequence"
+      },
+      {
+        "index": 14,
+        "kind": 32,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_objective"
+      },
+      {
+        "index": 15,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._incoming_sequence"
+      },
+      {
+        "index": 16,
+        "kind": 5,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._completion_sequence"
+      },
+      {
+        "index": 17,
+        "kind": 32,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._player_objective"
+      },
+      {
+        "index": 18,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._incoming_sequence"
+      },
+      {
+        "index": 19,
+        "kind": 5,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._completion_sequence"
+      },
+      {
+        "index": 20,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_objective"
+      },
+      {
+        "index": 21,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._incoming_sequence"
+      },
+      {
+        "index": 22,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._completion_sequence"
+      },
+      {
+        "index": 23,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_objective"
+      },
+      {
+        "index": 24,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._incoming_sequence"
+      },
+      {
+        "index": 25,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._completion_sequence"
+      },
+      {
+        "index": 26,
+        "kind": 32,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._player_objective"
+      },
+      {
+        "index": 27,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._incoming_sequence"
+      },
+      {
+        "index": 28,
+        "kind": 5,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b._completion_sequence"
+      },
+      {
+        "index": 29,
+        "kind": 6,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto._cinematic"
+      },
+      {
+        "index": 30,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._player_trigger"
+      },
+      {
+        "index": 31,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab"
+      },
+      {
+        "index": 32,
+        "kind": 29,
+        "name": "cosmo_m0_phase00_highway.pt_ab_1"
+      },
+      {
+        "index": 33,
+        "kind": 28,
+        "name": "cosmo_m0_phase00_highway.pm_in_wall"
+      },
+      {
+        "index": 34,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._player_trigger"
+      },
+      {
+        "index": 35,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._player_trigger"
+      },
+      {
+        "index": 36,
+        "kind": 30,
+        "name": "cosmo_m0_phase01_breach.tg_m0_gating"
+      },
+      {
+        "index": 37,
+        "kind": 29,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._player_trigger"
+      },
+      {
+        "index": 38,
+        "kind": 29,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._player_trigger"
+      },
+      {
+        "index": 39,
+        "kind": 29,
+        "name": "cosmo_m0_phase02_graveyard.pt_obj_backup_adv"
+      },
+      {
+        "index": 40,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._player_trigger"
+      },
+      {
+        "index": 41,
+        "kind": 29,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._player_trigger"
+      },
+      {
+        "index": 42,
+        "kind": 29,
+        "name": "pt_first_obj"
+      },
+      {
+        "index": 43,
+        "kind": 60,
+        "name": "cosmo_m0_phase02_graveyard"
+      },
+      {
+        "index": 44,
+        "kind": 58,
+        "name": "cosmo_m0_phase02_graveyard.tv_obj_backup_adv"
+      },
+      {
+        "index": 45,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04"
+      },
+      {
+        "index": 46,
+        "kind": 44,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._nav_point"
+      },
+      {
+        "index": 47,
+        "kind": 60,
+        "name": "cosmo_m0_phase01_breach"
+      },
+      {
+        "index": 48,
+        "kind": 58,
+        "name": "tv_first_obj"
+      },
+      {
+        "index": 49,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.tv_obj_investigate_wall"
+      },
+      {
+        "index": 50,
+        "kind": 60,
+        "name": "cosmo_m0_phase03_hangar"
+      },
+      {
+        "index": 51,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.tv_obj_m0_m04b"
+      },
+      {
+        "index": 52,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.ap_obj_m0_m04b"
+      },
+      {
+        "index": 53,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar"
+      },
+      {
+        "index": 54,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.sv_m0_gating"
+      },
+      {
+        "index": 55,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall"
+      },
+      {
+        "index": 56,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway"
+      },
+      {
+        "index": 57,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_goto_hangar._nav_point"
+      },
+      {
+        "index": 58,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a"
+      },
+      {
+        "index": 59,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._trigger_volume"
+      },
+      {
+        "index": 60,
+        "kind": 44,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._nav_point"
+      },
+      {
+        "index": 61,
+        "kind": 58,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04a._trigger_volume"
+      },
+      {
+        "index": 62,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab"
+      },
+      {
+        "index": 63,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_ab_1"
+      },
+      {
+        "index": 64,
+        "kind": 59,
+        "name": "cosmo_m0_phase03_hangar.obj_m0_m04b"
+      },
+      {
+        "index": 65,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_investigate_wall._nav_point"
+      },
+      {
+        "index": 66,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr"
+      },
+      {
+        "index": 67,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.pf_104a_pwr._trigger[0]"
+      },
+      {
+        "index": 68,
+        "kind": 60,
+        "name": "cosmo_m0_phase04_outro"
+      },
+      {
+        "index": 69,
+        "kind": 59,
+        "name": "cosmo_m0_phase04_outro.pf_105_cto"
+      },
+      {
+        "index": 70,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.tv_in_wall"
+      },
+      {
+        "index": 71,
+        "kind": 55,
+        "name": "cosmo_m0_phase00_highway.breach"
+      },
+      {
+        "index": 72,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon"
+      },
+      {
+        "index": 73,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1"
+      },
+      {
+        "index": 74,
+        "kind": 58,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._trigger_volume"
+      },
+      {
+        "index": 75,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res"
+      },
+      {
+        "index": 76,
+        "kind": 55,
+        "name": "cosmo_m0_phase01_breach.graveyard"
+      },
+      {
+        "index": 77,
+        "kind": 58,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._trigger_volume"
+      },
+      {
+        "index": 78,
+        "kind": 44,
+        "name": "cosmo_m0_phase01_breach.obj_get_weapon._nav_point"
+      },
+      {
+        "index": 79,
+        "kind": 60,
+        "name": "cosmo_m0_phase01b_breach"
+      },
+      {
+        "index": 80,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard"
+      },
+      {
+        "index": 81,
+        "kind": 55,
+        "name": "cosmo_m0_phase01b_breach.graveyard"
+      },
+      {
+        "index": 82,
+        "kind": 60,
+        "name": "cosmo_m0_phase00_highway_intro"
+      },
+      {
+        "index": 83,
+        "kind": 61,
+        "name": "cosmo_m0_phase02_graveyard.obj_m0_m04._object"
+      },
+      {
+        "index": 84,
+        "kind": 58,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._trigger_volume"
+      },
+      {
+        "index": 85,
+        "kind": 55,
+        "name": "cosmo_m0_phase03_hangar.hangar"
+      },
+      {
+        "index": 86,
+        "kind": 59,
+        "name": "cosmo_m0_phase00_highway_intro.pf_104_res_fp"
+      },
+      {
+        "index": 87,
+        "kind": 44,
+        "name": "cosmo_m0_phase00_highway.obj_m0_phase00_m1._nav_point"
+      },
+      {
+        "index": 88,
+        "kind": 44,
+        "name": "cosmo_m0_phase01b_breach.obj_goto_graveyard._nav_point"
+      },
+      {
+        "index": 89,
+        "kind": 59,
+        "name": "globals"
+      },
+      {
+        "index": 90,
+        "kind": 59,
+        "name": "cosmo_m0_phase01_breach.globals"
+      },
+      {
+        "index": 91,
+        "kind": 59,
+        "name": "cosmo_m0_phase01b_breach.globals"
+      },
+      {
+        "index": 92,
+        "kind": 59,
+        "name": "cosmo_m0_phase02_graveyard.globals"
+      }
+    ]
+  }
+]

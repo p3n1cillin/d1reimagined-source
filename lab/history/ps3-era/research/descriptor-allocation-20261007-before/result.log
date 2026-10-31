@@ -1,0 +1,7 @@
+FAIL cached handles cannot escape a retired pool
+FAIL old pool reset cannot invalidate post-switch allocation
+FAIL new pool cache remains valid after old asynchronous reset
+FAIL uncached spill also drops old cached handles
+FAIL uncached spill allocation survives old reset
+FAIL autoscaling grows within configured bounds
+20 descriptor allocation checks, 6 failed

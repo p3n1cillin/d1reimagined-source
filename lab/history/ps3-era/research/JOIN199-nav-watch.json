@@ -1,0 +1,7 @@
+{
+  "utc": "2026-10-08T13:37:26.1512072Z",
+  "old_hash": "C2D50DEEBC2B8121DDA3824B709D8BFBBB5DDCC4EEE4FFAC156D852AA62C8486",
+  "new_hash": "9B7C6BCA8A32A1E11EAC76C91D54D6BE290A1F47EEE95FA80D8F3F2912C1784D",
+  "line": "2ff2d0 8",
+  "purpose": "Registers at function containing reproducible Nav access violation; no memory dump or writes"
+}

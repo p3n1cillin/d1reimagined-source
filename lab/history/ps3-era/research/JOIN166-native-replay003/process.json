@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-07T13:43:48.6056014Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 10400,
+    "startTimeUtcTicks": "639269774296495917",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "capture_sha256": "c5ae36b0720aef631baba6ecd25cad3e52ce3a5dee8ee062bbdb451da852462c",
+  "capture_build": "714e432f39969b3d19cd585e40963e8ee8670208d9bc7ea853e4e93324ebba6b",
+  "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "change": "Replay main-memory allocation excludes null address",
+  "global_before_sha256": "71C7E08939860F78C12A53D095DDC1CCD1525A46D1493714DEE6F9F85D229AB9",
+  "global_replay_sha256": "22C081E2680A9F81C565860262232AF1296EBEA2831849338BA79BD6E7C2350B",
+  "depth_candidate": true,
+  "ring": false,
+  "scope": "Private captured UI/control frame only; no live PPU/SPU/backend replay."
+}

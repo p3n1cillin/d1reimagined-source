@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-08T00:31:49.986076+00:00",
+  "samples": 2660,
+  "states": [
+    {
+      "current": [
+        113,
+        2166136261
+      ],
+      "target": [
+        -1,
+        2166136261
+      ],
+      "engine_phase": 0,
+      "samples": 325
+    },
+    {
+      "current": [
+        113,
+        2166136261
+      ],
+      "target": [
+        112,
+        2166136261
+      ],
+      "engine_phase": 6,
+      "samples": 1
+    },
+    {
+      "current": [
+        -1,
+        2166136261
+      ],
+      "target": [
+        112,
+        2166136261
+      ],
+      "engine_phase": 6,
+      "samples": 6
+    },
+    {
+      "current": [
+        112,
+        2166136261
+      ],
+      "target": [
+        -1,
+        2166136261
+      ],
+      "engine_phase": 6,
+      "samples": 20
+    },
+    {
+      "current": [
+        112,
+        2166136261
+      ],
+      "target": [
+        -1,
+        2166136261
+      ],
+      "engine_phase": 0,
+      "samples": 547
+    },
+    {
+      "current": [
+        112,
+        2166136261
+      ],
+      "target": [
+        24,
+        1754485874
+      ],
+      "engine_phase": 3,
+      "samples": 309
+    },
+    {
+      "current": [
+        24,
+        1754485874
+      ],
+      "target": [
+        112,
+        2166136261
+      ],
+      "engine_phase": 3,
+      "samples": 1452
+    }
+  ],
+  "follow_phases": {
+    "0": 872,
+    "2": 802,
+    "4": 4,
+    "5": 21,
+    "1": 855,
+    "3": 106
+  },
+  "session_states": {
+    "6": 2660
+  },
+  "read_failures": [],
+  "validation_or_fatal_lines": [],
+  "validation_enable_lines": [],
+  "last_native_log_line": "\u00c2\u00b7T 0:15:05.515255 {PPU[0x1000008] Thread (job #1/2) [libnet: 0x01d70afc]} sys_net: sys_net_bnet_recvfrom(s=28, buf=*0xd018bac0, len=4096, flags=0x0, addr=*0xd018b210, paddrlen=*0xd018b170)"
+}

@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-07T13:49:56.8800036Z",
+  "all_prior_owned_closed": true,
+  "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "title_original": true,
+  "global_restored": true,
+  "baseline_seconds": 180,
+  "capture_checkpoint_seconds": 600,
+  "no_menu_phase_sequence": true,
+  "depth_candidate": true,
+  "ring": false,
+  "live_game_renderer_change": "None: two new patches affect native capture replay only",
+  "scope": "Earlier outdoor capture diagnostic, not equivalent to500/600-second conformance comparisons"
+}

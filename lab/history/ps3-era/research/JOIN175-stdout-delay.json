@@ -1,0 +1,33 @@
+{
+  "utc": "2026-10-07T22:52:13.133407+00:00",
+  "measured_unique_frame_prints": 2023,
+  "over_1s": 32,
+  "total_elapsed_seconds": 93.919,
+  "worst": [
+    {
+      "seconds": 6.579,
+      "message": "[20261007-210527-332018] frame 295 (kind 1): c->ah not id=294 payload=22 bytes 000000000000000101000"
+    },
+    {
+      "seconds": 5.6,
+      "message": "[20261007-210527-332018] frame 1000 (kind 1): c->ah not id=999 payload=22 bytes 00000000000000010100"
+    },
+    {
+      "seconds": 4.455,
+      "message": "[20261007-210527-332018] frame 179 (kind 1): c->ah not id=178 payload=22 bytes 000000000000000101000"
+    },
+    {
+      "seconds": 4.318,
+      "message": "[20261007-210527-332018] frame 2022 (kind 1): c->ah not id=2021 payload=22 bytes 0000000000000001010"
+    },
+    {
+      "seconds": 4.289,
+      "message": "[20261007-210527-332018] frame 48 (kind 1): c->ah not id=47 payload=22 bytes 00000000000000010100000"
+    },
+    {
+      "seconds": 4.067,
+      "message": "[20261007-210527-332018] frame 1001 (kind 1): c->ah not id=1000 payload=22 bytes 0000000000000001010"
+    }
+  ],
+  "scope": "Console string timestamp immediately before print(...flush=True) to structured log-event timestamp immediately after that print. Includes scheduling delay in that interval; does not identify OS cause or measure capture-write time. Only uniquely matched original-connection frame lines included."
+}

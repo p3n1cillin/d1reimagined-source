@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-08T13:22:33.0196040Z",
+  "supersedes": "JOIN197-independent-closed.json global hash check only: incorrect path config.yml",
+  "global_sha256": "71C7E08939860F78C12A53D095DDC1CCD1525A46D1493714DEE6F9F85D229AB9",
+  "global_unchanged": true,
+  "restored_watch_saved_before_join198": "442847E5847064F2D570943381CAA88DFD66E9DC212FFD299D9AC6D2F1EDD4B6",
+  "current_watch_scope": "JOIN198 planned diagnostic watch already prepared",
+  "all_exact_owned_closed": true
+}

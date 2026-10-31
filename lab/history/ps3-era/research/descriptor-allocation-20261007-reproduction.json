@@ -1,0 +1,6 @@
+{
+  "patch_sha256": "1f74dc7698b4b015050ba9dee87e61acbe571221403a5035e9ed5f349549df60",
+  "source_matches_applied_patch": true,
+  "actual_source_sha256": "ed18bdf7202cec6ffc62f12e46cfc18176624a0e05f102a98dff28e996545989",
+  "baseline_source_sha256": "0c0c91a9b207098bc76e38ef0b87e418d8e9dfe811ee2bc46e8ea1ac67b521c7"
+}

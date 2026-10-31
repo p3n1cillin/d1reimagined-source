@@ -1,0 +1,8 @@
+# JOIN222 second phase: same synthetic body with recipient character at 0x80800e70+40.
+26a00c 6 if=lr==0x26a630 r3:32 r4:32
+5aede4 12 r4:128
+2b2a60 12 r3:128
+2b2f74 12 r3:48
+2b36f8 24 if=m4:2==0xe0e r4:56 r6:48
+2b3240 24 if=m5:2==0xe0e r5:56 r6:48
+472518 12 r3:24

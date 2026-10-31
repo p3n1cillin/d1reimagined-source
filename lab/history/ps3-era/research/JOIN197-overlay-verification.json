@@ -1,0 +1,48 @@
+{
+  "at_utc": "2026-10-08T13:06:36.363966+00:00",
+  "checks": [
+    {
+      "name": "peer",
+      "wire_bytes": 105,
+      "ghost_fields": {
+        "0": 267,
+        "8": 862,
+        "10": 42,
+        "12": null,
+        "24": {
+          "0": {
+            "0": 14,
+            "2": 1
+          },
+          "4": {},
+          "8": {},
+          "12": {},
+          "16": {},
+          "20": {}
+        }
+      }
+    },
+    {
+      "name": "select",
+      "wire_bytes": 105,
+      "ghost_fields": {
+        "0": 267,
+        "8": 862,
+        "10": 42,
+        "12": null,
+        "24": {
+          "0": {
+            "0": 14,
+            "2": 1
+          },
+          "4": {},
+          "8": {},
+          "12": {},
+          "16": {},
+          "20": {}
+        }
+      }
+    }
+  ],
+  "scope": "Private appearance plus Ghost channel 14/default cosmetic index 1 candidate; semantics and visibility require native confirmation."
+}

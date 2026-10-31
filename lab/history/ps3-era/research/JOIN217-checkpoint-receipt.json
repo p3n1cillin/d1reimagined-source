@@ -1,0 +1,107 @@
+{
+  "recorded_utc": "2026-10-08T22:08:32.411101+00:00",
+  "source_base": "28455edb058faf0566a2f52cdb83e683b39a62bb",
+  "tested_source": "dirty source; exact diff/status in JOIN217-prepare.json and tested-source.diff",
+  "native_trace_hits": {
+    "0x2b36f8": 8,
+    "0x2b3240": 8,
+    "0x2b279c": 0,
+    "0x2b2a60": 0,
+    "0x2b2f74": 0,
+    "0x472518": 0
+  },
+  "backend_service_601_observed": false,
+  "samples": [
+    {
+      "utc": "2026-10-08T21:57:51.696756+00:00",
+      "world": 14,
+      "pending_records": 2,
+      "cached_nonces": 0
+    },
+    {
+      "utc": "2026-10-08T22:00:03.470886+00:00",
+      "world": 14,
+      "pending_records": 2,
+      "cached_nonces": 0
+    },
+    {
+      "utc": "2026-10-08T22:05:17.867025+00:00",
+      "world": 3,
+      "pending_records": 2,
+      "cached_nonces": 0
+    }
+  ],
+  "scope": "Synthetic pending rifle records, unarmed starter, ordinary guarded movement, read-only guest memory. No authentic reward nonce, native claim, grant, combat, graphics fix or RSX capture accepted.",
+  "cleanup_utc": "2026-10-08T22:05:38.9464982Z",
+  "independent_closed_count": 9,
+  "configuration_restored": true,
+  "validation_previously_completed_this_continuation": {
+    "server": {
+      "tests": 202,
+      "pass": true,
+      "seconds": 13.843
+    },
+    "scripts": {
+      "tests": 171,
+      "pass": true,
+      "seconds": 1.274
+    },
+    "player_db": {
+      "tests": 12,
+      "pass": true
+    },
+    "loot_probe": {
+      "tests": 5,
+      "pass": true
+    },
+    "mission_final_schema": {
+      "timed": 1,
+      "reactive": 58,
+      "pass": true
+    },
+    "database_counterfactual": "Four new methods initially produced seven failures and three errors against old implementation; repaired suite passes. No separate raw test log was saved."
+  },
+  "evidence": [
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN217-pre-stop-native.log",
+      "bytes": 29174692,
+      "sha256": "4db9275d051f58ad3219c149073a019c7800c8ac383a120e41333c68b8c5a12e"
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\FINAL124_JOIN217-bap.log",
+      "bytes": 35832,
+      "sha256": "9e8c549b5c0886a89692fad27968740471124203ae69ec1b63fcee76aff176bf"
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\FINAL124_JOIN217-ahl.log",
+      "bytes": 117638,
+      "sha256": "e620fe5168e2e3cf69c6b41f80c32490807308c451dd9b9119e54806ba068dcc"
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-independent-closure-verified.json",
+      "bytes": 3109,
+      "sha256": "c8ee772e13046f2ddf7f6bd9fd9ed3d69f944c5c7f5b9b613fc53da97ad8c0bf"
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN217-cleanup-result.json",
+      "bytes": 269,
+      "sha256": "b3049319e707a7d8367b903d4d0141cb75713d16532c18a62fbcdc2fab87d06e"
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-loot-overlay.json",
+      "bytes": 3647,
+      "sha256": "078d73fd00be0031f4facffbc590b936d6bc51d1c8910d87199590116bccc1ee"
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-overlay-preflight.json",
+      "bytes": 390,
+      "sha256": "afebf5cbe57ee1c2e9a3bdbb61e97dc3c78d3903c94a4976f89354cddae1c0f0"
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-rifle-approach\\result.json",
+      "bytes": 362,
+      "sha256": "400608cd8af57518571fcf50ce218111f0d783c8cae52438d35a463fd1067cb9"
+    }
+  ],
+  "late_evidence": "Next consolidated report; October 8 report delivered at 16:25 UK stays immutable. No new NAS delivery claimed."
+}

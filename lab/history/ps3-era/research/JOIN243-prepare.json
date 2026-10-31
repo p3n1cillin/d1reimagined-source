@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-09T18:43:12.2944329Z",
+  "source_base": "bb55871b71620a0800f94f5f6cc4a7b6818e20aa",
+  "source_clean": false,
+  "source_status": [],
+  "change": "Read-only coverage trace: the drive appends coverage to the watch list at the wall, then the rifle grant raises the urgent dialog; functions first called after the grant identify the dialog path. Committed source bb55871. No control lines or guest writes.",
+  "trace": "# JOIN243: coverage armed at the wall (by the drive) to find functions first called when the urgent dialog appears after the grant.\n",
+  "launch_sha256": "DEDE9D4D9CF2EE97DEA0EEB7227451E260D362E5C9589714E3A341CED5DAEBE7"
+}

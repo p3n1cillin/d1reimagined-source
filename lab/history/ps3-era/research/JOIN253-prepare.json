@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-10T00:45:08.7568448Z",
+  "source_base": "48c39925f5b15324747c39239d76ea851c9945a4",
+  "source_clean": false,
+  "source_status": [
+    " M missions/a_guardian_rises.json"
+  ],
+  "change": "Mission script: each objective starts at state 5 instead of 1 (incoming), since state 1 raises the NEW MISSION / The Taken King: Prelude banner that the reference never shows; the delayed state-5 step with the waypoint stays. Launch default now sends universe flags 2059/2065/2066 false (commit 48c3992). Same mission drive. No control lines or guest writes.",
+  "trace": "# JOIN253: no watches. Objectives start at state 5 (no NEW MISSION banner); dialog flags off by default.\n",
+  "launch_sha256": "E3E8283DD9E4D5139E8BB48F81568E5A7FC5C22E09FD8A79BBD59452CBEA35BF"
+}

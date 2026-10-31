@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-07T12:37:54.8035127Z",
+  "build": "714e432f39969b3d19cd585e40963e8ee8670208d9bc7ea853e4e93324ebba6b",
+  "source_commit": "0c6c5ddfffd6a34cdc7a399357bd22c1d7d665ad",
+  "data_commit": "479f3a970b62101864c3c71af52d8d11756c11d6",
+  "source_dirty": false,
+  "ring_off_from_boot": true,
+  "guarded_depth_candidate": true,
+  "post_match_seconds": 600,
+  "interaction_phases": 20,
+  "native_capture_checkpoint_max_seconds": 240,
+  "rsx_capture_requires_actual_image_inspection": true,
+  "scope": "One-shot capture-marker native verification and shading investigation; no new fidelity repair or gameplay acceptance claim"
+}

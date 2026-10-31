@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-09T07:23:49.5804587Z",
+  "source_base": "277008667d7839b0963f14fb0e6e9e93b1349060",
+  "source_clean": false,
+  "source_status": [],
+  "change": "Committed host-incident control (2770086). Same private unarmed starter, synthetic pending rifle and selector-2 body as JOIN220; watches each queue-submission gate (0x12f9d4, serialize 0x1db184, 0xbee268, alloc 0x1f6ec8, commit 0x1f6f88). No production changes or guest writes; no pickup acceptance.",
+  "trace": "# JOIN221: queue-submission gates for the explicit selector-2 host incident (synthetic fixture).\n27d744 8 if=r3==25 r5:128\n12f9d4 40 if=lr==0x27d774\nbee3a8 40 if=lr==0x27d798\n1db184 40 if=lr==0x27d7b8 r3:32 r4:32\nbee268 40 if=lr==0x27d7d8\n1f6ec8 40 if=lr==0x27d864\n99e380 40 if=lr==0x27d8a4\n1f6f88 40 if=lr==0x27d8ac r3:32\n5aede4 12 r4:24\n2b2a60 12 r3:128\n472518 12 r3:24\n",
+  "launch_sha256": "536DCF53622E0553183B2C5E77DB562B7A8FCC8B75537D37F813156616A3B6A4"
+}

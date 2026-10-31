@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-07T13:42:56.7416518Z",
+  "replay": "JOIN166-native-replay002",
+  "inspected_images": [
+    "screenshot_2026_10_07_14_36_53.png",
+    "screenshot_2026_10_07_14_37_03.png"
+  ],
+  "observed": "Both actual replay screenshots are entirely black and do not reproduce STILL THERE? inactivity dialog.",
+  "native_context_allocation": "PASS: proceeds through context allocation and command execution after excluding null address",
+  "native_full_parse": "PASS for this captured stream reaching replay execution",
+  "visual_fidelity": "FAIL",
+  "live_graphics": "NOT ACCEPTED",
+  "source_evidence": {
+    "captured_flip_commands": 0,
+    "final_color_a_offset": "0x0de10000",
+    "registered_display_buffer_0_offset": "0x0de10000",
+    "registered_display_buffer_1_offset": "0x0e1a8000",
+    "existing_manual_flip_buffer": 1
+  },
+  "next": "Test replay fallback selecting a registered buffer matching the final local colour-A offset and pitch; keep inference bounded"
+}

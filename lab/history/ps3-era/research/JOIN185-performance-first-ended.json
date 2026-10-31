@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-08T08:46:46.2485125+00:00",
+  "identity": {
+    "tag": "performance-probe",
+    "id": 12584,
+    "startTimeUtcTicks": "639270459412016464",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "exact_owned_closed": true,
+  "outcome": "Startup failure: null manager before initialized game. Original output retained."
+}

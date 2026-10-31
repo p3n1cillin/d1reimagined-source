@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-07T23:48:37.944647+00:00",
+  "state": {
+    "current": 36,
+    "engine": 3,
+    "stable": true,
+    "native_slice_current": [
+      112,
+      2166136261
+    ],
+    "native_slice_target": [
+      24,
+      1754485874
+    ]
+  },
+  "fresh_sample": {
+    "utc": "2026-10-07T23:48:37.915520+00:00",
+    "atomic": false,
+    "state": {
+      "current": 36,
+      "engine": 3,
+      "stable": true,
+      "native_slice_current": [
+        112,
+        2166136261
+      ],
+      "native_slice_target": [
+        24,
+        1754485874
+      ]
+    },
+    "entity": "0x602c3300",
+    "hook_age": 8.999995770864189e-07,
+    "native_choice_36c_39b": "0006000040314bc60348000000000000000000000000000000000000000000000007d18c00000000ffffffffffffffff",
+    "choice_unchanged_during_read": true,
+    "xyz": [
+      354.3044128417969,
+      -796.1596069335938,
+      14.100346565246582
+    ],
+    "position_unchanged_during_read": true
+  },
+  "entity": "0x602c3300",
+  "xyz": [
+    354.3044128417969,
+    -796.1596069335938,
+    14.100346565246582
+  ],
+  "route_result": {
+    "run": "FINAL124_JOIN179",
+    "started_utc": "2026-10-07T23:45:45.679253+00:00",
+    "status": "route_reached",
+    "radius": 1.5,
+    "final_radius": 0.25,
+    "final_xyz": [
+      353.81219482421875,
+      -796.3140869140625,
+      14.127391815185547
+    ],
+    "finished_utc": "2026-10-07T23:47:52.978927+00:00"
+  },
+  "request": {
+    "teleport": "24:0x68935472"
+  },
+  "scope": "Manual existing host-protocol experiment after precise route arrival; not an automatic handoff or guest-memory write."
+}

@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-07T23:38:17.9576846Z",
+  "unit_tests": 29,
+  "unit_result": "PASS",
+  "validation": [
+    {
+      "value": "0",
+      "exit_code": 2,
+      "rejected": true
+    },
+    {
+      "value": "-1",
+      "exit_code": 2,
+      "rejected": true
+    },
+    {
+      "value": "NaN",
+      "exit_code": 2,
+      "rejected": true
+    },
+    {
+      "value": "inf",
+      "exit_code": 2,
+      "rejected": true
+    }
+  ],
+  "no_output_created": true,
+  "scope": "Existing route/walker/owned-memory/session regressions plus actual CLI invalid-radius rejection before native access. Native final-radius experiment pending."
+}

@@ -1,0 +1,30 @@
+import datetime,json
+from pathlib import Path
+runtime=Path('F:/d1/<pc>-import/d1xenia/local')
+path=runtime/'PRIVATE_ENGINEERING/2026-10-08-progress.md'
+at=datetime.datetime.now(datetime.timezone.utc).isoformat()
+prefix=f'''## Active engineering checkpoint — {at}
+
+Previous work is PROGRESS: JOIN180 verified ordinary same-player doorway crossing and initial corridor controls, independent closed-owner/config restoration, 29 relevant CPU checks, full-duration visual reference sampling and corrected acceptance docs. Full complete-game goal remains ACTIVE and unfinished.
+
+Source87c7e83acfcffd48d1ff2a1bef09f550aa81d6ae and data7893dea856fdd3cebd4467b89654636a86007426 are pushed and exact remote heads verified; both worktrees clean. These source changes add optional connected Breach-tail traversal and correctly labelled raw follow/target observations. Native180 tests dirty source on prior d7944d2; its tested route/probe hashes remain in JOIN180-prepare.json. No renderer build or unrelated resets.
+
+JOIN180 CLOSED00:19:53.566UTC8October. Natural current24 report00:13:42.502 after ordinary input, no manual teleport24/control bytes0, same fresh actor0x602c3300. Original route guard stops on native change; private 30s guarded continuation reaches387.574,-801.931,16.64600:16:38.383, later settles387.182,-801.972,16.624.2660non-atomic samples,547idle112/1452pending24/0idle24, allsession6, no pointer/context recheck failures.13exact recorded identities independently closed00:29:12; title/global/watch hashes match, XInput/RPCN retained, controls/errors empty. Native validation layer verified before stop; bounded log0VUID/device-loss/fatal through15:05.515255. No RSX armed/saved. Actual mission images dark, small lit floor patch; sampled armoured Titan proportionate with5armour icons, Ghost/subclass/fixture rifle, zero level/light and loading weapon icons. Combined graphics, stable streaming, authentic pickup, encounters/completion remain unaccepted.
+
+Private receipts: RESEARCH/JOIN180-final-acceptance.json; JOIN180-independent-closed.json; JOIN180-session-summary.json; JOIN180-guardian-route; JOIN180-after-natural-entry; JOIN180-natural-player-continuation-2; JOIN180-after-corridor. First continuation stopped before pad waiting for callback; second waited at most5s for only missing fresh callback. Recent callbacks do not guarantee unit lifetime across respawn. Leases restored exact installed bytes before wrapper original-byte restoration.
+
+JOIN180 footage:3indexed originals hashesmatch,2unindexed originals retained and independently full-decodeFAIL. Last2indexed decodePASS30.31/30.22s1280x720/audio but model samples are frontend verification/loading. No accepted continuous180missionvideo; original sources untouched. Capture health previously IDLE/outbox0/noactive/NASconnected is not footage acceptance. No final video edit, publishing, reference media transfer or duplicate daily handoff.
+
+Latest human correction: missing objective waypoints, incomplete revival shots and missing Ghost. Answered candidly that earlier selected timestamps were overclaimed. Model inspected305exact-seek stills5s apart across full25:21.32 plus closer revival/power/rifle cues; NOTevery-frame playback/fullaudio. Private source hash8fabe0c5...5149ae and reviewed-sheet receipt in reference-mission1-20261008/review.json. Corrected revivalWORKING→PARTIAL in feature matrix/walkthrough/acceptance, timestamped public paraphrase at notes/guardian-rises-reference-review.md. Local source/stills/rawdefinitions remain private.
+
+Actual01.24 static gate: objective3a68c0 state752B;10fixed64Bmarkers+40. Registration57a7d8 requires entrytype nonzero and entry+20nonnull;155f60 checks sentinels, does not resolve. Current production mission sends no entries. Prior JOIN62/63 entry+4/root+4-only tests failed. Marker materialization57b4ec, with null root ref, compares entry+c against active slice>>3&63 through14dcf4/158dbc. JOIN180 active_loading112 yields14,24 yields3. Target lookup/position from entry+20. Cinematic actual definitions80cb8d56/57 have matching IDs6:1/2 and performance hashesaccc0f17/afcc146d; no complete-cast/timing fix claimed. Current70s/45s script stops need authored completion investigation, not guessed replacement timers.
+
+JOIN181 is now LIVE in bounded owned wrapper (unified exec8317). Exact client5452/ticks639270406013246558/C5; native/services manifest FINAL124_JOIN181-processes.json, launch wrapper SIGNON_LOCAL/JOIN181-launch.ps1. It tests private JOIN181-mission-marker-candidate.json, SHA1767a7d796edb1e92220cf8d619a9c5b9da44f21df4504734a9a1558f60fcdf4: authored nav reference at marker+20, type1, fallback slice bucket14outside/3inside, clear on objectivecompletion. Current schema preflight PASS4timed/35reactive. Not promoted to repo and no native visibility result yet. Bounded read-only watches3a68c0/57b4ec/57b3cc; same C5/backend/starterTitan, cinematics/timing unchanged. Preparation backs original title/watch; finally exact-owned cleanup/restores bytes/XInput/controls and preserves RPCN. Do not rebuild renderer/live or restart because observation timeout. Inspect actual UI before dependent inputs; finish only at safe checkpoint after helper closures. No RSX capture request armed.
+
+Next engineering: inspect181actual marker/normal and NavMode frames, native marker-state/materialized position, actual objectiveclear/handover. Resolve correct visual gate before promoting states. Continue authored revival/Ghost/torch/power, actual unarmed-to-rifle grant, continuous streaming, encounters/rewards/checkpoints/completion/Tower, then full Destiny systems/backend/multiplayer. Full goal never shrinks to this mission. October7daily package already delivered immutable17:49UTC; late175–180 belongs nexteligibleedition with actual dates; no morning duplicate. Historical Xbox checkout deletion remains auto-review rejection; no bypass.
+
+Earlier entries follow; superseded claims stay historical.
+
+'''
+path.write_text(prefix+path.read_text(encoding='utf-8-sig'),encoding='utf-8')
+print(at)

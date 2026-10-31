@@ -1,0 +1,196 @@
+{
+  "at": "2026-10-07T23:30:22.846510+00:00",
+  "run": "JOIN178",
+  "previous_goal_turn": "PROGRESS: backend repair/native arrival and JOIN177 movement evidence changed the next action.",
+  "current_goal_turn": "PROGRESS: actual complete recorded route, physical trigger-to-objective handover, manually requested Breach activation, native mission capture and failed replay fidelity comparison.",
+  "goal_status": "ACTIVE; complete-game objective incomplete",
+  "source_tested_code_commit": "2e327654445a54397d340e673a3f5175e77f74e3",
+  "source_doc_commit_before178_result": "06453b7babdedd1ab94bf3466c3d0a1840e6c1bc",
+  "build": {
+    "at": "2026-10-07T23:11:45.2347880Z",
+    "source_commit": "2e327654445a54397d340e673a3f5175e77f74e3",
+    "renderer_sha256": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+    "backend_sha256": "40249994fa77b7972d7b3bb73b511c7781e91f58ad3826c783d3176e3092d1d8",
+    "previous_owned_closed": true,
+    "scope": "Same Titan/highway and shipped routine-console fix. Extend checkpoint to 600seconds; route toward Breach using consumed pad inputs/read-only memory. Capture only while exact native owner is live. No build or guest-memory writes."
+  },
+  "sample_count": 2093,
+  "sample_first_utc": "2026-10-07T23:15:53.613192+00:00",
+  "sample_last_utc": "2026-10-07T23:24:39.555491+00:00",
+  "non_atomic": true,
+  "states": {
+    "6": 2093
+  },
+  "idle112_count": 395,
+  "first_idle112": "2026-10-07T23:17:22.507270+00:00",
+  "active24_count": 555,
+  "first_active24": "2026-10-07T23:22:20.034064+00:00",
+  "idle24_count": 0,
+  "context_errors": 0,
+  "pointer_recheck_failures": 0,
+  "context_recheck_failures": 0,
+  "route": {
+    "run": "FINAL124_JOIN178",
+    "started_utc": "2026-10-07T23:18:06.749811+00:00",
+    "status": "route_reached",
+    "final_xyz": [
+      352.5052185058594,
+      -796.57568359375,
+      14.096423149108887
+    ],
+    "finished_utc": "2026-10-07T23:20:10.970690+00:00"
+  },
+  "manual_request": {
+    "utc": "2026-10-07T23:22:17.063428+00:00",
+    "run": "JOIN178",
+    "state": {
+      "current": 36,
+      "engine": 3,
+      "stable": true,
+      "native_slice_current": [
+        112,
+        2166136261
+      ],
+      "native_slice_target": [
+        24,
+        1754485874
+      ]
+    },
+    "route_result": {
+      "run": "FINAL124_JOIN178",
+      "started_utc": "2026-10-07T23:18:06.749811+00:00",
+      "status": "route_reached",
+      "final_xyz": [
+        352.5052185058594,
+        -796.57568359375,
+        14.096423149108887
+      ],
+      "finished_utc": "2026-10-07T23:20:10.970690+00:00"
+    },
+    "entity": "0x602c3300",
+    "position": [
+      352.8676452636719,
+      -796.523193359375,
+      14.070785522460938
+    ],
+    "request": {
+      "teleport": "24:0x68935472"
+    },
+    "scope": "Manual existing host-protocol handoff at actual route endpoint, after fresh owned native target24 and engine3. Not a synthetic ACK, guest-memory write or automatic mission fix."
+  },
+  "handoff": "Physical route reaches recorded endpoint. Type18 trigger completes EnterTheWall and starts FindAWeapon; group-switch alone stalls at112/target24/engine3. Existing manual protocol teleport at actual endpoint activates24; a return112 request follows and remains unsettled. Not an automatic mission fix.",
+  "capture": {
+    "at": "2026-10-07T23:24:39.6147011Z",
+    "client": {
+      "tag": "rpcs3",
+      "id": 3640,
+      "startTimeUtcTicks": "639270115169724072",
+      "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+    },
+    "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+    "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\captures\\BLES01857_20261008002430_capture.rrc.gz",
+    "bytes": 46247472,
+    "sha256": "7d5743c0eaca38ec4df1f30ccc8c4d048eb5509baa6092cac1ea379e0865b93e",
+    "native_success_line": "\u00b7S 0:12:41.354731 {RSX [0x4065200]} RSX: Capture successful: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/captures/BLES01857_20261008002430_capture.rrc.gz",
+    "capture_saved": true,
+    "pause_expected": true,
+    "full_parse": "NOT RUN",
+    "replay": "NOT RUN",
+    "graphics": "NOT ACCEPTED",
+    "scope": "Private native RSX diagnostic frame; successful native capture pauses the emulator. Captured state must be inspected separately."
+  },
+  "prefix_inspection": {
+    "counts": {
+      "tiles": 1,
+      "memory": 3218,
+      "data": 2994,
+      "displays": 1,
+      "commands": 65308
+    },
+    "gzip_full_decode": "PASS",
+    "resource_references": "PASS",
+    "opaque_register_tail_bytes": 74240
+  },
+  "replay": {
+    "at": "2026-10-07T23:26:22.3170952Z",
+    "identity": {
+      "tag": "rpcs3",
+      "id": 17360,
+      "startTimeUtcTicks": "639270123485109293",
+      "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+    },
+    "capture_sha256": "7d5743c0eaca38ec4df1f30ccc8c4d048eb5509baa6092cac1ea379e0865b93e",
+    "capture_build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+    "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+    "screenshots": [
+      {
+        "sample": 1,
+        "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_08_00_26_09.png",
+        "at": "2026-10-07T23:26:09.8674385Z",
+        "bytes": 57013,
+        "sha256": "d74ce92e3cec02d706704f657e41ef17d103240a206219b0bd3e7f80fa5f2501",
+        "core_layer": [
+          {
+            "ModuleName": "VkLayer_khronos_validation.dll",
+            "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+          }
+        ]
+      },
+      {
+        "sample": 2,
+        "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_08_00_26_21.png",
+        "at": "2026-10-07T23:26:21.7354167Z",
+        "bytes": 57012,
+        "sha256": "d8f6c5137281739fafe8f91ae9b1bdd401ead02d4c41f976f1c8a09e945bb575",
+        "core_layer": [
+          {
+            "ModuleName": "VkLayer_khronos_validation.dll",
+            "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+          }
+        ]
+      }
+    ],
+    "native_full_parse": "Native parser reached rendered output; visual inspection pending",
+    "visual_comparison": "FAIL: both inspected replay frames show black scenery and a corrupted strip below the HUD; original recording frames at approximately23:24:29/34UTC show lit Breach geometry.",
+    "graphics": "NOT ACCEPTED",
+    "owned_closed": true,
+    "global_restored": true,
+    "title_unchanged": true,
+    "errors": [],
+    "native_log_counts": {
+      "VUID": 0,
+      "device_loss": 0,
+      "fatal_severity": 0
+    },
+    "scope_note": "Native parser reached presentation and replay closed/restored. This does not reproduce the live frame, prove the outdoor fault or identify a cause. No new renderer patch/build."
+  },
+  "video_inspection_receipt": "JOIN178-video-inspection/receipt.json",
+  "cleanup": {
+    "at": "2026-10-07T23:24:40.8665844Z",
+    "fixture_completed": true,
+    "all_owned_closed": true,
+    "title_unchanged": true,
+    "watch_unchanged": true,
+    "input": "Handler: XInput",
+    "active_controls": [],
+    "shared_rpcn_preserved": true,
+    "errors": []
+  },
+  "core_layer": {
+    "at": "2026-10-07T23:24:39.8073402Z",
+    "client_alive": true,
+    "layer": {
+      "ModuleName": "VkLayer_khronos_validation.dll",
+      "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+    }
+  },
+  "native_log_counts": {
+    "VUID": 0,
+    "device_loss": 0,
+    "fatal_severity": 0
+  },
+  "graphics": "NOT ACCEPTED; captured mission reference/replay mismatch, not an outdoor black-green reproduction.",
+  "next_task": "Observe actual player position/zone choice after host handover; test final doorway crossing using fresh same-player ownership before accepting or automating the client-requested Breach switch. Diagnose captured-resource/display fidelity separately; never infer live shading failure from this mismatched replay.",
+  "reporting_timezone": "Europe/London",
+  "date_note": "JOIN178 runs8October UK,7October UTC. October7 immutable dailyreport already delivered; late evidence next eligible edition. No media resend/publication."
+}

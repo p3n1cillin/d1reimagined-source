@@ -1,0 +1,7 @@
+# JOIN221 seventh phase: delivery gates in 0x1d97c8.
+27d744 4 if=r3==25 r5:64
+1ca800 4 if=lr==0x1d9808
+26b2fc 4 if=lr==0x1d9814 r4:32
+1db14c 4 if=lr==0x1d9848
+5aede4 12 r4:24
+2b2a60 12 r3:128

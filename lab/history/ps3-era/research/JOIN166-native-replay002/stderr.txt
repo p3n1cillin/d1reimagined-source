@@ -1,0 +1,3 @@
+
+MidiInWinMM::initialize: no MIDI input devices currently available.
+

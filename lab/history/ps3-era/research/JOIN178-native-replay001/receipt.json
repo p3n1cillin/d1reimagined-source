@@ -1,0 +1,53 @@
+{
+  "at": "2026-10-07T23:26:22.3170952Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 17360,
+    "startTimeUtcTicks": "639270123485109293",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "capture_sha256": "7d5743c0eaca38ec4df1f30ccc8c4d048eb5509baa6092cac1ea379e0865b93e",
+  "capture_build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "screenshots": [
+    {
+      "sample": 1,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_08_00_26_09.png",
+      "at": "2026-10-07T23:26:09.8674385Z",
+      "bytes": 57013,
+      "sha256": "d74ce92e3cec02d706704f657e41ef17d103240a206219b0bd3e7f80fa5f2501",
+      "core_layer": [
+        {
+          "ModuleName": "VkLayer_khronos_validation.dll",
+          "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+        }
+      ]
+    },
+    {
+      "sample": 2,
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\screenshot_2026_10_08_00_26_21.png",
+      "at": "2026-10-07T23:26:21.7354167Z",
+      "bytes": 57012,
+      "sha256": "d8f6c5137281739fafe8f91ae9b1bdd401ead02d4c41f976f1c8a09e945bb575",
+      "core_layer": [
+        {
+          "ModuleName": "VkLayer_khronos_validation.dll",
+          "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+        }
+      ]
+    }
+  ],
+  "native_full_parse": "Native parser reached rendered output; visual inspection pending",
+  "visual_comparison": "FAIL: both inspected replay frames show black scenery and a corrupted strip below the HUD; original recording frames at approximately23:24:29/34UTC show lit Breach geometry.",
+  "graphics": "NOT ACCEPTED",
+  "owned_closed": true,
+  "global_restored": true,
+  "title_unchanged": true,
+  "errors": [],
+  "native_log_counts": {
+    "VUID": 0,
+    "device_loss": 0,
+    "fatal_severity": 0
+  },
+  "scope_note": "Native parser reached presentation and replay closed/restored. This does not reproduce the live frame, prove the outdoor fault or identify a cause. No new renderer patch/build."
+}

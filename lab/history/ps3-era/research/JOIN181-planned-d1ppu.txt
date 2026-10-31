@@ -1,0 +1,4 @@
+# JOIN181: bounded read-only objective and marker materialization watches.
+3a68c0 64 r3:16
+57b4ec 24 r3:48
+57b3cc 24 if=lr==0x57b730 r3:48 r5:64

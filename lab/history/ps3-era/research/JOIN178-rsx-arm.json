@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-07T23:24:25.5329134Z",
+  "client": {
+    "tag": "rpcs3",
+    "id": 3640,
+    "startTimeUtcTicks": "639270115169724072",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "inspected_frame": "BLES01857_screenshot_2026_10_08_00_23_23.png",
+  "scope": "Inspected rendered Breach interior after actual route and manual host-protocol activation. Reference capture, not the outdoor black-green fault; capture output/replay must be inspected independently."
+}

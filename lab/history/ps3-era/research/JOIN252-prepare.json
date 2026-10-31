@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-09T21:06:27.0996045Z",
+  "source_base": "bb55871b71620a0800f94f5f6cc4a7b6818e20aa",
+  "source_clean": false,
+  "source_status": [
+    " M notes/checkpoint-2026-10-09-mission.md",
+    " M notes/guardian-rises-reference-script.md",
+    " M scripts/Invoke-Final124Join.ps1"
+  ],
+  "change": "Universe flag overrides 2059, 2065 and 2066 = 1 (false). JOIN251 read the MOTD selector group holding the urgent dialog from memory: entries 0x80a58505 (flag 2065), 0x80a5e9fb (2066) and the MOTD 0x80a5851c (2059), each a one-op universe flag test that is true in the content defaults. Read-only watches on selection and enqueue. Same mission drive. Committed source bb55871. No control lines or guest writes.",
+  "trace": "# JOIN252: urgent group flags 2059/2065/2066 = false. Selector selections and dialog enqueues.\r\n48a2e0 30 r3:16 r4:64\r\n753430 20 r3:16\n",
+  "launch_sha256": "1EDD69D1AE16DEA7482BDB1CA4544A37E80B92FFBA2BC931369F71E5EAAEDF5A"
+}

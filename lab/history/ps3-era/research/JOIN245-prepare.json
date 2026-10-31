@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-09T19:21:04.0777723Z",
+  "source_base": "bb55871b71620a0800f94f5f6cc4a7b6818e20aa",
+  "source_clean": false,
+  "source_status": [],
+  "change": "Self-flags layer C1262-1327 = false (character unlock table, 2048 entries in 01.24) on top of the all-true flags; tests whether the urgent and MOTD dialog gates (op 1 indexes 1262-1327) read the character table. Same mission drive as JOIN244. Committed source bb55871. No control lines or guest writes.",
+  "trace": "# JOIN245: no extra watches. Character unlock flags C1262-1327 = false; does the urgent/MOTD dialog still appear?\n",
+  "launch_sha256": "5AD7D355B17BD03999D8F9076C04A5B804C3498334F2EC79AD2927D52C4983E3"
+}

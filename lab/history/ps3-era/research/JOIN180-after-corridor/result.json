@@ -1,0 +1,14 @@
+{
+  "started_utc": "2026-10-08T00:16:56.513358+00:00",
+  "finished_utc": "2026-10-08T00:17:56.652405+00:00",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 15208,
+    "startTimeUtcTicks": "639270146812666619",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "samples": 229,
+  "fresh_player_samples": 226,
+  "error": null,
+  "scope": "Read-only non-atomic observation; later callback required after phase/slice changes; positions suppressed outside stable engine0/3. Recent callbacks still do not guarantee unit lifetime."
+}

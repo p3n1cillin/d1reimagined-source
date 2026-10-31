@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-07T07:57:43.7937220Z",
+  "run": "FINAL124_JOIN160",
+  "checks": [
+    {
+      "segment": "4f885f168beb48b7a50af1302ad19641",
+      "recorded_at": "2026-10-07T08:52:41.8873129+01:00",
+      "source_exists": true,
+      "sha_matches": true,
+      "bytes": 2638940
+    },
+    {
+      "segment": "6dd79b8e721f44a48d7c859637c58012",
+      "recorded_at": "2026-10-07T08:55:43.9749714+01:00",
+      "source_exists": true,
+      "sha_matches": true,
+      "bytes": 7583320
+    },
+    {
+      "segment": "6f35798e244941aa90a19dea07413470",
+      "recorded_at": "2026-10-07T08:53:12.1414106+01:00",
+      "source_exists": true,
+      "sha_matches": true,
+      "bytes": 3101823
+    },
+    {
+      "segment": "758a781a94864afebf16fe5dfc3d938d",
+      "recorded_at": "2026-10-07T08:55:13.3108492+01:00",
+      "source_exists": true,
+      "sha_matches": true,
+      "bytes": 2360660
+    },
+    {
+      "segment": "89b818aaca1f40838914cf6f128fc3b3",
+      "recorded_at": "2026-10-07T08:54:12.7080961+01:00",
+      "source_exists": true,
+      "sha_matches": true,
+      "bytes": 3092780
+    },
+    {
+      "segment": "923991b7c8034549b620c98752817d5a",
+      "recorded_at": "2026-10-07T08:56:20.6494673+01:00",
+      "source_exists": true,
+      "sha_matches": true,
+      "bytes": 5650142
+    },
+    {
+      "segment": "980197d8bc284e5f8860b8ca9383086b",
+      "recorded_at": "2026-10-07T08:54:43.0129845+01:00",
+      "source_exists": true,
+      "sha_matches": true,
+      "bytes": 2226907
+    },
+    {
+      "segment": "b89fba20ad834a7d8e6f6591eea51aa4",
+      "recorded_at": "2026-10-07T08:53:42.4353937+01:00",
+      "source_exists": true,
+      "sha_matches": true,
+      "bytes": 2548209
+    },
+    {
+      "segment": "cfc22e09ad304f3aacffe2fd265b4fc0",
+      "recorded_at": "2026-10-07T08:56:54.7205401+01:00",
+      "source_exists": true,
+      "sha_matches": true,
+      "bytes": 1408040
+    }
+  ],
+  "scope": "Indexed untouched native originals remain outside rolling preview buffer"
+}

@@ -1,0 +1,59 @@
+{
+  "utc": "2026-10-08T13:26:42.244516+00:00",
+  "atomic": false,
+  "registry": "0x60006100",
+  "header": "0000000000000000000000000000000060ad1e980000000060ad0a000000012400000012000000010000012000000124ffffffff0000000000000000c00001200000039affffffffffffffff0167686f7374206765617220636163686520726567697374727900000000000000000000000000000000000000000000000000000000ef2b00000000000000000000000000000000000000000000000000000000",
+  "record_stride": 292,
+  "slots": [
+    {
+      "slot": 0,
+      "unit_tag": "0x80a6a008",
+      "ghost_gear_handle": "0x3ef34000",
+      "record_index": 0,
+      "record_address": "0x60ad0a00",
+      "record": "0000000600000003ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff80a6bfe2ffffffff00000000ffffffff00000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000000000000000000000000000000200006af5847d",
+      "record_unchanged": true
+    },
+    {
+      "slot": 1,
+      "unit_tag": "0xffffffff",
+      "ghost_gear_handle": "0xffffffff"
+    },
+    {
+      "slot": 2,
+      "unit_tag": "0xffffffff",
+      "ghost_gear_handle": "0xffffffff"
+    },
+    {
+      "slot": 3,
+      "unit_tag": "0xffffffff",
+      "ghost_gear_handle": "0xffffffff"
+    },
+    {
+      "slot": 4,
+      "unit_tag": "0xffffffff",
+      "ghost_gear_handle": "0xffffffff"
+    },
+    {
+      "slot": 5,
+      "unit_tag": "0xffffffff",
+      "ghost_gear_handle": "0xffffffff"
+    }
+  ],
+  "code_checks": [
+    {
+      "address": "0x71ec90",
+      "matches_elf": true
+    },
+    {
+      "address": "0x2086d8",
+      "matches_elf": true
+    },
+    {
+      "address": "0x42fa68",
+      "matches_elf": true
+    }
+  ],
+  "registry_unchanged": true,
+  "manager_unchanged": true
+}

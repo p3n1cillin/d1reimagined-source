@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-08T00:04:18.4856916Z",
+  "source_commit": "d7944d26b7a13cb83ca472e698924aeacb38190e",
+  "route_sha256": "7ae24e5015528eaa3cbd75f310e5d49b52bb42fe9b9b460d5ab83d64ee48c203",
+  "probe_sha256": "46a5d9711440f2547921936aae24e8889cc2ca4839da538a5f453f584848f043",
+  "uncommitted_changes": "Optional connected Breach-tail traversal with unchanged slice guards; follow phase correctly labelled in read-only probe, legacy key retained.29CPUchecksPASS.",
+  "renderer_sha256": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "scope": "Same backend/Titan/C5; native client-directed crossing experiment using existing recorded Breach tail. No manual teleport24, no guest writes, no renderer build."
+}

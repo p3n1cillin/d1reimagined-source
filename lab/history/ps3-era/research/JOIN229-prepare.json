@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-09T10:33:06.0409239Z",
+  "source_base": "196377f2d9e92fe2062edfdee4ae03a7f2f8de7f",
+  "source_clean": false,
+  "source_status": [
+    " M scripts/Invoke-Final124Join.ps1"
+  ],
+  "change": "Universe flags 1321/1327 false in the launch defaults (MOTD and urgent dialogs); cleared pending-loot slots published after the grant. Otherwise as JOIN228: unarmed starter, mission-announced rifle, service-601 grant. No private overlay, control incident or guest writes.",
+  "trace": "# JOIN229: mission-announced starter rifle (no private overlay or control event); pickup path watches.\n5aede4 6 r4:24\n2b2a60 6 r3:128\n2b36f8 400 if=m4:2==0xe0e r4:56\n2b2c00 12 r3:64\n472518 12 r3:64\n",
+  "launch_sha256": "8A3A69B7667B29F664B9E7A6C5D8B0C3466801CB14FF4BF692BCD76814F0D8A7"
+}

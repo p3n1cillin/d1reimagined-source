@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-09T19:01:55.0075451Z",
+  "source_base": "bb55871b71620a0800f94f5f6cc4a7b6818e20aa",
+  "source_clean": false,
+  "source_status": [],
+  "change": "Read-only trace of the dialog manager queue calls (0x19cd24, 0x19cdb0, 0x19d04c, 0x19c604) and investment callers, to find what raises the urgent dialog at world entry and after the grant. Committed source bb55871. No control lines or guest writes.",
+  "trace": "# JOIN244: dialog manager queue calls and investment-side callers (urgent dialog source).\n19cd24 24 r3:32 r4:32\n19cdb0 24 r3:32 r4:32\n19d04c 24 r3:32 r4:32\n19c604 24 r3:32\n455008 12 r3:32\n4551c8 12 r3:32\n456410 24 r3:32 r4:32\n457480 12 r3:32\n",
+  "launch_sha256": "AA2120AB20AF24C255EA076A3392EF15A5C58FE22129FD0E362848F2E9E54068"
+}

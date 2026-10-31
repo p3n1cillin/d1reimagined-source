@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-08T16:25:10.8729708Z",
+  "source_base": "3c7c8fc66dae0691cea179309a1afcaae036226c",
+  "source_clean": false,
+  "server_sha256": "BD1CB362569105FC127646154C25B89CF7BD19B197D59ADDC3AA07A41506725E",
+  "tested_source_diff_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+  "change": "Committed starter default; uncommitted mission adds o2_20 at Breach entry and the automatic light-up chain (o2_40, o2_50, light props, o2_70, o2_80 + chest); unchanged renderer; exit-code watcher.",
+  "trace": "# JOIN205: committed starter Ghost default; repeat of the JOIN204 resurrection exit with exit-code watcher.\n71ec90 12 r3:48\n71edcc 12 r1+0x74:4\n2d1880 8 r1+0x70:4\n42fae0 4 r20:824\n1fb3c8 8 if=r4==0x0 if=lr==0x2ff330\n"
+}

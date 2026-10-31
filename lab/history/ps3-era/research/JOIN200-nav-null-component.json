@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-08T13:51:46.260904+00:00",
+  "atomic": false,
+  "component_pool": "6036a890000000006033a48000000018000020000000054c0000000400000018ffffffffffffffff00000000c0000018000003d6ffffffffffffffff01636f6d",
+  "record_address": "0x60341e78",
+  "index": 1301,
+  "record": "0520fefe245bbf5a60341e7869fac5280ffac51d80802667",
+  "resolved_pointer": "0x0",
+  "pool_unchanged": true,
+  "record_unchanged": true,
+  "code_checks": [
+    {
+      "address": "0x2ff2d0",
+      "matches_elf": true
+    },
+    {
+      "address": "0x1fb3c8",
+      "matches_elf": true
+    }
+  ],
+  "scope": "Exact run after native null-pointer callback; a free/null record does not alone identify the original datum or establish stale ownership."
+}

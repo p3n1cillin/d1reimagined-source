@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-07T13:11:38.719666+00:00",
+  "checks": [
+    {
+      "name": "valid-prefix-opaque-tail",
+      "result": "PASS",
+      "scope": "prefix only; opaque register tail unverified"
+    },
+    {
+      "name": "wrong-version",
+      "result": "PASS",
+      "rejection": "requires little-endian native RRC v6"
+    },
+    {
+      "name": "wrong-host-endian",
+      "result": "PASS",
+      "rejection": "requires little-endian native RRC v6"
+    },
+    {
+      "name": "missing-memory-reference",
+      "result": "PASS",
+      "rejection": "1 unresolved resource references"
+    },
+    {
+      "name": "truncated-command",
+      "result": "PASS",
+      "rejection": "truncated capture at 71, requested 16"
+    },
+    {
+      "name": "excessive-map-count",
+      "result": "PASS",
+      "rejection": "private inspection count limit exceeded"
+    }
+  ],
+  "native_format_roundtrip": "NOT RUN",
+  "scope": "Synthetic private prefix parser checks, no gameplay/renderer acceptance"
+}

@@ -1,0 +1,49 @@
+{
+  "build": "BLES01857 01.24",
+  "atomic": false,
+  "captured_utc": "2026-10-06T13:02:51.505695+00:00",
+  "engine": "0x3073e780",
+  "initialized": true,
+  "flags_88_8b": [
+    4,
+    0,
+    0,
+    0
+  ],
+  "current": {
+    "word_0": 113,
+    "name_hash": "0x811c9dc5",
+    "slice_set": 113,
+    "raw": "00000071811c9dc50000007100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "target": {
+    "word_0": -1,
+    "name_hash": "0x811c9dc5",
+    "slice_set": -1,
+    "raw": "ffffffff811c9dc5ffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "peer_byte_1d0": 1,
+  "cached_world_version": 1,
+  "local_peer_slot": 0,
+  "group_current": {
+    "slice_set": 113,
+    "sequence": 0,
+    "state": 1,
+    "peer": 0,
+    "local_peer_byte": 1
+  },
+  "group_switch": {
+    "slice_set": -1,
+    "sequence": 0,
+    "state": 0,
+    "peer": -1,
+    "local_peer_byte": 0
+  },
+  "slice_table": "0x60155c80",
+  "slices": {
+    "active": 113,
+    "loading": -1,
+    "target_loaded": null
+  },
+  "fields_unchanged_during_sample": true
+}

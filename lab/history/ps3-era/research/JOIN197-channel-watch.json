@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-08T13:11:38.5542554Z",
+  "reason": "Read the actual cosmetic channel table; no matching dye branch hit yet",
+  "old_hash": "A7C42FCF35535CA347FE76B796F8157D5960EF8F091FEFCAD8B8E96A575E476B",
+  "new_hash": "6C16BD309B1344B357BD3C4780050D23DB82492651729D7DCE9A6E450FD6C6B2",
+  "line": "71edec 12 r3:32",
+  "guest_memory_writes": false
+}

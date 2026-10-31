@@ -1,0 +1,1 @@
+# JOIN245: no extra watches. Character unlock flags C1262-1327 = false; does the urgent/MOTD dialog still appear?

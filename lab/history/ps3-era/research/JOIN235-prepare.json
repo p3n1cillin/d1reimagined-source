@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-09T13:44:16.3264155Z",
+  "source_base": "c0c9a7a9c4ad7425c4c2b9b23e0af8c9685e3b5a",
+  "source_clean": false,
+  "source_status": [
+    " M server/bap_server.py"
+  ],
+  "change": "Stat-block experiment (uncommitted): the Khvostov item object carries instance block +0x28 with primary stat {Attack 0x15f5c563, 5, 5, kinetic} and stat index 20 (Magazine) = 25. Otherwise the committed mission (fe1d77f) with the aimed-fire helper; drive adds the rifle trigger point. No control lines or guest writes.",
+  "trace": "# JOIN235: mission-announced starter rifle (no private overlay or control event); pickup path watches.\n5aede4 6 r4:24\n2b2a60 6 r3:128\n2b36f8 400 if=m4:2==0xe0e r4:56\n2b2c00 12 r3:64\n472518 12 r3:64\n",
+  "launch_sha256": "274CE212FD82A65577008DFC9AF8437036AC2EF8C04D90B4B174B10E32B90221"
+}

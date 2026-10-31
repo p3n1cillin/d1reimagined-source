@@ -1,0 +1,15 @@
+{
+  "utc": "2026-10-09T09:49:57.7701124Z",
+  "source_base": "40fc27bef67be2be6c46650f2e182e3c88854859",
+  "source_clean": false,
+  "source_status": [
+    " M missions/a_guardian_rises.json",
+    " M server/bap_server.py",
+    " M server/mission_script.py",
+    " M server/test_mission_script.py",
+    "?? server/test_mission_loot.py"
+  ],
+  "change": "Mission loot drop retest after fixing the host reaction log that crashed on loot steps (JOIN227). Unarmed starter; --world-loot pending record; mission loot_drop on the light-up chain; service 601 grant. No private overlay, control incident or guest writes.",
+  "trace": "# JOIN228: mission-announced starter rifle (no private overlay or control event); pickup path watches.\n5aede4 6 r4:24\n2b2a60 6 r3:128\n2b36f8 400 if=m4:2==0xe0e r4:56\n2b2c00 12 r3:64\n472518 12 r3:64\n",
+  "launch_sha256": "655082F73FF137A6EF4E45270121CB2D88BFD5582730F5F7C755986D0650B147"
+}

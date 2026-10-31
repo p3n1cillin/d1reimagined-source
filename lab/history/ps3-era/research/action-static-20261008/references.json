@@ -1,0 +1,42 @@
+[
+  {
+    "target": "0x5aea30",
+    "callers": [],
+    "descriptors": [
+      {
+        "descriptor": "0x185dfa8",
+        "code": [],
+        "data": [
+          "0x13ecf44"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "0x5aede4",
+    "callers": [],
+    "descriptors": [
+      {
+        "descriptor": "0x185dfe8",
+        "code": [],
+        "data": [
+          "0x189ad74"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "0x2b279c",
+    "callers": [
+      "0x5aeb30"
+    ],
+    "descriptors": []
+  },
+  {
+    "target": "0x2b2a60",
+    "callers": [
+      "0x5aedf4"
+    ],
+    "descriptors": []
+  }
+]

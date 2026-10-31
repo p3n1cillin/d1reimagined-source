@@ -1,0 +1,9 @@
+# JOIN244: dialog manager queue calls and investment-side callers (urgent dialog source).
+19cd24 24 r3:32 r4:32
+19cdb0 24 r3:32 r4:32
+19d04c 24 r3:32 r4:32
+19c604 24 r3:32
+455008 12 r3:32
+4551c8 12 r3:32
+456410 24 r3:32 r4:32
+457480 12 r3:32

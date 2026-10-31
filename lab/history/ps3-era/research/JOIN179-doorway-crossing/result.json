@@ -1,0 +1,17 @@
+{
+  "started_utc": "2026-10-07T23:51:33.268732+00:00",
+  "scope": "Ordinary pad input on fresh post-teleport actor, bounded corridor and 25 seconds; no guest writes.",
+  "entity": "0x602cd380",
+  "start_xyz": [
+    353.88330078125,
+    -796.36328125,
+    14.074560165405273
+  ],
+  "endpoint_reached": true,
+  "final_xyz": [
+    356.1282043457031,
+    -796.3821411132812,
+    14.07438850402832
+  ],
+  "finished_utc": "2026-10-07T23:51:34.764758+00:00"
+}

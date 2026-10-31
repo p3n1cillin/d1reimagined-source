@@ -1,0 +1,516 @@
+{
+  "comment": [
+    "A Guardian Rises (act_cosmo_m0_highway): the start of the first mission, as a stand-in activity-host script.",
+    "Use with bap_server.py --ah-mission missions/a_guardian_rises.json (see notes/mission-director.md).",
+    "Order from the reference recording: revival cinematic (third person, then first person), 'Enter the Wall',",
+    "trigger at the Wall, 'Find a Weapon' in The Breach, the Ghost's light, the power beat (pf_104a_pwr), 'Grab the Rifle'.",
+    "Field meanings are from the EBOOT handlers; the values marked in the note as guesses are what the runs test.",
+    "Triggers (kind 0x1d): +0 true arms the trigger, with the arming time at +4 = \"$now\" and --ah-sim-clock enabled.",
+    "01.24 trigger reports are type-18 incidents; repeated reports and the Breach disconnect still need diagnosis.",
+    "Objectives: 1 = active; 3 = complete (the handler special-cases 3, and the state-3 case of 0x355abc calls into the",
+    "character/progress code); 2 looks like 'active with progress counters'. Squads (kind 1): a new +0x44 generation re-runs",
+    "the squad; squad_existing_members means +0x5c on 01.00 or +0x74 on 01.24 (0 destroy, 1 release, -1 nothing).",
+    "01.24 JOIN99/101: sq_nux_ghost desired counts at +0x2c = {0:1,4:[1]} create one physical member after bubble readiness and a manual protocol reset.",
+    "The Breach state changes are scheduled 20 s after current slice set 24; Fallen desired counts remain unverified.",
+    "Objective states (01.24, JOIN60): 1 = incoming (the 'NEW MISSION' banner with the activity name, about 4 s), 5 = active:",
+    "the title (and on change its description) shows at the left of the HUD. Each objective is set to 1 and 6 s later to 5.",
+    "3 is still used for completion (special-cased by the handler); its on-screen effect is not confirmed yet.",
+    "Handover (JOIN70): the completed objective goes to 3 (with its completion sequence), 4 s later to 0 while the next",
+    "objective starts (1, incoming sequence step 1, trigger armed), and 6 s after that the next objective goes to 5.",
+    "01.24 JOIN77/81: player-trigger reports are type-18 incidents. Objective lane phases cancel delayed updates from earlier handovers.",
+    "Breach object names now resolve each signed relative name pointer; the old printable-string scan shifted names by six records.",
+    "pf_104a_pwr is the separate power beat; the ho_ghostlight alias enables a bounded manual selector test, with no automatic torch action yet.",
+    "01.24 JOIN104: the manual o_device_invis_light alias creates, removes and recreates its placed unit using generation and +4 Boolean; illumination and mission timing remain unverified.",
+    "01.24 JOIN109: the authored Ghost member state creates one unit with member/performance bindings while desired counts remain zero; it replaces the count-only Ghost path.",
+    "nux_ghost is a manual performance alias, kind 0x28 (40 decimal)/index 125; no automatic cue or torch action is enabled.",
+    "01.24 JOIN182: raw kind-13 positions require 96 wire bits even when schema width is zero.",
+    "Objective markers use entry 0 at +0x40, type 1, authored nav target at entry+0x20 and null root fallback slice bucket (112>>3=14, 24>>3=3).",
+    "JOIN182 verifies the normal-view Enter the Wall diamond and disabled marker after completion; the next three target entries are configured but still need native visibility acceptance.",
+    "Normal/Nav Mode objective text, complete revival shots/Ghost and stable Breach progression remain incomplete."
+  ],
+  "clock": "ready",
+  "objects": {
+    "cine_revival": "0x992bb471:0x6:1:0x8080254d",
+    "cine_revival_fp": "0x992bb471:0x6:2:0x8080254d",
+    "obj_enter_wall": "0x992bb471:0x20:3:0x80802a1b",
+    "seq_enter_wall_in": "0x992bb471:0x5:4:0x808029a1",
+    "seq_enter_wall_done": "0x992bb471:0x5:5:0x808029a1",
+    "trig_enter_wall": "0x992bb471:0x1d:30:0x80800463",
+    "obj_investigate": "0x992bb471:0x20:7:0x80802a1b",
+    "seq_investigate_in": "0x992bb471:0x5:8:0x808029a1",
+    "seq_investigate_done": "0x992bb471:0x5:9:0x808029a1",
+    "trig_investigate": "0x992bb471:0x1d:34:0x80800463",
+    "cine_ghost_light": "0x992bb471:0x6:10:0x8080254d",
+    "trig_ghost_light": "0x992bb471:0x1d:37:0x80800463",
+    "obj_get_weapon": "0x992bb471:0x20:11:0x80802a1b",
+    "seq_get_weapon_in": "0x992bb471:0x5:12:0x808029a1",
+    "seq_get_weapon_done": "0x992bb471:0x5:13:0x808029a1",
+    "trig_get_weapon": "0x992bb471:0x1d:35:0x80800463",
+    "obj_graveyard": "0x992bb471:0x20:14:0x80802a1b",
+    "seq_graveyard_in": "0x992bb471:0x5:15:0x808029a1",
+    "trig_graveyard": "0x992bb471:0x1d:38:0x80800463",
+    "sq_breach_floor_a": "0xfc0e45a3:0x1:28:0x8080071e:1",
+    "sq_breach_floor_b": "0xfc0e45a3:0x1:30:0x8080071e:1",
+    "sq_breach_wall_l_a": "0xfc0e45a3:0x1:26:0x8080071e:1",
+    "sq_ghost": "0xecf574b5:0x1:28:0x8080071e:1",
+    "trig_ghostlight": "0xfc0e45a3:0x1d:120:0x80800463",
+    "sq_nux_ghost": "0xfc0e45a3:0x1:94:0x8080071e:1",
+    "sq_nux_ghost__ghost": "0xfc0e45a3:0x2:95:0x80800868:1",
+    "nux_ghost": "0xfc0e45a3:0x28:125:0x80800556",
+    "of_ghostlight": "0xfc0e45a3:0x21:124:0x80800750",
+    "ho_ghostlight": "0xfc0e45a3:0x18:101:0x8080065c:1",
+    "o_device_invis_light": "0xfc0e45a3:0x4:8:0x808007d9:1",
+    "trig_ghostlight_continue": "0xfc0e45a3:0x1d:121:0x80800463"
+  },
+  "steps": [
+    {
+      "at": 20,
+      "set": {
+        "cine_revival": {
+          "4": 1,
+          "8": true,
+          "0x14": -1,
+          "0x9c": {
+            "0": 1,
+            "4": [
+              "$player"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "at": 90,
+      "set": {
+        "cine_revival": {
+          "4": 2,
+          "8": false,
+          "0x14": -1
+        },
+        "cine_revival_fp": {
+          "4": 1,
+          "8": true,
+          "0x14": -1,
+          "0x9c": {
+            "0": 1,
+            "4": [
+              "$player"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "at": 135,
+      "set": {
+        "cine_revival_fp": {
+          "4": 2,
+          "8": false,
+          "0x14": -1
+        }
+      }
+    },
+    {
+      "at": 140,
+      "teleport": 112
+    },
+    {
+      "on": {
+        "type": 21,
+        "slice_set": 112
+      },
+      "delay": 20,
+      "set": {
+        "obj_enter_wall": {
+          "0": 1,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 1,
+              "0xc": 14,
+              "0x20": {
+                "0": 2569778289,
+                "4": 44,
+                "6": 87
+              }
+            }
+          }
+        },
+        "seq_enter_wall_in": {
+          "0": "$now",
+          "4": 1
+        },
+        "trig_enter_wall": {
+          "0": true,
+          "4": "$now"
+        }
+      },
+      "lane": "objectives",
+      "phase": "enter_wall"
+    },
+    {
+      "on": {
+        "type": 21,
+        "slice_set": 112
+      },
+      "delay": 26,
+      "set": {
+        "obj_enter_wall": {
+          "0": 5,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 1,
+              "0xc": 14,
+              "0x20": {
+                "0": 2569778289,
+                "4": 44,
+                "6": 87
+              }
+            }
+          }
+        }
+      },
+      "lane": "objectives",
+      "phase": "enter_wall"
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_enter_wall"
+      },
+      "set": {
+        "obj_enter_wall": {
+          "0": 3,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 0
+            }
+          }
+        },
+        "seq_enter_wall_done": {
+          "0": "$now",
+          "4": 1
+        },
+        "trig_enter_wall": {
+          "0": false
+        }
+      },
+      "lane": "objectives",
+      "phase": "investigate"
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_enter_wall"
+      },
+      "delay": 4,
+      "set": {
+        "obj_enter_wall": {
+          "0": 0,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 0
+            }
+          }
+        },
+        "obj_investigate": {
+          "0": 1,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 1,
+              "0xc": 3,
+              "0x20": {
+                "0": 2569778289,
+                "4": 44,
+                "6": 65
+              }
+            }
+          }
+        },
+        "seq_investigate_in": {
+          "0": "$now",
+          "4": 1
+        },
+        "trig_investigate": {
+          "0": true,
+          "4": "$now"
+        }
+      },
+      "lane": "objectives",
+      "phase": "investigate"
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_enter_wall"
+      },
+      "delay": 10,
+      "set": {
+        "obj_investigate": {
+          "0": 5,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 1,
+              "0xc": 3,
+              "0x20": {
+                "0": 2569778289,
+                "4": 44,
+                "6": 65
+              }
+            }
+          }
+        }
+      },
+      "lane": "objectives",
+      "phase": "investigate"
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_investigate"
+      },
+      "set": {
+        "obj_investigate": {
+          "0": 3,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 0
+            }
+          }
+        },
+        "seq_investigate_done": {
+          "0": "$now",
+          "4": 1
+        },
+        "trig_ghost_light": {
+          "0": true,
+          "4": "$now"
+        },
+        "trig_investigate": {
+          "0": false
+        }
+      },
+      "lane": "objectives",
+      "phase": "get_weapon"
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_investigate"
+      },
+      "delay": 4,
+      "set": {
+        "obj_investigate": {
+          "0": 0,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 0
+            }
+          }
+        },
+        "obj_get_weapon": {
+          "0": 1,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 1,
+              "0xc": 3,
+              "0x20": {
+                "0": 2569778289,
+                "4": 44,
+                "6": 78
+              }
+            }
+          }
+        },
+        "seq_get_weapon_in": {
+          "0": "$now",
+          "4": 1
+        },
+        "trig_get_weapon": {
+          "0": true,
+          "4": "$now"
+        }
+      },
+      "lane": "objectives",
+      "phase": "get_weapon"
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_investigate"
+      },
+      "delay": 10,
+      "set": {
+        "obj_get_weapon": {
+          "0": 5,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 1,
+              "0xc": 3,
+              "0x20": {
+                "0": 2569778289,
+                "4": 44,
+                "6": 78
+              }
+            }
+          }
+        }
+      },
+      "lane": "objectives",
+      "phase": "get_weapon"
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_ghost_light"
+      },
+      "set": {
+        "cine_ghost_light": {
+          "4": 1,
+          "8": true,
+          "0x14": -1,
+          "0x9c": {
+            "0": 1,
+            "4": [
+              "$player"
+            ]
+          }
+        },
+        "trig_ghost_light": {
+          "0": false
+        }
+      }
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_get_weapon"
+      },
+      "set": {
+        "obj_get_weapon": {
+          "0": 3,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 0
+            }
+          }
+        },
+        "seq_get_weapon_done": {
+          "0": "$now",
+          "4": 1
+        },
+        "trig_get_weapon": {
+          "0": false
+        }
+      },
+      "lane": "objectives",
+      "phase": "graveyard"
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_get_weapon"
+      },
+      "delay": 4,
+      "set": {
+        "obj_get_weapon": {
+          "0": 0,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 0
+            }
+          }
+        },
+        "obj_graveyard": {
+          "0": 1,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 1,
+              "0xc": 3,
+              "0x20": {
+                "0": 2569778289,
+                "4": 44,
+                "6": 88
+              }
+            }
+          }
+        },
+        "seq_graveyard_in": {
+          "0": "$now",
+          "4": 1
+        },
+        "trig_graveyard": {
+          "0": true,
+          "4": "$now"
+        }
+      },
+      "lane": "objectives",
+      "phase": "graveyard"
+    },
+    {
+      "on": {
+        "type": 18,
+        "object": "trig_get_weapon"
+      },
+      "delay": 10,
+      "set": {
+        "obj_graveyard": {
+          "0": 5,
+          "0x2c0": -1,
+          "0x40": {
+            "0": {
+              "0": 1,
+              "0xc": 3,
+              "0x20": {
+                "0": 2569778289,
+                "4": 44,
+                "6": 88
+              }
+            }
+          }
+        }
+      },
+      "lane": "objectives",
+      "phase": "graveyard"
+    },
+    {
+      "on": {
+        "type": 21,
+        "slice_set": 24
+      },
+      "delay": 20,
+      "set": {
+        "sq_nux_ghost__ghost": {
+          "0": 1,
+          "4": -1,
+          "5": 0,
+          "6": true
+        },
+        "sq_breach_floor_a": {
+          "0x44": 1,
+          "squad_existing_members": -1
+        },
+        "sq_breach_floor_b": {
+          "0x44": 1,
+          "squad_existing_members": -1
+        },
+        "sq_breach_wall_l_a": {
+          "0x44": 1,
+          "squad_existing_members": -1
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-07T14:17:44.8219840Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 10156,
+    "startTimeUtcTicks": "639269794648452920",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "capture_sha256": "f17d48b7ec856e2cf8335d78a37a672d3ae9beaa430dafa32735fa32d34479dc",
+  "capture_build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "change": "Replay excludes guest null page and selects matching final local colour-A display buffer",
+  "global_before_sha256": "71C7E08939860F78C12A53D095DDC1CCD1525A46D1493714DEE6F9F85D229AB9",
+  "global_replay_sha256": "22C081E2680A9F81C565860262232AF1296EBEA2831849338BA79BD6E7C2350B",
+  "depth_candidate": true,
+  "ring": false,
+  "scope": "Private captured outdoor cinematic control; no live PPU/SPU/backend replay or accepted corruption reproduction."
+}

@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-07T07:49:44.565480+00:00",
+  "run": "FINAL124_JOIN159",
+  "build_sha256": "55efc9072019124be3e880ca8c881339d057390c47d3bf77c799ccb6de920259",
+  "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN159-preserved-native-20261007T074231.mp4",
+  "source_sha256": "e94c1315bce52616839ff559ac7b9c508a0a822f9be994112a79cc6fd68096c4",
+  "provenance": "Byte-identical finalized native recording preserved from its verified rolling-buffer copy. The earlier worker removed the recorder-path original; no repair, cut or re-encode applied.",
+  "recorded_at": "2026-10-07T07:42:31.271953+00:00",
+  "media": {
+    "duration_seconds": 26.37,
+    "contains_audio": true,
+    "full_decode": "PASS",
+    "video_properties": {
+      "inspection": "AVAILABLE",
+      "width": 1280,
+      "height": 720,
+      "average_fps_reported": 17.24,
+      "base_fps_reported": 30.0,
+      "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+    }
+  },
+  "inspection_frames": [
+    "frame-01.png",
+    "frame-02.png",
+    "frame-03.png",
+    "frame-04.png",
+    "frame-05.png",
+    "frame-06.png"
+  ],
+  "scope": "Private video decoding and sampled-frame QA; not an edited production clip or continuous visual acceptance",
+  "privacy": "Account label and native overlay paths are present; private diagnostic evidence only"
+}

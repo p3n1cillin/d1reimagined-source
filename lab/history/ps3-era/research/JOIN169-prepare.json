@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-07T15:01:45.7437631Z",
+  "prior_owned_closed": true,
+  "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
+  "source_commit": "7b159d776b1a53a9afccd0cdbd9b50b08da13df7",
+  "data_commit": "de956e57482d73deeb25c3372b19cb8652845b13",
+  "baseline_seconds": 60,
+  "inspection_seconds": 600,
+  "scope": "Prompt urgent-dialog dismissal followed by actual 113->112 arrival and guarded movement/mission observation. No automatic RSX request; not equivalent longer renderer comparison."
+}

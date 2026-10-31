@@ -1,0 +1,32 @@
+{
+  "options_from_actual_source": {},
+  "results": [
+    {
+      "format": "mov",
+      "interrupted_decode": {
+        "exit": 3199971767,
+        "frames": 0,
+        "seconds": 0,
+        "error": "[mov,mp4,m4a,3gp,3g2,mj2 @ 0000020c6bb4f7c0] moov atom not found\n[in#0 @ 0000020c6bb4f3c0] Error opening input: Invalid data found when processing input\nError opening input file F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\fragmented-recording-before-audit\\interrupted.mov.\nError opening input files: Invalid data found when processing input\n"
+      }
+    },
+    {
+      "format": "mp4",
+      "interrupted_decode": {
+        "exit": 3199971767,
+        "frames": 0,
+        "seconds": 0,
+        "error": "[mov,mp4,m4a,3gp,3g2,mj2 @ 000001615a1cf7c0] moov atom not found\n[in#0 @ 000001615a1cf3c0] Error opening input: Invalid data found when processing input\nError opening input file F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\fragmented-recording-before-audit\\interrupted.mp4.\nError opening input files: Invalid data found when processing input\n"
+      }
+    },
+    {
+      "normal_writer_exit": 0,
+      "normal_decode": {
+        "exit": 0,
+        "frames": 90,
+        "seconds": 3.0,
+        "error": ""
+      }
+    }
+  ]
+}

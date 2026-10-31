@@ -1,0 +1,4 @@
+D1DESC tag eid=12 cmd=0000000000000042 fence=0000000000000043
+D1DESC submit order=7 queue=0000000000000041 cmd=0000000000000042 fence=0000000000000043 result=-4
+D1DESC completed path=wait eid=12 cmd=0000000000000042 fence=0000000000000043
+vkResetDescriptorPool(): descriptorPool can't be called on VkDescriptorPool 0x44 that is currently in use by VkCommandBuffer 0x42.

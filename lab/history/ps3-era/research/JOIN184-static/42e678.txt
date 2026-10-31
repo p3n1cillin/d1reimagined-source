@@ -1,0 +1,16 @@
+0042e678  1c840338  mulli    r4, r4, 0x338
+0042e67c  7c632014  addc     r3, r3, r4
+0042e680  78630020  clrldi   r3, r3, 0x20
+0042e684  4e800020  blr      
+0042e688  7c0802a6  mflr     r0
+0042e68c  4896a399  bl       0xd98a24  ; 0xd98a24
+0042e690  f821ff81  stdu     r1, -0x80(r1)
+0042e694  f8010090  std      r0, 0x90(r1)
+0042e698  3c8001ad  lis      r4, 0x1ad
+0042e69c  607f0000  ori      r31, r3, 0
+0042e6a0  8064d25c  lwz      r3, -0x2da4(r4)
+0042e6a4  4bbfd4bd  bl       0x2bb60  ; 0x2bb60
+0042e6a8  1c9f0338  mulli    r4, r31, 0x338
+0042e6ac  7c632014  addc     r3, r3, r4
+0042e6b0  78630020  clrldi   r3, r3, 0x20
+0042e6b4  38210080  addi     r1, r1, 0x80

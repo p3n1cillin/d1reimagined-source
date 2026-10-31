@@ -1,0 +1,19 @@
+{
+  "fatal_lines": 0,
+  "device_loss_lines": 0,
+  "gpu_fault_lines": 0,
+  "checkpoint_report_headers": 0,
+  "active_marker_confirmed": true,
+  "last_native_time": "0:13:26.394269",
+  "watch_counts": {
+    "273e50": 9,
+    "48e7f0": 40,
+    "2720e4": 8,
+    "27203c": 8,
+    "1db1cc": 9
+  },
+  "teleport_requests": 2,
+  "target_112_reports": 0,
+  "pre_shutdown_remote_resets": 2,
+  "controlled_shutdown_reset_excluded": true
+}

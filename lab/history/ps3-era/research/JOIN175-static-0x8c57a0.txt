@@ -1,0 +1,55 @@
+008c57a0  f821ffb1  stdu     r1, -0x50(r1)
+008c57a4  38c00005  li       r6, 5
+008c57a8  80e4008c  lwz      r7, 0x8c(r4)
+008c57ac  38600000  li       r3, 0
+008c57b0  60250000  ori      r5, r1, 0
+008c57b4  7cc903a6  mtctr    r6
+008c57b8  2c870000  cmpwi    cr1, r7, 0
+008c57bc  90650030  stw      r3, 0x30(r5)
+008c57c0  30a50004  addic    r5, r5, 4
+008c57c4  4200fff8  bdnz     0x8c57bc
+008c57c8  38c0ffff  li       r6, -1
+008c57cc  60c50000  ori      r5, r6, 0
+008c57d0  41860008  beq      cr1, 0x8c57d8
+008c57d4  80c40088  lwz      r6, 0x88(r4)
+008c57d8  2c06ffff  cmpwi    r6, -1
+008c57dc  4182008c  beq      0x8c5868
+008c57e0  31040090  addic    r8, r4, 0x90
+008c57e4  30e7ffff  addic    r7, r7, -1
+008c57e8  78c91764  sldi     r9, r6, 2
+008c57ec  60aa0000  ori      r10, r5, 0
+008c57f0  7d294014  addc     r9, r9, r8
+008c57f4  2c06ffff  cmpwi    r6, -1
+008c57f8  79290020  clrldi   r9, r9, 0x20
+008c57fc  81290000  lwz      r9, 0(r9)
+008c5800  81290000  lwz      r9, 0(r9)
+008c5804  5529103a  slwi     r9, r9, 2
+008c5808  7d290814  addc     r9, r9, r1
+008c580c  79290020  clrldi   r9, r9, 0x20
+008c5810  81690030  lwz      r11, 0x30(r9)
+008c5814  316b0001  addic    r11, r11, 1
+008c5818  91690030  stw      r11, 0x30(r9)
+008c581c  41820040  beq      0x8c585c
+008c5820  81640088  lwz      r11, 0x88(r4)
+008c5824  81240084  lwz      r9, 0x84(r4)
+008c5828  7d6b3010  subfc    r11, r11, r6
+008c582c  7d6b4814  addc     r11, r11, r9
+008c5830  7d8b4bd6  divw     r12, r11, r9
+008c5834  7d8c49d6  mullw    r12, r12, r9
+008c5838  7d6c5810  subfc    r11, r12, r11
+008c583c  7c8b3800  cmpw     cr1, r11, r7
+008c5840  2c0b0000  cmpwi    r11, 0
+008c5844  4c402342  crorc    cr0eq, cr0lt, cr1lt
+008c5848  41820014  beq      0x8c585c
+008c584c  31460001  addic    r10, r6, 1
+008c5850  7cca4bd6  divw     r6, r10, r9
+008c5854  7cc649d6  mullw    r6, r6, r9
+008c5858  7d465010  subfc    r10, r6, r10
+008c585c  61460000  ori      r6, r10, 0
+008c5860  2c06ffff  cmpwi    r6, -1
+008c5864  4082ff84  bne      0x8c57e8
+008c5868  80810038  lwz      r4, 0x38(r1)
+008c586c  2c040000  cmpwi    r4, 0
+008c5870  40820008  bne      0x8c5878
+008c5874  38600001  li       r3, 1
+008c5878  38210050  addi     r1, r1, 0x50

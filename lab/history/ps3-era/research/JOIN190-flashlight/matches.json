@@ -1,0 +1,56 @@
+[
+ {
+  "tag": "0x80cb8215",
+  "reference": "0x80800861",
+  "size": 14722,
+  "hits": {
+   "tv_nux_light_start": [
+    1940,
+    6024,
+    11872
+   ]
+  }
+ },
+ {
+  "tag": "0x80cb8257",
+  "reference": "0x80800861",
+  "size": 588,
+  "hits": {
+   "tv_nux_light_start": [
+    448
+   ]
+  }
+ },
+ {
+  "tag": "0x80cb9131",
+  "reference": "0x80800861",
+  "size": 652,
+  "hits": {
+   "tv_flashlight": [
+    528
+   ]
+  }
+ },
+ {
+  "tag": "0x80cb9155",
+  "reference": "0x80800861",
+  "size": 576,
+  "hits": {
+   "pt_fallen_above": [
+    376
+   ]
+  }
+ },
+ {
+  "tag": "0x80cb915b",
+  "reference": "0x80800861",
+  "size": 13338,
+  "hits": {
+   "tv_flashlight": [
+    1796,
+    3816,
+    9552
+   ]
+  }
+ }
+]

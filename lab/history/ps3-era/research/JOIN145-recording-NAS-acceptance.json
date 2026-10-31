@@ -1,0 +1,11 @@
+{
+  "clip_id": "<lab-pc>-20261006T082554-05a38c92bf8d4457a36e9cf2b57d4324",
+  "duration_seconds": 84.25,
+  "NAS_verified_files": 7,
+  "verified_payload_hashes_and_sizes": 6,
+  "unique_segments": 3,
+  "truncated": true,
+  "unfinished_original_preserved": true,
+  "ready_packages": 10,
+  "state": "SUBMITTED"
+}

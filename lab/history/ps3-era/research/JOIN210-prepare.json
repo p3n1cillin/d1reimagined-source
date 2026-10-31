@@ -1,0 +1,8 @@
+{
+  "utc": "2026-10-08T18:23:02.5789692Z",
+  "source_base": "35011135e2bc88530f36d7cd48f96d444ed28647",
+  "source_clean": true,
+  "mission_sha256": "DBBE9872D18ECE513EC14B74E3A31E9F55F7430CA72FD888C3E534D0770F86F7",
+  "change": "No source candidate. Committed rifle selection and walker precision. Private native traces; later manual lifecycle comparison must remain labelled diagnostic, not retail gate/lighting acceptance.",
+  "trace": "# JOIN210: prop creation/command dispatch and result; no guest writes.\n214478 24 r4+0:64\n13f068 24 if=lr==0x2145d0 r4+0:128\n2145d0 24 r1+0x70:4\n2151d0 16 r3+0:16 r4+0:8\n214254 20 r3+0:16 r4+0:32 r5+0:40\n290af8 24 if=lr==0x214458 r3+0:32 r4+0:32 r5+0:32\n"
+}

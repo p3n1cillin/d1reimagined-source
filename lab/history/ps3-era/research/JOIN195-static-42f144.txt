@@ -1,0 +1,150 @@
+0042f144  7c0802a6  mflr     r0
+0042f148  489698bd  bl       0xd98a04  ; 0xd98a04
+0042f14c  f821ff31  stdu     r1, -0xd0(r1)
+0042f150  f80100e0  std      r0, 0xe0(r1)
+0042f154  3b800000  li       r28, 0
+0042f158  60de0000  ori      r30, r6, 0
+0042f15c  f8610070  std      r3, 0x70(r1)
+0042f160  549b063e  clrlwi   r27, r4, 0x18
+0042f164  639f0000  ori      r31, r28, 0
+0042f168  4be7391d  bl       0x2a2a84  ; 0x2a2a84
+0042f16c  2c030000  cmpwi    r3, 0
+0042f170  41820224  beq      0x42f394
+0042f174  3c6001ab  lis      r3, 0x1ab
+0042f178  306366a4  addic    r3, r3, 0x66a4
+0042f17c  4bbe3791  bl       0x1290c  ; 0x1290c
+0042f180  30810070  addic    r4, r1, 0x70
+0042f184  4be87615  bl       0x2b6798  ; 0x2b6798
+0042f188  60790000  ori      r25, r3, 0
+0042f18c  2c190000  cmpwi    r25, 0
+0042f190  41820204  beq      0x42f394
+0042f194  30790010  addic    r3, r25, 0x10
+0042f198  3b800001  li       r28, 1
+0042f19c  309e0004  addic    r4, r30, 4
+0042f1a0  482f02cd  bl       0x71f46c  ; 0x71f46c
+0042f1a4  80790020  lwz      r3, 0x20(r25)
+0042f1a8  907e0220  stw      r3, 0x220(r30)
+0042f1ac  4bd9c675  bl       0x1cb820  ; 0x1cb820
+0042f1b0  80830000  lwz      r4, 0(r3)
+0042f1b4  80840034  lwz      r4, 0x34(r4)
+0042f1b8  80840000  lwz      r4, 0(r4)
+0042f1bc  7c8903a6  mtctr    r4
+0042f1c0  4e9e0421  bdnzctrl 
+0042f1c4  88990011  lbz      r4, 0x11(r25)
+0042f1c8  607d0000  ori      r29, r3, 0
+0042f1cc  7c840774  extsb    r4, r4
+0042f1d0  63c50000  ori      r5, r30, 0
+0042f1d4  482f05fd  bl       0x71f7d0  ; 0x71f7d0
+0042f1d8  88990012  lbz      r4, 0x12(r25)
+0042f1dc  63a30000  ori      r3, r29, 0
+0042f1e0  30be0001  addic    r5, r30, 1
+0042f1e4  7c840774  extsb    r4, r4
+0042f1e8  482f0629  bl       0x71f810  ; 0x71f810
+0042f1ec  33a1007c  addic    r29, r1, 0x7c
+0042f1f0  4be73741  bl       0x2a2930  ; 0x2a2930
+0042f1f4  60640000  ori      r4, r3, 0
+0042f1f8  63a30000  ori      r3, r29, 0
+0042f1fc  4be75a89  bl       0x2a4c84  ; 0x2a4c84
+0042f200  8341007c  lwz      r26, 0x7c(r1)
+0042f204  33b90600  addic    r29, r25, 0x600
+0042f208  8b1a000d  lbz      r24, 0xd(r26)
+0042f20c  7f180774  extsb    r24, r24
+0042f210  2c180000  cmpwi    r24, 0
+0042f214  4180006c  blt      0x42f280
+0042f218  2c180014  cmpwi    r24, 0x14
+0042f21c  40800064  bge      0x42f280
+0042f220  2c180000  cmpwi    r24, 0
+0042f224  4180005c  blt      0x42f280
+0042f228  2c180014  cmpwi    r24, 0x14
+0042f22c  40800054  bge      0x42f280
+0042f230  7b0326e4  sldi     r3, r24, 4
+0042f234  3cc0811c  lis      r6, -0x7ee4
+0042f238  7ca31814  addc     r5, r3, r3
+0042f23c  60c79dc5  ori      r7, r6, 0x9dc5
+0042f240  7c632814  addc     r3, r3, r5
+0042f244  309e0224  addic    r4, r30, 0x224
+0042f248  7c7d1814  addc     r3, r29, r3
+0042f24c  30be0228  addic    r5, r30, 0x228
+0042f250  78770020  clrldi   r23, r3, 0x20
+0042f254  90e10078  stw      r7, 0x78(r1)
+0042f258  30c10078  addic    r6, r1, 0x78
+0042f25c  62e30000  ori      r3, r23, 0
+0042f260  482eefa9  bl       0x71e208  ; 0x71e208
+0042f264  7b032ea4  sldi     r3, r24, 5
+0042f268  30be01cc  addic    r5, r30, 0x1cc
+0042f26c  7c991814  addc     r4, r25, r3
+0042f270  62e30000  ori      r3, r23, 0
+0042f274  30840188  addic    r4, r4, 0x188
+0042f278  78840020  clrldi   r4, r4, 0x20
+0042f27c  482eec01  bl       0x71de7c  ; 0x71de7c
+0042f280  889a0010  lbz      r4, 0x10(r26)
+0042f284  7c840774  extsb    r4, r4
+0042f288  2c840014  cmpwi    cr1, r4, 0x14
+0042f28c  2c040000  cmpwi    r4, 0
+0042f290  4c402342  crorc    cr0eq, cr0lt, cr1lt
+0042f294  4182003c  beq      0x42f2d0
+0042f298  2c040000  cmpwi    r4, 0
+0042f29c  41800034  blt      0x42f2d0
+0042f2a0  40840030  bge      cr1, 0x42f2d0
+0042f2a4  788326e4  sldi     r3, r4, 4
+0042f2a8  78842ea4  sldi     r4, r4, 5
+0042f2ac  7cc31814  addc     r6, r3, r3
+0042f2b0  7c992014  addc     r4, r25, r4
+0042f2b4  7c633014  addc     r3, r3, r6
+0042f2b8  30840188  addic    r4, r4, 0x188
+0042f2bc  7c7d1814  addc     r3, r29, r3
+0042f2c0  30be01a4  addic    r5, r30, 0x1a4
+0042f2c4  78840020  clrldi   r4, r4, 0x20
+0042f2c8  78630020  clrldi   r3, r3, 0x20
+0042f2cc  482ef5a1  bl       0x71e86c  ; 0x71e86c
+0042f2d0  889a0011  lbz      r4, 0x11(r26)
+0042f2d4  7c840774  extsb    r4, r4
+0042f2d8  2c840014  cmpwi    cr1, r4, 0x14
+0042f2dc  2c040000  cmpwi    r4, 0
+0042f2e0  4c402342  crorc    cr0eq, cr0lt, cr1lt
+0042f2e4  4182003c  beq      0x42f320
+0042f2e8  2c040000  cmpwi    r4, 0
+0042f2ec  41800034  blt      0x42f320
+0042f2f0  40840030  bge      cr1, 0x42f320
+0042f2f4  788326e4  sldi     r3, r4, 4
+0042f2f8  78842ea4  sldi     r4, r4, 5
+0042f2fc  7cc31814  addc     r6, r3, r3
+0042f300  7c992014  addc     r4, r25, r4
+0042f304  7c633014  addc     r3, r3, r6
+0042f308  30840188  addic    r4, r4, 0x188
+0042f30c  7c7d1814  addc     r3, r29, r3
+0042f310  30be01fc  addic    r5, r30, 0x1fc
+0042f314  78840020  clrldi   r4, r4, 0x20
+0042f318  78630020  clrldi   r3, r3, 0x20
+0042f31c  482ef975  bl       0x71ec90  ; 0x71ec90
+0042f320  88ba0012  lbz      r5, 0x12(r26)
+0042f324  8b5a0013  lbz      r26, 0x13(r26)
+0042f328  7ca50774  extsb    r5, r5
+0042f32c  7f5a0774  extsb    r26, r26
+0042f330  2c850014  cmpwi    cr1, r5, 0x14
+0042f334  2c050000  cmpwi    r5, 0
+0042f338  4c402342  crorc    cr0eq, cr0lt, cr1lt
+0042f33c  41820048  beq      0x42f384
+0042f340  78a326e4  sldi     r3, r5, 4
+0042f344  63e40000  ori      r4, r31, 0
+0042f348  7ca31814  addc     r5, r3, r3
+0042f34c  2c1a0000  cmpwi    r26, 0
+0042f350  7c632814  addc     r3, r3, r5
+0042f354  7c7d1814  addc     r3, r29, r3
+0042f358  78630020  clrldi   r3, r3, 0x20
+0042f35c  41800020  blt      0x42f37c
+0042f360  2c1a0014  cmpwi    r26, 0x14
+0042f364  40800018  bge      0x42f37c
+0042f368  7b4426e4  sldi     r4, r26, 4
+0042f36c  7ca42014  addc     r5, r4, r4
+0042f370  7c842814  addc     r4, r4, r5
+0042f374  7c9d2014  addc     r4, r29, r4
+0042f378  78840020  clrldi   r4, r4, 0x20
+0042f37c  30be0208  addic    r5, r30, 0x208
+0042f380  482ef181  bl       0x71e500  ; 0x71e500
+0042f384  7f630034  cntlzw   r3, r27
+0042f388  5463dffe  rlwinm   r3, r3, 0x1b, 0x1f, 0x1f
+0042f38c  68630001  xori     r3, r3, 1
+0042f390  907e0218  stw      r3, 0x218(r30)
+0042f394  63830000  ori      r3, r28, 0
+0042f398  382100d0  addi     r1, r1, 0xd0

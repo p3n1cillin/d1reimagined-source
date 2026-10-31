@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-08T07:32:35.8294135Z",
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "source_base": "87c7e83acfcffd48d1ff2a1bef09f550aa81d6ae",
+  "source_clean": false,
+  "change": "Raw position encoding repair in server/investment.py; 175 server tests pass.",
+  "candidate_sha256": "1767a7d796edb1e92220cf8d619a9c5b9da44f21df4504734a9a1558f60fcdf4",
+  "trace": "# JOIN182: bounded read-only marker and cinematic entry watches.\n3a68c0 256 r3:16\n57b4ec 64 if=r6==0x150 r3:112\n57b3cc 64 if=lr==0x57b730 r3:48 r5:64\n580928 16 r3:448\n425654 32 r3:4\n425120 32 r3:4\n",
+  "scope": "Same marker candidate and C5; fresh host process uses repaired position encoder. No cinematic timing/cast changes, guest writes or visible marker pass claimed."
+}

@@ -1,0 +1,7 @@
+{
+  "started_at": "2026-10-07T07:44:01.6254379Z",
+  "ended_at": "2026-10-07T07:45:59.2215979Z",
+  "exit_code": 0,
+  "executable_sha256": "4706856A73901B1555D03AF7A4F1F854B4A2950FBDED89D9F51B140EC71F94A5",
+  "scope": "Full incremental MSVC x64 Release build of existing private renderer plus descriptor allocation cache retirement; no deployment yet"
+}

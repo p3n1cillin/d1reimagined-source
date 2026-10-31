@@ -1,0 +1,234 @@
+PASS Final124RunHelpers.ps1 syntax
+PASS Invoke-Final124Run.ps1 syntax
+PASS Start-FinalBuildSmoke.ps1 syntax
+PASS Start-LocalStack.ps1 syntax
+PASS Send-RpcsKey.ps1 syntax
+PASS Invoke-RpcsStep.ps1 syntax
+PASS TLS/auth3 noise is not SignOn
+PASS auth3 response is not SignOn success
+PASS BAP startup lines are not connections
+PASS startup noise is not a user-profile reply
+PASS startup-only verdict
+PASS actual SignOn HTTP request count
+PASS actual SignOn success count
+PASS manifest response count
+PASS SignOn success verdict
+PASS BAP connection takes priority over SignOn
+PASS actual BAP protocol frame count
+PASS user-profile request is not its reply
+PASS actual user-profile reply is counted
+PASS BAP frame takes priority over SignOn
+PASS snapshot length with active writer
+PASS snapshot bytes with active writer
+PASS snapshot read error includes both paths
+PASS failed snapshot preserves previous destination
+PASS failed snapshot leaves no temporary artifact
+PASS stale shared log is rejected
+PASS fresh fallback log is selected after stale first location
+PASS startup output is bounded even for a long line
+PASS live retained launch handle does not claim exit
+PASS wrong start time cannot authorize cleanup
+PASS wrong executable cannot authorize cleanup
+PASS window readiness does not swallow wrong input ownership
+PASS argument echo child succeeds
+PASS argument count round trip
+PASS argument 0 round trip
+PASS argument 1 round trip
+PASS argument 2 round trip
+PASS argument 3 round trip
+PASS argument 4 round trip
+PASS argument 5 round trip
+PASS retained launch handle confirms actual exit
+PASS actual child exit code is reported
+PASS exit diagnosis includes hexadecimal code and both redirected streams
+PASS Python launch 0 records an explicit executable
+PASS Python launch 0 is monitored by identity
+PASS Python launch 0 is cleaned up
+PASS Python launch 1 records an explicit executable
+PASS Python launch 1 is monitored by identity
+PASS Python launch 1 is cleaned up
+PASS Python launch 2 records an explicit executable
+PASS Python launch 2 is monitored by identity
+PASS Python launch 2 is cleaned up
+PASS Python launch 3 records an explicit executable
+PASS Python launch 3 is monitored by identity
+PASS Python launch 3 is cleaned up
+PASS Python launch 4 records an explicit executable
+PASS Python launch 4 is monitored by identity
+PASS Python launch 4 is cleaned up
+PASS Python launch 5 records an explicit executable
+PASS Python launch 5 is monitored by identity
+PASS Python launch 5 is cleaned up
+PASS Python launch 6 records an explicit executable
+PASS Python launch 6 is monitored by identity
+PASS Python launch 6 is cleaned up
+PASS Python launch 7 records an explicit executable
+PASS Python launch 7 is monitored by identity
+PASS Python launch 7 is cleaned up
+success launch requested; observing for up to 15 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+  preflight and stack launch succeeded
+  BAP TCP connection observed
+success : REACHED BAP (protocol frame received)
+  probes=0 replies=0 dns=0 signon-requests=0 signon-replies=0 manifest-replies=0 bap-connections=1 bap-frames=1
+cleaned up the processes owned by this run
+RPCS3 log snapshot: 38 bytes -> %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\success-rpcs3.log
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\success-summary.json
+PASS success completed status
+PASS success error propagation
+PASS success retention status
+PASS wrapper BAP verdict
+PASS success continuation mode recorded
+PASS success profile handoff recorded
+PASS success log capture status
+PASS success owned child lifecycle
+PASS success leaves unrelated process running
+PASS success restores Local environment
+continue_bap launch requested; observing for up to 12 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+  preflight and stack launch succeeded
+  BAP TCP connection observed
+continue_bap : REACHED BAP (protocol frame received)
+  probes=0 replies=0 dns=0 signon-requests=0 signon-replies=0 manifest-replies=0 bap-connections=1 bap-frames=2
+cleaned up the processes owned by this run
+RPCS3 log snapshot: 43 bytes -> %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\continue_bap-rpcs3.log
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\continue_bap-summary.json
+PASS continue-bap completed status
+PASS continue-bap error propagation
+PASS continue-bap retention status
+PASS wrapper BAP verdict
+PASS continue-bap continuation mode recorded
+PASS continue-bap profile handoff recorded
+PASS continued observation includes a frame received after initial BAP connection
+PASS continue-bap log capture status
+PASS continue-bap owned child lifecycle
+PASS continue-bap leaves unrelated process running
+PASS continue-bap restores Local environment
+profile_ready launch requested; observing for up to 60 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+  preflight and stack launch succeeded
+  BAP TCP connection observed
+profile_ready : REACHED BAP (protocol frame received)
+  probes=0 replies=0 dns=0 signon-requests=0 signon-replies=0 manifest-replies=0 bap-connections=1 bap-frames=2
+leaving this run's stack up (-KeepRpcs3); ownership record: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\profile_ready-processes.json
+RPCS3 log snapshot: 44 bytes -> %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\profile_ready-rpcs3.log
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\profile_ready-summary.json
+PASS profile-ready completed status
+PASS profile-ready error propagation
+PASS profile-ready retention status
+PASS wrapper BAP verdict
+PASS profile-ready continuation mode recorded
+PASS profile-ready profile handoff recorded
+PASS profile handoff waits for the actual late reply
+PASS profile handoff returns before the sixty-second observation deadline
+PASS profile-ready log capture status
+PASS profile-ready owned child lifecycle
+PASS profile-ready leaves unrelated process running
+PASS profile-ready restores Local environment
+window_delay launch requested; observing for up to 56 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+  preflight and stack launch succeeded
+  BAP TCP connection observed
+  waiting for this owned RPCS3 game window within the boot deadline
+  15:05:37  Cross #1
+window_delay : REACHED BAP (protocol frame received)
+  probes=0 replies=0 dns=0 signon-requests=0 signon-replies=0 manifest-replies=0 bap-connections=1 bap-frames=1
+cleaned up the processes owned by this run
+RPCS3 log snapshot: 43 bytes -> %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\window_delay-rpcs3.log
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\window_delay-summary.json
+PASS window-delay completed status
+PASS window-delay error propagation
+PASS window-delay retention status
+PASS wrapper BAP verdict
+PASS window-delay continuation mode recorded
+PASS window-delay profile handoff recorded
+PASS missing game window is retried within original boot budget
+PASS delayed readiness posts exactly one input
+PASS missing game window does not count as a press
+PASS window-delay log capture status
+PASS window-delay owned child lifecycle
+PASS window-delay leaves unrelated process running
+PASS window-delay restores Local environment
+preflight_failure launch requested; observing for up to 15 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+cleaned up the processes owned by this run
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\preflight_failure-summary.json
+PASS preflight-failure completed status
+PASS preflight-failure error propagation
+PASS preflight-failure retention status
+PASS preflight-failure continuation mode recorded
+PASS preflight-failure profile handoff recorded
+PASS preflight-failure log capture status
+PASS preflight-failure leaves unrelated process running
+PASS preflight-failure restores Local environment
+stack_failure launch requested; observing for up to 15 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+cleaned up the processes owned by this run
+RPCS3 log snapshot: 44 bytes -> %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\stack_failure-rpcs3.log
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\stack_failure-summary.json
+PASS stack-failure completed status
+PASS stack-failure error propagation
+PASS stack-failure retention status
+PASS stack-failure continuation mode recorded
+PASS stack-failure profile handoff recorded
+PASS stack-failure log capture status
+PASS stack-failure owned child lifecycle
+PASS stack-failure leaves unrelated process running
+PASS stack-failure restores Local environment
+stale_log launch requested; observing for up to 15 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+cleaned up the processes owned by this run
+WARNING: RPCS3 log capture failed: No shared RPCS3 log was written since this emulator started at 2026-10-07T14:05:54.5082033Z; refusing to capture a previous run's log. Checked %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\RPCS3_FINAL124_SMOKE001\log\RPCS3.log or %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\RPCS3_FINAL124_SMOKE001\RPCS3.log.
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\stale_log-summary.json
+PASS stale-log completed status
+PASS stale-log error propagation
+PASS stale-log retention status
+PASS stale-log continuation mode recorded
+PASS stale-log profile handoff recorded
+PASS stale-log log capture status
+PASS failed launch does not publish previous emulator evidence
+PASS failed capture explains stale shared log
+PASS stale-log owned child lifecycle
+PASS stale-log leaves unrelated process running
+PASS stale-log restores Local environment
+interrupted_registration launch requested; observing for up to 1 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+cleaned up the processes owned by this run
+RPCS3 log snapshot: 55 bytes -> %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\interrupted_registration-rpcs3.log
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\interrupted_registration-summary.json
+PASS interrupted-registration completed status
+PASS interrupted-registration error propagation
+PASS interrupted-registration retention status
+PASS interrupted-registration continuation mode recorded
+PASS interrupted-registration profile handoff recorded
+PASS interrupted-registration log capture status
+PASS interrupted-registration owned child lifecycle
+PASS interrupted-registration unregistered child cannot survive interruption
+PASS interrupted-registration leaves unrelated process running
+PASS interrupted-registration restores Local environment
+interrupted_hung launch requested; observing for up to 1 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+cleaned up the processes owned by this run
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\interrupted_hung-summary.json
+PASS interrupted-hung completed status
+PASS interrupted-hung error propagation
+PASS interrupted-hung retention status
+PASS interrupted-hung continuation mode recorded
+PASS interrupted-hung profile handoff recorded
+PASS interrupted-hung log capture status
+PASS interrupted-hung unregistered child cannot survive interruption
+PASS interrupted-hung leaves unrelated process running
+PASS interrupted-hung restores Local environment
+retained_exclusive launch requested; observing for up to 15 s. Logs: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs
+  preflight and stack launch succeeded
+  BAP TCP connection observed
+retained_exclusive : REACHED BAP (protocol frame received)
+  probes=0 replies=0 dns=0 signon-requests=0 signon-replies=0 manifest-replies=0 bap-connections=1 bap-frames=1
+leaving this run's stack up (-KeepRpcs3); ownership record: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\retained_exclusive-processes.json
+WARNING: RPCS3 log capture deferred: Could not snapshot '%USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\RPCS3_FINAL124_SMOKE001\log\RPCS3.log' to '%USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\retained_exclusive-rpcs3.log': Exception calling ".ctor" with "4" argument(s): "The process cannot access the file '%USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\RPCS3_FINAL124_SMOKE001\log\RPCS3.log' because it is being used by another process."
+run summary: %USERPROFILE%\AppData\Local\Temp\d1-final124-tests-aa11e361-d509-47ab-855e-20f34ba26b6c\private runtime\SIGNON_LOCAL\logs\retained_exclusive-summary.json
+PASS retained-exclusive completed status
+PASS retained-exclusive error propagation
+PASS retained-exclusive retention status
+PASS wrapper BAP verdict
+PASS retained-exclusive continuation mode recorded
+PASS retained-exclusive profile handoff recorded
+PASS retained-exclusive log capture status
+PASS retained-exclusive owned child lifecycle
+PASS deferred capture reports source path
+PASS deferred log can be captured after owned process stops
+PASS retained-exclusive leaves unrelated process running
+PASS retained-exclusive restores Local environment
+PASS correct identity permits cleanup
+All isolated 01.24 run checks passed.

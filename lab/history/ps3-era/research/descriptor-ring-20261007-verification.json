@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-07T08:22:47.5812825Z",
+  "actual_ring_header_sha256": "9a40a4fc75e1670bbb5893b64b43dbf30b94b433ef4e151b30543b852dfdb08a",
+  "ring_cpu_checks": 20,
+  "ring_cpu_failures": 0,
+  "parser_tests": 10,
+  "parser_failures": 0,
+  "allocation_regression_checks": 20,
+  "allocation_regression_failures": 0,
+  "retirement_regression_checks": 23,
+  "retirement_regression_failures": 0,
+  "compiler": "MSVC x64 C++20 /EHsc /W4",
+  "full_release_build_exit_code": 0,
+  "native_result": "JOIN161 running; not yet accepted",
+  "scope": "Actual header concurrency/serialization contracts and actual allocator/retirement extraction; no Vulkan causality or pixels"
+}

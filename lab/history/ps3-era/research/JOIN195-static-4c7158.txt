@@ -1,0 +1,60 @@
+004c7158  7c0802a6  mflr     r0
+004c715c  488d18c9  bl       0xd98a24  ; 0xd98a24
+004c7160  f821ff81  stdu     r1, -0x80(r1)
+004c7164  f8010090  std      r0, 0x90(r1)
+004c7168  607f0000  ori      r31, r3, 0
+004c716c  4bffed5d  bl       0x4c5ec8  ; 0x4c5ec8
+004c7170  38800000  li       r4, 0
+004c7174  38600008  li       r3, 8
+004c7178  7c6903a6  mtctr    r3
+004c717c  909f00cc  stw      r4, 0xcc(r31)
+004c7180  3c60811c  lis      r3, -0x7ee4
+004c7184  909f00f4  stw      r4, 0xf4(r31)
+004c7188  60639dc5  ori      r3, r3, 0x9dc5
+004c718c  907f00f0  stw      r3, 0xf0(r31)
+004c7190  33ff0008  addic    r31, r31, 8
+004c7194  4200ffec  bdnz     0x4c7180
+004c7198  38210080  addi     r1, r1, 0x80
+004c719c  488d18ec  b        0xd98a88  ; 0xd98a88
+004c71a0  7c0802a6  mflr     r0
+004c71a4  488d1871  bl       0xd98a14  ; 0xd98a14
+004c71a8  f821ff61  stdu     r1, -0xa0(r1)
+004c71ac  f80100b0  std      r0, 0xb0(r1)
+004c71b0  607d0000  ori      r29, r3, 0
+004c71b4  38c00001  li       r6, 1
+004c71b8  3900ffff  li       r8, -1
+004c71bc  3bc00000  li       r30, 0
+004c71c0  3ce0012d  lis      r7, 0x12d
+004c71c4  98dd0000  stb      r6, 0(r29)
+004c71c8  607f0000  ori      r31, r3, 0
+004c71cc  909d0004  stw      r4, 4(r29)
+004c71d0  38c0007f  li       r6, 0x7f
+004c71d4  90bd00ac  stw      r5, 0xac(r29)
+004c71d8  307d00d0  addic    r3, r29, 0xd0
+004c71dc  911d00b0  stw      r8, 0xb0(r29)
+004c71e0  911d00b4  stw      r8, 0xb4(r29)
+004c71e4  9bdd00d8  stb      r30, 0xd8(r29)
+004c71e8  9bdd00d9  stb      r30, 0xd9(r29)
+004c71ec  9bdd00da  stb      r30, 0xda(r29)
+004c71f0  88a71040  lbz      r5, 0x1040(r7)
+004c71f4  98dd00dc  stb      r6, 0xdc(r29)
+004c71f8  98bd00db  stb      r5, 0xdb(r29)
+004c71fc  4bc76a25  bl       0x13dc20  ; 0x13dc20
+004c7200  63dc0000  ori      r28, r30, 0
+004c7204  63e40000  ori      r4, r31, 0
+004c7208  33640008  addic    r27, r4, 8
+004c720c  63630000  ori      r3, r27, 0
+004c7210  4bdb24f9  bl       0x279708  ; 0x279708
+004c7214  339c0001  addic    r28, r28, 1
+004c7218  63640000  ori      r4, r27, 0
+004c721c  2c1c0008  cmpwi    r28, 8
+004c7220  4180ffe8  blt      0x4c7208
+004c7224  3c60811c  lis      r3, -0x7ee4
+004c7228  93dd0048  stw      r30, 0x48(r29)
+004c722c  38800008  li       r4, 8
+004c7230  607d9dc5  ori      r29, r3, 0x9dc5
+004c7234  7c8903a6  mtctr    r4
+004c7238  93bf006c  stw      r29, 0x6c(r31)
+004c723c  93df0070  stw      r30, 0x70(r31)
+004c7240  33ff0008  addic    r31, r31, 8
+004c7244  4200fff4  bdnz     0x4c7238

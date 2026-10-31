@@ -1,0 +1,11 @@
+{
+  "scope": "Private synthetic pending-loot records only; no equipped weapon, position or successful grant claimed. Both nonce keys/IDs are diagnostic, not recovered mission values.",
+  "overlay_sha256": "078d73fd00be0031f4facffbc590b936d6bc51d1c8910d87199590116bccc1ee",
+  "encoded_bytes": 216,
+  "roundtrip": true,
+  "source_kinds": [
+    3,
+    5
+  ],
+  "item_index": 3598
+}

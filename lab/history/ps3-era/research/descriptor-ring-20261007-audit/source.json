@@ -1,0 +1,4 @@
+{
+  "actual_header_sha256": "9a40a4fc75e1670bbb5893b64b43dbf30b94b433ef4e151b30543b852dfdb08a",
+  "scope": "Bounded suffix, one-shot freeze and concurrent writer contracts; no Vulkan/native causality claim"
+}

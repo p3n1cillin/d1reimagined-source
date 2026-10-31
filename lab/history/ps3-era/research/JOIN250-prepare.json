@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-09T20:43:32.3805105Z",
+  "source_base": "bb55871b71620a0800f94f5f6cc4a7b6818e20aa",
+  "source_clean": false,
+  "source_status": [
+    " M notes/checkpoint-2026-10-09-mission.md",
+    " M notes/guardian-rises-reference-script.md",
+    " M scripts/Invoke-Final124Join.ps1"
+  ],
+  "change": "Read-only watches on the urgent dialog source found statically: 0x4867e8 enqueues a dialog (0x753430) when the flag word from 0x74bc84 has bit 0x400, set by 0x46d4ec/0x46d3e0 when the unlock check 0xc39a94(ctx, index) fails. Logs the index and chains. JOIN249 traced the UI show path (urgent queued at 0:03:57 via 0x753328). Baseline flags; same mission drive. Committed source bb55871. No control lines or guest writes.",
+  "trace": "# JOIN250: urgent dialog source. Unlock check of an index (bit 0x400 when false) and the dialog enqueue.\r\nc39a94 40 r3:16\r\n46d4ec 20 r3:16\r\n46d3e0 20 r3:16\r\n4867e8 20 r3:32 r4:8\r\n753430 20 r3:16\r\nc58e84 40 r3:16\n",
+  "launch_sha256": "C4EBEEF21677F7C5EBA73C94D5E86EF234C1BFCCBB47BC646EFE704F3154ADCB"
+}

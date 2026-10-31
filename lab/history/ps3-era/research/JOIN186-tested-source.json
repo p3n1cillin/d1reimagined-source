@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-08T09:02:27.9383368+00:00",
+  "source_base": "7bedf8e5df854bac79633baf242cc6110957a5f8",
+  "dirty": true,
+  "files": [
+    {
+      "file": "server/bap_server.py",
+      "sha256": "269191824cc1e63c082d3da25d6b061cc219f08b6c7b1d23e12d44ca8900511b"
+    },
+    {
+      "file": "server/mission_script.py",
+      "sha256": "e80555dc7875d59a3c25e0cd63ffeea0a425dfdfb11ad5be8ee1e21b1327c392"
+    },
+    {
+      "file": "server/incident_codec.py",
+      "sha256": "de02def1d8675e452ba763a8a0a1223342505a8748acd01b3626774fd6777f0e"
+    },
+    {
+      "file": "scripts/rpcs3_final124_performance.py",
+      "sha256": "7003f655d9b2be5a23f6153b0c1d85780b6cb9b121d858aca34fa8956d728505"
+    }
+  ],
+  "scope": "Actual uncommitted completion matcher/reactive teleport and read-only probe. Private first start90; production first start20."
+}

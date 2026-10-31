@@ -1,0 +1,972 @@
+{
+  "utc": "2026-10-08T22:43:34.564276+00:00",
+  "atomic": false,
+  "interface": "0x1ab9d7c",
+  "vtable": "0x13e7cf0",
+  "incoming_descriptor": "0x18540e8",
+  "incoming_function": "0x2fcd64",
+  "payload_adapters": [
+    {
+      "selector": 0,
+      "override": "0x0",
+      "fallback": "0x1a93320",
+      "chosen": {
+        "address": "0x1a93320",
+        "words": [
+          "0x13e77c0",
+          "0x13e6c30",
+          "0x13e6e88"
+        ],
+        "vtable": "0x13e77c0",
+        "descriptors": [
+          "0x18502d8",
+          "0x18502c8",
+          "0x18502e0",
+          "0x1852b10"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x7ddb0",
+          "0xe49d78"
+        ]
+      }
+    },
+    {
+      "selector": 1,
+      "override": "0x1ad5aac",
+      "fallback": "0x1a93324",
+      "chosen": {
+        "address": "0x1ad5aac",
+        "words": [
+          "0x13e97d8",
+          "0x13e6e88",
+          "0x13e97c8"
+        ],
+        "vtable": "0x13e97d8",
+        "descriptors": [
+          "0x1858818",
+          "0x1858808",
+          "0x1850358",
+          "0x1850558"
+        ],
+        "functions": [
+          "0x1da238",
+          "0x26f8a8",
+          "0x7ddb0",
+          "0x26d794"
+        ]
+      }
+    },
+    {
+      "selector": 2,
+      "override": "0x0",
+      "fallback": "0x1a93330",
+      "chosen": {
+        "address": "0x1a93330",
+        "words": [
+          "0x13e7770",
+          "0x13e6cb0",
+          "0x1a93330"
+        ],
+        "vtable": "0x13e7770",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1852ae0"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe49d50"
+        ]
+      }
+    },
+    {
+      "selector": 3,
+      "override": "0x0",
+      "fallback": "0x1a93340",
+      "chosen": {
+        "address": "0x1a93340",
+        "words": [
+          "0x13e6f38",
+          "0x13e6cb0",
+          "0x1a93340"
+        ],
+        "vtable": "0x13e6f38",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1850680"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2e21c"
+        ]
+      }
+    },
+    {
+      "selector": 4,
+      "override": "0x0",
+      "fallback": "0x1a93358",
+      "chosen": {
+        "address": "0x1a93358",
+        "words": [
+          "0x13e76e0",
+          "0x13e7718",
+          "0x13e7728"
+        ],
+        "vtable": "0x13e76e0",
+        "descriptors": [
+          "0x18502d8",
+          "0x18502c8",
+          "0x18502e0",
+          "0x1852a60"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x28c880"
+        ]
+      }
+    },
+    {
+      "selector": 5,
+      "override": "0x0",
+      "fallback": "0x1a93360",
+      "chosen": {
+        "address": "0x1a93360",
+        "words": [
+          "0x13e7728",
+          "0x13e7760",
+          "0x13e7030"
+        ],
+        "vtable": "0x13e7728",
+        "descriptors": [
+          "0x18502d8",
+          "0x18502c8",
+          "0x18502e0",
+          "0x1852aa8"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x7ddb0",
+          "0xe49d3c"
+        ]
+      }
+    },
+    {
+      "selector": 6,
+      "override": "0x1ad5ac0",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5ac0",
+        "words": [
+          "0x13e96d8",
+          "0x13e6cb0",
+          "0x1ad5ac0"
+        ],
+        "vtable": "0x13e96d8",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1858708"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe58958"
+        ]
+      }
+    },
+    {
+      "selector": 7,
+      "override": "0x0",
+      "fallback": "0x1a93368",
+      "chosen": {
+        "address": "0x1a93368",
+        "words": [
+          "0x13e7030",
+          "0x13e6cb0",
+          "0x1a93368"
+        ],
+        "vtable": "0x13e7030",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1850768"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2e26c"
+        ]
+      }
+    },
+    {
+      "selector": 8,
+      "override": "0x1ad5ad0",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5ad0",
+        "words": [
+          "0x13e9840",
+          "0x13e6cb0",
+          "0x1ad5ad0"
+        ],
+        "vtable": "0x13e9840",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1858858"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe5b3ec"
+        ]
+      }
+    },
+    {
+      "selector": 9,
+      "override": "0x1ad5ae0",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5ae0",
+        "words": [
+          "0x13e9890",
+          "0x13e6cb0",
+          "0x1ad5ae0"
+        ],
+        "vtable": "0x13e9890",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1858898"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe5b414"
+        ]
+      }
+    },
+    {
+      "selector": 10,
+      "override": "0x0",
+      "fallback": "0x1a93378",
+      "chosen": {
+        "address": "0x1a93378",
+        "words": [
+          "0x13e7690",
+          "0x13e6cb0",
+          "0x1a93378"
+        ],
+        "vtable": "0x13e7690",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1852a38"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe49d14"
+        ]
+      }
+    },
+    {
+      "selector": 11,
+      "override": "0x1ad5af0",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5af0",
+        "words": [
+          "0x13ecfe8",
+          "0x13e6cb0",
+          "0x1ad5af0"
+        ],
+        "vtable": "0x13ecfe8",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x185e0c0"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe650ac"
+        ]
+      }
+    },
+    {
+      "selector": 12,
+      "override": "0x1ad5b00",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5b00",
+        "words": [
+          "0x13ed088",
+          "0x13e6cb0",
+          "0x1ad5b00"
+        ],
+        "vtable": "0x13ed088",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x185e140"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe650d4"
+        ]
+      }
+    },
+    {
+      "selector": 13,
+      "override": "0x1ad5b10",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5b10",
+        "words": [
+          "0x13e98e0",
+          "0x13e6cb0",
+          "0x1ad5b10"
+        ],
+        "vtable": "0x13e98e0",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x18588d8"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe5b43c"
+        ]
+      }
+    },
+    {
+      "selector": 14,
+      "override": "0x1ad5b20",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5b20",
+        "words": [
+          "0x1411120",
+          "0x13e6cb0",
+          "0x1ad5b20"
+        ],
+        "vtable": "0x1411120",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1884668"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0x109b8b8"
+        ]
+      }
+    },
+    {
+      "selector": 15,
+      "override": "0x1ad5b30",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5b30",
+        "words": [
+          "0x13e9728",
+          "0x13e6cb0",
+          "0x1ad5b30"
+        ],
+        "vtable": "0x13e9728",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1858750"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe58980"
+        ]
+      }
+    },
+    {
+      "selector": 16,
+      "override": "0x0",
+      "fallback": "0x1a93388",
+      "chosen": {
+        "address": "0x1a93388",
+        "words": [
+          "0x13e7558",
+          "0x13e6cb0",
+          "0x1a93388"
+        ],
+        "vtable": "0x13e7558",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1852940"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe49c88"
+        ]
+      }
+    },
+    {
+      "selector": 17,
+      "override": "0x0",
+      "fallback": "0x1a933a8",
+      "chosen": {
+        "address": "0x1a933a8",
+        "words": [
+          "0x13e75f8",
+          "0x13e7630",
+          "0x13e6df0"
+        ],
+        "vtable": "0x13e75f8",
+        "descriptors": [
+          "0x18502d8",
+          "0x18502c8",
+          "0x18502e0",
+          "0x18529b0"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x7ddb0",
+          "0xe49cd8"
+        ]
+      }
+    },
+    {
+      "selector": 18,
+      "override": "0x0",
+      "fallback": "0x1a933b0",
+      "chosen": {
+        "address": "0x1a933b0",
+        "words": [
+          "0x13e6df0",
+          "0x13e6cb0",
+          "0x1a933b0"
+        ],
+        "vtable": "0x13e6df0",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x18504f8"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2de78"
+        ]
+      }
+    },
+    {
+      "selector": 19,
+      "override": "0x1ad5b40",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5b40",
+        "words": [
+          "0x13e9978",
+          "0x13e6cb0",
+          "0x1ad5b40"
+        ],
+        "vtable": "0x13e9978",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1858958"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe5b464"
+        ]
+      }
+    },
+    {
+      "selector": 20,
+      "override": "0x0",
+      "fallback": "0x1a933c0",
+      "chosen": {
+        "address": "0x1a933c0",
+        "words": [
+          "0x13e74b0",
+          "0x13e74e8",
+          "0x13e74f8"
+        ],
+        "vtable": "0x13e74b0",
+        "descriptors": [
+          "0x18502d8",
+          "0x18502c8",
+          "0x18502e0",
+          "0x18528a8"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x7ddb0",
+          "0xe49c4c"
+        ]
+      }
+    },
+    {
+      "selector": 21,
+      "override": "0x0",
+      "fallback": "0x1a933dc",
+      "chosen": {
+        "address": "0x1a933dc",
+        "words": [
+          "0x13e6cc0",
+          "0x13e6cb0",
+          "0x1a933dc"
+        ],
+        "vtable": "0x13e6cc0",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1850400"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2ddc4"
+        ]
+      }
+    },
+    {
+      "selector": 22,
+      "override": "0x0",
+      "fallback": "0x1a933ec",
+      "chosen": {
+        "address": "0x1a933ec",
+        "words": [
+          "0x13e6d10",
+          "0x13e6cb0",
+          "0x1a933ec"
+        ],
+        "vtable": "0x13e6d10",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1850438"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2ddec"
+        ]
+      }
+    },
+    {
+      "selector": 23,
+      "override": "0x0",
+      "fallback": "0x1a933f8",
+      "chosen": {
+        "address": "0x1a933f8",
+        "words": [
+          "0x13e6d50",
+          "0x13e6cb0",
+          "0x1a933f8"
+        ],
+        "vtable": "0x13e6d50",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1850470"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2de14"
+        ]
+      }
+    },
+    {
+      "selector": 24,
+      "override": "0x0",
+      "fallback": "0x1a93408",
+      "chosen": {
+        "address": "0x1a93408",
+        "words": [
+          "0x13e6da0",
+          "0x13e6cb0",
+          "0x1a93408"
+        ],
+        "vtable": "0x13e6da0",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x18504b0"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2de3c"
+        ]
+      }
+    },
+    {
+      "selector": 25,
+      "override": "0x1ad5b50",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5b50",
+        "words": [
+          "0x13e9930",
+          "0x13e9968",
+          "0x13ed038"
+        ],
+        "vtable": "0x13e9930",
+        "descriptors": [
+          "0x18502d8",
+          "0x18502c8",
+          "0x18502e0",
+          "0x1858900"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x469310"
+        ]
+      }
+    },
+    {
+      "selector": 26,
+      "override": "0x1ad5b58",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5b58",
+        "words": [
+          "0x13ed038",
+          "0x13e6cb0",
+          "0x1ad5b58"
+        ],
+        "vtable": "0x13ed038",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x185e0e8"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0x5b0564"
+        ]
+      }
+    },
+    {
+      "selector": 27,
+      "override": "0x0",
+      "fallback": "0x1a933c8",
+      "chosen": {
+        "address": "0x1a933c8",
+        "words": [
+          "0x13e74f8",
+          "0x13e6cb0",
+          "0x1a933c8"
+        ],
+        "vtable": "0x13e74f8",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x1852908",
+          "0x18528f0"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x1da238",
+          "0xe49c60"
+        ]
+      }
+    },
+    {
+      "selector": 28,
+      "override": "0x0",
+      "fallback": "0x1a93398",
+      "chosen": {
+        "address": "0x1a93398",
+        "words": [
+          "0x13e7640",
+          "0x13e6cb0",
+          "0x1a93398"
+        ],
+        "vtable": "0x13e7640",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x18529f0"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe49cec"
+        ]
+      }
+    },
+    {
+      "selector": 29,
+      "override": "0x1ad5b68",
+      "fallback": "0x1a93474",
+      "chosen": {
+        "address": "0x1ad5b68",
+        "words": [
+          "0x13e9788",
+          "0x13e6cb0",
+          "0x1ad5b68"
+        ],
+        "vtable": "0x13e9788",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1858778"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0x465f28"
+        ]
+      }
+    },
+    {
+      "selector": 30,
+      "override": "0x0",
+      "fallback": "0x1a93418",
+      "chosen": {
+        "address": "0x1a93418",
+        "words": [
+          "0x13e6f88",
+          "0x13e6cb0",
+          "0x1a93418"
+        ],
+        "vtable": "0x13e6f88",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x18506d0"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2e244"
+        ]
+      }
+    },
+    {
+      "selector": 31,
+      "override": "0x0",
+      "fallback": "0x1a93350",
+      "chosen": {
+        "address": "0x1a93350",
+        "words": [
+          "0x13e6ef0",
+          "0x13e6f28",
+          "0x13e76e0"
+        ],
+        "vtable": "0x13e6ef0",
+        "descriptors": [
+          "0x18502d8",
+          "0x18502c8",
+          "0x18502e0",
+          "0x1850648"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x7ddb0",
+          "0xe2e208"
+        ]
+      }
+    },
+    {
+      "selector": 32,
+      "override": "0x0",
+      "fallback": "0x1a93428",
+      "chosen": {
+        "address": "0x1a93428",
+        "words": [
+          "0x13e6ea0",
+          "0x13e6cb0",
+          "0x1a93428"
+        ],
+        "vtable": "0x13e6ea0",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1850608"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2e1c4"
+        ]
+      }
+    },
+    {
+      "selector": 33,
+      "override": "0x0",
+      "fallback": "0x1a93438",
+      "chosen": {
+        "address": "0x1a93438",
+        "words": [
+          "0x13e75a8",
+          "0x13e6cb0",
+          "0x1a93438"
+        ],
+        "vtable": "0x13e75a8",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1852980"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe49cb0"
+        ]
+      }
+    },
+    {
+      "selector": 34,
+      "override": "0x0",
+      "fallback": "0x1a93448",
+      "chosen": {
+        "address": "0x1a93448",
+        "words": [
+          "0x13e6fd8",
+          "0x13e7010",
+          "0x13e7020"
+        ],
+        "vtable": "0x13e6fd8",
+        "descriptors": [
+          "0x18502d8",
+          "0x18502c8",
+          "0x1850730",
+          "0x1850708"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0x7ddb0",
+          "0x26f8a8",
+          "0x26f7a8"
+        ]
+      }
+    },
+    {
+      "selector": 35,
+      "override": "0x0",
+      "fallback": "0x1a93454",
+      "chosen": {
+        "address": "0x1a93454",
+        "words": [
+          "0x13e7080",
+          "0x13e6cb0",
+          "0x1a93454"
+        ],
+        "vtable": "0x13e7080",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18507c8",
+          "0x18507a0"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x1da238",
+          "0x26fc08"
+        ]
+      }
+    },
+    {
+      "selector": 36,
+      "override": "0x0",
+      "fallback": "0x1a93468",
+      "chosen": {
+        "address": "0x1a93468",
+        "words": [
+          "0x13e6e40",
+          "0x13e6cb0",
+          "0x1a93468"
+        ],
+        "vtable": "0x13e6e40",
+        "descriptors": [
+          "0x18503a8",
+          "0x1850398",
+          "0x18503b0",
+          "0x1850528"
+        ],
+        "functions": [
+          "0x7ddb0",
+          "0xe27d84",
+          "0x7ddb0",
+          "0xe2de8c"
+        ]
+      }
+    }
+  ]
+}

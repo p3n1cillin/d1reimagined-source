@@ -1,0 +1,15 @@
+PASS empty collector releases nothing
+PASS empty collector releases its lock
+PASS only the completed prefix is detached
+PASS resource callbacks run outside the map lock
+PASS later completion releases the retained scope
+PASS future-only scope remains retained
+FAIL writer appending after observed end cannot release a pending scope
+FAIL appended pending resource remains available for later completion
+PASS contended append callbacks still run outside the lock
+PASS appended resource is released when its event completes
+FAIL writer delaying the current scope cannot release it early
+PASS delayed scope releases at the updated watermark
+PASS partial-prefix contention preserves all future resources
+PASS partial-prefix callbacks are outside the lock
+14 GC scope checks, 3 failed

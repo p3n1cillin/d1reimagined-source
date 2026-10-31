@@ -1,0 +1,150 @@
+002d184c  7c0802a6  mflr     r0
+002d1850  48ac71d5  bl       0xd98a24  ; 0xd98a24
+002d1854  f821ff81  stdu     r1, -0x80(r1)
+002d1858  f8010090  std      r0, 0x90(r1)
+002d185c  3d0001ab  lis      r8, 0x1ab
+002d1860  607f0000  ori      r31, r3, 0
+002d1864  60860000  ori      r6, r4, 0
+002d1868  60a70000  ori      r7, r5, 0
+002d186c  30610070  addic    r3, r1, 0x70
+002d1870  808869ac  lwz      r4, 0x69ac(r8)
+002d1874  38a00003  li       r5, 3
+002d1878  39000000  li       r8, 0
+002d187c  481f4c05  bl       0x4c6480  ; 0x4c6480
+002d1880  80610070  lwz      r3, 0x70(r1)
+002d1884  907f0000  stw      r3, 0(r31)
+002d1888  38210080  addi     r1, r1, 0x80
+002d188c  48ac71fc  b        0xd98a88  ; 0xd98a88
+002d1890  7c0802a6  mflr     r0
+002d1894  48ac7191  bl       0xd98a24  ; 0xd98a24
+002d1898  f821ff81  stdu     r1, -0x80(r1)
+002d189c  f8010090  std      r0, 0x90(r1)
+002d18a0  3d0001ab  lis      r8, 0x1ab
+002d18a4  607f0000  ori      r31, r3, 0
+002d18a8  60860000  ori      r6, r4, 0
+002d18ac  60a70000  ori      r7, r5, 0
+002d18b0  30610070  addic    r3, r1, 0x70
+002d18b4  808869b0  lwz      r4, 0x69b0(r8)
+002d18b8  38a00003  li       r5, 3
+002d18bc  39000000  li       r8, 0
+002d18c0  481f4bc1  bl       0x4c6480  ; 0x4c6480
+002d18c4  80610070  lwz      r3, 0x70(r1)
+002d18c8  907f0000  stw      r3, 0(r31)
+002d18cc  38210080  addi     r1, r1, 0x80
+002d18d0  48ac71b8  b        0xd98a88  ; 0xd98a88
+002d18d4  f821ff91  stdu     r1, -0x70(r1)
+002d18d8  7c0802a6  mflr     r0
+002d18dc  f8010080  std      r0, 0x80(r1)
+002d18e0  3ca001ab  lis      r5, 0x1ab
+002d18e4  60640000  ori      r4, r3, 0
+002d18e8  8065699c  lwz      r3, 0x699c(r5)
+002d18ec  88630028  lbz      r3, 0x28(r3)
+002d18f0  2c030000  cmpwi    r3, 0
+002d18f4  41820014  beq      0x2d1908
+002d18f8  3c6001ab  lis      r3, 0x1ab
+002d18fc  38a00000  li       r5, 0
+002d1900  806369a0  lwz      r3, 0x69a0(r3)
+002d1904  481f4fe5  bl       0x4c68e8  ; 0x4c68e8
+002d1908  e8010080  ld       r0, 0x80(r1)
+002d190c  7c0803a6  mtlr     r0
+002d1910  38210070  addi     r1, r1, 0x70
+002d1914  4e800020  blr      
+002d1918  f821ff91  stdu     r1, -0x70(r1)
+002d191c  7c0802a6  mflr     r0
+002d1920  f8010080  std      r0, 0x80(r1)
+002d1924  3ca001ab  lis      r5, 0x1ab
+002d1928  60640000  ori      r4, r3, 0
+002d192c  8065699c  lwz      r3, 0x699c(r5)
+002d1930  88630028  lbz      r3, 0x28(r3)
+002d1934  2c030000  cmpwi    r3, 0
+002d1938  41820014  beq      0x2d194c
+002d193c  3c6001ab  lis      r3, 0x1ab
+002d1940  38a00000  li       r5, 0
+002d1944  806369a4  lwz      r3, 0x69a4(r3)
+002d1948  481f4fa1  bl       0x4c68e8  ; 0x4c68e8
+002d194c  e8010080  ld       r0, 0x80(r1)
+002d1950  7c0803a6  mtlr     r0
+002d1954  38210070  addi     r1, r1, 0x70
+002d1958  4e800020  blr      
+002d195c  f821ff91  stdu     r1, -0x70(r1)
+002d1960  7c0802a6  mflr     r0
+002d1964  f8010080  std      r0, 0x80(r1)
+002d1968  3ca001ab  lis      r5, 0x1ab
+002d196c  60640000  ori      r4, r3, 0
+002d1970  8065699c  lwz      r3, 0x699c(r5)
+002d1974  88630028  lbz      r3, 0x28(r3)
+002d1978  2c030000  cmpwi    r3, 0
+002d197c  41820014  beq      0x2d1990
+002d1980  3c6001ab  lis      r3, 0x1ab
+002d1984  38a00000  li       r5, 0
+002d1988  806369a8  lwz      r3, 0x69a8(r3)
+002d198c  481f4f5d  bl       0x4c68e8  ; 0x4c68e8
+002d1990  e8010080  ld       r0, 0x80(r1)
+002d1994  7c0803a6  mtlr     r0
+002d1998  38210070  addi     r1, r1, 0x70
+002d199c  4e800020  blr      
+002d19a0  f821ff91  stdu     r1, -0x70(r1)
+002d19a4  7c0802a6  mflr     r0
+002d19a8  f8010080  std      r0, 0x80(r1)
+002d19ac  3ca001ab  lis      r5, 0x1ab
+002d19b0  60640000  ori      r4, r3, 0
+002d19b4  8065699c  lwz      r3, 0x699c(r5)
+002d19b8  88630028  lbz      r3, 0x28(r3)
+002d19bc  2c030000  cmpwi    r3, 0
+002d19c0  41820014  beq      0x2d19d4
+002d19c4  3c6001ab  lis      r3, 0x1ab
+002d19c8  38a00000  li       r5, 0
+002d19cc  806369ac  lwz      r3, 0x69ac(r3)
+002d19d0  481f4f19  bl       0x4c68e8  ; 0x4c68e8
+002d19d4  e8010080  ld       r0, 0x80(r1)
+002d19d8  7c0803a6  mtlr     r0
+002d19dc  38210070  addi     r1, r1, 0x70
+002d19e0  4e800020  blr      
+002d19e4  f821ff91  stdu     r1, -0x70(r1)
+002d19e8  7c0802a6  mflr     r0
+002d19ec  f8010080  std      r0, 0x80(r1)
+002d19f0  3ca001ab  lis      r5, 0x1ab
+002d19f4  60640000  ori      r4, r3, 0
+002d19f8  8065699c  lwz      r3, 0x699c(r5)
+002d19fc  88630028  lbz      r3, 0x28(r3)
+002d1a00  2c030000  cmpwi    r3, 0
+002d1a04  41820014  beq      0x2d1a18
+002d1a08  3c6001ab  lis      r3, 0x1ab
+002d1a0c  38a00000  li       r5, 0
+002d1a10  806369b0  lwz      r3, 0x69b0(r3)
+002d1a14  481f4ed5  bl       0x4c68e8  ; 0x4c68e8
+002d1a18  e8010080  ld       r0, 0x80(r1)
+002d1a1c  7c0803a6  mtlr     r0
+002d1a20  38210070  addi     r1, r1, 0x70
+002d1a24  4e800020  blr      
+002d1a28  7c0802a6  mflr     r0
+002d1a2c  48ac6ff9  bl       0xd98a24  ; 0xd98a24
+002d1a30  f821ff81  stdu     r1, -0x80(r1)
+002d1a34  f8010090  std      r0, 0x90(r1)
+002d1a38  3c8001ab  lis      r4, 0x1ab
+002d1a3c  607f0000  ori      r31, r3, 0
+002d1a40  30610070  addic    r3, r1, 0x70
+002d1a44  808469b4  lwz      r4, 0x69b4(r4)
+002d1a48  48002455  bl       0x2d3e9c  ; 0x2d3e9c
+002d1a4c  80610070  lwz      r3, 0x70(r1)
+002d1a50  907f0000  stw      r3, 0(r31)
+002d1a54  38210080  addi     r1, r1, 0x80
+002d1a58  48ac7030  b        0xd98a88  ; 0xd98a88
+002d1a5c  f821ff91  stdu     r1, -0x70(r1)
+002d1a60  7c0802a6  mflr     r0
+002d1a64  f8010080  std      r0, 0x80(r1)
+002d1a68  3ca001ab  lis      r5, 0x1ab
+002d1a6c  60640000  ori      r4, r3, 0
+002d1a70  806569b4  lwz      r3, 0x69b4(r5)
+002d1a74  48002491  bl       0x2d3f04  ; 0x2d3f04
+002d1a78  e8010080  ld       r0, 0x80(r1)
+002d1a7c  7c0803a6  mtlr     r0
+002d1a80  38210070  addi     r1, r1, 0x70
+002d1a84  4e800020  blr      
+002d1a88  7c0802a6  mflr     r0
+002d1a8c  48ac6f99  bl       0xd98a24  ; 0xd98a24
+002d1a90  f821ff81  stdu     r1, -0x80(r1)
+002d1a94  f8010090  std      r0, 0x90(r1)
+002d1a98  3d0001ab  lis      r8, 0x1ab
+002d1a9c  607f0000  ori      r31, r3, 0
+002d1aa0  60860000  ori      r6, r4, 0

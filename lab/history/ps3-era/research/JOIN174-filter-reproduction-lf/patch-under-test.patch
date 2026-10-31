@@ -1,0 +1,163 @@
+--- a/rpcs3/Emu/RSX/d1diag.h
++++ b/rpcs3/Emu/RSX/d1diag.h
+@@ -3,6 +3,7 @@
+ // the SPU lighting reads (0x44000000-0x46000000). Throttled.
+ #include "util/types.hpp"
+ #include "Common/descriptor_lifetime_ring.h"
++#include "Common/ppu_watch_filter.h"
+ #include <atomic>
+ #include <bit>
+ #include <mutex>
+@@ -246,7 +247,7 @@
+ 
+ 	// PPU call tracing (LLVM decoder, where GDB breakpoints are ignored). Every compiled function
+ 	// below 0x2000000 checks g_ppu_mask[addr >> 2] on entry and calls ppu_d1hit when set. The
+-	// watch list comes from d1/d1ppu.txt, one watch per line: "ADDR [MAXHITS] [u] [rN[+OFF]:LEN ...]"
++	// watch list comes from d1/d1ppu.txt, one watch per line: "ADDR [MAXHITS] [u] [if=...] [rN[+OFF]:LEN ...]"
+ 	// (hex address, default 50 hits, memory dumps at register + offset); re-read when it changes.
+ 	// Fixed host address (reserved and committed in PPUThread.cpp before any PPU code runs), so the
+ 	// compiled PPU code can embed it as a 64-bit constant and cached objects stay valid across runs.
+@@ -257,6 +258,7 @@
+ 		u32 addr;
+ 		u32 left;
+ 		std::vector<std::tuple<u32, u32, u32>> dumps; // register, offset, length
++		std::vector<ppu_watch_filter> filters; // all must match before logging consumes a hit
+ 		bool unique = false; // "u": log each distinct dump content once
+ 		std::vector<u64> seen;
+ 	};
+@@ -320,6 +322,12 @@
+ 				{
+ 					w.unique = true;
+ 				}
++				else if (tok.starts_with("if="))
++				{
++					ppu_watch_filter filter;
++					if (!parse_ppu_watch_filter(tok, filter)) throw std::invalid_argument("Invalid PPU watch filter");
++					w.filters.push_back(filter);
++				}
+ 				else if (tok[0] == 'r' && tok.find(':') != umax)
+ 				{
+ 					const usz colon = tok.find(':'), plus = tok.find('+');
+--- a/rpcs3/Emu/Cell/PPUThread.cpp
++++ b/rpcs3/Emu/Cell/PPUThread.cpp
+@@ -3416,6 +3416,7 @@
+ 	}
+ 
+ 	std::lock_guard lock(d1diag::g_ppu_mutex);
++	bool watched_address = false;
+ 
+ 	for (auto& w : d1diag::g_ppu_watches)
+ 	{
+@@ -3423,6 +3424,18 @@
+ 		{
+ 			continue;
+ 		}
++		watched_address = true;
++		if (!std::all_of(w.filters.begin(), w.filters.end(), [&](const auto& filter)
++		{
++			return d1diag::matches_ppu_watch_filter(filter,
++				[&](u32 reg) { return reg == d1diag::ppu_filter_lr ? ppu.lr : reg == 1 ? r1 : ppu.gpr[reg]; },
++				[](u32 ptr, u32 width, u64& value)
++				{
++					if (!vm::check_addr(ptr, vm::page_readable, width)) return false;
++					for (u32 i = 0; i < width; i++) value = (value << 8) | vm::read8(ptr + i);
++					return true;
++				});
++		})) continue;
+ 
+ 		if (w.unique)
+ 		{
+@@ -3492,7 +3505,8 @@
+ 		return;
+ 	}
+ 
+-	d1diag::g_ppu_mask[addr >> 2] = 0;
++	// A nonmatching call keeps the watch armed and leaves its budget/unique keys intact.
++	if (!watched_address) d1diag::g_ppu_mask[addr >> 2] = 0;
+ }
+ 
+ template <typename T>
+--- /dev/null
++++ b/rpcs3/Emu/RSX/Common/ppu_watch_filter.h
+@@ -0,0 +1,81 @@
++#pragma once
++#include <charconv>
++#include <cstdint>
++#include <limits>
++#include <stdexcept>
++#include <string_view>
++
++namespace d1diag
++{
++	inline constexpr std::uint32_t ppu_filter_lr = 32; // internal selector; r32 is not a register
++	// A register equality, or a big-endian guest-memory equality. A zero width selects
++	// the register itself. Filters are read-only and must run before deduplication/budget.
++	struct ppu_watch_filter
++	{
++		std::uint32_t reg = 0, offset = 0, width = 0;
++		std::uint64_t value = 0;
++	};
++
++	inline bool ppu_filter_number(std::string_view text, std::uint64_t& value, bool allow_hex = true)
++	{
++		int base = 10;
++		if (allow_hex && text.starts_with("0x"))
++		{
++			text.remove_prefix(2);
++			base = 16;
++		}
++		if (text.empty()) return false;
++		const auto result = std::from_chars(text.data(), text.data() + text.size(), value, base);
++		return result.ec == std::errc{} && result.ptr == text.data() + text.size();
++	}
++
++	// if=r5==0x15, if=lr==0x47a208 or if=m6+1:4==0x15; predicates are ANDed in order.
++	inline bool parse_ppu_watch_filter(std::string_view token, ppu_watch_filter& out)
++	{
++		if (!token.starts_with("if=")) return false;
++		token.remove_prefix(3);
++		const auto equal = token.find("==");
++		if (equal == std::string_view::npos) return false;
++		auto location = token.substr(0, equal);
++		ppu_watch_filter parsed;
++		if (!ppu_filter_number(token.substr(equal + 2), parsed.value) || location.empty()) return false;
++		if (location == "lr")
++		{
++			parsed.reg = ppu_filter_lr;
++			out = parsed;
++			return true;
++		}
++		const bool memory = location.front() == 'm';
++		if (!memory && location.front() != 'r') return false;
++		location.remove_prefix(1);
++		const auto plus = location.find('+'), colon = location.find(':');
++		std::uint64_t reg = 0, offset = 0, width = 0;
++		const auto reg_end = memory ? (plus < colon ? plus : colon) : location.size();
++		// r0/r2 travel in the LLVM entry ABI and are not exposed by the existing hook.
++		if (!ppu_filter_number(location.substr(0, reg_end), reg, false) || reg > 31 || reg == 0 || reg == 2) return false;
++		if (memory)
++		{
++			if (colon == std::string_view::npos) return false;
++			if (plus != std::string_view::npos && (plus >= colon || !ppu_filter_number(location.substr(plus + 1, colon - plus - 1), offset))) return false;
++			if (offset > std::numeric_limits<std::uint32_t>::max() || !ppu_filter_number(location.substr(colon + 1), width, false)) return false;
++			if (width != 1 && width != 2 && width != 4 && width != 8) return false;
++			if (width != 8 && parsed.value >= (std::uint64_t{1} << (width * 8))) return false;
++		}
++		parsed.reg = static_cast<std::uint32_t>(reg);
++		parsed.offset = static_cast<std::uint32_t>(offset);
++		parsed.width = static_cast<std::uint32_t>(width);
++		out = parsed;
++		return true;
++	}
++
++	template <typename RegisterRead, typename MemoryRead>
++	bool matches_ppu_watch_filter(const ppu_watch_filter& filter, RegisterRead&& reg, MemoryRead&& memory)
++	{
++		const auto base = reg(filter.reg);
++		if (!filter.width) return base == filter.value;
++		const std::uint64_t address = static_cast<std::uint32_t>(base) + std::uint64_t{filter.offset};
++		if (address + filter.width > (std::uint64_t{1} << 32)) return false;
++		std::uint64_t value = 0;
++		return memory(static_cast<std::uint32_t>(address), filter.width, value) && value == filter.value;
++	}
++}

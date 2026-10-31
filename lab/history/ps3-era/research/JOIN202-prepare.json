@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-08T14:44:29.5353380Z",
+  "source_base": "00b891dc1b2fe5f2c66053416c870c9b0b1328cb",
+  "source_clean": true,
+  "server_sha256": "BD1CB362569105FC127646154C25B89CF7BD19B197D59ADDC3AA07A41506725E",
+  "tested_source_diff_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+  "change": "Committed starter default (Generalist appearance 0, dye 15/2493); no gear file or overlay; unchanged renderer and mission; host exit-code watcher.",
+  "trace": "# JOIN202: committed starter Ghost default; repeat of the JOIN201 resurrection exit with exit-code watcher.\n71ec90 12 r3:48\n71edcc 12 r1+0x74:4\n2d1880 8 r1+0x70:4\n42fae0 4 r20:824\n1fb3c8 8 if=r4==0x0 if=lr==0x2ff330\n"
+}

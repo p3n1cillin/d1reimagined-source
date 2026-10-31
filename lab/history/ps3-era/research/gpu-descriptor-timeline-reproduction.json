@@ -1,0 +1,11 @@
+{
+  "patch_sha256": "5d14265646000b30a14cfbdbdb690c2435db7776c7803702536944f50ca7f610",
+  "source_matches_applied_patch": {
+    "rpcs3/Emu/RSX/d1diag.h": true,
+    "rpcs3/Emu/RSX/VK/VKCommandStream.cpp": true,
+    "rpcs3/Emu/RSX/VK/VKGSRenderTypes.hpp": true,
+    "rpcs3/Emu/RSX/VK/VKResourceManager.h": true,
+    "rpcs3/Emu/RSX/VK/vkutils/descriptors.cpp": true,
+    "rpcs3/Emu/RSX/VK/vkutils/garbage_collector.h": true
+  }
+}

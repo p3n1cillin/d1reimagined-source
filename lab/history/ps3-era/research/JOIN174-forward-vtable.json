@@ -1,0 +1,75 @@
+{
+  "utc": "2026-10-07T19:40:20.421452+00:00",
+  "object": "0x1adb29c",
+  "vtable": "0x13ed200",
+  "methods": {
+    "0x0": {
+      "descriptor": "0x185e298",
+      "entry": "0x5b2604"
+    },
+    "0x4": {
+      "descriptor": "0x185e2a0",
+      "entry": "0x81220"
+    },
+    "0x8": {
+      "descriptor": "0x185e2a8",
+      "entry": "0x5b2610"
+    },
+    "0xc": {
+      "descriptor": "0x185e2b0",
+      "entry": "0x5b26ec"
+    },
+    "0x10": {
+      "descriptor": "0x185e1b0",
+      "entry": "0x2bb60"
+    },
+    "0x14": {
+      "descriptor": "0x185e1b8",
+      "entry": "0x7ddb0"
+    },
+    "0x18": {
+      "descriptor": "0x185e1c0",
+      "entry": "0x2bb60"
+    },
+    "0x1c": {
+      "descriptor": "0x185e1c8",
+      "entry": "0x7ddb0"
+    },
+    "0x20": {
+      "descriptor": "0x185e2b8",
+      "entry": "0x5b2810"
+    },
+    "0x24": {
+      "descriptor": "0x185e2c0",
+      "entry": "0x5b281c"
+    },
+    "0x28": {
+      "descriptor": "0x185e1e0",
+      "entry": "0x2bb60"
+    },
+    "0x2c": {
+      "descriptor": "0x185e1e8",
+      "entry": "0x5b22e4"
+    },
+    "0x30": {
+      "descriptor": "0x185e1f0",
+      "entry": "0x2bb60"
+    },
+    "0x34": {
+      "descriptor": "0x185e1f8",
+      "entry": "0x7ddb0"
+    },
+    "0x38": {
+      "descriptor": "0x185e200",
+      "entry": "0x2bb60"
+    },
+    "0x3c": {
+      "descriptor": "0x185e208",
+      "entry": "0x5b22e4"
+    },
+    "0x40": {
+      "descriptor": "0x185e210",
+      "entry": "0x2bb60"
+    }
+  }
+}

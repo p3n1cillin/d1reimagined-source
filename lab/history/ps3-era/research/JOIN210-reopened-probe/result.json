@@ -1,0 +1,8 @@
+{
+  "utc": "2026-10-08T21:34:53.297589+00:00",
+  "run": "JOIN210",
+  "scope": "ordinary guarded input; read-only guest memory",
+  "status": "stopped",
+  "reason": "[WinError 87] The parameter is incorrect.",
+  "finished_utc": "2026-10-08T21:34:53.298029+00:00"
+}

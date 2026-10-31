@@ -1,0 +1,20 @@
+PASS successful child preserves one result
+PASS literal argument survives native boundary
+PASS failed screenshot prevents subsequent completion
+PASS child exit identifies failed step
+PASS later success replaces stale native failure status
+PASS join runner syntax
+PASS first failure propagates through actual join runner
+PASS first failure cannot report done
+PASS first failure closes all exact owned children and proxy
+PASS first failure records cooperative shutdown
+PASS final failure propagates through actual join runner
+PASS final failure cannot report done
+PASS final failure closes all exact owned children and proxy
+PASS final failure records cooperative shutdown
+PASS successful join completes its observer handoff
+PASS successful handoff reports done
+PASS successful short join retains all exact children and proxy
+PASS none failure closes all exact owned children and proxy
+PASS none failure records cooperative shutdown
+All isolated native capture and kept-stack handoff checks passed.

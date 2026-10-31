@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-08T10:12:29.1544369Z",
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "source_commit": "01c9bd3951f09eb3a7fdb3a5725c2dedf4ac0414",
+  "source_clean": true,
+  "mission": "missions/a_guardian_rises.json with automatic bubble-3 reset 30 s after current 24",
+  "scope": "Verify automatic reset; locate Breach trigger volumes/chest/nav point read-only; guarded exploration."
+}

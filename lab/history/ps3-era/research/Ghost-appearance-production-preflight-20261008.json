@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-08T13:42:20.347309+00:00",
+  "gear": [
+    {
+      "family": "peer",
+      "bytes": 100,
+      "ghost": {
+        "0": 267,
+        "8": 862,
+        "10": 42
+      }
+    },
+    {
+      "family": "select",
+      "bytes": 100,
+      "ghost": {
+        "0": 267,
+        "8": 862,
+        "10": 42
+      }
+    }
+  ],
+  "mission_changes": 46,
+  "scope": "Production appearance default without overlay; actual schema preflight only."
+}

@@ -1,0 +1,131 @@
+{
+  "at": "2026-10-08T13:22:14.8526415Z",
+  "checks": [
+    {
+      "identity": {
+        "tag": "dns",
+        "id": 11760,
+        "startTimeUtcTicks": "639270616123851545",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "stun",
+        "id": 25424,
+        "startTimeUtcTicks": "639270616124322041",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "signon",
+        "id": 24688,
+        "startTimeUtcTicks": "639270616124458336",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "lobby",
+        "id": 18564,
+        "startTimeUtcTicks": "639270616126913835",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "bap",
+        "id": 24792,
+        "startTimeUtcTicks": "639270616127072318",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "rpcs3",
+        "id": 25344,
+        "startTimeUtcTicks": "639270616157490082",
+        "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "gdbd",
+        "id": 14316,
+        "startTimeUtcTicks": "639270616204102912",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "proxy",
+        "id": 5240,
+        "startTimeUtcTicks": "639270617674446782",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "session-probe",
+        "id": 9360,
+        "startTimeUtcTicks": "639270617970052414",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "tag": "performance-probe",
+        "id": 7124,
+        "startTimeUtcTicks": "639270617081907185",
+        "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+      },
+      "exact_owned_alive": false
+    },
+    {
+      "identity": {
+        "recorder": {
+          "tag": "native-recorder",
+          "id": 11208,
+          "startTimeUtcTicks": "639270616238619547",
+          "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+        },
+        "emulator": {
+          "tag": "rpcs3",
+          "id": 25344,
+          "startTimeUtcTicks": "639270616157490082",
+          "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+        }
+      },
+      "exact_owned_alive": false
+    }
+  ],
+  "all_exact_owned_closed": true,
+  "configuration": [
+    {
+      "name": "title",
+      "sha256": "22C081E2680A9F81C565860262232AF1296EBEA2831849338BA79BD6E7C2350B",
+      "unchanged": true
+    },
+    {
+      "name": "global",
+      "sha256": null,
+      "unchanged": false
+    },
+    {
+      "name": "watch",
+      "sha256": "442847E5847064F2D570943381CAA88DFD66E9DC212FFD299D9AC6D2F1EDD4B6",
+      "unchanged": true
+    }
+  ],
+  "all_hashes_match": false
+}

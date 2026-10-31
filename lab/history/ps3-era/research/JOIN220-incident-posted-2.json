@@ -1,0 +1,8 @@
+{
+  "utc": "2026-10-08T23:05:18.263610+00:00",
+  "phase": 2,
+  "current_world": 14,
+  "cache_before": 0,
+  "quantizer_global": 0,
+  "scope": "Repeat identical synthetic event with decoder/queue watches; route helper completed/released at budget. Not a native pickup or grant."
+}

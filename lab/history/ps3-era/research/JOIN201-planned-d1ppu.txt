@@ -1,0 +1,6 @@
+# JOIN201: art-record Ghost appearance 0 and dye 15/2493; verify unit/cache resolution and Nav null component.
+71ec90 12 r3:48
+71edcc 12 r1+0x74:4
+2d1880 8 r1+0x70:4
+42fae0 4 r20:824
+1fb3c8 8 if=r4==0x0 if=lr==0x2ff330

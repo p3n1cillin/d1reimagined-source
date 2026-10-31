@@ -1,0 +1,6 @@
+# JOIN229: mission-announced starter rifle (no private overlay or control event); pickup path watches.
+5aede4 6 r4:24
+2b2a60 6 r3:128
+2b36f8 400 if=m4:2==0xe0e r4:56
+2b2c00 12 r3:64
+472518 12 r3:64

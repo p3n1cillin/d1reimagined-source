@@ -1,0 +1,47 @@
+{
+  "utc": "2026-10-08T22:53:20.143256+00:00",
+  "run": "JOIN219",
+  "source_base": "e5c05bc0e48073d7dce6ff7b683cd40d291bc381",
+  "source_clean_at_native_launch": true,
+  "native_hits": {
+    "12f2e8": 0,
+    "1cb0b0": 3,
+    "1caf20": 3,
+    "26ba98": 3,
+    "5aea30": 3,
+    "5ae7a4": 3,
+    "5aede4": 0,
+    "2b279c": 0,
+    "2b2a60": 0,
+    "2b2f74": 0,
+    "472518": 0
+  },
+  "new_gameplay_acceptance": false,
+  "scope": "Read-only verification of incoming interface2fcd64->92c134->2700a4 and selector2 body80800cb6; no host incident injection. Selector1 uses custom override; selector17 generic cinematic codec80800792.",
+  "files": {
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN219-prepare.json": {
+      "bytes": 731,
+      "sha256": "b822ac3f89ebde698e34ab02b350d1b2dc8293687b93a13f45246aafdf50e9f3"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN219-body-adapters.json": {
+      "bytes": 20609,
+      "sha256": "c46dfeede00b3a8c47f62806f515b3137b7cc07378a5a7d105eb474b9c75d943"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN219-body-resources.json": {
+      "bytes": 1596,
+      "sha256": "56f246b5efd501c519ab7f675c3ce75df85e2971679ea5bcd087ff7fd8a69f5f"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN219-independent-closure-verified.json": {
+      "bytes": 3108,
+      "sha256": "b3cfe2afeaf09276d6c9cfef54207ee100928437fed548ea6944a7f4da81453a"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN219-cleanup-result.json": {
+      "bytes": 269,
+      "sha256": "d556b3294cd6c4b32e188f11ab74c197101322611ea321370c0ff8ed6b5d4b4f"
+    },
+    "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN219-pre-stop-native.log": {
+      "bytes": 17378177,
+      "sha256": "dce96233322e5224abf81eec5838f8c32c43a65ec541bf587fccaf873436a65f"
+    }
+  }
+}

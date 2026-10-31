@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-07T07:50:01.6121940Z",
+  "previous": {
+    "tag": "content-monitor",
+    "id": 12200,
+    "startTimeUtcTicks": "639269518236718565",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "current": {
+    "tag": "content-monitor",
+    "id": 21092,
+    "startTimeUtcTicks": "639269562015814668",
+    "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "current_alive": true,
+  "change": "Retain finalized native originals after indexing; keep rolling buffer bounded",
+  "capture_tests": 82
+}

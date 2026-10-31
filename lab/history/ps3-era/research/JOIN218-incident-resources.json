@@ -1,0 +1,242 @@
+{
+  "utc": "2026-10-08T22:23:54.903567+00:00",
+  "atomic": false,
+  "scope": "Read-only native incident resources, corrected signed global addresses; no tag-handle dereference or incident injection.",
+  "resources": [
+    {
+      "global": "0x18dedc4",
+      "resource": "0x1aabbf0",
+      "resource_words": [
+        "0x8080097d",
+        "0x1178bf4",
+        "0x1bd7b08",
+        "0x18e0790",
+        "0x80800ef2",
+        "0x1194ae0",
+        "0x1bdec58",
+        "0x18e0798"
+      ],
+      "metadata": "0x1178bf4",
+      "metadata_words": [
+        "0xcc",
+        "0x98651d12",
+        "0x0",
+        "0xffffffff",
+        "0x2cc",
+        "0x4000000",
+        "0x400",
+        "0x103c90",
+        "0x0",
+        "0x0",
+        "0x12ca68",
+        "0xe22ec",
+        "0xc",
+        "0x80800050",
+        "0x8080010a",
+        "0x3",
+        "0x8080097d",
+        "0x2cc",
+        "0x2cc",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "global": "0x18dee3c",
+      "resource": "0x1aabfb0",
+      "resource_words": [
+        "0x80800c0a",
+        "0x1187e30",
+        "0x1bc1f50",
+        "0x18e0970",
+        "0x80800ec9",
+        "0x1164b4c",
+        "0x1bd3de8",
+        "0x18e0978"
+      ],
+      "metadata": "0x1187e30",
+      "metadata_words": [
+        "0x7c",
+        "0xe20d896f",
+        "0x0",
+        "0x808009a6",
+        "0x110",
+        "0x4000000",
+        "0x40400",
+        "0x103c10",
+        "0x0",
+        "0x0",
+        "0x1077a0",
+        "0x9366c",
+        "0xc",
+        "0x80800050",
+        "0x8080010a",
+        "0x1",
+        "0x80800c0a",
+        "0x110",
+        "0x10d",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "global": "0x18ded3c",
+      "resource": "0x1aaac30",
+      "resource_words": [
+        "0x808009a6",
+        "0x1182d78",
+        "0x1bbb580",
+        "0x18dffd0",
+        "0x8080419f",
+        "0x1168488",
+        "0x1bbf0e0",
+        "0x18dffd8"
+      ],
+      "metadata": "0x1182d78",
+      "metadata_words": [
+        "0x11c",
+        "0xca254cd8",
+        "0x0",
+        "0xffffffff",
+        "0x110",
+        "0x4000000",
+        "0x400",
+        "0x103c10",
+        "0x0",
+        "0x0",
+        "0x10c858",
+        "0x98724",
+        "0xc",
+        "0x80800050",
+        "0x8080010a",
+        "0x5",
+        "0x808009a6",
+        "0x110",
+        "0x10d",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "global": "0x18ded40",
+      "resource": "0x1aaac60",
+      "resource_words": [
+        "0x808052e5",
+        "0x11606dc",
+        "0x1bd1fc8",
+        "0x18dffe8",
+        "0x808053bb",
+        "0x1159078",
+        "0x1bd3d28",
+        "0x18dfff0"
+      ],
+      "metadata": "0x11606dc",
+      "metadata_words": [
+        "0xac",
+        "0x26a9e22a",
+        "0x842341",
+        "0xffffffff",
+        "0x2004",
+        "0x4000000",
+        "0x600",
+        "0x103d90",
+        "0x0",
+        "0x0",
+        "0x1344d4",
+        "0xd9060",
+        "0x14",
+        "0x8080001d",
+        "0x808001a9",
+        "0x80800050",
+        "0x8080010a",
+        "0x2",
+        "0x808052e5",
+        "0x2004",
+        "0x2004",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    }
+  ],
+  "registrations": [
+    {
+      "table": "0x189ad48",
+      "event_global": "0x1a207b8",
+      "event_hash": "0x790c2a95",
+      "schema_global": "0x1a20710",
+      "schema_hash": "0x1124697d",
+      "callback_descriptor": "0x185dfb8",
+      "callback": "0x5aebc4"
+    },
+    {
+      "table": "0x189ad54",
+      "event_global": "0x1a20790",
+      "event_hash": "0xbd1ba345",
+      "schema_global": "0x1a20710",
+      "schema_hash": "0x1124697d",
+      "callback_descriptor": "0x185dfc0",
+      "callback": "0x5aec08"
+    },
+    {
+      "table": "0x189ad60",
+      "event_global": "0x1a207fc",
+      "event_hash": "0x88cdeb67",
+      "schema_global": "0x1a20710",
+      "schema_hash": "0x1124697d",
+      "callback_descriptor": "0x185dfc8",
+      "callback": "0x5aec3c"
+    },
+    {
+      "table": "0x189ad6c",
+      "event_global": "0x1a207a4",
+      "event_hash": "0x7a0fd954",
+      "schema_global": "0x1a207b0",
+      "schema_hash": "0x84f68b44",
+      "callback_descriptor": "0x185dfe8",
+      "callback": "0x5aede4"
+    },
+    {
+      "table": "0x189ad78",
+      "event_global": "0x1ad5c54",
+      "event_hash": "0x859fd2e9",
+      "schema_global": "0x1a2077c",
+      "schema_hash": "0x8703a279",
+      "callback_descriptor": "0x185dfd0",
+      "callback": "0x5aed78"
+    },
+    {
+      "table": "0x189ad84",
+      "event_global": "0x1ad5c54",
+      "event_hash": "0x859fd2e9",
+      "schema_global": "0x1ad5c38",
+      "schema_hash": "0xc7161f86",
+      "callback_descriptor": "0x185dfd8",
+      "callback": "0x5aed9c"
+    },
+    {
+      "table": "0x189ad90",
+      "event_global": "0x1ad5c44",
+      "event_hash": "0xf5b91b87",
+      "schema_global": "0x1a2077c",
+      "schema_hash": "0x8703a279",
+      "callback_descriptor": "0x185dfe0",
+      "callback": "0x5aedc0"
+    }
+  ],
+  "constants": {
+    "0x1a20758": "0x324e9a20",
+    "0x1a207b8": "0x790c2a95",
+    "0x1a207fc": "0x88cdeb67",
+    "0x1a20710": "0x1124697d"
+  }
+}

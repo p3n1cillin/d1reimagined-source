@@ -1,0 +1,7 @@
+# JOIN250: urgent dialog source. Unlock check of an index (bit 0x400 when false) and the dialog enqueue.
+c39a94 40 r3:16
+46d4ec 20 r3:16
+46d3e0 20 r3:16
+4867e8 20 r3:32 r4:8
+753430 20 r3:16
+c58e84 40 r3:16

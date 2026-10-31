@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-08T13:59:04.874990+00:00",
+  "selected_originals": [
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_14_47_03.mp4",
+      "sha256": "644f2f7085f1722548bfd8ed774579ddce74c24996729f9bca4488e61c700879",
+      "validation": {
+        "duration_seconds": 30.28,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 11.79,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      }
+    },
+    {
+      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_14_48_34.mp4",
+      "sha256": "9f9a9beefa4cbbdc945324e45d521bace02fd843677f4054f7e5dc5f7bb2d808",
+      "validation": {
+        "duration_seconds": 30.34,
+        "contains_audio": true,
+        "full_decode": "PASS",
+        "video_properties": {
+          "inspection": "AVAILABLE",
+          "width": 1280,
+          "height": 720,
+          "average_fps_reported": 10.15,
+          "base_fps_reported": 30.0,
+          "frame_rate_precision": "Rounded FFmpeg input-stream values; not a gameplay performance measurement"
+        }
+      }
+    }
+  ],
+  "scope": "Selected untouched originals only. Full decode/audio validation is not every-frame visual review; recording frame-rate fields are not game FPS."
+}

@@ -1,0 +1,5 @@
+
+MidiInWinMM::initialize: no MIDI input devices currently available.
+
+RPCS3: RSX Replay: SIG: Thread terminated due to fatal error: Capture Replay: context alloc failed
+(in file F:\d1\<pc>-import\dev\rpcs3\rpcs3\Emu\RSX\Capture\rsx_replay.cpp:35[:24], in function 'stx::se_t<uint,1,4> rsx::rsx_replay_thread::allocate_context(void)')

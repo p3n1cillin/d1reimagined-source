@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-06T19:23:31.4469301Z",
+  "runtime_sha256": "55EFC9072019124BE3E880CA8C881339D057390C47D3BF77C799CCB6DE920259",
+  "backup_sha256": "5D94E44F96007BEB94A9B542B7283056533B553E863DE573C8857636098E0735",
+  "title_sha256": "7ACF93A56E6190281FACB2A147BA5144DDB8ACFC1654ADD73CD0AD0260F5BE6D",
+  "capture_tests": 81,
+  "recorder_lock_checks": 11,
+  "launch": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\JOIN157-launch.ps1",
+  "trace_enabled": false,
+  "checkpoint_enabled": true
+}

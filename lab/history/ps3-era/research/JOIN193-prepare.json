@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-08T11:44:16.5826979Z",
+  "build": "c5bc7f5786835302dafe3265549e2052d3265df7025fc997bc6249e3647fe7cf",
+  "source_commit": "949c9ad063f8b5e5238e32496cf76d631d76df18",
+  "source_clean": true,
+  "trace": "# JOIN193: cinematic cast gear acquisition (read-only call watches)\n42f3a0 40\n42edb4 60\n2d184c 40\n2e9124 40\n42b51c 20\n",
+  "scope": "Observe performance binding types and gear-cache category requests during the revival; no writes."
+}

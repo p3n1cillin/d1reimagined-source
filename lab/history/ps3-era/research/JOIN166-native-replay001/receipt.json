@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-07T13:29:12.2340375Z",
+  "identity": {
+    "tag": "rpcs3",
+    "id": 19652,
+    "startTimeUtcTicks": "639269765163432570",
+    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+  },
+  "capture_sha256": "c5ae36b0720aef631baba6ecd25cad3e52ce3a5dee8ee062bbdb451da852462c",
+  "build": "714e432f39969b3d19cd585e40963e8ee8670208d9bc7ea853e4e93324ebba6b",
+  "screenshots": [],
+  "native_full_parse": "NOT VERIFIED",
+  "visual_comparison": "NOT RUN",
+  "graphics": "NOT ACCEPTED",
+  "owned_closed": true,
+  "global_restored": true,
+  "title_unchanged": true,
+  "errors": [
+    "No fresh native replay screenshot"
+  ]
+}
