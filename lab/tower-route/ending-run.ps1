@@ -31,20 +31,20 @@ $Repo = (Resolve-Path "$PSScriptRoot\..\..").Path
 $S = $PSScriptRoot -replace '\\', '/'
 $RepoFwd = $Repo -replace '\\', '/'
 $C = Get-D1Path Staging
-$F = Get-D1Path Fixtures
+$Fix = Get-D1Path Fixtures   # not $F: PowerShell names ignore case, and the loop below uses $f
 $Cf = $C -replace '\\', '/'
 # Stop the previous lab yourself first (by exact PID); this script only refuses to start over a running one.
 if (Get-Process d1-activity-host, d1-responder, shadnet-server, shadPS4 -ErrorAction SilentlyContinue) { throw 'lab still running' }
 if (-not $env:D1_AUDIO_TAP) { $env:D1_AUDIO_TAP = Get-D1Path ShadPS4 '..\audio-tap' }
 foreach ($f in "$C\profile-push.bin", "$C\profile-push.item", "$C\profile-push.soid", "$env:D1_AUDIO_TAP\rec.flag") { if (Test-Path $f) { Remove-Item -LiteralPath $f -Force } }
 New-Item -ItemType Directory -Force "$C\$Name" | Out-Null
-Copy-Item "$F\mission\breach-prop3-only.txt" "$C\$Name\"
+Copy-Item "$Fix\mission\breach-prop3-only.txt" "$C\$Name\"
 $extra = "D1_LOOT_GRANT_ROSTER=$LootRoster,D1_AH_CAPTURE_CLIENT_UPDATES=2048,D1_AH_CAPTURE_CLIENT_UPDATES_AFTER_S=900,D1_AH_WORLD_PERIOD_MS=33.333333,D1_AH_SENSE_SCHEMAS=1:0x80800357,2:0x808005D9,3:0x80800830,4:0x80800387,0xC:0x80802C30,0x18:0x8080048A,0x1C:0x808005C3,0x27:0x80802B18,D1_PROFILE_PUSH_FILE=$C\profile-push.bin"
 if ($WorldTable) { $extra += ",D1_AH_WORLD_TABLE=$WorldTable" }
 if (-not $NoVendors) {
     # Glimmer 25,000 (slot 308), Silver 500 (309) and Legendary Marks 200 (310) in the account; the
     # responder applies vendor purchases itself (notes/ps4-56578-vendor-purchase-2026-10-30.md).
-    $V = "$F\vendor"
+    $V = "$Fix\vendor"
     $extra += ",D1_ACCOUNT_FILE=$V\account-currencies.bin,D1_ACCOUNT_PUSH_FILE=$C\account-push.bin"
     $extra += ",D1_VENDOR_SALES=$V\vendor-sales.tsv,D1_VENDOR_PROFILE_OBJ=$V\vendor-profile.obj,D1_VENDOR_ITEM_TEMPLATE=$V\vendor-item-template.obj"
     $extra += ",D1_VENDOR_ACCOUNT_SLOTS=308:869:25000,309:873:500,310:4548:200,D1_ORACLE=$Oracle"
