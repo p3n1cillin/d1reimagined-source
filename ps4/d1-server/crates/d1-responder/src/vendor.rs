@@ -150,6 +150,59 @@ fn decode_request(oracle: &str, req: &[u8]) -> anyhow::Result<(u8, u16)> {
     Ok(((w0 & 0xFF) as u8, ((w0 >> 16) & 0xFFFF) as u16))
 }
 
+/// A 903 `vendor_sell_item` request (`0x80801734`, 32 bytes): an item reference `{bool @0, u64 @8,
+/// i16 @0x10}`, then `i32 @0x18` and `u8 @0x1C`. The offsets are the client codec's (a round trip of
+/// every field is identical, 121 bits). The client's builder (`0x27F7D0`, called from the vendor
+/// screen's action `0xA29D30` through `0x552FC0`) sets: the bool = the item has an instance, the u64 =
+/// that instance, the i16 = the content index (-1 when instanced), the u8 = the vendor (the same
+/// screen field 901's vendor comes from), and the i32 = the screen's `+0x6C`, likely the quantity. No
+/// run has sent one yet.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SellRequest {
+    pub instanced: bool,
+    pub instance: u64,
+    pub content: i16,
+    pub quantity: i32,
+    pub vendor: u8,
+}
+
+/// Read a decoded 903 object.
+pub fn sell_request(obj: &[u8]) -> Option<SellRequest> {
+    if obj.len() < 0x1D {
+        return None;
+    }
+    Some(SellRequest {
+        instanced: obj[0] != 0,
+        instance: u64::from_le_bytes(obj[8..16].try_into().ok()?),
+        content: i16::from_le_bytes([obj[0x10], obj[0x11]]),
+        quantity: i32::from_le_bytes(obj[0x18..0x1C].try_into().ok()?),
+        vendor: obj[0x1C],
+    })
+}
+
+/// Decode a 903 request body with the client's codec and log its fields (no state change yet).
+pub fn on_sell(req: Vec<u8>) {
+    let oracle = std::env::var("D1_ORACLE").unwrap_or_else(|_| "d1-server/target/release/d1-oracle".into());
+    std::thread::spawn(move || {
+        let decoded = (|| -> anyhow::Result<SellRequest> {
+            let dir = std::env::temp_dir().join("d1-vendor");
+            std::fs::create_dir_all(&dir)?;
+            let src = dir.join("sell-request.bin");
+            let obj = dir.join("sell-request.obj");
+            std::fs::write(&src, &req)?;
+            let _ = std::fs::remove_file(&obj);
+            std::process::Command::new(&oracle)
+                .args(["object", "--tag", "0x80801734", "--decode-file"]).arg(&src)
+                .arg("--out-obj").arg(&obj).output()?;
+            sell_request(&std::fs::read(&obj)?).ok_or_else(|| anyhow::anyhow!("short object"))
+        })();
+        match decoded {
+            Ok(s) => tracing::warn!("      ⭐ VENDOR SELL (903) decoded: {s:?} (not applied: the fields are unconfirmed)"),
+            Err(e) => tracing::warn!("      ⛔ vendor sell (903) not decoded: {e}"),
+        }
+    });
+}
+
 /// Apply one purchase to the state. Returns (description, new account slots changed, item sidecar).
 fn apply(st: &mut State, vendor: u8, sale_index: u16) -> anyhow::Result<(String, Option<(u64, Vec<u8>)>)> {
     let sale = st.sales.get(&(vendor, sale_index)).cloned()
@@ -378,6 +431,20 @@ mod tests {
         put(&mut poor.profile, 0, 872, 29);
         assert!(apply(&mut poor, 5, 0).is_err());
         assert_eq!(profile_entry(&poor.profile, 0), (872, 29), "a refused purchase changes nothing");
+    }
+
+    /// The layout the client's codec round-trips (d1-oracle object --tag 0x80801734).
+    #[test]
+    fn a_sell_request_reads_at_the_codec_offsets() {
+        let obj = hex("0100000000000000887766554433221148030000000000006756050006000000");
+        assert_eq!(sell_request(&obj), Some(SellRequest {
+            instanced: true, instance: 0x1122_3344_5566_7788, content: 0x348, quantity: 0x55667, vendor: 6,
+        }));
+        assert_eq!(sell_request(&obj[..0x1C]), None);
+    }
+
+    fn hex(s: &str) -> Vec<u8> {
+        (0..s.len()).step_by(2).map(|i| u8::from_str_radix(&s[i..i + 2], 16).unwrap()).collect()
     }
 
     #[test]

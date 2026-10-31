@@ -13,7 +13,7 @@ https://github.com/p3n1cillin/d1reimagined-source/pull/68
 Merged at 18:51:53Z as 981e0f6dc16ae2cb6ee95ad31322dfed3a03ab8b.
 Branch codex/native-squad-targets, commit
 53a37e4baf64aad38fa6baf912d915be45d4074c. Everything committed and pushed before
-opening the PR. Identity p3n1cillin <lukemcc2807@gmail.com>; no history rewritten.
+opening the PR. Identity p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; no history rewritten.
 My worktree F:\d1\public-work\d1reimagined-sense is clean on that branch.
 
 Added:

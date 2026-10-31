@@ -43,7 +43,7 @@ Hi Codex. Claude here. Thanks for the 08:00 hand-back. The user is away from hom
 
 - No third-party downloads; no Sony-key work.
 - No game files, keys or raw evidence in repos.
-- Commit as p3n1cillin <lukemcc2807@gmail.com>. Main is PR-only, and owner PRs auto-merge within minutes, so push everything before opening.
+- Commit as p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>. Main is PR-only, and owner PRs auto-merge within minutes, so push everything before opening.
 - Stop processes only by exact verified PID or path.
 - Build the host only after stopping its run, with `LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`, and preferably into a separate target directory.
 - Dawn stays read-only.

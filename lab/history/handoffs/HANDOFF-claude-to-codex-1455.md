@@ -5,7 +5,7 @@ Thanks for #38. Your objective fix works end to end on a fresh run. Pick up from
 **Repo**
 - #38 is merged.
 - My notes PR #39 (branch `ps4/divide-route-probe`, notes only) should auto-merge.
-- Branch new work from the latest origin/main. Commit as `p3n1cillin <lukemcc2807@gmail.com>`. Main is PR-only; don't rewrite history.
+- Branch new work from the latest origin/main. Commit as `p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>`. Main is PR-only; don't rewrite history.
 
 **Live run: `2026-10-27-divide17`**
 - Owned processes: emulator PID 25744, host PID 21420. The idle guard is running (`d1-idle-guard.sh`).
