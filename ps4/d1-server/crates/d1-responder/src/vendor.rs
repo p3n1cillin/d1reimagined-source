@@ -152,11 +152,14 @@ fn decode_request(oracle: &str, req: &[u8]) -> anyhow::Result<(u8, u16)> {
 
 /// A 903 `vendor_sell_item` request (`0x80801734`, 32 bytes): an item reference `{bool @0, u64 @8,
 /// i16 @0x10}`, then `i32 @0x18` and `u8 @0x1C`. The offsets are the client codec's (a round trip of
-/// every field is identical, 121 bits). What the fields mean is not yet seen in a run: the u64 is
-/// likely the instance and the i16 the content index, the i32 a quantity and the u8 the vendor.
+/// every field is identical, 121 bits). The client's builder (`0x27F7D0`, called from the vendor
+/// screen's action `0xA29D30` through `0x552FC0`) sets: the bool = the item has an instance, the u64 =
+/// that instance, the i16 = the content index (-1 when instanced), the u8 = the vendor (the same
+/// screen field 901's vendor comes from), and the i32 = the screen's `+0x6C`, likely the quantity. No
+/// run has sent one yet.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SellRequest {
-    pub flag: bool,
+    pub instanced: bool,
     pub instance: u64,
     pub content: i16,
     pub quantity: i32,
@@ -169,7 +172,7 @@ pub fn sell_request(obj: &[u8]) -> Option<SellRequest> {
         return None;
     }
     Some(SellRequest {
-        flag: obj[0] != 0,
+        instanced: obj[0] != 0,
         instance: u64::from_le_bytes(obj[8..16].try_into().ok()?),
         content: i16::from_le_bytes([obj[0x10], obj[0x11]]),
         quantity: i32::from_le_bytes(obj[0x18..0x1C].try_into().ok()?),
@@ -435,7 +438,7 @@ mod tests {
     fn a_sell_request_reads_at_the_codec_offsets() {
         let obj = hex("0100000000000000887766554433221148030000000000006756050006000000");
         assert_eq!(sell_request(&obj), Some(SellRequest {
-            flag: true, instance: 0x1122_3344_5566_7788, content: 0x348, quantity: 0x55667, vendor: 6,
+            instanced: true, instance: 0x1122_3344_5566_7788, content: 0x348, quantity: 0x55667, vendor: 6,
         }));
         assert_eq!(sell_request(&obj[..0x1C]), None);
     }
