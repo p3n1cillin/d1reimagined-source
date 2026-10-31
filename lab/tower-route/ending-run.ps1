@@ -14,6 +14,9 @@ param(
     [string]$WorldTable = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Fixtures 'mission\world-table-tower.txt'),
     # The roster cards served after the Breach rifle claim (the loot grant).
     [string]$LootRoster = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Fixtures 'characters\roster-def1200-helm-saint14'),
+    # Unlock flags as run sense73 served them, 308 and 3391 included: without them the tutorial stopped
+    # in 'cleanup' after the prologue (sense74). The route reaches the Tower through 165, not index 0.
+    [string]$UnlockFlags = '98,308,419,440,834,2668,3391,5021,5998,6029,433,2539,2549,3558,3587,3520,3527,3531,3533,3534,3535,3536,3544,3568,3594,3595,305,2669,2670,3389',
     # The d1-oracle build the responder encodes vendor purchases with.
     [string]$Oracle = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Workspace 'd1-server\target\release\d1-oracle.exe'),
     # Stop at the post-game screens instead of holding CONTINUE.
@@ -50,7 +53,7 @@ if (-not $NoVendors) {
     $extra += ",D1_VENDOR_ACCOUNT_SLOTS=308:869:25000,309:873:500,310:4548:200,D1_ORACLE=$Oracle"
 }
 if ($ExtraEnv) { $extra += ",$ExtraEnv" }
-Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name', $Name, '-Minutes', '300', '-Extra', $extra) -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
+Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name', $Name, '-Minutes', '300', '-UnlockFlags', $UnlockFlags, '-Extra', $extra) -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
 $jobs = @(
     "until tasklist | grep -q shadPS4; do sleep 5; done; exec $RepoFwd/tools/ps4_setup/d1-idle-guard.sh",
     "until ls -d $Cf/contained-boot/*-$Name >/dev/null 2>&1; do sleep 5; done; H=`$(ls -d $Cf/contained-boot/*-$Name)/activity-host.log; R=$Cf/$Name; cd $RepoFwd && python -u -I tools/ps4_setup/d1-agr-replay.py --run-dir `$R --host-log `$H --garage-clients `$R/breach-prop3-only.txt --boot-timeout 1800 > `$R/replay-console.log 2> `$R/replay-error.log; grep -q 'DIVIDE REACHED' `$R/replay-console.log && bash $S/chain2.sh $Name > `$R/chain.log 2>&1",
