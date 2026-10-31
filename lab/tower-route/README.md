@@ -35,6 +35,7 @@ This is how the lab's runs are made. The defaults recreate run sense73 (31 Octob
 | `nav.py`, `run.py`, `follow.py`, `seek.py`, `target.py`, `marker.py`, `release.py` | Walk the Guardian over positions it has walked before. |
 | `alive.py` | Reads live squad counts from the activity host log. |
 | `gamefocus.py` | Keeps the emulator window in front for input. |
+| `abilities-check.py`, `tower-head-check.py` | Screen checks of a running lab: the ability icons (#134), and the Guardian's head in the Tower in the normal view and the wave emote (#128). |
 | `probe-*.py`, `monitor-recall-departure-readonly.py`, `attach-readonly.py`, `static56578.py` | Read-only probes of the running client (and of the executable). Output goes to `STAGING/probes`. |
 | `routepaths.py` | Where all of the above find the repository, the fixtures and the staging folder. |
 

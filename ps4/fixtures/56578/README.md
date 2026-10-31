@@ -18,5 +18,9 @@ The Guardian is a Titan Striker. Every peer card carries the Striker's ability r
 both subclass items name grid 132 with its default nodes (`tools/ps4_setup/d1-talent-grid.py 132`,
 written with `d1-character-fixup.py`; issue #134). Without them there is no grenade, melee or super.
 
+Every profile and peer card also sets the wear-helmet flag (customization block `0x8080181A`, the
+2-bit field at `+0x2C`; `d1-character-fixup.py --helmet`). With it clear, the Guardian had no head in
+the Tower (issue #128); run sense77 (31 October) served it set and the helmet showed.
+
 The defaults of `lab/tower-route/ending-run.ps1` serve exactly what run sense73 (31 October 2026)
 served, apart from the account: sense73's put Legendary Marks in Silver's slot. Files named `*.draft.*` are lab drafts, kept as they were served.
