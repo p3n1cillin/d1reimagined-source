@@ -362,6 +362,71 @@ pub fn on_buy(req: Vec<u8>) {
     });
 }
 
+/// The profile's equipped array: 20 instance ids (u64) after the 340 inventory slots.
+const EQUIPPED: usize = 0x2B78;
+
+/// The equipped-array index of a bucket, read from the geared fixture (each equipped instance's
+/// inventory slot gives its bucket): subclass, the five armour pieces, the three weapons, the vehicle
+/// and the ghost. Other buckets are not known yet.
+fn equipped_index(ordinal: u8) -> Option<usize> {
+    Some(match ordinal {
+        0x06 => 1,
+        0x07..=0x0B => 2 + (ordinal - 0x07) as usize,
+        0x02..=0x04 => 7 + (ordinal - 0x02) as usize,
+        0x0D => 11,
+        0x0E => 12,
+        _ => return None,
+    })
+}
+
+/// Apply a 403 `inventory_equip_item`: point the equipped entry of the item's bucket at it.
+fn apply_equip(profile: &mut [u8], instance: u64) -> anyhow::Result<String> {
+    let slot = (0..340u16).find(|s| {
+        let e = PROFILE_SLOTS + 32 * *s as usize;
+        u64::from_le_bytes(profile[e + 8..e + 16].try_into().unwrap()) == instance
+    }).ok_or_else(|| anyhow::anyhow!("instance {instance:#x} is in no profile slot"))?;
+    let ordinal = BUCKETS.iter().find(|b| b.3 == 0 && b.1 <= slot && slot < b.1 + b.2).map(|b| b.0)
+        .ok_or_else(|| anyhow::anyhow!("slot {slot} is in no character bucket"))?;
+    let index = equipped_index(ordinal).ok_or_else(|| anyhow::anyhow!("bucket {ordinal:#x} has no known equipped index"))?;
+    let at = EQUIPPED + 8 * index;
+    let old = u64::from_le_bytes(profile[at..at + 8].try_into().unwrap());
+    profile[at..at + 8].copy_from_slice(&instance.to_le_bytes());
+    Ok(format!("{instance:#x} (slot {slot}, bucket {ordinal:#x}) equipped at index {index}, replacing {old:#x}"))
+}
+
+/// Decode a 403 request (`0x80801942`, one u64) with the client's codec.
+fn decode_instance(oracle: &str, req: &[u8]) -> anyhow::Result<u64> {
+    let hex: String = req.iter().map(|b| format!("{b:02x}")).collect();
+    let o = std::process::Command::new(oracle).args(["object", "--tag", "0x80801942", "--decode", &hex]).output()?;
+    let text = String::from_utf8_lossy(&o.stdout);
+    text.lines().find_map(|l| l.trim().strip_prefix("+0x0000").map(|v| u64::from_str_radix(v.trim().trim_start_matches("0x"), 16)))
+        .ok_or_else(|| anyhow::anyhow!("no +0x0000 in the decoded 403 request"))?
+        .map_err(Into::into)
+}
+
+/// Handle a 403 request body: equip the item in the purchase state's profile and push it.
+pub fn on_equip(req: Vec<u8>) {
+    if state().lock().map(|s| s.is_none()).unwrap_or(true) {
+        return;
+    }
+    std::thread::spawn(move || {
+        let Ok(mut guard) = state().lock() else { return };
+        let Some(st) = guard.as_mut() else { return };
+        let result = (|| -> anyhow::Result<String> {
+            let instance = decode_instance(&st.oracle, &req)?;
+            let mut profile = st.profile.clone();
+            let what = apply_equip(&mut profile, instance)?;
+            st.profile = profile;
+            publish(st, None)?;
+            Ok(what)
+        })();
+        match result {
+            Ok(what) => tracing::warn!("      ⭐⭐ EQUIP APPLIED: {what}; profile push written"),
+            Err(e) => tracing::warn!("      ⛔ equip NOT applied: {e}"),
+        }
+    });
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -445,6 +510,25 @@ mod tests {
 
     fn hex(s: &str) -> Vec<u8> {
         (0..s.len()).step_by(2).map(|i| u8::from_str_radix(&s[i..i + 2], 16).unwrap()).collect()
+    }
+
+    /// Equipping the second rifle (sense81's 403) moves the primary entry (index 7) to it.
+    #[test]
+    fn an_equip_points_the_bucket_entry_at_the_item() {
+        let mut p = st(0).profile;
+        let put = |p: &mut Vec<u8>, slot: usize, ci: u16, soid: u64| {
+            let e = PROFILE_SLOTS + 32 * slot;
+            p[e..e + 2].copy_from_slice(&ci.to_le_bytes());
+            p[e + 8..e + 16].copy_from_slice(&soid.to_le_bytes());
+        };
+        put(&mut p, 93, 3598, 0xD100_0000_0000_0401);
+        put(&mut p, 94, 3598, 0xD100_0000_0000_030B);
+        p[EQUIPPED + 56..EQUIPPED + 64].copy_from_slice(&0xD100_0000_0000_0401u64.to_le_bytes());
+        apply_equip(&mut p, 0xD100_0000_0000_030B).unwrap();
+        assert_eq!(&p[EQUIPPED + 56..EQUIPPED + 64], &0xD100_0000_0000_030Bu64.to_le_bytes());
+        assert!(apply_equip(&mut p, 0xD100_0000_0000_0999).is_err(), "an instance in no slot is refused");
+        put(&mut p, 0, 872, 0xD100_0000_0000_0500);
+        assert!(apply_equip(&mut p, 0xD100_0000_0000_0500).is_err(), "Materials have no equipped entry");
     }
 
     #[test]
