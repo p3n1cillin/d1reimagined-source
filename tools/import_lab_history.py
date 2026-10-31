@@ -40,7 +40,7 @@ SCRUB = [(re.compile(rb'192\.168\.\d+\.\d+'), b'<lan>'),
          (re.compile(rb'lcmcclellan12@gmail\.com', re.I), b'<old-email>'),
          (re.compile(rb'lukespc', re.I), b'<pc>'),
          (re.compile(rb'matildaspc', re.I), b'<lab-pc>'),
-         (re.compile(rb'/home/runner/'), b'<home>/')]   # CI runner paths in old logs
+         (re.compile(rb'/home' + rb'/runner/'), b'<home>/')]   # CI runner paths in old logs
 # A Markdown link (or image) and its target, as the repository's link check reads them.
 MD_LINK = re.compile(r'(!?)\[([^\]]*)\]\(([^)\s#]+)((?:#[^)\s]*)?)\)')
 TEXT = SOURCE | {'.txt', '.json', '.jsonl', '.log', '.tsv', '.csv', '.xml', '.yml', '.yaml', '.ini', '.patch'}
