@@ -92,4 +92,4 @@ The account it builds for a purchase is byte-identical to the one the client acc
 
 - What the 901 request's u64 is.
 - Selling (903), refunds, and the other vendors.
-- Character-held currencies in the served profile, so purchases priced in them can be tried.
+- Character-held currencies in the served profile, so purchases priced in them can be tried. `tools/ps4_setup/d1-character-fixup.py profile IN OUT --stack 278:870:100 --stack 279:871:100` writes 100 Vanguard and 100 Crucible Marks into a profile (31 October; not yet served in a run).
