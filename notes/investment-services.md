@@ -6,6 +6,14 @@ into the EBOOT (`scripts/d1_types.py services --packages <dir> --oodle <dll>`). 
 request function in the 0x411000-0x413000 block that loads the wire id (`li rN, wire`); its callers are the
 game code using that service. Meanings are CONFIRMED only where a run showed them.
 
+The name hash is the 32-bit FNV-1 of the service name (offset basis `0x811C9DC5`, prime `0x01000193`,
+multiply then xor). Names are given where a search of one to three words joined by `_` found the hash
+(31 October 2026; about one false match in twenty is expected at that size, so a longer name could still
+collide). For example, 903 is `vendor_sell_item`; its request `0x80801734` is `{bool @0, u64 @8, i16 @0x10}`,
+`i32 @0x18`, `u8 @0x1C` (32 bytes, 121 bits), by a round trip through the client codec.
+This table is the PS3 01.24 one. The PS4 56578 table also has 904 `vendor_interact` and 905
+`vendor_refund_item` (FNV-1 against the live table).
+
 | Wire | Name hash | Wrapper | Request | Response | Meaning |
 | ---: | --- | --- | --- | --- | --- |
 | 104 | `0x5a146eab` |  | `0x80801811`  | `0x808018f8` {u8:4 i32} {u64?x2 {i32:5 [0x808046a3]}? {i32:5 [0x80804743]}? {i32:3 [0x80804655]}? u32?} | universe object (CONFIRMED, stand-in) |
@@ -21,24 +29,24 @@ game code using that service. Meanings are CONFIRMED only where a run showed the
 | 304 | `0x3eb709c0` |  | `0x80801802` u64x2 {{i32:4 [0x8080547d]} {i32:1 [0x80804792]} {i32:9 [0x80804407]}} | `0x8080188c` u8:4 |  |
 | 305 | `0x58502e05` | `0x4119f4` | `0x8080184e` u64x2 {{i32:4 [0x8080547d]} {i32:1 [0x80804792]} {i32:9 [0x80804407]}} | `0x808016ea` u8:4 |  |
 | 402 | `0x3931cb8a` | `0x411ca0` | `0x80801767` {bool u64 i16} i32 | `0x80801953` {u8:4 i32} | item move with quantity (LIKELY transfer/vault: {bool, u64 instance, i16 item index} + i32 count) |
-| 403 | `0xc579f488` |  | `0x80801942` u64 | `0x80801834` {u8:4 i32} | item action by instance id (UNKNOWN: equip?) |
-| 404 | `0x9befe885` | `0x411dd8` | `0x8080189a` u64 | `0x808018ab` {u8:4 i32} | item action by instance id (UNKNOWN) |
-| 405 | `0x82842f7b` | `0x411f08` | `0x808018ce` u8x2 u64 i16 i32 | `0x80801719` {u8:4 i32} | item move between owners/buckets (LIKELY: u8 x2 + instance + index + count) |
-| 501 | `0xe906221f` | `0x411360` | `0x80801860` {u8?x3} {i16 u8x3 i16x3 {i16x3}x2 i16 u32 u8:2} {{u8x17}} | `0x8080185d` {u8:4 i32} u64 | create character: class, appearance, name bytes (CONFIRMED) |
-| 502 | `0xf721133e` | `0x4114b0` | `0x80801939` u64 | `0x808017f9` {u8:4 i32} | delete character (LIKELY: u64 character id) |
-| 503 | `0x0c662090` | `0x412044` | `0x80801726` {{u8x36} u64} | `0x80801825` {u8:4 i32} u64 u32x2 {u64?x2 {i32:5 [0x808046a3]}? {i32:5 [0x80804743]}? {i32:3 [0x8080465 | sign in (CONFIRMED) |
-| 504 | `0x7d6146cc` | `0x4121a0` | `0x808017ce` u64 | `0x80801845` {u8:4 i32} | select character (CONFIRMED) |
-| 505 | `0x1ce11bb6` | `0x412a9c` | `0x808017e5`  | `0x80801886` {u8:4 i32} | leave activity / back to orbit (CONFIRMED in TEST158b) |
+| 403 | `0xc579f488` `inventory_equip_item` |  | `0x80801942` u64 | `0x80801834` {u8:4 i32} | item action by instance id (UNKNOWN: equip?) |
+| 404 | `0x9befe885` `inventory_unequip_item` | `0x411dd8` | `0x8080189a` u64 | `0x808018ab` {u8:4 i32} | item action by instance id (UNKNOWN) |
+| 405 | `0x82842f7b` `inventory_transfer_item` | `0x411f08` | `0x808018ce` u8x2 u64 i16 i32 | `0x80801719` {u8:4 i32} | item move between owners/buckets (LIKELY: u8 x2 + instance + index + count) |
+| 501 | `0xe906221f` `login_create_character` | `0x411360` | `0x80801860` {u8?x3} {i16 u8x3 i16x3 {i16x3}x2 i16 u32 u8:2} {{u8x17}} | `0x8080185d` {u8:4 i32} u64 | create character: class, appearance, name bytes (CONFIRMED) |
+| 502 | `0xf721133e` `login_delete_character` | `0x4114b0` | `0x80801939` u64 | `0x808017f9` {u8:4 i32} | delete character (LIKELY: u64 character id) |
+| 503 | `0x0c662090` `login_account` | `0x412044` | `0x80801726` {{u8x36} u64} | `0x80801825` {u8:4 i32} u64 u32x2 {u64?x2 {i32:5 [0x808046a3]}? {i32:5 [0x80804743]}? {i32:3 [0x8080465 | sign in (CONFIRMED) |
+| 504 | `0x7d6146cc` `login_character` | `0x4121a0` | `0x808017ce` u64 | `0x80801845` {u8:4 i32} | select character (CONFIRMED) |
+| 505 | `0x1ce11bb6` `signout_character` | `0x412a9c` | `0x808017e5`  | `0x80801886` {u8:4 i32} | leave activity / back to orbit (CONFIRMED in TEST158b) |
 | 506 | `0x27b12a16` |  | `0x80801814` {i16 u8x3 i16x3 {i16x3}x2 i16 u32 u8:2} | `0x80801736` {u8:4 i32} | edit appearance (LIKELY: the appearance struct only) |
-| 601 | `0x3bf631f4` |  | `0x80801757` u8:3 {{i32 u64} i32} | `0x808017ab` {u8:4 i32} {{i32 u64} i32} |  |
-| 701 | `0x54f74ceb` | `0x41258c` | `0x808016dd` {{{0x808047c9}? {0x808041c3}?}? {{0x80801705}? {0x808017f0}?}?} | `0x8080189b` {u8:4 i32} |  |
-| 702 | `0xfc75eb1b` | `0x4126e8` | `0x808016cf` {{{0x808016d2}? {0x808041c3}? f32?}? {{0x808018db}? {0x80801927}? {0x808018fe}? u32? {0x80 | `0x8080194d` {u8:4 i32} | activity/character history update (LIKELY: same record types as the self character +0x18e8) |
+| 601 | `0x3bf631f4` `loot_pickup_item` |  | `0x80801757` u8:3 {{i32 u64} i32} | `0x808017ab` {u8:4 i32} {{i32 u64} i32} |  |
+| 701 | `0x54f74ceb` `profile_set_account_profile` | `0x41258c` | `0x808016dd` {{{0x808047c9}? {0x808041c3}?}? {{0x80801705}? {0x808017f0}?}?} | `0x8080189b` {u8:4 i32} |  |
+| 702 | `0xfc75eb1b` `profile_set_character_profile` | `0x4126e8` | `0x808016cf` {{{0x808016d2}? {0x808041c3}? f32?}? {{0x808018db}? {0x80801927}? {0x808018fe}? u32? {0x80 | `0x8080194d` {u8:4 i32} | activity/character history update (LIKELY: same record types as the self character +0x18e8) |
 | 801 | `0xf9d0480f` | `0x412e54` | `0x8080171f` u64 u8 | `0x80801720` {u8:4 i32} | item flag (LIKELY lock/track: instance + u8) |
 | 802 | `0x9997cc20` | `0x412f88` | `0x8080174d` u64 u8 | `0x8080183d` {u8:4 i32} | item flag (LIKELY lock/track: instance + u8) |
 | 803 | `0x0484d2fb` |  | `0x8080184a` u64 {{u8x2} u8} u8:3 | `0x80801792` {u8:4 i32} |  |
-| 901 | `0x4d0ea80c` | `0x412be0` | `0x80801777` u8 i16 u64? | `0x80801888` {u8:4 i32} | vendor purchase (LIKELY: u8 vendor, i16 item index, u64?) |
+| 901 | `0x4d0ea80c` `vendor_buy_item` | `0x412be0` | `0x80801777` u8 i16 u64? | `0x80801888` {u8:4 i32} | vendor purchase (LIKELY: u8 vendor, i16 item index, u64?) |
 | 902 | `0x890c0597` |  | `0x8080180d` {bool u64 i16} i16 | `0x808016ef` {u8:4 i32} | item action with {bool,u64,i16} + i16 (UNKNOWN: refund/dismantle?) |
-| 903 | `0x5610f2e4` | `0x412d18` | `0x80801734` {bool u64 i16} i32 u8 | `0x8080183a` {u8:4 i32} | item action with {bool,u64,i16} + i32 + u8 (UNKNOWN) |
+| 903 | `0x5610f2e4` `vendor_sell_item` | `0x412d18` | `0x80801734` {bool u64 i16} i32 u8 | `0x8080183a` {u8:4 i32} | item action with {bool,u64,i16} + i32 + u8 (UNKNOWN) |
 | 1101 | `0x74bce44f` |  | `0x80801718` f32 | `0x8080188d` u8:4 |  |
 | 1102 | `0xd4c4c1d7` |  | `0x808018a4` i32 | `0x8080187e` u8:4 |  |
 | 1103 | `0xf15cb19c` |  | `0x80801799` u8:3 | `0x8080175c` u8:4 i32 |  |
