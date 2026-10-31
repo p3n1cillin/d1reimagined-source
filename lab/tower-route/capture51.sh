@@ -2,6 +2,7 @@
 # Marketing capture: record from Dock 13 arrival through the post-game screens, tour the tabs, stop.
 # Usage: capture51.sh RUNNAME
 S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd); REPO=$(cd "$S/../.." && pwd)
+SW=$(cd "$S" && pwd -W)   # the same folder as Windows Python reads it, for paths inside python -c code
 C=$(python "$REPO/tools/ps4_setup/d1paths.py" staging); F=$(python "$REPO/tools/ps4_setup/d1paths.py" fixtures)
 R=$1
 until ls -d $C/contained-boot/*-$R >/dev/null 2>&1; do sleep 5; done; D=$(ls -d $C/contained-boot/*-$R); H=$D/activity-host.log
@@ -14,7 +15,7 @@ echo "$(date +%H:%M:%S) phase 7 published"
 sleep 25
 python -c "
 import importlib.util,ctypes,time
-s=importlib.util.spec_from_file_location('gf','$S/gamefocus.py');gf=importlib.util.module_from_spec(s);s.loader.exec_module(gf)
+s=importlib.util.spec_from_file_location('gf','$SW/gamefocus.py');gf=importlib.util.module_from_spec(s);s.loader.exec_module(gf)
 u=ctypes.WinDLL('user32')
 def tap(vk):
     gf.ensure(); u.keybd_event(vk,u.MapVirtualKeyW(vk,0),0,None); time.sleep(0.15); u.keybd_event(vk,u.MapVirtualKeyW(vk,0),2,None)

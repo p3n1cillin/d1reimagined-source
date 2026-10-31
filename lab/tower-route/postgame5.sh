@@ -4,12 +4,13 @@
 # with XP900 and the owned Arcadia plus its inventory item (PR #81 responder); then scoreboard, @phase 7, tour.
 # Usage: postgame5.sh RUNNAME [SCOREBOARD_LIST]
 S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd); REPO=$(cd "$S/../.." && pwd)
+SW=$(cd "$S" && pwd -W)   # the same folder as Windows Python reads it, for paths inside python -c code
 C=$(python "$REPO/tools/ps4_setup/d1paths.py" staging); F=$(python "$REPO/tools/ps4_setup/d1paths.py" fixtures)
 P=$F/postgame
 SB=${2:-$P/agr-postgame-scoreboard-arcadia-ratio30.draft.txt}
 grab() { python -c "
 import importlib.util
-s=importlib.util.spec_from_file_location('fight','$S/fight.py');f=importlib.util.module_from_spec(s);s.loader.exec_module(f)
+s=importlib.util.spec_from_file_location('fight','$SW/fight.py');f=importlib.util.module_from_spec(s);s.loader.exec_module(f)
 try: f.grab('$C/$1/capture/$2.png')
 except Exception: pass" 2>/dev/null; }
 publish() { echo "clients 0x4786c0e0 $1" > $C/ah-control.txt; until [ ! -f $C/ah-control.txt ]; do sleep 1; done; sleep 2
