@@ -44,3 +44,6 @@ aqtinstall.log
 
 # The pad helper stamps its last press beside itself (read by d1-idle-guard.sh).
 /tools/ps4_setup/d1-pad-last.txt
+
+# Personal scrub patterns for tools/import_lab_history.py (see tools/scrub-patterns.example.txt).
+/tools/scrub-patterns.local.txt

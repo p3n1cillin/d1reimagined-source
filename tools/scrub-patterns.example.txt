@@ -1,0 +1,14 @@
+# Personal scrub patterns for tools/import_lab_history.py.
+# Copy this file to tools/scrub-patterns.local.txt (gitignored) and replace the placeholders with your
+# own details. One rule per line: a regular expression (Python syntax, matched case-insensitively), a
+# tab, then its replacement. Every pattern is also a personal-data check: a file that still matches
+# after scrubbing is held back.
+#
+# Your Windows user folder:
+C:[\\/]+Users[\\/]+<your-user-name>	%USERPROFILE%
+# The private folder the imported files came from (it becomes lab/history in the repository):
+[A-Za-z]:[\\/]+<path>[\\/]+<to>[\\/]+<private-folder>	lab/history
+# Your machines' names:
+<your-pc-name>	<pc>
+# E-mail addresses that must not be published:
+<name>@example\.com	<email>

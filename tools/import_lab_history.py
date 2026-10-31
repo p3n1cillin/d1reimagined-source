@@ -9,7 +9,10 @@ Everything used to get the project this far belongs in the repository, except:
   - keys and credentials;
   - personal data (checked by a scan; a hit stops the import of that file).
 
-    import_lab_history.py SOURCE DEST [--dry-run]
+    import_lab_history.py SOURCE DEST [--dry-run] [--exclude FOLDER ...]
+
+Personal scrub patterns come from tools/scrub-patterns.local.txt (untracked; D1_SCRUB_PATTERNS
+overrides). An import without them is refused; scrub-patterns.example.txt shows the format.
 
 SOURCE is a folder of dated working folders; each lands at DEST/<name> with the same layout.
 """
@@ -30,22 +33,38 @@ GAME_NAME = re.compile(r'(^owned|owned-|^[0-9a-f]{8}(\.|-)|-definition|\.pkgentr
 GAME_DIR = re.compile(r'(^|[\\/])(owned|[a-z-]*-owned|dumps?|packages|entries)([\\/]|$)', re.I)
 # Our own code and notes are kept even when they read game content; the content itself is not.
 SOURCE = {'.py', '.rs', '.sh', '.ps1', '.cmd', '.bat', '.c', '.h', '.cpp', '.md', '.toml'}
-# Replaced in text files on import: local network addresses, the Windows profile folder, the lab
-# machines' names, the old commit email, and the private folder these files came from (which is
-# lab/history in the repository).
-SEP = rb'(?:\\\\|\\|/)+'
-SCRUB = [(re.compile(rb'192\.168\.\d+\.\d+'), b'<lan>'),
-         (re.compile(rb'C:' + SEP + rb'Users' + SEP + rb'lukem', re.I), rb'%USERPROFILE%'),
-         (re.compile(rb'(?:[A-Za-z]:|/[a-z])' + SEP + rb'd1' + SEP + rb'lukespc-import' + SEP + rb'd1xenia' + SEP +
-                     rb'local' + SEP + rb'PRIVATE_ENGINEERING', re.I), b'lab/history'),
-         (re.compile(rb'lcmcclellan12@gmail\.com', re.I), b'<old-email>'),
-         (re.compile(rb'lukespc', re.I), b'<pc>'),
-         (re.compile(rb'matildaspc', re.I), b'<lab-pc>'),
-         (re.compile(rb'/home' + rb'/runner/'), b'<home>/')]   # CI runner paths in old logs
+# Replaced in text files on import. The generic rules live here: local network addresses and CI
+# runner paths. The personal ones (your user folder, machine names, old e-mail addresses, the private
+# folder the files came from) are read from an untracked file, scrub-patterns.local.txt beside this
+# script or D1_SCRUB_PATTERNS, so they never enter the repository. See scrub-patterns.example.txt.
+GENERIC_SCRUB = [(re.compile(rb'192\.168\.\d+\.\d+'), b'<lan>'),
+                 (re.compile(rb'/home' + rb'/runner/'), b'<home>/')]   # CI runner paths in old logs
+GENERIC_PERSONAL = [re.compile(rb'192\.168\.\d+\.\d+')]
+LOCAL_PATTERNS = os.environ.get('D1_SCRUB_PATTERNS') or os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'scrub-patterns.local.txt')
 # A Markdown link (or image) and its target, as the repository's link check reads them.
 MD_LINK = re.compile(r'(!?)\[([^\]]*)\]\(([^)\s#]+)((?:#[^)\s]*)?)\)')
 TEXT = SOURCE | {'.txt', '.json', '.jsonl', '.log', '.tsv', '.csv', '.xml', '.yml', '.yaml', '.ini', '.patch'}
-PERSONAL = re.compile(rb'(lcmcclellan|lukespc|matildaspc|C:[\\/]+Users[\\/]+lukem|192\.168\.\d+\.\d+)', re.I)
+
+
+def load_local_patterns(path):
+    """`REGEX<TAB>REPLACEMENT` per line (Python syntax, case-insensitive); # starts a comment. Every
+    pattern is also a personal-data check: a file that still matches after scrubbing is held."""
+    rules = []
+    with open(path, encoding='utf-8') as f:
+        for n, line in enumerate(f, 1):
+            line = line.rstrip('\r\n')
+            if not line.strip() or line.lstrip().startswith('#'):
+                continue
+            if '\t' not in line:
+                sys.exit(f'{path}:{n}: want REGEX<TAB>REPLACEMENT')
+            pattern, replacement = line.split('\t', 1)
+            rules.append((re.compile(pattern.encode(), re.I), replacement.encode()))
+    return rules
+
+
+SCRUB = list(GENERIC_SCRUB)
+PERSONAL = list(GENERIC_PERSONAL)
 MAX_BYTES = 5 * 1024 * 1024
 # Binaries are kept only when they are the project's own encodings (served fixtures, decoded objects,
 # wire messages, drafts). Everything else binary is a package entry or a game-memory snapshot.
@@ -80,7 +99,7 @@ def verdict(path, rel):
         data = f.read()
     if ext in TEXT:
         data = scrub(data)
-    if PERSONAL.search(data):
+    if any(p.search(data) for p in PERSONAL):
         return 'personal'
     return 'keep'
 
@@ -128,6 +147,13 @@ def main():
     # source trees, or metadata extracted from game updates.
     ap.add_argument('--exclude', action='append', default=[])
     a = ap.parse_args()
+    if os.path.exists(LOCAL_PATTERNS):
+        local = load_local_patterns(LOCAL_PATTERNS)
+        SCRUB.extend(local)
+        PERSONAL.extend(p for p, _ in local)
+    elif not a.dry_run:
+        sys.exit(f'no personal scrub patterns at {LOCAL_PATTERNS}: copy scrub-patterns.example.txt there and '
+                 'fill in your own details first (an import without them could publish personal data)')
     counts, sizes, held = {}, {}, []
     for top, dirs, files in os.walk(a.source):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
