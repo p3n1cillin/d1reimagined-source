@@ -2,8 +2,8 @@
 
 The active target is **Destiny 1, CUSA00219, executable build `56578.17.04.12`**
 (package metadata 01.33), using shadPS4 and the local Rust services in this tree.
-**The complete game is not playable.** This source publication includes the
-supplied preservation project's servers, protocol libraries, diagnostic tools and
+**The complete game is not playable.** This source publication includes
+aknumbers' Destiny 1 Preservation Project's servers, protocol libraries, diagnostic tools and
 generators, with our tested preparation and content-reader fixes. Game inputs,
 firmware, generated catalogues, native fixtures and private run evidence are
 excluded.
