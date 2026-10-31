@@ -1,0 +1,314 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cb50896..9155db2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -970,6 +970,8 @@ set(CORE src/core/aerolib/stubs.cpp
+ if (ARCHITECTURE STREQUAL "x86_64")
+     set(CORE ${CORE}
+              src/core/cpu_patches.cpp
++             src/core/d1_native_mouse.cpp
++             src/core/d1_native_mouse.h
+              src/core/cpu_patches.h
+              ${FIBER_LIB})
+ endif()
+diff --git a/src/common/memory_patcher.cpp b/src/common/memory_patcher.cpp
+index ec0b346..612f860 100644
+--- a/src/common/memory_patcher.cpp
++++ b/src/common/memory_patcher.cpp
+@@ -13,6 +13,7 @@
+ #include "common/path_util.h"
+ #include "core/emulator_state.h"
+ #include "core/file_format/psf.h"
++#include "core/d1_native_mouse.h"
+ #include "memory_patcher.h"
+ 
+ namespace MemoryPatcher {
+@@ -273,6 +274,7 @@ void OnGameLoaded() {
+         }
+     }
+     ApplyPendingPatches();
++    Core::D1NativeMouse::Install();
+ }
+ 
+ void AddPatchToQueue(const patchInfo& patchToAdd) {
+diff --git a/src/core/cpu_patches.cpp b/src/core/cpu_patches.cpp
+index 22a241f..dffeec9 100644
+--- a/src/core/cpu_patches.cpp
++++ b/src/core/cpu_patches.cpp
+@@ -22,6 +22,8 @@
+ #include "common/assert.h"
+ #include "common/decoder.h"
+ #include "common/signal_context.h"
++#include "common/logging/log.h"
++#include "common/memory_patcher.h"
+ #include "common/types.h"
+ #include "core/signals.h"
+ #include "core/tls.h"
+@@ -2231,4 +2233,111 @@ void PrePatchInstructions(u64 segment_addr, u64 segment_size) {
+ #endif
+ }
+ 
++bool InstallD1Detour(u64 site_vaddr, std::span<const u8> span, D1DetourCallback callback) {
++    if (MemoryPatcher::g_eboot_address == 0) {
++        LOG_ERROR(Core, "D1 detour {:#x}: the main executable is not loaded", site_vaddr);
++        return false;
++    }
++    auto* site = reinterpret_cast<u8*>(MemoryPatcher::g_eboot_address + site_vaddr);
++    if (std::memcmp(site, span.data(), span.size()) != 0) {
++        LOG_ERROR(Core, "D1 detour {:#x}: the bytes there are not the pinned span; refusing",
++                  site_vaddr);
++        return false;
++    }
++    auto* module = GetContainingModule(site);
++    if (module == nullptr || module->trampoline_exhausted) {
++        LOG_ERROR(Core, "D1 detour {:#x}: no patch module or trampoline space", site_vaddr);
++        return false;
++    }
++    // Whole instructions covering the jump and the pinned span.
++    std::vector<DecodedCodeInstruction> instructions;
++    uintptr_t at = reinterpret_cast<uintptr_t>(site);
++    size_t size = 0;
++    while (size < std::max(NearJumpSize, span.size())) {
++        auto decoded = DecodeCodeInstruction(at, reinterpret_cast<uintptr_t>(module->end));
++        if (decoded.instruction.length == 0 || IsControlFlowTerminator(decoded.instruction)) {
++            LOG_ERROR(Core, "D1 detour {:#x}: cannot relocate the instruction at {:#x}",
++                      site_vaddr, at - MemoryPatcher::g_eboot_address);
++            return false;
++        }
++        size += decoded.instruction.length;
++        at += decoded.instruction.length;
++        instructions.push_back(decoded);
++    }
++
++    auto& g = module->trampoline_gen;
++    const size_t start = g.getSize();
++    try {
++        // Keep the guest's red zone intact, then save everything the callback may clobber.
++        g.lea(rsp, ptr[rsp - GuestRedZoneSize]);
++        g.push(rax);
++        g.push(rcx);
++        g.push(rdx);
++        g.push(rbx);
++        g.push(rbp);
++        g.push(rsi);
++        g.push(rdi);
++        g.push(r8);
++        g.push(r9);
++        g.push(r10);
++        g.push(r11);
++        g.push(r12);
++        g.push(r13);
++        g.push(r14);
++        g.push(r15);
++        g.pushfq();
++        g.mov(rdi, rsp); // D1DetourRegisters*
++        g.mov(rsi, site_vaddr);
++        g.mov(rbx, rsp); // callee-saved across the call
++        g.and_(rsp, -32);
++        g.sub(rsp, 16 * 32);
++        for (int i = 0; i < 16; ++i) {
++            g.vmovdqu(ptr[rsp + i * 32], Xbyak::Ymm(i));
++        }
++        g.mov(rax, reinterpret_cast<u64>(callback));
++        g.call(rax);
++        for (int i = 0; i < 16; ++i) {
++            g.vmovdqu(Xbyak::Ymm(i), ptr[rsp + i * 32]);
++        }
++        g.mov(rsp, rbx);
++        g.popfq();
++        g.pop(r15);
++        g.pop(r14);
++        g.pop(r13);
++        g.pop(r12);
++        g.pop(r11);
++        g.pop(r10);
++        g.pop(r9);
++        g.pop(r8);
++        g.pop(rdi);
++        g.pop(rsi);
++        g.pop(rbp);
++        g.pop(rbx);
++        g.pop(rdx);
++        g.pop(rcx);
++        g.pop(rax);
++        g.lea(rsp, ptr[rsp + GuestRedZoneSize]);
++        for (const auto& decoded : instructions) {
++            if (!EncodeRelocatedInstruction(decoded, g)) {
++                g.setSize(start);
++                LOG_ERROR(Core, "D1 detour {:#x}: relocation refused", site_vaddr);
++                return false;
++            }
++        }
++        g.jmp(reinterpret_cast<void*>(at));
++    } catch (const Xbyak::Error& error) {
++        g.setSize(start);
++        LOG_ERROR(Core, "D1 detour {:#x}: trampoline: {}", site_vaddr, error.what());
++        return false;
++    }
++    const auto* trampoline = g.getCode() + start;
++    auto& patch = module->patch_gen;
++    patch.reset();
++    patch.setSize(reinterpret_cast<uintptr_t>(site) - reinterpret_cast<uintptr_t>(patch.getCode()));
++    patch.jmp(trampoline, Xbyak::CodeGenerator::LabelType::T_NEAR);
++    patch.nop(size - NearJumpSize);
++    LOG_INFO(Core, "D1 detour installed at {:#x} ({} bytes relocated)", site_vaddr, size);
++    return true;
++}
++
+ } // namespace Core
+diff --git a/src/core/cpu_patches.h b/src/core/cpu_patches.h
+index a8ac368..4cdaa27 100644
+--- a/src/core/cpu_patches.h
++++ b/src/core/cpu_patches.h
+@@ -54,6 +54,22 @@ void RegisterPatchModule(void* module_ptr, u64 module_size, void* trampoline_are
+ /// Applies CPU patches that need to be done before beginning executions.
+ void PrePatchInstructions(u64 segment_addr, u64 segment_size);
+ 
++// D1: detours. A host callback runs at a pinned guest instruction span with the guest's registers,
++// then the span's own instructions run (relocated) and execution continues after it.
++
++/// The guest's general registers and flags at the detour, in the trampoline's push order. A
++/// callback may change them; they are restored from here.
++struct D1DetourRegisters {
++    u64 rflags, r15, r14, r13, r12, r11, r10, r9, r8, rdi, rsi, rbp, rbx, rdx, rcx, rax;
++};
++using D1DetourCallback = void(PS4_SYSV_ABI*)(D1DetourRegisters* regs, u64 site_vaddr);
++
++/// Installs a detour at the main executable's virtual address `site_vaddr` (as in the patch files,
++/// without the 0x400000 bias). Refuses, returning false, unless the bytes there equal `span`, the
++/// instructions covering at least a near jump decode and relocate, and the module has trampoline
++/// space. Call before the guest runs the site (e.g. right after the game's patches are applied).
++bool InstallD1Detour(u64 site_vaddr, std::span<const u8> span, D1DetourCallback callback);
++
+ // Windows static guest red-zone protection
+ /// Keeps Windows exception dispatch outside live guest red zones at faultable memory accesses.
+ RedZonePatchResult PatchRedZoneMemoryInstructions(u64 segment_addr, u64 segment_size,
+diff --git a/src/core/d1_native_mouse.cpp b/src/core/d1_native_mouse.cpp
+new file mode 100644
+index 0000000..436b292
+--- /dev/null
++++ b/src/core/d1_native_mouse.cpp
+@@ -0,0 +1,105 @@
++// SPDX-FileCopyrightText: Copyright 2026 d1reimagined contributors
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++// D1 (CUSA00219, executable 56578): the engine's own keyboard/mouse layer, fed from the host.
++// The menu cursor update at 0x985D00 (01.29 0x984060; the span `mov ebx,[r15+0x210]`, followed by the
++// elapsed-ms subtract and the call to the mouse getter 0xAD670) runs once a frame while a cursor
++// exists, with the UI root in r15 and the cursor position as floats at +0x350/+0x354.
++//   D1_MOUSE_PROBE=1   log the UI root and cursor position at the first hits; change nothing.
++//   D1_MOUSE_CURSOR=1  move the cursor by the host mouse's movement since the last frame, while the
++//                      game window has focus (Windows; D1_MOUSE_SENS scales it, default 1: the
++//                      engine adds mouse counts to the cursor unscaled).
++
++#include <array>
++#include <atomic>
++#include <cstdlib>
++#include <cstring>
++
++#ifdef _WIN32
++#include <windows.h>
++#endif
++
++#include "common/logging/log.h"
++#include "core/cpu_patches.h"
++#include "core/d1_native_mouse.h"
++
++namespace Core::D1NativeMouse {
++
++namespace {
++
++constexpr u64 CursorSite = 0x985D00;
++constexpr std::array<u8, 7> CursorSpan = {0x41, 0x8B, 0x9F, 0x10, 0x02, 0x00, 0x00};
++std::atomic<int> g_probe_hits{0};
++float g_sensitivity = 1.0f;
++
++bool EnvOn(const char* name) {
++    const char* v = std::getenv(name);
++    return v != nullptr && *v != '\0' && *v != '0';
++}
++
++void PS4_SYSV_ABI ProbeCursor(D1DetourRegisters* regs, u64 site) {
++    const int n = g_probe_hits.fetch_add(1);
++    if (n >= 3) {
++        return;
++    }
++    float xy[2]{};
++    std::memcpy(xy, reinterpret_cast<const void*>(regs->r15 + 0x350), sizeof(xy));
++    LOG_INFO(Input, "D1 mouse probe: cursor site {:#x} hit {}: UI root {:#x}, cursor ({}, {})", site,
++             n + 1, regs->r15, xy[0], xy[1]);
++}
++
++#ifdef _WIN32
++bool GameHasFocus() {
++    DWORD pid = 0;
++    GetWindowThreadProcessId(GetForegroundWindow(), &pid);
++    return pid == GetCurrentProcessId();
++}
++
++void PS4_SYSV_ABI MoveCursor(D1DetourRegisters* regs, u64) {
++    static POINT last{};
++    static bool have_last = false;
++    POINT now{};
++    if (!GetCursorPos(&now)) {
++        return;
++    }
++    if (have_last && GameHasFocus()) {
++        const float dx = static_cast<float>(now.x - last.x) * g_sensitivity;
++        const float dy = static_cast<float>(now.y - last.y) * g_sensitivity;
++        if (dx != 0.0f || dy != 0.0f) {
++            float xy[2];
++            std::memcpy(xy, reinterpret_cast<const void*>(regs->r15 + 0x350), sizeof(xy));
++            xy[0] += dx;
++            xy[1] += dy;
++            std::memcpy(reinterpret_cast<void*>(regs->r15 + 0x350), xy, sizeof(xy));
++        }
++    }
++    last = now;
++    have_last = true;
++}
++#endif
++
++} // namespace
++
++void Install() {
++    if (const char* s = std::getenv("D1_MOUSE_SENS"); s != nullptr && *s != '\0') {
++        g_sensitivity = static_cast<float>(std::atof(s));
++    }
++    if (EnvOn("D1_MOUSE_CURSOR")) {
++#ifdef _WIN32
++        if (InstallD1Detour(CursorSite, CursorSpan, MoveCursor)) {
++            LOG_INFO(Input, "D1 mouse: the menu cursor follows the host mouse (sensitivity {})",
++                     g_sensitivity);
++        } else {
++            LOG_ERROR(Input, "D1 mouse: the cursor detour was refused");
++        }
++#else
++        LOG_ERROR(Input, "D1 mouse: D1_MOUSE_CURSOR is Windows-only for now");
++#endif
++        return;
++    }
++    if (EnvOn("D1_MOUSE_PROBE") && !InstallD1Detour(CursorSite, CursorSpan, ProbeCursor)) {
++        LOG_ERROR(Input, "D1 mouse probe: the cursor detour was refused");
++    }
++}
++
++} // namespace Core::D1NativeMouse
+diff --git a/src/core/d1_native_mouse.h b/src/core/d1_native_mouse.h
+new file mode 100644
+index 0000000..0a85736
+--- /dev/null
++++ b/src/core/d1_native_mouse.h
+@@ -0,0 +1,12 @@
++// SPDX-FileCopyrightText: Copyright 2026 d1reimagined contributors
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#pragma once
++
++namespace Core::D1NativeMouse {
++
++/// Installs the D1 mouse detours that the environment asks for (D1_MOUSE_PROBE). Call once the
++/// game's patches are applied, before the guest runs.
++void Install();
++
++} // namespace Core::D1NativeMouse
