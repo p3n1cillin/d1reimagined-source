@@ -1,0 +1,20 @@
+# Relays a submitted review to the Sweep workflow's merge job (workflow_run), which acts with this
+# repository's token. Runs nothing of the pull request's and needs no permissions.
+name: Review
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions: {}
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Relay
+        env:
+          PR: ${{ github.event.pull_request.number }}
+          STATE: ${{ github.event.review.state }}
+        run: echo "Review on #$PR ($STATE); the Sweep workflow's merge job follows."
