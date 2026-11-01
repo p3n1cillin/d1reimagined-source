@@ -18,6 +18,9 @@ reference, not copied in.
 | [Dawn](https://github.com/isinternets/Dawn) | GPL-3.0 | A Destiny 2 server emulator; its New Light mission mirrors A Guardian Rises. | Read-only reference, already credited. |
 | [Destiny 1 Preservation Project](https://gitlab.com/aknumbers/d1preservation) | GPL-2.0-or-later | The base of `ps4/`. | Already the foundation, credited. |
 
+Servers rebuilt for other games (Marvel Heroes, WildStar, Warframe, Mass Effect 3, Dauntless and
+more) are surveyed in [similar projects](similar-projects.md).
+
 Searches that found nothing usable: a public reverse-engineered D1 server other than the above.
 The shadPS4 compatibility tracker has two reports for CUSA00219 (issues 317 and 994); they were not
 commented on.
