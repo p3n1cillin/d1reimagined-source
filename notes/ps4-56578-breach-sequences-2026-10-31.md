@@ -87,14 +87,25 @@ mostly unrelated stack locals; the live client is the better instrument.
     reference), most with empty lists of their own, and they spawned anyway. An empty list is not
     fatal.
   - No Breach squad called the picker at all.
-- So the Breach squads are never asked to make members. The question moves up a level: the
-  per-frame squad update (`0x102B60` → `0x102C10`) makes members only while desired > existing +
-  live, and the Breach lists serve their squads with no state image. A served desired count
-  (`tools/ps4_setup/d1-squad-states.py`) needs a watch on that update and on the picker, to see
-  where the Breach squads stop.
+- So the Breach squads are never asked to make members, and the reason is in our lists. The
+  unattended route (`lab/tower-route/ending-run.ps1`) serves the Breach squads with no state image,
+  so their desired count is 0. Squad states were worked out on 26 October ([run
+  `fallen2`](ps4-56578-blockers-2026-10-26.md)): the hash fields at `0x811C9DC5` plus a desired count
+  make the Breach Fallen spawn and attack. The route leaves them out so that its replay can walk
+  through.
+- **Run sense94 confirms it with the watch.** `tools/ps4_setup/d1-squad-states.py` gave squads 21,
+  26, 28 and 30 one member each (generation 2). The list was published through the activity host's
+  control line right after step 15. Within seconds each of the four ran the update's spawn path
+  (`0x102D40` → `0x102D69`), called the picker, and had a live member 25-70 m from the Guardian
+  inside the Breach. They had no template points and empty lists.
+- **Conclusion.** The Breach does not lack spawn points or a sequence state; it lacks served squad
+  states at the right moments. Those are what the original server's encounter scripting sent. Note
+  that a control line's path must be a Windows path (`F:/...`): the host can't open an MSYS path
+  (`/f/...`).
 
 ## Next
 
-- Why the Breach squads never reach the spawn picker: watch `0x102C10` with a served desired count.
+- Serving the Breach squad states in the unattended route, with the fight to match (the replay alone
+  doesn't survive an attack), and the Wall's later squads at their own moments.
 - What the drop actors need: `dropper1` and `crawler1`–`8` (kind `0x28`). Performances animate
   members of squads that already exist, so they wait on the squads.
