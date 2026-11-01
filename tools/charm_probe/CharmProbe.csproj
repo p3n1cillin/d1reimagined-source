@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Point CharmDir at a checkout of https://github.com/MontagueM/Charm with
+       patches/charm-d1-strategy-null-guard.patch applied. -->
+  <PropertyGroup>
+    <CharmDir Condition="'$(CharmDir)' == ''">F:\d1\third-party\MontagueM_Charm</CharmDir>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>$(NoWarn);CS8632</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(CharmDir)\Tiger\Tiger.csproj" />
+    <ProjectReference Include="$(CharmDir)\Arithmic\Arithmic.csproj" />
+    <None Include="$(CharmDir)\Charm\ThirdParty\**\*" LinkBase="ThirdParty" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

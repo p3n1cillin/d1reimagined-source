@@ -2160,7 +2160,13 @@ pub fn fetch_family_request(args: &[u8]) -> Option<FetchFamilyRequest> {
 /// `D1_206_TAIL`-style append experiment failed: `10 || tail` cannot express a span.
 ///
 /// `None` reproduces the historical `0x10` fixed point byte for byte.
+///
+/// Panics if the span is longer than the 16-bit length can say (65,535 bytes): the length would
+/// wrap and the client would read a short span followed by garbage.
 pub fn fetch_family_response_body(span: Option<&[u8]>) -> Vec<u8> {
+    if let Some(s) = span {
+        assert!(s.len() <= 0xFFFF, "206 span of {} bytes does not fit its 16-bit length", s.len());
+    }
     let mut bits: Vec<bool> = Vec::with_capacity(24 + span.map_or(0, |s| s.len() * 8));
     for i in (0..4).rev() {
         bits.push((1u64 >> i) & 1 == 1); // the 4-bit leaf at its zero value, biased +1
@@ -3705,6 +3711,14 @@ mod queuez_tests {
     /// through the decoder and it names **family 4**, i.e. the delivery that purges the profile at
     /// creation-finish. That is asserted here so the two are never conflated again.
     #[test]
+    #[should_panic(expected = "does not fit its 16-bit length")]
+    fn a_206_span_too_long_for_its_length_is_refused() {
+        // Blam Network's rsat codec, given 70,000 bytes, writes the length mod 2^16 and decodes
+        // 4,464; the client would do the same. Refuse rather than send that.
+        fetch_family_response_body(Some(&vec![0u8; 70_000]));
+    }
+
+    #[test]
     fn fetch_family_response_envelope_matches_the_native_encoder() {
         // `d1-oracle message --tag 0x80801869 --msgid 206 --span <this>` -> wire `00ce` + `PINNED`.
         let canned_span: Vec<u8> = [
@@ -3733,6 +3747,11 @@ mod queuez_tests {
         // No span reproduces the historical fixed point, and `investment_206_response` is built
         // from the same function so the two can never drift apart.
         assert_eq!(fetch_family_response_body(None), vec![0x10]);
+
+        // The longest span the 16-bit length can carry still round-trips.
+        let longest = vec![0xA5u8; 0xFFFF];
+        assert_eq!(fetch_family_response_span(&fetch_family_response_body(Some(&longest))).unwrap(),
+                   longest);
 
         // Round-trip, and the RED side: the pinned constant is a FAMILY-4 delivery.
         let back = fetch_family_response_span(&pinned).expect("the pinned body carries a span");

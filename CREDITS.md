@@ -38,9 +38,13 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
 
 ## Destiny research
 
-- **[MontagueM](https://github.com/MontagueM)**: [Charm](https://github.com/MontagueM/Charm). Its
-  Destiny 1 tag schemas for activities, bubbles and map data are cited in
-  [`notes/public-research.md`](notes/public-research.md).
+- **[MontagueM](https://github.com/MontagueM)**: [Charm](https://github.com/MontagueM/Charm)
+  (GPL-3.0).
+  - Its Destiny 1 tag schemas for activities, bubbles and map data are cited in
+    [`notes/public-research.md`](notes/public-research.md).
+  - Its `Tiger` library, with a one-line local fix, reads build 56578. `tools/charm_probe` uses it
+    to list named tags and activities and to name all 8,609 inventory items
+    ([notes](notes/charm-56578.md)).
 - **[v4nguard](https://github.com/v4nguard)**: [tiger-pkg](https://github.com/v4nguard/tiger-pkg)
   (MIT). Its `d1_legacy` reader gave the package layout that `scripts/d1_pkg.py` follows.
   [quicktag](https://github.com/v4nguard/quicktag) (GPL-3.0), its package and tag explorer, is built
@@ -56,7 +60,10 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
     sensor index the host serves to its authored name.
   - Its Fukugen Daihon reconstructions of the mission scripts (`enc_breach_m0`,
     `act_cosmo_m0_highway`) show which squads each Breach trigger places.
-  - Its dictionary maps bundle hashes to names (`0xFC0E45A3` = `enc_breach_m0`).
+  - Its dictionary maps bundle hashes to names (`0xFC0E45A3` = `enc_breach_m0`). It also names
+    the 2014 build's message ids.
+  - Its independent `rsat` codec cross-checks ours byte for byte (`tools/rsat_crosscheck`,
+    [notes](notes/rsat-blam-crosscheck.md)).
   - See [`notes/ps4-56578-breach-sequences-2026-10-31.md`](notes/ps4-56578-breach-sequences-2026-10-31.md).
 - **[lizardpeter](https://github.com/lizardpeter)**:
   [destiny-1](https://github.com/lizardpeter/destiny-1). It documents the v24 package format and the
