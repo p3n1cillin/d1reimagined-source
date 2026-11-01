@@ -165,6 +165,7 @@ def main():
     blind, blocked = 0, {}                                # blind aims at this lock; lock -> blocked until
     idle = 0                                              # passes in a row with no target
     seen_h, seen_h_at, kept = None, 0, 0                  # last health read, when, frames kept
+    fired = 0                                             # bursts and melee at a target in view
     try:
         while time.time() < t_end:
             k += 1; vit = ''
@@ -235,6 +236,7 @@ def main():
                 if in_view: sight, blind = time.time(), 0
                 if d < 2.2:
                     tap('MELEE', 100); time.sleep(0.4)          # point blank: melee (R1)
+                    fired += 1
                 elif ok and not in_view:
                     # Not walking at it: closing in on an unseen target walked the Guardian into walls.
                     blind += 1
@@ -254,6 +256,7 @@ def main():
                     ads = d > 12
                     v0 = W.vital(lock) if isinstance(lock, tuple) else None
                     if ads: key('ADS', True); time.sleep(0.25)
+                    fired += 1
                     key('FIRE', True); key('A' if strafe > 0 else 'D', True); time.sleep(0.7)
                     key('FIRE', False); key('A', False); key('D', False); key('ADS', False)
                     v1 = W.vital(lock) if v0 is not None else None
@@ -282,7 +285,10 @@ def main():
         print('stopped:', e, flush=True); release_all(); sys.exit(3)
     finally:
         release_all()
-    print('bursts', bursts, flush=True)
+    # The replay's skirmish counts a round ending `bursts 0` as idle and stops after two: count only
+    # shots at a target in view, so a round spent aiming at Fallen behind walls 50 m off (sense108's
+    # corridor: six 30 s rounds a stretch) is idle too.
+    print('bursts', fired, flush=True)
 
 
 if __name__ == '__main__':
