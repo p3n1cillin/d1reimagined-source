@@ -79,6 +79,23 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
 - **The people behind [RPCS3 issue #12802](https://github.com/RPCS3/rpcs3/issues/12802)**. They
   showed Destiny reaching character select against private servers.
 
+## Other games' revival servers (read for design)
+
+These servers rebuilt online games from the retail client. They were read for their designs (spawn
+phases, vendor ledgers, sessions), not copied; see [`notes/similar-projects.md`](notes/similar-projects.md).
+
+- **[Crypto137](https://github.com/Crypto137)** and contributors:
+  [MHServerEmu](https://github.com/Crypto137/MHServerEmu) (Marvel Heroes, AGPL-3.0).
+- **[NexusForever](https://github.com/NexusForever)**: [NexusForever](https://github.com/NexusForever/NexusForever)
+  (WildStar, AGPL-3.0).
+- **[spaceninjaserver](https://github.com/spaceninjaserver)**:
+  [SpaceNinjaServer](https://github.com/spaceninjaserver/SpaceNinjaServer) (Warframe, AGPL-3.0).
+- **[PocketRelay](https://github.com/PocketRelay)**: [PocketRelay](https://github.com/PocketRelay/Server)
+  (Mass Effect 3 multiplayer, MIT).
+- **[mixutin](https://github.com/mixutin)** and **[SyST3MDeV](https://github.com/SyST3MDeV)**:
+  [Dauntless Revived](https://github.com/mixutin/dauntless-revived) and
+  [Undaunted](https://github.com/SyST3MDeV/Undaunted) (Dauntless, AGPL-3.0).
+
 ## Tools used (not bundled)
 
 - **[maxton](https://github.com/maxton)**: [LibOrbisPkg](https://github.com/maxton/LibOrbisPkg)
