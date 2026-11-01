@@ -298,10 +298,86 @@ the Divide's step has fired).
   outro.
 - In sense102 the client sent 2 squad updates after the Divide.
 
+## The Fallen's entrances: `enter()` is the member's command script (1 November)
+
+In The Breach the wall Dreg vaults the pipes, the Vandal drops from the ceiling, Dregs drop from
+above and one climbs a grate. Served as squads alone, every one of them stood up in place.
+
+The script says what each one does. `enc_breach_m0.es` (Blam Network's reconstruction, already in
+[CREDITS.md](../CREDITS.md)) defines `enter` itself:
+
+```
+def enter(actor, sequence, audio):
+    __cs.clear()
+    __cs.scripted_sequence(sequence)
+    actor.execute(__cs)
+    if audio:
+        audio.start(actor)
+```
+
+The animation is the named member's command script, one `scripted_sequence` atom naming the
+action. The sequence argument (`seq_fallen_vault_right` and the like) is only its audio.
+
+In 56578 the command script sits in the member's A `0x80800868`, as `0x80800512` at `+0xB0`
+(`d1-eboot descriptors --tag 0x80800868`):
+
+| A offset | Field |
+| --- | --- |
+| `+0xB0` | cookie, 31 bits; a new value starts the script |
+| `+0xB4` | pc |
+| `+0xB8` | atom count, at most 32 |
+| `+0xC0` | atoms, 64 bytes each: `+0` kind (1 = scripted_sequence), `+4` end condition (0 = its own duration), `+0x10` the action's FNV-1 hash |
+
+Both the image and the squad image below round-trip through the client's codec
+(`d1-oracle object --tag 0x80800868`: 587 bits, IDENTICAL; `--tag 0x8080071e`: 504 bits).
+
+Two more things the native runs showed:
+- The member's optional binding at `+0x50`/`+0x58` is not the sequence. Pointing it at
+  `0xFC0E45A3/0x5/99` crashed the client at `0x1BDCC1`, the same unguarded lookup an all-zero
+  binding hits. It stays absent.
+- A squad whose state has no entry (`+0x2C` = 0, what `d1-squad-states.py` writes for count 0)
+  places the client's own default, one body per member. A wall squad served that way plus its
+  entered member gave two Dregs, one of them vaulting. One entry with count 0 (`+0x2C` = 1,
+  `+0x30` = 0) leaves only the named actor. `d1-squad-states.py` now writes it for `SUB:GEN:=0`.
+
+`d1-member-states.py SUB:GEN:ACTION` writes the member state with the command script.
+`d1-breach-waves.py` now enters each wave's named members as the script does (`ENTRANCES`: 13
+squads, 17 members) and gives their squads the explicit zero; `--no-entrances` writes the squads
+alone. The three squads the script gives `@member_counts` place that many bodies (21: 1, h: 2,
+garage exit: 3) instead of `--count`. It no longer places squads 26, 28 and 30 before the first trigger: the script only gives
+them an objective (`enc_breach_m0.es:165-167`), and served that way they met the Guardian round
+the corner before the first Vandal.
+
+Seen in 56578 on shadPS4 (official kit), all with the published lists:
+- squad 38 with member 39 `act_fallen_vault_right`: the wall Dreg vaults the pipes, alone once
+  the squad carries the explicit zero;
+- squad 24 with member 25 `act_fallen_intro_vandal_drop`: the Vandal drops from the ceiling;
+- the bridge rush (56, 58), the mines corridor (44, 47, 49, 51, 53, 55) and the garage (68, 72,
+  74): the drops, the grate climb, both vaults and the two garage Vandals play;
+- the whole route by its triggers, twice, each report from 108 to 107 answered with its wave's
+  list as it arrived:
+  - first with hand-made lists that armed one trigger at a time. That run still placed 26/28/30
+    first and activated `2__dreg_c` besides.
+  - then from a fresh mission start with this generator's lists (before the `@member_counts` and
+    explicit-zero spent commits): `agr-bw-armed.txt`, all nine triggers armed at once. All nine
+    reported in route order with their entrances, nothing came before the first Vandal, and the
+    client kept its AH connection for the whole run.
+
+Still open:
+- Squad tasks (`set_task`), which give the Fallen somewhere to go: placed with their entrance,
+  they stand and shoot. The first Vandal's move to the bridge (`set_task("first_vandal")`, line
+  327) is one of them.
+- The mines' lasers (`o_fallen_tripwire_1`-`7`).
+- Building a new client list took the host 15 to 70 s, longer for more states. Past about 20 s
+  the client dropped the AH connection and reloaded the mission. Schedule steps are built when
+  the host starts; a list published by control mid-run is built then. These runs used a local
+  host change that is not on `main` (`D1_AH_SENSOR_CACHE`, built frames kept on disk), with the
+  lists' frames built ahead in a dry host, so each list applied at once.
+
 ## Next
 
-- Run the trigger-driven waves (above) and check that the client reports the wave triggers once
-  they are armed.
+- Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
+- Run `agr-bw-steps.txt` as schedule steps, all nine triggers armed at once, with the entrances.
 - The nests' perching Fallen (`dropper1`, `crawler1`-`8`; squads 77 and 86) are placed at the
   encounter's start and scatter on trigger 120. Their performances animate members of squads that
   already exist, so they need those squads' states too.
