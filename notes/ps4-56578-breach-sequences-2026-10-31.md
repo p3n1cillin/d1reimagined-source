@@ -68,9 +68,32 @@ investigation](private-host-investigation.md)). The Breach squads' own `+0x250` 
 the open question is what fills a squad's runtime `+0x250` list. A static search for `+0x250` finds
 mostly unrelated stack locals; the live client is the better instrument.
 
+## Spawn points are not what stops the Breach (run sense93, 1 November)
+
+- **What `+0x250` is.** The squad initialiser `0x177990` sets `+0x250` to the squad's own reference
+  (it reads back as the squad's sensor name). It builds the spawn-point nodes from the template's
+  inline points (count at template `+0x40`, 0x90-byte entries from the self-relative offset at
+  `+0x48`) and keeps the node list's head at `+0x3D8`. That is list `+0x188`, which the picker
+  `0x17B6A0` walks, matching each node's key at `+0x84` against `A + 0x4C`. Nodes are built only
+  there (`0x175FA0` and `0x177680` have no other callers).
+- **`lab/tower-route/squad-templates-readonly.py`** lists every live squad's template point count,
+  node head and `+0x250` reference. With the Breach loaded (step 15), all 30 Breach squads
+  (`0xFC0E45A3`) have no template points and no nodes. After the Divide loaded, 9 of its 12 squads
+  (`0x9243DFFB`) had none either; only 14, 15 and 16 have one point each. All 12 had members.
+- **The picker, watched** (`d1-watchwrite.py --exec 0x17A011 --exec 0x17A0BA`, from step 15
+  through the Divide):
+  - Only the Divide's 12 squads called it (1-10 times each), with the `A + 0x4C`/`+0x50` we serve
+    (`0x811C9DC5`, an empty reference) and their own empty lists. They spawned anyway, so an empty
+    list is not fatal.
+  - No Breach squad called the picker at all.
+- So the Breach squads are never asked to make members. The question moves up a level: the
+  per-frame squad update (`0x102B60` → `0x102C10`) makes members only while desired > existing +
+  live, and the Breach lists serve their squads with no state image. A served desired count
+  (`tools/ps4_setup/d1-squad-states.py`) needs a watch on that update and on the picker, to see
+  where the Breach squads stop.
+
 ## Next
 
-- What fills a squad's `+0x250` list at runtime, and what `A + 0x4C` is in the squads that do
-  spawn (the Divide's).
+- Why the Breach squads never reach the spawn picker: watch `0x102C10` with a served desired count.
 - What the drop actors need: `dropper1` and `crawler1`–`8` (kind `0x28`). Performances animate
   members of squads that already exist, so they wait on the squads.
