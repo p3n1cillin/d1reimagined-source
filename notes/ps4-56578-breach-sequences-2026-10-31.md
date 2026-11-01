@@ -432,6 +432,32 @@ the waves to get there. Each stop along the way gave the route a fix:
 - **Startup.** The host built every list again on each start (16 minutes with the wave lists). With
   #197 it keeps built frames in `D1_AH_SENSOR_CACHE`, which `ending-run.ps1` now sets.
 
+## Fighting the entered Fallen, and fighting like a player (run sense108)
+
+- **The route could not see them.** A member placed by its own state (`enter()`) keeps a handle to its
+  authored member at entity `+0x50` instead of -1. The squad reader took `+0x50 == -1` as membership,
+  so in sense108 every entered Fallen (24, 38, 42, 56, 58) was in its squad's list but never a target.
+  Such members are now `named` and targeted (six live targets appeared at once). A small `+0x50` with
+  no handle serial still means inactive.
+- **Shooting through walls.** With every member locatable, `combat2.py` fired at Fallen it could
+  locate but not see. An enemy's nameplate shows only when it is in view under the reticle, so a
+  target aimed at with no plate near the reticle is now treated as behind a wall: no fire, one
+  peek to the side, then it is skipped for 8 s. A hit confirmed by the target's health in the last
+  3 s, or a target within 8 m, also counts as in view, for the dark hall. It no longer walks
+  straight at a target out of sight, which walked it into walls.
+- **Dying.** The 2014 reference player takes hits as big as ours and survives by breaking line of
+  sight while the shield comes back. The Guardian now backs off below 0.55 health (was 0.35) and waits
+  about 5 s.
+- **Time.** A round with nothing to shoot at ends after 8 passes instead of sweeping for its full
+  30 s. A skirmish fights only members within 45 m and keeps going while one is, and in waves mode
+  one comes before each stretch, so the Guardian clears the way before walking into a wave.
+- **Where the walks stalled.** Across sense105-108 the repeated stall spots were respawn points
+  (the hall at (415, -795) and the corridor's east end at (530, -725)), walks from them, the tracked
+  Fallen of sense107 and the fan room's grate. All but the grate, now routed round, came from
+  deaths, so fewer deaths is the main fix for stalls too.
+- **Wave timing.** Fighting each stretch made the walk slower than the waves' 300 s timeouts, so the
+  corridor's waves came early. They now wait 900 s.
+
 ## Next
 
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
