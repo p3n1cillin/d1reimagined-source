@@ -67,6 +67,7 @@ class Replay:
         self.tracked = run / 'tracked.json'
         self.native_unit = False
         self.wave = None                   # the squads of the last wave fought, for skirmish()
+        self.route_prefix = ''             # a resumed replay names its routes apart (play())
 
     def command(self, name, args, seconds, check=True):
         # Preserve earlier attempts and evidence, including explicit resumes.
@@ -208,7 +209,7 @@ class Replay:
         points = json.loads(Path(route).read_text())
         nearest = min(range(len(points)), key=lambda i: math.dist(points[i][:2], stop[:2]))
         index = 0
-        while (self.run / f'replay-{name}-resume-{index}.json').exists():
+        while (self.run / f'replay-{self.route_prefix}{name}-resume-{index}.json').exists():
             index += 1
         return self.write_route(f'{name}-resume-{index}', points[nearest:])
 
@@ -336,7 +337,7 @@ class Replay:
         return self.write_route(name, points[start:stop])
 
     def write_route(self, name, points):
-        path = self.run / f'replay-{name}.json'
+        path = self.run / f'replay-{self.route_prefix}{name}.json'
         if not points:
             raise RuntimeError(f'Empty {name} route')
         text = json.dumps(points) + '\n'
@@ -349,6 +350,13 @@ class Replay:
         return path
 
     def play(self, boot_timeout, resume):
+        if resume:
+            # The first attempt's routes stay as evidence; a route of the same name but other
+            # points would be refused (run sense106's first resume stopped on one).
+            n = 1
+            while any(self.run.glob(f'replay-resume{n}-*.json')):
+                n += 1
+            self.route_prefix = f'resume{n}-'
         if not resume:
             # The launcher owns input during boot. Do not race its cinematic skips.
             if not wait_for((self.run/'launcher.log', self.run/'boot.log'), 'in gameplay (112)', boot_timeout):
