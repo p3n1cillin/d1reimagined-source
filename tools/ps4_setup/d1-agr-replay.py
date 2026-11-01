@@ -352,6 +352,14 @@ class Replay:
             out = self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '30', '--squads', self.wave,
                          '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
+            if self.waves and out and 'unit changed (death)' in out[-1]:
+                # Died in the fight (sense108, before the junction leg): retrack and re-arm now, and
+                # let play_waves restart from the leg nearest the respawn.
+                self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                                         '--tracked', str(self.tracked), '--retrack'], 60, check=False)
+                self.select_retracked_position()
+                self.rearm(name)
+                raise Respawned(name)
             idle = idle + 1 if out and out[-1].strip() == 'bursts 0' else 0
             if idle >= 2:                  # near but out of sight: leave it to the walk (see fight())
                 break
