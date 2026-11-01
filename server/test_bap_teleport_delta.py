@@ -142,7 +142,8 @@ class TeleportDeltaSession(unittest.TestCase):
         client = self.start()
         self.queue(client)
         self.report(client, current=self.target, state=3)
-        arrived = self.collect(client, 0.15)
+        # 0.15 s was not always enough for a slow runner to see the completion too (#192).
+        arrived = self.collect(client, 0.6)
         self.assertTrue(any(world.get("teleport") == [3, *self.target] for world in arrived), arrived)
         self.assertTrue(any(world.get("teleport") is None for world in arrived), arrived)
 
@@ -157,7 +158,7 @@ class TeleportDeltaSession(unittest.TestCase):
         self.assertTrue(all(world.get("teleport") == [1, *self.target] for world in pending), pending)
 
         self.report(client, current=self.target)
-        arrived = self.collect(client, 0.15)
+        arrived = self.collect(client, 0.6)
         self.assertTrue(any(world.get("teleport") == [3, *self.target] for world in arrived), arrived)
 
     def test_group_switch_waits_for_fresh_current_on_peer_only_delta(self):
