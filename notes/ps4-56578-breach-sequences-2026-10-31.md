@@ -68,9 +68,44 @@ investigation](private-host-investigation.md)). The Breach squads' own `+0x250` 
 the open question is what fills a squad's runtime `+0x250` list. A static search for `+0x250` finds
 mostly unrelated stack locals; the live client is the better instrument.
 
+## Spawn points are not what stops the Breach (run sense93, 1 November)
+
+- **What `+0x250` is.** The squad initialiser `0x177990` sets `+0x250` to the squad's own reference
+  (it reads back as the squad's sensor name). It builds the spawn-point nodes from the template's
+  inline points (count at template `+0x40`, 0x90-byte entries from the self-relative offset at
+  `+0x48`) and keeps the node list's head at `+0x3D8`. That is list `+0x188`, which the picker
+  `0x17B6A0` walks, matching each node's key at `+0x84` against `A + 0x4C`. Nodes are built only
+  there (`0x175FA0` and `0x177680` have no other callers).
+- **`lab/tower-route/squad-templates-readonly.py`** lists every live squad's template point count,
+  node head and `+0x250` reference. With the Breach loaded (step 15), all 30 Breach squads
+  (`0xFC0E45A3`) have no template points and no nodes. After the Divide loaded, 9 of its 12 squads
+  (`0x9243DFFB`) had none either; only 14, 15 and 16 have one point each. All 12 had members.
+- **The picker, watched** (`d1-watchwrite.py --exec 0x17A011 --exec 0x17A0BA`, from step 15
+  through the Divide):
+  - It was called 132 times: 49 by the Divide's squads, 23 by `0x062DD95D` (the hangar cohort) and
+    60 by `0x8D3F1166`. They all had the `A + 0x4C`/`+0x50` we serve (`0x811C9DC5`, an empty
+    reference), most with empty lists of their own, and they spawned anyway. An empty list is not
+    fatal.
+  - No Breach squad called the picker at all.
+- So the Breach squads are never asked to make members, and the reason is in our lists. The
+  unattended route (`lab/tower-route/ending-run.ps1`) serves the Breach squads with no state image,
+  so their desired count is 0. Squad states were worked out on 26 October ([run
+  `fallen2`](ps4-56578-blockers-2026-10-26.md)): the hash fields at `0x811C9DC5` plus a desired count
+  make the Breach Fallen spawn and attack. The route leaves them out so that its replay can walk
+  through.
+- **Run sense94 confirms it with the watch.** `tools/ps4_setup/d1-squad-states.py` gave squads 21,
+  26, 28 and 30 one member each (generation 2). The list was published through the activity host's
+  control line right after step 15. Within seconds each of the four ran the update's spawn path
+  (`0x102D40` → `0x102D69`), called the picker, and had a live member 25-70 m from the Guardian
+  inside the Breach. They had no template points and empty lists.
+- **Conclusion.** The Breach does not lack spawn points or a sequence state; it lacks served squad
+  states at the right moments. Those are what the original server's encounter scripting sent. Note
+  that a control line's path must be a Windows path (`F:/...`): the host can't open an MSYS path
+  (`/f/...`).
+
 ## Next
 
-- What fills a squad's `+0x250` list at runtime, and what `A + 0x4C` is in the squads that do
-  spawn (the Divide's).
+- Serving the Breach squad states in the unattended route, with the fight to match (the replay alone
+  doesn't survive an attack), and the Wall's later squads at their own moments.
 - What the drop actors need: `dropper1` and `crawler1`–`8` (kind `0x28`). Performances animate
   members of squads that already exist, so they wait on the squads.
