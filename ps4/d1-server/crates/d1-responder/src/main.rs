@@ -3708,6 +3708,18 @@ async fn main() -> Result<()> {
                                                                             vendor::on_equip(req.to_vec());
                                                                         }
                                                                         Some(d1_bap::investment_701_response_body())
+                                                                    } else if id == 905 {
+                                                                        // 905 vendor_refund_item: logged and decoded (the item reference
+                                                                        // and a u64, likely the refund receipt; vendor::refund_request).
+                                                                        // Answered with the result composite like the other vendor
+                                                                        // messages. Its response tag isn't known, but every vendor
+                                                                        // response read so far is that composite, and the padded default
+                                                                        // (no object) is the shape that failed to decode for 104.
+                                                                        let req = plain.get(8..).unwrap_or(&[]);
+                                                                        warn!("      ⭐ VENDOR REFUND (905) ({}B request): {}", req.len(),
+                                                                              req.iter().map(|x| format!("{x:02x}")).collect::<String>());
+                                                                        vendor::on_refund(req);
+                                                                        Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 901 || id == 903 {
                                                                         // 901 vendor_buy_item / 903 vendor_sell_item. Responses
                                                                         // 0x80801888 and 0x8080183A both lead with the 0x80801796
