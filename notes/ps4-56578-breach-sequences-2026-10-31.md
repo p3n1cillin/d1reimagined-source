@@ -458,6 +458,28 @@ the waves to get there. Each stop along the way gave the route a fix:
 - **Wave timing.** Fighting each stretch made the walk slower than the waves' 300 s timeouts, so the
   corridor's waves came early. They now wait 900 s.
 
+## Walking into the same wall, and fighting a second late (sense108 resumes, 1 November late)
+
+- **The same wall.** The resume died in the junction leg's pre-fight and respawned below the
+  tripmine stairs (533.8, -759). The leg then walked straight at its own first waypoint, 40 m west
+  (corridor waypoint 9), standing: up the stairs and into the start of the corridor, which is
+  walked crouched. d1-walk's skip logic took the next waypoint three times, all the same way.
+  `walk_fighting` now raises `Respawned` when the Guardian is more than 15 m from every waypoint of
+  its leg; `play_waves` picks the leg nearest the Guardian (here the chest leg, 2 m away, then
+  mine-stairs and mine-crouched, each with its stance) and only that leg may rejoin from off-route.
+  Every stretch starts at the waypoint nearest the Guardian, and a stall sidesteps and walks an
+  earlier waypoint before the retry (`tests/test_agr_replay_walk.py`).
+- **Skips reset the give-up timer.** d1-walk counted a skipped waypoint as progress, so each skip
+  restarted `--give-up`: 2.5 minutes against that wall. Progress is now an arrival or closing on the
+  current waypoint.
+- **Fighting a second late.** Every combat pass took its frame with `d1-shot.ps1`: a PowerShell
+  start, an Add-Type compile and a 400 ms focus wait, 1.02 s measured. `fight.grab` captures the
+  window in-process (0.15 s with the PNG); the script is the fallback.
+- **Health that vanished.** The death's log reads the Guardian's health 0.78, then `None` for 8 s.
+  `health.py` only took a grey-white fill; the bar is red when critical. It reads red too now, and
+  combat2 treats a bar under 0.9 that vanishes within 4 s as critical (retreat) and keeps that frame
+  (`<log>.lost-health-N.png`) to check the reader against.
+
 ## Next
 
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
