@@ -56,6 +56,12 @@ def enemy_angle(img):
 
 
 def pad(keys):
+    try:
+        import d1_keys                  # in-process (d1-walk does the same); the script is the fallback
+        d1_keys.press(keys)
+        return
+    except Exception:
+        pass
     subprocess.run(['powershell', '-NoProfile', '-File', PAD, '-Keys', keys], capture_output=True)
 
 
