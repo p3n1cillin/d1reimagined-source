@@ -49,6 +49,12 @@ WAVES = (
     (107, (76,)),          # pt_fallen_3_spawn: garage exit
 )
 
+# Squads whose script gives @member_counts: their bodies, summed over the cells (variant 0 here).
+MEMBER_COUNTS = {
+    21: 1,   # first vandal {vandal: 1}
+    55: 2,   # h {dreg: 1, dreg_1: 1}
+    76: 3,   # garage exit {dregs: 1, dregs_1: 1, vandal: 1}
+}
 # enter(member, action, ...) per squad, as each wave's script calls it (enc_breach_m0.es:305-378).
 ENTRANCES = {
     24: ((25, 'act_fallen_intro_vandal_drop'),),       # bouncedown c: vandal_blade drops from the ceiling
@@ -121,6 +127,8 @@ def build(base_lines, gen=2, count=1, entrances=True):
             if i in entered:
                 squads[i] = named()
                 members.update({m: member_states.member(gen, action) for m, action in entered[i]})
+            elif entrances and i in MEMBER_COUNTS:
+                squads[i] = squad_states.squad(gen, MEMBER_COUNTS[i])
             else:
                 squads[i] = live()
         triggers[trigger] = UNARMED

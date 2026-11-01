@@ -97,6 +97,13 @@ class BreachWaves(unittest.TestCase):
             self.assertEqual(desired(rows[('0x1', i)][1]), (1, 2))
         self.assertFalse([k for k in rows if k[0] == '0x2'])
 
+    def test_member_counts_squads_place_their_script_bodies(self):
+        rows = breach_rows(self.lists['agr-bw-107.txt'])
+        for i, bodies in M.MEMBER_COUNTS.items():
+            self.assertEqual(desired(rows[('0x1', i)][1])[1], 2, i)
+        self.assertEqual(desired(breach_rows(self.lists['agr-bw-116.txt'])[('0x1', 55)][1]), (2, 2))
+        self.assertEqual(desired(rows[('0x1', 76)][1]), (3, 2))
+
     def test_lists_change_only_breach_rows(self):
         for text in self.lists.values():
             got = text.splitlines()

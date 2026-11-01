@@ -343,7 +343,8 @@ Two more things the native runs showed:
 `d1-member-states.py SUB:GEN:ACTION` writes the member state with the command script.
 `d1-breach-waves.py` now enters each wave's named members as the script does (`ENTRANCES`: 13
 squads, 17 members) and gives their squads the explicit zero; `--no-entrances` writes the squads
-alone. It no longer places squads 26, 28 and 30 before the first trigger: the script only gives
+alone. The three squads the script gives `@member_counts` place that many bodies (21: 1, h: 2,
+garage exit: 3) instead of `--count`. It no longer places squads 26, 28 and 30 before the first trigger: the script only gives
 them an objective (`enc_breach_m0.es:165-167`), and served that way they met the Guardian round
 the corner before the first Vandal.
 
