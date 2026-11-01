@@ -157,9 +157,64 @@ Where they spawned (one member each, read 5-60 s after the publish; Guardian nea
 Squad 94 had a member with no body position yet. None of them moved much in the minute
 watched, except the hall's Dregs, which closed on the Guardian.
 
+## The Breach by name (Blam Network's tiger, 1 November)
+
+Blam Network's [tiger](https://github.com/Blam-Network/tiger) libraries (MIT) read build 56578
+directly. `tools/ps4_setup/d1-bundle-rows.mjs` (using its `gibbon` reader) lists every row of an
+activity bundle in index order, and that order is the sensor index the host serves. Group
+`0xFC0E45A3` is the bundle `enc_breach_m0` (tag `0x80CB8167`, 244 rows, 141 slotted). Its 30 squads:
+
+| Index | Squad | Index | Squad |
+| --- | --- | --- | --- |
+| 21 | `sq_fallen_first_vandal` | 51 | `sq_fallen_dropdown_g` |
+| 22 | `sq_fallen_bouncedown_a` | 53 | `sq_fallen_wall_l_g` |
+| 24 | `sq_fallen_bouncedown_c` | 55 | `sq_fallen_h` |
+| 26 | `sq_fallen_wall_l_a` | 56 | `sq_fallen_1c` |
+| 28 | `sq_fallen_floor_a` | 58 | `sq_fallen_2` |
+| 30 | `sq_fallen_floor_b` | 62 | `sq_fallen_bridge` |
+| 32 | `sq_fallen_wall_r_b` | 63 | `sq_fallen_sniper` |
+| 34 | `sq_fallen_wall_l_b` | 64 | `sq_fallen_garage_obj` |
+| 36 | `sq_fallen_dropdown_c` | 68 | `sq_fallen_garage_melee` |
+| 38 | `sq_fallen_wall_l_c` | 72 | `sq_fallen_garage_vandals_2` |
+| 40 | `sq_fallen_floor_c` | 74 | `sq_fallen_garage_vandals_3` |
+| 42 | `sq_fallen_dropdown_e` | 76 | `sq_fallen_garage_exit` |
+| 44 | `sq_fallen_dropdown_f` | 77 | `sq_fallen_nest1` |
+| 47 | `sq_fallen_floor_f` | 86 | `sq_fallen_nest2` |
+| 49 | `sq_fallen_wall_r_f` | 94 | `sq_nux_ghost` |
+
+Player triggers are kind `0x1D`, rows 102-122. Examples: 106 `pt_fallen_vandal_spawn`, 107
+`pt_fallen_3_spawn`, 108 `pt_fallen_1b_spawn`, 110 `pt_fallen_c_spawn`, 111 `pt_fallen_melee`, 112
+`pt_fallen_arena_spawn`, 114-116 `pt_corr_spawn_b*`, 119 `pt_exit`, and 120
+`pt_nux_ghost_light_up_start` (the trigger our schedule already arms).
+
+Their Fukugen Daihon reconstruction of `enc_breach_m0.es` gives the waves. Each `sleep_until` on a
+trigger places squads:
+
+| Trigger | Squads placed |
+| --- | --- |
+| 108 `pt_fallen_1b_spawn` | 21 first vandal |
+| 110 `pt_fallen_c_spawn` | 24 bouncedown c, 38 wall l c |
+| 111 `pt_fallen_melee` | 42 dropdown e |
+| 112 `pt_fallen_arena_spawn` | 56 1c, 58 2 (bridge rush) |
+| 114 `pt_corr_spawn_b` | 44 dropdown f |
+| 115 `pt_corr_spawn_b_melee` | 47 floor f, 49 wall r f |
+| 116 `pt_corr_spawn_b_rear` | 51 dropdown g, 53 wall l g, then 55 h |
+| 106 `pt_fallen_vandal_spawn` | 72, 74 garage vandals, 68 garage melee (and night falls) |
+| 107 `pt_fallen_3_spawn` | 76 garage exit, once one of the five is left or on 119 `pt_exit` |
+
+Nests 77 and 86 hold the perching Fallen that scatter on the Ghost's light-up (120).
+
+What this changes:
+- The route's squads 21, 26, 28 and 30 are the first vandal, wall l a, floor a and floor b.
+- The "junction" wave of sense101/102 (64, 68, 76; 72 and 74 a level below) is the garage fight.
+- In our runs the client reports only trigger 120, the one the schedule arms. Serving the Breach
+  as written means arming its other triggers the same way and serving each trigger's squads when
+  it fires.
+
 ## Next
 
-- The Wall's later squads at their own moments, the same way. The map above says which route leg
+- The Wall's squads on their own triggers, per the table above: arm triggers 106-122 and serve
+  each one's squads when it fires. The map above says which route leg
   passes each group; the original mission sends them in waves, not all at once.
 - What the drop actors need: `dropper1` and `crawler1`–`8` (kind `0x28`). Performances animate
   members of squads that already exist, so they wait on the squads.
