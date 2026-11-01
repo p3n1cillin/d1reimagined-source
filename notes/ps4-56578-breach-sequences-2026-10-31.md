@@ -408,6 +408,30 @@ over the waves (`--waves`).
   - so the replay now re-arms after a death: it serves the current wave list (read from the host
     log) with arming time 1 + n (`--schedule-dir`).
 
+## Getting the unattended route through (run sense107, 1 November night)
+
+sense107 had all of the above, reported seven wave triggers (120, 108, 110, 111, 112, 115, 116),
+walked and fought the chest leg without a death, and reached the Divide at 22:20, the first run with
+the waves to get there. Each stop along the way gave the route a fix:
+- **A lost track.** After a death, the heuristic position copies followed a standing Fallen (squad
+  53), and the corridor leg "stalled" there for 13 minutes while the respawned Guardian was 90 m away.
+  Waves mode now always uses the native walker after the rifle, and checks a stop against where the
+  Guardian really is.
+- **Respawns.** A death in the corridor brought the Guardian back at its east end, and the junction
+  leg tried five times to walk straight through the corridor. The legs after the rifle are now a
+  list, each with its stance. After a respawn they restart from the leg nearest the Guardian,
+  standing, and a resumed replay starts there too.
+- **The fan room's grate.** Waypoints 10 to 11 of `wall_fan_tunnel_to_divide.json` run into a grate
+  beside the fan. Every walk pressed into it, and sense104 had got through only by slipping south. The
+  route now follows that line; from the stuck spot the Guardian was through in seconds.
+- **Pushing to the time limit.** `d1-walk.py` (and the chain's `run.py`) kept repeating their stuck
+  handling until the time ran out: 420 s a walk at the grate, 200 s a try at the hangar bay. They now
+  stop after 45 s (30 s) with no waypoint reached and no 0.5 m gained, and the replay fights, backs off
+  or re-approaches. `d1-walk.py` also always skips to the nearest waypoint of the route it is given, so
+  a retry backs off by first walking to one earlier waypoint alone.
+- **Startup.** The host built every list again on each start (16 minutes with the wave lists). With
+  #197 it keeps built frames in `D1_AH_SENSOR_CACHE`, which `ending-run.ps1` now sets.
+
 ## Next
 
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
