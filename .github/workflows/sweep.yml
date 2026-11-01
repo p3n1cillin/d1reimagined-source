@@ -1,9 +1,10 @@
 # Scheduled upkeep, run from main. It reads PR metadata and git objects only, never PR code.
-# - every 15 min, merge: contributors' PRs follow the maintainer's review. APPROVED on the current head
-#   enables squash auto-merge (GitHub merges once main's required checks pass), unless the PR touches
-#   .github/ ("maintainer merge": merged by hand) or carries "do not merge". New commits after an approval
-#   go back to "needs review". It also labels check health: "awaiting CI approval", "checks failing"
-#   (one comment per head commit) and "update branch" (behind main and missing a newer required check).
+# - every 15 min and after each review (the Review workflow), merge: contributors' PRs follow the
+#   maintainer's review. APPROVED on the current head enables squash auto-merge (GitHub merges once
+#   main's required checks pass), unless the PR touches .github/ ("maintainer merge": merged by
+#   hand) or carries "do not merge". New commits after an approval go back to "needs review". It
+#   also labels check health: "awaiting CI approval", "checks failing" (one comment per head commit)
+#   and "update branch" (behind main and missing a newer required check).
 # - hourly and on pushes to main: "needs rebase" on conflicting PRs, and a comment on PRs that touch the
 #   same lines as another open PR (.github/scripts/pr_overlap.py).
 # - daily: the label set below; a "stale" reminder after 30 days without activity (never closed); the
@@ -20,6 +21,12 @@ on:
     - cron: '30 17 * * 0'
   push:
     branches: [main]
+  # A review's own run gets a read-only token on fork PRs, so the Review workflow only relays the event
+  # and the merge job runs here, with this repository's token, as soon as it finishes. The 15-minute
+  # schedule stays as the fallback: GitHub delays scheduled runs (#193 waited 12 minutes, approved).
+  workflow_run:
+    workflows: [Review]
+    types: [completed]
   workflow_dispatch:
     inputs:
       release:
@@ -31,7 +38,7 @@ permissions: {}
 
 jobs:
   merge:
-    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '*/15 * * * *'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run' || github.event.schedule == '*/15 * * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
