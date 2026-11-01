@@ -105,8 +105,33 @@ object's `+0x74` (0–14, jump table `0xA2A214`):
 Action 14 takes another path (`0xA07C20`). It is not yet known which screen sets action 1, so no run has
 sent a 903 yet. The responder decodes and logs one if it comes (#144).
 
+The UI sets the action through `0xA29C90` (it stores the vendor at `+0x60`, the action at `+0x74` and
+`+0x6C`). Of its ten callers, only two pass a fixed action (8 and 11). The rest pass the action
+through from their own callers. So the action comes from the UI content's item-action interface,
+and the sell screen has to be found from that side.
+
+## Executor Hideo in the social Tower (run sense85, 1 November)
+
+- The social Tower (flags 308 and 3391 not served, `D1_AH_ACTIVITY_REMAP=165:0`) starts in Tower
+  North. `lab/tower-route/seek.py -77.1,14.4 --no-nav` walks from there to Executor Hideo's dark
+  corner by the crates. His "□ Approach" opens only on a **held** □ (about 1.5 s); a tap does
+  nothing.
+- The allegiance offer and the vendor screen read all five currencies: Glimmer, Legendary Marks,
+  Silver, and the Vanguard and Crucible Marks served in the profile (100 each, through
+  `d1-character-fixup.py --stack`).
+- His stock: Material Exchange donations (for example 5 Motes of Light plus New Monarchy allegiance),
+  and a rank 3 Unity Engram (5 Silver Dust plus allegiance and rank 3). Nothing is priced in marks,
+  so the marks purchase needs the Vanguard or Crucible Quartermaster (sale-table vendors 16 and 24).
+- Accepting allegiance is a purchase: the New Monarchy Faction Badge for 2,500 Glimmer, with "✕
+  Acquire". Neither a tap nor a 2-second hold sent anything. No investment message reached the
+  server, so the client refused the purchase itself. Why is open.
+- Patches 99-40 (Research Assistant), at about (-116.9, 42.7) in Tower North, opens his screen on a
+  held □ in the social Tower, with an empty stock. In the PvE Tower (through 165), approaching him
+  opened nothing (30 October).
+
 ## Still open
 
 - What the 901 request's u64 is.
 - Selling (903), refunds, and the other vendors.
-- Character-held currencies in the served profile, so purchases priced in them can be tried. `tools/ps4_setup/d1-character-fixup.py profile IN OUT --stack 278:870:100 --stack 279:871:100` writes 100 Vanguard and 100 Crucible Marks into a profile (31 October; not yet served in a run).
+- A purchase priced in Vanguard or Crucible Marks, at a quartermaster.
+- Why the client won't send the faction badge purchase.
