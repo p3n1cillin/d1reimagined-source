@@ -211,10 +211,31 @@ What this changes:
   as written means arming its other triggers the same way and serving each trigger's squads when
   it fires.
 
+## Serving the waves by their triggers (written, not yet run)
+
+[`tools/ps4_setup/d1-breach-waves.py`](../tools/ps4_setup/d1-breach-waves.py) writes the Breach as
+the table above places it, from the list served before the waves (`agr-b-graveyard.txt`):
+
+- **`agr-bw-armed.txt`** arms the nine wave triggers and places the opening squads (26, 28 and 30).
+- **`agr-bw-<trigger>.txt`**, one per trigger, places that trigger's squads and disarms it.
+- **No refills:** squads whose wave has passed keep their generation with a desired count of 0, so
+  their members stay but aren't replaced. sense101 showed that a count of 1 refills a squad behind
+  the player.
+- **`agr-bw-steps.txt`** holds the schedule lines (`^0xfc0e45a3/0x1d/<trigger>|300`) that go after
+  the `agr-b-graveyard.txt` step. The host keeps each trigger report until a step uses it, so a
+  trigger crossed early still counts.
+
+It is opt-in: the default schedule still serves the route's lists from the replay.
+
+**The limit:** the steps run in order, so a trigger the client never reports holds the later waves
+and the Divide for its timeout.
+
+`tests/test_breach_waves.py` checks the lists against the real base list.
+
 ## Next
 
-- The Wall's squads on their own triggers, per the trigger table above: arm triggers 106-122 and
-  serve each one's squads when it fires, in waves as the original mission does.
+- Run the trigger-driven waves (above) and check that the client reports the wave triggers once
+  they are armed.
 - The nests' perching Fallen (`dropper1`, `crawler1`-`8`; squads 77 and 86) are placed at the
   encounter's start and scatter on trigger 120. Their performances animate members of squads that
   already exist, so they need those squads' states too.
