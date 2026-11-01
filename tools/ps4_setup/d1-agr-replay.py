@@ -23,6 +23,10 @@ RIFLE_EVENT = 'player trigger 0x992bb471/0x1d/35 reported'
 DIVIDE_SLICE = 'client is now in slice set 96'
 DIVIDE_STEP = 'mission step 16 at '   # agr-steps-divide.txt: the Divide's list (%96)
 BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-graveyard-fallen.txt gives states
+# --waves: the mission schedule serves the Breach by its own triggers (d1-breach-waves.py), so the
+# replay publishes nothing and fights whatever those waves placed. The first group is the opening and the
+# hall's waves (triggers 108-112), the second the corridor's and the garage's (114-116, 106, 107).
+WAVE_SQUADS = ('26,28,30,21,24,38,42,56,58', '44,47,49,51,53,55,72,74,68,76')
 JUNCTION_SQUADS = '64,68,76'   # agr-b-graveyard-junction.txt: on or by the garage route (run sense100's map).
 # 72 and 74 stand a level below it; in sense101 the fight went down after them and the Guardian died twice.
 
@@ -56,8 +60,9 @@ def wait_for(path, needle, seconds, *, offset=0, clock=time.monotonic, sleep=tim
 
 
 class Replay:
-    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None, junction=None):
+    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None, junction=None, waves=False):
         self.run, self.host_log, self.garage_clients = run, host_log, garage_clients
+        self.waves = waves
         self.pad_path, self.routes, self.fallen, self.junction = pad, routes, fallen, junction
         self.tracked = run / 'tracked.json'
         self.native_unit = False
@@ -240,7 +245,8 @@ class Replay:
         those squads is within 400 m (run sense97: the Breach's four in 3.5 minutes). Gives up after
         the rounds and goes on: the route can still be walked.
         """
-        self.publish(clients, label)
+        if clients is not None:            # --waves: the schedule placed them
+            self.publish(clients, label)
         self.wave = squads
         time.sleep(8)                      # the members appeared within seconds in sense94
         empty = 0
@@ -331,7 +337,9 @@ class Replay:
         wall = json.loads((self.routes/'fight_through_the_wall.json').read_text())
         chest = json.loads((self.routes/'wall_container_to_chest.json').read_text())
         to_chest = wall + chest[1:]
-        if self.fallen:
+        if self.waves:
+            to_chest = self.fight(to_chest, None, WAVE_SQUADS[0], 'waves-hall', 'the hall waves')
+        elif self.fallen:
             to_chest = self.fight(to_chest, self.fallen, BREACH_SQUADS, 'fallen', 'Breach Fallen')
         self.walk('chest', self.write_route('to-chest', to_chest), 840)
         self.walk('mine-stairs', self.sliced_route('mine-a', 'wall_tripmine_corridor.json', 0, 4), 90, 1.2)
@@ -343,11 +351,16 @@ class Replay:
         junction = self.sliced_route('junction', 'wall_junction_west.json', 4, None)
         self.walk('junction-west', junction, 330)
         garage = self.routes/'wall_garage_door.json'
-        if self.junction:
+        if self.waves:
+            garage = self.write_route('garage-rest', self.fight(json.loads(garage.read_text()), None,
+                                      WAVE_SQUADS[1], 'waves-garage', 'the corridor and garage waves',
+                                      back=json.loads(junction.read_text())))
+        elif self.junction:
             garage = self.write_route('garage-rest', self.fight(json.loads(garage.read_text()), self.junction,
                                       JUNCTION_SQUADS, 'junction', 'junction Fallen',
                                       back=json.loads(junction.read_text())))
-        self.publish_garage()
+        if not self.waves:                 # the wave lists carry the open garage door
+            self.publish_garage()
         self.walk('garage', garage, 150, 1.0)
         self.walk('fan-to-divide', self.routes/'wall_fan_tunnel_to_divide.json', 420)
         if not wait_for(self.host_log, DIVIDE_SLICE, 45):
@@ -369,7 +382,11 @@ def main():
                     help='after the rifle, publish this list (Breach squad states) and fight the Fallen')
     ap.add_argument('--junction-fallen', type=Path,
                     help='after the junction, publish this list (squads 64, 68, 76) and fight them on the way to the garage')
+    ap.add_argument('--waves', action='store_true',
+                    help='the schedule serves the Breach by its triggers (agr-steps-divide-waves.txt): publish nothing, fight the waves')
     a = ap.parse_args()
+    if a.waves and (a.breach_fallen or a.junction_fallen):
+        ap.error('--waves replaces --breach-fallen and --junction-fallen')
     if a.pad is None:
         a.pad = d1paths.tools() / 'd1-pad.ps1'
     if a.boot_timeout <= 0:
@@ -388,7 +405,7 @@ def main():
         output.write('Pad replay owns input; do not run another movement driver.\n')
     try:
         Replay(a.run_dir, a.host_log, a.garage_clients, a.pad, fallen=a.breach_fallen,
-               junction=a.junction_fallen).play(a.boot_timeout, a.resume_after_rifle)
+               junction=a.junction_fallen, waves=a.waves).play(a.boot_timeout, a.resume_after_rifle)
     finally:
         lock.unlink()
 

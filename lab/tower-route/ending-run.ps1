@@ -2,7 +2,7 @@
 # hangar clear) -> outro -> XP + completion + ship + scoreboard + phase 7 -> post-game tour -> CONTINUE
 # (3 s hold) -> 165 -> Tower North with its squads and vendors, recorded with game audio.
 #   ending-run.ps1 -Name sense73 [-WorldTable <file>] [-Postgame postgame5.sh] [-NoContinue] [-NoRecord] [-NoVendors]
-#     [-ClientPatch <xml>] [-ExtraEnv D1_INACTIVITY_MS=86400000] [-BreachFallen] [-JunctionFallen]
+#     [-ClientPatch <xml>] [-ExtraEnv D1_INACTIVITY_MS=86400000] [-BreachFallen] [-JunctionFallen] [-Waves]
 # The defaults recreate run sense73 (31 Oct 2026). Served fixtures come from ps4/fixtures/56578
 # (D1_FIXTURES); run output goes to the staging folder (D1_STAGING). The lab must already be stopped.
 # The served host/responder are whatever is in the served target; build and swap them separately,
@@ -37,6 +37,9 @@ param(
     # After the junction, serve the squads by the junction and the garage (mission/
     # agr-b-graveyard-junction.txt) and fight them on the way to the garage (--junction-fallen).
     [switch]$JunctionFallen,
+    # Serve the Breach by its own triggers instead (mission/agr-steps-divide-waves.txt, made with
+    # tools/ps4_setup/d1-breach-waves.py; issue #185) and fight what each wave places (--waves).
+    [switch]$Waves,
     [string]$Bash = 'C:\Program Files\Git\bin\bash.exe'
 )
 $ErrorActionPreference = 'Stop'
@@ -66,8 +69,13 @@ if (-not $NoVendors) {
 if ($ExtraEnv) { $extra += ",$ExtraEnv" }
 $agr = @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name', $Name, '-Minutes', '300', '-UnlockFlags', $UnlockFlags, '-Extra', $extra)
 if ($ClientPatch) { $agr += '-ClientPatch', (Resolve-Path $ClientPatch).Path }
+if ($Waves) {
+    if ($BreachFallen -or $JunctionFallen) { throw '-Waves replaces -BreachFallen and -JunctionFallen' }
+    $agr += '-Steps', (Join-Path $Fix 'mission\agr-steps-divide-waves.txt' -Resolve)
+}
 Start-Process pwsh -WindowStyle Hidden -ArgumentList $agr -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
 $Fallen = if ($BreachFallen) { ' --breach-fallen ' + ((Join-Path $Fix 'mission\agr-b-graveyard-fallen.txt' -Resolve) -replace '\\', '/') } else { '' }
+if ($Waves) { $Fallen += ' --waves' }
 if ($JunctionFallen) { $Fallen += ' --junction-fallen ' + ((Join-Path $Fix 'mission\agr-b-graveyard-junction.txt' -Resolve) -replace '\\', '/') }
 $jobs = @(
     "until ls -d $Cf/contained-boot/*-$Name >/dev/null 2>&1; do sleep 5; done; H=`$(ls -d $Cf/contained-boot/*-$Name)/activity-host.log; R=$Cf/$Name; cd $RepoFwd && python -u -I tools/ps4_setup/d1-agr-replay.py --run-dir `$R --host-log `$H --garage-clients `$R/breach-prop3-only.txt --boot-timeout 1800$Fallen > `$R/replay-console.log 2> `$R/replay-error.log; grep -q 'DIVIDE REACHED' `$R/replay-console.log && bash $S/chain2.sh $Name > `$R/chain.log 2>&1",

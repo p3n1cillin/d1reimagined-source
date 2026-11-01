@@ -1,0 +1,39 @@
+# agr-steps-divide.txt with the Breach served by its own triggers (tools/ps4_setup/d1-breach-waves.py, issue #185):
+# after the rifle, the nine wave triggers are armed and each one places its squads when the client reports it.
+# A Guardian Rises (164), then Fight Through the Wall (objective 14), the Breach Fallen, the Divide (17 on slice 96) and Find the Ship (20, marker 52, on slice 104), driven by the client's incidents (891 = cinematic stopped/skipped), with timeouts
+164  0        0x4786c0e0  sensor-clients-act_cosmo_m0_highway-r113-cine.txt
+164  @891,1726|70  0x4786c0e0  agr-step1.txt
+164  @891,1726|45  0x4786c0e0  agr-step2.txt
+164  +5       0x4786c0e0  agr-step3t.txt  112
+164  ^0x992bb471/0x1d/30|900  0x4786c0e0  agr-wall-done.txt
+164  +4  0x4786c0e0  agr-breach.txt
+164  %24|900  0x4786c0e0  agr-investigate.txt
+164  +35  0x4786c0e0  agr-b-light-armed.txt
+164  ^0xfc0e45a3/0x1d/120|900  0x4786c0e0  agr-b-light-up.txt
+164  +22  0x4786c0e0  agr-b-lights.txt
+164  +2  0x4786c0e0  agr-b-activate.txt
+164  +10  0x4786c0e0  agr-b-activate-c.txt  incident=1851:0000000140000000104fb75e0b0200000000000000000000000000000000000000001e8d0000000000000940000000000000000000000010f3549bf111a6291063722d20000000c0
+164  ^0x992bb471/0x1d/34|900  0x4786c0e0  agr-b-investigated2-c.txt
+164  +4  0x4786c0e0  agr-b-get-weapon2-c.txt
+164  ^0x992bb471/0x1d/35|900  0x4786c0e0  agr-b-got-weapon-c.txt
+164  +4  0x4786c0e0  agr-b-graveyard.txt
+164 +2 0x4786c0e0 agr-bw-armed.txt
+164 ^0xfc0e45a3/0x1d/108|300 0x4786c0e0 agr-bw-108.txt
+164 ^0xfc0e45a3/0x1d/110|300 0x4786c0e0 agr-bw-110.txt
+164 ^0xfc0e45a3/0x1d/111|300 0x4786c0e0 agr-bw-111.txt
+164 ^0xfc0e45a3/0x1d/112|300 0x4786c0e0 agr-bw-112.txt
+164 ^0xfc0e45a3/0x1d/114|300 0x4786c0e0 agr-bw-114.txt
+164 ^0xfc0e45a3/0x1d/115|300 0x4786c0e0 agr-bw-115.txt
+164 ^0xfc0e45a3/0x1d/116|300 0x4786c0e0 agr-bw-116.txt
+164 ^0xfc0e45a3/0x1d/106|300 0x4786c0e0 agr-bw-106.txt
+164 ^0xfc0e45a3/0x1d/107|300 0x4786c0e0 agr-bw-107.txt
+164 %96|5400 0x4786c0e0 agr-divide17-drop2-activate-control.txt
+164 +20 0x4786c0e0 agr-divide17-drop2-exit-candidate.txt
+164 ^0x992bb471/0x1d/39|14400 0x4786c0e0 agr-divide-objective20-m52-disarm39.txt
+164 %104|14400 0x4786c0e0 agr-dock13-obj20-arm40.txt
+164 ^0x992bb471/0x1d/40|14400 0x4786c0e0 agr-dock13-obj23-m60-arm41.txt
+164 ^0x992bb471/0x1d/41|14400 0x4786c0e0 agr-dock13-assign-1112.draft.txt
+164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 agr-outro104-clear26-request105.draft.txt 105
+164 +40 0x4786c0e0 agr-outro105-register.draft.txt
+164 +3 0x4786c0e0 agr-outro105-play.draft.txt
+164 @891,1726|150 0x4786c0e0 agr-outro105-stop.draft.txt
