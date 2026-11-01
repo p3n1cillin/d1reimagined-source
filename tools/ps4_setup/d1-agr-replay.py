@@ -197,6 +197,8 @@ class Replay:
         The walk alone does not survive them. Fight in rounds, closing in on the nearest one, until
         no member of those squads is left in the client's world, then walk back to where the route
         resumes and retrack. Gives up after the rounds and goes on: the route can still be walked.
+        Seeks go straight (--no-nav): the mission's nav graph doesn't cover the Breach, and nav.py
+        then reports exit 3 (run sense96).
         """
         resume = json.loads((self.routes/'fight_through_the_wall.json').read_text())[0]
         self.publish(self.fallen, 'Breach Fallen')
@@ -213,7 +215,7 @@ class Replay:
             else:
                 empty = 0
                 self.command(f'fallen-seek-{round_}', [sys.executable, '-u', '-I', str(LAB/'seek.py'),
-                             target, '--max-s', '40', '--tol', '12'], 70, check=False)
+                             target, '--max-s', '40', '--tol', '12', '--no-nav'], 70, check=False)
             self.command(f'fallen-fight-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '40', '--squads', BREACH_SQUADS,
                          '--log', str(self.run/'fallen-combat.jsonl')], 100, check=False)
@@ -221,7 +223,7 @@ class Replay:
         else:
             print('Breach Fallen still standing after 8 rounds; continuing the route.', flush=True)
         self.command('fallen-return', [sys.executable, '-u', '-I', str(LAB/'seek.py'),
-                     f'{resume[0]},{resume[1]}', '--max-s', '90', '--tol', '2'], 130, check=False)
+                     f'{resume[0]},{resume[1]}', '--max-s', '90', '--tol', '2', '--no-nav'], 130, check=False)
         self.command('fallen-release', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
                                  '--tracked', str(self.tracked), '--retrack'], 60)
