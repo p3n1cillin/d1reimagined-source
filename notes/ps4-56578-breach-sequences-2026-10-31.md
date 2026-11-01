@@ -213,8 +213,8 @@ What this changes:
 
 ## Next
 
-- The Wall's squads on their own triggers, per the table above: arm triggers 106-122 and serve
-  each one's squads when it fires. The map above says which route leg
-  passes each group; the original mission sends them in waves, not all at once.
-- What the drop actors need: `dropper1` and `crawler1`–`8` (kind `0x28`). Performances animate
-  members of squads that already exist, so they wait on the squads.
+- The Wall's squads on their own triggers, per the trigger table above: arm triggers 106-122 and
+  serve each one's squads when it fires, in waves as the original mission does.
+- The nests' perching Fallen (`dropper1`, `crawler1`-`8`; squads 77 and 86) are placed at the
+  encounter's start and scatter on trigger 120. Their performances animate members of squads that
+  already exist, so they need those squads' states too.
