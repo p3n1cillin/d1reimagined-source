@@ -56,12 +56,15 @@ class TeleportDeltaSession(unittest.TestCase):
         client = FakeClient(sock)
         client.notify(bap.AH_JOIN_REQUEST, bap.investment.encode(
             self.activity_schema, bap.JOIN_REQUEST_TYPE, {0: 7, 8: 9, 0x10: {0: PEER}}))
-        self.collect(client, 0.02)
+        self.collect(client, 0.2)
         return client
 
     def report(self, client, **fields):
         client.notify(bap.AH_CLIENT_STATE, json.dumps(fields).encode())
 
+    # Windows that wait for a reply use a long duration with `until`, so they return as soon as it
+    # comes; 0.02-0.15 s windows failed on slow Windows runners (#192, #200). Windows that assert
+    # nothing finishes stay short where a delayed finish is part of the test.
     def collect(self, client, duration, until=None):
         worlds = []
         deadline = time.monotonic() + duration
@@ -101,7 +104,7 @@ class TeleportDeltaSession(unittest.TestCase):
         self.args.ah_heartbeat = bap.parse_args(["--ah-heartbeat", "0.005"]).ah_heartbeat
         client = self.start()
         started = self.queue(client)
-        pending = self.collect(client, 0.04)
+        pending = self.collect(client, 0.2)
         self.assertGreaterEqual(len(pending), 2)
         initial = next(world for world in started if world.get("teleport") == [1, *self.target])
         self.assertTrue(all(world.get("teleport") == [1, *self.target]
@@ -116,11 +119,11 @@ class TeleportDeltaSession(unittest.TestCase):
         # JOIN92 reported current 24 long before the host requested it again. The
         # next target/peer delta preceded current -1 while the actual load began.
         self.report(client, current=self.target, target=[112, 0x811C9DC5], state=3)
-        self.collect(client, 0.02)
+        self.collect(client, 0.2)
         started = self.queue(client)
         self.report(client, target=self.target, peer_byte=4)
         self.report(client, current=[-1, 0x811C9DC5])
-        loading = self.collect(client, 0.1)
+        loading = self.collect(client, 1.0, until=lambda world: True)
         self.assertTrue(loading)
         self.assertTrue(all(world.get("teleport") == [1, *self.target] for world in loading), loading)
         self.assertTrue(all(world["zone"] == 112 and world.get("target") is None
@@ -150,10 +153,10 @@ class TeleportDeltaSession(unittest.TestCase):
     def test_stale_current_does_not_finish_on_peer_only_delta(self):
         client = self.start()
         self.report(client, current=self.target, target=[112, 0x811C9DC5], state=4)
-        self.collect(client, 0.02)
+        self.collect(client, 0.2)
         self.queue(client)
         self.report(client, peer_byte=4)
-        pending = self.collect(client, 0.1)
+        pending = self.collect(client, 1.0, until=lambda world: True)
         self.assertTrue(pending)
         self.assertTrue(all(world.get("teleport") == [1, *self.target] for world in pending), pending)
 
@@ -164,29 +167,29 @@ class TeleportDeltaSession(unittest.TestCase):
     def test_group_switch_waits_for_fresh_current_on_peer_only_delta(self):
         client = self.start()
         self.report(client, current=[112, 0x811C9DC5], target=self.target, state=3)
-        switching = self.collect(client, 0.02)
+        switching = self.collect(client, 1.0, until=lambda w: w["zone"] == 112 and w.get("target") == 24)
         self.assertTrue(any(world["zone"] == 112 and world.get("target") == 24
                             for world in switching), switching)
         self.report(client, peer_byte=4)
-        pending = self.collect(client, 0.03)
+        pending = self.collect(client, 1.0, until=lambda world: True)
         self.assertTrue(pending)
         self.assertTrue(all(world["zone"] == 112 and world.get("target") == 24
                             for world in pending), pending)
 
         self.report(client, current=self.target)
-        arrived = self.collect(client, 0.03)
+        arrived = self.collect(client, 1.0, until=lambda w: w["zone"] == 24 and w.get("target") is None)
         self.assertTrue(any(world["zone"] == 24 and world.get("target") is None
                             for world in arrived), arrived)
 
     def check_invalidated_target(self, invalid):
         client = self.start()
         self.report(client, current=[112, 0x811C9DC5], target=self.target, state=1)
-        self.collect(client, 0.02)
+        self.collect(client, 0.2)
         self.queue(client)
         # Invalidate an already matched target, then send the same state-only arrival delta.
         self.report(client, target=invalid)
         self.report(client, state=4)
-        worlds = self.collect(client, 0.13)
+        worlds = self.collect(client, 0.4)
         self.assertTrue(worlds)
         self.assertFalse(any(world.get("teleport") == [3, *self.target] for world in worlds), worlds)
         self.assertTrue(all(world.get("teleport") == [1, *self.target] for world in worlds), worlds)
@@ -204,12 +207,12 @@ class TeleportDeltaSession(unittest.TestCase):
     def test_target_cache_does_not_cross_activity_host_connections(self):
         previous = self.start()
         self.report(previous, target=self.target, state=1)
-        self.collect(previous, 0.02)
+        self.collect(previous, 0.2)
         previous.sock.close()
         client = self.start()
         self.queue(client)
         self.report(client, state=4)
-        worlds = self.collect(client, 0.13)
+        worlds = self.collect(client, 0.4)
         self.assertTrue(worlds)
         self.assertFalse(any(world.get("teleport") == [3, *self.target] for world in worlds), worlds)
 
