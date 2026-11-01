@@ -69,6 +69,9 @@ if (-not $NoVendors) {
     $extra += ",D1_VENDOR_ACCOUNT_SLOTS=308:869:25000,309:873:500,310:4548:200,D1_ORACLE=$Oracle"
 }
 if ($ExtraEnv) { $extra += ",$ExtraEnv" }
+# Built sensor frames kept between runs (#197): the wave schedule's lists took the host 16 minutes
+# to build on every start (sense105). A host without the cache ignores the variable.
+if ($ExtraEnv -notmatch 'D1_AH_SENSOR_CACHE=') { $extra += ",D1_AH_SENSOR_CACHE=$C\sensor-cache" }
 $agr = @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name', $Name, '-Minutes', '300', '-UnlockFlags', $UnlockFlags, '-Extra', $extra)
 if ($ClientPatch) { $agr += '-ClientPatch', (Resolve-Path $ClientPatch).Path }
 if ($Steps) {
