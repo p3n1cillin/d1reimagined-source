@@ -186,9 +186,11 @@ class Replay:
             time.sleep(.5)
         if control.exists():
             raise RuntimeError(f'AH did not consume the {label} control; stopping')
-        # Consumption is not acceptance. Require the host's success line as well.
-        accepted = 'control: sensor clients ' + clients.as_posix() + ' ('
-        if not wait_for(self.host_log, accepted, 20, offset=offset):
+        # Consumption is not acceptance. Require the host's answer as well: the frame served
+        # ("... (N bytes)"), or dropped because a mission step installed a newer frame while it was
+        # being built ("... superseded by a mission step"; the host builds lists off its tick).
+        accepted = 'control: sensor clients ' + clients.as_posix() + ' '
+        if not wait_for(self.host_log, accepted, 60, offset=offset):
             raise RuntimeError(f'AH did not log acceptance of the {label} list; stopping')
 
     def fight(self, route, clients, squads, tag, label, back=None):
