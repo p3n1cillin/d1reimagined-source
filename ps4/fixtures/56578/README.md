@@ -29,5 +29,10 @@ array (`d1-character-fixup.py --item`; notes/ps4-56578-equip-2026-11-01.md). Wit
 screen after the mission was empty. The items are the ones `characters/inventory-tutorial` and the
 rifle grant serve.
 
+The tutorial profiles carry the same gear during the mission. `profile-tutorial-t.bin` (served at
+boot) holds the subclass, armour, Ghost and vehicle. `grants/profile-tutorial-th.bin` (pushed with
+the Breach rifle) adds the Khvostov. The character screen at the start of the mission (run sense86)
+shows the armour, Ghost and subclass, with the weapon slots locked until the rifle.
+
 The defaults of `lab/tower-route/ending-run.ps1` serve what run sense73 (31 October 2026) served,
 except for the account (sense73's put Legendary Marks in Silver's slot) and the post-game gear above. Files named `*.draft.*` are lab drafts, kept as they were served.
