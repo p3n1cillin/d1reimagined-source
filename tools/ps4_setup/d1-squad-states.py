@@ -13,6 +13,10 @@ member count COUNT for variant 0 (+0x2C count, +0x30 i16), generation GEN at +0x
 re-runs the squad) and existing-members mode -1 at +0x74 (keep). The per-frame squad update
 (0x102B60 -> 0x102C10) creates members while desired - existing - live > 0. Layout from
 `d1-eboot descriptors --tag 0x8080071e`; every image round-trips through the client's codec.
+
+COUNT 0 writes no entry (+0x2C = 0): the client then places its own default, one body per member.
+An explicit zero is one entry with count 0 (`SUB:GEN:=0`, `squad(gen, 0, entry=True)`): a squad whose
+members are all named then places only the actors their own member states create (56578, native).
 """
 import struct, sys
 
@@ -20,13 +24,13 @@ ABSENT = (0x811C9DC5, 0xFF, 0xFFFF)
 NONE_HASH = 0x811C9DC5
 
 
-def squad(gen, count=0):
+def squad(gen, count=0, entry=False):
     b = bytearray(124)
     for ref in (0x00, 0x08, 0x50, 0x58):
         struct.pack_into('<IBxH', b, ref, *ABSENT)
     for off in (0x48, 0x4C, 0x78):
         struct.pack_into('<I', b, off, NONE_HASH)
-    if count:
+    if count or entry:
         struct.pack_into('<I', b, 0x2C, 1)
         struct.pack_into('<h', b, 0x30, count)
     struct.pack_into('<I', b, 0x44, gen)
@@ -38,9 +42,11 @@ def main():
     base, out, group = sys.argv[1], sys.argv[2], sys.argv[3].lower()
     states = {}
     for spec in sys.argv[4:]:
-        f = [int(x, 0) for x in spec.split(':')]
+        parts = spec.split(':')
+        entry = len(parts) > 2 and parts[2].startswith('=')
+        f = [int(x.lstrip('='), 0) for x in parts]
         sub, gen, count = f[0], f[1], (f[2] if len(f) > 2 else 0)
-        states[(group, '0x1', str(sub))] = squad(gen, count)
+        states[(group, '0x1', str(sub))] = squad(gen, count, entry)
     lines, hit = [], set()
     for line in open(base):
         p = line.split()

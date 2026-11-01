@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use D1 Reimagined in research or writing, please cite it as below."
+title: "D1 Reimagined: Destiny 1 preservation source"
+type: software
+authors:
+  - name: "D1 Reimagined contributors"
+repository-code: "https://github.com/p3n1cillin/d1reimagined-source"
+url: "https://d1reimagined.com"
+license: GPL-2.0-only
+keywords:
+  - game preservation
+  - Destiny
+  - shadPS4
+  - server emulation
+  - reverse engineering
+references:
+  - type: software
+    title: "Destiny 1 Preservation Project"
+    authors:
+      - name: aknumbers
+    repository-code: "https://gitlab.com/aknumbers/d1preservation"
+  - type: software
+    title: shadPS4
+    authors:
+      - name: "shadPS4 Emulator Project"
+    repository-code: "https://github.com/shadps4-emu/shadPS4"

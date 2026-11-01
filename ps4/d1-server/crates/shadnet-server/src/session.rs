@@ -174,6 +174,7 @@ impl Session {
             Some(Command::Login) => self.handle_login(&packet),
             Some(Command::GetToken) => self.handle_get_token(&packet),
             Some(Command::GetServerFeatures) => self.handle_server_features(&packet),
+            Some(Command::SetClientVersion) => self.handle_client_version(&packet),
             Some(Command::Terminate) => {
                 info!(peer = %self.peer, "client requested Terminate");
                 self.reply(&packet, ErrorType::NoError, &[])
@@ -261,8 +262,10 @@ impl Session {
     }
 
     fn handle_server_features(&mut self, packet: &Packet) -> Result<(), ()> {
+        // Trophies stay off: nothing here stores them (UnlockTrophy and SyncTrophies are Unsupported).
         let reply = shadnet_proto::ServerFeaturesReply {
             matching2_enabled: self.state.config.matching2_enabled,
+            trophies_enabled: false,
         };
         info!(
             peer = %self.peer,
@@ -270,6 +273,17 @@ impl Session {
             "<-- ServerFeaturesReply"
         );
         self.reply(packet, ErrorType::NoError, &reply.encode_to_vec())
+    }
+
+    /// The emulator says which build it is after signing in (shadNet's `SetClientVersion`, 13).
+    /// Upstream records it and can refuse versions it doesn't allow; we log it, so every run says
+    /// which emulator build it ran on, and accept it. Until 1 November 2026 it was `Unsupported`.
+    fn handle_client_version(&mut self, packet: &Packet) -> Result<(), ()> {
+        let Ok(req) = shadnet_proto::SetClientVersionRequest::decode(packet.request_blob()) else {
+            return self.reply(packet, ErrorType::Malformed, &[]);
+        };
+        info!(peer = %self.peer, version = %client_version(&req.version), "client version");
+        self.reply(packet, ErrorType::NoError, &[])
     }
 
     /// Refuse cleanly and loudly. A clean `Unsupported` beats a hang or a plausible lie: the client
@@ -809,9 +823,31 @@ pub fn deliver(state: &ServerState, outcome: &Outcome) {
     }
 }
 
+/// The reported version as upstream keeps it: whitespace collapsed, control characters dropped,
+/// and clipped at 256 characters with an ellipsis, so a clipped value is never taken for the real one.
+fn client_version(raw: &str) -> String {
+    const MAX: usize = 256;
+    let clean: String =
+        raw.split_whitespace().collect::<Vec<_>>().join(" ").chars().filter(|c| !c.is_control()).collect();
+    if clean.chars().count() > MAX {
+        clean.chars().take(MAX - 1).chain(std::iter::once('…')).collect()
+    } else {
+        clean
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_client_version_is_cleaned_and_clipped_as_upstream_does() {
+        assert_eq!(client_version("  shadPS4 v0.19.0\tWIP d1-34c579f\u{7} "), "shadPS4 v0.19.0 WIP d1-34c579f");
+        assert_eq!(client_version(""), "");
+        let long = client_version(&"x".repeat(300));
+        assert_eq!(long.chars().count(), 256);
+        assert!(long.ends_with('…'));
+    }
 
     #[test]
     fn the_room_command_range_is_exactly_the_matchmaking_block() {

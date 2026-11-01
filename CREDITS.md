@@ -28,7 +28,10 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
   - shadPS4's in-tree shadNet client is the authority the services are written against; see
     [`ps4/d1-server/ATTRIBUTION.md`](ps4/d1-server/ATTRIBUTION.md).
 - **shadNet and the rpcsn Project**: the PSN-replacement protocol. Its schema is vendored verbatim in
-  `ps4/d1-server/proto/`.
+  `ps4/d1-server/proto/`, from the project's shadPS4 build. The official server,
+  [shadps4-emu/shadNet](https://github.com/shadps4-emu/shadNet) (GPL-2.0-or-later), was read for
+  how it answers the newer commands, such as `SetClientVersion`, and is compared with ours.
+  [RPCN](https://github.com/RipleyTom/rpcn), by RipleyTom, is the PS3 server shadNet grew from.
 - **[RPCS3](https://github.com/RPCS3/rpcs3)**, by the RPCS3 project and its contributors (GPL-2.0).
   It carried the earlier PS3 route. The `patches/rpcs3-*.patch` files are changes to RPCS3's source,
   and its contributors keep their copyright.

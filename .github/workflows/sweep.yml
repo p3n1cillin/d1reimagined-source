@@ -6,7 +6,9 @@
 #   (one comment per head commit) and "update branch" (behind main and missing a newer required check).
 # - hourly and on pushes to main: "needs rebase" on conflicting PRs, and a comment on PRs that touch the
 #   same lines as another open PR (.github/scripts/pr_overlap.py).
-# - daily: the label set below; a "stale" reminder after 30 days without activity (never closed).
+# - daily: the label set below; a "stale" reminder after 30 days without activity (never closed); the
+#   "Repository health" issue (.github/scripts/health.py): PRs and issues waiting on a maintainer,
+#   starter tasks, STATUS.md's age, fork work with no pull request, merged branches left behind.
 # - Sundays: a "Weekly progress" release with notes from the PRs merged since the last one.
 name: Sweep
 
@@ -191,6 +193,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      contents: read
       issues: write
       pull-requests: write
     env:
@@ -212,7 +215,8 @@ jobs:
           label 'update branch'        fbca04 "Behind main and missing some of main's required checks: merge or rebase main"
           # Housekeeping
           label 'needs rebase'         b60205 'Conflicts with main, rebase needed'
-          label 'open PR limit'        d93f0b 'Closed over the open PR limit: 1 without merged PRs, 20 with at least 1, none from 20'
+          label 'open PR limit'        d93f0b 'Closed over the open PR limit: 3 ready without merged PRs, 20 with at least 1, none from 20'
+          label 'maintenance'          ededed 'The daily repository health report'
           label 'stale'                ededed 'No activity for 30 days'
           label 'inputs-reviewed'      c5def5 'A maintainer accepted a large or unusual file (CI inputs check)'
           label 'dependencies'         0366d6 'Dependency updates'
@@ -239,7 +243,7 @@ jobs:
           label 'tests'     d4c5f9 'Tests only'
       # A reminder only: research PRs often wait on a lab run or on someone with the inputs, and closing
       # them loses work. Drafts are left alone.
-      - uses: actions/stale@v9
+      - uses: actions/stale@v11
         with:
           days-before-issue-stale: -1
           days-before-issue-close: -1
@@ -253,6 +257,14 @@ jobs:
             This pull request has had no activity for 30 days. If it's waiting on something (a review, a run,
             inputs), say what in a comment; if it conflicts with `main`, press Update branch or rebase.
             It won't be closed automatically.
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+      - name: Repository health
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/health.py
 
   release:
     if: github.event.schedule == '30 17 * * 0' || inputs.release

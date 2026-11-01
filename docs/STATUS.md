@@ -1,4 +1,8 @@
-# Contributor checkpoint — 30 October 2026
+# Contributor checkpoint — 1 November 2026
+
+New here? Start with [GETTING-STARTED.md](GETTING-STARTED.md); [ARCHITECTURE.md](ARCHITECTURE.md) and
+[GLOSSARY.md](GLOSSARY.md) explain the pieces and the terms, and [the notes index](../notes/README.md) finds
+the research.
 
 The active work is PS4 CUSA00219 executable build 56578 (package 01.33; 01.29 remains the address
 reference) on [the project's shadPS4 build](https://github.com/p3n1cillin/d1reimagined-shadps4). The
@@ -11,7 +15,7 @@ release.
 | Area | Observed | Still open |
 | --- | --- | --- |
 | Executable and content | Owned build 56578 (ELF SHA-256 `672f03411c0503dfbcda804cbb9fb27cdd9a8d73a8bcb71bf0c4f688073b0833`), selected through `ps4/capture-rig/builds.json`. 1,647 package tables and 701,164 block hashes pass. | Each contributor supplies their own inputs. Don't apply 01.29 offsets unchanged. |
-| A Guardian Rises | Runs from the highway through The Breach, the Divide and Dock 13 to the hangar fight and the outro cinematic. The host drives each step from the client's own reports ([Dock 13](../notes/ps4-56578-dock13-2026-10-28.md), [outro](../notes/ps4-56578-outro-2026-10-28.md)). The Breach Fallen spawn once the server serves their squad states, and the unattended route can serve and fight them (`ending-run.ps1 -BreachFallen`, run sense97; [Breach notes](../notes/ps4-56578-breach-sequences-2026-10-31.md)). | The Wall's later squads, dialogue and tutorial fidelity; some cutscenes are skipped. |
+| A Guardian Rises | Runs from the highway through The Breach, the Divide and Dock 13 to the hangar fight and the outro cinematic. The host drives each step from the client's own reports ([Dock 13](../notes/ps4-56578-dock13-2026-10-28.md), [outro](../notes/ps4-56578-outro-2026-10-28.md)). The Breach Fallen spawn once the server serves their squad states, and the unattended route can serve and fight them (`ending-run.ps1 -BreachFallen`, run sense97; [Breach notes](../notes/ps4-56578-breach-sequences-2026-10-31.md)). | Serving the Breach's waves on the triggers its own mission script uses ([`d1-breach-waves.py`](../tools/ps4_setup/d1-breach-waves.py), written from Blam Network's reconstruction; not yet run). The perching Fallen in the nests, the Ghost's fly-to-the-gun performance, dialogue and tutorial fidelity; some cutscenes are skipped. |
 | Rifle, ammo and stats | Service 601 and the profile deltas deliver and equip the starter rifle; it fires and kills. | Ammo and item-stat fidelity. Attack and Defense come from the item level curves ([#51](https://github.com/p3n1cillin/d1reimagined-source/pull/51)). |
 | The whole mission, reproducible | Everything a run serves is in the repository: the characters, the mission schedule and its sensor lists, the post-game pushes and the vendor setup ([`ps4/fixtures/56578`](../ps4/fixtures/56578/README.md)). [`lab/tower-route/ending-run.ps1`](../lab/tower-route/README.md) plays A Guardian Rises from boot to Tower North with nobody at the pad. Run sense76 (31 October) did it from the repository alone. | The unattended fight relies on memory reads of the running client. |
 | Subclass abilities | The served Guardian (a Titan Striker) has its grenade, melee and super: the ability rows and perks come from the subclass talent grid ([#134](https://github.com/p3n1cillin/d1reimagined-source/issues/134)). Seen on the Moon: an arc grenade and melee, and sprint at 1.63× walking. The Guardian's helmet shows in the Tower now that the wear-helmet flag is served ([#128](https://github.com/p3n1cillin/d1reimagined-source/issues/128), run sense77). | Other subclasses, and choosing nodes. |
@@ -34,11 +38,15 @@ No game files needed:
 
 - [Good first issues](https://github.com/p3n1cillin/d1reimagined-source/labels/good%20first%20issue): small, well-scoped tasks, for example the remaining [d1-bap round-trip tests](https://github.com/p3n1cillin/d1reimagined-source/issues/4).
 - Tests and CI: the workspace tests CI can't run yet (d1-oracle, d1-activity-host, d1-live's process tests) and portable build instructions.
+- Protocol: [Blam Network's 2014 message names](../notes/rsat-blam-crosscheck.md) list ids we don't serve yet (403 equip, 902 buyback, 1401 offers). [`tools/rsat_crosscheck`](../tools/rsat_crosscheck/README.md) checks our codec against theirs.
+- Design: [servers rebuilt for other games](../notes/similar-projects.md) and what each suggests for waves, vendors and public sessions.
 - Review the Windows/WSL platform contract, the package ownership resolver and the recovery adapters with synthetic inputs. Keep the crypto, hash and build-identity gates intact.
 
 With your own inputs:
 
 - Vendors: the server applies purchases (investment 901 `vendor_buy_item`) by itself; each one leaves a refund record (account field [20]) that the client keeps. Next: a screen that lists refunds (905 `vendor_refund_item`; Eva's doesn't), and selling (903 `vendor_sell_item`). The responder already decodes 903 requests ([notes](../notes/ps4-56578-vendor-purchase-2026-10-30.md), [services](../notes/investment-services.md)).
+- The Breach as authored: run the [trigger-driven waves](../notes/ps4-56578-breach-sequences-2026-10-31.md) and check that the client reports each wave trigger once armed.
+- Content: [`tools/charm_probe`](../tools/charm_probe/README.md) names build 56578's tags, activities and all 8,609 items; vendor and unlock definitions still need decoding.
 - Play or replay the whole mission: [`lab/tower-route`](../lab/tower-route/README.md), or `tools/ps4_setup/d1-agr-run.ps1` to take the pad yourself.
 - A Guardian Rises' story cinematic (activity 165, which CONTINUE launches) before Tower North; the Tower's plaza and hangar regions; ammo and stat fidelity.
 - The emulator: stability and rendering in [d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4).

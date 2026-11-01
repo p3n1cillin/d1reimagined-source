@@ -94,6 +94,7 @@ commands! {
     AddBlock = 10,
     RemoveBlock = 11,
     GetServerFeatures = 12,
+    SetClientVersion = 13,
     GetBoardInfos = 30,
     RecordScore = 31,
     RecordScoreData = 32,
@@ -105,6 +106,7 @@ commands! {
     GetScoreGameDataByAccId = 38,
     GetToken = 39,
     SetAppearOffline = 40,
+    LookupOnlineId = 41,
     ContextStart = 100,
     CreateRoom = 101,
     JoinRoom = 102,
@@ -121,6 +123,22 @@ commands! {
     GetUserInfoList = 113,
     GetRoomMemberDataExternalList = 114,
     SendRoomMessage = 115,
+    TusSetData = 201,
+    TusGetData = 202,
+    TusSetMultiSlotVariable = 203,
+    TusGetMultiSlotVariable = 204,
+    TusAddAndGetVariable = 205,
+    TusGetMultiSlotDataStatus = 206,
+    TusGetMultiUserDataStatus = 207,
+    TusGetFriendsDataStatus = 208,
+    TusDeleteMultiSlotData = 209,
+    TusGetMultiUserVariable = 210,
+    TusTryAndSetVariable = 211,
+    TusGetFriendsVariable = 212,
+    TusDeleteMultiSlotVariable = 213,
+    TssGetData = 214,
+    UnlockTrophy = 301,
+    SyncTrophies = 302,
 }
 
 impl std::fmt::Display for Command {
@@ -306,6 +324,7 @@ errors! {
     ScoreHasData = 31,
     CondFail = 32,
     Unsupported = 33,
+    TooLarge = 34,
 }
 
 #[derive(Debug, Clone)]
