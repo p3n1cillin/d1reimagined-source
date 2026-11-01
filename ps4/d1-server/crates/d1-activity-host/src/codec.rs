@@ -237,6 +237,14 @@ pub fn oracle() -> &'static OracleWorker {
     W.get_or_init(OracleWorker::spawn)
 }
 
+/// A second worker, with its own emulator, for operator `clients` control lines. Jobs on one
+/// worker run in turn, so a long list built on [`oracle`] held every per-tick encode behind it:
+/// 30 Breach squad states took 31 s, the host went silent and the client dropped it (run sense99).
+pub fn control_oracle() -> &'static OracleWorker {
+    static W: OnceLock<OracleWorker> = OnceLock::new();
+    W.get_or_init(OracleWorker::spawn)
+}
+
 // ── the codecs ───────────────────────────────────────────────────────────────────────────────────
 
 /// ⭐ **The real codec.** It runs `FUN_002A4090` / `FUN_002A4140` - the client's own functions -
@@ -284,6 +292,17 @@ impl SchemaCodec {
     /// instance construction, like [`Self::prewarm`].
     pub fn build_sensor(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Result<Vec<u8>, AhError> {
         oracle()
+            .call(|reply| Job::BuildSensor { params: params.clone(), reply })
+            .map_err(|detail| AhError::SchemaCodec {
+                user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
+                detail,
+            })
+    }
+
+    /// [`Self::build_sensor`] on [`control_oracle`], so the build doesn't queue the host's own
+    /// encodes behind it. For operator control lines, which are built off the tick.
+    pub fn build_sensor_aside(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Result<Vec<u8>, AhError> {
+        control_oracle()
             .call(|reply| Job::BuildSensor { params: params.clone(), reply })
             .map_err(|detail| AhError::SchemaCodec {
                 user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,

@@ -1,0 +1,20 @@
+diff --git a/Tiger/SchemaDeserializer.cs b/Tiger/SchemaDeserializer.cs
+index cced9c5..41e2376 100644
+--- a/Tiger/SchemaDeserializer.cs
++++ b/Tiger/SchemaDeserializer.cs
+@@ -204,7 +204,14 @@ public class SchemaDeserializer : Strategy.StrategistSingleton<SchemaDeserialize
+     private FieldInfo[] GetStrategyFields(FieldInfo[] getFields)
+     {
+         // don't include fields that have a strategy assigned but are larger than us
+-        return getFields.Where(f => !f.GetCustomAttributes<SchemaFieldAttribute>().Any() || (_strategy >= GetAttribute<SchemaFieldAttribute>(f).Strategy && !GetAttribute<SchemaFieldAttribute>(f).Obsolete)).ToArray();
++        return getFields.Where(f =>
++        {
++            if (!f.GetCustomAttributes<SchemaFieldAttribute>().Any())
++                return true;
++            // local fix: fields whose SchemaField attributes are all for later strategies return null here (crashed D1)
++            SchemaFieldAttribute? a = GetAttribute<SchemaFieldAttribute>(f);
++            return a != null && _strategy >= a.Strategy && !a.Obsolete;
++        }).ToArray();
+     }
+ 
+     private TigerStrategy GetStrategyFromNamespace(string namespaceString)

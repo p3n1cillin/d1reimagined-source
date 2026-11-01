@@ -1,0 +1,11 @@
+[package]
+name = "rsat-crosscheck"
+version = "0.0.0"
+edition = "2021"
+publish = false
+license = "GPL-2.0-or-later"
+
+[workspace]
+
+[dependencies]
+d1-bap = { path = "../../ps4/d1-server/crates/d1-bap" }

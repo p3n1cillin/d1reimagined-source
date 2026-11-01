@@ -741,7 +741,9 @@ fn main() -> anyhow::Result<()> {
                                 let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
                                 let p = d1_activity_host::sensor_list::params_for_list(&params, group, team, &text)
                                     .map_err(|e| format!("{path}: {e:#}"))?;
-                                d1_activity_host::codec::SchemaCodec::build_sensor(&p).map_err(|e| e.to_string())
+                                // On its own worker: the build runs off the tick and must not queue
+                                // the host's per-tick encodes behind it (runs sense98, sense99).
+                                d1_activity_host::codec::SchemaCodec::build_sensor_aside(&p).map_err(|e| e.to_string())
                             },
                         )));
                     }

@@ -38,11 +38,33 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
 
 ## Destiny research
 
-- **[MontagueM](https://github.com/MontagueM)**: [Charm](https://github.com/MontagueM/Charm). Its
-  Destiny 1 tag schemas for activities, bubbles and map data are cited in
-  [`notes/public-research.md`](notes/public-research.md).
+- **[MontagueM](https://github.com/MontagueM)**: [Charm](https://github.com/MontagueM/Charm)
+  (GPL-3.0).
+  - Its Destiny 1 tag schemas for activities, bubbles and map data are cited in
+    [`notes/public-research.md`](notes/public-research.md).
+  - Its `Tiger` library, with a one-line local fix, reads build 56578. `tools/charm_probe` uses it
+    to list named tags and activities and to name all 8,609 inventory items
+    ([notes](notes/charm-56578.md)).
 - **[v4nguard](https://github.com/v4nguard)**: [tiger-pkg](https://github.com/v4nguard/tiger-pkg)
   (MIT). Its `d1_legacy` reader gave the package layout that `scripts/d1_pkg.py` follows.
+  [quicktag](https://github.com/v4nguard/quicktag) (GPL-3.0), its package and tag explorer, is built
+  locally for browsing build 56578's tags ([related projects](notes/related-projects.md)).
+- **[nruble](https://github.com/nruble)**: the [Cryptarch Guide](https://github.com/nruble/cryptarch-guide)
+  (GPL-3.0). Its archived D1 manifest gives the Tower vendors' map positions, from which the
+  quartermasters' and Banshee-44's world positions are estimated
+  ([vendor notes](notes/ps4-56578-vendor-purchase-2026-10-30.md)).
+- **[Blam Network](https://github.com/Blam-Network)**: [tiger](https://github.com/Blam-Network/tiger),
+  TypeScript libraries for Destiny's Tiger engine (MIT for the code packages).
+  - Its `gibbon` reader, with definitions for our exact build `56578.17.04.12.1251.evil`, names
+    every row of every activity bundle: `tools/ps4_setup/d1-bundle-rows.mjs` uses it to map each
+    sensor index the host serves to its authored name.
+  - Its Fukugen Daihon reconstructions of the mission scripts (`enc_breach_m0`,
+    `act_cosmo_m0_highway`) show which squads each Breach trigger places.
+  - Its dictionary maps bundle hashes to names (`0xFC0E45A3` = `enc_breach_m0`). It also names
+    the 2014 build's message ids.
+  - Its independent `rsat` codec cross-checks ours byte for byte (`tools/rsat_crosscheck`,
+    [notes](notes/rsat-blam-crosscheck.md)).
+  - See [`notes/ps4-56578-breach-sequences-2026-10-31.md`](notes/ps4-56578-breach-sequences-2026-10-31.md).
 - **[lizardpeter](https://github.com/lizardpeter)**:
   [destiny-1](https://github.com/lizardpeter/destiny-1). It documents the v24 package format and the
   activity, bubble and map graph, cited in the research notes.
@@ -57,12 +79,33 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
 - **The people behind [RPCS3 issue #12802](https://github.com/RPCS3/rpcs3/issues/12802)**. They
   showed Destiny reaching character select against private servers.
 
+## Other games' revival servers (read for design)
+
+These servers rebuilt online games from the retail client. They were read for their designs (spawn
+phases, vendor ledgers, sessions), not copied; see [`notes/similar-projects.md`](notes/similar-projects.md).
+
+- **[Crypto137](https://github.com/Crypto137)** and contributors:
+  [MHServerEmu](https://github.com/Crypto137/MHServerEmu) (Marvel Heroes, AGPL-3.0).
+- **[NexusForever](https://github.com/NexusForever)**: [NexusForever](https://github.com/NexusForever/NexusForever)
+  (WildStar, AGPL-3.0).
+- **[spaceninjaserver](https://github.com/spaceninjaserver)**:
+  [SpaceNinjaServer](https://github.com/spaceninjaserver/SpaceNinjaServer) (Warframe, AGPL-3.0).
+- **[PocketRelay](https://github.com/PocketRelay)**: [PocketRelay](https://github.com/PocketRelay/Server)
+  (Mass Effect 3 multiplayer, MIT).
+- **[mixutin](https://github.com/mixutin)** and **[SyST3MDeV](https://github.com/SyST3MDeV)**:
+  [Dauntless Revived](https://github.com/mixutin/dauntless-revived) and
+  [Undaunted](https://github.com/SyST3MDeV/Undaunted) (Dauntless, AGPL-3.0).
+
 ## Tools used (not bundled)
 
 - **[maxton](https://github.com/maxton)**: [LibOrbisPkg](https://github.com/maxton/LibOrbisPkg)
   (LGPL-3.0). It reads the PS4 packages and their file system, through a locally fixed build.
 - **[SocraticBliss](https://github.com/SocraticBliss)**:
   [ps4_unfself](https://github.com/SocraticBliss/ps4_unfself) (GPL-3.0). It unwraps SELF files.
+- **[cohaereo](https://github.com/cohaereo) and nblock**:
+  [tiger-pkg](https://github.com/v4nguard/tiger-pkg) (MIT), published by v4nguard. It reads the
+  Tiger engine's packages. Its examples (`unpack`, with version `d1_roi`) read build 56578's PS4
+  packages, which made the game's UI content readable ([notes](notes/tiger-pkg-56578.md)).
 - **The [GoldHEN](https://github.com/GoldHEN/GoldHEN) team**: GoldHEN. Its FTP server decrypts
   SELF/sprx files on read, which made dumping from an owned console straightforward.
 - **[Ghidra](https://github.com/NationalSecurityAgency/ghidra)** (Apache-2.0), for analysis, and
