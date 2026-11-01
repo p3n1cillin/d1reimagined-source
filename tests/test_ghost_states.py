@@ -12,12 +12,13 @@ LIST = (ROOT / 'ps4/fixtures/56578/mission/agr-b-lights.txt').read_text().splitl
 
 
 class GhostStates(unittest.TestCase):
-    def test_the_member_image_is_56578s_size_with_the_ps3_test_fields(self):
+    def test_the_member_image_is_d1_member_states_with_the_ps3_test_fields(self):
         b = M.member(1)
+        self.assertEqual(b, M.member_states.member(1))
         self.assertEqual(len(b), 2312)                                  # d1-eboot descriptors 0x80800868
         self.assertEqual(struct.unpack_from('<Ibb?', b, 0), (1, -1, 0, True))
-        self.assertEqual(struct.unpack_from('<I', b, 0x28)[0], M.EMPTY_HASH)
-        self.assertEqual(struct.unpack_from('<IBxH', b, 0x50), (M.EMPTY_HASH, 0xFF, 0xFFFF))
+        # the binding stays absent: index -1 at +0x58, never zero (an unguarded lookup crashed on one)
+        self.assertEqual(b[0x50:0x5C].hex(), 'c59d1c81ff00ffffffffffff')
 
     def test_the_performance_image_carries_the_fly_to_the_gun_action(self):
         b = M.performance(3)

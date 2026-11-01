@@ -11,32 +11,34 @@ states were served:
   action key `0x9B1D6A71`, the empty override `0x811C9DC5` and a generation. The client looked it up
   under category `0xAFB11A12`, dispatched it, and the Ghost moved about 21 m towards the gun.
 
-The 56578 layouts are from `d1-eboot descriptors --tag 0x80800868 --tag 0x80800556`:
-- the member is 2312 bytes. Its leading fields are the same four, then nested parts left empty
-  except an object reference at `+0x50` (absent: `0x811C9DC5, 0xFF, 0xFFFF`) and a hash at `+0x28`
-  (the client's empty `0x811C9DC5`);
-- the performance is 48 bytes: the primary state at `+0`, and an empty bounded list at `+0xC`.
+The member state is `d1-member-states.py`'s image, which has been checked through the client's codec
+and natively: the leading four fields, and the optional binding at `+0x50` absent with index -1 at
+`+0x58` (a zero there names a real reference, and the client's unguarded lookup crashed on one).
+The performance is 48 bytes on 56578 (`d1-eboot descriptors --tag 0x80800556`): the primary state at
+`+0`, and an empty bounded list at `+0xC`.
 
 Rows that already carry a state are replaced. A new generation re-runs the state, so a list that
 keeps an earlier state must keep its generation.
 """
 import argparse
+import importlib.util
+from pathlib import Path
 import struct
 import sys
 
 BREACH = '0xfc0e45a3'
 EMPTY_HASH = 0x811C9DC5
 ACTION = 0x9B1D6A71          # the performance asset's only action key (JOIN111)
-MEMBER_TAG, PERFORM_TAG = '0x80800868', '0x80800556'
+PERFORM_TAG = '0x80800556'
+
+_spec = importlib.util.spec_from_file_location('member_states', Path(__file__).with_name('d1-member-states.py'))
+member_states = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(member_states)
+MEMBER_TAG = member_states.TAG
 
 
 def member(gen):
-    b = bytearray(2312)
-    struct.pack_into('<I', b, 0x00, gen)
-    struct.pack_into('<bbB', b, 0x04, -1, 0, 1)
-    struct.pack_into('<I', b, 0x28, EMPTY_HASH)
-    struct.pack_into('<IBxH', b, 0x50, EMPTY_HASH, 0xFF, 0xFFFF)
-    return bytes(b)
+    return member_states.member(gen)
 
 
 def performance(gen):
