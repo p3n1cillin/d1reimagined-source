@@ -219,6 +219,10 @@ class Replay:
             else:
                 self.skirmish(tag)
                 self.pad(f"Hold:{'DA'[attempt % 2]}:600", 'NumPad2')
+                # Re-approach rather than push: sense107's fan retries resumed at the waypoint nearest
+                # the stop, the wrong side of the fan room's grate, and pressed into it four times.
+                current = self.resume_route(name, route, lines, back=3 * (attempt + 1)) or current
+                continue
             current = self.resume_route(name, route, lines) or current
         raise RuntimeError(f'{name} stopped before completing its route in {tries} tries; no subsequent input sent')
 
@@ -349,7 +353,7 @@ class Replay:
         if self.native_unit and not self.waves:
             print(f'Retrack kept {len(copies)} copies (<30): remaining walks require native unit/facing validation.', flush=True)
 
-    def resume_route(self, name, route, lines):
+    def resume_route(self, name, route, lines, back=0):
         """The route from the waypoint nearest the walker's final `stopped (x, y, z)`, or None."""
         last = lines[-1] if lines else ''
         if not last.startswith('stopped ('):
@@ -359,7 +363,7 @@ class Replay:
         except ValueError:
             return None
         points = json.loads(Path(route).read_text())
-        nearest = min(range(len(points)), key=lambda i: math.dist(points[i][:2], stop[:2]))
+        nearest = max(0, min(range(len(points)), key=lambda i: math.dist(points[i][:2], stop[:2])) - back)
         index = 0
         while (self.run / f'replay-{self.route_prefix}{name}-resume-{index}.json').exists():
             index += 1
