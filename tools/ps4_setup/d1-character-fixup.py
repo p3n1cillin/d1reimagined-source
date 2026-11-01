@@ -4,7 +4,7 @@ through the client's own codec (d1-oracle object). Writes a new file; never edit
 
     d1-character-fixup.py peer    IN OUT [--grid 132] [--helmet]   family 0/1 peer view (0x808017FD)
     d1-character-fixup.py item    IN OUT --grid 132                inventory item (0x80801732): the subclass
-    d1-character-fixup.py profile IN OUT [--helmet] [--stack 278:870:100 ...] [--item 93:3598:0xd100000000000401@7 ...]
+    d1-character-fixup.py profile IN OUT [--helmet] [--stack 278:870:100 ...] [--item 93:3598:0xd100000000000401@6 ...]
                                                                    profile (0x80801743)
 
 Abilities (issue #134): the subclass item names its talent grid (+0x58) and its active nodes (36
@@ -23,10 +23,10 @@ at +0x10) holding a stack of a non-instanced item, e.g. a character-held currenc
 slot must be empty or already hold that content.
 
 Items: an instanced item in a profile slot (content, instance at +8, quantity 0), and with @N the
-equipped array (20 x u64 instance at +0x2B78) entry N pointing at it. From the geared fixture: 1 =
-subclass (bucket 0x06, slot 40), 2..6 = the armour (0x07..0x0B, slots 43/53/63/73/83), 7/8/9 = the
-weapons (0x02/0x03/0x04, slots 93/103/113), 11 = vehicle (0x0D, slot 143), 12 = ghost (0x0E, slot
-153). The item itself must be served too (D1_INVENTORY, as a 0x80801732 element).
+equipped item SOIDs (20 x u64 at +0x2B80, `d1-oracle profile layout`) entry N pointing at it. From the
+geared fixture: 0 = subclass (bucket 0x06, slot 40), 1..5 = the armour (0x07..0x0B, slots
+43/53/63/73/83), 6/7/8 = the weapons (0x02/0x03/0x04, slots 93/103/113), 10 = vehicle (0x0D, slot
+143), 11 = ghost (0x0E, slot 153). The item itself must be served too (D1_INVENTORY, as a 0x80801732 element).
 
 Needs D1_ORACLE (or the workspace build), D1_BUILDS and D1_BUILD, plus D1_PKGDIR for --grid.
 """
@@ -49,7 +49,7 @@ PEER_ROWS, ROW_SIZE, OPTIONS = 0x40, 68, 16
 PEER_PERKS, PERK_SLOTS, NO_PERK = 0x30 + 0x768, 32, 256
 ITEM_GRID, ITEM_NODES, NODE_BYTES = 0x58, 0x5A, 36
 PROFILE_SLOTS, SLOT_SIZE, EMPTY = 0x38, 32, 0xFFFF
-EQUIPPED, EQUIPPED_COUNT = 0x2B78, 20
+EQUIPPED, EQUIPPED_COUNT = 0x2B80, 20
 
 
 def oracle():

@@ -420,19 +420,19 @@ pub fn on_buy(req: Vec<u8>) {
     });
 }
 
-/// The profile's equipped array: 20 instance ids (u64) after the 340 inventory slots.
-const EQUIPPED: usize = 0x2B78;
+/// The profile's equipped item SOIDs: 20 x u64 at +0x2B80 (`d1-oracle profile layout`).
+const EQUIPPED: usize = 0x2B80;
 
 /// The equipped-array index of a bucket, read from the geared fixture (each equipped instance's
 /// inventory slot gives its bucket): subclass, the five armour pieces, the three weapons, the vehicle
 /// and the ghost. Other buckets are not known yet.
 fn equipped_index(ordinal: u8) -> Option<usize> {
     Some(match ordinal {
-        0x06 => 1,
-        0x07..=0x0B => 2 + (ordinal - 0x07) as usize,
-        0x02..=0x04 => 7 + (ordinal - 0x02) as usize,
-        0x0D => 11,
-        0x0E => 12,
+        0x06 => 0,
+        0x07..=0x0B => 1 + (ordinal - 0x07) as usize,
+        0x02..=0x04 => 6 + (ordinal - 0x02) as usize,
+        0x0D => 10,
+        0x0E => 11,
         _ => return None,
     })
 }
@@ -602,7 +602,7 @@ mod tests {
         (0..s.len()).step_by(2).map(|i| u8::from_str_radix(&s[i..i + 2], 16).unwrap()).collect()
     }
 
-    /// Equipping the second rifle (sense81's 403) moves the primary entry (index 7) to it.
+    /// Equipping the second rifle (sense81's 403) moves the primary entry (index 6) to it.
     #[test]
     fn an_equip_points_the_bucket_entry_at_the_item() {
         let mut p = st(0).profile;
@@ -613,9 +613,9 @@ mod tests {
         };
         put(&mut p, 93, 3598, 0xD100_0000_0000_0401);
         put(&mut p, 94, 3598, 0xD100_0000_0000_030B);
-        p[EQUIPPED + 56..EQUIPPED + 64].copy_from_slice(&0xD100_0000_0000_0401u64.to_le_bytes());
+        p[EQUIPPED + 48..EQUIPPED + 56].copy_from_slice(&0xD100_0000_0000_0401u64.to_le_bytes());
         apply_equip(&mut p, 0xD100_0000_0000_030B).unwrap();
-        assert_eq!(&p[EQUIPPED + 56..EQUIPPED + 64], &0xD100_0000_0000_030Bu64.to_le_bytes());
+        assert_eq!(&p[EQUIPPED + 48..EQUIPPED + 56], &0xD100_0000_0000_030Bu64.to_le_bytes());
         assert!(apply_equip(&mut p, 0xD100_0000_0000_0999).is_err(), "an instance in no slot is refused");
         put(&mut p, 0, 872, 0xD100_0000_0000_0500);
         assert!(apply_equip(&mut p, 0xD100_0000_0000_0500).is_err(), "Materials have no equipped entry");
