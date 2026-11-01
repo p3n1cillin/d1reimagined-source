@@ -95,13 +95,10 @@ class Replay:
         return lines
 
     def walk(self, name, route, seconds, tolerance=1.3, extra=(), strict=True):
-        lines = self.walk_once(name, route, seconds, tolerance, extra, check=not self.waves)
+        if self.waves and strict:
+            return self.walk_waves(name, route, seconds, tolerance, extra)
+        lines = self.walk_once(name, route, seconds, tolerance, extra)
         done = bool(lines and lines[-1].startswith('done '))
-        if self.waves and not done and lines and (UNIT_LOST in lines[-1] or self.lost(lines[-1])):
-            # A death (sense106 died in the tripmine corridor): recover, then resume from here.
-            self.recover(name)
-            me = self.where()
-            lines = [f'stopped ({me[0]}, {me[1]}, {me[2]})'] if me else []
         if strict and not done:
             self.skirmish(name)
             # Run 18 stalled at the Wall's stair corner (waypoint 45 of enter_the_wall)
@@ -125,6 +122,30 @@ class Replay:
         if strict and not done:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
+
+    def walk_waves(self, name, route, seconds, tolerance, extra, tries=5):
+        """A leg with the waves about: deaths and stalls are expected, so every attempt survives them.
+
+        After a death or a lost track (UNIT_LOST, or a stop far from the Guardian), recover and go on
+        from where the Guardian is. After a stall, fight, sidestep (alternating sides, as sense45 needed
+        at the fan) and go on from the waypoint nearest the stop. Run sense107's junction leg fought,
+        then its resume met a changed unit and stopped the replay.
+        """
+        current = route
+        for attempt in range(tries):
+            tag = name if attempt == 0 else f'{name}-try{attempt}'
+            lines = self.walk_once(tag, current, seconds, tolerance, extra, check=False)
+            if lines and lines[-1].startswith('done '):
+                return True
+            if not lines or UNIT_LOST in lines[-1] or self.lost(lines[-1]):
+                self.recover(tag)
+                me = self.where()
+                lines = [f'stopped ({me[0]}, {me[1]}, {me[2]})'] if me else []
+            else:
+                self.skirmish(tag)
+                self.pad(f"Hold:{'DA'[attempt % 2]}:600", 'NumPad2')
+            current = self.resume_route(name, route, lines) or current
+        raise RuntimeError(f'{name} stopped before completing its route in {tries} tries; no subsequent input sent')
 
     def walk_fighting(self, name, points, squads, seconds, chunk=10, tries=3):
         """Walk `points` a few waypoints at a time, fighting `squads` after each stretch.
