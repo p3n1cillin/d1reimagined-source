@@ -63,6 +63,10 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
   (LGPL-3.0). It reads the PS4 packages and their file system, through a locally fixed build.
 - **[SocraticBliss](https://github.com/SocraticBliss)**:
   [ps4_unfself](https://github.com/SocraticBliss/ps4_unfself) (GPL-3.0). It unwraps SELF files.
+- **[cohaereo](https://github.com/cohaereo) and nblock**:
+  [tiger-pkg](https://github.com/v4nguard/tiger-pkg) (MIT), published by v4nguard. It reads the
+  Tiger engine's packages. Its examples (`unpack`, with version `d1_roi`) read build 56578's PS4
+  packages, which made the game's UI content readable ([notes](notes/tiger-pkg-56578.md)).
 - **The [GoldHEN](https://github.com/GoldHEN/GoldHEN) team**: GoldHEN. Its FTP server decrypts
   SELF/sprx files on read, which made dumping from an owned console straightforward.
 - **[Ghidra](https://github.com/NationalSecurityAgency/ghidra)** (Apache-2.0), for analysis, and
