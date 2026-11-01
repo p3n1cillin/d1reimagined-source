@@ -115,6 +115,26 @@ class Replay:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
 
+    def walk_fighting(self, name, points, squads, seconds, chunk=10):
+        """Walk `points` a few waypoints at a time, fighting `squads` after each stretch.
+
+        With the Breach served by its triggers (--waves), each wave comes as the Guardian crosses its
+        trigger, so one fight at the start of a leg meets only the first. Run sense105 fought the
+        first Vandal, then walked the 64-waypoint chest leg through three more waves without
+        fighting, died in the hall and could not find the route again from the respawn.
+        """
+        self.wave = squads
+        for k, start in enumerate(range(0, len(points) - 1, chunk)):
+            part = points[start:start + chunk + 1]
+            me = self.where()
+            if me and math.dist(me[:2], part[0][:2]) > 15:
+                # A respawn (or a stretch that ended short): rejoin from the nearest waypoint so far.
+                near = min(range(start + 1), key=lambda i: math.dist(points[i][:2], me[:2]))
+                part = points[near:start + chunk + 1]
+            share = max(90, seconds * len(part) // len(points))
+            self.walk(f'{name}-{k}', self.write_route(f'{name}-{k}', part), share)
+            self.skirmish(f'{name}-{k}')
+
     def skirmish(self, name, rounds=3):
         """Fight what is left of the last wave where a walk stalled.
 
@@ -341,13 +361,19 @@ class Replay:
             to_chest = self.fight(to_chest, None, WAVE_SQUADS[0], 'waves-hall', 'the hall waves')
         elif self.fallen:
             to_chest = self.fight(to_chest, self.fallen, BREACH_SQUADS, 'fallen', 'Breach Fallen')
-        self.walk('chest', self.write_route('to-chest', to_chest), 840)
+        if self.waves:
+            self.walk_fighting('chest', to_chest, WAVE_SQUADS[0], 840)
+        else:
+            self.walk('chest', self.write_route('to-chest', to_chest), 840)
         self.walk('mine-stairs', self.sliced_route('mine-a', 'wall_tripmine_corridor.json', 0, 4), 90, 1.2)
         self.pad('NumPad6')
         # If this fails, stop crouched. Do not blindly toggle stance in a retry.
         self.walk('mine-crouched', self.sliced_route('mine-b', 'wall_tripmine_corridor.json', 3, 10), 240, 1.5)
         self.pad('NumPad6')
         self.walk('mine-junction', self.sliced_route('mine-c', 'wall_tripmine_corridor.json', 9, None), 150, 1.2)
+        if self.waves:                     # the corridor's waves (114-116) came during the mine legs
+            self.wave = WAVE_SQUADS[1]
+            self.skirmish('mine-end')
         junction = self.sliced_route('junction', 'wall_junction_west.json', 4, None)
         self.walk('junction-west', junction, 330)
         garage = self.routes/'wall_garage_door.json'
