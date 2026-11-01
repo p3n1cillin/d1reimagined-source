@@ -49,9 +49,28 @@ by kind: kind 5 (another sequence) is handled directly, and kinds above `0x1F` g
 Which references sequence 96 lists is not settled: the register snapshot at the end of the check
 contradicted the play call that followed.
 
+## Where a squad's spawn points come from
+
+`0x179FB0` picks a squad's spawn points:
+- `0x1058B0(squad)` returns `&A + 0x50`, where A is the squad's 0x7C-byte state `0x8080071E` (fetched
+  by `0x2CFCD0(object, 0x7C)`). `A + 0x50` holds an object reference. If the reference is valid
+  (`0x1076C0`) and resolves (`0x109760`), the list used is **that object's** `+0x250`. Otherwise it
+  is the squad's own `+0x250`.
+- `0x105840(squad)` returns the u32 at `A + 0x4C`, a hash used as the key. `0x17B6A0(list, &key,
+  &flag, &1, &count)` picks from the list. When nothing is found, the key is set (not `0x811C9DC5`)
+  and the squad's flag `+0x24` is non-zero, it tries again with the flag cleared.
+- After that come the template's inline points (per the contributor's reading).
+
+So whatever `A + 0x50` names must be laid out like a squad, with a list at `+0x250`. That fits the
+contributor's crash: pointing it at `ps_fallen_1` faulted in the template getter `0x1055E0`. Position
+sets (kind `0x2D`) are definitions with no replicated state ([private-host
+investigation](private-host-investigation.md)). The Breach squads' own `+0x250` lists are empty, so
+the open question is what fills a squad's runtime `+0x250` list. A static search for `+0x250` finds
+mostly unrelated stack locals; the live client is the better instrument.
+
 ## Next
 
-What the drop actors need in order to spawn: `dropper1` and `crawler1`–`8` (kind `0x28`), or a
-spawn-point list for the squads. A contributor found that pointing a squad's `A+0x50` at a non-squad
-object crashes the template getter `0x1055E0`, so whatever it names probably needs a squad-like
-definition.
+- What fills a squad's `+0x250` list at runtime, and what `A + 0x4C` is in the squads that do
+  spawn (the Divide's).
+- What the drop actors need: `dropper1` and `crawler1`–`8` (kind `0x28`). Performances animate
+  members of squads that already exist, so they wait on the squads.
