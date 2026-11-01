@@ -17,4 +17,5 @@ jobs:
         env:
           PR: ${{ github.event.pull_request.number }}
           STATE: ${{ github.event.review.state }}
-        run: echo "Review on #$PR ($STATE); the Sweep workflow's merge job follows."
+        run: |
+          echo "Review on PR $PR ($STATE); the Sweep workflow's merge job follows."
