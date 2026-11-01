@@ -331,7 +331,7 @@ class Replay:
         """
         if not self.wave:
             return
-        fought = False
+        fought, idle = False, 0
         for round_ in range(rounds):
             lines = self.command(f'{name}-skirmish-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
                                  self.wave], 30, check=False)
@@ -340,9 +340,12 @@ class Replay:
             if not spot or (me and math.dist(me[:2], [float(v) for v in spot.split(',')]) > reach):
                 break
             fought = True
-            self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
+            out = self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '30', '--squads', self.wave,
                          '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
+            idle = idle + 1 if out and out[-1].strip() == 'bursts 0' else 0
+            if idle >= 2:                  # near but out of sight: leave it to the walk (see fight())
+                break
             self.command(f'{name}-skirmish-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         if fought:                         # as after a wave: the fight can move the tracked copies
             self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
@@ -460,7 +463,7 @@ class Replay:
             self.publish(clients, label)
         self.wave = squads
         time.sleep(8)                      # the members appeared within seconds in sense94
-        empty = 0
+        empty = idle = 0
         for round_ in range(8):
             lines = self.command(f'{tag}-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
                                  squads], 30, check=False)
@@ -479,9 +482,15 @@ class Replay:
                         self.walk_once(f'{tag}-approach-{round_}',
                                        self.write_route(f'{tag}-approach-{round_}', route[a:b + 1]),
                                        90, 1.5, (), check=False)
-            self.command(f'{tag}-fight-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
+            out = self.command(f'{tag}-fight-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '30', '--squads', squads,
                          '--log', str(self.run/f'{tag}-combat.jsonl')], 90, check=False)
+            # Two rounds in a row without a shot: what is left is out of sight or out of reach, and
+            # combat2 no longer fires through walls, so more rounds only cost time.
+            idle = idle + 1 if out and out[-1].strip() == 'bursts 0' else 0
+            if idle >= 2:
+                print(f'{label}: two rounds without a shot; going on', flush=True)
+                break
             self.command(f'{tag}-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         else:
             if not empty:                  # only if the last round still found one
