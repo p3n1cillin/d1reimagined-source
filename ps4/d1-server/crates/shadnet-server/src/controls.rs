@@ -286,7 +286,7 @@ pub fn run() -> Vec<Control> {
         &ErrorType::ALL.iter().map(|(n, v)| (*n, *v as u64)).collect::<Vec<_>>(),
         &cpp_enum(cpp, "ErrorType"),
     ) {
-        Ok(n) => check("ErrorType matches shadPS4's `enum class ErrorType`, both directions", n == 34, format!("{n} values (all 34 room errors present)")),
+        Ok(n) => check("ErrorType matches shadPS4's `enum class ErrorType`, both directions", n == 35, format!("{n} values (all 34 room errors present, and TooLarge since the d1 fork's TSS)")),
         Err(e) => check("ErrorType matches shadPS4's `enum class ErrorType`, both directions", false, e),
     });
 
