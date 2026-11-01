@@ -354,10 +354,14 @@ Seen in 56578 on shadPS4 (official kit), all with the published lists:
 - squad 24 with member 25 `act_fallen_intro_vandal_drop`: the Vandal drops from the ceiling;
 - the bridge rush (56, 58), the mines corridor (44, 47, 49, 51, 53, 55) and the garage (68, 72,
   74): the drops, the grate climb, both vaults and the two garage Vandals play;
-- the whole route by its triggers: each trigger armed in turn (one at a time, not the nine of
-  `agr-bw-armed.txt`), and each report from 108 to 107 answered with its wave's list. Every wave
-  trigger reported once armed. That run still placed 26/28/30 first and activated `2__dreg_c`
-  besides; the generator here leaves both out.
+- the whole route by its triggers, twice, each report from 108 to 107 answered with its wave's
+  list as it arrived:
+  - first with hand-made lists that armed one trigger at a time. That run still placed 26/28/30
+    first and activated `2__dreg_c` besides.
+  - then from a fresh mission start with this generator's lists (before the `@member_counts` and
+    explicit-zero spent commits): `agr-bw-armed.txt`, all nine triggers armed at once. All nine
+    reported in route order with their entrances, nothing came before the first Vandal, and the
+    client kept its AH connection for the whole run.
 
 Still open:
 - Squad tasks (`set_task`), which give the Fallen somewhere to go: placed with their entrance,
@@ -365,9 +369,10 @@ Still open:
   327) is one of them.
 - The mines' lasers (`o_fallen_tripwire_1`-`7`).
 - Building a new client list took the host 15 to 70 s, longer for more states. Past about 20 s
-  the client dropped the AH connection and reloaded the mission. A frame already in
-  `D1_AH_SENSOR_CACHE` applies at once. Schedule steps are built when the host starts; a list
-  published by control mid-run is built then.
+  the client dropped the AH connection and reloaded the mission. Schedule steps are built when
+  the host starts; a list published by control mid-run is built then. These runs used a local
+  host change that is not on `main` (`D1_AH_SENSOR_CACHE`, built frames kept on disk), with the
+  lists' frames built ahead in a dry host, so each list applied at once.
 
 ## Next
 

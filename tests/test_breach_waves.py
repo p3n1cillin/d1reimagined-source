@@ -104,6 +104,14 @@ class BreachWaves(unittest.TestCase):
         self.assertEqual(desired(breach_rows(self.lists['agr-bw-116.txt'])[('0x1', 55)][1]), (2, 2))
         self.assertEqual(desired(rows[('0x1', 76)][1]), (3, 2))
 
+    def test_every_squad_placed_in_the_last_list_has_one_entry(self):
+        # No entry (+0x2C = 0) makes the client place its default again: a spent squad must not refill.
+        rows = breach_rows(self.lists['agr-bw-107.txt'])
+        for i in {s for _, squads in M.WAVES for s in squads}:
+            self.assertEqual(entries(rows[('0x1', i)][1]), 1, i)
+            if i != 76:  # the last wave's own squad is still live
+                self.assertEqual(desired(rows[('0x1', i)][1]), (0, 2), i)
+
     def test_lists_change_only_breach_rows(self):
         for text in self.lists.values():
             got = text.splitlines()

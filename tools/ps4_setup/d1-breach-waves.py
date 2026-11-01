@@ -15,9 +15,10 @@ Each `sleep_until` on a trigger places squads, and the trigger reports reach the
 3403 (`^G/0x1D/I` steps).
 
 Each list is the whole state, so later lists carry the earlier waves:
-- A squad that has had its wave keeps its generation, with a desired count of 0. Its members stay,
-  but a member killed is not replaced. With a count of 1 the squad refills, which is how run
-  sense101 met the first wave again behind it.
+- A squad that has had its wave keeps its generation, with one entry of count 0 (an explicit zero:
+  with no entry the client places its own default). Its members stay, but a member killed is not
+  replaced. With a count of 1 the squad refills, which is how run sense101 met the first wave
+  again behind it.
 - A trigger that has fired goes back to unarmed.
 - The host keeps every trigger report until a step uses it, so a trigger crossed before its step
   is due still counts.
@@ -114,15 +115,16 @@ def render(base_lines, squads, triggers, members=None):
 def build(base_lines, gen=2, count=1, entrances=True):
     """[(name, text)]: the armed list, then one per wave."""
     live = lambda: squad_states.squad(gen, count)
-    spent = lambda: squad_states.squad(gen, 0)
-    named = lambda: squad_states.squad(gen, 0, entry=True)
+    # An explicit zero: with no entry (+0x2C = 0) the client places its own default again.
+    spent = lambda: squad_states.squad(gen, 0, entry=True)
+    named = spent
     entered = ENTRANCES if entrances else {}
     squads = {i: live() for i in OPENING}
     members = {}
     triggers = {t: ARMED for t, _ in WAVES}
     lists = [('agr-bw-armed.txt', render(base_lines, squads, triggers, members))]
     for trigger, placed in WAVES:
-        squads = {i: (img if i in entered else spent()) for i, img in squads.items()}
+        squads = {i: spent() for i in squads}
         for i in placed:
             if i in entered:
                 squads[i] = named()
