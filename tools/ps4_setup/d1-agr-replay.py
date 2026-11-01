@@ -171,7 +171,7 @@ class Replay:
         legs = self.waves_legs(to_chest)
         self.stance = 'stand'
         i = self.nearest_leg(legs) if resume else 0
-        restart = 0
+        restart, chosen = 0, resume     # chosen: the leg was picked as the one nearest the Guardian
         while i < len(legs):
             name, points, seconds, tolerance, stance, squads, *first = legs[i]
             # A restarted leg writes its own routes: the first pass's are evidence, and a route of the
@@ -189,7 +189,8 @@ class Replay:
                     self.pad('NumPad6')
                     self.stance = stance
                 if squads:
-                    self.walk_fighting(name, points, squads, seconds, chunk=8 if name != 'chest' else 10)
+                    self.walk_fighting(name, points, squads, seconds, chunk=8 if name != 'chest' else 10,
+                                       rejoin=chosen)
                 else:
                     self.walk_waves(name, self.write_route(name, points), seconds, tolerance, (), legs=points)
             except Respawned:
@@ -198,10 +199,10 @@ class Replay:
                 restarts -= 1
                 restart += 1
                 self.stance = 'stand'
-                i = self.nearest_leg(legs, upto=i)
+                i, chosen = self.nearest_leg(legs, upto=i), True
                 print(f'{name}: respawned; restarting from {legs[i][0]}', flush=True)
                 continue
-            i += 1
+            i, chosen = i + 1, False
         if not wait_for(self.host_log, DIVIDE_SLICE, 45):
             raise RuntimeError('No natural slice-96 crossing observed; no Divide control published')
         print('DIVIDE REACHED: verify scheduled step 16, native authority, objective and scene.', flush=True)
@@ -247,40 +248,65 @@ class Replay:
             current = self.resume_route(name, route, lines) or current
         raise RuntimeError(f'{name} stopped before completing its route in {tries} tries; no subsequent input sent')
 
-    def walk_fighting(self, name, points, squads, seconds, chunk=10, tries=3):
-        """Walk `points` a few waypoints at a time, fighting `squads` after each stretch.
+    def walk_fighting(self, name, points, squads, seconds, chunk=10, tries=3, rejoin=False):
+        """Walk `points` a few waypoints at a time, fighting `squads` before and after each stretch.
 
         With the Breach served by its triggers (--waves), each wave comes as the Guardian crosses its
         trigger, so one fight at the start of a leg meets only the first. Run sense105 fought the
         first Vandal, then walked the 64-waypoint chest leg through three more waves without
         fighting, died in the hall and could not find the route again from the respawn.
 
-        A stretch that stops short (a stall, or a death: run sense106's walker refused the changed
-        unit) is retried after a retrack and a fight, from the waypoint nearest the Guardian.
+        Each stretch starts at the waypoint nearest the Guardian, so a restarted leg does not walk
+        back to its first stretch. A Guardian more than 15 m from every waypoint (a respawn) raises
+        Respawned, unless `rejoin` (play_waves chose this leg as the nearest): the walk would go
+        straight at the nearest waypoint, and run sense108's junction leg did that from the respawn
+        below the corridor stairs, standing, into the start of the crouch-only tripmine corridor.
+
+        A stretch that stops short is retried: after a death, retrack, re-arm and fight; after a
+        stall, sidestep and walk to an earlier waypoint first (as walk_waves does), not push into
+        the same wall again from the same spot.
         """
         self.wave = squads
-        for k, start in enumerate(range(0, len(points) - 1, chunk)):
+        off = lambda me, i: math.dist(points[i][:2], me[:2])
+        nearest = lambda me: min(range(len(points)), key=lambda i: off(me, i))
+        me = self.where()
+        start = nearest(me) if me else 0
+        if me and off(me, start) > 15 and not rejoin:
+            raise Respawned(name)
+        k = 0
+        while start < len(points) - 1:
             end = min(start + chunk, len(points) - 1)
             for attempt in range(tries):
-                part = points[start:end + 1]
-                me = self.where()
-                if me and math.dist(me[:2], part[0][:2]) > 15:
-                    # A respawn, or a stretch that ended short: rejoin from the nearest waypoint so far.
-                    near = min(range(end + 1), key=lambda i: math.dist(points[i][:2], me[:2]))
-                    part = points[near:end + 1]
-                share = max(90, seconds * len(part) // len(points))
                 tag = f'{name}-{k}' + (f'-retry{attempt}' if attempt else '')
                 # Clear the way first: walking into a wave is where the Guardian died (sense105-108).
                 self.skirmish(f'{tag}-pre')
+                me = self.where()
+                near = nearest(me) if me else start
+                if me and off(me, near) > 15 and not rejoin:
+                    raise Respawned(name)
+                if near >= end:
+                    break
+                part = points[near:end + 1]
+                share = max(90, seconds * len(part) // len(points))
                 lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3, (), check=False)
                 if lines and lines[-1].startswith('done '):
                     break
-                self.recover(tag)
-                if self.away(points):
-                    raise Respawned(name)
+                if not lines or UNIT_LOST in lines[-1] or 'unit changed' in lines[-1] or self.lost(lines[-1]):
+                    self.recover(tag)
+                    if self.away(points, 15):
+                        raise Respawned(name)
+                    continue
+                # A stall: step aside, walk back a little, and come at the stretch again.
+                self.pad(f"Hold:{'DA'[attempt % 2]}:600", 'NumPad2')
+                me = self.where()
+                if me:
+                    back = max(nearest(me) - 2 * (attempt + 1), 0)
+                    self.walk_once(f'{tag}-back', self.write_route(f'{tag}-back', points[back:back + 1]),
+                                   60, 1.5, (), check=False)
             else:
                 raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
             self.skirmish(f'{name}-{k}')
+            start, k, rejoin = end, k + 1, False
 
     def lost(self, last):
         """Whether a walk's final `stopped (x, y, z)` is far from where the Guardian really is."""
