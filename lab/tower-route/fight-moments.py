@@ -6,7 +6,10 @@ Reads the combat logs the replay writes (RUN_DIR/*combat.jsonl, *skirmish.jsonl:
 with the target's health) and scores each second by what happened in it:
 - damage dealt: the locked target's health falling, scaled by how far;
 - a kill: a target that took damage and is never locked again (health readings stop before a death,
-  so the last one seen is often well above zero).
+  so the last one seen is often well above zero);
+- shooting: a second with the crosshair on a locked target. Members placed by their own state (the
+  Breach's entrances) report no health, so for them a kill is a target aimed at three times or more
+  and never locked again.
 
 It prints the best non-overlapping windows of --length seconds as offsets into a recording that
 began at --start (epoch seconds): `start_s length_s kills damage`. The production side cuts Shorts
@@ -22,7 +25,7 @@ LOCK = re.compile(r"lock \('sq', (\d+), (\d+), (\d+)\) d [\d.]+ aimed (\w+) plat
 
 
 def events(run_dir):
-    """[(t, unit, health)] for every lock with a known health, in time order."""
+    """[(t, unit, health, aimed)] for every lock, in time order; health is None when unknown."""
     out = []
     for path in glob.glob(os.path.join(run_dir, '*combat.jsonl')) + glob.glob(os.path.join(run_dir, '*skirmish.jsonl')):
         for line in open(path, encoding='utf-8', errors='replace'):
@@ -31,23 +34,31 @@ def events(run_dir):
             except ValueError:
                 continue
             m = LOCK.search(rec.get('msg', ''))
-            if m and m.group(5) != 'None':
-                out.append((rec['t'], (int(m.group(1)), int(m.group(2)), int(m.group(3))), float(m.group(5))))
+            if m:
+                health = None if m.group(5) == 'None' else float(m.group(5))
+                out.append((rec['t'], (int(m.group(1)), int(m.group(2)), int(m.group(3))), health,
+                            m.group(4) == 'True'))
     return sorted(out)
 
 
 def score(evts):
-    """{second: (kills, damage)} from the lock stream."""
-    per, last, first = {}, {}, {}
-    final = {unit: k for k, (_, unit, _) in enumerate(evts)}
-    for k, (t, unit, health) in enumerate(evts):
-        first.setdefault(unit, health)
+    """{second: (kills, damage)} from the lock stream; aimed seconds count 0.05 damage each."""
+    per, last, first, aims = {}, {}, {}, {}
+    final = {unit: k for k, (_, unit, _, _) in enumerate(evts)}
+    for k, (t, unit, health, aimed) in enumerate(evts):
         s = int(t)
         kills, dmg = per.get(s, (0, 0.0))
-        if unit in last and health < last[unit][1]:
-            dmg += last[unit][1] - health
-        last[unit] = (t, health)
-        if final[unit] == k and health < first[unit] - 0.1:
+        if aimed:
+            dmg += 0.05
+            aims[unit] = aims.get(unit, 0) + 1
+        if health is not None:
+            first.setdefault(unit, health)
+            if unit in last and health < last[unit]:
+                dmg += last[unit] - health
+            last[unit] = health
+            if final[unit] == k and health < first[unit] - 0.1:
+                kills += 1
+        elif final[unit] == k and aims.get(unit, 0) >= 3:
             kills += 1
         per[s] = (kills, dmg)
     return per
