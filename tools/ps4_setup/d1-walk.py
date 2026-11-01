@@ -273,6 +273,8 @@ def main():
     ap.add_argument("--tolerance", type=float, default=2.5)
     ap.add_argument("--radius", type=float, default=25)
     ap.add_argument('--max-seconds', type=float, default=600)
+    ap.add_argument('--give-up', type=float, default=45,
+                    help='stop after this many seconds with no waypoint reached and no 0.5 m gained (0: never)')
     ap.add_argument('--turn-sign', type=int, choices=(-1, 1),
                     help='hold a measured camera turn direction; do not infer it from collision slides')
     ap.add_argument('--turn-rate', type=float,
@@ -354,8 +356,19 @@ def main():
         return None
 
     retreats = 0
+    # Stuck handling below (jump, back-step, side-step, skip) can repeat for the whole time limit
+    # against the same obstacle: sense107 pressed into the fan room's grate for an hour in 420 s
+    # walks. With no progress for --give-up seconds, stop and let the caller fight, back off or
+    # re-approach instead.
+    progress_at, progress_i, progress_d = time.time(), i, None
     while i < len(route) and time.time() < t_end:
         active(force=False)
+        d_now = math.dist(here[:2], route[i][:2])
+        if i > progress_i or progress_d is None or d_now < progress_d - 0.5:
+            progress_at, progress_i, progress_d = time.time(), i, d_now
+        elif a.give_up and time.time() - progress_at > a.give_up:
+            print(f'no progress for {a.give_up:.0f} s at wp {i}/{len(route)}')
+            break
         target = route[i]
         out = escape(here)
         if out:

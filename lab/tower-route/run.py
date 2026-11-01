@@ -9,11 +9,14 @@ w = L('w', routepaths.WALK); fo = L('follow')
 RATE = 2.76e-3
 VK_W, VK_X, VK_J, VK_L = 0x57, 0x58, 0x4A, 0x4C
 ap = argparse.ArgumentParser(); ap.add_argument('points'); ap.add_argument('--tol', type=float, default=2.5); ap.add_argument('--max-s', type=float, default=60); ap.add_argument('--walk', action='store_true', help='no sprint (L3) taps')
+ap.add_argument('--give-up', type=float, default=30, help='stop after this many seconds without a point reached or 0.5 m gained (0: never)')
 a = ap.parse_args()
 pts = [tuple(map(float, p.split(','))) for p in a.points.split(';')]
 c = w.Client(); c.native_unit = True
 fo.fight.pad('NumPad4')                      # focus the emulator
 t0 = time.time(); last_sprint = 0; i = 0; stuck = 0; prev = None
+# sense107's chain spent 200 s per attempt against the hangar bay's walls: give up early instead.
+progress_at, progress_i, progress_d = t0, 0, None
 try:
     fo.key(VK_W, True)
     while i < len(pts) and time.time() - t0 < a.max_s:
@@ -25,7 +28,12 @@ try:
             if gap > 25: raise
             time.sleep(0.12); continue
         tx, ty = pts[i]
-        if math.dist((x, y), (tx, ty)) < a.tol:
+        dnow = math.dist((x, y), (tx, ty))
+        if i > progress_i or progress_d is None or dnow < progress_d - 0.5:
+            progress_at, progress_i, progress_d = time.time(), i, dnow
+        elif a.give_up and time.time() - progress_at > a.give_up:
+            break
+        if dnow < a.tol:
             i += 1; continue
         if not a.walk and time.time() - last_sprint > 1.5:  # L3 tap (re)starts the sprint
             fo.key(VK_X, True); time.sleep(0.06); fo.key(VK_X, False); last_sprint = time.time()
@@ -42,7 +50,8 @@ try:
         prev = (x, y)
         time.sleep(0.12)
     x, y, z = w.position(c, None)
-    print(f'{"done" if i >= len(pts) else "timeout"} ({x:.1f}, {y:.1f}, {z:.1f}) after {time.time() - t0:.1f} s', flush=True)
+    end = 'done' if i >= len(pts) else ('stuck' if a.give_up and time.time() - progress_at > a.give_up else 'timeout')
+    print(f'{end} ({x:.1f}, {y:.1f}, {z:.1f}) after {time.time() - t0:.1f} s', flush=True)
 except RuntimeError as e:
     print(f'stopped after {time.time() - t0:.1f} s:', e); sys.exit(3)
 finally:
