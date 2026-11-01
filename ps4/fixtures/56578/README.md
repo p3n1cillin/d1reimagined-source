@@ -22,5 +22,12 @@ Every profile and peer card also sets the wear-helmet flag (customization block 
 2-bit field at `+0x2C`; `d1-character-fixup.py --helmet`). With it clear, the Guardian had no head in
 the Tower (issue #128); run sense77 (31 October) served it set and the helmet showed.
 
-The defaults of `lab/tower-route/ending-run.ps1` serve exactly what run sense73 (31 October 2026)
-served, apart from the account: sense73's put Legendary Marks in Silver's slot. Files named `*.draft.*` are lab drafts, kept as they were served.
+The three post-game profiles (`postgame/profile-active164-xp0`, `-xp900`, `arcadia-profile-xp900-owned`)
+carry the gear the Guardian leaves the mission with. That is the tutorial inventory's subclass,
+armour, Ghost and vehicle, plus the granted Khvostov, each in its bucket's slot and in the equipped
+array (`d1-character-fixup.py --item`; notes/ps4-56578-equip-2026-11-01.md). Without it the character
+screen after the mission was empty. The items are the ones `characters/inventory-tutorial` and the
+rifle grant serve.
+
+The defaults of `lab/tower-route/ending-run.ps1` serve what run sense73 (31 October 2026) served,
+except for the account (sense73's put Legendary Marks in Silver's slot) and the post-game gear above. Files named `*.draft.*` are lab drafts, kept as they were served.
