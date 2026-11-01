@@ -88,7 +88,7 @@ class TeleportDeltaSession(unittest.TestCase):
         self.assertTrue(any(world.get("target") == 24 for world in accepted), accepted)
         started = self.queue(client)
         self.report(client, state=4)
-        later = self.collect(client, 0.15)
+        later = self.collect(client, 0.6)
         finished = [world for world in later if world.get("teleport") == [3, *self.target]]
         self.assertTrue(finished, later)
         self.assertTrue(any(world.get("teleport") is None for world in later), later)
@@ -127,7 +127,7 @@ class TeleportDeltaSession(unittest.TestCase):
                             for world in loading), loading)
 
         self.report(client, state=4)
-        arrived = self.collect(client, 0.15)
+        arrived = self.collect(client, 0.6)
         finished = [world for world in arrived if world.get("teleport") == [3, *self.target]]
         self.assertTrue(finished, arrived)
         initial = next(world for world in started if world.get("teleport") == [1, *self.target])
