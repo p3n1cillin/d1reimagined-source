@@ -151,12 +151,33 @@ and the sell screen has to be found from that side.
   serve any yet, so the client can't send a 905. Where the receipts live (an object family, or a
   profile field past the ones `d1-oracle profile layout` names) is the next question for refunds.
 
+## Refund records: account field [20] (1 November)
+
+The refund screen (`0xA205E0`) reads the records from the account object, not the profile. Field
+`[20]` of the account (`0x8080174F`, 6,248 bytes) is a u32 followed by 30 records of 208 bytes
+(`0x80801781`):
+
+| Offset | Contents |
+|---|---|
+| `+0x00` | cost count (3 bits), then up to six costs `{u16 content, u64, u32 quantity}` from `+0x08` |
+| `+0x98` | record type (2 bits); the screen only lists type 2 |
+| `+0xA0` | the item bought: `{u16 content, u64 instance, u32 quantity}` |
+| `+0xB8` | u16 (the responder writes the vendor index) |
+| `+0xBC` | u32 (the responder writes the sale index) |
+| `+0xC0` | u64 expiry, compared with the client's "now" |
+| `+0xC8` | u64 (the responder writes the purchase stamp) |
+
+The 901's u64 is the stamp the expiry is measured against, so the responder records each applied
+purchase with expiry = stamp + `D1_REFUND_WINDOW` (default 1,800) and pushes field `[20]` with the
+account. The meaning of `+0xB8`, `+0xBC` and `+0xC8` is a guess; the screen reads the costs, the
+type, the item and the expiry.
+
 ## Still open
 
 - What the owner field behind the 901 and 905 u64 is: `0x265100` returns `obj+0x3E88` (when `+0x3E80`
   is set) or `obj+8` of the object `0x5753C0(4)` hands out, the family-4/type-4 (unlock-state,
   `0x8080102E`) lookup ([signon and entitlement](../ps4/design/signon-and-entitlement.md)). It read
   `0xB11` in sense69, not the key we serve that object under (`0x7FFFFFFFFFFFFFFE`).
-- Selling (903), refund receipts (so the client can offer a refund, 905), and the other vendors.
+- Selling (903), the refund itself (905, once the client offers it), and the other vendors.
 - A purchase priced in Vanguard or Crucible Marks, at a quartermaster.
 - Why the client won't send the faction badge purchase.
