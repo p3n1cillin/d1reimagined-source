@@ -2,7 +2,8 @@
 
     squad-templates-readonly.py [--group 0xfc0e45a3]
 For every squad in the current content's squad list it prints the sensor name (group, index), the
-template's inline spawn-point count (template +0x40), the squad's own spawn-node head (+0x3D8, -1 =
+template's variant count (template +0x20, what the per-frame update 0x102C10 loops over),
+its inline spawn-point count (template +0x40), the squad's own spawn-node head (+0x3D8, -1 =
 none) and its +0x250 reference. The template is what 0x1055E0 returns:
 P = squad[+8] + resolve(u32 squad[+0]); template = resolve(u32 P[+0x68]) + u64 P[+0x70].
 The spawn picker 0x179FB0 walks the node list at list +0x188 (squad +0x3D8), filled at squad init
@@ -36,9 +37,10 @@ for j in range(count):
         P = p.u(comp + 8, 'Q') + sr.resolve(p.u(comp, 'I'))
         tmpl = sr.resolve(p.u(P + 0x68, 'I')) + p.u(P + 0x70, 'Q')
         points = p.u(tmpl + 0x40, 'q')
+        variants = p.u(tmpl + 0x20, 'q')   # the per-frame update 0x102C10 loops over these; 0 = it never spawns
         head = p.u(comp + 0x3D8, 'i')
         ref = struct.unpack('<IBxH', p.read(comp + 0x250, 8))
-        print(f'{h:#010x} kind {kind} index {index:3d}  template points {points:3d}  head {head:#x}  '
+        print(f'{h:#010x} kind {kind} index {index:3d}  variants {variants:2d}  template points {points:3d}  head {head:#x}  '
               f'+0x250 ref {ref[0]:#x}/{ref[1]:#x}/{ref[2]:#x}  members {p.u(comp + 0x278, "i")}')
     except Exception as e:  # a squad mid-teardown; report and go on
         print(f'entry {j}: {e}')
