@@ -26,7 +26,8 @@ This is how the lab's runs are made. The defaults recreate run sense73 (31 Octob
 
 | Script | Role |
 |---|---|
-| `ending-run.ps1` | Starts `tools/ps4_setup/d1-agr-run.ps1` with the route's server settings, then the jobs below. `-BreachFallen` also serves the Breach Fallen after the rifle and has the replay fight them along its route (run sense97). |
+| `ending-run.ps1` | Starts `tools/ps4_setup/d1-agr-run.ps1` with the route's server settings, then the jobs below. `-BreachFallen` also serves the Breach Fallen after the rifle and has the replay fight them along its route (run sense97). `-Waves` serves the Breach by its own triggers instead (`agr-steps-divide-waves.txt`); the replay then fights stretch by stretch, re-arms the waves after a death and restarts from the nearest leg after a respawn. `-Steps <schedule>` serves another schedule. |
+| `resume-waves.sh` | A supervised resume of a `-Waves` run after the rifle: stops the stuck replay, releases the pad, resumes from the leg nearest the Guardian, then runs `chain2.sh` if it reaches the Divide. |
 | `chain2.sh` | After the replay reaches the Divide: walks (`nav.py`) and fights (`combat2.py`) through the gate, Dock 13 and the hangar until the mission's last squad is down. |
 | `postgame5.sh` | Pushes the profile at the right moments (XP, completion, the Arcadia), then the scoreboard and phase 7, which bring up the post-game screens. |
 | `capture51.sh` | Records from Dock 13 through the post-game tour. |
