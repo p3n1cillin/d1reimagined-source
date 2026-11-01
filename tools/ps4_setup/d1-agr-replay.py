@@ -220,8 +220,14 @@ class Replay:
                 self.skirmish(tag)
                 self.pad(f"Hold:{'DA'[attempt % 2]}:600", 'NumPad2')
                 # Re-approach rather than push: sense107's fan retries resumed at the waypoint nearest
-                # the stop, the wrong side of the fan room's grate, and pressed into it four times.
-                current = self.resume_route(name, route, lines, back=3 * (attempt + 1)) or current
+                # the stop and pressed into the fan room's grate four times. d1-walk skips to the
+                # nearest waypoint of whatever route it is given, so first walk to one earlier
+                # waypoint alone, then resume from there.
+                back = self.resume_route(f'{name}-back{attempt}', route, lines, back=3 * (attempt + 1))
+                if back:
+                    first = json.loads(Path(back).read_text())[:1]
+                    self.walk_once(f'{tag}-back', self.write_route(f'{tag}-back', first), 60, 1.5, (), check=False)
+                current = back or current
                 continue
             current = self.resume_route(name, route, lines) or current
         raise RuntimeError(f'{name} stopped before completing its route in {tries} tries; no subsequent input sent')
