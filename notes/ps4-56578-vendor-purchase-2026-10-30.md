@@ -154,7 +154,9 @@ and the sell screen has to be found from that side.
 ## Still open
 
 - What the owner field behind the 901 and 905 u64 is: `0x265100` returns `obj+0x3E88` (when `+0x3E80`
-  is set) or `obj+8` of the object `0x5753C0(4)` hands out. It read `0xB11` in sense69.
+  is set) or `obj+8` of the object `0x5753C0(4)` hands out, the family-4/type-4 (unlock-state,
+  `0x8080102E`) lookup ([signon and entitlement](../ps4/design/signon-and-entitlement.md)). It read
+  `0xB11` in sense69, not the key we serve that object under (`0x7FFFFFFFFFFFFFFE`).
 - Selling (903), refund receipts (so the client can offer a refund, 905), and the other vendors.
 - A purchase priced in Vanguard or Crucible Marks, at a quartermaster.
 - Why the client won't send the faction badge purchase.
