@@ -2701,7 +2701,20 @@ pub fn account_rsat_with_inventory(
     inventory: &[u8],
     bit_count: usize,
 ) -> Vec<u8> {
-    assert!(bit_count <= inventory.len() * 8, "{bit_count} bits from {} bytes", inventory.len());
+    account_rsat_with_fields(account_soid, characters, profile_soid, &[(6, inventory, bit_count)])
+}
+
+/// [`account_rsat`] plus any of fields **[6]..[24]**, each given as its sub-object's own bitstream
+/// `(field, bytes, bit_count)` (encode it with the client's codec, `d1-oracle object --tag <sub-tag>
+/// --obj-file`). Fields not listed stay ABSENT, as in [`account_rsat_with_inventory`], which this
+/// generalises. Field [20] (`0x8080174F` at `+0x5A50`) is the vendor refund records: a u32, then 30
+/// records of 208 bytes, the list the client's refund screen (`0xA205E0`) walks.
+pub fn account_rsat_with_fields(
+    account_soid: u64,
+    characters: &[u64],
+    profile_soid: u64,
+    fields: &[(u32, &[u8], usize)],
+) -> Vec<u8> {
     let mut bits = character_list_bits(account_soid, characters);
     bits.push(false); // field 2 absent
     bits.push(true); // field 3 present
@@ -2710,10 +2723,15 @@ pub fn account_rsat_with_inventory(
     }
     bits.push(false); // field 4
     bits.push(false); // field 5
-    bits.push(true); // field 6 present
-    bits.extend((0..bit_count).map(|i| (inventory[i / 8] >> (7 - i % 8)) & 1 == 1));
-    for _ in 0..(ACCOUNT_FIELD_COUNT - 7) {
-        bits.push(false);
+    for field in 6..ACCOUNT_FIELD_COUNT {
+        match fields.iter().find(|f| f.0 == field) {
+            Some(&(_, data, bit_count)) => {
+                assert!(bit_count <= data.len() * 8, "field {field}: {bit_count} bits from {} bytes", data.len());
+                bits.push(true);
+                bits.extend((0..bit_count).map(|i| (data[i / 8] >> (7 - i % 8)) & 1 == 1));
+            }
+            None => bits.push(false),
+        }
     }
     pack_msb_first(bits)
 }
@@ -3887,6 +3905,22 @@ mod unlocks_object_tests {
         assert!(with[at + 1..].iter().all(|&b| b == 0), "every later field absent");
         let inv = account_rsat_with_inventory(1, &[2], 3, &[0b1010_0000], 3);
         assert_eq!(&bits(&inv)[at..at + 4], &[1, 1, 0, 1]);
+    }
+
+    /// Field [20] (the refund records) lands after [6]'s bits and thirteen absent fields [7]..[19],
+    /// followed by four absent fields [21]..[24].
+    #[test]
+    fn account_with_fields_places_field_20() {
+        let bits = |b: &[u8]| (0..b.len() * 8).map(|i| (b[i / 8] >> (7 - i % 8)) & 1).collect::<Vec<u8>>();
+        let at = (1 + 64) + (1 + 4 + 64) + 1 + (1 + 64) + 2;
+        let a = bits(&account_rsat_with_fields(1, &[2], 3, &[(6, &[0b1010_0000], 3), (20, &[0b1100_0000], 2)]));
+        assert_eq!(&a[at..at + 4], &[1, 1, 0, 1], "field [6] and its three bits");
+        let f20 = at + 4 + 13;
+        assert!(a[at + 4..f20].iter().all(|&b| b == 0), "fields [7]..[19] absent");
+        assert_eq!(&a[f20..f20 + 3], &[1, 1, 1], "field [20] present, then its two bits");
+        assert!(a[f20 + 3..f20 + 7].iter().all(|&b| b == 0), "fields [21]..[24] absent");
+        assert_eq!(account_rsat_with_fields(1, &[2], 3, &[(6, &[0b1010_0000], 3)]),
+                   account_rsat_with_inventory(1, &[2], 3, &[0b1010_0000], 3));
     }
 
     /// A verbatim account that is the hand-built one must give the same family as not passing one,

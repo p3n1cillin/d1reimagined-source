@@ -91,6 +91,55 @@ struct State {
     template: Vec<u8>,
     next_soid: u64,
     oracle: String,
+    /// Refund records sent as account field [20] (newest last, at most [`REFUND_RECORDS`]).
+    refunds: Vec<RefundRecord>,
+}
+
+/// Account field [20] (`0x8080174F`, 6248 bytes): a u32, then 30 records of 208 bytes
+/// (`0x80801781`). The vendor refund screen (`0xA205E0`) shows the records whose type (`+0x98`, 2 bits)
+/// is 2 and whose expiry (`+0xC0`) is later than the client's time (the u64 a 901 or 905 request
+/// carries). Each holds the costs to give back (`+0x00`: 3-bit count, up to six `{u16 content @0, u64
+/// @8, u32 quantity @0x10}` from `+0x08`) and the item (`+0xA0`, same shape). `+0xB8` (u16), `+0xBC`
+/// (u32) and `+0xC8` (u64) are filled with the vendor, the sale index and the purchase time as a guess.
+const REFUND_RECORDS: usize = 30;
+const REFUND_FIELD_BYTES: usize = 6248;
+const REFUND_RECORD_BYTES: usize = 208;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct RefundRecord {
+    vendor: u8,
+    sale: u16,
+    item: u16,
+    instance: u64,
+    costs: Vec<(u16, u32)>,
+    bought: u64,
+    expires: u64,
+}
+
+/// The 6248-byte `0x8080174F` object for `records` (oldest first).
+fn refund_object(records: &[RefundRecord]) -> Vec<u8> {
+    let mut o = vec![0u8; REFUND_FIELD_BYTES];
+    let records = &records[records.len().saturating_sub(REFUND_RECORDS)..];
+    o[0..4].copy_from_slice(&(records.len() as u32).to_le_bytes());
+    for (i, r) in records.iter().enumerate() {
+        let at = 8 + REFUND_RECORD_BYTES * i;
+        let costs = &r.costs[..r.costs.len().min(6)];
+        o[at] = costs.len() as u8;
+        for (j, (content, quantity)) in costs.iter().enumerate() {
+            let c = at + 8 + 24 * j;
+            o[c..c + 2].copy_from_slice(&content.to_le_bytes());
+            o[c + 0x10..c + 0x14].copy_from_slice(&quantity.to_le_bytes());
+        }
+        o[at + 0x98] = 2;
+        o[at + 0xA0..at + 0xA2].copy_from_slice(&r.item.to_le_bytes());
+        o[at + 0xA8..at + 0xB0].copy_from_slice(&r.instance.to_le_bytes());
+        o[at + 0xB0..at + 0xB4].copy_from_slice(&1u32.to_le_bytes());
+        o[at + 0xB8..at + 0xBA].copy_from_slice(&u16::from(r.vendor).to_le_bytes());
+        o[at + 0xBC..at + 0xC0].copy_from_slice(&u32::from(r.sale).to_le_bytes());
+        o[at + 0xC0..at + 0xC8].copy_from_slice(&r.expires.to_le_bytes());
+        o[at + 0xC8..at + 0xD0].copy_from_slice(&r.bought.to_le_bytes());
+    }
+    o
 }
 
 fn state() -> &'static Mutex<Option<State>> {
@@ -112,7 +161,7 @@ fn load() -> anyhow::Result<State> {
     }
     let oracle = std::env::var("D1_ORACLE").unwrap_or_else(|_| "d1-server/target/release/d1-oracle".into());
     tracing::warn!("      vendor purchases on: {} sales from {sales_path}, account {account:?}", sales.len());
-    Ok(State { sales, account, profile, template, next_soid: 0xD100_0000_0000_0601, oracle })
+    Ok(State { sales, account, profile, template, next_soid: 0xD100_0000_0000_0601, oracle, refunds: Vec::new() })
 }
 
 /// Run `d1-oracle object --tag TAG --obj-file …`; returns the payload and its bit count.
@@ -134,8 +183,8 @@ fn encode(oracle: &str, tag: &str, obj: &[u8], name: &str) -> anyhow::Result<(Ve
     Ok((std::fs::read(&out)?, bits))
 }
 
-/// Decode the 901 request with the client's codec: (vendor, sale).
-fn decode_request(oracle: &str, req: &[u8]) -> anyhow::Result<(u8, u16)> {
+/// Decode the 901 request with the client's codec: (vendor, sale, the client's time stamp at +8).
+fn decode_request(oracle: &str, req: &[u8]) -> anyhow::Result<(u8, u16, u64)> {
     let hex: String = req.iter().map(|b| format!("{b:02x}")).collect();
     let o = std::process::Command::new(oracle).args(["object", "--tag", "0x80801777", "--decode", &hex]).output()?;
     let text = String::from_utf8_lossy(&o.stdout);
@@ -147,7 +196,10 @@ fn decode_request(oracle: &str, req: &[u8]) -> anyhow::Result<(u8, u16)> {
         Some(Ok(w)) => w,
         _ => 0, // all-zero object: vendor 0, sale 0
     };
-    Ok(((w0 & 0xFF) as u8, ((w0 >> 16) & 0xFFFF) as u16))
+    let stamp = text.lines().find_map(|l| {
+        l.trim().strip_prefix("+0x0008").and_then(|v| u64::from_str_radix(v.trim().trim_start_matches("0x"), 16).ok())
+    }).unwrap_or(0);
+    Ok(((w0 & 0xFF) as u8, ((w0 >> 16) & 0xFFFF) as u16, stamp))
 }
 
 /// A 903 `vendor_sell_item` request (`0x80801734`, 32 bytes): an item reference `{bool @0, u64 @8,
@@ -348,7 +400,16 @@ fn publish(st: &State, sidecar: Option<(u64, Vec<u8>)>) -> anyhow::Result<()> {
     let acct = crate::env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
     let chr = crate::env_soid("D1_CHARACTER_SOID", 0xD100_0000_0000_0101);
     let prof = crate::env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201);
-    let account = d1_bap::account_rsat_with_inventory(acct, &[chr], prof, &bits, n);
+    let refunds = if st.refunds.is_empty() {
+        None
+    } else {
+        Some(encode(&st.oracle, "0x8080174f", &refund_object(&st.refunds), "account-refunds")?)
+    };
+    let mut fields: Vec<(u32, &[u8], usize)> = vec![(6, &bits, n)];
+    if let Some((rb, rn)) = &refunds {
+        fields.push((20, rb, *rn));
+    }
+    let account = d1_bap::account_rsat_with_fields(acct, &[chr], prof, &fields);
     let (profile, _) = encode(&st.oracle, "0x80801743", &st.profile, "profile")?;
     if let Some(p) = std::env::var_os("D1_ACCOUNT_PUSH_FILE").map(PathBuf::from) {
         std::fs::write(&p, &account)?;
@@ -409,10 +470,18 @@ pub fn on_buy(req: Vec<u8>) {
         };
         let Some(st) = guard.as_mut() else { return };
         let result = (|| -> anyhow::Result<String> {
-            let (vendor, sale) = decode_request(&st.oracle, &req)?;
+            let (vendor, sale, stamp) = decode_request(&st.oracle, &req)?;
             let (what, sidecar) = apply(st, vendor, sale)?;
+            // The refund record the client's refund screen needs (account field [20]).
+            let s = &st.sales[&(vendor, sale)];
+            let window: u64 = std::env::var("D1_REFUND_WINDOW").ok().and_then(|v| v.parse().ok()).unwrap_or(1800);
+            st.refunds.push(RefundRecord {
+                vendor, sale, item: s.item, instance: sidecar.as_ref().map(|x| x.0).unwrap_or(0),
+                costs: s.costs.iter().map(|&(content, quantity, _)| (content, quantity)).collect(),
+                bought: stamp, expires: stamp.saturating_add(window),
+            });
             publish(st, sidecar)?;
-            Ok(what)
+            Ok(format!("{what}; refund record until {:#x} (bought at {stamp:#x})", stamp.saturating_add(window)))
         })();
         match result {
             Ok(what) => tracing::warn!("      ⭐⭐ VENDOR PURCHASE APPLIED: {what}; pushes written"),
@@ -500,7 +569,7 @@ mod tests {
         }
         let mut account = BTreeMap::new();
         account.insert(308, (869, glimmer));
-        State { sales: parse_sales(TSV), account, profile, template: vec![0; 184], next_soid: 0x601, oracle: String::new() }
+        State { sales: parse_sales(TSV), account, profile, template: vec![0; 184], next_soid: 0x601, oracle: String::new(), refunds: Vec::new() }
     }
 
     #[test]
@@ -620,6 +689,29 @@ mod tests {
         assert!(apply_equip(&mut p, 0xD100_0000_0000_0999).is_err(), "an instance in no slot is refused");
         put(&mut p, 0, 872, 0xD100_0000_0000_0500);
         assert!(apply_equip(&mut p, 0xD100_0000_0000_0500).is_err(), "Materials have no equipped entry");
+    }
+
+    /// A refund record lands where the client's refund screen reads it: type 2 at +0x98, the item at
+    /// +0xA0, the expiry at +0xC0, the costs from +0x08, with the count in front.
+    #[test]
+    fn a_refund_record_has_the_screens_layout() {
+        let r = RefundRecord { vendor: 6, sale: 23, item: 840, instance: 0xD100_0000_0000_0601,
+                               costs: vec![(869, 570)], bought: 0xB11, expires: 0xB11 + 1800 };
+        let o = refund_object(&[r.clone()]);
+        assert_eq!(o.len(), REFUND_FIELD_BYTES);
+        assert_eq!(&o[0..4], &1u32.to_le_bytes());
+        let at = 8;
+        assert_eq!(o[at], 1, "one cost");
+        assert_eq!(&o[at + 8..at + 10], &869u16.to_le_bytes());
+        assert_eq!(&o[at + 0x18..at + 0x1C], &570u32.to_le_bytes());
+        assert_eq!(o[at + 0x98], 2);
+        assert_eq!(&o[at + 0xA0..at + 0xA2], &840u16.to_le_bytes());
+        assert_eq!(&o[at + 0xA8..at + 0xB0], &0xD100_0000_0000_0601u64.to_le_bytes());
+        assert_eq!(&o[at + 0xC0..at + 0xC8], &(0xB11u64 + 1800).to_le_bytes());
+        let many: Vec<_> = (0..35).map(|i| RefundRecord { sale: i, ..r.clone() }).collect();
+        let o = refund_object(&many);
+        assert_eq!(&o[0..4], &30u32.to_le_bytes(), "only the newest 30");
+        assert_eq!(&o[8 + 0xBC..8 + 0xC0], &5u32.to_le_bytes(), "the oldest kept is the sixth");
     }
 
     #[test]
