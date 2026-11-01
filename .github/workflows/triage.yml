@@ -2,8 +2,8 @@
 # write token, so nothing here checks out or executes pull request code; conventions reads the PR's
 # commits as git objects only.
 # - conventions (required): `area: summary` title, no secrets, no broken relative links;
-# - triage: welcome a first issue or PR; the open-PR limit (1 until an author has a PR merged, then 20,
-#   none from 20); "needs review"; size labels; auto-merge for the maintainer's and Dependabot's PRs;
+# - triage: welcome a first issue or PR; the open-PR limit (3 ready PRs until an author has a PR merged,
+#   then 20, none from 20; drafts don't count); "needs review"; size labels; auto-merge for the maintainer's and Dependabot's PRs;
 # - areas: labels from .github/labeler.yml (they group the weekly release notes);
 # - report: the automatic pre-review report on contributors' PRs (.github/scripts/pr_report.py).
 name: Triage
@@ -70,6 +70,7 @@ jobs:
                 await github.rest.issues.createComment({ owner, repo, issue_number: item.number, body: [
                   `Thanks for your first ${isPR ? 'pull request' : 'issue'}, @${author}, and welcome to D1 Reimagined.`, '',
                   `A maintainer will take a look. The [contributing guide](${site}/CONTRIBUTING.md) explains how ${isPR ? 'pull requests move from review to merge' : 'issues and pull requests are handled'}, and the [contributor checkpoint](${site}/docs/STATUS.md) is where to start.`,
+                  ...(isPR ? ['Unfinished is fine: mark it as a draft and say what is missing, and we will help get it over the line. Leave "Allow edits by maintainers" ticked so a maintainer can push small fixes for you.'] : []),
                   'Questions and early ideas are welcome on the [community Discord](https://d1reimagined.com/discord) (help and ideas forums).', '',
                   'Please keep game files, keys, firmware and account data out of issues and pull requests.',
                 ].join('\n') });
@@ -98,14 +99,15 @@ jobs:
             if (['opened', 'reopened', 'ready_for_review'].includes(action)) {
               const merged = (await github.rest.search.issuesAndPullRequests({ q: `repo:${owner}/${repo} is:pr is:merged base:main author:${author}`, per_page: 1 })).data.total_count;
               if (merged < 20) {
-                const limit = merged >= 1 ? 20 : 1;
+                const limit = merged >= 1 ? 20 : 3;
                 const open = new Set((await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open', base: 'main', per_page: 100 }))
-                  .filter((p) => p.user.login === author).map((p) => p.number)).add(pr.number);
+                  .filter((p) => p.user.login === author && !p.draft).map((p) => p.number));
+                if (!pr.draft) open.add(pr.number);
                 if (open.size > limit) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: ['open PR limit', ...add] });
                   await github.rest.issues.createComment({ owner, repo, issue_number: pr.number, body:
-                    `Thanks for your contribution! Until an author has a pull request merged they can have 1 open at a time, then 20, and from 20 merged there is no limit. ` +
-                    'This one was closed automatically because that limit was reached. It is not a judgement of the change: reopen it once one of your open pull requests is merged or closed.' });
+                    `Thanks for your contribution! Until an author has a pull request merged they can have 3 ready for review at a time, then 20, and from 20 merged there is no limit; drafts don't count. ` +
+                    'This one was closed automatically because that limit was reached. It is not a judgement of the change: reopen it as a draft, or once one of your open pull requests is merged or closed.' });
                   await github.rest.pulls.update({ owner, repo, pull_number: pr.number, state: 'closed' });
                   return;
                 }

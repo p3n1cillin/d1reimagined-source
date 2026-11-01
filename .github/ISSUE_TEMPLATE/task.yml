@@ -1,0 +1,44 @@
+name: Task
+description: A piece of work to pick up, sized for one pull request. Maintainers use this for good first issues.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A task says what to change, where, and how anyone can tell it is done. If you are not sure
+        it is wanted yet, ask in the ideas forum on the [Discord](https://d1reimagined.com/discord) first.
+  - type: textarea
+    id: what
+    attributes:
+      label: What to do
+      description: The change, in a few sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where
+      description: The files, crates or notes involved, as links.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: What a reviewer can check, e.g. "`cargo test -p d1-bap` passes with a new test for 403".
+    validations:
+      required: true
+  - type: dropdown
+    id: inputs
+    attributes:
+      label: Game files needed?
+      options:
+        - No, it works without game files
+        - Yes, it needs your own game inputs
+    validations:
+      required: true
+  - type: textarea
+    id: background
+    attributes:
+      label: Background
+      description: Links to notes, issues or Dev Blogs that explain why.
