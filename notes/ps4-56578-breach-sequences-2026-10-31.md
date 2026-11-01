@@ -128,6 +128,26 @@ the rifle's retrack, the replay publishes `ps4/fixtures/56578/mission/agr-b-grav
   - All four squads were empty in memory 3.5 minutes after the publish. The chest walk then
     resumed from the waypoint nearest the Guardian.
 
+## A second wave by the junction (runs sense101 and sense102)
+
+`ending-run.ps1 -JunctionFallen` (`d1-agr-replay.py --junction-fallen`) serves a second list after
+the `junction-west` leg and fights it along the garage route before the garage publish. The fight
+is now one helper per wave.
+
+- **sense101, with squads 64, 68, 72, 74 and 76** (the map's west group):
+  - The Breach wave went down in six rounds. The legs after it walked normally to the junction.
+  - At the junction, 64 and 68 went down. 72 and 74 stand a level below the garage route, and 76
+    by its end. Fighting them, the Guardian died twice.
+  - It respawned back in the tripmine corridor (about (461, -720)). The garage walk then headed
+    straight at the route from there, ended on the lower level near 72 at (421, -711), and the
+    replay stopped there.
+  - The four Breach squads had members again by then, at their spawn spots. With a desired count
+    of 1, a squad refills once its member dies. They were far behind the route.
+- **Changes:**
+  - The junction list now serves only 64, 68 and 76, the ones on or by the garage route.
+  - When the Guardian ends a wave more than 15 m from the next route (a respawn), it re-walks the
+    leg before the fight from its nearest waypoint first.
+
 ## Next
 
 - The Wall's later squads at their own moments, the same way.
