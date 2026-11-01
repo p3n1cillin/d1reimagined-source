@@ -84,7 +84,7 @@ jobs:
         working-directory: ps4/d1-server
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -169,7 +169,7 @@ jobs:
         run: |
           read -ra changed <<< "$FILES"
           rustfmt --check --edition 2021 "${changed[@]}" 2>&1 | python3 .github/scripts/new_findings.py --base "$BASE" --tool rustfmt || true
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         if: steps.files.outputs.rs != ''
         with:
           path: |
