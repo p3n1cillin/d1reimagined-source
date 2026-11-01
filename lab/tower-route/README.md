@@ -26,13 +26,14 @@ This is how the lab's runs are made. The defaults recreate run sense73 (31 Octob
 
 | Script | Role |
 |---|---|
-| `ending-run.ps1` | Starts `tools/ps4_setup/d1-agr-run.ps1` with the route's server settings, then the jobs below. |
+| `ending-run.ps1` | Starts `tools/ps4_setup/d1-agr-run.ps1` with the route's server settings, then the jobs below. `-BreachFallen` also serves the Breach Fallen after the rifle and has the replay fight them along its route (run sense97). |
 | `chain2.sh` | After the replay reaches the Divide: walks (`nav.py`) and fights (`combat2.py`) through the gate, Dock 13 and the hangar until the mission's last squad is down. |
 | `postgame5.sh` | Pushes the profile at the right moments (XP, completion, the Arcadia), then the scoreboard and phase 7, which bring up the post-game screens. |
 | `capture51.sh` | Records from Dock 13 through the post-game tour. |
 | `continue-hold.sh` | Checks the recall gate, then holds CONTINUE and watches the departure to the Tower. |
 | `combat2.py`, `fight.py`, `plates.py`, `health.py`, `read_vitals.py` | Find live enemies (nameplates, squad memory), aim and fire. |
 | `nav.py`, `run.py`, `follow.py`, `seek.py`, `target.py`, `marker.py`, `release.py` | Walk the Guardian over positions it has walked before. |
+| `where.py`, `squad-templates-readonly.py`, `find-bytes-readonly.py` | Read-only: the Guardian's position; each live squad's template variants, spawn points and node list; a byte search of the client's memory. |
 | `alive.py` | Reads live squad counts from the activity host log. |
 | `gamefocus.py` | Keeps the emulator window in front for input. |
 | `abilities-check.py`, `tower-head-check.py` | Screen checks of a running lab: the ability icons (#134), and the Guardian's head in the Tower in the normal view and the wave emote (#128). |

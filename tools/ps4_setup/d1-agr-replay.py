@@ -18,7 +18,9 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import d1paths  # sibling: local paths from D1_ROOT or paths.json
 ROUTES = HERE.parents[1] / 'missions' / 'routes'
+LAB = HERE.parents[1] / 'lab' / 'tower-route'   # combat2.py, seek.py, target.py, release.py
 RIFLE_EVENT = 'player trigger 0x992bb471/0x1d/35 reported'
+BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-graveyard-fallen.txt gives states
 
 
 def contains(path, needle, offset=0):
@@ -50,13 +52,13 @@ def wait_for(path, needle, seconds, *, offset=0, clock=time.monotonic, sleep=tim
 
 
 class Replay:
-    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES):
+    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None):
         self.run, self.host_log, self.garage_clients = run, host_log, garage_clients
-        self.pad_path, self.routes = pad, routes
+        self.pad_path, self.routes, self.fallen = pad, routes, fallen
         self.tracked = run / 'tracked.json'
         self.native_unit = False
 
-    def command(self, name, args, seconds):
+    def command(self, name, args, seconds, check=True):
         # Preserve earlier attempts and evidence, including explicit resumes.
         index = 0
         while True:
@@ -72,7 +74,7 @@ class Replay:
                                     env=dict(os.environ, D1_PAD=str(self.pad_path)))
         lines = path.read_text(encoding='utf-8', errors='replace').splitlines()
         print(name, 'exit', result.returncode, 'last:', lines[-1] if lines else '(empty)', flush=True)
-        if result.returncode:
+        if result.returncode and check:
             raise RuntimeError(f'{name} failed; preserve {path}')
         return lines
 
@@ -102,12 +104,12 @@ class Replay:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
 
-    def walk_once(self, name, route, seconds, tolerance, extra):
+    def walk_once(self, name, route, seconds, tolerance, extra, check=True):
         tracking = (['--native-unit', '--memory-facing'] if self.native_unit else
                     ['--tracked', str(self.tracked)])
         return self.command(name, [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
             *tracking, '--route', str(route), '--max-seconds', str(seconds),
-            '--tolerance', str(tolerance), '--turn-sign', '1', '--turn-rate', '2.26', *extra], seconds + 45)
+            '--tolerance', str(tolerance), '--turn-sign', '1', '--turn-rate', '2.26', *extra], seconds + 45, check)
 
     def select_retracked_position(self):
         """A sparse heuristic retrack must not drive the fourteen-minute chest leg.
@@ -168,20 +170,77 @@ class Replay:
         raise RuntimeError('Insufficient fresh position tracking; no route input sent')
 
     def publish_garage(self):
+        self.publish(self.garage_clients, 'garage')
+        time.sleep(6)
+
+    def publish(self, clients, label):
+        # The host opens the path itself: a Windows path (F:/...), never an MSYS one (/f/...).
         control = self.run.parent / 'ah-control.txt'
         offset = self.host_log.stat().st_size
         with control.open('x', encoding='utf-8') as output:
-            output.write('clients 0x4786c0e0 ' + self.garage_clients.as_posix() + '\n')
+            output.write('clients 0x4786c0e0 ' + clients.as_posix() + '\n')
         deadline = time.monotonic() + 20
         while control.exists() and time.monotonic() < deadline:
             time.sleep(.5)
         if control.exists():
-            raise RuntimeError('AH did not consume the garage control; stopping')
+            raise RuntimeError(f'AH did not consume the {label} control; stopping')
         # Consumption is not acceptance. Require the host's success line as well.
-        accepted = 'control: sensor clients ' + self.garage_clients.as_posix() + ' ('
+        accepted = 'control: sensor clients ' + clients.as_posix() + ' ('
         if not wait_for(self.host_log, accepted, 20, offset=offset):
-            raise RuntimeError('AH did not log acceptance of the garage list; stopping')
-        time.sleep(6)
+            raise RuntimeError(f'AH did not log acceptance of the {label} list; stopping')
+
+    def breach_fight(self, route):
+        """Opt-in (--breach-fallen): the Breach Fallen, fought along the route. Returns the rest of it.
+
+        The list gives Breach squads 21, 26, 28 and 30 a state with one desired member each, so they
+        spawn (26 October run `fallen2`; traced through the spawn path in run sense94). The walk alone
+        does not survive them. In run sense96 one came and was shot; the other three stood still on
+        the route itself (it passes them by waypoint 13), and free seeking off the route lost the
+        walk. So each round walks the route from the waypoint nearest the Guardian to the one nearest
+        the target, then fights, until twice no member of those squads is within 400 m. Gives up after
+        the rounds and goes on: the route can still be walked.
+        """
+        self.publish(self.fallen, 'Breach Fallen')
+        time.sleep(8)                      # the members appeared within seconds in sense94
+        empty = 0
+        for round_ in range(8):
+            lines = self.command(f'fallen-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
+                                 BREACH_SQUADS], 30, check=False)
+            target = next((l for l in reversed(lines) if l.count(',') == 1), None)
+            if target is None:
+                empty += 1
+                if empty == 2:             # twice nothing within 400 m: they are down
+                    break
+            else:
+                empty = 0
+                me, goal = self.where(), [float(v) for v in target.split(',')]
+                if me:
+                    a = min(range(len(route)), key=lambda k: math.dist(route[k][:2], me[:2]))
+                    b = min(range(len(route)), key=lambda k: math.dist(route[k][:2], goal))
+                    if b > a and math.dist(me[:2], goal) > 15:
+                        self.walk_once(f'fallen-approach-{round_}',
+                                       self.write_route(f'fallen-approach-{round_}', route[a:b + 1]),
+                                       90, 1.5, (), check=False)
+            self.command(f'fallen-fight-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
+                         '--seconds', '30', '--squads', BREACH_SQUADS,
+                         '--log', str(self.run/'fallen-combat.jsonl')], 90, check=False)
+            self.command(f'fallen-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
+        else:
+            print('Breach Fallen still standing after 8 rounds; continuing the route.', flush=True)
+        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                                 '--tracked', str(self.tracked), '--retrack'], 60)
+        self.select_retracked_position()
+        me = self.where()
+        a = min(range(len(route)), key=lambda k: math.dist(route[k][:2], me[:2])) if me else 0
+        return route[a:]
+
+    def where(self):
+        """The Guardian's position from memory (lab/tower-route/where.py), or None."""
+        lines = self.command('where', [sys.executable, '-I', str(LAB/'where.py')], 30, check=False)
+        try:
+            return [float(v) for v in lines[-1].split(',')]
+        except (IndexError, ValueError):
+            return None
 
     def sliced_route(self, name, source, start, stop):
         points = json.loads((self.routes/source).read_text())
@@ -222,7 +281,10 @@ class Replay:
         # chest trail, omitting its first point at the shared junction.
         wall = json.loads((self.routes/'fight_through_the_wall.json').read_text())
         chest = json.loads((self.routes/'wall_container_to_chest.json').read_text())
-        self.walk('chest', self.write_route('to-chest', wall + chest[1:]), 840)
+        to_chest = wall + chest[1:]
+        if self.fallen:
+            to_chest = self.breach_fight(to_chest)
+        self.walk('chest', self.write_route('to-chest', to_chest), 840)
         self.walk('mine-stairs', self.sliced_route('mine-a', 'wall_tripmine_corridor.json', 0, 4), 90, 1.2)
         self.pad('NumPad6')
         # If this fails, stop crouched. Do not blindly toggle stance in a retry.
@@ -248,6 +310,8 @@ def main():
     ap.add_argument('--boot-timeout', type=int, default=900)
     ap.add_argument('--resume-after-rifle', action='store_true',
                     help='Explicit supervised resume; refresh tracking and verify stance first')
+    ap.add_argument('--breach-fallen', type=Path,
+                    help='after the rifle, publish this list (Breach squad states) and fight the Fallen')
     a = ap.parse_args()
     if a.pad is None:
         a.pad = d1paths.tools() / 'd1-pad.ps1'
@@ -255,6 +319,8 @@ def main():
         ap.error('--boot-timeout must be positive')
     if not a.run_dir.is_dir() or not a.garage_clients.is_file() or not a.pad.is_file():
         ap.error('Run directory, private garage list and existing pad driver must exist')
+    if a.breach_fallen is not None and not a.breach_fallen.is_file():
+        ap.error('--breach-fallen must name an existing list')
     if not a.host_log.parent.name.endswith('-' + a.run_dir.name):
         ap.error('--host-log must belong to the selected contained run')
     lock = a.run_dir/'replay.lock'
@@ -263,7 +329,8 @@ def main():
     with lock.open('x') as output:
         output.write('Pad replay owns input; do not run another movement driver.\n')
     try:
-        Replay(a.run_dir, a.host_log, a.garage_clients, a.pad).play(a.boot_timeout, a.resume_after_rifle)
+        Replay(a.run_dir, a.host_log, a.garage_clients, a.pad,
+               fallen=a.breach_fallen).play(a.boot_timeout, a.resume_after_rifle)
     finally:
         lock.unlink()
 
