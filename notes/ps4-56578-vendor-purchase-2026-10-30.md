@@ -172,6 +172,22 @@ purchase with expiry = stamp + `D1_REFUND_WINDOW` (default 1,800) and pushes fie
 account. The meaning of `+0xB8`, `+0xBC` and `+0xC8` is a guess; the screen reads the costs, the
 type, the item and the expiry.
 
+Run sense91 (social Tower, 1 November):
+- At Eva the Command emblem was bought again. The responder logged `refund record until 0x145d
+  (bought at 0xd55)` and pushed an 8,563-byte account (field [20] beside the inventory). The client
+  took it: Glimmer 24,430 and "Can only hold one at a time", as before.
+- `lab/tower-route/find-bytes-readonly.py` found the record in the client's memory (two copies,
+  searched by its expiry and stamp): 1 cost of 570 Glimmer (869), type 2, item 840 with its instance
+  `0xD100000000000601`, 6 and 23 at `+0xB8`/`+0xBC`, expiry `0x145D`.
+- Eva's screen still showed no refund list, also after closing and reopening it, and neither did the
+  character screen opened from it.
+- The screen's data function (`0xA205E0`, `c_investment_vendor_refund_component`) doesn't filter by
+  vendor. It walks the 30 records from object `+0x5A58`, keeps those with type 2 whose expiry is
+  ahead of "now", sorts them and keeps at most the component's own limit (`+0x280`). It runs only when
+  `0x587880()` is 3 or less (it reads the active character index) and the three registry entry 4
+  objects exist. So the record would be listed wherever the component is placed; Eva's screen doesn't
+  place it. The next place to look is a gear vendor (Banshee-44, or a quartermaster).
+
 ## Still open
 
 - The value behind the 901 and 905 u64: `0x265100` returns a pointer to `obj+0x3E88` (when `+0x3E80`
