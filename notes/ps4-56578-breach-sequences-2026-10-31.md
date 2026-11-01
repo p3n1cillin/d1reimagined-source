@@ -153,6 +153,15 @@ is now one helper per wave.
     and 76 went down with no deaths.
   - The garage walk then completed, and the run reached the Divide at 14:16, 35 minutes after
     launch, having fought both waves.
+  - **But the Divide's squads never came.** The chain found none to fight, and the client sent 2
+    squad updates after the Divide, against 677 in sense97.
+  - The garage list was requested at 14:11:56. Built off the tick (#174), it was served at
+    14:12:09, after mission steps 16 (14:11:33) and 17 (14:11:53, the Divide's activation list).
+    It replaced step 17's frame.
+  - In sense97 the synchronous publish landed before step 16.
+  - Fixes: the host no longer serves a control frame that finishes after a mission step installed
+    one ("... superseded by a mission step; not served"). The replay accepts that answer too, and
+    waits up to 60 s for the host's answer.
 
 ## Next
 
