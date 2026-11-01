@@ -303,7 +303,8 @@ the Divide's step has fired).
 In The Breach the wall Dreg vaults the pipes, the Vandal drops from the ceiling, Dregs drop from
 above and one climbs a grate. Served as squads alone, every one of them stood up in place.
 
-The script says what each one does. `enc_breach_m0.es` defines `enter` itself:
+The script says what each one does. `enc_breach_m0.es` (Blam Network's reconstruction, already in
+[CREDITS.md](../CREDITS.md)) defines `enter` itself:
 
 ```
 def enter(actor, sequence, audio):
@@ -315,8 +316,7 @@ def enter(actor, sequence, audio):
 ```
 
 The animation is the named member's command script, one `scripted_sequence` atom naming the
-action. The sequence argument (`seq_fallen_vault_right` and the like) is only its audio. Blam
-Network's host builds it the same way (`bullshcript`, `src/host/natives/command_script.ts`).
+action. The sequence argument (`seq_fallen_vault_right` and the like) is only its audio.
 
 In 56578 the command script sits in the member's A `0x80800868`, as `0x80800512` at `+0xB0`
 (`d1-eboot descriptors --tag 0x80800868`):
