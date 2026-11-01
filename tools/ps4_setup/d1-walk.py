@@ -369,13 +369,18 @@ def main():
     # Stuck handling below (jump, back-step, side-step, skip) can repeat for the whole time limit
     # against the same obstacle: sense107 pressed into the fan room's grate for an hour in 420 s
     # walks. With no progress for --give-up seconds, stop and let the caller fight, back off or
-    # re-approach instead.
-    progress_at, progress_i, progress_d = time.time(), i, None
+    # re-approach instead. Progress is an arrival, or closing on the current waypoint; a skip or a
+    # step back only changes the waypoint measured against. sense108 skipped three in a row into
+    # the same wall at the tripmine corridor, each skip restarting the limit (2.5 minutes of it).
+    arrivals = 0
+    progress_at, progress_n, progress_i, progress_d = time.time(), 0, i, None
     while i < len(route) and time.time() < t_end:
         active(force=False)
         d_now = math.dist(here[:2], route[i][:2])
-        if i > progress_i or progress_d is None or d_now < progress_d - 0.5:
-            progress_at, progress_i, progress_d = time.time(), i, d_now
+        if i != progress_i and arrivals == progress_n:
+            progress_i, progress_d = i, d_now
+        if arrivals > progress_n or progress_d is None or d_now < progress_d - 0.5:
+            progress_at, progress_n, progress_i, progress_d = time.time(), arrivals, i, d_now
         elif a.give_up and time.time() - progress_at > a.give_up:
             print(f'no progress for {a.give_up:.0f} s at wp {i}/{len(route)}')
             break
@@ -393,6 +398,7 @@ def main():
         # count it as an arrival (rifle4 walked the whole route index off in place that way).
         if not out and d < (min(a.tolerance, 1.5) if sharp else a.tolerance):
             i += 1
+            arrivals += 1
             best, since_best, retreats = None, 0, 0
             continue
         # No progress toward this waypoint for a long while (a railing, a car): back off,
