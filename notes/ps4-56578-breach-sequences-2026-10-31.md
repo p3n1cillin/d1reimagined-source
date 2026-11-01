@@ -82,9 +82,10 @@ mostly unrelated stack locals; the live client is the better instrument.
   (`0x9243DFFB`) had none either; only 14, 15 and 16 have one point each. All 12 had members.
 - **The picker, watched** (`d1-watchwrite.py --exec 0x17A011 --exec 0x17A0BA`, from step 15
   through the Divide):
-  - Only the Divide's 12 squads called it (1-10 times each), with the `A + 0x4C`/`+0x50` we serve
-    (`0x811C9DC5`, an empty reference) and their own empty lists. They spawned anyway, so an empty
-    list is not fatal.
+  - It was called 132 times: 49 by the Divide's squads, 23 by `0x062DD95D` (the hangar cohort) and
+    60 by `0x8D3F1166`. They all had the `A + 0x4C`/`+0x50` we serve (`0x811C9DC5`, an empty
+    reference), most with empty lists of their own, and they spawned anyway. An empty list is not
+    fatal.
   - No Breach squad called the picker at all.
 - So the Breach squads are never asked to make members. The question moves up a level: the
   per-frame squad update (`0x102B60` → `0x102C10`) makes members only while desired > existing +
