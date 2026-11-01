@@ -7,6 +7,8 @@ See README.md for preparation and the limits of this diagnostic route.
 """
 import argparse
 import json
+import struct
+import re
 import math
 import os
 from pathlib import Path
@@ -27,7 +29,8 @@ BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-gr
 # replay publishes nothing and fights whatever those waves placed. The first group is the opening and the
 # hall's waves (triggers 108-112), the second the corridor's and the garage's (114-116, 106, 107).
 WAVE_SQUADS = ('26,28,30,21,24,38,42,56,58', '44,47,49,51,53,55,72,74,68,76')
-JUNCTION_SQUADS = '64,68,76'   # agr-b-graveyard-junction.txt: on or by the garage route (run sense100's map).
+JUNCTION_SQUADS = '64,68,76'
+UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'   # d1-walk.py after a death   # agr-b-graveyard-junction.txt: on or by the garage route (run sense100's map).
 # 72 and 74 stand a level below it; in sense101 the fight went down after them and the Guardian died twice.
 
 
@@ -60,9 +63,11 @@ def wait_for(path, needle, seconds, *, offset=0, clock=time.monotonic, sleep=tim
 
 
 class Replay:
-    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None, junction=None, waves=False):
+    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None, junction=None, waves=False,
+                 schedule_dir=None):
         self.run, self.host_log, self.garage_clients = run, host_log, garage_clients
-        self.waves = waves
+        self.waves, self.schedule_dir = waves, schedule_dir
+        self.rearms = 0
         self.pad_path, self.routes, self.fallen, self.junction = pad, routes, fallen, junction
         self.tracked = run / 'tracked.json'
         self.native_unit = False
@@ -90,8 +95,13 @@ class Replay:
         return lines
 
     def walk(self, name, route, seconds, tolerance=1.3, extra=(), strict=True):
-        lines = self.walk_once(name, route, seconds, tolerance, extra)
+        lines = self.walk_once(name, route, seconds, tolerance, extra, check=not self.waves)
         done = bool(lines and lines[-1].startswith('done '))
+        if self.waves and not done and lines and UNIT_LOST in lines[-1]:
+            # A death (sense106 died in the tripmine corridor): recover, then resume from here.
+            self.recover(name)
+            me = self.where()
+            lines = [f'stopped ({me[0]}, {me[1]}, {me[2]})'] if me else []
         if strict and not done:
             self.skirmish(name)
             # Run 18 stalled at the Wall's stair corner (waypoint 45 of enter_the_wall)
@@ -142,13 +152,43 @@ class Replay:
                 lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3, (), check=False)
                 if lines and lines[-1].startswith('done '):
                     break
-                self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                                         '--tracked', str(self.tracked), '--retrack'], 60, check=False)
-                self.select_retracked_position()
-                self.skirmish(tag)
+                self.recover(tag)
             else:
                 raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
             self.skirmish(f'{name}-{k}')
+
+    def recover(self, name):
+        """After a walk stops short (a stall, or a death): retrack, re-arm the waves, fight."""
+        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                                 '--tracked', str(self.tracked), '--retrack'], 60, check=False)
+        self.select_retracked_position()
+        self.rearm(name)
+        self.skirmish(name)
+
+    def rearm(self, name):
+        """Serve the current wave list again with a new arming time on its armed triggers.
+
+        A trigger's state (0x80800463) is the armed flag and an arming time. Every wave list arms
+        with time 1, and after a death in run sense106 the client reported no wave trigger again
+        (112-116 were served on their timeouts): a respawn seems to clear the arming, and the same
+        state served again doesn't restore it. A new arming time is a new state.
+        """
+        if not (self.waves and self.schedule_dir):
+            return
+        text = self.host_log.read_text(encoding='utf-8', errors='replace')
+        files = re.findall(r'mission step: index 164 .*? -> (\S+) \(', text)
+        served = re.findall(r'mission step (\d+) at ', text)
+        if not files or not served or int(served[-1]) >= len(files):
+            return
+        current = files[int(served[-1])]
+        if not current.startswith('agr-bw-'):
+            return                         # not inside the waves
+        self.rearms += 1
+        armed = ' 0x80800463 01000000' + struct.pack('<I', 1 + self.rearms).hex()
+        out = self.run / f'rearm-{self.rearms}-{current}'
+        out.write_text((self.schedule_dir / current).read_text().replace(' 0x80800463 0100000001000000', armed))
+        print(f'{name}: re-arming the triggers of {current} (arming time {1 + self.rearms})', flush=True)
+        self.publish(out, f're-armed {current}')
 
     def skirmish(self, name, rounds=3):
         """Fight what is left of the last wave where a walk stalled.
@@ -430,6 +470,8 @@ def main():
                     help='after the rifle, publish this list (Breach squad states) and fight the Fallen')
     ap.add_argument('--junction-fallen', type=Path,
                     help='after the junction, publish this list (squads 64, 68, 76) and fight them on the way to the garage')
+    ap.add_argument('--schedule-dir', type=Path,
+                    help='with --waves: the folder of the served schedule and its lists, to re-arm the waves after a death')
     ap.add_argument('--waves', action='store_true',
                     help='the schedule serves the Breach by its triggers (agr-steps-divide-waves.txt): publish nothing, fight the waves')
     a = ap.parse_args()
@@ -453,7 +495,8 @@ def main():
         output.write('Pad replay owns input; do not run another movement driver.\n')
     try:
         Replay(a.run_dir, a.host_log, a.garage_clients, a.pad, fallen=a.breach_fallen,
-               junction=a.junction_fallen, waves=a.waves).play(a.boot_timeout, a.resume_after_rifle)
+               junction=a.junction_fallen, waves=a.waves,
+               schedule_dir=a.schedule_dir).play(a.boot_timeout, a.resume_after_rifle)
     finally:
         lock.unlink()
 

@@ -84,7 +84,11 @@ if ($Waves) {
 }
 Start-Process pwsh -WindowStyle Hidden -ArgumentList $agr -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
 $Fallen = if ($BreachFallen) { ' --breach-fallen ' + ((Join-Path $Fix 'mission\agr-b-graveyard-fallen.txt' -Resolve) -replace '\\', '/') } else { '' }
-if ($Waves) { $Fallen += ' --waves' }
+if ($Waves) {
+    # The replay re-arms the current wave list after a death, so it needs the lists' folder.
+    $ScheduleDir = if ($Steps) { Split-Path (Resolve-Path $Steps).Path } else { Join-Path $Fix 'mission' }
+    $Fallen += ' --waves --schedule-dir ' + ($ScheduleDir -replace '\\', '/')
+}
 if ($JunctionFallen) { $Fallen += ' --junction-fallen ' + ((Join-Path $Fix 'mission\agr-b-graveyard-junction.txt' -Resolve) -replace '\\', '/') }
 $jobs = @(
     "until ls -d $Cf/contained-boot/*-$Name >/dev/null 2>&1; do sleep 5; done; H=`$(ls -d $Cf/contained-boot/*-$Name)/activity-host.log; R=$Cf/$Name; cd $RepoFwd && python -u -I tools/ps4_setup/d1-agr-replay.py --run-dir `$R --host-log `$H --garage-clients `$R/breach-prop3-only.txt --boot-timeout 1800$Fallen > `$R/replay-console.log 2> `$R/replay-error.log; grep -q 'DIVIDE REACHED' `$R/replay-console.log && bash $S/chain2.sh $Name > `$R/chain.log 2>&1",
