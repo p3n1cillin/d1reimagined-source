@@ -104,12 +104,12 @@ class Replay:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
 
-    def walk_once(self, name, route, seconds, tolerance, extra):
+    def walk_once(self, name, route, seconds, tolerance, extra, check=True):
         tracking = (['--native-unit', '--memory-facing'] if self.native_unit else
                     ['--tracked', str(self.tracked)])
         return self.command(name, [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
             *tracking, '--route', str(route), '--max-seconds', str(seconds),
-            '--tolerance', str(tolerance), '--turn-sign', '1', '--turn-rate', '2.26', *extra], seconds + 45)
+            '--tolerance', str(tolerance), '--turn-sign', '1', '--turn-rate', '2.26', *extra], seconds + 45, check)
 
     def select_retracked_position(self):
         """A sparse heuristic retrack must not drive the fourteen-minute chest leg.
@@ -189,18 +189,17 @@ class Replay:
         if not wait_for(self.host_log, accepted, 20, offset=offset):
             raise RuntimeError(f'AH did not log acceptance of the {label} list; stopping')
 
-    def breach_fight(self):
-        """Opt-in (--breach-fallen): the Breach Fallen, fought, then back to the route.
+    def breach_fight(self, route):
+        """Opt-in (--breach-fallen): the Breach Fallen, fought along the route. Returns the rest of it.
 
         The list gives Breach squads 21, 26, 28 and 30 a state with one desired member each, so they
-        spawn and attack (26 October run `fallen2`; traced through the spawn path in run sense94).
-        The walk alone does not survive them. Fight in rounds, closing in on the nearest one, until
-        no member of those squads is left in the client's world, then walk back to where the route
-        resumes and retrack. Gives up after the rounds and goes on: the route can still be walked.
-        Seeks go straight (--no-nav): the mission's nav graph doesn't cover the Breach, and nav.py
-        then reports exit 3 (run sense96).
+        spawn (26 October run `fallen2`; traced through the spawn path in run sense94). The walk alone
+        does not survive them. In run sense96 one came and was shot; the other three stood still on
+        the route itself (it passes them by waypoint 13), and free seeking off the route lost the
+        walk. So each round walks the route from the waypoint nearest the Guardian to the one nearest
+        the target, then fights, until twice no member of those squads is within 400 m. Gives up after
+        the rounds and goes on: the route can still be walked.
         """
-        resume = json.loads((self.routes/'fight_through_the_wall.json').read_text())[0]
         self.publish(self.fallen, 'Breach Fallen')
         time.sleep(8)                      # the members appeared within seconds in sense94
         empty = 0
@@ -214,20 +213,34 @@ class Replay:
                     break
             else:
                 empty = 0
-                self.command(f'fallen-seek-{round_}', [sys.executable, '-u', '-I', str(LAB/'seek.py'),
-                             target, '--max-s', '40', '--tol', '12', '--no-nav'], 70, check=False)
+                me, goal = self.where(), [float(v) for v in target.split(',')]
+                if me:
+                    a = min(range(len(route)), key=lambda k: math.dist(route[k][:2], me[:2]))
+                    b = min(range(len(route)), key=lambda k: math.dist(route[k][:2], goal))
+                    if b > a and math.dist(me[:2], goal) > 15:
+                        self.walk_once(f'fallen-approach-{round_}',
+                                       self.write_route(f'fallen-approach-{round_}', route[a:b + 1]),
+                                       90, 1.5, (), check=False)
             self.command(f'fallen-fight-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
-                         '--seconds', '40', '--squads', BREACH_SQUADS,
-                         '--log', str(self.run/'fallen-combat.jsonl')], 100, check=False)
+                         '--seconds', '30', '--squads', BREACH_SQUADS,
+                         '--log', str(self.run/'fallen-combat.jsonl')], 90, check=False)
             self.command(f'fallen-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         else:
             print('Breach Fallen still standing after 8 rounds; continuing the route.', flush=True)
-        self.command('fallen-return', [sys.executable, '-u', '-I', str(LAB/'seek.py'),
-                     f'{resume[0]},{resume[1]}', '--max-s', '90', '--tol', '2', '--no-nav'], 130, check=False)
-        self.command('fallen-release', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
                                  '--tracked', str(self.tracked), '--retrack'], 60)
         self.select_retracked_position()
+        me = self.where()
+        a = min(range(len(route)), key=lambda k: math.dist(route[k][:2], me[:2])) if me else 0
+        return route[a:]
+
+    def where(self):
+        """The Guardian's position from memory (lab/tower-route/where.py), or None."""
+        lines = self.command('where', [sys.executable, '-I', str(LAB/'where.py')], 30, check=False)
+        try:
+            return [float(v) for v in lines[-1].split(',')]
+        except (IndexError, ValueError):
+            return None
 
     def sliced_route(self, name, source, start, stop):
         points = json.loads((self.routes/source).read_text())
@@ -264,13 +277,14 @@ class Replay:
         self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
                               '--tracked', str(self.tracked), '--retrack'], 60)
         self.select_retracked_position()
-        if self.fallen:
-            self.breach_fight()
         # The proven session chain is the existing Wall route followed by the
         # chest trail, omitting its first point at the shared junction.
         wall = json.loads((self.routes/'fight_through_the_wall.json').read_text())
         chest = json.loads((self.routes/'wall_container_to_chest.json').read_text())
-        self.walk('chest', self.write_route('to-chest', wall + chest[1:]), 840)
+        to_chest = wall + chest[1:]
+        if self.fallen:
+            to_chest = self.breach_fight(to_chest)
+        self.walk('chest', self.write_route('to-chest', to_chest), 840)
         self.walk('mine-stairs', self.sliced_route('mine-a', 'wall_tripmine_corridor.json', 0, 4), 90, 1.2)
         self.pad('NumPad6')
         # If this fails, stop crouched. Do not blindly toggle stance in a retry.
