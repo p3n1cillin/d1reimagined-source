@@ -43,6 +43,12 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
   [`notes/public-research.md`](notes/public-research.md).
 - **[v4nguard](https://github.com/v4nguard)**: [tiger-pkg](https://github.com/v4nguard/tiger-pkg)
   (MIT). Its `d1_legacy` reader gave the package layout that `scripts/d1_pkg.py` follows.
+  [quicktag](https://github.com/v4nguard/quicktag) (GPL-3.0), its package and tag explorer, is built
+  locally for browsing build 56578's tags ([related projects](notes/related-projects.md)).
+- **[nruble](https://github.com/nruble)**: the [Cryptarch Guide](https://github.com/nruble/cryptarch-guide)
+  (GPL-3.0). Its archived D1 manifest gives the Tower vendors' map positions, from which the
+  quartermasters' and Banshee-44's world positions are estimated
+  ([vendor notes](notes/ps4-56578-vendor-purchase-2026-10-30.md)).
 - **[Blam Network](https://github.com/Blam-Network)**: [tiger](https://github.com/Blam-Network/tiger),
   TypeScript libraries for Destiny's Tiger engine (MIT for the code packages).
   - Its `gibbon` reader, with definitions for our exact build `56578.17.04.12.1251.evil`, names

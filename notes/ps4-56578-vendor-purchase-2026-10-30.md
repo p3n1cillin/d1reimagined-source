@@ -215,6 +215,36 @@ Run sense91 (social Tower, 1 November):
   22 m away but in directions that only agree if most of the distance is vertical, so his stall is
   on another level. Walking from Hideo toward (-73, -6) goes off the edge of the Tower.
 
+## Where the Tower's vendors stand (archived D1 manifest, 1 November)
+
+The [Cryptarch Guide](https://github.com/nruble/cryptarch-guide) keeps an archived D1 manifest
+(`public/data/d1_manifest`). Its `DestinyVendorDefinition` gives each Tower vendor a position on the
+Tower map (`positionX`/`positionY`, `TOWER_NODE`). We know two of them in the world: Eva Levante
+(Guardian Outfitter, map (770, 537), world (-70.9, 39.1)) and Executor Hideo (New Monarchy, map
+(735, 678), world (-77.1, 14.4)).
+
+A similarity transform through those two points has two solutions:
+- The mirrored one has rotation 0 and image y pointing down, as a map image would, at 0.175 m per
+  map pixel. It also puts the shader and silver dust kiosk 10 m from Eva, where it stands in D1.
+- The other needs a 152-degree rotation.
+
+Estimates from the mirrored fit, to be checked by walking there:
+
+| Vendor | Map | Estimated world (x, y) |
+| --- | --- | --- |
+| Crucible Quartermaster | (1052, 458) | (-21, 53) |
+| Crucible Handler (Shaxx) | (1162, 491) | (-2, 47) |
+| Bounty Tracker | (1062, 653) | (-20, 19) |
+| Postmaster | (1079, 775) | (-17, -3) |
+| Gunsmith (Banshee-44) | (1280, 665) | (18, 16) |
+| Vanguard Quartermaster | (1700, 470) | (92, 50) |
+| The Speaker | (616, 784) | (-98, -4) |
+
+The manifest also lists the quartermasters' categories. The Vanguard Quartermaster has 147 sales
+(armory, weapons, vehicles, material exchange). The Crucible Quartermaster has 75 (weapons,
+vehicles, material exchange, bounties). Banshee is 95 m from Hideo by this estimate, not 22 m, so
+the Armsday waypoint probably marks the way to him (stairs or a door), not his stall.
+
 ## Still open
 
 - The value behind the 901 and 905 u64: `0x265100` returns a pointer to `obj+0x3E88` (when `+0x3E80`
