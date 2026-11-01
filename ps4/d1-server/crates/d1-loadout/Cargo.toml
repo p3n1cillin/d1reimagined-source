@@ -22,4 +22,4 @@ serde_json.workspace = true
 # Only DEFLATE is needed: the Bungie world-content `.content` file is a one-entry ZIP whose
 # single member is DEFLATE-compressed [C, measured]. Default features would drag in
 # zstd/bzip2/lzma/AES for nothing.
-zip = { version = "8.6.0", default-features = false, features = ["deflate-flate2-zlib-rs"] }
+zip = { version = "9.2.1", default-features = false, features = ["deflate-flate2-zlib-rs"] }
