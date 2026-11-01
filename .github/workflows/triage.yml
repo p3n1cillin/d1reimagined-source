@@ -130,7 +130,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           sparse-checkout: .github
-      - uses: actions/labeler@v5
+      - uses: actions/labeler@v7
 
   # The automatic pre-review report on contributors' PRs (.github/scripts/pr_report.py): template, linked
   # issues, scope, tests, and what review should look at hardest. One comment, updated in place.
