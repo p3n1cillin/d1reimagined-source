@@ -147,6 +147,12 @@ is now one helper per wave.
   - The junction list now serves only 64, 68 and 76, the ones on or by the garage route.
   - When the Guardian ends a wave more than 15 m from the next route (a respawn), it re-walks the
     leg before the fight from its nearest waypoint first.
+- **sense102, with both changes:**
+  - The Breach wave fought through round 6; round 7 found nobody.
+  - The junction wave took three rounds: one walk along the garage route and three fights. 64, 68
+    and 76 went down with no deaths.
+  - The garage walk then completed, and the run reached the Divide at 14:16, 35 minutes after
+    launch, having fought both waves.
 
 ## Next
 
