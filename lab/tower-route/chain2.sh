@@ -12,6 +12,8 @@ stage() { echo "$(date +%H:%M:%S) $1"; }
 stage "start: squads $(python $S/alive.py $H 0x9243dffb)"
 for i in $(seq 1 10); do                      # gate fight until the gate squads (17-19) are down
   python $S/alive.py $H 0x9243dffb | grep -qE "17:0.*18:0.*19:0" && break
+  # Run sense91: the host still counted one of squad 18 for ten rounds with none left in the world.
+  [ $i -gt 2 ] && [ -z "$(python $S/target.py 17,18,19 2>/dev/null | grep -v shadPS4 | tail -1)" ] && { echo "  gate squads counted alive, none in the world"; break; }
   go pre_gate; fight 60; go gate; fight 60
 done
 stage "gate: $(python $S/alive.py $H 0x9243dffb)"
