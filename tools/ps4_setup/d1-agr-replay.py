@@ -18,7 +18,9 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import d1paths  # sibling: local paths from D1_ROOT or paths.json
 ROUTES = HERE.parents[1] / 'missions' / 'routes'
+LAB = HERE.parents[1] / 'lab' / 'tower-route'   # combat2.py, seek.py, target.py, release.py
 RIFLE_EVENT = 'player trigger 0x992bb471/0x1d/35 reported'
+BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-graveyard-fallen.txt gives states
 
 
 def contains(path, needle, offset=0):
@@ -50,13 +52,13 @@ def wait_for(path, needle, seconds, *, offset=0, clock=time.monotonic, sleep=tim
 
 
 class Replay:
-    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES):
+    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None):
         self.run, self.host_log, self.garage_clients = run, host_log, garage_clients
-        self.pad_path, self.routes = pad, routes
+        self.pad_path, self.routes, self.fallen = pad, routes, fallen
         self.tracked = run / 'tracked.json'
         self.native_unit = False
 
-    def command(self, name, args, seconds):
+    def command(self, name, args, seconds, check=True):
         # Preserve earlier attempts and evidence, including explicit resumes.
         index = 0
         while True:
@@ -72,7 +74,7 @@ class Replay:
                                     env=dict(os.environ, D1_PAD=str(self.pad_path)))
         lines = path.read_text(encoding='utf-8', errors='replace').splitlines()
         print(name, 'exit', result.returncode, 'last:', lines[-1] if lines else '(empty)', flush=True)
-        if result.returncode:
+        if result.returncode and check:
             raise RuntimeError(f'{name} failed; preserve {path}')
         return lines
 
@@ -168,20 +170,62 @@ class Replay:
         raise RuntimeError('Insufficient fresh position tracking; no route input sent')
 
     def publish_garage(self):
+        self.publish(self.garage_clients, 'garage')
+        time.sleep(6)
+
+    def publish(self, clients, label):
+        # The host opens the path itself: a Windows path (F:/...), never an MSYS one (/f/...).
         control = self.run.parent / 'ah-control.txt'
         offset = self.host_log.stat().st_size
         with control.open('x', encoding='utf-8') as output:
-            output.write('clients 0x4786c0e0 ' + self.garage_clients.as_posix() + '\n')
+            output.write('clients 0x4786c0e0 ' + clients.as_posix() + '\n')
         deadline = time.monotonic() + 20
         while control.exists() and time.monotonic() < deadline:
             time.sleep(.5)
         if control.exists():
-            raise RuntimeError('AH did not consume the garage control; stopping')
+            raise RuntimeError(f'AH did not consume the {label} control; stopping')
         # Consumption is not acceptance. Require the host's success line as well.
-        accepted = 'control: sensor clients ' + self.garage_clients.as_posix() + ' ('
+        accepted = 'control: sensor clients ' + clients.as_posix() + ' ('
         if not wait_for(self.host_log, accepted, 20, offset=offset):
-            raise RuntimeError('AH did not log acceptance of the garage list; stopping')
-        time.sleep(6)
+            raise RuntimeError(f'AH did not log acceptance of the {label} list; stopping')
+
+    def breach_fight(self):
+        """Opt-in (--breach-fallen): the Breach Fallen, fought, then back to the route.
+
+        The list gives Breach squads 21, 26, 28 and 30 a state with one desired member each, so they
+        spawn and attack (26 October run `fallen2`; traced through the spawn path in run sense94).
+        The walk alone does not survive them. Fight in rounds, closing in on the nearest one, until
+        no member of those squads is left in the client's world, then walk back to where the route
+        resumes and retrack. Gives up after the rounds and goes on: the route can still be walked.
+        """
+        resume = json.loads((self.routes/'fight_through_the_wall.json').read_text())[0]
+        self.publish(self.fallen, 'Breach Fallen')
+        time.sleep(8)                      # the members appeared within seconds in sense94
+        empty = 0
+        for round_ in range(8):
+            lines = self.command(f'fallen-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
+                                 BREACH_SQUADS], 30, check=False)
+            target = next((l for l in reversed(lines) if l.count(',') == 1), None)
+            if target is None:
+                empty += 1
+                if empty == 2:             # twice nothing within 400 m: they are down
+                    break
+            else:
+                empty = 0
+                self.command(f'fallen-seek-{round_}', [sys.executable, '-u', '-I', str(LAB/'seek.py'),
+                             target, '--max-s', '40', '--tol', '12'], 70, check=False)
+            self.command(f'fallen-fight-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
+                         '--seconds', '40', '--squads', BREACH_SQUADS,
+                         '--log', str(self.run/'fallen-combat.jsonl')], 100, check=False)
+            self.command(f'fallen-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
+        else:
+            print('Breach Fallen still standing after 8 rounds; continuing the route.', flush=True)
+        self.command('fallen-return', [sys.executable, '-u', '-I', str(LAB/'seek.py'),
+                     f'{resume[0]},{resume[1]}', '--max-s', '90', '--tol', '2'], 130, check=False)
+        self.command('fallen-release', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
+        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                                 '--tracked', str(self.tracked), '--retrack'], 60)
+        self.select_retracked_position()
 
     def sliced_route(self, name, source, start, stop):
         points = json.loads((self.routes/source).read_text())
@@ -218,6 +262,8 @@ class Replay:
         self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
                               '--tracked', str(self.tracked), '--retrack'], 60)
         self.select_retracked_position()
+        if self.fallen:
+            self.breach_fight()
         # The proven session chain is the existing Wall route followed by the
         # chest trail, omitting its first point at the shared junction.
         wall = json.loads((self.routes/'fight_through_the_wall.json').read_text())
@@ -248,6 +294,8 @@ def main():
     ap.add_argument('--boot-timeout', type=int, default=900)
     ap.add_argument('--resume-after-rifle', action='store_true',
                     help='Explicit supervised resume; refresh tracking and verify stance first')
+    ap.add_argument('--breach-fallen', type=Path,
+                    help='after the rifle, publish this list (Breach squad states) and fight the Fallen')
     a = ap.parse_args()
     if a.pad is None:
         a.pad = d1paths.tools() / 'd1-pad.ps1'
@@ -255,6 +303,8 @@ def main():
         ap.error('--boot-timeout must be positive')
     if not a.run_dir.is_dir() or not a.garage_clients.is_file() or not a.pad.is_file():
         ap.error('Run directory, private garage list and existing pad driver must exist')
+    if a.breach_fallen is not None and not a.breach_fallen.is_file():
+        ap.error('--breach-fallen must name an existing list')
     if not a.host_log.parent.name.endswith('-' + a.run_dir.name):
         ap.error('--host-log must belong to the selected contained run')
     lock = a.run_dir/'replay.lock'
@@ -263,7 +313,8 @@ def main():
     with lock.open('x') as output:
         output.write('Pad replay owns input; do not run another movement driver.\n')
     try:
-        Replay(a.run_dir, a.host_log, a.garage_clients, a.pad).play(a.boot_timeout, a.resume_after_rifle)
+        Replay(a.run_dir, a.host_log, a.garage_clients, a.pad,
+               fallen=a.breach_fallen).play(a.boot_timeout, a.resume_after_rifle)
     finally:
         lock.unlink()
 
