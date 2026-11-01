@@ -2,7 +2,7 @@
 # hangar clear) -> outro -> XP + completion + ship + scoreboard + phase 7 -> post-game tour -> CONTINUE
 # (3 s hold) -> 165 -> Tower North with its squads and vendors, recorded with game audio.
 #   ending-run.ps1 -Name sense73 [-WorldTable <file>] [-Postgame postgame5.sh] [-NoContinue] [-NoRecord] [-NoVendors]
-#     [-ClientPatch <xml>] [-ExtraEnv D1_INACTIVITY_MS=86400000] [-BreachFallen]
+#     [-ClientPatch <xml>] [-ExtraEnv D1_INACTIVITY_MS=86400000] [-BreachFallen] [-JunctionFallen]
 # The defaults recreate run sense73 (31 Oct 2026). Served fixtures come from ps4/fixtures/56578
 # (D1_FIXTURES); run output goes to the staging folder (D1_STAGING). The lab must already be stopped.
 # The served host/responder are whatever is in the served target; build and swap them separately,
@@ -34,6 +34,9 @@ param(
     # After the rifle, serve the Breach Fallen (mission/agr-b-graveyard-fallen.txt) and fight them
     # before walking on (d1-agr-replay.py --breach-fallen).
     [switch]$BreachFallen,
+    # After the junction, serve the squads by the junction and the garage (mission/
+    # agr-b-graveyard-junction.txt) and fight them on the way to the garage (--junction-fallen).
+    [switch]$JunctionFallen,
     [string]$Bash = 'C:\Program Files\Git\bin\bash.exe'
 )
 $ErrorActionPreference = 'Stop'
@@ -65,6 +68,7 @@ $agr = @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name',
 if ($ClientPatch) { $agr += '-ClientPatch', (Resolve-Path $ClientPatch).Path }
 Start-Process pwsh -WindowStyle Hidden -ArgumentList $agr -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
 $Fallen = if ($BreachFallen) { ' --breach-fallen ' + ((Join-Path $Fix 'mission\agr-b-graveyard-fallen.txt' -Resolve) -replace '\\', '/') } else { '' }
+if ($JunctionFallen) { $Fallen += ' --junction-fallen ' + ((Join-Path $Fix 'mission\agr-b-graveyard-junction.txt' -Resolve) -replace '\\', '/') }
 $jobs = @(
     "until ls -d $Cf/contained-boot/*-$Name >/dev/null 2>&1; do sleep 5; done; H=`$(ls -d $Cf/contained-boot/*-$Name)/activity-host.log; R=$Cf/$Name; cd $RepoFwd && python -u -I tools/ps4_setup/d1-agr-replay.py --run-dir `$R --host-log `$H --garage-clients `$R/breach-prop3-only.txt --boot-timeout 1800$Fallen > `$R/replay-console.log 2> `$R/replay-error.log; grep -q 'DIVIDE REACHED' `$R/replay-console.log && bash $S/chain2.sh $Name > `$R/chain.log 2>&1",
     "bash $S/$Postgame $Name $($Scoreboard -replace '\\','/') > $Cf/$Name/postgame.log 2>&1"

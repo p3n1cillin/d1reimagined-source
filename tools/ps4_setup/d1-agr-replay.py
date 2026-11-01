@@ -20,7 +20,11 @@ import d1paths  # sibling: local paths from D1_ROOT or paths.json
 ROUTES = HERE.parents[1] / 'missions' / 'routes'
 LAB = HERE.parents[1] / 'lab' / 'tower-route'   # combat2.py, seek.py, target.py, release.py
 RIFLE_EVENT = 'player trigger 0x992bb471/0x1d/35 reported'
+DIVIDE_SLICE = 'client is now in slice set 96'
+DIVIDE_STEP = 'mission step 16 at '   # agr-steps-divide.txt: the Divide's list (%96)
 BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-graveyard-fallen.txt gives states
+JUNCTION_SQUADS = '64,68,76'   # agr-b-graveyard-junction.txt: on or by the garage route (run sense100's map).
+# 72 and 74 stand a level below it; in sense101 the fight went down after them and the Guardian died twice.
 
 
 def contains(path, needle, offset=0):
@@ -52,11 +56,12 @@ def wait_for(path, needle, seconds, *, offset=0, clock=time.monotonic, sleep=tim
 
 
 class Replay:
-    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None):
+    def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None, junction=None):
         self.run, self.host_log, self.garage_clients = run, host_log, garage_clients
-        self.pad_path, self.routes, self.fallen = pad, routes, fallen
+        self.pad_path, self.routes, self.fallen, self.junction = pad, routes, fallen, junction
         self.tracked = run / 'tracked.json'
         self.native_unit = False
+        self.wave = None                   # the squads of the last wave fought, for skirmish()
 
     def command(self, name, args, seconds, check=True):
         # Preserve earlier attempts and evidence, including explicit resumes.
@@ -82,6 +87,7 @@ class Replay:
         lines = self.walk_once(name, route, seconds, tolerance, extra)
         done = bool(lines and lines[-1].startswith('done '))
         if strict and not done:
+            self.skirmish(name)
             # Run 18 stalled at the Wall's stair corner (waypoint 45 of enter_the_wall)
             # and ran out of time; the rest of the leg was walkable. Resume once from
             # the waypoint nearest the stop, then give up.
@@ -103,6 +109,32 @@ class Replay:
         if strict and not done:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
+
+    def skirmish(self, name, rounds=3):
+        """Fight what is left of the last wave where a walk stalled.
+
+        Run sense104 ended the junction wave with squad 76 still standing by the fan; the walk to
+        the Divide then stopped against the fan rail under its fire and the nudges could not get
+        past. So before resuming a stalled walk, fight any member of the last wave's squads that
+        is within reach.
+        """
+        if not self.wave:
+            return
+        fought = False
+        for round_ in range(rounds):
+            lines = self.command(f'{name}-skirmish-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
+                                 self.wave], 30, check=False)
+            if not any(l.count(',') == 1 for l in lines):
+                break
+            fought = True
+            self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
+                         '--seconds', '30', '--squads', self.wave,
+                         '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
+            self.command(f'{name}-skirmish-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
+        if fought:                         # as after a wave: the fight can move the tracked copies
+            self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                                     '--tracked', str(self.tracked), '--retrack'], 60)
+            self.select_retracked_position()
 
     def walk_once(self, name, route, seconds, tolerance, extra, check=True):
         tracking = (['--native-unit', '--memory-facing'] if self.native_unit else
@@ -170,6 +202,12 @@ class Replay:
         raise RuntimeError('Insufficient fresh position tracking; no route input sent')
 
     def publish_garage(self):
+        # Once the Divide's step (16 in agr-steps-divide.txt) has served its list, the garage list
+        # would replace it and the Divide's squads would never come. In runs sense102 and sense103
+        # the fights pushed the route past that step's timeout, so it fired before the garage.
+        if contains(self.host_log, DIVIDE_SLICE) or contains(self.host_log, DIVIDE_STEP):
+            print('The Divide step has served its list; the garage list is out of date and not published.', flush=True)
+            return
         self.publish(self.garage_clients, 'garage')
         time.sleep(6)
 
@@ -184,28 +222,31 @@ class Replay:
             time.sleep(.5)
         if control.exists():
             raise RuntimeError(f'AH did not consume the {label} control; stopping')
-        # Consumption is not acceptance. Require the host's success line as well.
-        accepted = 'control: sensor clients ' + clients.as_posix() + ' ('
-        if not wait_for(self.host_log, accepted, 20, offset=offset):
+        # Consumption is not acceptance. Require the host's answer as well: the frame served
+        # ("... (N bytes)"), or dropped because a mission step installed a newer frame while it was
+        # being built ("... superseded by a mission step"; the host builds lists off its tick).
+        accepted = 'control: sensor clients ' + clients.as_posix() + ' '
+        if not wait_for(self.host_log, accepted, 60, offset=offset):
             raise RuntimeError(f'AH did not log acceptance of the {label} list; stopping')
 
-    def breach_fight(self, route):
-        """Opt-in (--breach-fallen): the Breach Fallen, fought along the route. Returns the rest of it.
+    def fight(self, route, clients, squads, tag, label, back=None):
+        """Serve a wave (opt-in lists), fight it along `route`, and return the rest of the route.
 
-        The list gives Breach squads 21, 26, 28 and 30 a state with one desired member each, so they
-        spawn (26 October run `fallen2`; traced through the spawn path in run sense94). The walk alone
-        does not survive them. In run sense96 one came and was shot; the other three stood still on
-        the route itself (it passes them by waypoint 13), and free seeking off the route lost the
-        walk. So each round walks the route from the waypoint nearest the Guardian to the one nearest
-        the target, then fights, until twice no member of those squads is within 400 m. Gives up after
+        A list gives some squads a state with one desired member each, so they spawn (26 October run
+        `fallen2`; traced through the spawn path in run sense94). The walk alone does not survive
+        them. In run sense96 one came and was shot; the other three stood still on the route itself,
+        and free seeking off the route lost the walk. So each round walks the route from the waypoint
+        nearest the Guardian to the one nearest the target, then fights, until twice no member of
+        those squads is within 400 m (run sense97: the Breach's four in 3.5 minutes). Gives up after
         the rounds and goes on: the route can still be walked.
         """
-        self.publish(self.fallen, 'Breach Fallen')
+        self.publish(clients, label)
+        self.wave = squads
         time.sleep(8)                      # the members appeared within seconds in sense94
         empty = 0
         for round_ in range(8):
-            lines = self.command(f'fallen-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
-                                 BREACH_SQUADS], 30, check=False)
+            lines = self.command(f'{tag}-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
+                                 squads], 30, check=False)
             target = next((l for l in reversed(lines) if l.count(',') == 1), None)
             if target is None:
                 empty += 1
@@ -218,19 +259,27 @@ class Replay:
                     a = min(range(len(route)), key=lambda k: math.dist(route[k][:2], me[:2]))
                     b = min(range(len(route)), key=lambda k: math.dist(route[k][:2], goal))
                     if b > a and math.dist(me[:2], goal) > 15:
-                        self.walk_once(f'fallen-approach-{round_}',
-                                       self.write_route(f'fallen-approach-{round_}', route[a:b + 1]),
+                        self.walk_once(f'{tag}-approach-{round_}',
+                                       self.write_route(f'{tag}-approach-{round_}', route[a:b + 1]),
                                        90, 1.5, (), check=False)
-            self.command(f'fallen-fight-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
-                         '--seconds', '30', '--squads', BREACH_SQUADS,
-                         '--log', str(self.run/'fallen-combat.jsonl')], 90, check=False)
-            self.command(f'fallen-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
+            self.command(f'{tag}-fight-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
+                         '--seconds', '30', '--squads', squads,
+                         '--log', str(self.run/f'{tag}-combat.jsonl')], 90, check=False)
+            self.command(f'{tag}-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         else:
-            print('Breach Fallen still standing after 8 rounds; continuing the route.', flush=True)
+            if not empty:                  # only if the last round still found one
+                print(f'{label} still standing after 8 rounds; continuing the route.', flush=True)
         self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
                                  '--tracked', str(self.tracked), '--retrack'], 60)
         self.select_retracked_position()
         me = self.where()
+        if me and back and min(math.dist(p[:2], me[:2]) for p in route) > 15:
+            # A death respawns the Guardian at the last checkpoint (sense101: back in the tripmine
+            # corridor). Walk the leg before the fight again, from its waypoint nearest the
+            # Guardian, rather than straight at the route.
+            b = min(range(len(back)), key=lambda k: math.dist(back[k][:2], me[:2]))
+            self.walk_once(f'{tag}-back', self.write_route(f'{tag}-back', back[b:]), 330, 1.3, (), check=False)
+            me = self.where()
         a = min(range(len(route)), key=lambda k: math.dist(route[k][:2], me[:2])) if me else 0
         return route[a:]
 
@@ -283,7 +332,7 @@ class Replay:
         chest = json.loads((self.routes/'wall_container_to_chest.json').read_text())
         to_chest = wall + chest[1:]
         if self.fallen:
-            to_chest = self.breach_fight(to_chest)
+            to_chest = self.fight(to_chest, self.fallen, BREACH_SQUADS, 'fallen', 'Breach Fallen')
         self.walk('chest', self.write_route('to-chest', to_chest), 840)
         self.walk('mine-stairs', self.sliced_route('mine-a', 'wall_tripmine_corridor.json', 0, 4), 90, 1.2)
         self.pad('NumPad6')
@@ -291,11 +340,17 @@ class Replay:
         self.walk('mine-crouched', self.sliced_route('mine-b', 'wall_tripmine_corridor.json', 3, 10), 240, 1.5)
         self.pad('NumPad6')
         self.walk('mine-junction', self.sliced_route('mine-c', 'wall_tripmine_corridor.json', 9, None), 150, 1.2)
-        self.walk('junction-west', self.sliced_route('junction', 'wall_junction_west.json', 4, None), 330)
+        junction = self.sliced_route('junction', 'wall_junction_west.json', 4, None)
+        self.walk('junction-west', junction, 330)
+        garage = self.routes/'wall_garage_door.json'
+        if self.junction:
+            garage = self.write_route('garage-rest', self.fight(json.loads(garage.read_text()), self.junction,
+                                      JUNCTION_SQUADS, 'junction', 'junction Fallen',
+                                      back=json.loads(junction.read_text())))
         self.publish_garage()
-        self.walk('garage', self.routes/'wall_garage_door.json', 150, 1.0)
+        self.walk('garage', garage, 150, 1.0)
         self.walk('fan-to-divide', self.routes/'wall_fan_tunnel_to_divide.json', 420)
-        if not wait_for(self.host_log, 'client is now in slice set 96', 45):
+        if not wait_for(self.host_log, DIVIDE_SLICE, 45):
             raise RuntimeError('No natural slice-96 crossing observed; no Divide control published')
         print('DIVIDE REACHED: verify scheduled step 16, native authority, objective and scene.', flush=True)
 
@@ -312,6 +367,8 @@ def main():
                     help='Explicit supervised resume; refresh tracking and verify stance first')
     ap.add_argument('--breach-fallen', type=Path,
                     help='after the rifle, publish this list (Breach squad states) and fight the Fallen')
+    ap.add_argument('--junction-fallen', type=Path,
+                    help='after the junction, publish this list (squads 64, 68, 76) and fight them on the way to the garage')
     a = ap.parse_args()
     if a.pad is None:
         a.pad = d1paths.tools() / 'd1-pad.ps1'
@@ -319,8 +376,9 @@ def main():
         ap.error('--boot-timeout must be positive')
     if not a.run_dir.is_dir() or not a.garage_clients.is_file() or not a.pad.is_file():
         ap.error('Run directory, private garage list and existing pad driver must exist')
-    if a.breach_fallen is not None and not a.breach_fallen.is_file():
-        ap.error('--breach-fallen must name an existing list')
+    for opt, value in (('--breach-fallen', a.breach_fallen), ('--junction-fallen', a.junction_fallen)):
+        if value is not None and not value.is_file():
+            ap.error(f'{opt} must name an existing list')
     if not a.host_log.parent.name.endswith('-' + a.run_dir.name):
         ap.error('--host-log must belong to the selected contained run')
     lock = a.run_dir/'replay.lock'
@@ -329,8 +387,8 @@ def main():
     with lock.open('x') as output:
         output.write('Pad replay owns input; do not run another movement driver.\n')
     try:
-        Replay(a.run_dir, a.host_log, a.garage_clients, a.pad,
-               fallen=a.breach_fallen).play(a.boot_timeout, a.resume_after_rifle)
+        Replay(a.run_dir, a.host_log, a.garage_clients, a.pad, fallen=a.breach_fallen,
+               junction=a.junction_fallen).play(a.boot_timeout, a.resume_after_rifle)
     finally:
         lock.unlink()
 
