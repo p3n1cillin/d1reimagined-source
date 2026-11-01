@@ -62,12 +62,16 @@ $agr = @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name',
 if ($ClientPatch) { $agr += '-ClientPatch', (Resolve-Path $ClientPatch).Path }
 Start-Process pwsh -WindowStyle Hidden -ArgumentList $agr -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
 $jobs = @(
-    # The keep-alive starts in gameplay: an early press can carry the client past the title before the
-    # activity host listens (about 9 minutes), and it then fails to reach it (run sense75).
-    "until grep -q 'in gameplay' $Cf/$Name/launcher.log 2>/dev/null; do sleep 5; done; exec $RepoFwd/tools/ps4_setup/d1-idle-guard.sh",
     "until ls -d $Cf/contained-boot/*-$Name >/dev/null 2>&1; do sleep 5; done; H=`$(ls -d $Cf/contained-boot/*-$Name)/activity-host.log; R=$Cf/$Name; cd $RepoFwd && python -u -I tools/ps4_setup/d1-agr-replay.py --run-dir `$R --host-log `$H --garage-clients `$R/breach-prop3-only.txt --boot-timeout 1800 > `$R/replay-console.log 2> `$R/replay-error.log; grep -q 'DIVIDE REACHED' `$R/replay-console.log && bash $S/chain2.sh $Name > `$R/chain.log 2>&1",
     "bash $S/$Postgame $Name $($Scoreboard -replace '\\','/') > $Cf/$Name/postgame.log 2>&1"
 )
+# The keep-alive starts in gameplay: an early press can carry the client past the title before the
+# activity host listens (about 9 minutes), and it then fails to reach it (run sense75). With the idle
+# limit raised (-ExtraEnv D1_INACTIVITY_MS=...) it isn't needed, and its presses can't land on the
+# post-game screens (run sense90 left them by itself before the CONTINUE hold).
+if ($ExtraEnv -notmatch 'D1_INACTIVITY_MS=') {
+    $jobs += "until grep -q 'in gameplay' $Cf/$Name/launcher.log 2>/dev/null; do sleep 5; done; exec $RepoFwd/tools/ps4_setup/d1-idle-guard.sh"
+}
 if (-not $NoRecord) { $jobs += "bash $S/capture51.sh $Name > $Cf/$Name/capture.log 2>&1" }
 # continue-hold.sh waits for the capture tour to finish; with -NoRecord there is none to wait for.
 if (-not $NoContinue) { $jobs += "bash $S/continue-hold.sh $Name$(if ($NoRecord) { ' --no-record' }) > $Cf/$Name/continue.log 2>&1" }
