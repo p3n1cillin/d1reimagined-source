@@ -2,7 +2,7 @@
 # hangar clear) -> outro -> XP + completion + ship + scoreboard + phase 7 -> post-game tour -> CONTINUE
 # (3 s hold) -> 165 -> Tower North with its squads and vendors, recorded with game audio.
 #   ending-run.ps1 -Name sense73 [-WorldTable <file>] [-Postgame postgame5.sh] [-NoContinue] [-NoRecord] [-NoVendors]
-#     [-ClientPatch <xml>] [-ExtraEnv D1_INACTIVITY_MS=86400000] [-BreachFallen] [-JunctionFallen] [-Waves]
+#     [-ClientPatch <xml>] [-ExtraEnv D1_INACTIVITY_MS=86400000] [-BreachFallen] [-JunctionFallen] [-Waves] [-Steps <schedule>]
 # The defaults recreate run sense73 (31 Oct 2026). Served fixtures come from ps4/fixtures/56578
 # (D1_FIXTURES); run output goes to the staging folder (D1_STAGING). The lab must already be stopped.
 # The served host/responder are whatever is in the served target; build and swap them separately,
@@ -40,6 +40,8 @@ param(
     # Serve the Breach by its own triggers instead (mission/agr-steps-divide-waves.txt, made with
     # tools/ps4_setup/d1-breach-waves.py; issue #185) and fight what each wave places (--waves).
     [switch]$Waves,
+    # Serve another mission schedule (its lists beside it), e.g. a staged experiment.
+    [string]$Steps = '',
     [string]$Bash = 'C:\Program Files\Git\bin\bash.exe'
 )
 $ErrorActionPreference = 'Stop'
@@ -69,9 +71,13 @@ if (-not $NoVendors) {
 if ($ExtraEnv) { $extra += ",$ExtraEnv" }
 $agr = @('-NoProfile', '-File', "$Repo\tools\ps4_setup\d1-agr-run.ps1", '-Name', $Name, '-Minutes', '300', '-UnlockFlags', $UnlockFlags, '-Extra', $extra)
 if ($ClientPatch) { $agr += '-ClientPatch', (Resolve-Path $ClientPatch).Path }
+if ($Steps) {
+    # With -Waves, a staged copy of the waves schedule (e.g. with the Ghost's states added).
+    $agr += '-Steps', (Resolve-Path $Steps).Path
+}
 if ($Waves) {
     if ($BreachFallen -or $JunctionFallen) { throw '-Waves replaces -BreachFallen and -JunctionFallen' }
-    $agr += '-Steps', (Join-Path $Fix 'mission\agr-steps-divide-waves.txt' -Resolve)
+    if (-not $Steps) { $agr += '-Steps', (Join-Path $Fix 'mission\agr-steps-divide-waves.txt' -Resolve) }
     # Ten more lists for the host to build at start (about 40 s each with their squad states):
     # sense105's host was ready around the default 900 s limit.
     $agr += '-HostTimeoutSeconds', '1800'
