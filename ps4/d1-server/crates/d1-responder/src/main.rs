@@ -3710,7 +3710,7 @@ async fn main() -> Result<()> {
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 905 {
                                                                         // 905 vendor_refund_item: logged and decoded (the item reference
-                                                                        // and a u64, likely the refund receipt; vendor::refund_request).
+                                                                        // and the owner u64 that 901 also sends; vendor::refund_request).
                                                                         // Answered with the result composite like the other vendor
                                                                         // messages. Its response tag isn't known, but every vendor
                                                                         // response read so far is that composite, and the padded default
