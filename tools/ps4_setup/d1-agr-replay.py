@@ -128,17 +128,20 @@ class Replay:
         return done
 
     def waves_legs(self, to_chest):
-        """The legs after the rifle in waves mode: (name, points, seconds, tolerance, stance, squads).
+        """The legs after the rifle in waves mode: (name, points, seconds, tolerance, stance, squads[, first]).
 
         Walked one by one; a respawn restarts from the earliest leg near the Guardian (play_waves).
-        Squads, when given, are fought along the leg (walk_fighting) instead of after it.
+        Squads, when given, are fought along the leg (walk_fighting) instead of after it; `first`
+        squads are fought, standing, before a leg that walks without stopping.
         """
         load = lambda f: json.loads((self.routes/f).read_text())
         corridor, junction = load('wall_tripmine_corridor.json'), load('wall_junction_west.json')
         return [
             ('chest', to_chest, 840, 1.3, 'stand', WAVE_SQUADS[0]),
-            ('mine-stairs', corridor[0:4], 90, 1.2, 'stand', None),
-            ('mine-crouched', corridor[3:10], 240, 1.5, 'crouch', None),
+            # The tripmine legs walk without stopping to fight (the stance and the mines), but the
+            # corridor's Fallen killed the Guardian there three times (sense106-108): fight first.
+            ('mine-stairs', corridor[0:4], 90, 1.2, 'stand', None, WAVE_SQUADS[1]),
+            ('mine-crouched', corridor[3:10], 240, 1.5, 'crouch', None, WAVE_SQUADS[1]),
             ('mine-junction', corridor[9:], 150, 1.2, 'stand', WAVE_SQUADS[1]),
             ('junction-west', junction[4:], 330, 1.3, 'stand', WAVE_SQUADS[1]),
             ('garage', load('wall_garage_door.json'), 300, 1.0, 'stand', WAVE_SQUADS[1]),
@@ -170,15 +173,21 @@ class Replay:
         i = self.nearest_leg(legs) if resume else 0
         restart = 0
         while i < len(legs):
-            name, points, seconds, tolerance, stance, squads = legs[i]
+            name, points, seconds, tolerance, stance, squads, *first = legs[i]
             # A restarted leg writes its own routes: the first pass's are evidence, and a route of the
             # same name with other points is refused (sense108 stopped on replay-chest-0.json).
             if restart:
                 name = f'{name}-r{restart}'
-            if stance != self.stance:
-                self.pad('NumPad6')
-                self.stance = stance
             try:
+                if first and first[0]:
+                    self.wave = first[0]
+                    if self.stance != 'stand':     # fight standing, then take the leg's stance
+                        self.pad('NumPad6')
+                        self.stance = 'stand'
+                    self.skirmish(f'{name}-first')
+                if stance != self.stance:
+                    self.pad('NumPad6')
+                    self.stance = stance
                 if squads:
                     self.walk_fighting(name, points, squads, seconds, chunk=8 if name != 'chest' else 10)
                 else:
