@@ -33,6 +33,16 @@ PAD = os.environ.get('D1_PAD')   # else D1_TOOLS/d1-pad.ps1 (d1paths.py), resolv
 
 def pad(*keys, gap=150):
     global PAD
+    # In process (d1_keys.py): a PowerShell start per press about doubled a walk's time. The script
+    # stays the fallback, and D1_WALK_POWERSHELL_PAD=1 forces it.
+    if not os.environ.get('D1_WALK_POWERSHELL_PAD'):
+        try:
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            import d1_keys
+            d1_keys.press(*keys, gap=gap)
+            return
+        except Exception as e:                  # no window, odd key name: the script reports those
+            print(f'pad in process failed ({e}); using d1-pad.ps1', flush=True)
     if PAD is None:
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         import d1paths
