@@ -232,6 +232,72 @@ and the Divide for its timeout.
 
 `tests/test_breach_waves.py` checks the lists against the real base list.
 
+## A second wave by the junction (runs sense101 and sense102)
+
+`ending-run.ps1 -JunctionFallen` (`d1-agr-replay.py --junction-fallen`) serves a second list after
+the `junction-west` leg and fights it along the garage route before the garage publish. The fight
+is now one helper per wave.
+
+- **sense101, with squads 64, 68, 72, 74 and 76** (the map's west group):
+  - The Breach wave went down in six rounds. The legs after it walked normally to the junction.
+  - At the junction, 64 and 68 went down. 72 and 74 stand a level below the garage route, and 76
+    by its end. Fighting them, the Guardian died twice.
+  - It respawned back in the tripmine corridor (about (461, -720)). The garage walk then headed
+    straight at the route from there, ended on the lower level near 72 at (421, -711), and the
+    replay stopped there.
+  - The four Breach squads had members again by then, at their spawn spots. With a desired count
+    of 1, a squad refills once its member dies. They were far behind the route.
+- **Changes:**
+  - The junction list now serves only 64, 68 and 76, the ones on or by the garage route.
+  - When the Guardian ends a wave more than 15 m from the next route (a respawn), it re-walks the
+    leg before the fight from its nearest waypoint first.
+- **sense102, with both changes:**
+  - The Breach wave fought through round 6; round 7 found nobody.
+  - The junction wave took three rounds: one walk along the garage route and three fights. 64, 68
+    and 76 went down with no deaths.
+  - The garage walk then completed, and the run reached the Divide at 14:16, 35 minutes after
+    launch, having fought both waves.
+  - **But the Divide's squads never came.** The chain found none to fight, and the client sent 2
+    squad updates after the Divide, against 677 in sense97.
+  - The garage list was requested at 14:11:56. Built off the tick (#174), it was served at
+    14:12:09, after mission steps 16 (14:11:33) and 17 (14:11:53, the Divide's activation list).
+    It replaced step 17's frame.
+  - In sense97 the synchronous publish landed before step 16.
+  - Fixes: the host no longer serves a control frame that finishes after a mission step installed
+    one ("... superseded by a mission step; not served"). The replay accepts that answer too, and
+    waits up to 60 s for the host's answer.
+
+## The junction wave's last squad, and the Divide on time (run sense104)
+
+sense104 ran with both fixes from sense102 (no stale control frame, the garage list skipped once
+the Divide's step has fired).
+
+**The fan:**
+- The Breach and junction waves were fought as in sense102, but the junction wave ended with squad
+  76 still standing after 8 rounds, at about (405, -680) by the fan.
+- The walk to the Divide then stopped at the fan rail under its fire. The resume and three nudges
+  couldn't get past (16:03-16:20).
+- Stopped by hand, three fight rounds on 64, 68, 72, 74 and 76 followed; the Guardian died once and
+  respawned at (442, -714).
+- A retrack and the fan-tunnel route then walked through, and the client reached slice set 96 at
+  16:28:13.
+- Fix: a walk that stalls now first fights what is left of the last wave (`skirmish`, up to three
+  rounds, then a retrack), before it resumes and nudges.
+
+**The Divide:**
+- Its step (16) fired at 16:11:59 on its 2400 s timeout, 16 minutes before the Guardian got there.
+  The timeout is now 5400 s.
+- Even so, the Divide's squads were there this time: the garage list was skipped, so no late
+  control frame replaced the activation list.
+- The chain counted 12 live Divide squads and fought through the gate (squads 17-19 down).
+- It went on to Dock 13 (trigger 39, slice set 104) and the hangar bay (trigger 41), whose eight
+  squads were live.
+- The hangar was clear at 16:47:15 (mission step 22: the cohort is exactly zero), and the outro
+  steps followed (23 and 24, 16:47:56 and 16:47:59). That makes sense104 the first run that fought
+  every wave served, the Breach's, the junction's, the Divide's and the hangar's, through to the
+  outro.
+- In sense102 the client sent 2 squad updates after the Divide.
+
 ## Next
 
 - Run the trigger-driven waves (above) and check that the client reports the wave triggers once
