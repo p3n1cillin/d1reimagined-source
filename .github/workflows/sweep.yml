@@ -1,9 +1,10 @@
 # Scheduled upkeep, run from main. It reads PR metadata and git objects only, never PR code.
 # - every 15 min and after each review (the Review workflow), merge: contributors' PRs follow the
-#   maintainer's review. APPROVED on the current head enables squash auto-merge (GitHub merges once main's required checks pass), unless the PR touches
-#   .github/ ("maintainer merge": merged by hand) or carries "do not merge". New commits after an approval
-#   go back to "needs review". It also labels check health: "awaiting CI approval", "checks failing"
-#   (one comment per head commit) and "update branch" (behind main and missing a newer required check).
+#   maintainer's review. APPROVED on the current head enables squash auto-merge (GitHub merges once
+#   main's required checks pass), unless the PR touches .github/ ("maintainer merge": merged by
+#   hand) or carries "do not merge". New commits after an approval go back to "needs review". It
+#   also labels check health: "awaiting CI approval", "checks failing" (one comment per head commit)
+#   and "update branch" (behind main and missing a newer required check).
 # - hourly and on pushes to main: "needs rebase" on conflicting PRs, and a comment on PRs that touch the
 #   same lines as another open PR (.github/scripts/pr_overlap.py).
 # - daily: the label set below; a "stale" reminder after 30 days without activity (never closed); the
