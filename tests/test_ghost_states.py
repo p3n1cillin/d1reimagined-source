@@ -33,6 +33,12 @@ class GhostStates(unittest.TestCase):
         self.assertEqual(changed, [(['0xfc0e45a3', '0x2', '95'], M.MEMBER_TAG),
                                    (['0xfc0e45a3', '0x28', '125'], M.PERFORM_TAG)])
 
+    def test_the_ghost_squad_gets_one_entry_of_count_zero(self):
+        b = M.squad(1)
+        self.assertEqual(len(b), 124)
+        self.assertEqual(struct.unpack_from('<Ih', b, 0x2C), (1, 0))       # one entry, count 0
+        self.assertEqual(struct.unpack_from('<I', b, 0x44)[0], 1)          # generation
+
     def test_a_row_missing_from_the_list_is_refused(self):
         with self.assertRaises(SystemExit):
             M.apply(LIST, {('0x2', 9999): (M.MEMBER_TAG, M.member(1))})

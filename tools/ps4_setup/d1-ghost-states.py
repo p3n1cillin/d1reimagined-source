@@ -35,10 +35,24 @@ _spec = importlib.util.spec_from_file_location('member_states', Path(__file__).w
 member_states = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(member_states)
 MEMBER_TAG = member_states.TAG
+_spec = importlib.util.spec_from_file_location('squad_states', Path(__file__).with_name('d1-squad-states.py'))
+squad_states = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(squad_states)
+SQUAD_TAG = '0x8080071E'
 
 
 def member(gen):
     return member_states.member(gen)
+
+
+def squad(gen):
+    """`sq_nux_ghost` (kind 1, row 94) with one entry of count 0. A named member then makes the only
+    actor; with no entry the client adds its default body (DeRveXx, PR #193). Run sense106 served
+    the member with no squad state, and the reader found no member of squad 94."""
+    b = bytearray(squad_states.squad(gen, 0))
+    struct.pack_into('<I', b, 0x2C, 1)
+    struct.pack_into('<h', b, 0x30, 0)
+    return bytes(b)
 
 
 def performance(gen):
@@ -72,6 +86,7 @@ def main():
     a = ap.parse_args()
     states = {}
     if a.member is not None:
+        states[('0x1', 94)] = (SQUAD_TAG, squad(a.member))
         states[('0x2', 95)] = (MEMBER_TAG, member(a.member))
     if a.perform is not None:
         states[('0x28', 125)] = (PERFORM_TAG, performance(a.perform))
