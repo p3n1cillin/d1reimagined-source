@@ -389,6 +389,10 @@ pub struct ActivityInstance {
     control_file: Option<std::path::PathBuf>,
     /// Builds the frame for a `clients GROUP PATH` control line.
     control_builder: Option<ControlBuilder>,
+    /// `clients` frames being built off the tick: the client's own encoder takes seconds per squad
+    /// state, and a 30-state list built on the tick held it for 32 s, long enough for the client to
+    /// drop the activity host and relaunch the mission (run sense98).
+    control_builds: Vec<(String, std::sync::mpsc::Receiver<Result<Vec<u8>, String>>)>,
     /// ⭐ The host teleport in progress: (state, slice-set index, when it was asked).
     slice_request: Option<(u8, u32, Instant)>,
     /// Re-publish `replicate_membership` on the next poll (a teleport state changed).
@@ -529,6 +533,7 @@ impl ActivityInstance {
             pending_incidents: Vec::new(),
             control_file: None,
             control_builder: None,
+            control_builds: Vec::new(),
             slice_request: None,
             membership_dirty: false,
             membership_update: 1,
@@ -1371,6 +1376,21 @@ impl ActivityInstance {
     }
 
     fn poll_control(&mut self) {
+        // Finished `clients` builds go out in the order they were asked for.
+        while let Some((file, rx)) = self.control_builds.first() {
+            match rx.try_recv() {
+                Ok(Ok(bytes)) => {
+                    tracing::info!("⭐ control: sensor clients {file} ({} bytes)", bytes.len());
+                    self.sensor_payload = Some(bytes);
+                }
+                Ok(Err(e)) => tracing::warn!("control: clients {file}: {e}"),
+                Err(std::sync::mpsc::TryRecvError::Empty) => break,
+                Err(std::sync::mpsc::TryRecvError::Disconnected) => {
+                    tracing::warn!("control: clients {file}: the build stopped without a result")
+                }
+            }
+            self.control_builds.remove(0);
+        }
         let Some(path) = self.control_file.as_ref() else { return };
         let Ok(text) = std::fs::read_to_string(path) else { return };
         let _ = std::fs::remove_file(path);
@@ -1381,13 +1401,13 @@ impl ActivityInstance {
                 match (group, self.control_builder.clone()) {
                     (Some(group), Some(b)) => {
                         let team0 = matches!(&self.sensor_team_frames, Some((_, _, set)) if set.contains(&self.activity_index));
-                        match (b.0)(group, file, if team0 { 0 } else { -1 }) {
-                            Ok(bytes) => {
-                                tracing::info!("⭐ control: sensor clients {file} ({} bytes)", bytes.len());
-                                self.sensor_payload = Some(bytes);
-                            }
-                            Err(e) => tracing::warn!("control: clients {file}: {e}"),
-                        }
+                        let (tx, rx) = std::sync::mpsc::channel();
+                        let (path, team) = (file.to_string(), if team0 { 0 } else { -1 });
+                        std::thread::spawn(move || {
+                            let _ = tx.send((b.0)(group, &path, team));
+                        });
+                        tracing::info!("control: building sensor clients {file} off the tick");
+                        self.control_builds.push((file.to_string(), rx));
                     }
                     _ => tracing::warn!("control: ignored line {line:?} (bad group, or no builder)"),
                 }
@@ -2118,5 +2138,38 @@ mod tests {
             i.state(),
             InstanceState::Evicted { reason: EvictionReason::ConnectivityFailure }
         );
+    }
+
+    /// A `clients` control line is built off the tick (run sense98: a 30-state list built on it
+    /// held the host for 32 s and the client dropped it). The tick that reads the line returns at
+    /// once; a later tick serves the frame when the build is done.
+    #[test]
+    fn a_clients_control_line_is_built_off_the_tick() {
+        let (mut i, _) = instance();
+        let dir = std::env::temp_dir().join(format!("d1ah-control-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let control = dir.join("ah-control.txt");
+        std::fs::write(&control, "clients 0x4786c0e0 F:/list.txt\n").unwrap();
+        let (go, wait) = std::sync::mpsc::channel::<()>();
+        let wait = std::sync::Mutex::new(wait);
+        i.set_control_file(control.clone());
+        i.set_control_builder(ControlBuilder(std::sync::Arc::new(move |group, path, _team| {
+            wait.lock().unwrap().recv().unwrap();   // a slow encoder
+            Ok(vec![(group & 0xFF) as u8, path.len() as u8])
+        })));
+        i.poll_control();
+        assert!(!control.exists(), "the control file is consumed");
+        assert!(i.sensor_payload.is_none(), "nothing is served before the build finishes");
+        i.poll_control();
+        assert!(i.sensor_payload.is_none());
+        go.send(()).unwrap();
+        let deadline = Instant::now() + std::time::Duration::from_secs(5);
+        while i.sensor_payload.is_none() && Instant::now() < deadline {
+            std::thread::sleep(std::time::Duration::from_millis(5));
+            i.poll_control();
+        }
+        assert_eq!(i.sensor_payload.as_deref(), Some(&[0xE0, 11][..]));
+        assert!(i.control_builds.is_empty());
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

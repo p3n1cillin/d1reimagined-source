@@ -128,6 +128,19 @@ the rifle's retrack, the replay publishes `ps4/fixtures/56578/mission/agr-b-grav
   - All four squads were empty in memory 3.5 minutes after the publish. The chest walk then
     resumed from the waypoint nearest the Guardian.
 
+## Serving every Breach squad at once stalled the host (run sense98)
+
+A probe served states for all 30 Breach squads at step 15 (one member each; `d1-squad-states.py`),
+to see where each one spawns:
+- Building that list took the host 32 s. The control line is built with the client's own encoder in
+  the oracle, which costs seconds per squad state, and it ran on the host's tick. The four-state
+  list took about 13 s in sense94.
+- In those 32 s the host logged nothing, not even heartbeats. The client dropped the activity-host
+  connection and relaunched A Guardian Rises from the start (11:58:09).
+- The host now builds `clients` control lines on a thread and serves the frame on a later tick
+  (`ActivityInstance::poll_control`), so a long build no longer holds the connection. Where the
+  other 26 squads spawn is still to be read, with the fixed host.
+
 ## Next
 
 - The Wall's later squads at their own moments, the same way.
