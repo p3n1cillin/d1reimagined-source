@@ -20,6 +20,8 @@ import d1paths  # sibling: local paths from D1_ROOT or paths.json
 ROUTES = HERE.parents[1] / 'missions' / 'routes'
 LAB = HERE.parents[1] / 'lab' / 'tower-route'   # combat2.py, seek.py, target.py, release.py
 RIFLE_EVENT = 'player trigger 0x992bb471/0x1d/35 reported'
+DIVIDE_SLICE = 'client is now in slice set 96'
+DIVIDE_STEP = 'mission step 16 at '   # agr-steps-divide.txt: the Divide's list (%96)
 BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-graveyard-fallen.txt gives states
 JUNCTION_SQUADS = '64,68,76'   # agr-b-graveyard-junction.txt: on or by the garage route (run sense100's map).
 # 72 and 74 stand a level below it; in sense101 the fight went down after them and the Guardian died twice.
@@ -172,6 +174,12 @@ class Replay:
         raise RuntimeError('Insufficient fresh position tracking; no route input sent')
 
     def publish_garage(self):
+        # Once the Divide's step (16 in agr-steps-divide.txt) has served its list, the garage list
+        # would replace it and the Divide's squads would never come. In runs sense102 and sense103
+        # the fights pushed the route past that step's timeout, so it fired before the garage.
+        if contains(self.host_log, DIVIDE_SLICE) or contains(self.host_log, DIVIDE_STEP):
+            print('The Divide step has served its list; the garage list is out of date and not published.', flush=True)
+            return
         self.publish(self.garage_clients, 'garage')
         time.sleep(6)
 
@@ -313,7 +321,7 @@ class Replay:
         self.publish_garage()
         self.walk('garage', garage, 150, 1.0)
         self.walk('fan-to-divide', self.routes/'wall_fan_tunnel_to_divide.json', 420)
-        if not wait_for(self.host_log, 'client is now in slice set 96', 45):
+        if not wait_for(self.host_log, DIVIDE_SLICE, 45):
             raise RuntimeError('No natural slice-96 crossing observed; no Divide control published')
         print('DIVIDE REACHED: verify scheduled step 16, native authority, objective and scene.', flush=True)
 
