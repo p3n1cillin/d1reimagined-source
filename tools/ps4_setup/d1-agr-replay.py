@@ -115,24 +115,38 @@ class Replay:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
 
-    def walk_fighting(self, name, points, squads, seconds, chunk=10):
+    def walk_fighting(self, name, points, squads, seconds, chunk=10, tries=3):
         """Walk `points` a few waypoints at a time, fighting `squads` after each stretch.
 
         With the Breach served by its triggers (--waves), each wave comes as the Guardian crosses its
         trigger, so one fight at the start of a leg meets only the first. Run sense105 fought the
         first Vandal, then walked the 64-waypoint chest leg through three more waves without
         fighting, died in the hall and could not find the route again from the respawn.
+
+        A stretch that stops short (a stall, or a death: run sense106's walker refused the changed
+        unit) is retried after a retrack and a fight, from the waypoint nearest the Guardian.
         """
         self.wave = squads
         for k, start in enumerate(range(0, len(points) - 1, chunk)):
-            part = points[start:start + chunk + 1]
-            me = self.where()
-            if me and math.dist(me[:2], part[0][:2]) > 15:
-                # A respawn (or a stretch that ended short): rejoin from the nearest waypoint so far.
-                near = min(range(start + 1), key=lambda i: math.dist(points[i][:2], me[:2]))
-                part = points[near:start + chunk + 1]
-            share = max(90, seconds * len(part) // len(points))
-            self.walk(f'{name}-{k}', self.write_route(f'{name}-{k}', part), share)
+            end = min(start + chunk, len(points) - 1)
+            for attempt in range(tries):
+                part = points[start:end + 1]
+                me = self.where()
+                if me and math.dist(me[:2], part[0][:2]) > 15:
+                    # A respawn, or a stretch that ended short: rejoin from the nearest waypoint so far.
+                    near = min(range(end + 1), key=lambda i: math.dist(points[i][:2], me[:2]))
+                    part = points[near:end + 1]
+                share = max(90, seconds * len(part) // len(points))
+                tag = f'{name}-{k}' + (f'-retry{attempt}' if attempt else '')
+                lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3, (), check=False)
+                if lines and lines[-1].startswith('done '):
+                    break
+                self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                                         '--tracked', str(self.tracked), '--retrack'], 60, check=False)
+                self.select_retracked_position()
+                self.skirmish(tag)
+            else:
+                raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
             self.skirmish(f'{name}-{k}')
 
     def skirmish(self, name, rounds=3):
