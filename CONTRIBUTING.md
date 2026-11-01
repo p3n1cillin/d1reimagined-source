@@ -8,7 +8,8 @@ build failures, protocol investigations and proposed experiments.
 
 ## Already working in a fork or your own project?
 
-Please send it here, even if it's rough. One shared tree means your work reaches everyone who builds
+Anyone who wants to help is welcome, including people who have started a project of their own: the
+maintainer is happy to work with you. Please send your work here, even if it's rough. One shared tree means your work reaches everyone who builds
 the project, gets reviewed and tested by people who know the protocol, and isn't lost when a fork goes
 quiet. Everything merged is credited in [CREDITS.md](CREDITS.md) and the release notes.
 

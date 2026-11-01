@@ -21,6 +21,7 @@ Experimental, independent Destiny 1 preservation research and original local ser
 ## Get involved
 
 - **Star the repository:** it costs nothing, and stars are how other Destiny players find the project on GitHub.
+- **Everyone is welcome:** anyone who wants to help, including people with their own D1 projects. We'd rather build it together; see [working from a fork or your own project](CONTRIBUTING.md#already-working-in-a-fork-or-your-own-project).
 - **Already changed something in a fork?** Open a pull request, even a rough draft: see [sending work from a fork](CONTRIBUTING.md#already-working-in-a-fork-or-your-own-project). New here? [Getting started](docs/GETTING-STARTED.md) takes about 15 minutes.
 - **Pick up a task:** [good first issues](https://github.com/p3n1cillin/d1reimagined-source/labels/good%20first%20issue) and [help wanted](https://github.com/p3n1cillin/d1reimagined-source/labels/help%20wanted). Many need no game files at all, including research, documentation, tests and CI.
 - **Follow progress:** [Dev Blogs](https://d1reimagined.com/devblogs), and #dev-updates on the [Discord](https://d1reimagined.com/discord). To hear about each milestone here, choose **Watch → Custom → Releases**: every milestone gets a [release](https://github.com/p3n1cillin/d1reimagined-source/releases) with its Dev Blog and video.
