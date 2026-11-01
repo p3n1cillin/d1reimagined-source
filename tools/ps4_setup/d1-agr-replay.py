@@ -61,6 +61,7 @@ class Replay:
         self.pad_path, self.routes, self.fallen, self.junction = pad, routes, fallen, junction
         self.tracked = run / 'tracked.json'
         self.native_unit = False
+        self.wave = None                   # the squads of the last wave fought, for skirmish()
 
     def command(self, name, args, seconds, check=True):
         # Preserve earlier attempts and evidence, including explicit resumes.
@@ -86,6 +87,7 @@ class Replay:
         lines = self.walk_once(name, route, seconds, tolerance, extra)
         done = bool(lines and lines[-1].startswith('done '))
         if strict and not done:
+            self.skirmish(name)
             # Run 18 stalled at the Wall's stair corner (waypoint 45 of enter_the_wall)
             # and ran out of time; the rest of the leg was walkable. Resume once from
             # the waypoint nearest the stop, then give up.
@@ -107,6 +109,32 @@ class Replay:
         if strict and not done:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
+
+    def skirmish(self, name, rounds=3):
+        """Fight what is left of the last wave where a walk stalled.
+
+        Run sense104 ended the junction wave with squad 76 still standing by the fan; the walk to
+        the Divide then stopped against the fan rail under its fire and the nudges could not get
+        past. So before resuming a stalled walk, fight any member of the last wave's squads that
+        is within reach.
+        """
+        if not self.wave:
+            return
+        fought = False
+        for round_ in range(rounds):
+            lines = self.command(f'{name}-skirmish-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
+                                 self.wave], 30, check=False)
+            if not any(l.count(',') == 1 for l in lines):
+                break
+            fought = True
+            self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
+                         '--seconds', '30', '--squads', self.wave,
+                         '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
+            self.command(f'{name}-skirmish-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
+        if fought:                         # as after a wave: the fight can move the tracked copies
+            self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                                     '--tracked', str(self.tracked), '--retrack'], 60)
+            self.select_retracked_position()
 
     def walk_once(self, name, route, seconds, tolerance, extra, check=True):
         tracking = (['--native-unit', '--memory-facing'] if self.native_unit else
@@ -213,6 +241,7 @@ class Replay:
         the rounds and goes on: the route can still be walked.
         """
         self.publish(clients, label)
+        self.wave = squads
         time.sleep(8)                      # the members appeared within seconds in sense94
         empty = 0
         for round_ in range(8):
