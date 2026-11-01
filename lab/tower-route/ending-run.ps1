@@ -72,6 +72,9 @@ if ($ClientPatch) { $agr += '-ClientPatch', (Resolve-Path $ClientPatch).Path }
 if ($Waves) {
     if ($BreachFallen -or $JunctionFallen) { throw '-Waves replaces -BreachFallen and -JunctionFallen' }
     $agr += '-Steps', (Join-Path $Fix 'mission\agr-steps-divide-waves.txt' -Resolve)
+    # Ten more lists for the host to build at start (about 40 s each with their squad states):
+    # sense105's host was ready around the default 900 s limit.
+    $agr += '-HostTimeoutSeconds', '1800'
 }
 Start-Process pwsh -WindowStyle Hidden -ArgumentList $agr -RedirectStandardOutput "$C\$Name\boot.log" -RedirectStandardError "$C\$Name\boot-error.log" | Out-Null
 $Fallen = if ($BreachFallen) { ' --breach-fallen ' + ((Join-Path $Fix 'mission\agr-b-graveyard-fallen.txt' -Resolve) -replace '\\', '/') } else { '' }
