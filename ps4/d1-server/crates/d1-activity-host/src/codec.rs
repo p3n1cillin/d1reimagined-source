@@ -291,23 +291,27 @@ impl SchemaCodec {
     /// ~4 s of `ObjectOracle` setup never lands on the heartbeat or the join path. Call it at
     /// instance construction, like [`Self::prewarm`].
     pub fn build_sensor(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Result<Vec<u8>, AhError> {
-        oracle()
-            .call(|reply| Job::BuildSensor { params: params.clone(), reply })
-            .map_err(|detail| AhError::SchemaCodec {
-                user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
-                detail,
-            })
+        sensor_cache::cached(params, || {
+            oracle()
+                .call(|reply| Job::BuildSensor { params: params.clone(), reply })
+                .map_err(|detail| AhError::SchemaCodec {
+                    user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
+                    detail,
+                })
+        })
     }
 
     /// [`Self::build_sensor`] on [`control_oracle`], so the build doesn't queue the host's own
     /// encodes behind it. For operator control lines, which are built off the tick.
     pub fn build_sensor_aside(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Result<Vec<u8>, AhError> {
-        control_oracle()
-            .call(|reply| Job::BuildSensor { params: params.clone(), reply })
-            .map_err(|detail| AhError::SchemaCodec {
-                user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
-                detail,
-            })
+        sensor_cache::cached(params, || {
+            control_oracle()
+                .call(|reply| Job::BuildSensor { params: params.clone(), reply })
+                .map_err(|detail| AhError::SchemaCodec {
+                    user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
+                    detail,
+                })
+        })
     }
 
     /// The struct size the schema declares, for callers that must build an exact image.
@@ -547,5 +551,89 @@ mod tests {
 
     fn hex(s: &str) -> Vec<u8> {
         (0..s.len()).step_by(2).map(|i| u8::from_str_radix(&s[i..i + 2], 16).unwrap()).collect()
+    }
+}
+
+/// Built sensor frames kept on disk (`D1_AH_SENSOR_CACHE=<dir>`), so a list built once is not built
+/// again. Each frame goes through the client's own codec, about 40 s for a Breach wave list, so a
+/// run with the wave schedule spent 16 minutes building before the client could enter the mission
+/// (sense105), and a list published mid-run that takes over about 20 s makes the client drop the
+/// connection. DeRveXx ran this idea locally for PR #193's route checks.
+///
+/// The key is a 128-bit FNV-1a hash of everything the build reads: the parameters (their `Debug`
+/// text covers every field and client state), the selected build (`D1_BUILD`) and a format
+/// version. Unset, nothing is cached. A cache entry that can't be read is rebuilt.
+pub mod sensor_cache {
+    use std::path::PathBuf;
+
+    const FORMAT: &str = "sensor-cache-v1";
+
+    pub fn key(params: &d1_oracle::sensor::SensorPhaseUpdate, build: &str) -> u128 {
+        let text = format!("{FORMAT}|{build}|{params:?}");
+        let fnv = |basis: u64| {
+            text.bytes().fold(basis, |h, b| (h ^ u64::from(b)).wrapping_mul(0x0000_0100_0000_01B3))
+        };
+        (u128::from(fnv(0xCBF2_9CE4_8422_2325)) << 64) | u128::from(fnv(0x84222325_CBF29CE4))
+    }
+
+    fn path(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Option<PathBuf> {
+        let dir = std::env::var_os("D1_AH_SENSOR_CACHE").filter(|d| !d.is_empty())?;
+        let build = std::env::var("D1_BUILD").unwrap_or_default();
+        Some(PathBuf::from(dir).join(format!("{:032x}.bin", key(params, &build))))
+    }
+
+    pub fn cached<E>(
+        params: &d1_oracle::sensor::SensorPhaseUpdate,
+        build: impl FnOnce() -> Result<Vec<u8>, E>,
+    ) -> Result<Vec<u8>, E> {
+        let Some(file) = path(params) else { return build() };
+        if let Ok(bytes) = std::fs::read(&file) {
+            if !bytes.is_empty() {
+                return Ok(bytes);
+            }
+        }
+        let bytes = build()?;
+        // Write beside, then rename: a reader never sees half a frame.
+        let tmp = file.with_extension(format!("tmp{}", std::process::id()));
+        if let Some(dir) = file.parent() {
+            let _ = std::fs::create_dir_all(dir);
+        }
+        if std::fs::write(&tmp, &bytes).is_ok() && std::fs::rename(&tmp, &file).is_err() {
+            let _ = std::fs::remove_file(&tmp);
+        }
+        Ok(bytes)
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        fn params(gen: u8) -> d1_oracle::sensor::SensorPhaseUpdate {
+            d1_oracle::sensor::SensorPhaseUpdate {
+                gen, name_hash: 0x4786_C0E0, name_i8: 0x10, name_sub: 3, phase: 3, tail: None,
+                clients: Vec::new(), authority: None,
+            }
+        }
+
+        #[test]
+        fn the_key_follows_every_input() {
+            assert_eq!(key(&params(1), "later-56578"), key(&params(1), "later-56578"));
+            assert_ne!(key(&params(1), "later-56578"), key(&params(2), "later-56578"));
+            assert_ne!(key(&params(1), "later-56578"), key(&params(1), "other"));
+        }
+
+        #[test]
+        fn a_cached_frame_is_reused_and_a_missing_one_built() {
+            let dir = std::env::temp_dir().join(format!("d1-sensor-cache-test-{}", std::process::id()));
+            let _ = std::fs::remove_dir_all(&dir);
+            std::env::set_var("D1_AH_SENSOR_CACHE", &dir);
+            let p = params(7);
+            let mut builds = 0;
+            let first = cached::<()>(&p, || { builds += 1; Ok(vec![1, 2, 3]) }).unwrap();
+            let second = cached::<()>(&p, || { builds += 1; Ok(vec![9]) }).unwrap();
+            std::env::remove_var("D1_AH_SENSOR_CACHE");
+            let _ = std::fs::remove_dir_all(&dir);
+            assert_eq!((first, second, builds), (vec![1, 2, 3], vec![1, 2, 3], 1));
+        }
     }
 }
