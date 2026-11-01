@@ -134,6 +134,20 @@ and the sell screen has to be found from that side.
 - Accepting allegiance is a purchase: the New Monarchy Faction Badge for 2,500 Glimmer, with "✕
   Acquire". Neither a tap nor a 2-second hold sent anything. No investment message reached the
   server, so the client refused the purchase itself. Why is open.
+- Run sense92 (1 November) narrowed it down. A 4-second ✕ hold on the badge also sent nothing.
+  `tools/ps4_setup/d1-watchwrite.py --exec` breakpoints show where the two purchases part:
+  - Buying Eva's Command emblem in the same run hit `0xA29C90` (the action set-up), `0xA29D30` (the
+    dispatcher), `0xA29DC6` (past its three checks) and `0x27F530` (the 901 builder), with
+    `0xA228F0`, `0xA0DE90` and `0xAB6650` above them. The 901 then reached the server.
+  - ✕ on the badge hit none of these seven.
+  - So the badge's ✕ never enters the item-action path at all. Whatever handles it (the faction
+    allegiance dialog's own action) refuses earlier. The dialog's data component
+    (`c_faction_data_component`, vtable `0x195C0A0`) is display-only, with four small functions, so
+    the handler is elsewhere. A check the tooltip itself mentions (one allegiance at a time, a change
+    once a week) is a candidate.
+- Getting to Hideo and Eva in one run: from Hideo, go through the open area near the spawn
+  (about (-76, 30)) to reach Eva, and the same way back. `seek.py --no-nav` directly between
+  them ends in a storage room at about (-79.7, 24.4).
 - Patches 99-40 (Research Assistant), at about (-116.9, 42.7) in Tower North, opens his screen on a
   held □ in the social Tower, with an empty stock. In the PvE Tower (through 165), approaching him
   opened nothing (30 October).
