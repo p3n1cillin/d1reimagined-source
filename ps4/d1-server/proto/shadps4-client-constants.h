@@ -9,13 +9,14 @@
 // typed in ourselves. See `crates/shadnet-server/src/controls.rs`.
 //
 //   src/shadnet/client.h
-//     sha256 9e2fcfcf401f0949bcfec7073e31296721a1840046b5e869f892d3dc5faa277f
+//     sha256 987e69ee45183a1403caaa964fcde72fc3f169ffe58d854d31bbebd019e87639
 //   src/core/libraries/np/np_types2.h
 //     sha256 31e801dff01898ceaf3fbc079c9229231f204ab459ad327cc602364e3d30580d
 //
 // Upstream: https://github.com/shadps4-emu/shadPS4
-// Taken from the local working tree $HOME/dev/shadPS4-d1trace at commit
-//   1a51a41696a17a9a3b67ad6658dda547ddca4a98
+// Taken from d1reimagined-shadps4 (branch d1) at commit
+//   34c579fee98c5fec3ce0910d3d939213e702dec1
+// (first from the local working tree $HOME/dev/shadPS4-d1trace at 1a51a41696a17a9a3b67ad6658dda547ddca4a98)
 // (`src/shadnet/shadnet.proto` in that same tree hashes to the sha256 recorded in
 //  ATTRIBUTION.md for our vendored `proto/shadnet.proto`, i.e. the schema has not moved.)
 //
@@ -47,6 +48,7 @@ enum class CommandType : u16 {
     AddBlock = 10,
     RemoveBlock = 11,
     GetServerFeatures = 12,
+    SetClientVersion = 13,
     GetBoardInfos = 30,
     RecordScore = 31,
     RecordScoreData = 32,
@@ -58,6 +60,7 @@ enum class CommandType : u16 {
     GetScoreGameDataByAccId = 38,
     GetToken = 39,
     SetAppearOffline = 40,
+    LookupOnlineId = 41,
     // Matchmaking
     ContextStart = 100,
     CreateRoom = 101,
@@ -75,6 +78,24 @@ enum class CommandType : u16 {
     GetUserInfoList = 113,
     GetRoomMemberDataExternalList = 114,
     SendRoomMessage = 115,
+    // Title User Storage (TUS)
+    TusSetData = 201,
+    TusGetData = 202,
+    TusSetMultiSlotVariable = 203,
+    TusGetMultiSlotVariable = 204,
+    TusAddAndGetVariable = 205,
+    TusGetMultiSlotDataStatus = 206,
+    TusGetMultiUserDataStatus = 207,
+    TusGetFriendsDataStatus = 208,
+    TusDeleteMultiSlotData = 209,
+    TusGetMultiUserVariable = 210,
+    TusTryAndSetVariable = 211,
+    TusGetFriendsVariable = 212,
+    TusDeleteMultiSlotVariable = 213,
+    TssGetData = 214,
+    // Trophies
+    UnlockTrophy = 301,
+    SyncTrophies = 302,
 };
 
 enum class NotificationType : u16 {
@@ -122,6 +143,7 @@ enum class ErrorType : uint8_t {
     ScoreHasData = 31,
     CondFail = 32,
     Unsupported = 33,
+    TooLarge = 34, // TSS file on the server exceeds the slot's documented maximum
 };
 
 // ── from src/core/libraries/np/np_types2.h ───────────────────────────────────────────────────
