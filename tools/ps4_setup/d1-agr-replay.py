@@ -21,7 +21,8 @@ ROUTES = HERE.parents[1] / 'missions' / 'routes'
 LAB = HERE.parents[1] / 'lab' / 'tower-route'   # combat2.py, seek.py, target.py, release.py
 RIFLE_EVENT = 'player trigger 0x992bb471/0x1d/35 reported'
 BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-graveyard-fallen.txt gives states
-JUNCTION_SQUADS = '64,68,72,74,76'   # agr-b-graveyard-junction.txt: by the junction and the garage (run sense100)
+JUNCTION_SQUADS = '64,68,76'   # agr-b-graveyard-junction.txt: on or by the garage route (run sense100's map).
+# 72 and 74 stand a level below it; in sense101 the fight went down after them and the Guardian died twice.
 
 
 def contains(path, needle, offset=0):
@@ -190,7 +191,7 @@ class Replay:
         if not wait_for(self.host_log, accepted, 20, offset=offset):
             raise RuntimeError(f'AH did not log acceptance of the {label} list; stopping')
 
-    def fight(self, route, clients, squads, tag, label):
+    def fight(self, route, clients, squads, tag, label, back=None):
         """Serve a wave (opt-in lists), fight it along `route`, and return the rest of the route.
 
         A list gives some squads a state with one desired member each, so they spawn (26 October run
@@ -232,6 +233,13 @@ class Replay:
                                  '--tracked', str(self.tracked), '--retrack'], 60)
         self.select_retracked_position()
         me = self.where()
+        if me and back and min(math.dist(p[:2], me[:2]) for p in route) > 15:
+            # A death respawns the Guardian at the last checkpoint (sense101: back in the tripmine
+            # corridor). Walk the leg before the fight again, from its waypoint nearest the
+            # Guardian, rather than straight at the route.
+            b = min(range(len(back)), key=lambda k: math.dist(back[k][:2], me[:2]))
+            self.walk_once(f'{tag}-back', self.write_route(f'{tag}-back', back[b:]), 330, 1.3, (), check=False)
+            me = self.where()
         a = min(range(len(route)), key=lambda k: math.dist(route[k][:2], me[:2])) if me else 0
         return route[a:]
 
@@ -292,11 +300,13 @@ class Replay:
         self.walk('mine-crouched', self.sliced_route('mine-b', 'wall_tripmine_corridor.json', 3, 10), 240, 1.5)
         self.pad('NumPad6')
         self.walk('mine-junction', self.sliced_route('mine-c', 'wall_tripmine_corridor.json', 9, None), 150, 1.2)
-        self.walk('junction-west', self.sliced_route('junction', 'wall_junction_west.json', 4, None), 330)
+        junction = self.sliced_route('junction', 'wall_junction_west.json', 4, None)
+        self.walk('junction-west', junction, 330)
         garage = self.routes/'wall_garage_door.json'
         if self.junction:
             garage = self.write_route('garage-rest', self.fight(json.loads(garage.read_text()), self.junction,
-                                      JUNCTION_SQUADS, 'junction', 'junction Fallen'))
+                                      JUNCTION_SQUADS, 'junction', 'junction Fallen',
+                                      back=json.loads(junction.read_text())))
         self.publish_garage()
         self.walk('garage', garage, 150, 1.0)
         self.walk('fan-to-divide', self.routes/'wall_fan_tunnel_to_divide.json', 420)
@@ -318,7 +328,7 @@ def main():
     ap.add_argument('--breach-fallen', type=Path,
                     help='after the rifle, publish this list (Breach squad states) and fight the Fallen')
     ap.add_argument('--junction-fallen', type=Path,
-                    help='after the junction, publish this list (squads 64-76) and fight them on the way to the garage')
+                    help='after the junction, publish this list (squads 64, 68, 76) and fight them on the way to the garage')
     a = ap.parse_args()
     if a.pad is None:
         a.pad = d1paths.tools() / 'd1-pad.ps1'
