@@ -261,6 +261,8 @@ class Replay:
                     part = points[near:end + 1]
                 share = max(90, seconds * len(part) // len(points))
                 tag = f'{name}-{k}' + (f'-retry{attempt}' if attempt else '')
+                # Clear the way first: walking into a wave is where the Guardian died (sense105-108).
+                self.skirmish(f'{tag}-pre')
                 lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3, (), check=False)
                 if lines and lines[-1].startswith('done '):
                     break
@@ -315,13 +317,17 @@ class Replay:
         print(f'{name}: re-arming the triggers of {current} (arming time {1 + self.rearms})', flush=True)
         self.publish(out, f're-armed {current}')
 
-    def skirmish(self, name, rounds=3):
+    def skirmish(self, name, rounds=6, reach=45):
         """Fight what is left of the last wave where a walk stalled.
 
         Run sense104 ended the junction wave with squad 76 still standing by the fan; the walk to
         the Divide then stopped against the fan rail under its fire and the nudges could not get
         past. So before resuming a stalled walk, fight any member of the last wave's squads that
         is within reach.
+
+        Only a member within `reach` m counts, and the fight goes on while one is: target.py names the
+        nearest member up to 400 m away, and fighting one out of sight swept the view for 30 s at a
+        time (sense107/108) while the near ones were left for later.
         """
         if not self.wave:
             return
@@ -329,7 +335,9 @@ class Replay:
         for round_ in range(rounds):
             lines = self.command(f'{name}-skirmish-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
                                  self.wave], 30, check=False)
-            if not any(l.count(',') == 1 for l in lines):
+            spot = next((l for l in reversed(lines) if l.count(',') == 1), None)
+            me = self.where() if spot else None
+            if not spot or (me and math.dist(me[:2], [float(v) for v in spot.split(',')]) > reach):
                 break
             fought = True
             self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),

@@ -144,13 +144,26 @@ def aim(world, t, tries=4):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--seconds', type=float, default=120)
     ap.add_argument('--shots'); ap.add_argument('--log')
-    ap.add_argument('--squads', help='only these squad numbers, e.g. 8,11'); a = ap.parse_args()
+    ap.add_argument('--squads', help='only these squad numbers, e.g. 8,11')
+    # The 2014 reference player takes hits as big as ours and survives by breaking line of sight while
+    # the shield comes back (notes, 28 Oct). Backing off only below 0.35 for 3.5 s kept the Guardian
+    # dying in the Breach's waves (sense105-108).
+    ap.add_argument('--retreat-at', type=float, default=0.55, help='back off below this health fraction')
+    ap.add_argument('--recover-s', type=float, default=5.0, help='seconds to wait out of sight for the shield')
+    ap.add_argument('--idle-passes', type=int, default=8,
+                    help='end the fight after this many passes in a row with nothing to shoot at (0: never)')
+    a = ap.parse_args()
     only = {int(x) for x in a.squads.split(',')} if a.squads else None
     W = World(); fight.pad('NumPad4')                    # focus the emulator once
     log = open(a.log, 'a') if a.log else None
     t_end, k, lock, lock_seen, strafe, last_gren, bursts = time.time() + a.seconds, 0, None, 0, 1, 0, 0
     sight = time.time()                                   # last time a plate sat near the reticle
-    misses, advance_until = 0, 0                          # aimed bursts with no native pool drop; close-in deadline
+    misses, hit_at = 0, 0                                 # aimed bursts with no native pool drop; last confirmed hit
+    # Line of sight: an enemy's nameplate shows only when it is in view under the reticle. A target
+    # aimed at with no plate near the reticle is behind a wall: do not fire at it (sense108 emptied
+    # magazines into walls at members it could locate but not see). Peek once, then skip it a while.
+    blind, blocked = 0, {}                                # blind aims at this lock; lock -> blocked until
+    idle = 0                                              # passes in a row with no target
     try:
         while time.time() < t_end:
             k += 1; vit = ''
@@ -176,9 +189,12 @@ def main():
                     lock, lock_seen = best[1], time.time(); break
             if lock in livemap: lock_seen = max(lock_seen, time.time() - 2)   # a live lock survives a blink without its plate
             target = next((pos for unit, pos in objs if unit == lock), None) if lock and time.time() - lock_seen < 4 else None
-            members = [m for m in W.members(me) if only is None or m[1][2] in only]
+            now = time.time()
+            members = [m for m in W.members(me) if (only is None or m[1][2] in only) and blocked.get(m[1], 0) < now]
             if members:
                 pick = next((m for m in members if m[1] == lock), members[0])   # keep the current member lock
+                if pick[1] != lock:
+                    blind = 0
                 lock, target = pick[1], pick[2]
                 torso = [pos for _, pos in objs if math.dist(pos[:2], target[:2]) < 1.2 and 0.6 < pos[2] - target[2] < 2.2]
                 if torso:                                 # the member's own upright torso object (taller for Captains)
@@ -190,19 +206,30 @@ def main():
                 if lv:
                     lock, target = lv[0][1], lv[0][2]
             # 2. Hurt: break line of sight and recover.
-            if h is not None and h < 0.35:
-                release_all(); hold('S', 900); hold('A' if strafe > 0 else 'D', 500); time.sleep(3.5); tap('RELOAD')
-                print(k, f'health {h:.2f}: back off', flush=True); continue
+            if h is not None and h < a.retreat_at:
+                release_all(); hold('S', 1300); hold('A' if strafe > 0 else 'D', 600); tap('RELOAD')
+                time.sleep(max(0.0, a.recover_s - 2.0))
+                print(k, f'health {h:.2f}: back off and recover', flush=True); continue
             if target:
+                idle = 0
+                # In view now? This frame was taken after the previous pass aimed at the same lock.
+                in_view = any(abs(px - CX) < 220 and py < CY + 40 for px, py, _, _ in plates)
                 aim_pt = (target[0], target[1], target[2] + 0.2)   # torso object sits low in the chest; aim at upper chest
                 ok, d = aim(W, aim_pt)
-                if any(abs(px - CX) < 220 and py < CY + 40 for px, py, _, _ in plates): sight = time.time()
+                # Plates are hard to see in the dark hall: a hit confirmed by the target's health in the
+                # last 3 s, or a target this close, counts as in view too.
+                in_view = in_view or time.time() - hit_at < 3 or d < 8
+                if in_view: sight, blind = time.time(), 0
                 if d < 2.2:
                     tap('MELEE', 100); time.sleep(0.4)          # point blank: melee (R1)
-                elif ok and d > 3 and (time.time() < advance_until or
-                                       (W.vital(lock) is None if isinstance(lock, tuple) else True) and d > 8 and time.time() - sight > 3):
-                    hold('W', 700); hold('A' if strafe > 0 else 'D', 250)   # occluded: close in, sidestep around cover
-                    if time.time() - sight > 10: sight = time.time() - 2      # do not walk forever; fire a burst now and then
+                elif ok and not in_view:
+                    # Not walking at it: closing in on an unseen target walked the Guardian into walls.
+                    blind += 1
+                    if blind == 2:
+                        hold('A' if strafe > 0 else 'D', 450)    # peek round the corner once
+                    elif blind >= 3:
+                        blocked[lock], blind = time.time() + 8, 0   # behind a wall: leave it for 8 s
+                        print(k, f'lock {lock} out of sight at {d:.1f} m: skipped for 8 s', flush=True)
                 elif ok:
                     if 6 < d < 14 and time.time() - last_gren > 20:
                         tap('GREN', 120); last_gren = time.time()
@@ -214,7 +241,9 @@ def main():
                     v1 = W.vital(lock) if v0 is not None else None
                     if v0 is not None and v1 is not None:
                         misses = 0 if v1 < v0 - 1e-4 else misses + 1
-                        if misses >= 3: advance_until, misses = time.time() + 4, 0   # aimed but no damage: occluded, so close in / sidestep for 4 s
+                        if v1 < v0 - 1e-4: hit_at = time.time()
+                        if misses >= 3:                    # aimed and in view, but no damage: cover between us
+                            blocked[lock], misses = time.time() + 8, 0
                         vit = f' vit {v0:.3f}->{v1:.3f}'
                 strafe = -strafe; bursts += 1
                 if bursts % 8 == 0: tap('RELOAD')
@@ -224,6 +253,11 @@ def main():
                 if abs(pitch) > 0.06: hold('I' if pitch < 0 else 'K', max(25, abs(pitch) / PITCH_RATE))   # level the view
                 hold('L', 250); hold('W', 200); msg = f'{k}: no live enemy within 35 m; level and sweep'
                 if k % 15 == 0: tap('RELOAD')
+                idle += 1
+                if a.idle_passes and idle >= a.idle_passes:
+                    # Sweeping an empty room for the rest of a 30 s round (sense108) only costs time.
+                    print(msg, flush=True); print(k, 'nothing to fight: ending early', flush=True)
+                    break
             print(msg, flush=True)
             if log: log.write(json.dumps({'t': time.time(), 'k': k, 'msg': msg}) + '\n')
     except RuntimeError as e:
