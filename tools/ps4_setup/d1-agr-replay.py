@@ -30,7 +30,11 @@ BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-gr
 # hall's waves (triggers 108-112), the second the corridor's and the garage's (114-116, 106, 107).
 WAVE_SQUADS = ('26,28,30,21,24,38,42,56,58', '44,47,49,51,53,55,72,74,68,76')
 JUNCTION_SQUADS = '64,68,76'
-UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'   # d1-walk.py after a death   # agr-b-graveyard-junction.txt: on or by the garage route (run sense100's map).
+UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'   # d1-walk.py after a death
+
+
+class Respawned(Exception):
+    """The Guardian came back far from the leg being walked (play_waves restarts the legs)."""   # agr-b-graveyard-junction.txt: on or by the garage route (run sense100's map).
 # 72 and 74 stand a level below it; in sense101 the fight went down after them and the Guardian died twice.
 
 
@@ -123,7 +127,76 @@ class Replay:
             raise RuntimeError(f'{name} stopped before completing its route; no subsequent input sent')
         return done
 
-    def walk_waves(self, name, route, seconds, tolerance, extra, tries=5):
+    def waves_legs(self, to_chest):
+        """The legs after the rifle in waves mode: (name, points, seconds, tolerance, stance, squads).
+
+        Walked one by one; a respawn restarts from the earliest leg near the Guardian (play_waves).
+        Squads, when given, are fought along the leg (walk_fighting) instead of after it.
+        """
+        load = lambda f: json.loads((self.routes/f).read_text())
+        corridor, junction = load('wall_tripmine_corridor.json'), load('wall_junction_west.json')
+        return [
+            ('chest', to_chest, 840, 1.3, 'stand', WAVE_SQUADS[0]),
+            ('mine-stairs', corridor[0:4], 90, 1.2, 'stand', None),
+            ('mine-crouched', corridor[3:10], 240, 1.5, 'crouch', None),
+            ('mine-junction', corridor[9:], 150, 1.2, 'stand', WAVE_SQUADS[1]),
+            ('junction-west', junction[4:], 330, 1.3, 'stand', WAVE_SQUADS[1]),
+            ('garage', load('wall_garage_door.json'), 300, 1.0, 'stand', WAVE_SQUADS[1]),
+            ('fan-to-divide', load('wall_fan_tunnel_to_divide.json'), 420, 1.3, 'stand', None),
+        ]
+
+    def nearest_leg(self, legs, upto=None):
+        """The leg (up to `upto`) whose route passes nearest the Guardian (the earlier one on a tie).
+
+        Not the earliest within reach: the chest leg ends by the corridor's first respawn point, and
+        restarting there would walk the whole chest leg again."""
+        me = self.where()
+        if not me:
+            return 0
+        legs = legs[:None if upto is None else upto + 1]
+        gaps = [min(math.dist(p[:2], me[:2]) for p in leg[1]) for leg in legs]
+        return min(range(len(gaps)), key=lambda i: (round(gaps[i], 1), i))
+
+    def play_waves(self, to_chest, resume, restarts=6):
+        """The legs after the rifle, surviving respawns.
+
+        Run sense107 died in the corridor, respawned at its east end, and its junction leg tried five
+        times to walk straight through the corridor to its own first waypoint. A death far from the leg
+        now restarts the run of legs from the earliest one near the Guardian, standing (a respawn
+        stands up), with each leg setting its own stance.
+        """
+        legs = self.waves_legs(to_chest)
+        self.stance = 'stand'
+        i = self.nearest_leg(legs) if resume else 0
+        while i < len(legs):
+            name, points, seconds, tolerance, stance, squads = legs[i]
+            if stance != self.stance:
+                self.pad('NumPad6')
+                self.stance = stance
+            try:
+                if squads:
+                    self.walk_fighting(name, points, squads, seconds, chunk=8 if name != 'chest' else 10)
+                else:
+                    self.walk_waves(name, self.write_route(name, points), seconds, tolerance, (), legs=points)
+            except Respawned:
+                if restarts == 0:
+                    raise RuntimeError(f'{name}: too many respawns; no subsequent input sent')
+                restarts -= 1
+                self.stance = 'stand'
+                i = self.nearest_leg(legs, upto=i)
+                print(f'{name}: respawned; restarting from {legs[i][0]}', flush=True)
+                continue
+            i += 1
+        if not wait_for(self.host_log, DIVIDE_SLICE, 45):
+            raise RuntimeError('No natural slice-96 crossing observed; no Divide control published')
+        print('DIVIDE REACHED: verify scheduled step 16, native authority, objective and scene.', flush=True)
+
+    def away(self, points, limit=25):
+        """Whether the Guardian is more than `limit` m from every point of a leg (a respawn)."""
+        me = self.where()
+        return bool(me) and min(math.dist(p[:2], me[:2]) for p in points) > limit
+
+    def walk_waves(self, name, route, seconds, tolerance, extra, tries=5, legs=None):
         """A leg with the waves about: deaths and stalls are expected, so every attempt survives them.
 
         After a death or a lost track (UNIT_LOST, or a stop far from the Guardian), recover and go on
@@ -139,6 +212,8 @@ class Replay:
                 return True
             if not lines or UNIT_LOST in lines[-1] or self.lost(lines[-1]):
                 self.recover(tag)
+                if legs is not None and self.away(legs):
+                    raise Respawned(name)
                 me = self.where()
                 lines = [f'stopped ({me[0]}, {me[1]}, {me[2]})'] if me else []
             else:
@@ -174,6 +249,8 @@ class Replay:
                 if lines and lines[-1].startswith('done '):
                     break
                 self.recover(tag)
+                if self.away(points):
+                    raise Respawned(name)
             else:
                 raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
             self.skirmish(f'{name}-{k}')
@@ -455,8 +532,10 @@ class Replay:
         chest = json.loads((self.routes/'wall_container_to_chest.json').read_text())
         to_chest = wall + chest[1:]
         if self.waves:
-            to_chest = self.fight(to_chest, None, WAVE_SQUADS[0], 'waves-hall', 'the hall waves')
-        elif self.fallen:
+            if not resume or self.nearest_leg(self.waves_legs(to_chest)) == 0:
+                to_chest = self.fight(to_chest, None, WAVE_SQUADS[0], 'waves-hall', 'the hall waves')
+            return self.play_waves(to_chest, resume)
+        if self.fallen:
             to_chest = self.fight(to_chest, self.fallen, BREACH_SQUADS, 'fallen', 'Breach Fallen')
         if self.waves:
             self.walk_fighting('chest', to_chest, WAVE_SQUADS[0], 840)
