@@ -128,8 +128,38 @@ the rifle's retrack, the replay publishes `ps4/fixtures/56578/mission/agr-b-grav
   - All four squads were empty in memory 3.5 minutes after the publish. The chest walk then
     resumed from the waypoint nearest the Guardian.
 
+## Serving every Breach squad at once stalled the host (run sense98)
+
+A probe served states for all 30 Breach squads at step 15 (one member each; `d1-squad-states.py`),
+to see where each one spawns:
+- Building that list took the host 32 s. The control line is built with the client's own encoder in
+  the oracle, which costs seconds per squad state, and it ran on the host's tick. The four-state
+  list took about 13 s in sense94.
+- In those 32 s the host logged nothing, not even heartbeats. The client dropped the activity-host
+  connection and relaunched A Guardian Rises from the start (11:58:09).
+- Building on a thread alone was not enough (run sense99). The oracle worker runs its jobs in
+  turn, so the tick's own encodes queued behind the 31-second build, and the client dropped the
+  host again.
+- The host now builds `clients` control lines on a thread (`ActivityInstance::poll_control`) and on
+  a second oracle worker (`codec::control_oracle`, `SchemaCodec::build_sensor_aside`). Run sense100:
+  the same list took 32 s to build, the client stayed connected, and all 30 squads spawned.
+
+Where they spawned (one member each, read 5-60 s after the publish; Guardian near the rifle):
+
+| Area | Squads | Positions |
+| --- | --- | --- |
+| The Breach hall, by the rifle | 21, 22, 24, 26, 28, 30, 32, 34, 36, 38 | x 423-467, y -787 to -816, z 17 |
+| East of the hall | 40, 42, 56, 58, 62 | x 488-535, y -792 to -817, z 16-18 |
+| The tripmine corridor (`mine-*` legs) | 44, 47, 49, 51, 53, 55, 63 | x 466-534, y -715 to -739, z 14-16 |
+| West, by the junction and the garage | 64, 68, 72, 74, 76 | x 391-428, y -680 to -716, z 8-10 |
+| Between the hall and the corridor | 77, 86 | (449, -778, 16), (454, -751, 20) |
+
+Squad 94 had a member with no body position yet. None of them moved much in the minute
+watched, except the hall's Dregs, which closed on the Guardian.
+
 ## Next
 
-- The Wall's later squads at their own moments, the same way.
+- The Wall's later squads at their own moments, the same way. The map above says which route leg
+  passes each group; the original mission sends them in waves, not all at once.
 - What the drop actors need: `dropper1` and `crawler1`–`8` (kind `0x28`). Performances animate
   members of squads that already exist, so they wait on the squads.
