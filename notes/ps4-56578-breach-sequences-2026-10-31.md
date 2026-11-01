@@ -290,8 +290,12 @@ the Divide's step has fired).
 - Even so, the Divide's squads were there this time: the garage list was skipped, so no late
   control frame replaced the activation list.
 - The chain counted 12 live Divide squads and fought through the gate (squads 17-19 down).
-- It went on to Dock 13 (trigger 39, slice set 104) and the hangar bay (trigger 41), where the
-  hangar squads were live and being fought at 16:44.
+- It went on to Dock 13 (trigger 39, slice set 104) and the hangar bay (trigger 41), whose eight
+  squads were live.
+- The hangar was clear at 16:47:15 (mission step 22: the cohort is exactly zero), and the outro
+  steps followed (23 and 24, 16:47:56 and 16:47:59). That makes sense104 the first run that fought
+  every wave served, the Breach's, the junction's, the Divide's and the hangar's, through to the
+  outro.
 - In sense102 the client sent 2 squad updates after the Divide.
 
 ## Next
