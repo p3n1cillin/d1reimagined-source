@@ -125,6 +125,9 @@ and the sell screen has to be found from that side.
 - Accepting allegiance is a purchase: the New Monarchy Faction Badge for 2,500 Glimmer, with "✕
   Acquire". Neither a tap nor a 2-second hold sent anything. No investment message reached the
   server, so the client refused the purchase itself. Why is open.
+- Patches 99-40 (Research Assistant), at about (-116.9, 42.7) in Tower North, opens his screen on a
+  held □ in the social Tower, with an empty stock. In the PvE Tower (through 165), approaching him
+  opened nothing (30 October).
 
 ## Still open
 
