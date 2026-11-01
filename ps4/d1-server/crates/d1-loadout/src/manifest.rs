@@ -97,7 +97,7 @@ impl WorldManifest {
             bail!("expected exactly one member in {}, found {}", path.display(), zip.len());
         }
         let mut member = zip.by_index(0)?;
-        let name = member.name().to_string();
+        let name = member.name()?.to_string();
         let out = scratch_dir.join(format!("{}.sqlite", sanitise(&name)));
         {
             let mut w = std::fs::File::create(&out)
