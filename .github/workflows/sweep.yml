@@ -243,7 +243,7 @@ jobs:
           label 'tests'     d4c5f9 'Tests only'
       # A reminder only: research PRs often wait on a lab run or on someone with the inputs, and closing
       # them loses work. Drafts are left alone.
-      - uses: actions/stale@v9
+      - uses: actions/stale@v11
         with:
           days-before-issue-stale: -1
           days-before-issue-close: -1
