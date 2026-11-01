@@ -228,7 +228,8 @@ class Replay:
                          '--log', str(self.run/f'{tag}-combat.jsonl')], 90, check=False)
             self.command(f'{tag}-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         else:
-            print(f'{label} still standing after 8 rounds; continuing the route.', flush=True)
+            if not empty:                  # only if the last round still found one
+                print(f'{label} still standing after 8 rounds; continuing the route.', flush=True)
         self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
                                  '--tracked', str(self.tracked), '--retrack'], 60)
         self.select_retracked_position()
