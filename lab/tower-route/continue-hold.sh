@@ -1,7 +1,8 @@
 #!/bin/bash
 # Post-game CONTINUE on a parked run: pre-departure component read -> recall gate check -> monitor + recording ->
 # hold triangle ~4.2 s (hold-to-confirm, 3 s) -> screenshots through the load. Usage: continue-hold.sh RUNNAME [--no-record]
-# --no-record (ending-run.ps1 -NoRecord): there is no capture tour to wait for, and the departure is not recorded.
+# --no-record (ending-run.ps1 -NoRecord): there is no capture tour to wait for, so it waits for the post-game
+# pushes to finish (postgame5.sh's last section), and the departure is not recorded.
 S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd); REPO=$(cd "$S/../.." && pwd)
 C=$(python "$REPO/tools/ps4_setup/d1paths.py" staging); Q=$C/probes   # probe output (routepaths.probes())
 R=$C/$1; K=$R/capture; mkdir -p $K
@@ -10,6 +11,8 @@ recorders() { powershell -NoProfile -Command "(Get-CimInstance Win32_Process -Fi
 if [ $NOREC = 0 ]; then
   until grep -q 'recording stopped' $R/capture.log 2>/dev/null; do sleep 10; done
   until [ "$(recorders | tr -d '\r')" = "0" ]; do sleep 10; done
+else
+  until grep -q '== responder since phase 7' $R/postgame.log 2>/dev/null; do sleep 10; done
 fi
 echo "$(date +%H:%M:%S) tour done, no recorder running"
 # The tour ends on ACTIVITY REWARDS: R1 twice selects ADVANCEMENT. Codex's read-only probe captures the live UI
