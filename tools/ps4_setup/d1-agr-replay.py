@@ -168,8 +168,13 @@ class Replay:
         legs = self.waves_legs(to_chest)
         self.stance = 'stand'
         i = self.nearest_leg(legs) if resume else 0
+        restart = 0
         while i < len(legs):
             name, points, seconds, tolerance, stance, squads = legs[i]
+            # A restarted leg writes its own routes: the first pass's are evidence, and a route of the
+            # same name with other points is refused (sense108 stopped on replay-chest-0.json).
+            if restart:
+                name = f'{name}-r{restart}'
             if stance != self.stance:
                 self.pad('NumPad6')
                 self.stance = stance
@@ -182,6 +187,7 @@ class Replay:
                 if restarts == 0:
                     raise RuntimeError(f'{name}: too many respawns; no subsequent input sent')
                 restarts -= 1
+                restart += 1
                 self.stance = 'stand'
                 i = self.nearest_leg(legs, upto=i)
                 print(f'{name}: respawned; restarting from {legs[i][0]}', flush=True)
