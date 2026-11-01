@@ -298,6 +298,40 @@ the Divide's step has fired).
   outro.
 - In sense102 the client sent 2 squad updates after the Divide.
 
+## The waves by their triggers, in the unattended route (runs sense105 and sense106)
+
+`ending-run.ps1 -Waves` serves `agr-steps-divide-waves.txt`: the usual schedule with the nine wave
+steps after `agr-b-graveyard.txt`, all nine triggers armed at once. The garage door is carried into
+every list (`d1-breach-waves.py --overlay breach-prop3-only.txt`), so the replay publishes nothing
+over the waves (`--waves`).
+
+- **Startup:** the host builds every list at start, about 40 s for each wave list, so it was ready
+  only after 16 minutes. `-Waves` gives it 30.
+- **The triggers work.** Each trigger the Guardian reached was reported, and its wave was served
+  and spawned. In sense105: 120 at 17:27:48, then 108, 110, 111 and 112 within six minutes. In
+  sense106: 120, 108, 110 and 111.
+- **One fight is not enough.** Each wave comes as its trigger is crossed, so the old single fight
+  after the rifle meets only the first Vandal:
+  - sense105 walked the 64-waypoint chest leg through three more waves without fighting, died at
+    (468, -815), respawned at (415, -789) and lost the route;
+  - in waves mode the chest leg is now walked ten waypoints at a time, with a fight after each
+    stretch. A stretch that stops short (a stall, or a death the walker refuses to steer
+    through) is retried after a retrack and a fight, from the nearest waypoint;
+  - sense106 walked and fought all five stretches, then the tripmine stairs and the crouched
+    stretch, and died in the last stretch of the corridor.
+- **After a death the client reports no more wave triggers.** In sense106 the first death came at
+  18:46-18:47:
+  - 112 to 116 were then served only on their 300 s timeouts, though the Guardian walked through
+    their places later;
+  - a trigger's state (`0x80800463`) is the armed flag and an arming time, and every wave list
+    armed with time 1;
+  - the cause: a respawn clears the arming, and the same state served again doesn't restore it;
+  - **tested in sense106:** at 19:17:01, after the deaths, wave 107's list was served by control
+    with corridor triggers 114-116 armed at time 2. Walking the tripmine corridor, the client
+    reported 114 (19:18:00), 115 (19:18:05) and 116 (19:18:36);
+  - so the replay now re-arms after a death: it serves the current wave list (read from the host
+    log) with arming time 1 + n (`--schedule-dir`).
+
 ## Next
 
 - Run the trigger-driven waves (above) and check that the client reports the wave triggers once
