@@ -225,9 +225,10 @@ class RapidObjectiveHandover(unittest.TestCase):
                                "--ah-baselines", "0x10/3/0,0x10/3/1,0x10/3/2,0x10/3/3")
         pushes = []
         # Each trigger comes 0.6 s after the last: well after the 0.15 s step (which must fire) and well
-        # before the 1.2 s one (which the next trigger must cancel). At 0.21 s, a slow Windows runner
+        # before the 1.2 s one (which the next trigger must cancel). The last waits 3 s for its 1.2 s
+        # step: 1.5 s was not enough on a Windows runner (#191). At 0.21 s, a slow Windows runner
         # sometimes hadn't fired the 0.15 s step yet, and the final state kept the wall at 3.
-        for report, wait in ((b"A", 0.6), (b"B", 0.6), (b"C", 1.5)):
+        for report, wait in ((b"A", 0.6), (b"B", 0.6), (b"C", 3.0)):
             client.notify(15, report)
             pushes += fixture.run_client(client, wait)[1]
         states = [objects_in(fixture.schema, data) for _, subtype, data in pushes

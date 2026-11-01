@@ -189,7 +189,8 @@ class ActivityHostSession(unittest.TestCase):
 
     def test_events_log_records_frames_and_host_messages(self):
         c = self.start("--ah-heartbeat", "0.1:-1", "--ah-baselines", "0x10/3/0")
-        self.run_client(c, 0.3, reports=[(0.1, b"\x41")])
+        # 0.3 s was not always long enough for a slow runner to log the report (#191).
+        self.run_client(c, 1.0, reports=[(0.1, b"\x41")])
         path = next(Path(self.tmp.name).glob("*/events.jsonl"))
         events = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
         host = [e for e in events if e.get("ev") == "ah"]
