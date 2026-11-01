@@ -103,9 +103,33 @@ mostly unrelated stack locals; the live client is the better instrument.
   that a control line's path must be a Windows path (`F:/...`): the host can't open an MSYS path
   (`/f/...`).
 
+## The Breach fight in the unattended route (runs sense96 and sense97, 1 November)
+
+`lab/tower-route/ending-run.ps1 -BreachFallen` passes `--breach-fallen` to `d1-agr-replay.py`. After
+the rifle's retrack, the replay publishes `ps4/fixtures/56578/mission/agr-b-graveyard-fallen.txt`
+(the graveyard list with states for squads 21, 26, 28 and 30), then fights them before walking on.
+
+- **sense96, fighting off the route.** The Fallen spawned. Squad 28's Dreg came to the Guardian
+  (14 m), took hits (vitality 3 → 2 → dead) and died; the first Fallen killed by the unattended
+  route.
+  - The other three stood still at about (422, -813), (441, -814) and (452, -807). That is on the
+    route itself: the walk to the chest passes (446.9, -814.8) by waypoint 13.
+  - `seek.py` toward them failed at once. It walks the mission nav graph first, which does not
+    cover the Breach, and `nav.py` returned exit 3.
+  - `combat2.py`'s strafing then drifted the Guardian off the route, and the chest walk stalled
+    against a wall at waypoint 13.
+- **sense97, fighting along the route.** Each round now walks the route from the waypoint nearest
+  the Guardian to the one nearest the target (`target.py`, `lab/tower-route/where.py`), then fights
+  for 30 s:
+  - Round 0 shot the Dreg that came close.
+  - Round 1 walked to (420, -814) and fought.
+  - Round 2 fought the last one from (443, -808).
+  - Rounds 3 and 4 found nobody within 400 m.
+  - All four squads were empty in memory 3.5 minutes after the publish. The chest walk then
+    resumed from the waypoint nearest the Guardian.
+
 ## Next
 
-- Serving the Breach squad states in the unattended route, with the fight to match (the replay alone
-  doesn't survive an attack), and the Wall's later squads at their own moments.
+- The Wall's later squads at their own moments, the same way.
 - What the drop actors need: `dropper1` and `crawler1`–`8` (kind `0x28`). Performances animate
   members of squads that already exist, so they wait on the squads.
