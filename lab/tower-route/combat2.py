@@ -225,7 +225,12 @@ def main():
                 elif ok and not in_view:
                     # Not walking at it: closing in on an unseen target walked the Guardian into walls.
                     blind += 1
-                    if blind == 2:
+                    if blind == 1:
+                        # One short probe burst: a hit brings up the enemy's plate and health bar, so a
+                        # real target shows itself next frame. Plates are missed in some light (sense108's
+                        # corridor: 40 skips and almost no return fire), so never firing at all killed us.
+                        key('FIRE', True); time.sleep(0.3); key('FIRE', False)
+                    elif blind == 2:
                         hold('A' if strafe > 0 else 'D', 450)    # peek round the corner once
                     elif blind >= 3:
                         blocked[lock], blind = time.time() + 8, 0   # behind a wall: leave it for 8 s
