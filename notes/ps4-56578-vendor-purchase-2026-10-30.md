@@ -97,7 +97,7 @@ object's `+0x74` (0–14, jump table `0xA2A214`):
 |---|---|
 | 0 | 901 `vendor_buy_item` (builder `0x27F530`: vendor `[+0x60]`, sale `[+0x54]`) |
 | 1 | 903 `vendor_sell_item` (`0x552FC0` → builder `0x27F7D0`: instanced flag, instance, content index or -1, `[+0x6C]`, vendor `[+0x60]`) |
-| 2 | 905 `vendor_refund_item` (`0x552F60` → builder `0x27F6F0`: instanced flag, instance, content index, and a u64 at `+0x18` from `0x265100(owner...)`: the same owner field 901 sends as its u64) |
+| 2 | 905 `vendor_refund_item` (`0x552F60` → builder `0x27F6F0`: instanced flag, instance, content index, and a u64 at `+0x18` from `0x265100(...)`: the same value 901 sends as its u64, most likely the client's current time) |
 | 3, 4, 8, 9, 11, 12 | 402 |
 | 5 / 6 / 7 | 403 `inventory_equip_item` / 404 `inventory_unequip_item` / 405 `inventory_transfer_item` |
 | 10 | 904 `vendor_interact` |
@@ -174,10 +174,10 @@ type, the item and the expiry.
 
 ## Still open
 
-- What the owner field behind the 901 and 905 u64 is: `0x265100` returns `obj+0x3E88` (when `+0x3E80`
-  is set) or `obj+8` of the object `0x5753C0(4)` hands out, the family-4/type-4 (unlock-state,
-  `0x8080102E`) lookup ([signon and entitlement](../ps4/design/signon-and-entitlement.md)). It read
-  `0xB11` in sense69, not the key we serve that object under (`0x7FFFFFFFFFFFFFFE`).
+- The value behind the 901 and 905 u64: `0x265100` returns a pointer to `obj+0x3E88` (when `+0x3E80`
+  is set) or `obj+8` of an object from the family-4/type-4 registry entry (`0x5753C0(4)`). The
+  vendor refund screen (`0xA205E0`) compares it with each refund record's expiry (`+0x5B18`), so it
+  is most likely the client's current time (`0xB11` in sense69).
 - Selling (903), the refund itself (905, once the client offers it), and the other vendors.
 - A purchase priced in Vanguard or Crucible Marks, at a quartermaster.
 - Why the client won't send the faction badge purchase.

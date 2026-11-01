@@ -284,15 +284,16 @@ impl Bits<'_> {
 
 /// A 905 `vendor_refund_item` request. The client's builder (`0x27F6F0`, through `0x552F60` from
 /// the vendor screen's action 2) writes the same item reference as 903 (`{bool @0, u64 @8, i16
-/// @0x10}`) and a u64 at `+0x18` from `0x265100(owner...)`, the same owner field 901 sends as its u64
-/// (`obj+0x3E88` when `+0x3E80` is set, else `obj+8`; `0xB11` in run sense69's purchase).
+/// @0x10}`) and a u64 at `+0x18` from `0x265100(...)`, the same value 901 sends as its u64 (`0xB11`
+/// in run sense69's purchase). The vendor refund screen (`0xA205E0`) compares that value with each
+/// refund record's expiry (`+0x5B18`), so it is most likely the client's current time.
 /// Decoded from the bitstream directly, since its schema tag isn't known yet.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RefundRequest {
     pub instanced: bool,
     pub instance: u64,
     pub content: i16,
-    pub owner: u64,
+    pub stamp: u64,
 }
 
 pub fn refund_request(req: &[u8]) -> Option<RefundRequest> {
@@ -301,7 +302,7 @@ pub fn refund_request(req: &[u8]) -> Option<RefundRequest> {
         instanced: b.take(1)? != 0,
         instance: b.take(64)?,
         content: b.biased(16)? as i16,
-        owner: b.take(64)?,
+        stamp: b.take(64)?,
     })
 }
 
@@ -648,7 +649,7 @@ mod tests {
         assert_eq!(b.take(1), Some(0), "121 bits, then padding");
     }
 
-    /// A 905 built the same way: an instanced item and the owner value; a negative content index (-1)
+    /// A 905 built the same way: an instanced item and the time stamp; a negative content index (-1)
     /// round-trips through the bias.
     #[test]
     fn a_refund_request_decodes() {
@@ -662,7 +663,7 @@ mod tests {
         }
         let bytes: Vec<u8> = (0..bits.len()).step_by(8).map(|i| u8::from_str_radix(&bits[i..i + 8], 2).unwrap()).collect();
         assert_eq!(refund_request(&bytes), Some(RefundRequest {
-            instanced: true, instance: 0xD100_0000_0000_0601, content: -1, owner: 0x1234_5678_9ABC_DEF0,
+            instanced: true, instance: 0xD100_0000_0000_0601, content: -1, stamp: 0x1234_5678_9ABC_DEF0,
         }));
         assert_eq!(refund_request(&bytes[..10]), None);
     }
