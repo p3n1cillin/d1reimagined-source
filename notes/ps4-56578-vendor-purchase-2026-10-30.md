@@ -143,8 +143,10 @@ and the sell screen has to be found from that side.
   - So the badge's ✕ never enters the item-action path at all. Whatever handles it (the faction
     allegiance dialog's own action) refuses earlier. The dialog's data component
     (`c_faction_data_component`, vtable `0x195C0A0`) is display-only, with four small functions, so
-    the handler is elsewhere. A check the tooltip itself mentions (one allegiance at a time, a change
-    once a week) is a candidate.
+    the handler is elsewhere. The vendor interaction event handler component's entry points
+    (`0xA1F970`, `0xA1F9F0`, `0xA1FAC0`, `0xA1FB00`; `0xA1FB20` runs every frame) didn't run on ✕
+    either. A check the tooltip itself mentions (one allegiance at a time, a change once a week),
+    made against data the server doesn't send yet, is a candidate.
 - Getting to Hideo and Eva in one run: from Hideo, go through the open area near the spawn
   (about (-76, 30)) to reach Eva, and the same way back. `seek.py --no-nav` directly between
   them ends in a storage room at about (-79.7, 24.4).
