@@ -38,11 +38,15 @@ The retained PlayStation 3 implementation targets version 01.24 with RPCS3.
 See [current results and contribution priorities](docs/STATUS.md). The first
 mission, A Guardian Rises, now runs from the Cosmodrome through the Divide and
 Dock 13 to its outro and post-game screens, with the project's services driving
-its steps. △ CONTINUE launches the next story
-activity and arrives in a populated Tower North, with its civilians, Patches and
-Xûr ([29 October notes](notes/ps4-56578-continue-tower-2026-10-29.md)). Vendors
-don't open yet, and the next mission's own world is a stand-in. Native stability,
-progression beyond the first mission and multiplayer remain unproven.
+its steps. The Breach's Fallen come on the mission script's own triggers and play their authored
+entrances ([Breach notes](notes/ps4-56578-breach-sequences-2026-10-31.md)). △ CONTINUE launches the
+next story activity and arrives in a populated Tower North, with its civilians, Patches and Xûr
+([29 October notes](notes/ps4-56578-continue-tower-2026-10-29.md)). Vendor screens open and a
+purchase is applied end to end, and equipping gear works
+([purchase notes](notes/ps4-56578-vendor-purchase-2026-10-30.md),
+[equip notes](notes/ps4-56578-equip-2026-11-01.md)). Selling, refunds and marks prices are still
+open, and the next mission's own world is a stand-in. Native stability, progression beyond the first
+mission and multiplayer remain unproven.
 
 This is a research repository, not a ready-to-play installer. The `data/` directory contains material derived from the historical PS3 research snapshot: schemas, logs, update diffs and a checksum manifest. Game packages, executables, firmware, third-party runtimes, account databases, private keys and current runtime captures are not included; supply your own authorised copies and check them against `data/SHA256SUMS.txt`. Use only inputs you are authorised to use. No public service, console, account or third-party system is a testing target.
 
