@@ -166,7 +166,9 @@ def main():
     ap.add_argument('out_dir')
     ap.add_argument('--gen', type=int, default=2, help='generation for every Breach squad (default 2)')
     ap.add_argument('--count', type=int, default=1, help='desired members per squad (default 1)')
-    ap.add_argument('--timeout', type=int, default=300, help='seconds each wave waits for its trigger')
+    # 900: fighting each stretch, sense108 took over five minutes from one wave trigger to the next,
+    # and 300 s served the corridor's waves on their timeouts before the Guardian got there.
+    ap.add_argument('--timeout', type=int, default=900, help='seconds each wave waits for its trigger')
     ap.add_argument('--overlay', help='a list whose differences from BASE every list carries (e.g. the garage door)')
     ap.add_argument('--no-entrances', action='store_true', help='squads only: no enter() command scripts')
     a = ap.parse_args()
