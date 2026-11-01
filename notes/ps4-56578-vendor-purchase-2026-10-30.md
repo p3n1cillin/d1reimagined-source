@@ -187,6 +187,15 @@ Run sense91 (social Tower, 1 November):
   `0x587880()` is 3 or less (it reads the active character index) and the three registry entry 4
   objects exist. So the record would be listed wherever the component is placed; Eva's screen doesn't
   place it. The next place to look is a gear vendor (Banshee-44, or a quartermaster).
+- Where screens get the component: the factory `0x1130920` (allocates 0x1058 bytes, sets the
+  vtable `0x195FE00 + 0x10`, the list limit at `+0x280` starts at 0) is registered at `0xA211B1`
+  in a record at `0x2773A20`: type hash `0x7128FF278C066039`, a second record at `0x2773A58` with
+  `0xDC317725EE33B80A` and `0x543200BC`, and no name string. With Eva's screen open, neither 64-bit
+  hash was anywhere else in the client's memory, so screen content doesn't name the component by
+  them. How screen content picks its components is the next thing to read.
+- Banshee-44: from both the Tower North spawn and Executor Hideo, the Armsday waypoint is about
+  22 m away but in directions that only agree if most of the distance is vertical, so his stall is
+  on another level. Walking from Hideo toward (-73, -6) goes off the edge of the Tower.
 
 ## Still open
 
