@@ -203,6 +203,63 @@ pub fn on_sell(req: Vec<u8>) {
     });
 }
 
+/// The investment codec's bitstream, read most significant bit first. Integers the schema marks
+/// signed (and the "u8" of 903) are written biased, with their top bit flipped. Worked out from 903's
+/// round trip: `{1, 0x1122334455667788, 0x348}, 0x55667, 6` encodes to
+/// `889119a22ab33bc441a44002ab33c300`, where bits 65, 81 and 113 (the top bits of the i16, i32 and u8)
+/// are set.
+struct Bits<'a> {
+    data: &'a [u8],
+    at: usize,
+}
+
+impl Bits<'_> {
+    fn take(&mut self, width: usize) -> Option<u64> {
+        let mut v = 0u64;
+        for _ in 0..width {
+            let byte = *self.data.get(self.at / 8)?;
+            v = (v << 1) | u64::from((byte >> (7 - self.at % 8)) & 1);
+            self.at += 1;
+        }
+        Some(v)
+    }
+
+    fn biased(&mut self, width: usize) -> Option<i64> {
+        let v = self.take(width)? ^ (1 << (width - 1));
+        Some(((v << (64 - width)) as i64) >> (64 - width))
+    }
+}
+
+/// A 905 `vendor_refund_item` request. The client's builder (`0x27F6F0`, through `0x552F60` from
+/// the vendor screen's action 2) writes the same item reference as 903 (`{bool @0, u64 @8, i16
+/// @0x10}`) and a u64 at `+0x18`, which it takes from `0x265100(...)`: probably the refund receipt.
+/// Decoded from the bitstream directly, since its schema tag isn't known yet.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct RefundRequest {
+    pub instanced: bool,
+    pub instance: u64,
+    pub content: i16,
+    pub receipt: u64,
+}
+
+pub fn refund_request(req: &[u8]) -> Option<RefundRequest> {
+    let mut b = Bits { data: req, at: 0 };
+    Some(RefundRequest {
+        instanced: b.take(1)? != 0,
+        instance: b.take(64)?,
+        content: b.biased(16)? as i16,
+        receipt: b.take(64)?,
+    })
+}
+
+/// Log a 905 request's fields (no state change yet).
+pub fn on_refund(req: &[u8]) {
+    match refund_request(req) {
+        Some(r) => tracing::warn!("      ⭐ VENDOR REFUND (905) decoded: {r:?} (not applied yet)"),
+        None => tracing::warn!("      ⛔ vendor refund (905): {} bytes is too short to decode", req.len()),
+    }
+}
+
 /// Apply one purchase to the state. Returns (description, new account slots changed, item sidecar).
 fn apply(st: &mut State, vendor: u8, sale_index: u16) -> anyhow::Result<(String, Option<(u64, Vec<u8>)>)> {
     let sale = st.sales.get(&(vendor, sale_index)).cloned()
@@ -506,6 +563,38 @@ mod tests {
             instanced: true, instance: 0x1122_3344_5566_7788, content: 0x348, quantity: 0x55667, vendor: 6,
         }));
         assert_eq!(sell_request(&obj[..0x1C]), None);
+    }
+
+    /// The bit reader reproduces 903's round trip through the client codec.
+    #[test]
+    fn the_bitstream_reads_903s_known_encoding() {
+        let wire = hex("889119a22ab33bc441a44002ab33c300");
+        let mut b = Bits { data: &wire, at: 0 };
+        assert_eq!(b.take(1), Some(1));
+        assert_eq!(b.take(64), Some(0x1122_3344_5566_7788));
+        assert_eq!(b.biased(16), Some(0x348));
+        assert_eq!(b.biased(32), Some(0x55667));
+        assert_eq!(b.biased(8), Some(6));
+        assert_eq!(b.take(1), Some(0), "121 bits, then padding");
+    }
+
+    /// A 905 built the same way: an instanced item and a receipt; a negative content index (-1)
+    /// round-trips through the bias.
+    #[test]
+    fn a_refund_request_decodes() {
+        let mut bits = String::new();
+        bits += "1";
+        bits += &format!("{:064b}", 0xD100_0000_0000_0601u64);
+        bits += &format!("{:016b}", (-1i16 as u16) ^ 0x8000);
+        bits += &format!("{:064b}", 0x1234_5678_9ABC_DEF0u64);
+        while bits.len() % 8 != 0 {
+            bits.push('0');
+        }
+        let bytes: Vec<u8> = (0..bits.len()).step_by(8).map(|i| u8::from_str_radix(&bits[i..i + 8], 2).unwrap()).collect();
+        assert_eq!(refund_request(&bytes), Some(RefundRequest {
+            instanced: true, instance: 0xD100_0000_0000_0601, content: -1, receipt: 0x1234_5678_9ABC_DEF0,
+        }));
+        assert_eq!(refund_request(&bytes[..10]), None);
     }
 
     fn hex(s: &str) -> Vec<u8> {

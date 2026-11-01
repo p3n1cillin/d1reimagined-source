@@ -97,6 +97,7 @@ object's `+0x74` (0–14, jump table `0xA2A214`):
 |---|---|
 | 0 | 901 `vendor_buy_item` (builder `0x27F530`: vendor `[+0x60]`, sale `[+0x54]`) |
 | 1 | 903 `vendor_sell_item` (`0x552FC0` → builder `0x27F7D0`: instanced flag, instance, content index or -1, `[+0x6C]`, vendor `[+0x60]`) |
+| 2 | 905 `vendor_refund_item` (`0x552F60` → builder `0x27F6F0`: instanced flag, instance, content index, and a u64 at `+0x18` from `0x265100(...)`, probably the refund receipt) |
 | 3, 4, 8, 9, 11, 12 | 402 |
 | 5 / 6 / 7 | 403 `inventory_equip_item` / 404 `inventory_unequip_item` / 405 `inventory_transfer_item` |
 | 10 | 904 `vendor_interact` |
@@ -104,6 +105,14 @@ object's `+0x74` (0–14, jump table `0xA2A214`):
 
 Action 14 takes another path (`0xA07C20`). It is not yet known which screen sets action 1, so no run has
 sent a 903 yet. The responder decodes and logs one if it comes (#144).
+
+**The investment codec's bitstream.** 903's round trip shows how the client writes a request: each
+field's bits in order, most significant first, with no padding between fields. The schema's signed
+integers (and 903's "u8") are written biased, top bit flipped. `{1, 0x1122334455667788, 0x348},
+0x55667, 6` encodes to `889119a22ab33bc441a44002ab33c300`, with bits 65, 81 and 113 set. 905's schema
+tag isn't known, so the responder decodes its 145 bits directly with that rule and logs them
+(`vendor::refund_request`). It answers with the result composite, the shape of every vendor response
+read so far.
 
 The UI sets the action through `0xA29C90` (it stores the vendor at `+0x60`, the action at `+0x74` and
 `+0x6C`). Of its ten callers, only two pass a fixed action (8 and 11). The rest pass the action
