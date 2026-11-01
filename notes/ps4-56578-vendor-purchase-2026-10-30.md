@@ -138,10 +138,25 @@ and the sell screen has to be found from that side.
   held □ in the social Tower, with an empty stock. In the PvE Tower (through 165), approaching him
   opened nothing (30 October).
 
+## Eva and refunds (run sense88, 1 November)
+
+- In the social Tower, `lab/tower-route/seek.py -70.9,39.1 --no-nav` from the Tower North spawn ends
+  beside Eva Levante. A held □ opens her screen.
+- Buying the Command emblem (570 Glimmer) went through with nothing done by hand. The 901 arrived as
+  `86801780000000000005a380` (vendor 6, sale 23). The responder spent the Glimmer and pushed the
+  account and profile (`VENDOR PURCHASE APPLIED`). The client showed Glimmer 24,430, the acquisition
+  notice and "Can only hold one at a time".
+- No refund option appeared on the item or the screen. The client builds its refund UI from vendor
+  refund receipts (`c_investment_vendor_refund_receipt`, up to 30 per character). The server doesn't
+  serve any yet, so the client can't send a 905. Where the receipts live (an object family, or a
+  profile field past the ones `d1-oracle profile layout` names) is the next question for refunds.
+
 ## Still open
 
 - What the owner field behind the 901 and 905 u64 is: `0x265100` returns `obj+0x3E88` (when `+0x3E80`
-  is set) or `obj+8` of the object `0x5753C0(4)` hands out. It read `0xB11` in sense69.
-- Selling (903), refunds, and the other vendors.
+  is set) or `obj+8` of the object `0x5753C0(4)` hands out, the family-4/type-4 (unlock-state,
+  `0x8080102E`) lookup ([signon and entitlement](../ps4/design/signon-and-entitlement.md)). It read
+  `0xB11` in sense69, not the key we serve that object under (`0x7FFFFFFFFFFFFFFE`).
+- Selling (903), refund receipts (so the client can offer a refund, 905), and the other vendors.
 - A purchase priced in Vanguard or Crucible Marks, at a quartermaster.
 - Why the client won't send the faction badge purchase.
