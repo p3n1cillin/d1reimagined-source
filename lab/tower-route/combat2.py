@@ -4,7 +4,7 @@ native yaw/pitch aim locks on and tracks it. In-process keys only (no PowerShell
     combat2.py --seconds 120 [--shots DIR] [--log FILE]
 Stops (exit 3) when the Guardian's unit changes (death). Every loop moves a stick.
 """
-import argparse, ctypes, importlib.util, json, math, os, struct, sys, time
+import argparse, ctypes, importlib.util, json, math, os, shutil, struct, sys, time
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE); import routepaths  # noqa: E402
@@ -164,6 +164,7 @@ def main():
     # magazines into walls at members it could locate but not see). Peek once, then skip it a while.
     blind, blocked = 0, {}                                # blind aims at this lock; lock -> blocked until
     idle = 0                                              # passes in a row with no target
+    seen_h, seen_h_at, kept = None, 0, 0                  # last health read, when, frames kept
     try:
         while time.time() < t_end:
             k += 1; vit = ''
@@ -171,8 +172,20 @@ def main():
             if s is None: time.sleep(0.15); continue
             me, yaw, pitch = s
             W.scan(me)
-            img = fight.grab(os.path.join(a.shots, f'c-{k:03d}.png') if a.shots else str(routepaths.probes() / 'c2.png'))
+            img_path = os.path.join(a.shots, f'c-{k:03d}.png') if a.shots else str(routepaths.probes() / 'c2.png')
+            img = fight.grab(img_path)
             h = hp.health(img); plates = pl.plates(img)
+            if h is not None:
+                seen_h, seen_h_at = h, time.time()
+            elif seen_h is not None and seen_h < 0.9 and time.time() - seen_h_at < 4:
+                # A hurt bar that vanishes mid-fight is not a full one (the shield takes longer to
+                # refill): it is one the reader lost, as at critical health. sense108 died that way
+                # at 0.78 -> None. Assume the worst, and keep the frame to calibrate the reader.
+                if kept < 3 and a.log:
+                    kept += 1
+                    try: shutil.copy(img_path, f'{a.log}.lost-health-{kept}.png')
+                    except OSError: pass
+                h = 0.0
             objs = W.positions()
             # 1. Match each visible plate to the enemy object along its bearing.
             livemap = {unit: pos for _, unit, pos in W.live(objs, me)}
