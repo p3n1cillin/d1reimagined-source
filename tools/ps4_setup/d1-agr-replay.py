@@ -97,7 +97,7 @@ class Replay:
     def walk(self, name, route, seconds, tolerance=1.3, extra=(), strict=True):
         lines = self.walk_once(name, route, seconds, tolerance, extra, check=not self.waves)
         done = bool(lines and lines[-1].startswith('done '))
-        if self.waves and not done and lines and UNIT_LOST in lines[-1]:
+        if self.waves and not done and lines and (UNIT_LOST in lines[-1] or self.lost(lines[-1])):
             # A death (sense106 died in the tripmine corridor): recover, then resume from here.
             self.recover(name)
             me = self.where()
@@ -156,6 +156,17 @@ class Replay:
             else:
                 raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
             self.skirmish(f'{name}-{k}')
+
+    def lost(self, last):
+        """Whether a walk's final `stopped (x, y, z)` is far from where the Guardian really is."""
+        if not last.startswith('stopped ('):
+            return False
+        me = self.where()
+        try:
+            stop = [float(v) for v in last[len('stopped ('):last.index(')')].split(',')]
+        except ValueError:
+            return False
+        return bool(me) and math.dist(me[:2], stop[:2]) > 15
 
     def recover(self, name):
         """After a walk stops short (a stall, or a death): retrack, re-arm the waves, fight."""
@@ -233,8 +244,11 @@ class Replay:
         copies = json.loads(self.tracked.read_text())
         if not isinstance(copies, list) or any(type(a) is not int or a <= 0 for a in copies):
             raise RuntimeError('Malformed retracking result; no route input sent')
-        self.native_unit = len(copies) < 30
-        if self.native_unit:
+        # --waves: always the native walker. The heuristic copies can follow something else after a
+        # death: in run sense107 they held a standing Fallen's position (squad 53) while the
+        # respawned Guardian was 90 m away, and the corridor leg "stalled" there for 13 minutes.
+        self.native_unit = len(copies) < 30 or self.waves
+        if self.native_unit and not self.waves:
             print(f'Retrack kept {len(copies)} copies (<30): remaining walks require native unit/facing validation.', flush=True)
 
     def resume_route(self, name, route, lines):
