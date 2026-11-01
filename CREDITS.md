@@ -43,6 +43,15 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
   [`notes/public-research.md`](notes/public-research.md).
 - **[v4nguard](https://github.com/v4nguard)**: [tiger-pkg](https://github.com/v4nguard/tiger-pkg)
   (MIT). Its `d1_legacy` reader gave the package layout that `scripts/d1_pkg.py` follows.
+- **[Blam Network](https://github.com/Blam-Network)**: [tiger](https://github.com/Blam-Network/tiger),
+  TypeScript libraries for Destiny's Tiger engine (MIT for the code packages).
+  - Its `gibbon` reader, with definitions for our exact build `56578.17.04.12.1251.evil`, names
+    every row of every activity bundle: `tools/ps4_setup/d1-bundle-rows.mjs` uses it to map each
+    sensor index the host serves to its authored name.
+  - Its Fukugen Daihon reconstructions of the mission scripts (`enc_breach_m0`,
+    `act_cosmo_m0_highway`) show which squads each Breach trigger places.
+  - Its dictionary maps bundle hashes to names (`0xFC0E45A3` = `enc_breach_m0`).
+  - See [`notes/ps4-56578-breach-sequences-2026-10-31.md`](notes/ps4-56578-breach-sequences-2026-10-31.md).
 - **[lizardpeter](https://github.com/lizardpeter)**:
   [destiny-1](https://github.com/lizardpeter/destiny-1). It documents the v24 package format and the
   activity, bubble and map graph, cited in the research notes.
