@@ -496,6 +496,16 @@ the waves to get there. Each stop along the way gave the route a fix:
   7 s, not 30 s. The first frames kept as "lost" health showed no bar at all: the shield had
   refilled after a back-off. A back-off now resets that check.
 
+- **After the Divide.** chain2 took the gate, Dock 13 and the hangar: all eight hangar squads at zero
+  by 00:25:46, after two deaths (the nux walk, one hangar fight) it recovered from. The client then
+  played the outro and reported incident 891 (mission step 35) at 00:27:13. The post-game was lost:
+  postgame5 waited for `DIVIDE REACHED` in `replay-console.log`, which a resumed run doesn't write
+  (fixed: any `replay-console*.log`). Then I edited postgame5.sh while that copy ran. bash reads a
+  script by offset, so it skipped the inventory push and never published the scoreboard. About two
+  minutes after the outro the client dropped its connection (error "weasel"). The hangar recording
+  (rec3) shows the critical-health screen: the frame's edges go red. That is now the strongest
+  low-health signal combat2 has (`health.critical`).
+
 ## Next
 
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
