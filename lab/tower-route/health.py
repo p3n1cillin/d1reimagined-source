@@ -26,3 +26,19 @@ def health(img):
     frac = np.cumsum(lit) / np.arange(1, len(lit) + 1)
     ok = np.nonzero((frac >= 0.75) & lit)[0]
     return float(ok.max() + 1) / (X1 - X0)
+
+
+def critical(img):
+    """Whether the screen shows the game's critical-health effect: the frame's edges turn red.
+
+    Measured on sense108's recordings (2 Nov): the share of edge pixels (outside the middle 60%)
+    whose red exceeds both green and blue by 100 was 0.119-0.522 on the critical frames and at most
+    0.003 on ordinary ones, the corridor's red lamps and a close rust wall included (that wall gave
+    0.226 at a margin of 60). A far stronger sign than the bar, which is small and hides at full.
+    """
+    a = img.astype(int)
+    h, w = a.shape[:2]
+    edge = np.ones((h, w), bool)
+    edge[h // 5:4 * h // 5, w // 5:4 * w // 5] = False
+    e = a[edge]
+    return float(((e[:, 0] - e[:, 1:].max(axis=1)) > 100).mean()) > 0.05

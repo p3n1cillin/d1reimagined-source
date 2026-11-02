@@ -179,6 +179,8 @@ def main():
             img_path = os.path.join(a.shots, f'c-{k:03d}.png') if a.shots else str(routepaths.probes() / 'c2.png')
             img = fight.grab(img_path)
             h = hp.health(img); plates = pl.plates(img)
+            if hp.critical(img):
+                h = 0.0                                    # the red screen: critical whatever the bar says
             if h is not None:
                 seen_h, seen_at = h, time.time()
             elif seen_h is not None and seen_h < 0.9 and time.time() - seen_at < 1.5:
