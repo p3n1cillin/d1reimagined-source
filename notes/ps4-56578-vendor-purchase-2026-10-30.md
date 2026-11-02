@@ -154,6 +154,11 @@ and the sell screen has to be found from that side.
   held □ in the social Tower, with an empty stock. In the PvE Tower (through 165), approaching him
   opened nothing (30 October).
 
+> **Correction (2 November):** the game has no vendor refunds to aim for. Players get value back for
+> gear by dismantling it, for materials or Glimmer depending on the item. The client's refund code
+> below (905, refund receipts) is unused by the game as played, and the refund records the server now
+> sends (#167) are harmless but not needed. Dismantling is the path to serve next.
+
 ## Eva and refunds (run sense88, 1 November)
 
 - In the social Tower, `lab/tower-route/seek.py -70.9,39.1 --no-nav` from the Tower North spawn ends

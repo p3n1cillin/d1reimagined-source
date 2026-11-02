@@ -45,7 +45,7 @@ next story activity and arrives in a populated Tower North, with its civilians, 
 ([29 October notes](notes/ps4-56578-continue-tower-2026-10-29.md)). Vendor screens open and a
 purchase is applied end to end, and equipping gear works
 ([purchase notes](notes/ps4-56578-vendor-purchase-2026-10-30.md),
-[equip notes](notes/ps4-56578-equip-2026-11-01.md)). Selling, refunds and marks prices are still
+[equip notes](notes/ps4-56578-equip-2026-11-01.md)). Dismantling, selling and marks prices are still
 open, and the next mission's own world is a stand-in. Native stability, progression beyond the first
 mission and multiplayer remain unproven.
 
