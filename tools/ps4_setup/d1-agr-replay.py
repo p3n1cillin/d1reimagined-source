@@ -32,8 +32,8 @@ BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-gr
 # hall's waves (triggers 108-112), the second the corridor's and the garage's (114-116, 106, 107).
 WAVE_SQUADS = ('26,28,30,21,24,38,42,56,58', '44,47,49,51,53,55,72,74,68,76')
 JUNCTION_SQUADS = '64,68,76'
-UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'
-HURT_STOP = 0.4    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; sense118)   # d1-walk.py after a death
+UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'   # d1-walk.py after a death
+HURT_STOP = 0.3    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; sense118)
 
 
 class Respawned(Exception):

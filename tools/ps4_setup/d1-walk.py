@@ -379,7 +379,7 @@ def main():
     # A walk does not fight. Shot from the side, sense118 kept walking (or stalled facing a wall)
     # until it died; with --hurt-stop the walk stops once a second's look at the screen shows the
     # health bar below the limit, and the caller fights before walking on.
-    hurt, hurt_at = None, 0.0
+    hurt, hurt_at, low = None, 0.0, 0
     if a.hurt_stop:
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # d1_keys, for fight.grab
         lab = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'lab', 'tower-route')
@@ -398,7 +398,10 @@ def main():
                 h = 0.0 if hurt[1].critical(img) else hurt[1].health(img)
             except Exception:
                 h = None
-            if h is not None and h < a.hurt_stop:
+            # Two low readings in a row: the bar reader misreads now and then (sense123 read 0.30
+            # with the bar about three-quarters full, and stopped the same stretch four times).
+            low = low + 1 if h is not None and h < a.hurt_stop else 0
+            if low >= 2:
                 print(f'hurt: health {h:.2f} at wp {i}/{len(route)}')
                 break
         d_now = math.dist(here[:2], route[i][:2])
