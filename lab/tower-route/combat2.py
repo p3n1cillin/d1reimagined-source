@@ -176,6 +176,7 @@ def main():
     t_end, k, lock, lock_seen, strafe, last_gren, bursts = time.time() + a.seconds, 0, None, 0, 1, 0, 0
     sight = time.time()                                   # last time a plate sat near the reticle
     misses, hit_at = 0, 0                                 # aimed bursts with no native pool drop; last confirmed hit
+    swings = 0                                            # melees in a row that did nothing
     # Line of sight: an enemy's nameplate shows only when it is in view under the reticle. A target
     # aimed at with no plate near the reticle is behind a wall: do not fire at it (sense108 emptied
     # magazines into walls at members it could locate but not see). Peek once, then skip it a while.
@@ -279,8 +280,19 @@ def main():
                 in_view = in_view or time.time() - hit_at < 3 or d < 8
                 if in_view: sight, blind = time.time(), 0
                 if d < MELEE_RANGE:
+                    v0 = W.vital(lock) if isinstance(lock, tuple) else None
                     tap('MELEE', 100); time.sleep(0.4)          # in reach: melee (R1)
-                    fired += 1
+                    v1 = W.vital(lock) if v0 is not None else None
+                    # A member under the floor or behind a wall is "in reach" too: sense116 meleed
+                    # hangar squad 9, 1.7 m below the corridor, for ten minutes. Three swings with no
+                    # damage (or, with no health to read, no plate in view) skip it for 20 s.
+                    landed = v1 < v0 - 1e-4 if v0 is not None and v1 is not None else bool(plates)
+                    swings = 0 if landed else swings + 1
+                    if landed:
+                        fired += 1; hit_at = time.time()
+                    elif swings >= 3:
+                        blocked[lock], swings = time.time() + 20, 0
+                        print(k, f'lock {lock} in reach at {d:.1f} m but out of it: skipped for 20 s', flush=True)
                 elif ok and not in_view:
                     # Not walking at it: closing in on an unseen target walked the Guardian into walls.
                     blind += 1
