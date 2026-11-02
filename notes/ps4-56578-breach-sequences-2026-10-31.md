@@ -516,6 +516,14 @@ the waves to get there. Each stop along the way gave the route a fix:
   relaunched the same setup with the cache warm.
 - **The sensor cache works.** sense110's host was ready 42 s after launch (01:05:21 -> 01:06:03),
   against about 18 minutes for sense109 building the same 78 lists.
+- **Too fast for trigger 120.** sense110 stopped at the rifle: both approaches pushed into the
+  cage at y -788.2, and trigger 35 never came. The schedule arms the light-up trigger 120
+  (`agr-b-light-armed`, step 7) 35 s after slice 24. With keys pressed in-process the walks are much
+  quicker (breach leg 22 s, sense108 75 s). The platform walk crossed the trigger at about 01:10:05,
+  and it was armed at 01:10:21. Without the light-up, the activation and cage steps (8-12) never ran.
+  By hand: walking the platform back crossed trigger 120 at 01:19:52, the steps ran, and the rifle's
+  trigger came at 01:20:37. The replay now waits for step 7 before the platform walk, and walks back
+  and over again if trigger 120 is still missing.
 
 ## Next
 
