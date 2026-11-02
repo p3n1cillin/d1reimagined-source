@@ -490,6 +490,12 @@ the waves to get there. Each stop along the way gave the route a fix:
   check counts passes. The respawn after that death was inside the corridor; the restart took
   mine-crouched (crouched), not the junction leg.
 
+- **The Divide.** Resume5, with the cover retreat and the quicker rounds, went from the junction
+  through the garage and the fan tunnel without a death and crossed into slice 96 at 00:19:08
+  (2 November); chain2 took over from there. Fight rounds with nothing in view now end after about
+  7 s, not 30 s. The first frames kept as "lost" health showed no bar at all: the shield had
+  refilled after a back-off. A back-off now resets that check.
+
 ## Next
 
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
