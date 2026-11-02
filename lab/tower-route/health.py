@@ -16,9 +16,11 @@ def health(img):
     grey = band.std(axis=2).mean(axis=0) < 30
     red = (band[:, :, 0] - band[:, :, 1:].max(axis=2)).mean(axis=0) > 50
     lit = (mid - out > 10) & (grey | red) & (band.mean(axis=2).std(axis=0) < 30)
-    if lit[:48].mean() < 0.8:
+    # The bar's left end must be lit. 48 px was asked for at first, but at 0.10 the bar is 43 px:
+    # sense108 read None (no bar: full health) there while dying.
+    if lit[:20].mean() < 0.8:
         return None
-    ref = np.median(mid[:48])
+    ref = np.median(mid[:20])
     lit &= mid > ref - 30
     # the white fill runs from the left end: health is the longest prefix that is at least 75% lit
     frac = np.cumsum(lit) / np.arange(1, len(lit) + 1)

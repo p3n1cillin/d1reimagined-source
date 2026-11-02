@@ -71,5 +71,15 @@ class WalkFightingTest(unittest.TestCase):
         self.assertEqual(f.at, LINE[-1])
 
 
+class CoverTest(unittest.TestCase):
+    def test_cover_is_ten_metres_back_along_the_leg(self):
+        f = Fake((31.0, 0.5, 0.0)); f.leg = LINE
+        self.assertEqual(M.Replay.cover(f, f.at), LINE[4][:2])
+
+    def test_no_cover_at_the_start_of_a_leg(self):
+        f = Fake((0.5, 0.0, 0.0)); f.leg = LINE
+        self.assertIsNone(M.Replay.cover(f, f.at))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -220,7 +220,7 @@ class Replay:
         at the fan) and go on from the waypoint nearest the stop. Run sense107's junction leg fought,
         then its resume met a changed unit and stopped the replay.
         """
-        current = route
+        current, self.leg = route, legs
         for attempt in range(tries):
             tag = name if attempt == 0 else f'{name}-try{attempt}'
             lines = self.walk_once(tag, current, seconds, tolerance, extra, check=False)
@@ -266,7 +266,7 @@ class Replay:
         stall, sidestep and walk to an earlier waypoint first (as walk_waves does), not push into
         the same wall again from the same spot.
         """
-        self.wave = squads
+        self.wave, self.leg = squads, points
         off = lambda me, i: math.dist(points[i][:2], me[:2])
         nearest = lambda me: min(range(len(points)), key=lambda i: off(me, i))
         me = self.where()
@@ -375,8 +375,10 @@ class Replay:
             if not spot or (me and math.dist(me[:2], [float(v) for v in spot.split(',')]) > reach):
                 break
             fought = True
+            cover = self.cover(me)
             out = self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '30', '--squads', self.wave,
+                         *(['--cover', f'{cover[0]:.1f},{cover[1]:.1f}'] if cover else []),
                          '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
             if self.waves and out and 'unit changed (death)' in out[-1]:
                 # Died in the fight (sense108, before the junction leg): retrack and re-arm now, and
@@ -394,6 +396,22 @@ class Replay:
             self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
                                      '--tracked', str(self.tracked), '--retrack'], 60)
             self.select_retracked_position()
+
+    def cover(self, me, back=10.0):
+        """The point `back` m behind the Guardian along the current leg, to retreat to in a fight.
+
+        Backing straight off in the open did not break line of sight (sense108 died at the
+        junction after five back-offs); the way the Guardian came is known to be walkable and
+        mostly away from the wave ahead."""
+        leg = getattr(self, 'leg', None)
+        if not me or not leg:
+            return None
+        i = min(range(len(leg)), key=lambda j: math.dist(leg[j][:2], me[:2]))
+        gone = 0.0
+        while i > 0 and gone < back:
+            gone += math.dist(leg[i][:2], leg[i - 1][:2])
+            i -= 1
+        return leg[i][:2] if gone > 2 else None
 
     def walk_once(self, name, route, seconds, tolerance, extra, check=True):
         tracking = (['--native-unit', '--memory-facing'] if self.native_unit else

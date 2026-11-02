@@ -150,9 +150,11 @@ def main():
     # dying in the Breach's waves (sense105-108).
     ap.add_argument('--retreat-at', type=float, default=0.55, help='back off below this health fraction')
     ap.add_argument('--recover-s', type=float, default=5.0, help='seconds to wait out of sight for the shield')
+    ap.add_argument('--cover', help='x,y to retreat to: the route behind the Guardian (the replay passes it)')
     ap.add_argument('--idle-passes', type=int, default=8,
                     help='end the fight after this many passes in a row with nothing to shoot at (0: never)')
     a = ap.parse_args()
+    cover = tuple(float(v) for v in a.cover.split(',')) if a.cover else None
     only = {int(x) for x in a.squads.split(',')} if a.squads else None
     W = World(); fight.pad('NumPad4')                    # focus the emulator once
     log = open(a.log, 'a') if a.log else None
@@ -164,7 +166,8 @@ def main():
     # magazines into walls at members it could locate but not see). Peek once, then skip it a while.
     blind, blocked = 0, {}                                # blind aims at this lock; lock -> blocked until
     idle = 0                                              # passes in a row with no target
-    seen_h, seen_h_at, kept = None, 0, 0                  # last health read, when, frames kept
+    seen_h, seen_k, kept = None, -9, 0                    # last health read, its pass, frames kept
+    last_retreat_h, worse, stand_until = None, 0, 0       # health at the last back-off; back-offs it fell
     fired = 0                                             # bursts and melee at a target in view
     try:
         while time.time() < t_end:
@@ -177,11 +180,12 @@ def main():
             img = fight.grab(img_path)
             h = hp.health(img); plates = pl.plates(img)
             if h is not None:
-                seen_h, seen_h_at = h, time.time()
-            elif seen_h is not None and seen_h < 0.9 and time.time() - seen_h_at < 4:
+                seen_h, seen_k = h, k
+            elif seen_h is not None and seen_h < 0.9 and k - seen_k <= 2:
                 # A hurt bar that vanishes mid-fight is not a full one (the shield takes longer to
                 # refill): it is one the reader lost, as at critical health. sense108 died that way
                 # at 0.78 -> None. Assume the worst, and keep the frame to calibrate the reader.
+                # Counted in passes: a back-off pass takes about 5 s.
                 if kept < 3 and a.log:
                     kept += 1
                     try: shutil.copy(img_path, f'{a.log}.lost-health-{kept}.png')
@@ -220,10 +224,28 @@ def main():
                 if lv:
                     lock, target = lv[0][1], lv[0][2]
             # 2. Hurt: break line of sight and recover.
-            if h is not None and h < a.retreat_at:
-                release_all(); hold('S', 1300); hold('A' if strafe > 0 else 'D', 600); tap('RELOAD')
-                time.sleep(max(0.0, a.recover_s - 2.0))
-                print(k, f'health {h:.2f}: back off and recover', flush=True); continue
+            # Backing straight off and waiting in the open did not break line of sight: sense108 backed
+            # off five times at the junction while health fell 0.56 -> 0.10, and died. Go back along
+            # the route instead (--cover, where the Guardian came from), and if health still falls
+            # over two back-offs, stand and return fire for a while: waiting under fire only loses.
+            if h is not None and h < a.retreat_at and time.time() >= stand_until:
+                worse = worse + 1 if last_retreat_h is not None and h < last_retreat_h - 0.03 else 0
+                last_retreat_h = h
+                if worse >= 2:
+                    stand_until, worse, last_retreat_h = time.time() + 8, 0, None
+                    print(k, f'health {h:.2f}: still falling after backing off; fighting back', flush=True)
+                else:
+                    release_all()
+                    if cover and math.dist(me[:2], cover) > 2.5:
+                        aim(W, (cover[0], cover[1], me[2] + 0.35), tries=3)
+                        hold('W', int(min(2500, 450 * math.dist(me[:2], cover))))
+                        where_to = f'back to cover ({cover[0]:.0f}, {cover[1]:.0f})'
+                    else:
+                        hold('S', 1300); hold('A' if strafe > 0 else 'D', 600)
+                        where_to = 'back off'
+                    tap('RELOAD')
+                    time.sleep(max(0.0, a.recover_s - 2.5))
+                    print(k, f'health {h:.2f}: {where_to} and recover', flush=True); continue
             if target:
                 idle = 0
                 # In view now? This frame was taken after the previous pass aimed at the same lock.
