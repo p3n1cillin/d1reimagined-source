@@ -690,6 +690,27 @@ the waves to get there. Each stop along the way gave the route a fix:
   character (level, Light and stats from the tutorial character, not the geared one) is the 1:1
   version. It changes the balance both ways, so it needs its own run.
 
+## Junction-west in sense125 (2 November afternoon)
+
+sense125's second attempt (after the host-crash repair, notes/ps4-56578-dismantle-2026-11-02.md)
+died at junction-west three times, at 15:18, 15:30 and 15:33. sense124 had passed it.
+- **Fighting a lock it couldn't see.** combat2 held a lock on a squad 72 member about 36 m off,
+  across the lower junction (`aimed True plates 1-3`, one burst per 30 s round). One to three enemy
+  plates showed away from the reticle, and those enemies shot the Guardian down from 0.8.
+  - The damage-marker rule (#219) never fired; the critical red screen likely hides the chevron.
+  - #223: with the lock out of sight and plates on screen, turn onto the nearest plate and fire. It
+    fired at once in the live fight (15:35). The marker rule fired too, twice, and the fourth pass
+    got through junction-west at 15:37 (410, -714).
+- **A death the replay missed.** One round ended `health 0.00 … bursts 0` with no unit-changed
+  stop. The respawn at the corridor's east end (504, -721) was within 35 m of a leg point, so the
+  next stretch walked standing into the crouch-only crawl and bounced at x 486-488 for 2 min 20 s.
+  #221 counts a round that ends critical and more than 30 m from its start as a death.
+- **Aim at range.** Across sense100-125's fight logs (9,000 passes), the aim converges about half the
+  time at every range. At 37 m the yaw tolerance is 0.03 rad, but the shortest stick hold (25 ms)
+  turns 0.069 rad, so it settles only by luck. Of the aimed bursts with readable vitals, 9% showed
+  damage at 10-20 m and 4% at 30-45 m. That is likely an undercount: the read follows the burst at
+  once and replication may lag. Still, it suggests long-range fights are where the time goes.
+
 ## Next
 
 - Hangar deaths: three of sense116's four came inside combat2's 8 s fight-back window, at critical
@@ -699,6 +720,8 @@ the waves to get there. Each stop along the way gave the route a fix:
   Each arrived at 0.12 health or less with a Fallen 0.5-2 m away, so the corridor walk costs the
   health, not the fight. Next: before the junction's first skirmish, let the shield recover in the
   corridor when health is low.
+- Aim at range: holds shorter than 25 ms, or the game's own aim assist (fire once the error is
+  within a few degrees), and measure hits with the vitals read again a second later.
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
 - Run `agr-bw-steps.txt` as schedule steps, all nine triggers armed at once, with the entrances.
 - The nests' perching Fallen (`dropper1`, `crawler1`-`8`; squads 77 and 86) are placed at the
