@@ -611,6 +611,10 @@ the waves to get there. Each stop along the way gave the route a fix:
 - Hangar deaths: three of sense116's four came inside combat2's 8 s fight-back window, at critical
   health against squads 27-38 m away. #205 ends that window at critical health. If that isn't enough,
   back off to the nux doorway (`gap`), not to where the last walk began in the open hangar.
+- The mine junction: sense115 and sense117 both died stepping out of the crouched tripmine corridor.
+  Each arrived at 0.12 health or less with a Fallen 0.5-2 m away, so the corridor walk costs the
+  health, not the fight. Next: before the junction's first skirmish, let the shield recover in the
+  corridor when health is low.
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
 - Run `agr-bw-steps.txt` as schedule steps, all nine triggers armed at once, with the entrances.
 - The nests' perching Fallen (`dropper1`, `crawler1`-`8`; squads 77 and 86) are placed at the
