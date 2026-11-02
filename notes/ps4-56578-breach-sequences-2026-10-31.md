@@ -480,6 +480,16 @@ the waves to get there. Each stop along the way gave the route a fix:
   combat2 treats a bar under 0.9 that vanishes within 4 s as critical (retreat) and keeps that frame
   (`<log>.lost-health-N.png`) to check the reader against.
 
+- **Backing off in the open.** With those fixes the resume went through the tripmine corridor and
+  the junction without a death (resume4), then died in the junction-west fight. It had backed off
+  five times while its health fell 0.56 -> 0.47 -> 0.43 -> 0.32 -> 0.19 -> 0.10: two steps back,
+  a step aside and a 3 s wait still left it in the wave's line of fire. At 0.10 the bar is 43 px,
+  under the reader's 48 px minimum, so it read as no bar. The replay now gives combat2 `--cover`,
+  the leg's point 10 m behind the Guardian, and a back-off walks there. If health still falls over
+  two back-offs, combat2 stands and returns fire for 8 s. The reader needs 20 px, and the lost-bar
+  check counts passes. The respawn after that death was inside the corridor; the restart took
+  mine-crouched (crouched), not the junction leg.
+
 ## Next
 
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
