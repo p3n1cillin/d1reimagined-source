@@ -38,8 +38,8 @@ UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'   # d1-walk.p
 # session, and it rejoins and relaunches 164 from the start (the host serves mission step 0).
 REPAIR = 'Starting private activity repair state machine'
 CONNECTION = 'AH connection from '
-TELEPORTED = "transitioning:teleportation' due to completed"
 REPAIR_ATTEMPTS = 3
+RESTART = 'mission step 0 at +0 s'   # the host serving the mission from the start again
 HURT_STOP = 0.6    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; two readings in a row)
 
 
@@ -788,17 +788,22 @@ def mirror(source, target, offset, stop, sleep=time.sleep):
                 sleep(0.5)
 
 
-def rejoined(host_log, connections, client_log, client_offset, seconds=180):
+def rejoined(host_log, connections, client_log, client_offset, seconds=180, sleep=time.sleep):
     """After a failed attempt: did the client run its host-crash repair and rejoin? Returns the
-    offset of the rejoin's connection line in the host log, or None."""
-    if not contains(client_log, REPAIR, client_offset):
-        return None
+    offset of the rejoin's connection line in the host log, or None.
+
+    The evidence is the host's: a new connection whose mission starts over at step 0. The client's
+    own repair line is not enough to wait for: shadPS4 stops writing its log at 100 MB, and in
+    sense126 it had stopped (16:37) before the repair at 16:38, so the replay gave up."""
     deadline = time.monotonic() + seconds
-    while host_log.read_bytes().count(CONNECTION.encode()) <= connections:
+    while True:
+        offset = last_line_offset(host_log, CONNECTION) if host_log.exists() else -1
+        if host_log.exists() and host_log.read_bytes().count(CONNECTION.encode()) > connections and (
+                contains(host_log, RESTART, offset) or contains(client_log, REPAIR, client_offset)):
+            return offset
         if time.monotonic() >= deadline:
             return None
-        time.sleep(2)
-    return last_line_offset(host_log, CONNECTION)
+        sleep(2)
 
 
 def main():
@@ -863,7 +868,8 @@ def main():
             host_log = a.host_log.with_name(f'activity-host-attempt{attempt + 1}.log')
             threading.Thread(target=mirror, args=(a.host_log, host_log, offset, stop), daemon=True).start()
             resume = False
-            if not wait_for(client_log, TELEPORTED, 600, offset=last_line_offset(client_log, REPAIR)):
+            # In gameplay once the Guardian has a position again (the client log may have stopped).
+            if not replay.wait_for_unit(600):
                 raise RuntimeError('The rejoined client never reached gameplay; no route input sent')
             time.sleep(10)
     finally:
