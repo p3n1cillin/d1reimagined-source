@@ -673,6 +673,22 @@ the waves to get there. Each stop along the way gave the route a fix:
 - **The corridor's end (x about 491) is still the deadliest spot.** sense124 went from 0.74 health to
   0.02 in about a second there, more like a tripmine or grenade than rifle fire. Next: record that
   spot.
+- **Junction-west's kill spot (sense124, recorded).** Most of sense124's deaths came at waypoint
+  11 (452.0, -713.4), the top of a 2.4 m drop, in view of squads 74 and 72 below. The death screen
+  says "Guardian Down — Vandal, House of Devils". In the recording the Vandal stands in plain view
+  about 15 m ahead, lit blue by the tank, and the damage markers point straight ahead. No plate was
+  detected in that light, so combat2 took it for out of sight.
+  - Changes:
+    - a target that is aimed at and hits from straight ahead counts as in view;
+    - a back-off moves away from the damage marker;
+    - an unseen shooter gets a turn toward the marker and a burst;
+    - a walk stops at 0.6 health (two readings).
+  - Recordings: `capture/junction-west-drop.mp4` and `corridor-end.mp4` in the run folder.
+- **A fidelity gap: the Guardian's level.** A Guardian Rises is a new character's first mission,
+  played at level 1 in starter gear against level 1-2 enemies. The served Guardian is level 40 with
+  Light 385 from the start (the peer cards and the general stat table). Serving a level-1 starter
+  character (level, Light and stats from the tutorial character, not the geared one) is the 1:1
+  version. It changes the balance both ways, so it needs its own run.
 
 ## Next
 
