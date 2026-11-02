@@ -559,6 +559,11 @@ the waves to get there. Each stop along the way gave the route a fix:
   15 minutes, [idle timer](ps4-56578-idle-timer-2026-10-31.md)). sense109-114 ran with the default.
   sense115 (02:42) runs main's host build with the raised limit. If it passes step 17 and keeps
   going, the idle limit was the cause and #204 is moot.
+- **It was the idle limit.** sense115 (main's build, sensor cache, `D1_INACTIVITY_MS=86400000`)
+  started in under a minute, passed step 17 and all the waves, and reached the Divide unattended at
+  03:14:54, 32 minutes after launch. Three deaths on the way, each restarted from the nearest leg
+  (chest, mine-junction, junction-west). There was no dropped connection. `ending-run.ps1` now
+  raises the limit by default, and #204 is closed.
 
 ## Next
 
