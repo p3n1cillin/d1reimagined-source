@@ -87,8 +87,8 @@ This table is the PS3 01.24 one. The PS4 56578 table also has 904 `vendor_intera
 
 Blam Network's 2014 live dictionary (`network-ids.csv`, build 41375) names 402
 `inventory_perform_item_action` (request `InventoryPerformItemActionRequest`). This table had guessed a
-transfer, but 405 is the transfer. Destiny 1 gives value back for gear by dismantling it (there are no
-vendor refunds), and the 2013 alpha dictionary has the item-action tags `dismantle_weapon`
+transfer, but 405 is the transfer. Destiny 1 gives value back for gear by dismantling it (refunds were
+Eververse-only), and the 2013 alpha dictionary has the item-action tags `dismantle_weapon`
 (`0x38EF03D5`), `dismantle_armor` (`0x280E2902`) and `dismantle_item_timer` (`0xFE30D2E6`). So a
 dismantle is a 402: run sense118 sent one (2 November), decoded in
 [the dismantle note](ps4-56578-dismantle-2026-11-02.md) as {1, instance, content index} + quantity 0.
