@@ -22,6 +22,8 @@ import d1paths  # sibling: local paths from D1_ROOT or paths.json
 ROUTES = HERE.parents[1] / 'missions' / 'routes'
 LAB = HERE.parents[1] / 'lab' / 'tower-route'   # combat2.py, seek.py, target.py, release.py
 RIFLE_EVENT = 'player trigger 0x992bb471/0x1d/35 reported'
+LIGHT_EVENT = 'player trigger 0xfc0e45a3/0x1d/120 reported'    # the Breach light-up
+ARMED_120 = 'mission step 7 at'    # agr-b-light-armed in the AGR schedules (step 7 of agr-steps-divide*.txt)
 DIVIDE_SLICE = 'client is now in slice set 96'
 DIVIDE_STEP = 'mission step 16 at '   # agr-steps-divide.txt: the Divide's list (%96)
 BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-graveyard-fallen.txt gives states
@@ -457,6 +459,27 @@ class Replay:
         self.command('pad', ['powershell', '-NoProfile', '-File', str(self.pad_path),
                             '-Keys', ','.join(keys)], 20)
 
+    def platform(self):
+        """The platform walk, crossing trigger 120 only once it is armed.
+
+        The schedule arms trigger 120 (agr-b-light-armed, step 7) 35 s after the client enters slice
+        24. With keys pressed in-process the walks got faster, and sense110 crossed the trigger 15 s
+        before it was armed. Then the lights and the steps that open the rifle's cage never ran, and
+        both rifle approaches stopped at the cage. Wait for the arming, and if the trigger still
+        isn't reported, walk the platform back and over it again.
+        """
+        if not wait_for(self.host_log, ARMED_120, 90):
+            print('trigger 120 arming not seen in 90 s; walking the platform anyway', flush=True)
+        route = self.routes/'breach_platform.json'
+        self.walk('platform', route, 200)
+        for attempt in range(2):
+            if wait_for(self.host_log, LIGHT_EVENT, 8):
+                return
+            back = list(reversed(json.loads(route.read_text())))
+            self.walk(f'platform-back-{attempt}', self.write_route(f'platform-back-{attempt}', back), 200, strict=False)
+            self.walk(f'platform-again-{attempt}', route, 200, strict=False)
+        print('trigger 120 not reported after two passes; trying the rifle anyway', flush=True)
+
     def rifle(self):
         # Route completion is not the pickup postcondition. Run 17 stopped two units
         # short; a tighter second walk reached trigger 35. Never proceed without it.
@@ -610,7 +633,7 @@ class Replay:
             self.scan_spawn()
             self.walk('enter-wall', self.routes/'enter_the_wall.json', 650, 2.5)
             self.walk('breach', self.routes/'breach.json', 640, extra=('--avoid', '330,-837,340,-812'))
-            self.walk('platform', self.routes/'breach_platform.json', 200)
+            self.platform()
             self.rifle()
         elif not contains(self.host_log, RIFLE_EVENT):
             raise RuntimeError('Resume requires the rifle trigger in this run; no route input sent')
