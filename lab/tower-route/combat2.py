@@ -168,7 +168,7 @@ def main():
     idle = 0                                              # passes in a row with no target
     seen_h, seen_k, kept = None, -9, 0                    # last health read, its pass, frames kept
     last_retreat_h, worse, stand_until = None, 0, 0       # health at the last back-off; back-offs it fell
-    fired = 0                                             # bursts and melee at a target in view
+    fired, quiet = 0, 0                                   # bursts and melee at a target in view; passes since one
     try:
         while time.time() < t_end:
             k += 1; vit = ''
@@ -248,6 +248,7 @@ def main():
                     print(k, f'health {h:.2f}: {where_to} and recover', flush=True); continue
             if target:
                 idle = 0
+                fired0 = fired
                 # In view now? This frame was taken after the previous pass aimed at the same lock.
                 in_view = any(abs(px - CX) < 220 and py < CY + 40 for px, py, _, _ in plates)
                 aim_pt = (target[0], target[1], target[2] + 0.2)   # torso object sits low in the chest; aim at upper chest
@@ -291,6 +292,12 @@ def main():
                 strafe = -strafe; bursts += 1
                 if bursts % 8 == 0: tap('RELOAD')
                 msg = f'{k}: lock {lock if isinstance(lock, tuple) else hex(lock)} d {d:.1f} aimed {ok} plates {len(plates)} health {h}' + vit
+                quiet = 0 if fired > fired0 else quiet + 1
+                if a.idle_passes and quiet >= a.idle_passes * 3 // 2:
+                    # Targets located but none in view (behind walls, round corners): sense108 aimed
+                    # at the garage exit's Fallen 30 m off for whole 30 s rounds. The walk moves on.
+                    print(msg, flush=True); print(k, 'nothing in view to shoot: ending early', flush=True)
+                    break
             else:
                 # No lock: turn toward the radar threat or sweep, nudging forward.
                 if abs(pitch) > 0.06: hold('I' if pitch < 0 else 'K', max(25, abs(pitch) / PITCH_RATE))   # level the view
