@@ -90,5 +90,5 @@ Blam Network's 2014 live dictionary (`network-ids.csv`, build 41375) names 402
 transfer, but 405 is the transfer. Destiny 1 gives value back for gear by dismantling it (there are no
 vendor refunds), and the 2013 alpha dictionary has the item-action tags `dismantle_weapon`
 (`0x38EF03D5`), `dismantle_armor` (`0x280E2902`) and `dismantle_item_timer` (`0xFE30D2E6`). So a
-dismantle is most likely a 402 whose i32 names the action. The server has no 402 handler yet; the next
-step is to capture one from the game (hold dismantle on an unequipped item in the inventory).
+dismantle is a 402: run sense118 sent one (2 November), decoded in
+[the dismantle note](ps4-56578-dismantle-2026-11-02.md) as {1, instance, content index} + quantity 0.
