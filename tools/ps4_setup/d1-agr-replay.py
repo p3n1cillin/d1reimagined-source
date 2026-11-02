@@ -423,7 +423,10 @@ class Replay:
                 self.rearm(name)
                 raise Respawned(name)
             idle = idle + 1 if out and out[-1].strip() == 'bursts 0' else 0
-            if idle >= 2:                  # near but out of sight: leave it to the walk (see fight())
+            # One round with nothing in view ends the skirmish: near but out of sight, leave it to the
+            # walk (see fight()), whose hurt stop calls the fight back if it starts shooting. With
+            # two, sense123 spent 48 of its 67 rounds firing nothing (13.5 of 25.6 replay minutes).
+            if idle >= 1:
                 break
             self.command(f'{name}-skirmish-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         if fought:                         # as after a wave: the fight can move the tracked copies
