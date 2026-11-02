@@ -300,7 +300,10 @@ class Replay:
                 self.skirmish(f'{tag}-pre')
                 me = self.where()
                 near = nearest(me) if me else start
-                if me and off(me, near) > 15 and not rejoin:
+                # After a fight, only a respawn's distance (45-50 m: the chest start, the corridor's
+                # respawn) counts as one; a fight's back-offs move the Guardian 15-25 m, and sense124
+                # restarted from the corridor twice for that.
+                if me and off(me, near) > 35 and not rejoin:
                     raise Respawned(name)
                 if near >= end:
                     break
