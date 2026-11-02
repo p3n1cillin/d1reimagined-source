@@ -33,6 +33,16 @@ PAD = os.environ.get('D1_PAD')   # else D1_TOOLS/d1-pad.ps1 (d1paths.py), resolv
 
 def pad(*keys, gap=150):
     global PAD
+    # In process (d1_keys.py): a PowerShell start per press about doubled a walk's time. The script
+    # stays the fallback, and D1_WALK_POWERSHELL_PAD=1 forces it.
+    if not os.environ.get('D1_WALK_POWERSHELL_PAD'):
+        try:
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            import d1_keys
+            d1_keys.press(*keys, gap=gap)
+            return
+        except Exception as e:                  # no window, odd key name: the script reports those
+            print(f'pad in process failed ({e}); using d1-pad.ps1', flush=True)
     if PAD is None:
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         import d1paths
@@ -273,6 +283,8 @@ def main():
     ap.add_argument("--tolerance", type=float, default=2.5)
     ap.add_argument("--radius", type=float, default=25)
     ap.add_argument('--max-seconds', type=float, default=600)
+    ap.add_argument('--give-up', type=float, default=45,
+                    help='stop after this many seconds with no waypoint reached and no 0.5 m gained (0: never)')
     ap.add_argument('--turn-sign', type=int, choices=(-1, 1),
                     help='hold a measured camera turn direction; do not infer it from collision slides')
     ap.add_argument('--turn-rate', type=float,
@@ -354,8 +366,24 @@ def main():
         return None
 
     retreats = 0
+    # Stuck handling below (jump, back-step, side-step, skip) can repeat for the whole time limit
+    # against the same obstacle: sense107 pressed into the fan room's grate for an hour in 420 s
+    # walks. With no progress for --give-up seconds, stop and let the caller fight, back off or
+    # re-approach instead. Progress is an arrival, or closing on the current waypoint; a skip or a
+    # step back only changes the waypoint measured against. sense108 skipped three in a row into
+    # the same wall at the tripmine corridor, each skip restarting the limit (2.5 minutes of it).
+    arrivals = 0
+    progress_at, progress_n, progress_i, progress_d = time.time(), 0, i, None
     while i < len(route) and time.time() < t_end:
         active(force=False)
+        d_now = math.dist(here[:2], route[i][:2])
+        if i != progress_i and arrivals == progress_n:
+            progress_i, progress_d = i, d_now
+        if arrivals > progress_n or progress_d is None or d_now < progress_d - 0.5:
+            progress_at, progress_n, progress_i, progress_d = time.time(), arrivals, i, d_now
+        elif a.give_up and time.time() - progress_at > a.give_up:
+            print(f'no progress for {a.give_up:.0f} s at wp {i}/{len(route)}')
+            break
         target = route[i]
         out = escape(here)
         if out:
@@ -370,6 +398,7 @@ def main():
         # count it as an arrival (rifle4 walked the whole route index off in place that way).
         if not out and d < (min(a.tolerance, 1.5) if sharp else a.tolerance):
             i += 1
+            arrivals += 1
             best, since_best, retreats = None, 0, 0
             continue
         # No progress toward this waypoint for a long while (a railing, a car): back off,

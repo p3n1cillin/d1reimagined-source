@@ -120,6 +120,16 @@ class BreachWaves(unittest.TestCase):
                 if a.split()[:1] != [M.BREACH]:
                     self.assertEqual(a.rstrip('\n'), b)
 
+    def test_the_garage_door_overlay_reaches_every_list(self):
+        door = (ROOT / 'ps4/fixtures/56578/mission/breach-prop3-only.txt').read_text().splitlines(keepends=True)
+        lists = dict(M.build(M.overlay(BASE, door), gen=2, count=1))
+        for text in lists.values():
+            self.assertEqual(breach_rows(text)[('0x4', 3)][0].lower(), '0x808007d9')
+
+    def test_an_overlay_with_other_rows_is_refused(self):
+        with self.assertRaises(SystemExit):
+            M.overlay(BASE, BASE[1:])
+
     def test_the_steps_wait_on_each_trigger_in_route_order(self):
         lines = M.steps(300).splitlines()
         self.assertEqual(lines[0], '164 +2 0x4786c0e0 agr-bw-armed.txt')

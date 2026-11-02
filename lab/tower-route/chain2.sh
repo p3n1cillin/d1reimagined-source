@@ -4,10 +4,14 @@
 S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 C=$(python "$S/../../tools/ps4_setup/d1paths.py" staging)
 H=$(ls -d $C/contained-boot/*-$1)/activity-host.log
+RUN=$1                                         # fight() and go() have their own $1
 ev() { sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "$1"; }
 rel() { python $S/release.py; }                # every tool ends with no key held (a kill mid-press leaves it down)
-fight() { timeout $(( $1 + 60 )) python -u $S/combat2.py --seconds $1 ${2:+--squads $2} --log $C/chain2-combat.jsonl 2>&1 | grep -E "lock|bursts|stopped" | tail -1 | sed 's/^/    fight: /'; rel; }
-go() { echo "  nav $1: $(timeout 260 python -u $S/nav.py $1 --max-s 200 2>&1 | grep -v shadPS4 | tail -1)"; rel; }
+fight() { timeout $(( $1 + 60 )) python -u $S/combat2.py --seconds $1 ${2:+--squads $2} ${COVER:+--cover $COVER} --log $C/$RUN/chain2-combat.jsonl 2>&1 | grep -E "lock|bursts|stopped" | tail -1 | sed 's/^/    fight: /'; rel; }
+# Where the Guardian stood before a walk: the fights after it back off there (combat2 --cover), not
+# straight back into the open (sense108 died twice in the hangar).
+here() { COVER=$(python $S/where.py 2>/dev/null | grep -E "^-?[0-9.]+,-?[0-9.]+," | tail -1 | cut -d, -f1,2); }
+go() { here; echo "  nav $1: $(timeout 260 python -u $S/nav.py $1 --max-s 200 2>&1 | grep -v shadPS4 | tail -1)"; rel; }
 stage() { echo "$(date +%H:%M:%S) $1"; }
 stage "start: squads $(python $S/alive.py $H 0x9243dffb)"
 for i in $(seq 1 10); do                      # gate fight until the gate squads (17-19) are down
@@ -26,7 +30,7 @@ for i in $(seq 1 14); do
   ev "is exactly zero" && break
   a=$(python $S/alive.py $H); echo "  squads: $a"
   t=$(python $S/target.py $Q 2>/dev/null | grep -v shadPS4 | tail -1)
-  if [ -n "$t" ]; then echo "  seek $t: $(timeout 150 python -u $S/seek.py $t --max-s 90 --tol 5 --trail $C/seek-trails.jsonl 2>&1 | grep -v shadPS4 | tail -1)"; rel
+  if [ -n "$t" ]; then here; echo "  seek $t: $(timeout 150 python -u $S/seek.py $t --max-s 90 --tol 5 --trail $C/seek-trails.jsonl 2>&1 | grep -v shadPS4 | tail -1)"; rel
   else go bay; fi
   fight 60 $Q
 done

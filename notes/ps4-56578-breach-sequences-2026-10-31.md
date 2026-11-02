@@ -374,6 +374,185 @@ Still open:
   host change that is not on `main` (`D1_AH_SENSOR_CACHE`, built frames kept on disk), with the
   lists' frames built ahead in a dry host, so each list applied at once.
 
+## The waves by their triggers, in the unattended route (runs sense105 and sense106)
+
+`ending-run.ps1 -Waves` serves `agr-steps-divide-waves.txt`: the usual schedule with the nine wave
+steps after `agr-b-graveyard.txt`, all nine triggers armed at once. The garage door is carried into
+every list (`d1-breach-waves.py --overlay breach-prop3-only.txt`), so the replay publishes nothing
+over the waves (`--waves`).
+
+- **Startup:** the host builds every list at start, about 40 s for each wave list, so it was ready
+  only after 16 minutes. `-Waves` gives it 30.
+- **The triggers work.** Each trigger the Guardian reached was reported, and its wave was served
+  and spawned. In sense105: 120 at 17:27:48, then 108, 110, 111 and 112 within six minutes. In
+  sense106: 120, 108, 110 and 111.
+- **One fight is not enough.** Each wave comes as its trigger is crossed, so the old single fight
+  after the rifle meets only the first Vandal:
+  - sense105 walked the 64-waypoint chest leg through three more waves without fighting, died at
+    (468, -815), respawned at (415, -789) and lost the route;
+  - in waves mode the chest leg is now walked ten waypoints at a time, with a fight after each
+    stretch. A stretch that stops short (a stall, or a death the walker refuses to steer
+    through) is retried after a retrack and a fight, from the nearest waypoint;
+  - sense106 walked and fought all five stretches, then the tripmine stairs and the crouched
+    stretch, and died in the last stretch of the corridor.
+- **After a death the client reports no more wave triggers.** In sense106 the first death came at
+  18:46-18:47:
+  - 112 to 116 were then served only on their 300 s timeouts, though the Guardian walked through
+    their places later;
+  - a trigger's state (`0x80800463`) is the armed flag and an arming time, and every wave list
+    armed with time 1;
+  - the cause: a respawn clears the arming, and the same state served again doesn't restore it;
+  - **tested in sense106:** at 19:17:01, after the deaths, wave 107's list was served by control
+    with corridor triggers 114-116 armed at time 2. Walking the tripmine corridor, the client
+    reported 114 (19:18:00), 115 (19:18:05) and 116 (19:18:36);
+  - so the replay now re-arms after a death: it serves the current wave list (read from the host
+    log) with arming time 1 + n (`--schedule-dir`).
+
+## Getting the unattended route through (run sense107, 1 November night)
+
+sense107 had all of the above, reported seven wave triggers (120, 108, 110, 111, 112, 115, 116),
+walked and fought the chest leg without a death, and reached the Divide at 22:20, the first run with
+the waves to get there. Each stop along the way gave the route a fix:
+- **A lost track.** After a death, the heuristic position copies followed a standing Fallen (squad
+  53), and the corridor leg "stalled" there for 13 minutes while the respawned Guardian was 90 m away.
+  Waves mode now always uses the native walker after the rifle, and checks a stop against where the
+  Guardian really is.
+- **Respawns.** A death in the corridor brought the Guardian back at its east end, and the junction
+  leg tried five times to walk straight through the corridor. The legs after the rifle are now a
+  list, each with its stance. After a respawn they restart from the leg nearest the Guardian,
+  standing, and a resumed replay starts there too.
+- **The fan room's grate.** Waypoints 10 to 11 of `wall_fan_tunnel_to_divide.json` run into a grate
+  beside the fan. Every walk pressed into it, and sense104 had got through only by slipping south. The
+  route now follows that line; from the stuck spot the Guardian was through in seconds.
+- **Pushing to the time limit.** `d1-walk.py` (and the chain's `run.py`) kept repeating their stuck
+  handling until the time ran out: 420 s a walk at the grate, 200 s a try at the hangar bay. They now
+  stop after 45 s (30 s) with no waypoint reached and no 0.5 m gained, and the replay fights, backs off
+  or re-approaches. `d1-walk.py` also always skips to the nearest waypoint of the route it is given, so
+  a retry backs off by first walking to one earlier waypoint alone.
+- **Startup.** The host built every list again on each start (16 minutes with the wave lists). With
+  #197 it keeps built frames in `D1_AH_SENSOR_CACHE`, which `ending-run.ps1` now sets.
+
+## Fighting the entered Fallen, and fighting like a player (run sense108)
+
+- **The route could not see them.** A member placed by its own state (`enter()`) keeps a handle to its
+  authored member at entity `+0x50` instead of -1. The squad reader took `+0x50 == -1` as membership,
+  so in sense108 every entered Fallen (24, 38, 42, 56, 58) was in its squad's list but never a target.
+  Such members are now `named` and targeted (six live targets appeared at once). A small `+0x50` with
+  no handle serial still means inactive.
+- **Shooting through walls.** With every member locatable, `combat2.py` fired at Fallen it could
+  locate but not see. An enemy's nameplate shows only when it is in view under the reticle, so a
+  target aimed at with no plate near the reticle is now treated as behind a wall: no fire, one
+  peek to the side, then it is skipped for 8 s. A hit confirmed by the target's health in the last
+  3 s, or a target within 8 m, also counts as in view, for the dark hall. It no longer walks
+  straight at a target out of sight, which walked it into walls.
+- **Dying.** The 2014 reference player takes hits as big as ours and survives by breaking line of
+  sight while the shield comes back. The Guardian now backs off below 0.55 health (was 0.35) and waits
+  about 5 s.
+- **Time.** A round with nothing to shoot at ends after 8 passes instead of sweeping for its full
+  30 s. A skirmish fights only members within 45 m and keeps going while one is, and in waves mode
+  one comes before each stretch, so the Guardian clears the way before walking into a wave.
+- **Where the walks stalled.** Across sense105-108 the repeated stall spots were respawn points
+  (the hall at (415, -795) and the corridor's east end at (530, -725)), walks from them, the tracked
+  Fallen of sense107 and the fan room's grate. All but the grate, now routed round, came from
+  deaths, so fewer deaths is the main fix for stalls too.
+- **Wave timing.** Fighting each stretch made the walk slower than the waves' 300 s timeouts, so the
+  corridor's waves came early. They now wait 900 s.
+
+## Walking into the same wall, and fighting a second late (sense108 resumes, 1 November late)
+
+- **The same wall.** The resume died in the junction leg's pre-fight and respawned below the
+  tripmine stairs (533.8, -759). The leg then walked straight at its own first waypoint, 40 m west
+  (corridor waypoint 9), standing: up the stairs and into the start of the corridor, which is
+  walked crouched. d1-walk's skip logic took the next waypoint three times, all the same way.
+  `walk_fighting` now raises `Respawned` when the Guardian is more than 15 m from every waypoint of
+  its leg; `play_waves` picks the leg nearest the Guardian (here the chest leg, 2 m away, then
+  mine-stairs and mine-crouched, each with its stance) and only that leg may rejoin from off-route.
+  Every stretch starts at the waypoint nearest the Guardian, and a stall sidesteps and walks an
+  earlier waypoint before the retry (`tests/test_agr_replay_walk.py`).
+- **Skips reset the give-up timer.** d1-walk counted a skipped waypoint as progress, so each skip
+  restarted `--give-up`: 2.5 minutes against that wall. Progress is now an arrival or closing on the
+  current waypoint.
+- **Fighting a second late.** Every combat pass took its frame with `d1-shot.ps1`: a PowerShell
+  start, an Add-Type compile and a 400 ms focus wait, 1.02 s measured. `fight.grab` captures the
+  window in-process (0.15 s with the PNG); the script is the fallback.
+- **Health that vanished.** The death's log reads the Guardian's health 0.78, then `None` for 8 s.
+  `health.py` only took a grey-white fill; the bar is red when critical. It reads red too now, and
+  combat2 treats a bar under 0.9 that vanishes within 4 s as critical (retreat) and keeps that frame
+  (`<log>.lost-health-N.png`) to check the reader against.
+
+- **Backing off in the open.** With those fixes the resume went through the tripmine corridor and
+  the junction without a death (resume4), then died in the junction-west fight. It had backed off
+  five times while its health fell 0.56 -> 0.47 -> 0.43 -> 0.32 -> 0.19 -> 0.10: two steps back,
+  a step aside and a 3 s wait still left it in the wave's line of fire. At 0.10 the bar is 43 px,
+  under the reader's 48 px minimum, so it read as no bar. The replay now gives combat2 `--cover`,
+  the leg's point 10 m behind the Guardian, and a back-off walks there. If health still falls over
+  two back-offs, combat2 stands and returns fire for 8 s. The reader needs 20 px, and the lost-bar
+  check counts passes. The respawn after that death was inside the corridor; the restart took
+  mine-crouched (crouched), not the junction leg.
+
+- **The Divide.** Resume5, with the cover retreat and the quicker rounds, went from the junction
+  through the garage and the fan tunnel without a death and crossed into slice 96 at 00:19:08
+  (2 November); chain2 took over from there. Fight rounds with nothing in view now end after about
+  7 s, not 30 s. The first frames kept as "lost" health showed no bar at all: the shield had
+  refilled after a back-off. A back-off now resets that check.
+
+- **After the Divide.** chain2 took the gate, Dock 13 and the hangar: all eight hangar squads at zero
+  by 00:25:46, after two deaths (the nux walk, one hangar fight) it recovered from. The client then
+  played the outro and reported incident 891 (mission step 35) at 00:27:13. The post-game was lost:
+  postgame5 waited for `DIVIDE REACHED` in `replay-console.log`, which a resumed run doesn't write
+  (fixed: any `replay-console*.log`). Then I edited postgame5.sh while that copy ran. bash reads a
+  script by offset, so it skipped the inventory push and never published the scoreboard. About two
+  minutes after the outro the client dropped its connection (error "weasel"). The hangar recording
+  (rec3) shows the critical-health screen: the frame's edges go red. That is now the strongest
+  low-health signal combat2 has (`health.critical`).
+
+- **sense109 (2 November, 00:39).** This was the first run with the host built from main (sensor
+  cache, #197). It built and cached 78 lists in about 18 minutes and reached gameplay at 00:58.
+  Within two minutes, at the start of the enter-the-Wall walk, the client halted itself
+  (`RELEASE_VHALT`, "hitch detected … in_world … job name: 'network_update' … stalled") and the
+  emulator exited on the ud2 after its crash report. Of all the earlier crash reports, only run
+  agr-obj3 (25 October, in the prologue) stalled on `network_update`. The October `network_send`
+  halts were the Windows sendmsg bug, fixed since. So it is rare and predates this host. sense110
+  relaunched the same setup with the cache warm.
+- **The sensor cache works.** sense110's host was ready 42 s after launch (01:05:21 -> 01:06:03),
+  against about 18 minutes for sense109 building the same 78 lists.
+- **Too fast for trigger 120.** sense110 stopped at the rifle: both approaches pushed into the
+  cage at y -788.2, and trigger 35 never came. The schedule arms the light-up trigger 120
+  (`agr-b-light-armed`, step 7) 35 s after slice 24. With keys pressed in-process the walks are much
+  quicker (breach leg 22 s, sense108 75 s). The platform walk crossed the trigger at about 01:10:05,
+  and it was armed at 01:10:21. Without the light-up, the activation and cage steps (8-12) never ran.
+  By hand: walking the platform back crossed trigger 120 at 01:19:52, the steps ran, and the rifle's
+  trigger came at 01:20:37. The replay now waits for step 7 before the platform walk, and walks back
+  and over again if trigger 120 is still missing.
+- **A dropped connection, and a reload to the start.** After the rifle, sense110's resume fought
+  the hall wave and started the chest leg. The client sent its 2 s status (udt 15) for the last time
+  at 01:21:52, 30 s after the first wave's list (step 17, trigger 108). The host's connection ended
+  at 01:22:08 ("aborted"), and the client reconnected at 01:22:23. Then it reloaded the activity and
+  placed the Guardian back at the mission start (383, -961), with the host's schedule past the
+  rifle. The replay had burned its three chest tries in 30 s on "Guardian unit is unavailable"; it
+  now waits for the unit, and lost units don't count as tries. Three client-side network stalls
+  tonight: sense108 after the outro, sense109's `network_update` halt, and this one. Two were on the
+  new host build, one on the old. The emulator's own log had hit its 100 MB cap at 01:17, so it
+  doesn't cover the stall.
+- **The idle guard pressed into walks and fights.** It reads `tools/ps4_setup/d1-pad-last.txt` and
+  presses NumPad4, W and S after 300 s without a stamp. d1_keys stamped another folder, and combat2
+  never stamped. Both stamp beside `d1-pad.ps1` now.
+- **The same drop, on cue: the main host build (issue #204).** sense111 (01:27) passed the rifle with
+  the trigger 120 fix. Then mission step 17 (trigger 108, `agr-bw-108.txt`) at 01:33:30 was followed
+  by the same drop at 01:34:02, 32 s later; sense110's was 31 s after its step 17. sense108 passed
+  that step on the 1 November 14:39 host build. So the host is rolled back to that build
+  (`d1-activity-host.DEPLOYED.txt` says which), and main's build is kept beside it. The suspects are
+  the sensor cache (#197) and #202's dependency updates; #175 and #179 don't touch these frames.
+  sense112's launch failed when the lab responder stopped before listening, a one-off. sense113
+  (01:39) runs on the old build, with its 16-18 minute start.
+- **And on the old build too.** sense113 passed step 17 at 02:03:24 and waves 110, 111 and 112
+  (02:05-02:07). Then the client went quiet at 02:08:21 and dropped at 02:08:50, in the chest leg's
+  fifth stretch. So the drop isn't the main build alone (#204 corrected). It is a client-side
+  network stall, like sense109's halt. Main's build hit it 30 s after step 17 twice; the old build
+  later. sense108 ran 90 minutes on the old build without one, with a screen recording (d1-record)
+  running through the Wall. sense109-113 had none. sense114 (02:11) repeats sense113 with a
+  recording, to test that.
+
 ## Next
 
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).

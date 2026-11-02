@@ -22,7 +22,9 @@ push() { cp $1 $C/profile-push.bin; until [ ! -f $C/profile-push.bin ]; do sleep
   echo "$(date +%H:%M:%S) pushed $(basename $1): $(grep -a 'PROFILE PUSH' $D/responder.log | tail -1 | cut -c1-110)"; collector; }
 until ls -d $C/contained-boot/*-$1 >/dev/null 2>&1; do sleep 5; done
 D=$(ls -d $C/contained-boot/*-$1); H=$D/activity-host.log; mkdir -p $C/$1/capture
-until grep -q 'DIVIDE REACHED' $C/$1/replay-console.log 2>/dev/null; do sleep 5; done
+# Any replay log: a supervised resume (resume-waves.sh) writes replay-console-resumeN.log, and
+# sense108's post-game waited here after its resume crossed into the Divide.
+until cat $C/$1/replay-console*.log 2>/dev/null | grep -q 'DIVIDE REACHED'; do sleep 5; done
 collector; push $P/profile-active164-xp0.draft.bin
 sleep 20; collector
 until sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "now in slice set 104"; do sleep 5; done
