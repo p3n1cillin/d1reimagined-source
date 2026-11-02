@@ -275,11 +275,15 @@ class Replay:
         start = nearest(me) if me else 0
         if me and off(me, start) > 15 and not rejoin:
             raise Respawned(name)
-        k = 0
+        k, lost = 0, 0
         while start < len(points) - 1:
             end = min(start + chunk, len(points) - 1)
-            for attempt in range(tries):
+            attempt, stalls = 0, 0
+            while True:
+                if stalls >= tries:
+                    raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
                 tag = f'{name}-{k}' + (f'-retry{attempt}' if attempt else '')
+                attempt += 1
                 # Clear the way first: walking into a wave is where the Guardian died (sense105-108).
                 self.skirmish(f'{tag}-pre')
                 me = self.where()
@@ -294,19 +298,25 @@ class Replay:
                 if lines and lines[-1].startswith('done '):
                     break
                 if not lines or UNIT_LOST in lines[-1] or 'unit changed' in lines[-1] or self.lost(lines[-1]):
+                    # sense110 burned all three tries in 30 s on an unavailable unit (a reload): wait
+                    # for the unit first, and count it apart from the stalls.
+                    if not self.wait_for_unit():
+                        raise RuntimeError(f'{name}: no Guardian unit for 90 s; no subsequent input sent')
                     self.recover(tag)
                     if self.away(points, 15):
                         raise Respawned(name)
+                    lost += 1
+                    if lost > 6:
+                        raise RuntimeError(f'{name}: the Guardian unit was lost {lost} times; no subsequent input sent')
                     continue
                 # A stall: step aside, walk back a little, and come at the stretch again.
-                self.pad(f"Hold:{'DA'[attempt % 2]}:600", 'NumPad2')
+                stalls += 1
+                self.pad(f"Hold:{'DA'[stalls % 2]}:600", 'NumPad2')
                 me = self.where()
                 if me:
-                    back = max(nearest(me) - 2 * (attempt + 1), 0)
+                    back = max(nearest(me) - 2 * stalls, 0)
                     self.walk_once(f'{tag}-back', self.write_route(f'{tag}-back', points[back:back + 1]),
                                    60, 1.5, (), check=False)
-            else:
-                raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
             self.skirmish(f'{name}-{k}')
             start, k, rejoin = end, k + 1, False
 
@@ -597,9 +607,20 @@ class Replay:
         """The Guardian's position from memory (lab/tower-route/where.py), or None."""
         lines = self.command('where', [sys.executable, '-I', str(LAB/'where.py')], 30, check=False)
         try:
-            return [float(v) for v in lines[-1].split(',')]
+            pos = [float(v) for v in lines[-1].split(',')]
         except (IndexError, ValueError):
             return None
+        # 0,0,0 while the client loads (sense110's reload after a dropped connection).
+        return None if not any(pos) else pos
+
+    def wait_for_unit(self, seconds=90):
+        """Wait out a death or a reload: until the Guardian has a position again (True), or time out."""
+        end = time.time() + seconds
+        while time.time() < end:
+            if self.where():
+                return True
+            time.sleep(3)
+        return False
 
     def sliced_route(self, name, source, start, stop):
         points = json.loads((self.routes/source).read_text())

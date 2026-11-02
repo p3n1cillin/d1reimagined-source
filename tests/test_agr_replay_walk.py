@@ -16,8 +16,11 @@ LINE = [(float(x), 0.0, 0.0) for x in range(0, 50, 5)]     # ten waypoints along
 class Fake:
     """walk_fighting's surroundings: a Guardian that walks each route to its end unless told not to."""
 
-    def __init__(self, at, stall=0):
-        self.at, self.stall, self.walks, self.pads = at, stall, [], []
+    def __init__(self, at, stall=0, lose=0):
+        self.at, self.stall, self.lose, self.walks, self.pads = at, stall, lose, [], []
+
+    def wait_for_unit(self, seconds=90):
+        return True
 
     def where(self):
         return self.at
@@ -30,6 +33,9 @@ class Fake:
 
     def walk_once(self, tag, route, *rest, **kw):
         self.walks.append((tag, route))
+        if self.lose:
+            self.lose -= 1
+            return [M.UNIT_LOST + '; no stale position fallback']
         if self.stall and not tag.endswith('-back'):
             self.stall -= 1
             return [f'stopped ({self.at[0]}, {self.at[1]}, 0)']
@@ -68,6 +74,13 @@ class WalkFightingTest(unittest.TestCase):
         tags = [t for t, _ in f.walks]
         self.assertEqual(tags[:3], ['leg-0', 'leg-0-back', 'leg-0-retry1'])
         self.assertTrue(f.pads)
+        self.assertEqual(f.at, LINE[-1])
+
+
+    def test_a_lost_unit_does_not_use_up_the_tries(self):
+        # sense110: three unit-lost walks in 30 s ended the replay during a reload.
+        f = Fake((0.0, 0.0, 0.0), lose=4)
+        f.walk_fighting('leg', LINE, (), 300, chunk=4, tries=3)
         self.assertEqual(f.at, LINE[-1])
 
 
