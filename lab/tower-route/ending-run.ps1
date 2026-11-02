@@ -11,6 +11,8 @@ param(
     [Parameter(Mandatory)][string]$Name,
     [string]$Scoreboard = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Fixtures 'postgame\agr-postgame-scoreboard-arcadia-ratio30.draft.txt'),
     [string]$Postgame = 'postgame5.sh',
+    # The folder of the post-game profile pushes (postgame5.sh's PROFILE_DIR; empty: the fixtures').
+    [string]$PostgameDir = '',
     # The host world table: rows 0 and 165 serve the Tower with its own (squad-populated) list.
     [string]$WorldTable = (& "$PSScriptRoot\..\..\tools\ps4_setup\D1Paths.ps1" Fixtures 'mission\world-table-tower.txt'),
     # The roster cards served after the Breach rifle claim (the loot grant).
@@ -101,7 +103,7 @@ if ($Waves) {
 if ($JunctionFallen) { $Fallen += ' --junction-fallen ' + ((Join-Path $Fix 'mission\agr-b-graveyard-junction.txt' -Resolve) -replace '\\', '/') }
 $jobs = @(
     "until ls -d $Cf/contained-boot/*-$Name >/dev/null 2>&1; do sleep 5; done; H=`$(ls -d $Cf/contained-boot/*-$Name)/activity-host.log; R=$Cf/$Name; cd $RepoFwd && python -u -I tools/ps4_setup/d1-agr-replay.py --run-dir `$R --host-log `$H --garage-clients `$R/breach-prop3-only.txt --boot-timeout 1800$Fallen > `$R/replay-console.log 2> `$R/replay-error.log; grep -q 'DIVIDE REACHED' `$R/replay-console.log && bash $S/chain2.sh $Name > `$R/chain.log 2>&1",
-    "bash $S/$Postgame $Name $($Scoreboard -replace '\\','/') > $Cf/$Name/postgame.log 2>&1"
+    "bash $S/$Postgame $Name $($Scoreboard -replace '\\','/') $($PostgameDir -replace '\\','/') > $Cf/$Name/postgame.log 2>&1"
 )
 # The keep-alive starts in gameplay: an early press can carry the client past the title before the
 # activity host listens (about 9 minutes), and it then fails to reach it (run sense75). With the idle
