@@ -166,7 +166,7 @@ def main():
     # magazines into walls at members it could locate but not see). Peek once, then skip it a while.
     blind, blocked = 0, {}                                # blind aims at this lock; lock -> blocked until
     idle = 0                                              # passes in a row with no target
-    seen_h, seen_k, kept = None, -9, 0                    # last health read, its pass, frames kept
+    seen_h, seen_at, kept = None, 0, 0                    # last health read, when, frames kept
     last_retreat_h, worse, stand_until = None, 0, 0       # health at the last back-off; back-offs it fell
     fired, quiet = 0, 0                                   # bursts and melee at a target in view; passes since one
     try:
@@ -180,12 +180,13 @@ def main():
             img = fight.grab(img_path)
             h = hp.health(img); plates = pl.plates(img)
             if h is not None:
-                seen_h, seen_k = h, k
-            elif seen_h is not None and seen_h < 0.9 and k - seen_k <= 2:
+                seen_h, seen_at = h, time.time()
+            elif seen_h is not None and seen_h < 0.9 and time.time() - seen_at < 1.5:
                 # A hurt bar that vanishes mid-fight is not a full one (the shield takes longer to
                 # refill): it is one the reader lost, as at critical health. sense108 died that way
                 # at 0.78 -> None. Assume the worst, and keep the frame to calibrate the reader.
-                # Counted in passes: a back-off pass takes about 5 s.
+                # Within 1.5 s of fighting only: the shield refills in a few seconds out of fire
+                # (the first frames kept this way show a full, hidden bar), and a back-off resets it.
                 if kept < 3 and a.log:
                     kept += 1
                     try: shutil.copy(img_path, f'{a.log}.lost-health-{kept}.png')
@@ -245,6 +246,7 @@ def main():
                         where_to = 'back off'
                     tap('RELOAD')
                     time.sleep(max(0.0, a.recover_s - 2.5))
+                    seen_h = None                          # recovered: no bar now means a full one
                     print(k, f'health {h:.2f}: {where_to} and recover', flush=True); continue
             if target:
                 idle = 0
