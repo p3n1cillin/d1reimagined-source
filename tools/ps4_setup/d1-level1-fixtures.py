@@ -38,6 +38,7 @@ LEVEL = 1
 # items, without the override) is not decoded, and derived-stat refuses key 0. 5 is the value every
 # contributing item derives at item level 1 (Attack 5, Defense 5 each), and the mission's own
 # "Recommended Light 5". See README.md.
+# --light-native avoids the assumption for the profile: it clears the override instead.
 LIGHT = 5
 SAINT14_HELMET = 1065   # the content index the helm-saint14 card names for SOID d1..0303 (inventory: 6514)
 
@@ -142,6 +143,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('--fixtures', type=Path, default=Path(d1paths.fixtures()) / 'characters')
     ap.add_argument('--out', type=Path, default=HERE)
+    ap.add_argument('--light-native', action='store_true',
+                    help='clear the Light override in the profiles, so the client computes Light from the level-1 gear')
     a = ap.parse_args()
     F, OUT = a.fixtures, a.out.resolve()
     HERE = OUT                                   # report paths are relative to the output folder
@@ -158,7 +161,12 @@ def main():
         b = decode(src, PROFILE)
         if b[0x6FDC] != 1 or u32(b, 0x6FE0) != 0:
             sys.exit(f'{src}: the Light override is not where expected')
-        edit(src, out, PROFILE, [(0x6FE4, 'u32', LIGHT, 'stat override 0 value (Light)', 385)])
+        if a.light_native:
+            # No override: the client sums Light over the equipped (level-1) items itself, and never
+            # reads the override's value (ps4/design/items-and-gear.md section 10).
+            edit(src, out, PROFILE, [(0x6FDC, 'u32', 0, 'stat override present', 1)])
+        else:
+            edit(src, out, PROFILE, [(0x6FE4, 'u32', LIGHT, 'stat override 0 value (Light)', 385)])
 
     # 3. Roster dirs: family-0 peer view (level, Light), family-2 card (level, Light), the rest copied.
     for src_dir, out_dir in ((F / 'rosters-f0-tutorial', OUT / 'rosters-f0-tutorial-l1'),
