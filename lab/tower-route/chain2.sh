@@ -6,7 +6,7 @@ C=$(python "$S/../../tools/ps4_setup/d1paths.py" staging)
 H=$(ls -d $C/contained-boot/*-$1)/activity-host.log
 ev() { sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "$1"; }
 rel() { python $S/release.py; }                # every tool ends with no key held (a kill mid-press leaves it down)
-fight() { timeout $(( $1 + 60 )) python -u $S/combat2.py --seconds $1 ${2:+--squads $2} --log $C/chain2-combat.jsonl 2>&1 | grep -E "lock|bursts|stopped" | tail -1 | sed 's/^/    fight: /'; rel; }
+fight() { timeout $(( $1 + 60 )) python -u $S/combat2.py --seconds $1 ${2:+--squads $2} --log $C/$1/chain2-combat.jsonl 2>&1 | grep -E "lock|bursts|stopped" | tail -1 | sed 's/^/    fight: /'; rel; }
 go() { echo "  nav $1: $(timeout 260 python -u $S/nav.py $1 --max-s 200 2>&1 | grep -v shadPS4 | tail -1)"; rel; }
 stage() { echo "$(date +%H:%M:%S) $1"; }
 stage "start: squads $(python $S/alive.py $H 0x9243dffb)"
