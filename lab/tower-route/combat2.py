@@ -254,10 +254,15 @@ def main():
             if near and isinstance(lock, tuple):
                 v = W.vital(lock)
                 near = v is None or v <= 1.2
+            # Fighting back is for health still worth spending: at critical health it ends, and the
+            # Guardian backs off anyway. Three of sense116's four hangar deaths were inside that 8 s
+            # window, at 0.0-0.3 health against squads 27-38 m away.
+            if h is not None and h <= 0.15:
+                stand_until = 0
             if h is not None and h < a.retreat_at and time.time() >= stand_until and not near:
                 worse = worse + 1 if last_retreat_h is not None and h < last_retreat_h - 0.03 else 0
                 last_retreat_h = h
-                if worse >= 2:
+                if worse >= 2 and h > 0.15:
                     stand_until, worse, last_retreat_h = time.time() + 8, 0, None
                     print(k, f'health {h:.2f}: still falling after backing off; fighting back', flush=True)
                 else:
