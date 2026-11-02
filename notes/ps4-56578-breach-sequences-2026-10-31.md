@@ -580,6 +580,11 @@ the waves to get there. Each stop along the way gave the route a fix:
   - postgame5 now waits for the outro itself: four steps after the hangar cohort reads zero.
   - chain2 stops walking when the client launches 165 or closes its connection.
   - sense116 is the rerun.
+- **Close-range deaths.** Two of sense115's three deaths were to Fallen 2.4 and 2.6 m away, just
+  outside combat2's 2.2 m melee. It shot, and at low health turned its back on them to walk to cover.
+  combat2 now melees out to 3 m and doesn't back off with an enemy in reach. After the Dock 13 death,
+  chain2's next three walks started before the respawn and failed with "unit unavailable". Each walk
+  now waits up to 90 s for a position first.
 
 ## Next
 
