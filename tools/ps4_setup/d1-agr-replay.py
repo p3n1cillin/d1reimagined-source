@@ -303,7 +303,8 @@ class Replay:
                                        ('--hurt-stop', str(HURT_STOP)), check=False)
                 if lines and lines[-1].startswith('done '):
                     break
-                if lines and lines[-1].startswith('hurt:') and hurts < 4:
+                # d1-walk prints `hurt: ...` and then its usual `stopped (x, y, z)` last line.
+                if lines and any(l.startswith('hurt:') for l in lines[-3:]) and hurts < 4:
                     # Hurt mid-walk (d1-walk --hurt-stop): fight here before walking on, which is
                     # what the loop's pre-skirmish does. Not a stall: no sidestep, no walk back.
                     # Four in a stretch from something the fight never finds fall to the stall path.

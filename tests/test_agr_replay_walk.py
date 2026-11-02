@@ -39,7 +39,7 @@ class Fake:
             return [M.UNIT_LOST + '; no stale position fallback']
         if self.hurt and not tag.endswith('-back'):
             self.hurt -= 1
-            return ['hurt: health 0.20 at wp 1/4']
+            return ['hurt: health 0.20 at wp 1/4', f'stopped ({self.at[0]}, {self.at[1]}, 0)']   # as d1-walk prints them
         if self.stall and not tag.endswith('-back'):
             self.stall -= 1
             return [f'stopped ({self.at[0]}, {self.at[1]}, 0)']
