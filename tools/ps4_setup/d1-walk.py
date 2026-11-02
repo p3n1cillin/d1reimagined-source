@@ -499,7 +499,10 @@ def main():
                     continue
                 heading = None
         p0 = here
-        pad('Hold:W:350' if (sharp or d < 4) else 'Hold:W:700')
+        # Longer pulses on long straight stretches: each pulse ends in a stop to read the position, and
+        # a 700 ms pulse made the walk stop-and-go. 1300 ms covers about 5.3 m at 4.1 units/s, which
+        # still stops short of a waypoint more than 8 m away.
+        pad('Hold:W:350' if (sharp or d < 4) else 'Hold:W:1300' if d > 8 else 'Hold:W:700')
         here = position(c, tracked, p0) or p0
         step = math.dist(p0[:2], here[:2])
         if step > 0.3:
