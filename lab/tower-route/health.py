@@ -31,6 +31,13 @@ def health(img):
     return float(ok.max() + 1) / (X1 - X0)
 
 
+def drawn(a):
+    """Whether the health bar is on screen at all (its outline, row 174): it hides at full health."""
+    line = a[173:176, X0:X1].mean(axis=(0, 2))
+    around = (a[166:171, X0:X1].mean(axis=(0, 2)) + a[178:183, X0:X1].mean(axis=(0, 2))) / 2
+    return ((line - around) > 8).mean() >= 0.8
+
+
 def sliver(a):
     """A red fill too short for the 20 px test, or none, inside a drawn bar: else None (no bar).
 
@@ -39,9 +46,7 @@ def sliver(a):
     brighter than the rows around it across the whole bar, says a bar is drawn; the fill is the
     red run from its left end (red over green and blue by 60 or more; the empty track is 10-35).
     """
-    line = a[173:176, X0:X1].mean(axis=(0, 2))
-    around = (a[166:171, X0:X1].mean(axis=(0, 2)) + a[178:183, X0:X1].mean(axis=(0, 2))) / 2
-    if ((line - around) > 8).mean() < 0.8:
+    if not drawn(a):
         return None
     band = a[177:187, X0:X1]
     red = (band[:, :, 0] - band[:, :, 1:].max(axis=2)).mean(axis=0) > 60
@@ -60,6 +65,11 @@ def critical(img):
     0.226 at a margin of 60). A far stronger sign than the bar, which is small and hides at full.
     """
     a = img.astype(int)
+    # Only with the bar on screen: at critical health it always shows (a red sliver), and red light
+    # alone is not enough. The tripmine corridor's red lasers read as critical with the bar hidden,
+    # and every walk there stopped "hurt" at full health (sense124).
+    if not drawn(a):
+        return False
     h, w = a.shape[:2]
     edge = np.ones((h, w), bool)
     edge[h // 5:4 * h // 5, w // 5:4 * w // 5] = False

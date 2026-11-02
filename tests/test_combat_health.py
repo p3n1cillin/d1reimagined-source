@@ -18,7 +18,14 @@ def frame(edge_rgb, mid_rgb=(40, 40, 40), h=1119, w=1936):
 
 class Critical(unittest.TestCase):
     def test_red_edges_are_critical(self):
-        self.assertTrue(M.critical(frame((200, 40, 40))))
+        a = frame((200, 40, 40))
+        a[173:176, M.X0:M.X1] = (75, 75, 75)        # the bar's outline: the bar is drawn
+        a[166:171, M.X0:M.X1] = a[178:183, M.X0:M.X1] = (40, 40, 40)
+        self.assertTrue(M.critical(a))
+
+    def test_red_light_without_the_bar_is_not_critical(self):
+        # sense124: the tripmine corridor's red lasers, health full (bar hidden).
+        self.assertFalse(M.critical(frame((200, 40, 40))))
 
     def test_rust_and_dark_frames_are_not(self):
         self.assertFalse(M.critical(frame((150, 80, 40))))      # orange rust: red leads by 70
