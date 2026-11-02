@@ -47,6 +47,9 @@ CX, CY, HALF_W, HALF_H = 968, 652, 960, 540       # reticle and half extents
 FEET = (b'\xf6\xce\x9d\x80', b'\xe5\xcc\x9d\x80')     # body root at floor height (Dreg/Vandal, Captain)
 TORSO = (b'\x37\xe1\x9d\x80', b'\x8b\xdc\x9d\x80')    # ~1.3 m above its root while upright; floor height as a corpse
 ENEMY_HDR = FEET + TORSO
+# Melee reach (R1 lunges): sense115 died twice to Fallen at 2.4-2.6 m, shooting and then turning its
+# back on them to reach cover. A Titan's melee kills a Dreg outright.
+MELEE_RANGE = 3.0
 def wrap(a): return (a + math.pi) % (2 * math.pi) - math.pi
 
 
@@ -243,7 +246,9 @@ def main():
             # off five times at the junction while health fell 0.56 -> 0.10, and died. Go back along
             # the route instead (--cover, where the Guardian came from), and if health still falls
             # over two back-offs, stand and return fire for a while: waiting under fire only loses.
-            if h is not None and h < a.retreat_at and time.time() >= stand_until:
+            # Not with an enemy in melee reach: walking off turns the Guardian's back on it. Melee it.
+            near = target is not None and math.dist(me[:2], target[:2]) < MELEE_RANGE
+            if h is not None and h < a.retreat_at and time.time() >= stand_until and not near:
                 worse = worse + 1 if last_retreat_h is not None and h < last_retreat_h - 0.03 else 0
                 last_retreat_h = h
                 if worse >= 2:
@@ -273,8 +278,8 @@ def main():
                 # last 3 s, or a target this close, counts as in view too.
                 in_view = in_view or time.time() - hit_at < 3 or d < 8
                 if in_view: sight, blind = time.time(), 0
-                if d < 2.2:
-                    tap('MELEE', 100); time.sleep(0.4)          # point blank: melee (R1)
+                if d < MELEE_RANGE:
+                    tap('MELEE', 100); time.sleep(0.4)          # in reach: melee (R1)
                     fired += 1
                 elif ok and not in_view:
                     # Not walking at it: closing in on an unseen target walked the Guardian into walls.
