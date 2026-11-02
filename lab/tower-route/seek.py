@@ -31,7 +31,7 @@ def main():
     ap.add_argument('--tol', type=float, default=2.5); ap.add_argument('--trail'); ap.add_argument('--no-nav', action='store_true'); a = ap.parse_args()
     tx, ty = map(float, a.target.split(','))
     start = time.time()
-    W = c.World(); c.fight.pad('NumPad4')
+    W = c.World(); c.L('gamefocus').ensure()   # focus without a key (NumPad4 is Square, reload)
     # Walk the known graph to the node nearest the target first; free (bug) walking only covers the rest.
     # The whole run stays within --max-s: nav gets 60% of it and is stopped (keys released) if it
     # overruns, so no walker outlives this process and drives alongside the next tool.

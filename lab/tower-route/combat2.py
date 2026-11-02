@@ -185,7 +185,9 @@ def main():
     a = ap.parse_args()
     cover = tuple(float(v) for v in a.cover.split(',')) if a.cover else None
     only = {int(x) for x in a.squads.split(',')} if a.squads else None
-    W = World(); fight.pad('NumPad4')                    # focus the emulator once
+    # Focus the window without a key: NumPad4 is Square (reload), and every fight began with a
+    # reload under fire.
+    W = World(); L('gamefocus').ensure()
     log = open(a.log, 'a') if a.log else None
     t_end, k, lock, lock_seen, strafe, last_gren, bursts = time.time() + a.seconds, 0, None, 0, 1, 0, 0
     sight = time.time()                                   # last time a plate sat near the reticle
