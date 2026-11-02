@@ -514,6 +514,8 @@ the waves to get there. Each stop along the way gave the route a fix:
   agr-obj3 (25 October, in the prologue) stalled on `network_update`. The October `network_send`
   halts were the Windows sendmsg bug, fixed since. So it is rare and predates this host. sense110
   relaunched the same setup with the cache warm.
+- **The sensor cache works.** sense110's host was ready 42 s after launch (01:05:21 -> 01:06:03),
+  against about 18 minutes for sense109 building the same 78 lists.
 
 ## Next
 
