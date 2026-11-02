@@ -564,6 +564,22 @@ the waves to get there. Each stop along the way gave the route a fix:
   03:14:54, 32 minutes after launch. Three deaths on the way, each restarted from the nearest leg
   (chest, mine-junction, junction-west). There was no dropped connection. `ending-run.ps1` now
   raises the limit by default, and #204 is closed.
+- **sense115 reached the Tower unattended, but skipped the hangar.** After the Divide, chain2 cleared
+  the gate squads and reached Dock 13 (slice set 104 at 03:22:16). postgame5 then waited for "mission
+  step 25", which is the outro stop in the old schedule. In the waves schedule, which has ten more
+  steps, step 25 is a Breach wave that fired at 03:06. So the post-game went ahead at Dock 13:
+  - phase 7 at 03:23:58;
+  - CONTINUE at 03:25:36;
+  - activity 165 (city_tower_default1) at 03:25:44.
+
+  The client was still connected in the Tower at 07:37, more than four hours later, which
+  confirms the idle-limit fix. Meanwhile chain2 kept walking the hangar route into a Tower wall at
+  (-56.7, 16.6) until 03:43.
+
+  Fixes:
+  - postgame5 now waits for the outro itself: four steps after the hangar cohort reads zero.
+  - chain2 stops walking when the client launches 165 or closes its connection.
+  - sense116 is the rerun.
 
 ## Next
 
