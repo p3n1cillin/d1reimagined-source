@@ -16,8 +16,9 @@ LINE = [(float(x), 0.0, 0.0) for x in range(0, 50, 5)]     # ten waypoints along
 class Fake:
     """walk_fighting's surroundings: a Guardian that walks each route to its end unless told not to."""
 
-    def __init__(self, at, stall=0, lose=0):
+    def __init__(self, at, stall=0, lose=0, hurt=0):
         self.at, self.stall, self.lose, self.walks, self.pads = at, stall, lose, [], []
+        self.hurt, self.fights = hurt, []
 
     def wait_for_unit(self, seconds=90):
         return True
@@ -26,7 +27,7 @@ class Fake:
         return self.at
 
     def skirmish(self, name):
-        pass
+        self.fights.append(name)
 
     def write_route(self, name, points):
         return list(points)
@@ -36,6 +37,9 @@ class Fake:
         if self.lose:
             self.lose -= 1
             return [M.UNIT_LOST + '; no stale position fallback']
+        if self.hurt and not tag.endswith('-back'):
+            self.hurt -= 1
+            return ['hurt: health 0.20 at wp 1/4']
         if self.stall and not tag.endswith('-back'):
             self.stall -= 1
             return [f'stopped ({self.at[0]}, {self.at[1]}, 0)']
@@ -76,6 +80,22 @@ class WalkFightingTest(unittest.TestCase):
         self.assertTrue(f.pads)
         self.assertEqual(f.at, LINE[-1])
 
+
+    def test_hurt_fights_before_walking_on_without_a_stall(self):
+        # sense118 was shot from the side mid-walk and walked on (or stalled) until it died.
+        f = Fake((0.0, 0.0, 0.0), hurt=1)
+        f.walk_fighting('leg', LINE, (), 300, chunk=4)
+        tags = [t for t, _ in f.walks]
+        self.assertEqual(tags[:2], ['leg-0', 'leg-0-retry1'])     # no walk back
+        self.assertFalse(f.pads)                                  # no sidestep
+        self.assertEqual(f.fights[:2], ['leg-0-pre', 'leg-0-retry1-pre'])
+        self.assertEqual(f.at, LINE[-1])
+
+    def test_endless_hurt_falls_to_the_stall_path(self):
+        f = Fake((0.0, 0.0, 0.0), hurt=5)
+        f.walk_fighting('leg', LINE, (), 300, chunk=4)
+        self.assertTrue(f.pads)
+        self.assertEqual(f.at, LINE[-1])
 
     def test_a_lost_unit_does_not_use_up_the_tries(self):
         # sense110: three unit-lost walks in 30 s ended the replay during a reload.

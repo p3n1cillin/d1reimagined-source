@@ -32,7 +32,8 @@ BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-gr
 # hall's waves (triggers 108-112), the second the corridor's and the garage's (114-116, 106, 107).
 WAVE_SQUADS = ('26,28,30,21,24,38,42,56,58', '44,47,49,51,53,55,72,74,68,76')
 JUNCTION_SQUADS = '64,68,76'
-UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'   # d1-walk.py after a death
+UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'
+HURT_STOP = 0.4    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; sense118)   # d1-walk.py after a death
 
 
 class Respawned(Exception):
@@ -278,7 +279,7 @@ class Replay:
         k, lost = 0, 0
         while start < len(points) - 1:
             end = min(start + chunk, len(points) - 1)
-            attempt, stalls = 0, 0
+            attempt, stalls, hurts = 0, 0, 0
             while True:
                 if stalls >= tries:
                     raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
@@ -294,9 +295,16 @@ class Replay:
                     break
                 part = points[near:end + 1]
                 share = max(90, seconds * len(part) // len(points))
-                lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3, (), check=False)
+                lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3,
+                                       ('--hurt-stop', str(HURT_STOP)), check=False)
                 if lines and lines[-1].startswith('done '):
                     break
+                if lines and lines[-1].startswith('hurt:') and hurts < 4:
+                    # Hurt mid-walk (d1-walk --hurt-stop): fight here before walking on, which is
+                    # what the loop's pre-skirmish does. Not a stall: no sidestep, no walk back.
+                    # Four in a stretch from something the fight never finds fall to the stall path.
+                    hurts += 1
+                    continue
                 if not lines or UNIT_LOST in lines[-1] or 'unit changed' in lines[-1] or self.lost(lines[-1]):
                     # sense110 burned all three tries in 30 s on an unavailable unit (a reload): wait
                     # for the unit first, and count it apart from the stalls.
