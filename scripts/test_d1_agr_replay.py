@@ -213,6 +213,37 @@ class ReplayGates(unittest.TestCase):
             self.assertEqual(walked.call_count, 1)
 
 
+class HostCrashRepair(unittest.TestCase):
+    """sense125: the client's host-crash repair rejoins and restarts the mission from step 0."""
+
+    def test_the_last_matching_line_starts_after_its_newline(self):
+        with tempfile.TemporaryDirectory() as d:
+            log = Path(d)/'host.log'
+            log.write_bytes(b'a AH connection from 1\nb\nc AH connection from 2\n')
+            self.assertEqual(replay.last_line_offset(log, 'AH connection from '), 25)
+            self.assertEqual(replay.last_line_offset(log, 'absent'), -1)
+
+    def test_the_mirror_starts_at_the_rejoin(self):
+        import threading
+        with tempfile.TemporaryDirectory() as d:
+            src, dst = Path(d)/'host.log', Path(d)/'attempt2.log'
+            src.write_bytes(b'old RIFLE\nAH connection from 2\nnew\n')
+            stop = threading.Event()
+            stop.set()   # copy what is there, then return
+            replay.mirror(src, dst, replay.last_line_offset(src, 'AH connection from '), stop)
+            self.assertEqual(dst.read_bytes(), b'AH connection from 2\nnew\n')
+            self.assertFalse(replay.contains(dst, 'RIFLE'))
+
+    def test_no_repair_in_the_client_log_is_no_rejoin(self):
+        with tempfile.TemporaryDirectory() as d:
+            host, client = Path(d)/'host.log', Path(d)/'shad_log.txt'
+            host.write_bytes(b'AH connection from 1\nAH connection from 2\n')
+            client.write_bytes(b'unit died\n')
+            self.assertIsNone(replay.rejoined(host, 1, client, 0, seconds=0))
+            client.write_bytes(b'x ' + replay.REPAIR.encode() + b'\n')
+            self.assertEqual(replay.rejoined(host, 1, client, 0, seconds=0), 21)
+
+
 class SchedulePromotion(unittest.TestCase):
     def test_preserves_prior_timing_and_incident_payload(self):
         with tempfile.TemporaryDirectory() as directory:
