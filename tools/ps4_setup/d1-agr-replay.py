@@ -144,8 +144,11 @@ class Replay:
             # The tripmine legs walk without stopping to fight (the stance and the mines), but the
             # corridor's Fallen killed the Guardian there three times (sense106-108): fight first.
             ('mine-stairs', corridor[0:4], 90, 1.2, 'stand', None, WAVE_SQUADS[1]),
-            ('mine-crouched', corridor[3:10], 240, 1.5, 'crouch', None, WAVE_SQUADS[1]),
-            ('mine-junction', corridor[9:], 150, 1.2, 'stand', WAVE_SQUADS[1]),
+            # Crouched to waypoint 10, not 9: standing up at waypoint 9 (x 490.3) is where every
+            # junction death tonight happened, at full health a moment before (sense115, 117, 118
+            # twice, 119: x 490.7-491.4), most likely the corridor's last laser rather than a fight.
+            ('mine-crouched', corridor[3:11], 240, 1.5, 'crouch', None, WAVE_SQUADS[1]),
+            ('mine-junction', corridor[10:], 150, 1.2, 'stand', WAVE_SQUADS[1]),
             ('junction-west', junction[4:], 330, 1.3, 'stand', WAVE_SQUADS[1]),
             ('garage', load('wall_garage_door.json'), 300, 1.0, 'stand', WAVE_SQUADS[1]),
             ('fan-to-divide', load('wall_fan_tunnel_to_divide.json'), 420, 1.3, 'stand', None),
@@ -695,9 +698,9 @@ class Replay:
         self.walk('mine-stairs', self.sliced_route('mine-a', 'wall_tripmine_corridor.json', 0, 4), 90, 1.2)
         self.pad('NumPad6')
         # If this fails, stop crouched. Do not blindly toggle stance in a retry.
-        self.walk('mine-crouched', self.sliced_route('mine-b', 'wall_tripmine_corridor.json', 3, 10), 240, 1.5)
+        self.walk('mine-crouched', self.sliced_route('mine-b', 'wall_tripmine_corridor.json', 3, 11), 240, 1.5)
         self.pad('NumPad6')
-        self.walk('mine-junction', self.sliced_route('mine-c', 'wall_tripmine_corridor.json', 9, None), 150, 1.2)
+        self.walk('mine-junction', self.sliced_route('mine-c', 'wall_tripmine_corridor.json', 10, None), 150, 1.2)
         if self.waves:                     # the corridor's waves (114-116) came during the mine legs
             self.wave = WAVE_SQUADS[1]
             self.skirmish('mine-end')
