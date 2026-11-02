@@ -21,8 +21,20 @@ u32 = ctypes.WinDLL('user32')
 _s = importlib.util.spec_from_file_location('gamefocus', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gamefocus.py')); _gf = importlib.util.module_from_spec(_s); _s.loader.exec_module(_gf)
 VK = {'W': 0x57, 'A': 0x41, 'S': 0x53, 'D': 0x44, 'I': 0x49, 'J': 0x4A, 'K': 0x4B, 'L': 0x4C,
       'FIRE': 0x4F, 'ADS': 0x45, 'GREN': 0x51, 'MELEE': 0x55, 'RELOAD': 0x64, 'JUMP': 0x62}
+_stamped = 0
 def key(k, down):
-    if down: _gf.ensure()
+    global _stamped
+    if down:
+        _gf.ensure()
+        if time.time() - _stamped > 30:
+            # The idle guard (d1-idle-guard.sh) presses keys after 300 s without this stamp, which
+            # d1-pad.ps1 and d1_keys write; a long fight pressing keys directly never did.
+            _stamped = time.time()
+            try:
+                with open(os.path.join(HERE, '..', '..', 'tools', 'ps4_setup', 'd1-pad-last.txt'), 'w') as f:
+                    f.write(str(int(_stamped)))
+            except OSError:
+                pass
     u32.keybd_event(VK[k], u32.MapVirtualKeyW(VK[k], 0), 0 if down else 2, None)
 def tap(k, ms=60): key(k, True); time.sleep(ms / 1000); key(k, False)
 def hold(k, ms): key(k, True); time.sleep(max(0, ms) / 1000); key(k, False)

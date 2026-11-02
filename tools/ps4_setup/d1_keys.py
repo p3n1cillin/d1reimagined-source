@@ -8,7 +8,7 @@ Key names are System.Windows.Forms.Keys names as d1-pad.ps1 takes them (W/A/S/D 
 camera, NumPad2 cross, NumPad6 circle, NumPad4 square, NumPad8 triangle, Return options, Up/Down/
 Left/Right d-pad, Q/U L1/R1, E/O L2/R2). "Hold:<key>:<ms>" holds a key (default 120 ms). The window is
 brought to the front first when it isn't, as d1-pad.ps1 does; the emulator ignores keys sent to an
-unfocused window. Each press stamps D1_TOOLS/d1-pad-last.txt for the idle guard.
+unfocused window. Each press stamps d1-pad-last.txt beside this file for the idle guard.
 
 d1-walk.py pressed every key through `powershell -File d1-pad.ps1`: a PowerShell start of 0.3-0.6 s
 for each turn and each forward pulse, about doubling the time of a walk.
@@ -86,13 +86,9 @@ def press(*keys, gap=150):
     if not h:
         raise RuntimeError('No shadPS4 window')
     stamp = None
-    tools = os.environ.get('D1_TOOLS')
-    if not tools:
-        try:
-            import d1paths                      # beside this file; d1-pad.ps1 stamps its own folder
-            tools = str(d1paths.tools())
-        except Exception:
-            tools = None
+    # Beside this file, where d1-pad.ps1 stamps it and d1-idle-guard.sh reads it (the guard presses
+    # keys after 300 s without a stamp).
+    tools = os.path.dirname(os.path.abspath(__file__))
     for name, code, hold in plan:
         if not _focus(h):
             continue
