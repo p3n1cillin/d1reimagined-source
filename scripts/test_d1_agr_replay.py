@@ -243,6 +243,15 @@ class HostCrashRepair(unittest.TestCase):
             client.write_bytes(b'x ' + replay.REPAIR.encode() + b'\n')
             self.assertEqual(replay.rejoined(host, 1, client, 0, seconds=0), 21)
 
+    def test_the_hosts_restart_is_enough_when_the_client_log_has_stopped(self):
+        # sense126: shadPS4 had stopped writing its log (100 MB) before the repair.
+        with tempfile.TemporaryDirectory() as d:
+            host, client = Path(d)/'host.log', Path(d)/'shad_log.txt'
+            client.write_bytes(b'')
+            host.write_bytes(b'AH connection from 1\nstep 9\nAH connection from 2\nmission step 0 at +0 s for 164\n')
+            self.assertEqual(replay.rejoined(host, 1, client, 0, seconds=0), 28)
+            self.assertIsNone(replay.rejoined(host, 2, client, 0, seconds=0))
+
 
 class QuietDeath(unittest.TestCase):
     """sense125: a fight round ended at health 0.00 with `bursts 0`, and the Guardian had respawned."""
