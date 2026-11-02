@@ -1,8 +1,8 @@
 """Set the running 56578 client's frame rate live: d1-frame-rate.py N [--seconds S].
 
-Writes the three values the game's rate lives in, then measures the engine's ticks per second:
-- the cadence table (pointer at 0x26BCD08): +0x08 the present period in microseconds (1001000/N)
-  and +0x38 the rate N;
+Writes the four values the game's rate lives in, then measures the engine's ticks per second:
+- the cadence table (pointer at 0x26BCD08): +0x08 the present period in microseconds (1001000/N),
+  +0x38 the rate N and +0x40 the tick step in microseconds (1000000/N), which the scheduler ticks on;
 - the engine clock (pointer at 0x26BC880): +0x08 the tick period in seconds (1/N).
 Run sense fps-d120-game (2 November 2026) went from 120 to exactly 60.0 ticks/s this way, without
 a restart. The emulator has to present that fast: GPU.vblank_frequency >= N (read at its start)
@@ -37,12 +37,14 @@ def main():
     print(f'was: period {p.u(table + 8, "Q")} us, rate {p.u(table + 0x38, "Q")}, tick {p.u(clock + 8, "f"):.5f} s')
     p.write(table + 8, struct.pack('<Q', round(1001000 / a.fps)))
     p.write(table + 0x38, struct.pack('<Q', a.fps))
+    p.write(table + 0x40, struct.pack('<Q', round(1000000 / a.fps)))
     p.write(clock + 8, struct.pack('<f', 1.0 / a.fps))
     t0, k0 = time.monotonic(), p.u(clock + 0xC, 'I')
     time.sleep(a.seconds)
     t1, k1 = time.monotonic(), p.u(clock + 0xC, 'I')
     rate = (k1 - k0) / (t1 - t0)
-    print(f'now: rate {a.fps}, engine {rate:.1f} ticks/s ({rate / a.fps:.2f}x real time)')
+    game = rate * p.u(clock + 8, 'f')
+    print(f'now: rate {a.fps}, engine {rate:.1f} ticks/s, game time {game:.2f}x real')
 
 
 if __name__ == '__main__':
