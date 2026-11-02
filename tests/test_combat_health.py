@@ -53,5 +53,14 @@ class Sliver(unittest.TestCase):
         self.assertIsNone(M.health(a))
 
 
+class Fill(unittest.TestCase):
+    def test_a_glow_on_the_left_end_does_not_cut_the_fill(self):
+        # sense123: a light behind the bar's left end read a three-quarters bar as 0.30.
+        a = frame((20, 20, 20), (20, 20, 20))
+        a[176:188, M.X0:M.X0 + 340] = (157, 157, 157)
+        a[176:188, M.X0:M.X0 + 20] = (198, 198, 198)
+        self.assertAlmostEqual(M.health(a), 340 / (M.X1 - M.X0), delta=0.02)
+
+
 if __name__ == '__main__':
     unittest.main()

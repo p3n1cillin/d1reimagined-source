@@ -20,7 +20,10 @@ def health(img):
     # sense108 read None (no bar: full health) there while dying.
     if lit[:20].mean() < 0.8:
         return sliver(a)
-    ref = np.median(mid[:20])
+    # The fill's own brightness, from every lit column: the first 20 alone were skewed by a light
+    # behind the bar's left end (sense123: 198 there, 157 along the rest), which cut a bar about
+    # three-quarters full to 0.30.
+    ref = np.median(mid[lit])
     lit &= mid > ref - 30
     # the white fill runs from the left end: health is the longest prefix that is at least 75% lit
     frac = np.cumsum(lit) / np.arange(1, len(lit) + 1)
