@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import threading
 import time
 
 HERE = Path(__file__).resolve().parent
@@ -33,6 +34,12 @@ BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-gr
 WAVE_SQUADS = ('26,28,30,21,24,38,42,56,58', '44,47,49,51,53,55,72,74,68,76')
 JUNCTION_SQUADS = '64,68,76'
 UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'   # d1-walk.py after a death
+# The client's host-crash repair (sense125): a stall past its 20.5 s timeout ends the activity-host
+# session, and it rejoins and relaunches 164 from the start (the host serves mission step 0).
+REPAIR = 'Starting private activity repair state machine'
+CONNECTION = 'AH connection from '
+TELEPORTED = "transitioning:teleportation' due to completed"
+REPAIR_ATTEMPTS = 3
 HURT_STOP = 0.6    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; two readings in a row)
 
 
@@ -745,6 +752,42 @@ class Replay:
         print('DIVIDE REACHED: verify scheduled step 16, native authority, objective and scene.', flush=True)
 
 
+def last_line_offset(path, needle):
+    """Where the last line holding `needle` starts (-1 for none)."""
+    data = path.read_bytes()
+    at = data.rfind(needle.encode('utf-8'))
+    return -1 if at < 0 else data.rfind(b'\n', 0, at) + 1
+
+
+def mirror(source, target, offset, stop, sleep=time.sleep):
+    """Copy `source` from `offset` into `target` as it grows, until `stop` is set: a view of the host
+    log that starts at the rejoin, so `contains` can't match an earlier attempt's events."""
+    with source.open('rb') as src, target.open('wb') as out:
+        src.seek(offset)
+        while True:
+            chunk = src.read(65536)
+            if chunk:
+                out.write(chunk)
+                out.flush()
+            elif stop.is_set():
+                return
+            else:
+                sleep(0.5)
+
+
+def rejoined(host_log, connections, client_log, client_offset, seconds=180):
+    """After a failed attempt: did the client run its host-crash repair and rejoin? Returns the
+    offset of the rejoin's connection line in the host log, or None."""
+    if not contains(client_log, REPAIR, client_offset):
+        return None
+    deadline = time.monotonic() + seconds
+    while host_log.read_bytes().count(CONNECTION.encode()) <= connections:
+        if time.monotonic() >= deadline:
+            return None
+        time.sleep(2)
+    return last_line_offset(host_log, CONNECTION)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--run-dir', type=Path, required=True)
@@ -782,11 +825,37 @@ def main():
     # inspect processes and the scene before removing a stale lock manually.
     with lock.open('x') as output:
         output.write('Pad replay owns input; do not run another movement driver.\n')
+    client_log = d1paths.shadps4() / 'user' / 'log' / 'shad_log.txt'
+    host_log, resume, stops = a.host_log, a.resume_after_rifle, []
     try:
-        Replay(a.run_dir, a.host_log, a.garage_clients, a.pad, fallen=a.breach_fallen,
-               junction=a.junction_fallen, waves=a.waves,
-               schedule_dir=a.schedule_dir).play(a.boot_timeout, a.resume_after_rifle)
+        for attempt in range(1, REPAIR_ATTEMPTS + 1):
+            connections = a.host_log.read_bytes().count(CONNECTION.encode()) if a.host_log.exists() else 0
+            client_offset = client_log.stat().st_size if client_log.exists() else 0
+            replay = Replay(a.run_dir, host_log, a.garage_clients, a.pad, fallen=a.breach_fallen,
+                            junction=a.junction_fallen, waves=a.waves, schedule_dir=a.schedule_dir)
+            if attempt > 1:
+                replay.route_prefix = f'attempt{attempt}-'
+            try:
+                replay.play(a.boot_timeout, resume)
+                return
+            except Exception:
+                offset = rejoined(a.host_log, connections, client_log, client_offset)
+                if offset is None or attempt == REPAIR_ATTEMPTS:
+                    raise
+            # The mission starts over: replay it from the start against the host log from the rejoin.
+            print(time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'host-crash repair: the client rejoined;',
+                  f'replaying the mission again (attempt {attempt + 1})', flush=True)
+            stop = threading.Event()
+            stops.append(stop)
+            host_log = a.host_log.with_name(f'activity-host-attempt{attempt + 1}.log')
+            threading.Thread(target=mirror, args=(a.host_log, host_log, offset, stop), daemon=True).start()
+            resume = False
+            if not wait_for(client_log, TELEPORTED, 600, offset=last_line_offset(client_log, REPAIR)):
+                raise RuntimeError('The rejoined client never reached gameplay; no route input sent')
+            time.sleep(10)
     finally:
+        for stop in stops:
+            stop.set()
         lock.unlink()
 
 
