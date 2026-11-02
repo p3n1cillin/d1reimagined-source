@@ -555,6 +555,111 @@ pub fn on_equip(req: Vec<u8>) {
     });
 }
 
+/// Decode a 402 `inventory_perform_item_action` request (`0x80801767`: {bool, u64 instance, i16
+/// content index} + i32) with the client's codec: `(instanced, instance, content, quantity)`.
+/// Holding Square on an unequipped Khvostov in the character screen (sense118, 2 November) sent
+/// `e880000000000185c7074000000000` = {1, 0xd10000000000030b, 3598} + 0.
+fn decode_item_action(oracle: &str, req: &[u8]) -> anyhow::Result<(bool, u64, u16, u32)> {
+    let hex: String = req.iter().map(|b| format!("{b:02x}")).collect();
+    let o = std::process::Command::new(oracle).args(["object", "--tag", "0x80801767", "--decode", &hex]).output()?;
+    let text = String::from_utf8_lossy(&o.stdout);
+    let field = |at: &str| text.lines().find_map(|l| l.trim().strip_prefix(at).map(|v| u64::from_str_radix(v.trim().trim_start_matches("0x"), 16)));
+    let first = field("+0x0000").ok_or_else(|| anyhow::anyhow!("no +0x0000 in the decoded 402 request"))??;
+    let instance = field("+0x0008").ok_or_else(|| anyhow::anyhow!("no +0x0008 in the decoded 402 request"))??;
+    let third = field("+0x0010").ok_or_else(|| anyhow::anyhow!("no +0x0010 in the decoded 402 request"))??;
+    Ok((first & 1 == 1, instance, (third & 0xFFFF) as u16, (third >> 32) as u32))
+}
+
+/// What dismantling one item gives back: `content_index -> [(content, quantity, bucket)]`, from
+/// `D1_DISMANTLE_YIELDS` (`content_index content:quantity:bucket,...`, `#` comments). The yields
+/// were the original servers' rules, not client data, so each row must cite its source; an item
+/// with no row gives nothing back (logged), never an invented amount.
+fn dismantle_yields() -> HashMap<u16, Vec<(u16, u32, u8)>> {
+    let Some(path) = std::env::var_os("D1_DISMANTLE_YIELDS") else { return HashMap::new() };
+    let text = std::fs::read_to_string(&path).unwrap_or_default();
+    parse_yields(&text)
+}
+
+fn parse_yields(text: &str) -> HashMap<u16, Vec<(u16, u32, u8)>> {
+    let hex = |s: &str| u8::from_str_radix(s.trim_start_matches("0x"), 16).ok();
+    text.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()).filter_map(|l| {
+        let (ci, rest) = l.split_once(char::is_whitespace)?;
+        let ys = rest.split(',').filter_map(|y| {
+            let p: Vec<&str> = y.trim().split(':').collect();
+            Some((p.first()?.parse().ok()?, p.get(1)?.parse().ok()?, hex(p.get(2)?)?))
+        }).collect();
+        Some((ci.trim().parse().ok()?, ys))
+    }).collect()
+}
+
+/// Apply a dismantle (a 402 for one instanced item): empty its profile slot and credit its yields.
+/// An equipped item can't be dismantled (the game offers no Dismantle on it).
+fn apply_dismantle(st: &mut State, instance: u64, content: u16, yields: &[(u16, u32, u8)]) -> anyhow::Result<String> {
+    anyhow::ensure!(instance != 0, "a 402 without an instance (a stack) is not handled yet");
+    let mut profile = st.profile.clone();
+    let mut account = st.account.clone();
+    let slot = (0..340u16).find(|s| {
+        let e = PROFILE_SLOTS + 32 * *s as usize;
+        u64::from_le_bytes(profile[e + 8..e + 16].try_into().unwrap()) == instance
+    }).ok_or_else(|| anyhow::anyhow!("instance {instance:#x} is in no profile slot"))?;
+    let held = profile_entry(&profile, slot).0;
+    anyhow::ensure!(held == content, "slot {slot} holds content {held}, the request names {content}");
+    let equipped = (0..20).any(|i| u64::from_le_bytes(profile[EQUIPPED + 8 * i..EQUIPPED + 8 * i + 8].try_into().unwrap()) == instance);
+    anyhow::ensure!(!equipped, "{instance:#x} is equipped");
+    let e = PROFILE_SLOTS + 32 * slot as usize;
+    profile[e..e + 2].copy_from_slice(&[0xFF, 0xFF]);
+    profile[e + 8..e + 16].fill(0);
+    profile[e + 0x10..e + 0x14].fill(0);
+    for (ci, q, b) in yields {
+        let (first, n, scope) = bucket(*b).ok_or_else(|| anyhow::anyhow!("unknown bucket {b:#x}"))?;
+        if scope == 1 {
+            let at = (first..first + n).find(|s| account.get(s).map(|x| x.0) == Some(*ci))
+                .or_else(|| (first..first + n).find(|s| !account.contains_key(s)))
+                .ok_or_else(|| anyhow::anyhow!("account bucket {b:#x} is full"))?;
+            let have = account.get(&at).map(|x| x.1).unwrap_or(0);
+            account.insert(at, (*ci, have + q));
+        } else {
+            let at = (first..first + n).find(|s| profile_entry(&profile, *s).0 == *ci)
+                .or_else(|| (first..first + n).find(|s| profile_entry(&profile, *s).0 == 0xFFFF))
+                .ok_or_else(|| anyhow::anyhow!("bucket {b:#x} is full"))?;
+            let have = profile_entry(&profile, at).1;
+            let x = PROFILE_SLOTS + 32 * at as usize;
+            profile[x..x + 2].copy_from_slice(&ci.to_le_bytes());
+            profile[x + 0x10..x + 0x14].copy_from_slice(&(have + q).to_le_bytes());
+        }
+    }
+    st.profile = profile;
+    st.account = account;
+    Ok(format!("{instance:#x} (content {content}, slot {slot}) dismantled; yields {yields:?}"))
+}
+
+/// Handle a 402 request body: dismantle the item in the purchase state's profile and push it.
+pub fn on_item_action(req: Vec<u8>) {
+    if state().lock().map(|s| s.is_none()).unwrap_or(true) {
+        return;
+    }
+    std::thread::spawn(move || {
+        let Ok(mut guard) = state().lock() else { return };
+        let Some(st) = guard.as_mut() else { return };
+        let result = (|| -> anyhow::Result<String> {
+            let (instanced, instance, content, quantity) = decode_item_action(&st.oracle, &req)?;
+            anyhow::ensure!(instanced && quantity == 0, "only an instanced item's dismantle is handled (instanced {instanced}, quantity {quantity})");
+            let table = dismantle_yields();
+            let yields = table.get(&content).cloned().unwrap_or_default();
+            let mut what = apply_dismantle(st, instance, content, &yields)?;
+            if !table.contains_key(&content) {
+                what.push_str(" (no D1_DISMANTLE_YIELDS row for this item: nothing given back)");
+            }
+            publish(st, None)?;
+            Ok(what)
+        })();
+        match result {
+            Ok(what) => tracing::warn!("      ⭐⭐ DISMANTLE APPLIED: {what}; pushes written"),
+            Err(e) => tracing::warn!("      ⛔ dismantle NOT applied: {e}"),
+        }
+    });
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -570,6 +675,40 @@ mod tests {
         let mut account = BTreeMap::new();
         account.insert(308, (869, glimmer));
         State { sales: parse_sales(TSV), account, profile, template: vec![0; 184], next_soid: 0x601, oracle: String::new(), refunds: Vec::new() }
+    }
+
+    fn with_rifle(s: &mut State, slot: usize, instance: u64, equipped: bool) {
+        let e = PROFILE_SLOTS + 32 * slot;
+        s.profile[e..e + 2].copy_from_slice(&3598u16.to_le_bytes());
+        s.profile[e + 8..e + 16].copy_from_slice(&instance.to_le_bytes());
+        if equipped {
+            s.profile[EQUIPPED + 8 * 6..EQUIPPED + 8 * 7].copy_from_slice(&instance.to_le_bytes());
+        }
+    }
+
+    #[test]
+    fn a_dismantle_empties_the_slot_and_credits_its_yields() {
+        let mut s = st(100);
+        with_rifle(&mut s, 94, 0xd100_0000_0000_030b, false);
+        apply_dismantle(&mut s, 0xd100_0000_0000_030b, 3598, &[(869, 5, 0x1f)]).unwrap();
+        assert_eq!(profile_entry(&s.profile, 94).0, 0xFFFF);
+        assert_eq!(s.account[&308], (869, 105));
+    }
+
+    #[test]
+    fn an_equipped_item_is_not_dismantled() {
+        let mut s = st(100);
+        with_rifle(&mut s, 93, 0xd100_0000_0000_0401, true);
+        assert!(apply_dismantle(&mut s, 0xd100_0000_0000_0401, 3598, &[]).is_err());
+        assert_eq!(profile_entry(&s.profile, 93).0, 3598);
+    }
+
+    #[test]
+    fn the_yields_table_parses() {
+        let y = parse_yields("# source: ...
+3598	869:5:0x1f, 1043:1:0x24
+");
+        assert_eq!(y[&3598], vec![(869, 5, 0x1f), (1043, 1, 0x24)]);
     }
 
     #[test]
