@@ -319,7 +319,7 @@ def main():
                 # In view now? This frame was taken after the previous pass aimed at the same lock.
                 in_view = any(abs(px - CX) < 220 and py < CY + 40 for px, py, _, _ in plates)
                 aim_pt = (target[0], target[1], target[2] + 0.2)   # torso object sits low in the chest; aim at upper chest
-                ey0 = bearing(me, yaw, pitch, aim_pt)[0]          # the lock's bearing in this frame (img's view)
+                ey0, ep0, _ = bearing(me, yaw, pitch, aim_pt)     # the lock's bearing in this frame (img's view)
                 ok, d = aim(W, aim_pt)
                 # Plates are hard to see in the dark hall: a hit confirmed by the target's health in the
                 # last 3 s, or a target this close, counts as in view too.
@@ -348,6 +348,19 @@ def main():
                     elif swings >= 3:
                         blocked[lock], swings = time.time() + 20, 0
                         print(k, f'lock {lock} in reach at {d:.1f} m but out of it: skipped for 20 s', flush=True)
+                elif not in_view and plates:
+                    # The lock is out of sight but enemies show on screen: shoot what can be seen, as a
+                    # player would. sense125 held a lock on squad 72 at 36 m it could not see while one
+                    # to three plates showed off-centre, and died at junction-west three times. The
+                    # plates are from the frame before the aim turned to the lock: measure from there.
+                    cx, cy, _, _ = min(plates, key=lambda q: math.hypot(q[0] - CX, q[1] - CY))
+                    ry = -(cx - CX) / HALF_W * HFOV / 2 - ey0
+                    rp = -(cy + 40 - CY) / HALF_H * VFOV / 2 - ep0
+                    if abs(ry) > 0.02: hold('L' if ry < 0 else 'J', max(25, abs(ry) / YAW_RATE))
+                    if abs(rp) > 0.03: hold('I' if rp > 0 else 'K', max(25, abs(rp) / PITCH_RATE))
+                    key('FIRE', True); time.sleep(0.6); key('FIRE', False); fired += 1
+                    blocked[lock], blind = time.time() + 5, 0
+                    print(k, f'lock {lock} out of sight; fired at the plate at ({cx}, {cy})', flush=True)
                 elif ok and not in_view and (dd := damage_dir(img)) is not None and abs(wrap(dd + ey0)) > 0.6:
                     # Hit from elsewhere while the lock is out of sight: the shooter isn't the lock.
                     # sense125 aimed at junction-west locks 37-54 m off (bursts 0) while something
