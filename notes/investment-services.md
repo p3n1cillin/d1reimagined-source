@@ -28,7 +28,7 @@ This table is the PS3 01.24 one. The PS4 56578 table also has 904 `vendor_intera
 | 303 | `0xabbef2d3` |  | `0x808016fd` u64 i16 | `0x808016ec` {u8:4 i32} |  |
 | 304 | `0x3eb709c0` |  | `0x80801802` u64x2 {{i32:4 [0x8080547d]} {i32:1 [0x80804792]} {i32:9 [0x80804407]}} | `0x8080188c` u8:4 |  |
 | 305 | `0x58502e05` | `0x4119f4` | `0x8080184e` u64x2 {{i32:4 [0x8080547d]} {i32:1 [0x80804792]} {i32:9 [0x80804407]}} | `0x808016ea` u8:4 |  |
-| 402 | `0x3931cb8a` | `0x411ca0` | `0x80801767` {bool u64 i16} i32 | `0x80801953` {u8:4 i32} | item move with quantity (LIKELY transfer/vault: {bool, u64 instance, i16 item index} + i32 count) |
+| 402 | `0x3931cb8a` `inventory_perform_item_action` | `0x411ca0` | `0x80801767` {bool u64 i16} i32 | `0x80801953` {u8:4 i32} | an action on one item: {bool, u64 instance, i16 item index} + i32 (LIKELY the action; dismantling is one: see below) |
 | 403 | `0xc579f488` `inventory_equip_item` |  | `0x80801942` u64 | `0x80801834` {u8:4 i32} | item action by instance id (UNKNOWN: equip?) |
 | 404 | `0x9befe885` `inventory_unequip_item` | `0x411dd8` | `0x8080189a` u64 | `0x808018ab` {u8:4 i32} | item action by instance id (UNKNOWN) |
 | 405 | `0x82842f7b` `inventory_transfer_item` | `0x411f08` | `0x808018ce` u8x2 u64 i16 i32 | `0x80801719` {u8:4 i32} | item move between owners/buckets (LIKELY: u8 x2 + instance + index + count) |
@@ -82,3 +82,13 @@ This table is the PS3 01.24 one. The PS4 56578 table also has 904 `vendor_intera
 | 1304 | `0x1a31e889` |  | `0x8080195e` u64x2 i16x2 | `0x8080193d` u8:4 boolx3 |  |
 | 1401 | `0x33784d64` |  | `0x80801703`  | `0x8080194a` {u8:4 i32} |  |
 | 1501 | `0xfe4e505f` | `0x412428` | `0x80801818` u64 {u32x10} | `0x808018a8` u8:4 |  |
+
+## 402 is `inventory_perform_item_action` (2 November 2026)
+
+Blam Network's 2014 live dictionary (`network-ids.csv`, build 41375) names 402
+`inventory_perform_item_action` (request `InventoryPerformItemActionRequest`). This table had guessed a
+transfer, but 405 is the transfer. Destiny 1 gives value back for gear by dismantling it (refunds were
+Eververse-only), and the 2013 alpha dictionary has the item-action tags `dismantle_weapon`
+(`0x38EF03D5`), `dismantle_armor` (`0x280E2902`) and `dismantle_item_timer` (`0xFE30D2E6`). So a
+dismantle is a 402: run sense118 sent one (2 November), decoded in
+[the dismantle note](ps4-56578-dismantle-2026-11-02.md) as {1, instance, content index} + quantity 0.

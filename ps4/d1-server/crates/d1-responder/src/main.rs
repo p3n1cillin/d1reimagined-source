@@ -3687,7 +3687,7 @@ async fn main() -> Result<()> {
                                                                               b.iter().map(|x| format!("{x:02x}")).collect::<String>());
                                                                         Some(b)
                                                                     } else if (402..=405).contains(&id) {
-                                                                        // 402 (item move with a count), 403 inventory_equip_item,
+                                                                        // 402 inventory_perform_item_action (a dismantle), 403 inventory_equip_item,
                                                                         // 404 inventory_unequip_item, 405 inventory_transfer_item.
                                                                         // Responses 0x80801953 / 0x80801834 / 0x808018AB / 0x80801719
                                                                         // are each the 0x80801796 result composite alone; the client's
@@ -3697,15 +3697,18 @@ async fn main() -> Result<()> {
                                                                         // the padded default, a message id with no object - the shape
                                                                         // that made 104 fail to decode. A 403 is applied to the served
                                                                         // profile's equipped array (vendor::on_equip, when the purchase
-                                                                        // state is on); 402/404/405 are accepted only.
+                                                                        // state is on); a 402 is dismantled the same way (vendor::on_item_action);
+                                                                        // 404/405 are accepted only.
                                                                         let req = plain.get(8..).unwrap_or(&[]);
                                                                         warn!("      ⭐ ITEM {} ({}B request): {} -> accepted",
-                                                                              match id { 402 => "MOVE (402)", 403 => "EQUIP (403)",
+                                                                              match id { 402 => "ACTION (402)", 403 => "EQUIP (403)",
                                                                                          404 => "UNEQUIP (404)", _ => "TRANSFER (405)" },
                                                                               req.len(),
                                                                               req.iter().map(|x| format!("{x:02x}")).collect::<String>());
                                                                         if id == 403 {
                                                                             vendor::on_equip(req.to_vec());
+                                                                        } else if id == 402 {
+                                                                            vendor::on_item_action(req.to_vec());
                                                                         }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 905 {
