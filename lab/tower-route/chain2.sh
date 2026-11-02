@@ -13,7 +13,11 @@ rel() { python $S/release.py; }                # every tool ends with no key hel
 fight() { timeout $(( $1 + 60 )) python -u $S/combat2.py --seconds $1 ${2:+--squads $2} ${COVER:+--cover $COVER} --log $C/$RUN/chain2-combat.jsonl 2>&1 | grep -E "lock|bursts|stopped" | tail -1 | sed 's/^/    fight: /'; rel; }
 # Where the Guardian stood before a walk: the fights after it back off there (combat2 --cover), not
 # straight back into the open (sense108 died twice in the hangar).
-here() { COVER=$(python $S/where.py 2>/dev/null | grep -E "^-?[0-9.]+,-?[0-9.]+," | tail -1 | cut -d, -f1,2); }
+# It waits up to 90 s for a position: after a death the walks that started before the respawn failed
+# with "unit unavailable" (sense115 at Dock 13, three in a row).
+here() { for k in $(seq 1 18); do
+  COVER=$(python $S/where.py 2>/dev/null | grep -E "^-?[0-9.]+,-?[0-9.]+," | tail -1 | cut -d, -f1,2)
+  [ -n "$COVER" ] && [ "$COVER" != "0.0,0.0" ] && return; left && return; sleep 5; done; COVER=; }
 go() { here; echo "  nav $1: $(timeout 260 python -u $S/nav.py $1 --max-s 200 2>&1 | grep -v shadPS4 | tail -1)"; rel; }
 stage() { echo "$(date +%H:%M:%S) $1"; }
 stage "start: squads $(python $S/alive.py $H 0x9243dffb)"
