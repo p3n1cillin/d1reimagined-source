@@ -290,7 +290,10 @@ class Replay:
             attempt, stalls, hurts = 0, 0, 0
             while True:
                 if stalls >= tries:
-                    raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
+                    # Not the end of the run: play_waves restarts from the nearest leg (it allows six).
+                    # sense124's crouched leg stalled three times and the whole replay stopped.
+                    print(f'{name}: stretch {k} did not complete in {tries} tries; restarting from the nearest leg', flush=True)
+                    raise Respawned(name)
                 tag = f'{name}-{k}' + (f'-retry{attempt}' if attempt else '')
                 attempt += 1
                 # Clear the way first: walking into a wave is where the Guardian died (sense105-108).
@@ -328,7 +331,8 @@ class Replay:
                     continue
                 # A stall: step aside, walk back a little, and come at the stretch again.
                 stalls += 1
-                self.pad(f"Hold:{'DA'[stalls % 2]}:600", 'NumPad2')
+                # No jump in the crouch-only corridor: it stands the Guardian up under the lasers.
+                self.pad(f"Hold:{'DA'[stalls % 2]}:600", *(() if self.stance == 'crouch' else ('NumPad2',)))
                 me = self.where()
                 if me:
                     back = max(nearest(me) - 2 * stalls, 0)

@@ -18,7 +18,7 @@ class Fake:
 
     def __init__(self, at, stall=0, lose=0, hurt=0):
         self.at, self.stall, self.lose, self.walks, self.pads = at, stall, lose, [], []
-        self.hurt, self.fights = hurt, []
+        self.hurt, self.fights, self.stance = hurt, [], 'stand'
 
     def wait_for_unit(self, seconds=90):
         return True
@@ -80,6 +80,14 @@ class WalkFightingTest(unittest.TestCase):
         self.assertTrue(f.pads)
         self.assertEqual(f.at, LINE[-1])
 
+
+    def test_a_crouched_stall_does_not_jump(self):
+        # sense124: a jump in the crouch-only corridor stands the Guardian up under the lasers.
+        f = Fake((0.0, 0.0, 0.0), stall=1)
+        f.stance = 'crouch'
+        f.walk_fighting('leg', LINE, (), 300, chunk=4)
+        self.assertTrue(f.pads)
+        self.assertTrue(all('NumPad2' not in keys for keys in f.pads))
 
     def test_hurt_fights_before_walking_on_without_a_stall(self):
         # sense118 was shot from the side mid-walk and walked on (or stalled) until it died.
