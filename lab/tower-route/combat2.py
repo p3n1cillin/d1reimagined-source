@@ -295,8 +295,11 @@ def main():
                     v1 = W.vital(lock) if v0 is not None else None
                     # A member under the floor or behind a wall is "in reach" too: sense116 meleed
                     # hangar squad 9, 1.7 m below the corridor, for ten minutes. Three swings with no
-                    # damage (or, with no health to read, no plate in view) skip it for 20 s.
-                    landed = v1 < v0 - 1e-4 if v0 is not None and v1 is not None else bool(plates)
+                    # damage skip it for 20 s.
+                    # Only judged where the target's health can be read. The Breach's squads report
+                    # none, and with no plate in the dark corridor every swing counted as a miss:
+                    # sense118 skipped a Dreg at 2.6 m as "out of reach" and died to it.
+                    landed = v1 < v0 - 1e-4 if v0 is not None and v1 is not None else True
                     swings = 0 if landed else swings + 1
                     if landed:
                         fired += 1; hit_at = time.time()
