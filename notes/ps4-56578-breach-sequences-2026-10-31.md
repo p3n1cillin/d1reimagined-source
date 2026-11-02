@@ -585,6 +585,26 @@ the waves to get there. Each stop along the way gave the route a fix:
   combat2 now melees out to 3 m and doesn't back off with an enemy in reach. After the Dock 13 death,
   chain2's next three walks started before the respawn and failed with "unit unavailable". Each walk
   now waits up to 90 s for a position first.
+- **sense116: the whole mission in order, unattended (07:40 to 08:37).**
+
+  | Time | Point |
+  | --- | --- |
+  | 08:03:58 | The Divide, 24 minutes after launch, with no deaths in the Breach |
+  | 08:07:30 | Dock 13, after the gate |
+  | 08:19:17 | The hangar bay (trigger 41) |
+  | 08:31:24 | All eight hangar squads at zero |
+  | 08:32:07-08:33:32 | The outro (steps 34-35, incidents 2681 and 891) |
+  | 08:33:52 | The completed profile with 900 XP and the Arcadia |
+  | 08:34:39 | Phase 7 |
+  | 08:37:15 | CONTINUE, then the Tower (165) |
+
+  The Guardian died four times in the hangar. Problems found and fixed during the run:
+  - Hangar squad 9 was in melee reach but inside the corridor wall. combat2 meleed it for ten
+    minutes, and since each swing counted as a shot, no round ended. Three swings that do no damage
+    now skip the target for 20 s.
+  - The rule against backing off with an enemy in reach let a Captain (health 3.0) kill the Guardian
+    at critical health. It now applies only to enemies of health 1.2 or less.
+  - seek.py crashed on the missing unit during a death. It now exits 3, as for a death.
 
 ## Next
 
