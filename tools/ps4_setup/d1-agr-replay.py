@@ -33,6 +33,7 @@ BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-gr
 WAVE_SQUADS = ('26,28,30,21,24,38,42,56,58', '44,47,49,51,53,55,72,74,68,76')
 JUNCTION_SQUADS = '64,68,76'
 UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'   # d1-walk.py after a death
+HURT_STOP = 0.6    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; two readings in a row)
 
 
 class Respawned(Exception):
@@ -143,7 +144,11 @@ class Replay:
             # The tripmine legs walk without stopping to fight (the stance and the mines), but the
             # corridor's Fallen killed the Guardian there three times (sense106-108): fight first.
             ('mine-stairs', corridor[0:4], 90, 1.2, 'stand', None, WAVE_SQUADS[1]),
-            ('mine-crouched', corridor[3:10], 240, 1.5, 'crouch', None, WAVE_SQUADS[1]),
+            # The crouched leg fights as it goes (walk_fighting: short stretches, a fight check
+            # between them and a hurt stop), staying crouched under the lasers. Walked without
+            # fighting, the Guardian reached the corridor's end at about 0.1 health and died there (sense115,
+            # 117-120): the squads at the end shoot down the corridor during the 27 s crawl.
+            ('mine-crouched', corridor[3:10], 240, 1.5, 'crouch', WAVE_SQUADS[1], WAVE_SQUADS[1]),
             ('mine-junction', corridor[9:], 150, 1.2, 'stand', WAVE_SQUADS[1]),
             ('junction-west', junction[4:], 330, 1.3, 'stand', WAVE_SQUADS[1]),
             ('garage', load('wall_garage_door.json'), 300, 1.0, 'stand', WAVE_SQUADS[1]),
@@ -204,7 +209,11 @@ class Replay:
                 i, chosen = self.nearest_leg(legs, upto=i), True
                 print(f'{name}: respawned; restarting from {legs[i][0]}', flush=True)
                 continue
-            i, chosen = i + 1, False
+            # The next leg may rejoin from where this one left the Guardian: it has just finished
+            # the leg before, not respawned. sense123's junction leg ended with a fight that pulled
+            # it back 18 m from junction-west's route, which then took it for a respawn and sent it
+            # back to the junction leg, again and again.
+            i, chosen = i + 1, True
         if not wait_for(self.host_log, DIVIDE_SLICE, 45):
             raise RuntimeError('No natural slice-96 crossing observed; no Divide control published')
         print('DIVIDE REACHED: verify scheduled step 16, native authority, objective and scene.', flush=True)
@@ -278,25 +287,43 @@ class Replay:
         k, lost = 0, 0
         while start < len(points) - 1:
             end = min(start + chunk, len(points) - 1)
-            attempt, stalls = 0, 0
+            attempt, stalls, hurts, under_fire = 0, 0, 0, False
             while True:
                 if stalls >= tries:
-                    raise RuntimeError(f'{name}: stretch {k} did not complete in {tries} tries; no subsequent input sent')
+                    # Not the end of the run: play_waves restarts from the nearest leg (it allows six).
+                    # sense124's crouched leg stalled three times and the whole replay stopped.
+                    print(f'{name}: stretch {k} did not complete in {tries} tries; restarting from the nearest leg', flush=True)
+                    raise Respawned(name)
                 tag = f'{name}-{k}' + (f'-retry{attempt}' if attempt else '')
                 attempt += 1
                 # Clear the way first: walking into a wave is where the Guardian died (sense105-108).
-                self.skirmish(f'{tag}-pre')
+                # Straight to the fight after a hurt stop: standing for the shield wait under fire
+                # (3 s, plus the fight's start) killed sense124 at junction-west from 0.34-0.52 health.
+                self.skirmish(f'{tag}-pre', recover=not under_fire)
+                under_fire = False
                 me = self.where()
                 near = nearest(me) if me else start
-                if me and off(me, near) > 15 and not rejoin:
+                # After a fight, only a respawn's distance (45-50 m: the chest start, the corridor's
+                # respawn) counts as one; a fight's back-offs move the Guardian 15-25 m, and sense124
+                # restarted from the corridor twice for that.
+                if me and off(me, near) > 35 and not rejoin:
                     raise Respawned(name)
                 if near >= end:
                     break
                 part = points[near:end + 1]
                 share = max(90, seconds * len(part) // len(points))
-                lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3, (), check=False)
+                lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3,
+                                       ('--hurt-stop', str(HURT_STOP)), check=False)
                 if lines and lines[-1].startswith('done '):
                     break
+                # d1-walk prints `hurt: ...` and then its usual `stopped (x, y, z)` last line.
+                if lines and any(l.startswith('hurt:') for l in lines[-3:]) and hurts < 4:
+                    # Hurt mid-walk (d1-walk --hurt-stop): fight here before walking on, which is
+                    # what the loop's pre-skirmish does. Not a stall: no sidestep, no walk back.
+                    # Four in a stretch from something the fight never finds fall to the stall path.
+                    hurts += 1
+                    under_fire = True
+                    continue
                 if not lines or UNIT_LOST in lines[-1] or 'unit changed' in lines[-1] or self.lost(lines[-1]):
                     # sense110 burned all three tries in 30 s on an unavailable unit (a reload): wait
                     # for the unit first, and count it apart from the stalls.
@@ -311,7 +338,8 @@ class Replay:
                     continue
                 # A stall: step aside, walk back a little, and come at the stretch again.
                 stalls += 1
-                self.pad(f"Hold:{'DA'[stalls % 2]}:600", 'NumPad2')
+                # No jump in the crouch-only corridor: it stands the Guardian up under the lasers.
+                self.pad(f"Hold:{'DA'[stalls % 2]}:600", *(() if self.stance == 'crouch' else ('NumPad2',)))
                 me = self.where()
                 if me:
                     back = max(nearest(me) - 2 * stalls, 0)
@@ -364,7 +392,7 @@ class Replay:
         print(f'{name}: re-arming the triggers of {current} (arming time {1 + self.rearms})', flush=True)
         self.publish(out, f're-armed {current}')
 
-    def skirmish(self, name, rounds=6, reach=45):
+    def skirmish(self, name, rounds=6, reach=45, recover=True):
         """Fight what is left of the last wave where a walk stalled.
 
         Run sense104 ended the junction wave with squad 76 still standing by the fan; the walk to
@@ -378,6 +406,12 @@ class Replay:
         """
         if not self.wave:
             return
+        # Let the shield come back before fighting: sense115 and sense117 left the crouch-only
+        # tripmine corridor at 0.12 health or less and died to the first Fallen at the junction.
+        # Standing still in the corridor costs seconds; stepping out hurt costs the leg.
+        if recover:
+            self.command(f'{name}-recover', [sys.executable, '-I', str(LAB/'health_now.py'),
+                         '--wait-above', '0.5', '--max-s', '10'], 30, check=False)
         fought, idle = False, 0
         for round_ in range(rounds):
             lines = self.command(f'{name}-skirmish-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
@@ -401,7 +435,10 @@ class Replay:
                 self.rearm(name)
                 raise Respawned(name)
             idle = idle + 1 if out and out[-1].strip() == 'bursts 0' else 0
-            if idle >= 2:                  # near but out of sight: leave it to the walk (see fight())
+            # One round with nothing in view ends the skirmish: near but out of sight, leave it to the
+            # walk (see fight()), whose hurt stop calls the fight back if it starts shooting. With
+            # two, sense123 spent 48 of its 67 rounds firing nothing (13.5 of 25.6 replay minutes).
+            if idle >= 1:
                 break
             self.command(f'{name}-skirmish-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         if fought:                         # as after a wave: the fight can move the tracked copies

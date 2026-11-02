@@ -605,9 +605,100 @@ the waves to get there. Each stop along the way gave the route a fix:
   - The rule against backing off with an enemy in reach let a Captain (health 3.0) kill the Guardian
     at critical health. It now applies only to enemies of health 1.2 or less.
   - seek.py crashed on the missing unit during a death. It now exits 3, as for a death.
+- **sense117 (08:43, from #205's branch): the hangar with no deaths.**
+  - The health reader now reads a critical sliver or a drawn empty bar. Before, it read those as
+    "no bar", meaning full health. Three of sense116's saved lost-health frames were that case.
+  - At critical health the Guardian backs off instead of fighting back.
+  - Timeline: the Divide at 09:09; Dock 13 at 09:16; the hangar bay at 09:18; all eight hangar
+    squads at zero at 09:26:59, without a death; the outro over at 09:29.
+  - The last Captain (squad 8, health 3.0) took four rounds: seek, take damage, back off and
+    recover (0.27 to 0.95), fight from 33 m out of sight, then seek again.
+  - Deaths: one at the mine junction (the corridor shield wait came after this run's replay
+    started) and two at the gate.
+- **sense118 (09:36, #205's branch): four deaths before the Divide, and what the recording showed.**
+  The window was recorded through the junction (09:51-10:03).
+  - **The junction (09:48):** the melee skip took a Breach Dreg at 2.6 m for "out of reach",
+    because Breach squads report no health and no plate showed in the dark. Fixed: swings are only
+    judged where health is readable.
+  - **The junction again (09:50):** the fight locked a wave member 50 m away and swept with nothing
+    near in its list. Something close killed it a second after the round.
+  - **Junction-west, mid-walk (09:56):** the walker stalled facing a dark wall. The damage chevron
+    pointed right, and it was shot from that side until it died.
+  - **Junction-west (10:01):** the shield wait stood 10 s at 0.12 under fire. Then three back-offs
+    pinned it against pipes facing the wall, with arc fire from the right.
+  - **Fixes:**
+    - The shield wait gives up after 3 s with no recovery.
+    - The fight takes a live enemy more than 10 m nearer than its wave member. The wave lists miss
+      some squads: the junction's 64 is not in the second wave's list.
+  - **Back-offs at critical health, sense115-118:** 20 rounds ended that way and 3 were deaths, so
+    they are not the problem.
+  - **Still open:** a walk stretch doesn't fight. A walker shot from the side keeps walking (or
+    stalls) until it dies.
+- **The tripmine corridor's end (sense119, sense120).**
+  - Every junction death came where the crouched leg ended and the Guardian stood up. sense119
+    died there at full health a moment before, so I first suspected the corridor's last laser and
+    moved the stand-up point one waypoint on.
+  - sense120 then died at the new point, after finishing the crouched walk at 0.13 health under
+    fire from 4 m. The real cause: the squads at the corridor's end shoot down it during the 27 s
+    crawl, and the crouched leg never fought.
+  - It now goes through walk_fighting with the corridor's squads, staying crouched, and the
+    waypoint change is reverted.
+- **The hurt stop, live (sense120):** d1-walk stopped junction-west at 0.38 health. But the
+  replay read only the walk's last line, `stopped (x, y, z)`, which d1-walk prints after `hurt:`,
+  so it took the stall path. Fixed, and the test now returns both lines.
+- **Sprinting chain2's moves doesn't work (sense123, reverted).** With `--sprint` the gate walks
+  ended "stuck" every time, 70 m east of pre_gate. The walker steers on the move, and at sprint
+  speed it overshot. Walking stays.
+- **Damage is not the bug.** The "half health per magazine" reading predates the aim fix (the bot
+  aimed 1.3 m low), and combat2's `vit` is a sum of region fractions, not health. Runs from
+  ending-run serve the Khvostov's full weapon-stat card, and a 25-round magazine on the HUD shows
+  it; a zero table would give 12. Plain `d1-agr-run.ps1` served a zero table (about a tenth of the
+  damage) and now serves the same card.
+- **Where a run's time goes (2 Nov afternoon).** Replay minutes to the Divide: sense116 19.5
+  (9.4 fighting, 9.0 walking); sense123 25.6 (13.5 fighting, 9.7 walking).
+  - 48 of sense123's 67 fight rounds fired nothing (the nearest enemy 10-30 m away, out of sight).
+    One empty round now ends a skirmish (was two).
+  - Walks were stop-and-go in 700 ms pulses. They now use 1.3 s pulses with more than 8 m to go and
+    no sharp corner.
+  - sense118's hangar spent 295 of 429 s moving between fights.
+  - For comparison, a human takes about 20-25 minutes for the whole mission.
+- **The bar reader and the hurt stop (sense123).** A light behind the bar's left end cut a bar
+  about three-quarters full to 0.30, and the walk stopped the same stretch four times. Fixed (the
+  fill's brightness now comes from every lit column), and a hurt stop now needs two low readings
+  below 0.3.
+- **Shooting through the floor (sense124's recording).** At junction-west the Guardian stared down
+  through the catwalk's grating at a Fallen below, which counted as "in view" for being within 8 m,
+  while another walked up and meleed it. The close-range shortcuts now need the target within 2.5 m
+  of the Guardian's height.
+- **The corridor's end (x about 491) is still the deadliest spot.** sense124 went from 0.74 health to
+  0.02 in about a second there, more like a tripmine or grenade than rifle fire. Next: record that
+  spot.
+- **Junction-west's kill spot (sense124, recorded).** Most of sense124's deaths came at waypoint
+  11 (452.0, -713.4), the top of a 2.4 m drop, in view of squads 74 and 72 below. The death screen
+  says "Guardian Down — Vandal, House of Devils". In the recording the Vandal stands in plain view
+  about 15 m ahead, lit blue by the tank, and the damage markers point straight ahead. No plate was
+  detected in that light, so combat2 took it for out of sight.
+  - Changes:
+    - a target that is aimed at and hits from straight ahead counts as in view;
+    - a back-off moves away from the damage marker;
+    - an unseen shooter gets a turn toward the marker and a burst;
+    - a walk stops at 0.6 health (two readings).
+  - Recordings: `capture/junction-west-drop.mp4` and `corridor-end.mp4` in the run folder.
+- **A fidelity gap: the Guardian's level.** A Guardian Rises is a new character's first mission,
+  played at level 1 in starter gear against level 1-2 enemies. The served Guardian is level 40 with
+  Light 385 from the start (the peer cards and the general stat table). Serving a level-1 starter
+  character (level, Light and stats from the tutorial character, not the geared one) is the 1:1
+  version. It changes the balance both ways, so it needs its own run.
 
 ## Next
 
+- Hangar deaths: three of sense116's four came inside combat2's 8 s fight-back window, at critical
+  health against squads 27-38 m away. #205 ends that window at critical health. If that isn't enough,
+  back off to the nux doorway (`gap`), not to where the last walk began in the open hangar.
+- The mine junction: sense115 and sense117 both died stepping out of the crouched tripmine corridor.
+  Each arrived at 0.12 health or less with a Fallen 0.5-2 m away, so the corridor walk costs the
+  health, not the fight. Next: before the junction's first skirmish, let the shield recover in the
+  corridor when health is low.
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
 - Run `agr-bw-steps.txt` as schedule steps, all nine triggers armed at once, with the entrances.
 - The nests' perching Fallen (`dropper1`, `crawler1`-`8`; squads 77 and 86) are placed at the

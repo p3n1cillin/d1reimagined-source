@@ -19,13 +19,41 @@ def health(img):
     # The bar's left end must be lit. 48 px was asked for at first, but at 0.10 the bar is 43 px:
     # sense108 read None (no bar: full health) there while dying.
     if lit[:20].mean() < 0.8:
-        return None
-    ref = np.median(mid[:20])
+        return sliver(a)
+    # The fill's own brightness, from every lit column: the first 20 alone were skewed by a light
+    # behind the bar's left end (sense123: 198 there, 157 along the rest), which cut a bar about
+    # three-quarters full to 0.30.
+    ref = np.median(mid[lit])
     lit &= mid > ref - 30
     # the white fill runs from the left end: health is the longest prefix that is at least 75% lit
     frac = np.cumsum(lit) / np.arange(1, len(lit) + 1)
     ok = np.nonzero((frac >= 0.75) & lit)[0]
     return float(ok.max() + 1) / (X1 - X0)
+
+
+def drawn(a):
+    """Whether the health bar is on screen at all (its outline, row 174): it hides at full health."""
+    line = a[173:176, X0:X1].mean(axis=(0, 2))
+    around = (a[166:171, X0:X1].mean(axis=(0, 2)) + a[178:183, X0:X1].mean(axis=(0, 2))) / 2
+    return ((line - around) > 8).mean() >= 0.8
+
+
+def sliver(a):
+    """A red fill too short for the 20 px test, or none, inside a drawn bar: else None (no bar).
+
+    sense116's hangar deaths read None (full health) with the bar showing 4-6 px of red, and once
+    48 px of pale red over an orange wall. The bar's outline, a row at y 174 about 30 levels
+    brighter than the rows around it across the whole bar, says a bar is drawn; the fill is the
+    red run from its left end (red over green and blue by 60 or more; the empty track is 10-35).
+    """
+    if not drawn(a):
+        return None
+    band = a[177:187, X0:X1]
+    red = (band[:, :, 0] - band[:, :, 1:].max(axis=2)).mean(axis=0) > 60
+    run = int(np.argmin(red)) if not red.all() else len(red)
+    # A drawn bar with no fill at all is at about zero (sense116's junction death): the bar only
+    # shows below full health, so at worst this misreads as a back-off, never as a full bar.
+    return run / (X1 - X0) if run >= 2 else 0.0
 
 
 def critical(img):
@@ -37,6 +65,11 @@ def critical(img):
     0.226 at a margin of 60). A far stronger sign than the bar, which is small and hides at full.
     """
     a = img.astype(int)
+    # Only with the bar on screen: at critical health it always shows (a red sliver), and red light
+    # alone is not enough. The tripmine corridor's red lasers read as critical with the bar hidden,
+    # and every walk there stopped "hurt" at full health (sense124).
+    if not drawn(a):
+        return False
     h, w = a.shape[:2]
     edge = np.ones((h, w), bool)
     edge[h // 5:4 * h // 5, w // 5:4 * w // 5] = False

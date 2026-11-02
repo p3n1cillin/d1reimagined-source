@@ -294,6 +294,8 @@ def main():
     ap.add_argument('--memory-facing', action='store_true',
                     help='steer by the forward vector read from guest memory instead of inferring it from movement')
     ap.add_argument('--keepalive', type=float, help='only keep the Guardian active for this many seconds')
+    ap.add_argument('--hurt-stop', type=float,
+                    help='stop ("hurt: ...") when the screen shows health below this fraction, so the caller fights')
     ap.add_argument('--retrack', action='store_true', help='only drop stale copies from --tracked (after a death) and rewrite it')
     ap.add_argument('--respawns', default='',
                     help='with --retrack: "x,y,z;x,y,z" respawn points to scan when the retrack keeps too few copies')
@@ -374,8 +376,34 @@ def main():
     # the same wall at the tripmine corridor, each skip restarting the limit (2.5 minutes of it).
     arrivals = 0
     progress_at, progress_n, progress_i, progress_d = time.time(), 0, i, None
+    # A walk does not fight. Shot from the side, sense118 kept walking (or stalled facing a wall)
+    # until it died; with --hurt-stop the walk stops once a second's look at the screen shows the
+    # health bar below the limit, and the caller fights before walking on.
+    hurt, hurt_at, low = None, 0.0, 0
+    if a.hurt_stop:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # d1_keys, for fight.grab
+        lab = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'lab', 'tower-route')
+        mods = []
+        for n in ('fight', 'health'):
+            spec = importlib.util.spec_from_file_location(f'walk_{n}', os.path.join(lab, f'{n}.py'))
+            m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); mods.append(m)
+        import routepaths                                                   # on sys.path via fight.py
+        hurt = (mods[0], mods[1], str(routepaths.probes() / 'walk-hurt.png'))
     while i < len(route) and time.time() < t_end:
         active(force=False)
+        if hurt and time.time() - hurt_at >= 1.0:
+            hurt_at = time.time()
+            try:
+                img = hurt[0].grab(hurt[2])
+                h = 0.0 if hurt[1].critical(img) else hurt[1].health(img)
+            except Exception:
+                h = None
+            # Two low readings in a row: the bar reader misreads now and then (sense123 read 0.30
+            # with the bar about three-quarters full, and stopped the same stretch four times).
+            low = low + 1 if h is not None and h < a.hurt_stop else 0
+            if low >= 2:
+                print(f'hurt: health {h:.2f} at wp {i}/{len(route)}')
+                break
         d_now = math.dist(here[:2], route[i][:2])
         if i != progress_i and arrivals == progress_n:
             progress_i, progress_d = i, d_now
@@ -471,7 +499,10 @@ def main():
                     continue
                 heading = None
         p0 = here
-        pad('Hold:W:350' if (sharp or d < 4) else 'Hold:W:700')
+        # Longer pulses on long straight stretches: each pulse ends in a stop to read the position, and
+        # a 700 ms pulse made the walk stop-and-go. 1300 ms covers about 5.3 m at 4.1 units/s, which
+        # still stops short of a waypoint more than 8 m away.
+        pad('Hold:W:350' if (sharp or d < 4) else 'Hold:W:1300' if d > 8 else 'Hold:W:700')
         here = position(c, tracked, p0) or p0
         step = math.dist(p0[:2], here[:2])
         if step > 0.3:

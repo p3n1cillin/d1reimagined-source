@@ -67,7 +67,10 @@ if (-not $Geared) {
     $GD = "$B\grants"
     $x += ",D1_INVENTORY=$B\inventory-tutorial,D1_ROSTER_DIR=$B\rosters-f0-tutorial"
     $x += ",D1_LOOT_GRANT=0x827dbaf0=0xd100000000000401:$GD\khvostov-3598.bin|$GD\profile-tutorial-th.bin"
-    $x += ",D1_LOOT_GRANT_ROSTER=$GD\rosters-f0-tutorial-khv"
+    # The cards served after the rifle: the Khvostov's full weapon-stat table, as ending-run serves.
+    # grants/rosters-f0-tutorial-khv carries an all-zero table, which the stat group maps to Impact 2
+    # (about a tenth of the damage; continuation notes 27 Oct).
+    $x += ",D1_LOOT_GRANT_ROSTER=$B\roster-def1200-helm-saint14"
 }
 if ($Extra) { $x += ",$Extra" }
 $served = @('-NoProfile', '-File', (Join-Path $PSScriptRoot 'd1-lab-served.ps1'), '-Name', $Name,

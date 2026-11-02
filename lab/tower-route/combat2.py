@@ -44,6 +44,20 @@ def release_all():
 YAW_RATE, PITCH_RATE = 2.76e-3, 1.2e-3          # rad per ms of right-stick hold
 HFOV, VFOV = math.radians(78), math.radians(48)   # hip view, 1936x1119 capture
 CX, CY, HALF_W, HALF_H = 968, 652, 960, 540       # reticle and half extents
+
+
+def damage_dir(img):
+    """The bearing of the damage marker, radians clockwise from straight ahead (pi/2 = from the
+    right), or None. The game draws a saturated orange-red chevron on a ring about 175 px around
+    the reticle, pointing at whoever is hitting the Guardian. sense118's recording at junction-west:
+    shot from the right while the bot swept left, facing a wall, until it died."""
+    a = img[CY - 260:CY + 260, CX - 260:CX + 260].astype(int)
+    yy, xx = np.mgrid[-260:260, -260:260]
+    r = np.hypot(xx, yy)
+    m = (a[:, :, 0] > 200) & (a[:, :, 1] < 120) & (a[:, :, 2] < 70) & (a[:, :, 0] - a[:, :, 1] > 120) & (r > 140) & (r < 230)
+    if m.sum() < 150:
+        return None
+    return math.atan2(xx[m].mean(), -yy[m].mean())
 FEET = (b'\xf6\xce\x9d\x80', b'\xe5\xcc\x9d\x80')     # body root at floor height (Dreg/Vandal, Captain)
 TORSO = (b'\x37\xe1\x9d\x80', b'\x8b\xdc\x9d\x80')    # ~1.3 m above its root while upright; floor height as a corpse
 ENEMY_HDR = FEET + TORSO
@@ -171,7 +185,9 @@ def main():
     a = ap.parse_args()
     cover = tuple(float(v) for v in a.cover.split(',')) if a.cover else None
     only = {int(x) for x in a.squads.split(',')} if a.squads else None
-    W = World(); fight.pad('NumPad4')                    # focus the emulator once
+    # Focus the window without a key: NumPad4 is Square (reload), and every fight began with a
+    # reload under fire.
+    W = World(); L('gamefocus').ensure()
     log = open(a.log, 'a') if a.log else None
     t_end, k, lock, lock_seen, strafe, last_gren, bursts = time.time() + a.seconds, 0, None, 0, 1, 0, 0
     sight = time.time()                                   # last time a plate sat near the reticle
@@ -242,6 +258,14 @@ def main():
                 lv = [x for x in W.live(objs, me) if x[0] < 35]
                 if lv:
                     lock, target = lv[0][1], lv[0][2]
+            else:
+                # A live enemy much nearer than the wave member chosen is the threat: the fight's
+                # squad list is the wave's, and the junction's squad 64 is not in it. sense118 locked
+                # a member 50 m off at the junction while something near killed it, and the
+                # recording shows fire from the side the Guardian never turned to.
+                lv = [x for x in W.live(objs, me) if x[0] < 25]
+                if lv and lv[0][0] + 10 < math.dist(me, target):
+                    lock, target = lv[0][1], lv[0][2]
             # 2. Hurt: break line of sight and recover.
             # Backing straight off and waiting in the open did not break line of sight: sense108 backed
             # off five times at the junction while health fell 0.56 -> 0.10, and died. Go back along
@@ -250,19 +274,35 @@ def main():
             # Not with a weak enemy in melee reach: walking off turns the Guardian's back on it, and a
             # melee kills it. A Captain (health 3.0; a Dreg's is about 1) is another matter: sense116
             # stood and meleed one at critical health in the hangar and died. Back off from those.
-            near = target is not None and math.dist(me[:2], target[:2]) < MELEE_RANGE
+            # Level with the Guardian: a target a floor above or below (through a catwalk's grating)
+            # is not in reach, and not in view just for being close. sense124 stared down through
+            # the junction-west catwalk at a Fallen below while another walked up and meleed it.
+            level = target is not None and abs(target[2] - me[2]) < 2.5
+            near = level and math.dist(me[:2], target[:2]) < MELEE_RANGE
             if near and isinstance(lock, tuple):
                 v = W.vital(lock)
                 near = v is None or v <= 1.2
+            # Fighting back is for health still worth spending: at critical health it ends, and the
+            # Guardian backs off anyway. Three of sense116's four hangar deaths were inside that 8 s
+            # window, at 0.0-0.3 health against squads 27-38 m away.
+            if h is not None and h <= 0.15:
+                stand_until = 0
             if h is not None and h < a.retreat_at and time.time() >= stand_until and not near:
                 worse = worse + 1 if last_retreat_h is not None and h < last_retreat_h - 0.03 else 0
                 last_retreat_h = h
-                if worse >= 2:
+                if worse >= 2 and h > 0.15:
                     stand_until, worse, last_retreat_h = time.time() + 8, 0, None
                     print(k, f'health {h:.2f}: still falling after backing off; fighting back', flush=True)
                 else:
                     release_all()
-                    if cover and math.dist(me[:2], cover) > 2.5:
+                    dd = damage_dir(img)
+                    if dd is not None:
+                        # Away from whoever is hitting it, not back along the route: sense124 backed off
+                        # to its route cover at junction-west, under the same fire, three times.
+                        away = 'S' if abs(dd) < 0.8 else 'W' if abs(dd) > 2.35 else 'A' if dd > 0 else 'D'
+                        hold(away, 1500); hold('S', 500)
+                        where_to = f'away from the hit at {math.degrees(dd):.0f} deg'
+                    elif cover and math.dist(me[:2], cover) > 2.5:
                         aim(W, (cover[0], cover[1], me[2] + 0.35), tries=3)
                         hold('W', int(min(2500, 450 * math.dist(me[:2], cover))))
                         where_to = f'back to cover ({cover[0]:.0f}, {cover[1]:.0f})'
@@ -282,16 +322,25 @@ def main():
                 ok, d = aim(W, aim_pt)
                 # Plates are hard to see in the dark hall: a hit confirmed by the target's health in the
                 # last 3 s, or a target this close, counts as in view too.
-                in_view = in_view or time.time() - hit_at < 3 or d < 8
+                in_view = in_view or time.time() - hit_at < 3 or (d < 8 and level)
+                # Aimed at it and hit from straight ahead: that is the shooter, plate or not. At
+                # junction-west squad 74 shot sense124 from 19 m in the dark (no plate showed), was
+                # skipped as out of sight, and killed it four times at (450, -714).
+                if ok and not in_view:
+                    dd = damage_dir(img)
+                    in_view = dd is not None and abs(dd) < 0.6
                 if in_view: sight, blind = time.time(), 0
-                if d < MELEE_RANGE:
+                if d < MELEE_RANGE and level:
                     v0 = W.vital(lock) if isinstance(lock, tuple) else None
                     tap('MELEE', 100); time.sleep(0.4)          # in reach: melee (R1)
                     v1 = W.vital(lock) if v0 is not None else None
                     # A member under the floor or behind a wall is "in reach" too: sense116 meleed
                     # hangar squad 9, 1.7 m below the corridor, for ten minutes. Three swings with no
-                    # damage (or, with no health to read, no plate in view) skip it for 20 s.
-                    landed = v1 < v0 - 1e-4 if v0 is not None and v1 is not None else bool(plates)
+                    # damage skip it for 20 s.
+                    # Only judged where the target's health can be read. The Breach's squads report
+                    # none, and with no plate in the dark corridor every swing counted as a miss:
+                    # sense118 skipped a Dreg at 2.6 m as "out of reach" and died to it.
+                    landed = v1 < v0 - 1e-4 if v0 is not None and v1 is not None else True
                     swings = 0 if landed else swings + 1
                     if landed:
                         fired += 1; hit_at = time.time()
@@ -339,7 +388,14 @@ def main():
             else:
                 # No lock: turn toward the radar threat or sweep, nudging forward.
                 if abs(pitch) > 0.06: hold('I' if pitch < 0 else 'K', max(25, abs(pitch) / PITCH_RATE))   # level the view
-                hold('L', 250); hold('W', 200); msg = f'{k}: no live enemy within 35 m; level and sweep'
+                dd = damage_dir(img)
+                if dd is not None:
+                    # Hit by something unseen: turn to it and fire, as a player would.
+                    hold('L' if dd > 0 else 'J', max(25, abs(dd) / YAW_RATE))
+                    key('FIRE', True); time.sleep(0.5); key('FIRE', False); fired += 1
+                    msg = f'{k}: hit from {math.degrees(dd):.0f} deg; turned and fired'
+                else:
+                    hold('L', 250); hold('W', 200); msg = f'{k}: no live enemy within 35 m; level and sweep'
                 if k % 15 == 0: tap('RELOAD')
                 idle += 1
                 if a.idle_passes and idle >= a.idle_passes:
