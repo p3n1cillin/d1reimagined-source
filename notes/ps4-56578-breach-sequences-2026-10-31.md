@@ -537,6 +537,14 @@ the waves to get there. Each stop along the way gave the route a fix:
 - **The idle guard pressed into walks and fights.** It reads `tools/ps4_setup/d1-pad-last.txt` and
   presses NumPad4, W and S after 300 s without a stamp. d1_keys stamped another folder, and combat2
   never stamped. Both stamp beside `d1-pad.ps1` now.
+- **The same drop, on cue: the main host build (issue #204).** sense111 (01:27) passed the rifle with
+  the trigger 120 fix. Then mission step 17 (trigger 108, `agr-bw-108.txt`) at 01:33:30 was followed
+  by the same drop at 01:34:02, 32 s later; sense110's was 31 s after its step 17. sense108 passed
+  that step on the 1 November 14:39 host build. So the host is rolled back to that build
+  (`d1-activity-host.DEPLOYED.txt` says which), and main's build is kept beside it. The suspects are
+  the sensor cache (#197) and #202's dependency updates; #175 and #179 don't touch these frames.
+  sense112's launch failed when the lab responder stopped before listening, a one-off. sense113
+  (01:39) runs on the old build, with its 16-18 minute start.
 
 ## Next
 
