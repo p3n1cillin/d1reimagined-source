@@ -735,6 +735,13 @@ impl ReplicateMembership {
     pub const PAH_PEER_TOKENS: usize = 0x38;
     /// 20 - the same cap as the member array.
     pub const PAH_PEER_TOKEN_CAPACITY: usize = 20;
+    /// Region record `+0x09`: ambassadorship, 1 = assigned (2 = revoking). The client takes the
+    /// ambassador's path for a PUBLIC region (`0x7791C7`: this == 1 and `+0x0A` == the local peer;
+    /// "PAH assigned ambassadorship to us"), then creates the public session. 0 leaves it waiting
+    /// to join a session nobody advertises (notes/ps4-56578-public-sessions-2026-11-02.md).
+    pub const PAH_AMBASSADORSHIP: usize = 0x09;
+    /// Region record `+0x0A`: the ambassador's peer index.
+    pub const PAH_AMBASSADOR_PEER: usize = 0x0A;
 
     /// ⭐⭐ Publish **one** PAH-tabulated region record, in slot 0, and terminate the array.
     ///
@@ -800,6 +807,12 @@ impl ReplicateMembership {
         self.image[slot0 + Self::PAH_REGION_ID..slot0 + Self::PAH_REGION_ID + 4]
             .copy_from_slice(&region_id.to_le_bytes());
         self.image[slot0 + Self::PAH_PEER_TOKENS + peer_index] = token;
+        // D1_AH_PUBLIC_AMBASSADOR=1: assign the region's ambassadorship to this peer (step 2 of
+        // the public-session plan). Set here so every re-publish path re-applies it.
+        if std::env::var("D1_AH_PUBLIC_AMBASSADOR").is_ok_and(|v| v == "1") {
+            self.image[slot0 + Self::PAH_AMBASSADORSHIP] = 1;
+            self.image[slot0 + Self::PAH_AMBASSADOR_PEER] = peer_index as u8;
+        }
         // The terminator. See the doc comment - this is load-bearing, not hygiene.
         let slot1 = Self::PAH_REGIONS + Self::PAH_REGION_STRIDE;
         self.image[slot1 + Self::PAH_REGION_ID..slot1 + Self::PAH_REGION_ID + 4]
