@@ -293,7 +293,14 @@ def main():
                     print(k, f'health {h:.2f}: still falling after backing off; fighting back', flush=True)
                 else:
                     release_all()
-                    if cover and math.dist(me[:2], cover) > 2.5:
+                    dd = damage_dir(img)
+                    if dd is not None:
+                        # Away from whoever is hitting it, not back along the route: sense124 backed off
+                        # to its route cover at junction-west, under the same fire, three times.
+                        away = 'S' if abs(dd) < 0.8 else 'W' if abs(dd) > 2.35 else 'A' if dd > 0 else 'D'
+                        hold(away, 1500); hold('S', 500)
+                        where_to = f'away from the hit at {math.degrees(dd):.0f} deg'
+                    elif cover and math.dist(me[:2], cover) > 2.5:
                         aim(W, (cover[0], cover[1], me[2] + 0.35), tries=3)
                         hold('W', int(min(2500, 450 * math.dist(me[:2], cover))))
                         where_to = f'back to cover ({cover[0]:.0f}, {cover[1]:.0f})'
