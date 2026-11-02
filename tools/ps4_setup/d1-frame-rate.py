@@ -8,8 +8,9 @@ Run sense fps-d120-game (2 November 2026) went from 120 to exactly 60.0 ticks/s 
 a restart. The emulator has to present that fast: GPU.vblank_frequency >= N (read at its start)
 and D1_FLIP_RATE=0.
 
-The engine takes at most two ticks per frame, so game time runs at real speed only while the screen
-holds at least N/2 FPS. At 120 and 41 FPS it ticked 84/s: 0.7x speed.
+The engine simulates only so many ticks a second (CPU-bound: about 70 in the mission on the lab PC,
+nearly 1000 in orbit). Past that the game slows down: at 120 in the mission it ticked 84/s, 0.7x
+real time. The emulator's D1_FPS (the project's shadPS4 fork) holds a rate with a guard.
 """
 import argparse
 import importlib.util
