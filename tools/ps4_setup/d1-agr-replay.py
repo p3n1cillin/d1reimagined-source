@@ -287,7 +287,7 @@ class Replay:
         k, lost = 0, 0
         while start < len(points) - 1:
             end = min(start + chunk, len(points) - 1)
-            attempt, stalls, hurts = 0, 0, 0
+            attempt, stalls, hurts, under_fire = 0, 0, 0, False
             while True:
                 if stalls >= tries:
                     # Not the end of the run: play_waves restarts from the nearest leg (it allows six).
@@ -297,7 +297,10 @@ class Replay:
                 tag = f'{name}-{k}' + (f'-retry{attempt}' if attempt else '')
                 attempt += 1
                 # Clear the way first: walking into a wave is where the Guardian died (sense105-108).
-                self.skirmish(f'{tag}-pre')
+                # Straight to the fight after a hurt stop: standing for the shield wait under fire
+                # (3 s, plus the fight's start) killed sense124 at junction-west from 0.34-0.52 health.
+                self.skirmish(f'{tag}-pre', recover=not under_fire)
+                under_fire = False
                 me = self.where()
                 near = nearest(me) if me else start
                 # After a fight, only a respawn's distance (45-50 m: the chest start, the corridor's
@@ -319,6 +322,7 @@ class Replay:
                     # what the loop's pre-skirmish does. Not a stall: no sidestep, no walk back.
                     # Four in a stretch from something the fight never finds fall to the stall path.
                     hurts += 1
+                    under_fire = True
                     continue
                 if not lines or UNIT_LOST in lines[-1] or 'unit changed' in lines[-1] or self.lost(lines[-1]):
                     # sense110 burned all three tries in 30 s on an unavailable unit (a reload): wait
@@ -388,7 +392,7 @@ class Replay:
         print(f'{name}: re-arming the triggers of {current} (arming time {1 + self.rearms})', flush=True)
         self.publish(out, f're-armed {current}')
 
-    def skirmish(self, name, rounds=6, reach=45):
+    def skirmish(self, name, rounds=6, reach=45, recover=True):
         """Fight what is left of the last wave where a walk stalled.
 
         Run sense104 ended the junction wave with squad 76 still standing by the fan; the walk to
@@ -405,8 +409,9 @@ class Replay:
         # Let the shield come back before fighting: sense115 and sense117 left the crouch-only
         # tripmine corridor at 0.12 health or less and died to the first Fallen at the junction.
         # Standing still in the corridor costs seconds; stepping out hurt costs the leg.
-        self.command(f'{name}-recover', [sys.executable, '-I', str(LAB/'health_now.py'),
-                     '--wait-above', '0.5', '--max-s', '10'], 30, check=False)
+        if recover:
+            self.command(f'{name}-recover', [sys.executable, '-I', str(LAB/'health_now.py'),
+                         '--wait-above', '0.5', '--max-s', '10'], 30, check=False)
         fought, idle = False, 0
         for round_ in range(rounds):
             lines = self.command(f'{name}-skirmish-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),

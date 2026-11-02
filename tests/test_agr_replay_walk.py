@@ -26,8 +26,8 @@ class Fake:
     def where(self):
         return self.at
 
-    def skirmish(self, name):
-        self.fights.append(name)
+    def skirmish(self, name, recover=True):
+        self.fights.append(name if recover else name + ' (no wait)')
 
     def write_route(self, name, points):
         return list(points)
@@ -96,7 +96,7 @@ class WalkFightingTest(unittest.TestCase):
         tags = [t for t, _ in f.walks]
         self.assertEqual(tags[:2], ['leg-0', 'leg-0-retry1'])     # no walk back
         self.assertFalse(f.pads)                                  # no sidestep
-        self.assertEqual(f.fights[:2], ['leg-0-pre', 'leg-0-retry1-pre'])
+        self.assertEqual(f.fights[:2], ['leg-0-pre', 'leg-0-retry1-pre (no wait)'])   # straight to the fight
         self.assertEqual(f.at, LINE[-1])
 
     def test_endless_hurt_falls_to_the_stall_path(self):
