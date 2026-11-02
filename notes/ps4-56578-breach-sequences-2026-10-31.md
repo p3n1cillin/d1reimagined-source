@@ -506,6 +506,15 @@ the waves to get there. Each stop along the way gave the route a fix:
   (rec3) shows the critical-health screen: the frame's edges go red. That is now the strongest
   low-health signal combat2 has (`health.critical`).
 
+- **sense109 (2 November, 00:39).** This was the first run with the host built from main (sensor
+  cache, #197). It built and cached 78 lists in about 18 minutes and reached gameplay at 00:58.
+  Within two minutes, at the start of the enter-the-Wall walk, the client halted itself
+  (`RELEASE_VHALT`, "hitch detected … in_world … job name: 'network_update' … stalled") and the
+  emulator exited on the ud2 after its crash report. Of all the earlier crash reports, only run
+  agr-obj3 (25 October, in the prologue) stalled on `network_update`. The October `network_send`
+  halts were the Windows sendmsg bug, fixed since. So it is rare and predates this host. sense110
+  relaunched the same setup with the cache warm.
+
 ## Next
 
 - Squad tasks: how `set_task(name)` reaches the client (SquadAuth's task fields).
