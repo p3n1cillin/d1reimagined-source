@@ -258,7 +258,11 @@ def main():
             # Not with a weak enemy in melee reach: walking off turns the Guardian's back on it, and a
             # melee kills it. A Captain (health 3.0; a Dreg's is about 1) is another matter: sense116
             # stood and meleed one at critical health in the hangar and died. Back off from those.
-            near = target is not None and math.dist(me[:2], target[:2]) < MELEE_RANGE
+            # Level with the Guardian: a target a floor above or below (through a catwalk's grating)
+            # is not in reach, and not in view just for being close. sense124 stared down through
+            # the junction-west catwalk at a Fallen below while another walked up and meleed it.
+            level = target is not None and abs(target[2] - me[2]) < 2.5
+            near = level and math.dist(me[:2], target[:2]) < MELEE_RANGE
             if near and isinstance(lock, tuple):
                 v = W.vital(lock)
                 near = v is None or v <= 1.2
@@ -295,9 +299,9 @@ def main():
                 ok, d = aim(W, aim_pt)
                 # Plates are hard to see in the dark hall: a hit confirmed by the target's health in the
                 # last 3 s, or a target this close, counts as in view too.
-                in_view = in_view or time.time() - hit_at < 3 or d < 8
+                in_view = in_view or time.time() - hit_at < 3 or (d < 8 and level)
                 if in_view: sight, blind = time.time(), 0
-                if d < MELEE_RANGE:
+                if d < MELEE_RANGE and level:
                     v0 = W.vital(lock) if isinstance(lock, tuple) else None
                     tap('MELEE', 100); time.sleep(0.4)          # in reach: melee (R1)
                     v1 = W.vital(lock) if v0 is not None else None
