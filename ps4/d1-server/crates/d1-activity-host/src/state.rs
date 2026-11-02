@@ -113,6 +113,12 @@ pub enum InstanceState {
 /// something, anything, on the AH connection** more often than this.
 pub const HOST_SILENCE_LIMIT_MS: u64 = 20_000 + 500;
 
+/// ⭐ The client's drought line: when the activity-host connection has received nothing for this
+/// long, the client prints its `investment_bap_manager:drought` report and warns. Measured in run
+/// sense126 (2 November 2026): 68 of its 71 drought reports had that connection idle 5 s, the rest
+/// 10-12 s, never less. The heartbeat must stay well under it.
+pub const CLIENT_DROUGHT_WARN_MS: u64 = 5_000;
+
 /// Why we stopped hosting.
 ///
 /// `[R]` The client has an 11-entry `activity_host_boot_reason` table (`0x263CF30`, fn `0x2A4BB0`)
@@ -479,16 +485,17 @@ impl ActivityInstance {
 
     /// ⭐⭐ How long the Activity Host may stay silent before speaking unprompted.
     ///
-    /// A quarter of [`HOST_SILENCE_LIMIT_MS`]. Three things went into the number and none of them
-    /// is taste:
+    /// Under [`CLIENT_DROUGHT_WARN_MS`], with room: the worst gap is this plus the listener's poll
+    /// (a quarter of it), 2.5 s against the client's 5 s warning.
     ///
-    /// * The ceiling is **measured**, not guessed - 20,500 ms, from the client's own log line.
-    /// * The margin has to survive *three* consecutive lost or delayed heartbeats, because the
-    ///   consequence of one late frame is the whole session, and the cost of an early one is 154
-    ///   bytes.
-    /// * It must be larger than the client's keepalive cadence (2 s) so the heartbeat is driven by
-    ///   an event that certainly happens, rather than needing a timer thread of its own.
-    pub const HOST_HEARTBEAT_MS: u64 = HOST_SILENCE_LIMIT_MS / 4;
+    /// * The old value, a quarter of [`HOST_SILENCE_LIMIT_MS`] (5,125 ms), kept the session alive
+    ///   but crossed the client's drought line on every quiet stretch. In run sense126 all 71 of the
+    ///   client's drought reports had the activity-host connection idle 5 s or more, and the player
+    ///   saw "Contacting Destiny Servers" at random.
+    /// * It no longer needs to exceed the client's 2 s keepalive: the listener ticks on its own read
+    ///   timeout, so the heartbeat fires without client traffic.
+    /// * Cost: one 154-byte activity-state frame every 2 s.
+    pub const HOST_HEARTBEAT_MS: u64 = 2_000;
 
     pub fn new(ah_id: u64, session_id: impl Into<String>, now: Instant) -> Self {
         let keepalive_interval = Duration::from_millis(u64::from(JoinResult::DEFAULT_KEEPALIVE_MS));
@@ -2149,6 +2156,16 @@ mod tests {
             i.state(),
             InstanceState::Evicted { reason: EvictionReason::ConnectivityFailure }
         );
+    }
+
+    /// The heartbeat keeps the client under its 5 s drought line (run sense126: 71 drought reports
+    /// and random "Contacting Destiny Servers" at the old 5,125 ms).
+    #[test]
+    fn the_heartbeat_keeps_the_client_under_its_drought_line() {
+        // The worst gap is a heartbeat plus one listener poll (a quarter of it).
+        let worst = ActivityInstance::HOST_HEARTBEAT_MS + ActivityInstance::HOST_HEARTBEAT_MS / 4;
+        assert!(worst * 2 <= CLIENT_DROUGHT_WARN_MS, "worst gap {worst} ms is not half the 5 s drought line");
+        assert!(CLIENT_DROUGHT_WARN_MS < HOST_SILENCE_LIMIT_MS);
     }
 
     /// A `clients` control line is built off the tick (run sense98: a 30-state list built on it
