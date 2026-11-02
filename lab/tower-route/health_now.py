@@ -4,7 +4,8 @@
     python -I health_now.py [--wait-above 0.9 --max-s 10]
 
 With --wait-above it polls until health is above that fraction (or the bar hides) or --max-s runs
-out, and prints the last reading. The replay calls it before a fight: sense115 and sense117 stepped
+out, and prints the last reading. It gives up after 3 s with no recovery (the Guardian is under
+fire). The replay calls it before a fight: sense115 and sense117 stepped
 out of the tripmine corridor at 0.12 health or less and died to the first Fallen they met.
 """
 import argparse
@@ -39,10 +40,17 @@ def main():
     import routepaths
     path = str(routepaths.probes() / 'health-now.png')
     label, h = reading(fight, hp, path)
-    t_end = time.time() + a.max_s
+    t0, h0 = time.time(), h
+    t_end = t0 + a.max_s
     while a.wait_above is not None and h <= a.wait_above and time.time() < t_end:
         time.sleep(1.0)
         label, h = reading(fight, hp, path)
+        # Only wait while the shield is coming back. Under fire it doesn't, and standing still
+        # is the worst place to be: sense118 waited 10 s at 0.12 in the junction-west and died.
+        # The fight that follows backs off to cover instead.
+        if time.time() - t0 >= 3 and h <= h0 + 0.05:
+            label += ' (not recovering: under fire)'
+            break
     print(label, flush=True)
 
 
