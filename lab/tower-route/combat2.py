@@ -321,6 +321,12 @@ def main():
                 # Plates are hard to see in the dark hall: a hit confirmed by the target's health in the
                 # last 3 s, or a target this close, counts as in view too.
                 in_view = in_view or time.time() - hit_at < 3 or (d < 8 and level)
+                # Aimed at it and hit from straight ahead: that is the shooter, plate or not. At
+                # junction-west squad 74 shot sense124 from 19 m in the dark (no plate showed), was
+                # skipped as out of sight, and killed it four times at (450, -714).
+                if ok and not in_view:
+                    dd = damage_dir(img)
+                    in_view = dd is not None and abs(dd) < 0.6
                 if in_view: sight, blind = time.time(), 0
                 if d < MELEE_RANGE and level:
                     v0 = W.vital(lock) if isinstance(lock, tuple) else None
