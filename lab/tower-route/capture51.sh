@@ -12,12 +12,12 @@ echo "$(date +%H:%M:%S) Dock 13: recording"
 (cd $REPO && python -I tools/ps4_setup/d1-record.py --out $C/$R/capture/ending.mp4 --seconds 2400 --stop-file $STOP > $C/$R/capture/ending-record.log 2>&1 &)
 until sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "control: sensor clients $F/mission/agr-postgame-phase7.draft.txt"; do sleep 3; done
 echo "$(date +%H:%M:%S) phase 7 published"
-sleep 25
+sleep 10   # the post-game screens settle; a player moves on in seconds (was 25)
 python -c "
 import importlib.util,ctypes,time
 s=importlib.util.spec_from_file_location('gf','$SW/gamefocus.py');gf=importlib.util.module_from_spec(s);s.loader.exec_module(gf)
 u=ctypes.WinDLL('user32')
 def tap(vk):
     gf.ensure(); u.keybd_event(vk,u.MapVirtualKeyW(vk,0),0,None); time.sleep(0.15); u.keybd_event(vk,u.MapVirtualKeyW(vk,0),2,None)
-time.sleep(12); tap(0x55); time.sleep(14); tap(0x55); time.sleep(12); tap(0x55); time.sleep(10)" 2>&1 | tail -1
+time.sleep(6); tap(0x55); time.sleep(6); tap(0x55); time.sleep(6); tap(0x55); time.sleep(6)" 2>&1 | tail -1
 touch $STOP; echo "$(date +%H:%M:%S) recording stopped"; sleep 30; tail -3 $C/$R/capture/ending-record.log
