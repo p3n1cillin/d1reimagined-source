@@ -654,6 +654,25 @@ the waves to get there. Each stop along the way gave the route a fix:
   ending-run serve the Khvostov's full weapon-stat card, and a 25-round magazine on the HUD shows
   it; a zero table would give 12. Plain `d1-agr-run.ps1` served a zero table (about a tenth of the
   damage) and now serves the same card.
+- **Where a run's time goes (2 Nov afternoon).** Replay minutes to the Divide: sense116 19.5
+  (9.4 fighting, 9.0 walking); sense123 25.6 (13.5 fighting, 9.7 walking).
+  - 48 of sense123's 67 fight rounds fired nothing (the nearest enemy 10-30 m away, out of sight).
+    One empty round now ends a skirmish (was two).
+  - Walks were stop-and-go in 700 ms pulses. They now use 1.3 s pulses with more than 8 m to go and
+    no sharp corner.
+  - sense118's hangar spent 295 of 429 s moving between fights.
+  - For comparison, a human takes about 20-25 minutes for the whole mission.
+- **The bar reader and the hurt stop (sense123).** A light behind the bar's left end cut a bar
+  about three-quarters full to 0.30, and the walk stopped the same stretch four times. Fixed (the
+  fill's brightness now comes from every lit column), and a hurt stop now needs two low readings
+  below 0.3.
+- **Shooting through the floor (sense124's recording).** At junction-west the Guardian stared down
+  through the catwalk's grating at a Fallen below, which counted as "in view" for being within 8 m,
+  while another walked up and meleed it. The close-range shortcuts now need the target within 2.5 m
+  of the Guardian's height.
+- **The corridor's end (x about 491) is still the deadliest spot.** sense124 went from 0.74 health to
+  0.02 in about a second there, more like a tripmine or grenade than rifle fire. Next: record that
+  spot.
 
 ## Next
 
