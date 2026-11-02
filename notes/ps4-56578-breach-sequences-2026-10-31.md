@@ -634,6 +634,18 @@ the waves to get there. Each stop along the way gave the route a fix:
     they are not the problem.
   - **Still open:** a walk stretch doesn't fight. A walker shot from the side keeps walking (or
     stalls) until it dies.
+- **The tripmine corridor's end (sense119, sense120).**
+  - Every junction death came where the crouched leg ended and the Guardian stood up. sense119
+    died there at full health a moment before, so I first suspected the corridor's last laser and
+    moved the stand-up point one waypoint on.
+  - sense120 then died at the new point, after finishing the crouched walk at 0.13 health under
+    fire from 4 m. The real cause: the squads at the corridor's end shoot down it during the 27 s
+    crawl, and the crouched leg never fought.
+  - It now goes through walk_fighting with the corridor's squads, staying crouched, and the
+    waypoint change is reverted.
+- **The hurt stop, live (sense120):** d1-walk stopped junction-west at 0.38 health. But the
+  replay read only the walk's last line, `stopped (x, y, z)`, which d1-walk prints after `hurt:`,
+  so it took the stall path. Fixed, and the test now returns both lines.
 
 ## Next
 
