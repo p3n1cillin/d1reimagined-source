@@ -605,6 +605,16 @@ the waves to get there. Each stop along the way gave the route a fix:
   - The rule against backing off with an enemy in reach let a Captain (health 3.0) kill the Guardian
     at critical health. It now applies only to enemies of health 1.2 or less.
   - seek.py crashed on the missing unit during a death. It now exits 3, as for a death.
+- **sense117 (08:43, from #205's branch): the hangar with no deaths.**
+  - The health reader now reads a critical sliver or a drawn empty bar. Before, it read those as
+    "no bar", meaning full health. Three of sense116's saved lost-health frames were that case.
+  - At critical health the Guardian backs off instead of fighting back.
+  - Timeline: the Divide at 09:09; Dock 13 at 09:16; the hangar bay at 09:18; all eight hangar
+    squads at zero at 09:26:59, without a death; the outro over at 09:29.
+  - The last Captain (squad 8, health 3.0) took four rounds: seek, take damage, back off and
+    recover (0.27 to 0.95), fight from 33 m out of sight, then seek again.
+  - Deaths: one at the mine junction (the corridor shield wait came after this run's replay
+    started) and two at the gate.
 
 ## Next
 
