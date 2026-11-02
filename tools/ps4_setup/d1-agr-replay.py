@@ -209,7 +209,11 @@ class Replay:
                 i, chosen = self.nearest_leg(legs, upto=i), True
                 print(f'{name}: respawned; restarting from {legs[i][0]}', flush=True)
                 continue
-            i, chosen = i + 1, False
+            # The next leg may rejoin from where this one left the Guardian: it has just finished
+            # the leg before, not respawned. sense123's junction leg ended with a fight that pulled
+            # it back 18 m from junction-west's route, which then took it for a respawn and sent it
+            # back to the junction leg, again and again.
+            i, chosen = i + 1, True
         if not wait_for(self.host_log, DIVIDE_SLICE, 45):
             raise RuntimeError('No natural slice-96 crossing observed; no Divide control published')
         print('DIVIDE REACHED: verify scheduled step 16, native authority, objective and scene.', flush=True)
