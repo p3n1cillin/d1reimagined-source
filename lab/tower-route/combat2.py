@@ -247,8 +247,13 @@ def main():
             # off five times at the junction while health fell 0.56 -> 0.10, and died. Go back along
             # the route instead (--cover, where the Guardian came from), and if health still falls
             # over two back-offs, stand and return fire for a while: waiting under fire only loses.
-            # Not with an enemy in melee reach: walking off turns the Guardian's back on it. Melee it.
+            # Not with a weak enemy in melee reach: walking off turns the Guardian's back on it, and a
+            # melee kills it. A Captain (health 3.0; a Dreg's is about 1) is another matter: sense116
+            # stood and meleed one at critical health in the hangar and died. Back off from those.
             near = target is not None and math.dist(me[:2], target[:2]) < MELEE_RANGE
+            if near and isinstance(lock, tuple):
+                v = W.vital(lock)
+                near = v is None or v <= 1.2
             if h is not None and h < a.retreat_at and time.time() >= stand_until and not near:
                 worse = worse + 1 if last_retreat_h is not None and h < last_retreat_h - 0.03 else 0
                 last_retreat_h = h
