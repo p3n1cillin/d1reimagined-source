@@ -35,6 +35,7 @@ def main():
     ap.add_argument('--item', required=True); ap.add_argument('--soid', required=True)
     ap.add_argument('--responder-log', help='the run\'s responder.log, to report the 402 and its result')
     a = ap.parse_args()
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')   # the responder log has emoji; a cp1252 console can't print them
     out = os.path.join(a.run_dir, 'dismantle'); os.makedirs(out, exist_ok=True)
     subprocess.run([sys.executable, '-I', os.path.join(HERE, 'push_profile.py'), a.profile, '--item', a.item, '--soid', a.soid], check=True)
     time.sleep(3)
