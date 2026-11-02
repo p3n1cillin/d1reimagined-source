@@ -5,7 +5,10 @@ There are two ways to help. Most contributions need **no game files at all**.
 ## 1. Without game files (about 15 minutes)
 
 You need Git, Python 3.14 and, for the Rust services, [Rust](https://rustup.rs) with `protoc`
-(`apt install protobuf-compiler`, `brew install protobuf` or `winget install protobuf`).
+(`apt install protobuf-compiler`, `brew install protobuf` or `winget install protobuf`) and libclang,
+which the Unicorn CPU emulator's bindings are generated with (`apt install libclang-dev`, Xcode's
+command-line tools, or `winget install LLVM.LLVM`). On Windows, if the build stops with "Unable to
+find libclang", set `LIBCLANG_PATH` to LLVM's `bin` folder.
 
 ```sh
 git clone https://github.com/<you>/d1reimagined-source   # your fork
