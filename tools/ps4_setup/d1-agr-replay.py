@@ -433,6 +433,8 @@ class Replay:
                          '--seconds', '30', '--squads', self.wave,
                          *(['--cover', f'{cover[0]:.1f},{cover[1]:.1f}'] if cover else []),
                          '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
+            if self.waves and out and 'unit changed (death)' not in out[-1] and self.died_quietly(out, me):
+                out = out + ['unit changed (death)']
             if self.waves and out and 'unit changed (death)' in out[-1]:
                 # Died in the fight (sense108, before the junction leg): retrack and re-arm now, and
                 # let play_waves restart from the leg nearest the respawn.
@@ -646,6 +648,17 @@ class Replay:
             me = self.where()
         a = min(range(len(route)), key=lambda k: math.dist(route[k][:2], me[:2])) if me else 0
         return route[a:]
+
+    def died_quietly(self, out, before):
+        """A death at the very end of a fight round, after its last reading: the round ends with
+        `bursts N`, not combat2's unit-changed stop. sense125's junction-west round read health 0.00
+        and ended; the next leg started 66 m away at the corridor's respawn, standing, and walked
+        into the crouch-only crawl for two minutes. Checked only when the round ended critical."""
+        healths = [float(m) for l in out for m in re.findall(r'health (\d+\.\d+)', l)]
+        if not healths or healths[-1] > 0.15 or not before:
+            return False
+        me = self.where()
+        return bool(me) and math.dist(me[:2], before[:2]) > 30
 
     def where(self):
         """The Guardian's position from memory (lab/tower-route/where.py), or None."""

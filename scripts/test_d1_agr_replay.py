@@ -244,6 +244,35 @@ class HostCrashRepair(unittest.TestCase):
             self.assertEqual(replay.rejoined(host, 1, client, 0, seconds=0), 21)
 
 
+class QuietDeath(unittest.TestCase):
+    """sense125: a fight round ended at health 0.00 with `bursts 0`, and the Guardian had respawned."""
+
+    def player(self, root, at):
+        p = replay.Replay(root, root/'host', root/'garage', root/'pad')
+        return p, patch.object(p, 'where', return_value=at)
+
+    def test_critical_and_far_from_the_rounds_start_is_a_death(self):
+        with tempfile.TemporaryDirectory() as d:
+            p, where = self.player(Path(d), [504.2, -721.4, 15.3])
+            with where:
+                self.assertTrue(p.died_quietly(['6 health 0.00: back to cover (463, -713) and recover', 'bursts 0'],
+                                               [437.9, -713.6, 12.3]))
+
+    def test_a_back_off_is_not_a_death(self):
+        with tempfile.TemporaryDirectory() as d:
+            p, where = self.player(Path(d), [455.0, -713.0, 12.3])
+            with where:
+                self.assertFalse(p.died_quietly(['1 health 0.09: back to cover', 'bursts 0'], [437.9, -713.6, 12.3]))
+
+    def test_healthy_rounds_are_not_checked(self):
+        with tempfile.TemporaryDirectory() as d:
+            p, where = self.player(Path(d), [504.2, -721.4, 15.3])
+            with where as w:
+                self.assertFalse(p.died_quietly(['3: lock 1 d 30 aimed True plates 1 health 0.83', 'bursts 4'],
+                                                [437.9, -713.6, 12.3]))
+                w.assert_not_called()
+
+
 class SchedulePromotion(unittest.TestCase):
     def test_preserves_prior_timing_and_incident_payload(self):
         with tempfile.TemporaryDirectory() as directory:
