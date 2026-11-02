@@ -154,10 +154,12 @@ and the sell screen has to be found from that side.
   held □ in the social Tower, with an empty stock. In the PvE Tower (through 165), approaching him
   opened nothing (30 October).
 
-> **Correction (2 November):** the game has no vendor refunds to aim for. Players get value back for
+> **Correction (2 November, revised):** refunds were narrower than this note assumed. Eververse
+> (Tess Everis) purchases could be returned for Silver within about 15 minutes (Bungie's FAQ, 21 October
+> 2015); nothing shows ordinary vendors such as Eva offering them. Otherwise, players get value back for
 > gear by dismantling it, for materials or Glimmer depending on the item. The client's refund code
-> below (905, refund receipts) is unused by the game as played, and the refund records the server now
-> sends (#167) are harmless but not needed. Dismantling is the path to serve next.
+> below (905, refund receipts) serves Tess's store. The refund records the server now sends after Eva's
+> purchases (#167) are harmless but not needed. Dismantling is the path to serve next.
 
 ## Eva and refunds (run sense88, 1 November)
 
