@@ -18,11 +18,7 @@ fight() { timeout $(( $1 + 60 )) python -u $S/combat2.py --seconds $1 ${2:+--squ
 here() { for k in $(seq 1 18); do
   COVER=$(python $S/where.py 2>/dev/null | grep -E "^-?[0-9.]+,-?[0-9.]+," | tail -1 | cut -d, -f1,2)
   [ -n "$COVER" ] && [ "$COVER" != "0.0,0.0" ] && return; left && return; sleep 5; done; COVER=; }
-# Sprint between nodes (6.6 units/s against 4.1 walking), except through the NUX door to the bay,
-# which the Dock 13 notes say to walk. Sprint never overlaps fight input here: every walk and fight
-# ends with rel (sprint plus fight input once set off a 10 s third-person pose).
-go() { here; local sp=--sprint; case $1 in nux|bay|gap) sp=;; esac
-  echo "  nav $1: $(timeout 260 python -u $S/nav.py $1 --max-s 200 $sp 2>&1 | grep -v shadPS4 | tail -1)"; rel; }
+go() { here; echo "  nav $1: $(timeout 260 python -u $S/nav.py $1 --max-s 200 2>&1 | grep -v shadPS4 | tail -1)"; rel; }
 stage() { echo "$(date +%H:%M:%S) $1"; }
 stage "start: squads $(python $S/alive.py $H 0x9243dffb)"
 for i in $(seq 1 10); do                      # gate fight until the gate squads (17-19) are down
