@@ -2,12 +2,14 @@
 # XP + ship run (Codex's collector timing): while the profile activity is still ffff, push active164/XP0 (collector
 # target 2); at Dock 13 push active164/XP900 (sample recorded in stage 2); after the outro push the completed profile
 # with XP900 and the owned Arcadia plus its inventory item (PR #81 responder); then scoreboard, @phase 7, tour.
-# Usage: postgame5.sh RUNNAME [SCOREBOARD_LIST]
+# Usage: postgame5.sh RUNNAME [SCOREBOARD_LIST] [PROFILE_DIR]
+# PROFILE_DIR holds the pushed profiles and the Arcadia item (default: the fixtures' postgame folder),
+# e.g. a new Guardian's completion record from d1-new-guardian-profiles.py.
 S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd); REPO=$(cd "$S/../.." && pwd)
 SW=$(cd "$S" && pwd -W)   # the same folder as Windows Python reads it, for paths inside python -c code
 C=$(python "$REPO/tools/ps4_setup/d1paths.py" staging); F=$(python "$REPO/tools/ps4_setup/d1paths.py" fixtures)
-P=$F/postgame
-SB=${2:-$P/agr-postgame-scoreboard-arcadia-ratio30.draft.txt}
+SB=${2:-$F/postgame/agr-postgame-scoreboard-arcadia-ratio30.draft.txt}
+P=${3:-$F/postgame}
 grab() { python -c "
 import importlib.util
 s=importlib.util.spec_from_file_location('fight','$SW/fight.py');f=importlib.util.module_from_spec(s);s.loader.exec_module(f)
