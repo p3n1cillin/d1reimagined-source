@@ -378,6 +378,11 @@ class Replay:
         """
         if not self.wave:
             return
+        # Let the shield come back before fighting: sense115 and sense117 left the crouch-only
+        # tripmine corridor at 0.12 health or less and died to the first Fallen at the junction.
+        # Standing still in the corridor costs seconds; stepping out hurt costs the leg.
+        self.command(f'{name}-recover', [sys.executable, '-I', str(LAB/'health_now.py'),
+                     '--wait-above', '0.5', '--max-s', '10'], 30, check=False)
         fought, idle = False, 0
         for round_ in range(rounds):
             lines = self.command(f'{name}-skirmish-target-{round_}', [sys.executable, '-I', str(LAB/'target.py'),
