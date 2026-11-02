@@ -124,6 +124,15 @@ class SquadTrackingTests(unittest.TestCase):
             p.put(address, fmt, value)
             self.assertEqual(reader.snapshot()['targets'], [])
 
+    def test_a_member_placed_by_its_own_state_is_a_target(self):
+        # +0x50 holds the authored member's handle instead of -1 (a mission script's enter(), #193).
+        p, reader, a = fixture()
+        p.put(a['member'] + 0x50, 'I', 0x3AFA2094)
+        targets = reader.snapshot()['targets']
+        self.assertEqual(len(targets), 1)
+        self.assertTrue(targets[0]['named'])
+        self.assertFalse(targets[0]['active'])
+
     def test_recycled_pair_and_object_are_diagnostics(self):
         for key, offset, value in (('serial_at', 0, 99), ('body', 0x24, 99)):
             p, reader, a = fixture()

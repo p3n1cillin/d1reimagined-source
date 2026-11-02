@@ -1,6 +1,6 @@
 """Write the Breach's Fallen as the mission script places them: one sensor list per player trigger.
 
-    python -I d1-breach-waves.py BASE_LIST OUT_DIR [--gen G] [--count N] [--timeout S]
+    python -I d1-breach-waves.py BASE_LIST OUT_DIR [--gen G] [--count N] [--timeout S] [--overlay LIST]
 
 BASE_LIST is the list served before the waves, normally `agr-b-graveyard.txt`. OUT_DIR gets:
 - `agr-bw-armed.txt`: every wave trigger armed (the script places no squad before its first trigger:
@@ -13,6 +13,10 @@ The waves are Blam Network's Fukugen Daihon reconstruction of `enc_breach_m0.es`
 (https://github.com/Blam-Network/tiger); see notes/ps4-56578-breach-sequences-2026-10-31.md.
 Each `sleep_until` on a trigger places squads, and the trigger reports reach the host as incident
 3403 (`^G/0x1D/I` steps).
+
+`--overlay LIST` carries every row in which LIST differs from BASE_LIST into all the lists. The
+unattended route uses it for the garage door (`breach-prop3-only.txt` opens prop 3), which it would
+otherwise publish as a control list over the waves.
 
 Each list is the whole state, so later lists carry the earlier waves:
 - A squad that has had its wave keeps its generation, with one entry of count 0 (an explicit zero:
@@ -112,6 +116,18 @@ def render(base_lines, squads, triggers, members=None):
     return ''.join(out)
 
 
+def overlay(base_lines, other_lines):
+    """BASE with every row that differs in OTHER replaced by OTHER's (same rows, same order)."""
+    if len(base_lines) != len(other_lines):
+        raise SystemExit('the overlay list must have the same rows as the base list')
+    out = []
+    for a, b in zip(base_lines, other_lines):
+        if a.split()[:3] != b.split()[:3]:
+            raise SystemExit(f'the overlay list differs in its rows: {a.split()[:3]} against {b.split()[:3]}')
+        out.append(b if a.split() != b.split() else a)
+    return out
+
+
 def build(base_lines, gen=2, count=1, entrances=True):
     """[(name, text)]: the armed list, then one per wave."""
     live = lambda: squad_states.squad(gen, count)
@@ -150,12 +166,17 @@ def main():
     ap.add_argument('out_dir')
     ap.add_argument('--gen', type=int, default=2, help='generation for every Breach squad (default 2)')
     ap.add_argument('--count', type=int, default=1, help='desired members per squad (default 1)')
-    ap.add_argument('--timeout', type=int, default=300, help='seconds each wave waits for its trigger')
+    # 900: fighting each stretch, sense108 took over five minutes from one wave trigger to the next,
+    # and 300 s served the corridor's waves on their timeouts before the Guardian got there.
+    ap.add_argument('--timeout', type=int, default=900, help='seconds each wave waits for its trigger')
+    ap.add_argument('--overlay', help='a list whose differences from BASE every list carries (e.g. the garage door)')
     ap.add_argument('--no-entrances', action='store_true', help='squads only: no enter() command scripts')
     a = ap.parse_args()
     out = Path(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     base = Path(a.base).read_text().splitlines(keepends=True)
+    if a.overlay:
+        base = overlay(base, Path(a.overlay).read_text().splitlines(keepends=True))
     for name, text in build(base, a.gen, a.count, not a.no_entrances):
         (out / name).write_text(text, newline='\n')
     (out / 'agr-bw-steps.txt').write_text(steps(a.timeout), newline='\n')

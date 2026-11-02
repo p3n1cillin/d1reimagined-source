@@ -137,9 +137,15 @@ class SquadReader:
         ent = data + (handle & 0x1FFF) * stride
         raw = p.read(ent, 0x58)
         _require(struct.unpack_from('<I', raw, 0x38)[0] == handle, 'member identity mismatch')
-        active = struct.unpack_from('<i', raw, 0x50)[0] == -1
-        result = {'member_handle': handle, 'active': active, 'parts': [], 'health': None}
-        if not active:
+        binding = struct.unpack_from('<I', raw, 0x50)[0]
+        active = binding == 0xFFFFFFFF
+        # A member placed by its own state (a mission script's enter(), PR #193) keeps a handle to its
+        # authored member at +0x50 instead of -1, so the creation counter leaves it out; it is just as
+        # live. Run sense108: the Breach's entered Fallen were in their squads' lists, never targeted.
+        # A handle carries a serial above its 13-bit index (0x3AFA2094); small values are not bindings.
+        named = binding != 0xFFFFFFFF and binding >> 13 != 0
+        result = {'member_handle': handle, 'active': active, 'named': named, 'parts': [], 'health': None}
+        if not (active or named):
             return result
         # 0x138190, the udt-6 squad-count predicate. The retail missing-state
         # fallback returns true; do not promote that permissive path to a target.
@@ -231,7 +237,7 @@ class SquadReader:
                      (p.read(comp + 0x27C, n * 8) if n else b'') == pairs, 'squad list changed')
             squads.append(row)
             for member in row['members']:
-                if member['active'] and member.get('sense_matches') and member['parts']:
+                if (member['active'] or member.get('named')) and member.get('sense_matches') and member['parts']:
                     targets.append({'group': h, 'squad': index, **member})
         _require(self.content() == identity, 'current content changed')
         return {'unix': time.time(), 'content_index': identity[0], 'squads': squads, 'targets': targets}

@@ -15,6 +15,24 @@ CX, CY, R_IN, R_OUT = 185, 189, 14, 95   # radar centre and the ring searched, f
 
 
 def grab(path):
+    """The shadPS4 window as an RGB int array, also saved to `path`.
+
+    In-process (0.02 s, plus the PNG): d1-shot.ps1 took 1.0 s a frame (a PowerShell start, an
+    Add-Type compile and a 400 ms wait for focus), so every combat pass saw the fight a second late.
+    The script is the fallback when the in-process grab fails."""
+    try:
+        import ctypes, ctypes.wintypes as wt
+        from PIL import ImageGrab
+        import d1_keys
+        h = d1_keys._window()
+        if h and d1_keys._focus(h):
+            r = wt.RECT()
+            ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
+            im = ImageGrab.grab((r.left, r.top, r.right, r.bottom), all_screens=True).convert('RGB')
+            im.save(path, compress_level=1)
+            return np.asarray(im).astype(int)
+    except Exception:
+        pass
     subprocess.run(['powershell', '-NoProfile', '-File', SHOT, '-Out', path], capture_output=True)
     return np.asarray(Image.open(path).convert('RGB')).astype(int)
 
@@ -38,6 +56,12 @@ def enemy_angle(img):
 
 
 def pad(keys):
+    try:
+        import d1_keys                  # in-process (d1-walk does the same); the script is the fallback
+        d1_keys.press(keys)
+        return
+    except Exception:
+        pass
     subprocess.run(['powershell', '-NoProfile', '-File', PAD, '-Keys', keys], capture_output=True)
 
 

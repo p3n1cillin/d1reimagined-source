@@ -22,14 +22,20 @@ push() { cp $1 $C/profile-push.bin; until [ ! -f $C/profile-push.bin ]; do sleep
   echo "$(date +%H:%M:%S) pushed $(basename $1): $(grep -a 'PROFILE PUSH' $D/responder.log | tail -1 | cut -c1-110)"; collector; }
 until ls -d $C/contained-boot/*-$1 >/dev/null 2>&1; do sleep 5; done
 D=$(ls -d $C/contained-boot/*-$1); H=$D/activity-host.log; mkdir -p $C/$1/capture
-until grep -q 'DIVIDE REACHED' $C/$1/replay-console.log 2>/dev/null; do sleep 5; done
+# Any replay log: a supervised resume (resume-waves.sh) writes replay-console-resumeN.log, and
+# sense108's post-game waited here after its resume crossed into the Divide.
+until cat $C/$1/replay-console*.log 2>/dev/null | grep -q 'DIVIDE REACHED'; do sleep 5; done
 collector; push $P/profile-active164-xp0.draft.bin
 sleep 20; collector
 until sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "now in slice set 104"; do sleep 5; done
 push $P/profile-active164-xp900.draft.bin
 sleep 20; collector
-until sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "mission step 25"; do sleep 3; done
-sed 's/\x1b\[[0-9;]*m//g' $H | grep -E "mission step 2[2-5]|incident (2681|891)" | tail -5 | cut -c12-27,60-160
+# The outro is over four steps after the hangar cohort reads zero (clear, register, play, stop). Not a
+# step number: the waves schedule has ten more steps and its "mission step 25" (the old schedule's
+# outro stop) is a Breach wave, so sense115 finished the mission at Dock 13, before the hangar.
+outro_done() { sed 's/\x1b\[[0-9;]*m//g' $H | awk '/is exactly zero/{z=1} z && /mission step [0-9]+ at/{n++} END{exit !(n>=4)}'; }
+until outro_done; do sleep 3; done
+sed 's/\x1b\[[0-9;]*m//g' $H | grep -E "mission step [0-9]+ at|incident (2681|891)" | tail -5 | cut -c12-27,60-160
 sleep 5; cp $P/arcadia-3517-inventory.draft.bin $C/profile-push.item; echo d1000000000003f1 > $C/profile-push.soid
 push $P/arcadia-profile-xp900-owned.draft.bin
 grep -a -i "item" $D/responder.log | tail -3 | cut -c1-140

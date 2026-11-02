@@ -10,9 +10,17 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 s = importlib.util.spec_from_file_location('c', os.path.join(HERE, 'combat2.py')); c = importlib.util.module_from_spec(s); s.loader.exec_module(c)
 
 
+def mine(W):
+    """W.me(), or a RuntimeError (exit 3, as a death) while the Guardian has no unit: sense116 died in
+    the hangar mid-seek and crashed on the None."""
+    st = W.me()
+    if st is None: raise RuntimeError('unit unavailable (death)')
+    return st
+
+
 def face(W, yaw_goal):
     for _ in range(3):
-        _, yaw, _ = W.me()
+        _, yaw, _ = mine(W)
         e = c.wrap(yaw_goal - yaw)
         if abs(e) < 0.08: return
         c.hold('J' if e > 0 else 'L', max(25, abs(e) / c.YAW_RATE))
@@ -39,14 +47,14 @@ def main():
     trail, t_end, side, fails = [], start + a.max_s, random.choice((1, -1)), 0
     try:
         while time.time() < t_end:
-            me, _, pitch = W.me(); trail.append([round(v, 2) for v in me])
+            me, _, pitch = mine(W); trail.append([round(v, 2) for v in me])
             d = math.dist(me[:2], (tx, ty))
             if d < a.tol:
                 print(f'arrived {me[0]:.1f},{me[1]:.1f},{me[2]:.1f} d {d:.1f}', flush=True); break
             if abs(pitch) > 0.1: c.hold('I' if pitch < 0 else 'K', abs(pitch) / c.PITCH_RATE)
             face(W, math.atan2(ty - me[1], tx - me[0]))
             c.hold('W', 900)
-            me2 = W.me()[0]
+            me2 = mine(W)[0]
             if math.dist(me2[:2], (tx, ty)) < d - 0.4:
                 fails = 0; continue
             # Blocked: slide along the obstacle on one side, then retry the direct heading.
@@ -56,7 +64,7 @@ def main():
             face(W, ang); c.hold('W', 1200 + 300 * (fails % 4))
             if fails % 4 == 3: c.tap('JUMP', 80); c.hold('W', 600)
         else:
-            me = W.me()[0]; print(f'timeout {me[0]:.1f},{me[1]:.1f},{me[2]:.1f} d {math.dist(me[:2], (tx, ty)):.1f}', flush=True)
+            me = mine(W)[0]; print(f'timeout {me[0]:.1f},{me[1]:.1f},{me[2]:.1f} d {math.dist(me[:2], (tx, ty)):.1f}', flush=True)
             sys.exit(1)
     except RuntimeError as e:
         print('stopped:', e, flush=True); c.release_all(); sys.exit(3)
