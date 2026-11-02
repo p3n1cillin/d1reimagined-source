@@ -798,7 +798,9 @@ def rejoined(host_log, connections, client_log, client_offset, seconds=180, slee
     deadline = time.monotonic() + seconds
     while True:
         offset = last_line_offset(host_log, CONNECTION) if host_log.exists() else -1
-        if host_log.exists() and host_log.read_bytes().count(CONNECTION.encode()) > connections and (
+        # The session's first connection is never a rejoin: the replay starts before the client has
+        # connected (sense128 took its own first connection for one, at 17:45, and waited for nothing).
+        if host_log.exists() and host_log.read_bytes().count(CONNECTION.encode()) > max(connections, 1) and (
                 contains(host_log, RESTART, offset) or contains(client_log, REPAIR, client_offset)):
             return offset
         if time.monotonic() >= deadline:

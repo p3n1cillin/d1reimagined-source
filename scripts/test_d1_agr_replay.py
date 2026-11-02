@@ -252,6 +252,14 @@ class HostCrashRepair(unittest.TestCase):
             self.assertEqual(replay.rejoined(host, 1, client, 0, seconds=0), 28)
             self.assertIsNone(replay.rejoined(host, 2, client, 0, seconds=0))
 
+    def test_the_first_connection_is_not_a_rejoin(self):
+        # sense128: the replay counted 0 connections before the client connected.
+        with tempfile.TemporaryDirectory() as d:
+            host, client = Path(d)/'host.log', Path(d)/'shad_log.txt'
+            client.write_bytes(b'')
+            host.write_bytes(b'AH connection from 1'+bytes([10])+b'mission step 0 at +0 s for 164'+bytes([10]))
+            self.assertIsNone(replay.rejoined(host, 0, client, 0, seconds=0))
+
 
 class QuietDeath(unittest.TestCase):
     """sense125: a fight round ended at health 0.00 with `bursts 0`, and the Guardian had respawned."""
