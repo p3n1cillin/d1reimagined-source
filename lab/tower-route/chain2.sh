@@ -42,4 +42,4 @@ for i in $(seq 1 14); do
   fight 60 $Q
 done
 stage "end: $(python $S/alive.py $H)"
-sed 's/\x1b\[[0-9;]*m//g' $H | grep -E "mission step 2[0-9]|HOLD" | tail -3 | cut -c12-27,60-200
+sed 's/\x1b\[[0-9;]*m//g' $H | grep -E "mission step [0-9]+ at|HOLD" | tail -3 | cut -c12-27,60-200
