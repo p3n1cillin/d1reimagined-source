@@ -44,6 +44,20 @@ def release_all():
 YAW_RATE, PITCH_RATE = 2.76e-3, 1.2e-3          # rad per ms of right-stick hold
 HFOV, VFOV = math.radians(78), math.radians(48)   # hip view, 1936x1119 capture
 CX, CY, HALF_W, HALF_H = 968, 652, 960, 540       # reticle and half extents
+
+
+def damage_dir(img):
+    """The bearing of the damage marker, radians clockwise from straight ahead (pi/2 = from the
+    right), or None. The game draws a saturated orange-red chevron on a ring about 175 px around
+    the reticle, pointing at whoever is hitting the Guardian. sense118's recording at junction-west:
+    shot from the right while the bot swept left, facing a wall, until it died."""
+    a = img[CY - 260:CY + 260, CX - 260:CX + 260].astype(int)
+    yy, xx = np.mgrid[-260:260, -260:260]
+    r = np.hypot(xx, yy)
+    m = (a[:, :, 0] > 200) & (a[:, :, 1] < 120) & (a[:, :, 2] < 70) & (a[:, :, 0] - a[:, :, 1] > 120) & (r > 140) & (r < 230)
+    if m.sum() < 150:
+        return None
+    return math.atan2(xx[m].mean(), -yy[m].mean())
 FEET = (b'\xf6\xce\x9d\x80', b'\xe5\xcc\x9d\x80')     # body root at floor height (Dreg/Vandal, Captain)
 TORSO = (b'\x37\xe1\x9d\x80', b'\x8b\xdc\x9d\x80')    # ~1.3 m above its root while upright; floor height as a corpse
 ENEMY_HDR = FEET + TORSO
@@ -359,7 +373,14 @@ def main():
             else:
                 # No lock: turn toward the radar threat or sweep, nudging forward.
                 if abs(pitch) > 0.06: hold('I' if pitch < 0 else 'K', max(25, abs(pitch) / PITCH_RATE))   # level the view
-                hold('L', 250); hold('W', 200); msg = f'{k}: no live enemy within 35 m; level and sweep'
+                dd = damage_dir(img)
+                if dd is not None:
+                    # Hit by something unseen: turn to it and fire, as a player would.
+                    hold('L' if dd > 0 else 'J', max(25, abs(dd) / YAW_RATE))
+                    key('FIRE', True); time.sleep(0.5); key('FIRE', False); fired += 1
+                    msg = f'{k}: hit from {math.degrees(dd):.0f} deg; turned and fired'
+                else:
+                    hold('L', 250); hold('W', 200); msg = f'{k}: no live enemy within 35 m; level and sweep'
                 if k % 15 == 0: tap('RELOAD')
                 idle += 1
                 if a.idle_passes and idle >= a.idle_passes:
