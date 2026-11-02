@@ -192,6 +192,24 @@ pub const ACT_COSMO_M0_5_HANGAR: KnownWorld = KnownWorld {
     chosen: &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
 };
 
+/// `cine_reveal` - the cinematic between A Guardian Rises and the Tower: the Ghost and the
+/// jumpship fly to the Traveler and the Last City (phases `cine_106_trv_phase` and
+/// `cine_107_twr_phase`). Activity 165 (`STORY_CINEMATIC`) is this world in the live 2014
+/// activity table (Blam Network's `activities.csv`, row 127: scenario `0x80C3E00A`, 4 bubbles,
+/// start bubble 3, bundles `cine_reveal` and `story_common`, next activity 0 = the Tower). Read
+/// offline from the owned 56578 scenario-client record `0x80C3E00A` (`d1-oracle oodle entry`, in
+/// `ps4_cinematic_trv_activities`): `+0x08` = FNV-1("cine_reveal") `0x2FE7DBE6`, PRIVATE
+/// `0x14CDA256`, PUBLIC `0xD56DCA6E`, 4 bubbles at `+0x48`.
+///
+/// ⚠ Not yet live-captured: serving it in place of the Tower for 165 is the test.
+pub const CINE_REVEAL: KnownWorld = KnownWorld {
+    name: "cine_reveal",
+    scenario_tag: 0x80C3_E00A,
+    checksum: 0x14CD_A256,
+    bubble_count: 4,
+    chosen: &[0, 1, 2, 3],
+};
+
 /// Every world whose scenario record has been captured or read from owned content.
 pub const KNOWN_WORLDS: &[KnownWorld] = &[
     PVP_MOONBASE,
@@ -201,6 +219,7 @@ pub const KNOWN_WORLDS: &[KnownWorld] = &[
     ACT_COSMO_M1_DOME_A,
     CITY_TOWER_DEFAULT1,
     ACT_COSMO_M0_5_HANGAR,
+    CINE_REVEAL,
 ];
 
 /// The world an Activity Host publishes when nothing overrides it.
@@ -338,5 +357,11 @@ mod tests {
         let h = lookup("act_cosmo_m0_5_hangar").expect("hangar row");
         assert_eq!((h.scenario_tag, h.checksum, h.bubble_count), (0x80CB_802B, 0x3142_9B32, 22));
         assert_ne!(h.checksum, ACT_COSMO_M0_HIGHWAY.checksum, "PRIVATE differs from the Highway");
+    }
+
+    #[test]
+    fn the_reveal_cinematic_is_known_by_its_world_name() {
+        let c = lookup("cine_reveal").expect("cine_reveal row");
+        assert_eq!((c.scenario_tag, c.checksum, c.bubble_count), (0x80C3_E00A, 0x14CD_A256, 4));
     }
 }
