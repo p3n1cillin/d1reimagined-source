@@ -646,6 +646,14 @@ the waves to get there. Each stop along the way gave the route a fix:
 - **The hurt stop, live (sense120):** d1-walk stopped junction-west at 0.38 health. But the
   replay read only the walk's last line, `stopped (x, y, z)`, which d1-walk prints after `hurt:`,
   so it took the stall path. Fixed, and the test now returns both lines.
+- **Sprinting chain2's moves doesn't work (sense123, reverted).** With `--sprint` the gate walks
+  ended "stuck" every time, 70 m east of pre_gate. The walker steers on the move, and at sprint
+  speed it overshot. Walking stays.
+- **Damage is not the bug.** The "half health per magazine" reading predates the aim fix (the bot
+  aimed 1.3 m low), and combat2's `vit` is a sum of region fractions, not health. Runs from
+  ending-run serve the Khvostov's full weapon-stat card, and a 25-round magazine on the HUD shows
+  it; a zero table would give 12. Plain `d1-agr-run.ps1` served a zero table (about a tenth of the
+  damage) and now serves the same card.
 
 ## Next
 
