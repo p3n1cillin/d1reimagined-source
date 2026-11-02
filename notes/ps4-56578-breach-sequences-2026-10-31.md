@@ -552,6 +552,13 @@ the waves to get there. Each stop along the way gave the route a fix:
   later. sense108 ran 90 minutes on the old build without one, with a screen recording (d1-record)
   running through the Wall. sense109-113 had none. sense114 (02:11) repeats sense113 with a
   recording, to test that.
+- **sense114: the recording didn't help.** In the chest leg's fifth stretch the Guardian died, the
+  replay re-armed `agr-bw-112`, and the client halted on the same `network_update` hitch as sense109
+  (02:40). Comparing its server environment with sense108's shows one real difference: sense108 had
+  `D1_INACTIVITY_MS=86400000`, the PvE idle limit raised to a day (key 1020; the client default is
+  15 minutes, [idle timer](ps4-56578-idle-timer-2026-10-31.md)). sense109-114 ran with the default.
+  sense115 (02:42) runs main's host build with the raised limit. If it passes step 17 and keeps
+  going, the idle limit was the cause and #204 is moot.
 
 ## Next
 
