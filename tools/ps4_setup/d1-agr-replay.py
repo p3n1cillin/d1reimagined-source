@@ -33,7 +33,7 @@ BREACH_SQUADS = '21,26,28,30'   # the squads ps4/fixtures/56578/mission/agr-b-gr
 WAVE_SQUADS = ('26,28,30,21,24,38,42,56,58', '44,47,49,51,53,55,72,74,68,76')
 JUNCTION_SQUADS = '64,68,76'
 UNIT_LOST = 'Current Guardian unit is unavailable or inconsistent'   # d1-walk.py after a death
-HURT_STOP = 0.3    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; sense118)
+HURT_STOP = 0.6    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; two readings in a row)
 
 
 class Respawned(Exception):
