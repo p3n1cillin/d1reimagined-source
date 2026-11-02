@@ -615,6 +615,25 @@ the waves to get there. Each stop along the way gave the route a fix:
     recover (0.27 to 0.95), fight from 33 m out of sight, then seek again.
   - Deaths: one at the mine junction (the corridor shield wait came after this run's replay
     started) and two at the gate.
+- **sense118 (09:36, #205's branch): four deaths before the Divide, and what the recording showed.**
+  The window was recorded through the junction (09:51-10:03).
+  - **The junction (09:48):** the melee skip took a Breach Dreg at 2.6 m for "out of reach",
+    because Breach squads report no health and no plate showed in the dark. Fixed: swings are only
+    judged where health is readable.
+  - **The junction again (09:50):** the fight locked a wave member 50 m away and swept with nothing
+    near in its list. Something close killed it a second after the round.
+  - **Junction-west, mid-walk (09:56):** the walker stalled facing a dark wall. The damage chevron
+    pointed right, and it was shot from that side until it died.
+  - **Junction-west (10:01):** the shield wait stood 10 s at 0.12 under fire. Then three back-offs
+    pinned it against pipes facing the wall, with arc fire from the right.
+  - **Fixes:**
+    - The shield wait gives up after 3 s with no recovery.
+    - The fight takes a live enemy more than 10 m nearer than its wave member. The wave lists miss
+      some squads: the junction's 64 is not in the second wave's list.
+  - **Back-offs at critical health, sense115-118:** 20 rounds ended that way and 3 were deaths, so
+    they are not the problem.
+  - **Still open:** a walk stretch doesn't fight. A walker shot from the side keeps walking (or
+    stalls) until it dies.
 
 ## Next
 
