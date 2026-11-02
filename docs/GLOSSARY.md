@@ -47,7 +47,7 @@ example `0xFC0E45A3` for the Breach).
 stopped, a skip requested, a trigger crossed (3403). Mission steps can wait on them.
 
 **Investment.** Bungie's name for the inventory and economy services (BAP message ids 4xx, 6xx and 9xx):
-equipping, loot, vendor purchases, refunds.
+equipping, loot, vendor purchases, dismantling.
 
 **Mission step.** One line of a mission schedule: when to fire and which sensor list to serve.
 
