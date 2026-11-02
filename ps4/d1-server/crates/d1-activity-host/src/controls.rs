@@ -679,11 +679,13 @@ pub fn run() -> Vec<Control> {
     let mut quiet = ActivityInstance::new(1, "s", now);
     quiet.on_connect(now);
     quiet.on_client_message(&ClientMessage::from_struct_image(3, &img).unwrap(), now);
+    // Inside the heartbeat interval at every step below, so a reply can only be the message's own.
+    let inside = quiet.host_heartbeat() / 5;
     c.push(check(
         "NEGATIVE: the heartbeat is not an ACK - a keepalive inside the interval still answers \
          nothing, and udt 16 is still unsendable",
         quiet
-            .on_client_message(&ClientMessage::Keepalive, now + step)
+            .on_client_message(&ClientMessage::Keepalive, now + inside)
             .is_empty()
             && protocol::check_sendable(protocol::UDT_KEEPALIVE_RESPONSE).is_err(),
         "the reply to a keepalive is still `not evicting`; what changed is that the HOST now \
@@ -694,7 +696,7 @@ pub fn run() -> Vec<Control> {
     // though the join already sent them, which is exactly what `published_state` blocks elsewhere.
     let refresh = quiet.on_client_message(
         &ClientMessage::from_struct_image(17, &[0u8; 8]).unwrap(),
-        now + step * 2,
+        now + inside * 2,
     );
     let refresh_udts: Vec<u32> =
         refresh.iter().map(|p| p.message.user_defined_type()).collect();
@@ -711,7 +713,7 @@ pub fn run() -> Vec<Control> {
     let cad = ClientMessage::from_struct_image(21, &[0u8; 0x220]);
     let cad_reply = cad
         .as_ref()
-        .map(|m| quiet.on_client_message(m, now + step * 3))
+        .map(|m| quiet.on_client_message(m, now + inside * 3))
         .unwrap_or_default();
     c.push(check(
         "⭐ udt 21 client_authoritative_data_update is RECEIVABLE and answered with nothing - \
@@ -729,7 +731,7 @@ pub fn run() -> Vec<Control> {
     // ⭐ udt 14 - recorded, never answered.
     let leave = quiet.on_client_message(
         &ClientMessage::from_struct_image(14, &[0u8; 0x14]).unwrap(),
-        now + step * 4,
+        now + inside * 4,
     );
     c.push(check(
         "⛔ udt 14 peer_leave_request is recorded and NOT answered - it is the funeral, not the \
@@ -2411,10 +2413,11 @@ fn leak_controls() -> Vec<Control> {
         match &failure {
             Some((i, e)) => format!("** FAILED ON CYCLE {i} of {LEAK_CYCLES} ** {e}"),
             None => format!(
-                "{done} cycles × {} messages = {} encodes, ≈{} min of a 5,125 ms heartbeat",
+                "{done} cycles × {} messages = {} encodes, ≈{} min of a {} ms heartbeat",
                 establish.len(),
                 done * establish.len(),
-                done * 5125 / 60_000
+                done * ActivityInstance::HOST_HEARTBEAT_MS as usize / 60_000,
+                ActivityInstance::HOST_HEARTBEAT_MS
             ),
         },
     ));
