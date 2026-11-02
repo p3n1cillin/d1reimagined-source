@@ -28,5 +28,30 @@ class Critical(unittest.TestCase):
         self.assertIsNone(M.health(frame((30, 30, 30))))
 
 
+def bar(fill_px, fill_rgb=(200, 30, 30)):
+    """A dark frame with the health bar's outline drawn (row 174) and `fill_px` of fill."""
+    a = frame((30, 30, 30), (30, 30, 30))
+    a[173:176, M.X0:M.X1] = (75, 75, 75)
+    a[177:187, M.X0:M.X1] = (50, 30, 30)              # the empty track, faintly red
+    a[177:187, M.X0:M.X0 + fill_px] = fill_rgb
+    return a
+
+
+class Sliver(unittest.TestCase):
+    # sense116's hangar deaths: a drawn bar with a few px of red read None (full health).
+    def test_a_red_sliver_reads_low(self):
+        h = M.health(bar(5))
+        self.assertIsNotNone(h)
+        self.assertLess(h, 0.03)
+
+    def test_a_drawn_empty_bar_reads_zero(self):
+        self.assertEqual(M.health(bar(0)), 0.0)
+
+    def test_no_outline_still_reads_none(self):
+        a = bar(5)
+        a[173:176, M.X0:M.X1] = (30, 30, 30)
+        self.assertIsNone(M.health(a))
+
+
 if __name__ == '__main__':
     unittest.main()
