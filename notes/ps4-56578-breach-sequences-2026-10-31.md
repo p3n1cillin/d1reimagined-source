@@ -524,6 +524,19 @@ the waves to get there. Each stop along the way gave the route a fix:
   By hand: walking the platform back crossed trigger 120 at 01:19:52, the steps ran, and the rifle's
   trigger came at 01:20:37. The replay now waits for step 7 before the platform walk, and walks back
   and over again if trigger 120 is still missing.
+- **A dropped connection, and a reload to the start.** After the rifle, sense110's resume fought
+  the hall wave and started the chest leg. The client sent its 2 s status (udt 15) for the last time
+  at 01:21:52, 30 s after the first wave's list (step 17, trigger 108). The host's connection ended
+  at 01:22:08 ("aborted"), and the client reconnected at 01:22:23. Then it reloaded the activity and
+  placed the Guardian back at the mission start (383, -961), with the host's schedule past the
+  rifle. The replay had burned its three chest tries in 30 s on "Guardian unit is unavailable"; it
+  now waits for the unit, and lost units don't count as tries. Three client-side network stalls
+  tonight: sense108 after the outro, sense109's `network_update` halt, and this one. Two were on the
+  new host build, one on the old. The emulator's own log had hit its 100 MB cap at 01:17, so it
+  doesn't cover the stall.
+- **The idle guard pressed into walks and fights.** It reads `tools/ps4_setup/d1-pad-last.txt` and
+  presses NumPad4, W and S after 300 s without a stamp. d1_keys stamped another folder, and combat2
+  never stamped. Both stamp beside `d1-pad.ps1` now.
 
 ## Next
 
