@@ -545,6 +545,13 @@ the waves to get there. Each stop along the way gave the route a fix:
   the sensor cache (#197) and #202's dependency updates; #175 and #179 don't touch these frames.
   sense112's launch failed when the lab responder stopped before listening, a one-off. sense113
   (01:39) runs on the old build, with its 16-18 minute start.
+- **And on the old build too.** sense113 passed step 17 at 02:03:24 and waves 110, 111 and 112
+  (02:05-02:07). Then the client went quiet at 02:08:21 and dropped at 02:08:50, in the chest leg's
+  fifth stretch. So the drop isn't the main build alone (#204 corrected). It is a client-side
+  network stall, like sense109's halt. Main's build hit it 30 s after step 17 twice; the old build
+  later. sense108 ran 90 minutes on the old build without one, with a screen recording (d1-record)
+  running through the Wall. sense109-113 had none. sense114 (02:11) repeats sense113 with a
+  recording, to test that.
 
 ## Next
 
