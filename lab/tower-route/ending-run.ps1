@@ -68,6 +68,12 @@ if (-not $NoVendors) {
     $extra += ",D1_VENDOR_SALES=$V\vendor-sales.tsv,D1_VENDOR_PROFILE_OBJ=$V\vendor-profile.obj,D1_VENDOR_ITEM_TEMPLATE=$V\vendor-item-template.obj"
     $extra += ",D1_VENDOR_ACCOUNT_SLOTS=308:869:25000,309:873:500,310:4548:200,D1_ORACLE=$Oracle"
 }
+# The client's PvE idle limit is 15 minutes since the last button press unless the server sets it
+# (key 1020, notes/ps4-56578-idle-timer-2026-10-31.md). sense109-114 (2 November) ran with the default.
+# Each lost the client 5-30 minutes into gameplay ('network_update' halts, dropped connections)
+# while our tools were pressing keys. sense108 and sense115, with a day's limit, ran clean. Set it
+# unless -ExtraEnv does.
+if ($ExtraEnv -notmatch 'D1_INACTIVITY_MS=') { $extra += ',D1_INACTIVITY_MS=86400000' }
 if ($ExtraEnv) { $extra += ",$ExtraEnv" }
 # Built sensor frames kept between runs (#197): the wave schedule's lists took the host 16 minutes
 # to build on every start (sense105). A host without the cache ignores the variable.
@@ -99,9 +105,9 @@ $jobs = @(
 )
 # The keep-alive starts in gameplay: an early press can carry the client past the title before the
 # activity host listens (about 9 minutes), and it then fails to reach it (run sense75). With the idle
-# limit raised (-ExtraEnv D1_INACTIVITY_MS=...) it isn't needed, and its presses can't land on the
+# limit raised (the default above) it isn't needed, and its presses can't land on the
 # post-game screens (run sense90 left them by itself before the CONTINUE hold).
-if ($ExtraEnv -notmatch 'D1_INACTIVITY_MS=') {
+if ($extra -notmatch 'D1_INACTIVITY_MS=') {
     $jobs += "until grep -q 'in gameplay' $Cf/$Name/launcher.log 2>/dev/null; do sleep 5; done; exec $RepoFwd/tools/ps4_setup/d1-idle-guard.sh"
 }
 if (-not $NoRecord) { $jobs += "bash $S/capture51.sh $Name > $Cf/$Name/capture.log 2>&1" }
