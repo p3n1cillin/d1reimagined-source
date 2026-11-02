@@ -242,6 +242,14 @@ def main():
                 lv = [x for x in W.live(objs, me) if x[0] < 35]
                 if lv:
                     lock, target = lv[0][1], lv[0][2]
+            else:
+                # A live enemy much nearer than the wave member chosen is the threat: the fight's
+                # squad list is the wave's, and the junction's squad 64 is not in it. sense118 locked
+                # a member 50 m off at the junction while something near killed it, and the
+                # recording shows fire from the side the Guardian never turned to.
+                lv = [x for x in W.live(objs, me) if x[0] < 25]
+                if lv and lv[0][0] + 10 < math.dist(me, target):
+                    lock, target = lv[0][1], lv[0][2]
             # 2. Hurt: break line of sight and recover.
             # Backing straight off and waiting in the open did not break line of sight: sense108 backed
             # off five times at the junction while health fell 0.56 -> 0.10, and died. Go back along
