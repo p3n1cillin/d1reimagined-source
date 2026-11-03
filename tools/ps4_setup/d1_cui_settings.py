@@ -23,7 +23,7 @@ def array(data, field, stride):
     if not n and not rel:
         return []
     head = field + 8 + rel
-    if n > 4096 or head < 4 or head + 16 + n * stride > len(data):
+    if n > (1 << 20) or head < 4 or head + 16 + n * stride > len(data):
         raise ValueError('array outside tag')
     if struct.unpack_from('<I', data, head - 4)[0] != ARRAY or struct.unpack_from('<Q', data, head)[0] != n:
         raise ValueError('array marker or repeated count disagrees')
@@ -57,7 +57,7 @@ class Settings:
                 'ids': [self.u32(o) for o in self.rows]}
 
 
-def video_candidate(source, template_group):
+def video_candidate(source, template_group, label_base=None):
     original = Settings(source)
     # Caller identifies the decoded Helmet group. Native group identifiers are authored hashes;
     # do not assume that hashing its displayed English label reproduces its identifier.
@@ -77,7 +77,9 @@ def video_candidate(source, template_group):
     labels = {}
 
     def label(name, text):
-        h = fnv('d1reimagined.video.' + name)
+        h = fnv('d1reimagined.video.' + name) if label_base is None else label_base + len(labels)
+        if h > 0xffffffff:
+            raise ValueError('no remaining string-hash slots')
         if h in labels and labels[h] != text:
             raise ValueError('new string hash collision')
         labels[h] = text
@@ -238,3 +240,89 @@ def video_graph_candidate(source, template_group, video_group):
                         'target_list_node': target_node, 'target_slot': new_slot >> 16,
                         'named_property_index': len(names), 'bindings': len(new_bindings),
                         'installed': False, 'native_ui_verified': False}
+
+
+def video_strings_candidate(index, english, labels):
+    """Append ASCII labels without moving any existing string's hash index.
+
+    The English part/entry/blob arrays follow the existing d1-scenarios.py reader. New keys
+    must follow the original maximum so every old hash keeps its original ordinal.
+    """
+    for data in (index, english):
+        if len(data) < 0x58 or struct.unpack_from('<Q', data)[0] != len(data):
+            raise ValueError('string tag self-length disagrees')
+    hashes_at = array(index, 8, 4)
+    hashes = [struct.unpack_from('<I', index, o)[0] for o in hashes_at]
+    keys = [int(h, 16) for h in labels]
+    if hashes != sorted(set(hashes)) or keys != sorted(set(keys)) or not keys or min(keys) <= max(hashes):
+        raise ValueError('new label keys must be sorted and follow every original hash')
+    texts = [text.encode('ascii') for text in labels.values()]
+    if any(not t or len(t) > 65535 for t in texts):
+        raise ValueError('new labels must be nonempty bounded ASCII')
+    parts = array(english, 8, 32)
+    entries = array(english, 0x48, 16)
+    blob = array(english, 0x38, 1)
+    if not parts or not blob or len(entries) != len(hashes):
+        raise ValueError('string index and English entries disagree')
+
+    def append(out, source, field, n, stride):
+        _, rel = struct.unpack_from('<Qq', source, field)
+        cls = struct.unpack_from('<I', source, field + 8 + rel + 8)[0]
+        out.extend(b'\0' * (-len(out) % 8))
+        head = len(out) + 8
+        out.extend(struct.pack('<IIQII', 0, ARRAY, n, cls, 0))
+        start = len(out)
+        out.extend(b'\0' * (n * stride))
+        struct.pack_into('<Qq', out, field, n, head - field - 8)
+        return [start + i * stride for i in range(n)]
+
+    ix, en = bytearray(index), bytearray(english)
+    for o, h in zip(append(ix, index, 8, len(hashes) + len(keys), 4), hashes + keys):
+        struct.pack_into('<I', ix, o, h)
+    new_parts = append(en, english, 8, len(parts) + len(texts), 32)
+    extra = {}
+    for old in parts:
+        target = old + 8 + struct.unpack_from('<q', english, old + 8)[0]
+        length = struct.unpack_from('<H', english, old + 0x14)[0]
+        if not 0 <= target <= len(english) - length:
+            raise ValueError('original part outside its source tag')
+        if length and not blob[0] <= target <= blob[0] + len(blob) - length:
+            extra[old] = english[target:target + length]
+    new_blob = append(en, english, 0x38, len(blob) + sum(map(len, extra.values())) + sum(map(len, texts)), 1)
+    en[new_blob[0]:new_blob[0] + len(blob)] = english[blob[0]:blob[0] + len(blob)]
+    cursor = new_blob[0] + len(blob)
+    for old, dst in zip(parts, new_parts):
+        en[dst:dst + 32] = english[old:old + 32]
+        old_text = old + 8 + struct.unpack_from('<q', english, old + 8)[0]
+        length = struct.unpack_from('<H', english, old + 0x14)[0]
+        if old in extra:
+            en[cursor:cursor + length] = extra[old]
+            struct.pack_into('<q', en, dst + 8, cursor - dst - 8)
+            cursor += length
+            continue
+        if not blob[0] <= old_text <= blob[0] + len(blob) - length:
+            # Control/formatting parts may refer to the other arrays, including short strings.
+            # Keep their original target in the intact prefix rather than misclassifying it.
+            if not 0 <= old_text <= len(english) - length:
+                raise ValueError('original part outside its source tag')
+            struct.pack_into('<q', en, dst + 8, old_text - dst - 8)
+            continue
+        struct.pack_into('<q', en, dst + 8, new_blob[0] + old_text - blob[0] - dst - 8)
+    for dst, text in zip(new_parts[len(parts):], texts):
+        en[dst:dst + 32] = english[parts[0]:parts[0] + 32]
+        struct.pack_into('<q', en, dst + 8, cursor - dst - 8)
+        struct.pack_into('<HHH', en, dst + 0x14, len(text), len(text), 0)
+        en[cursor:cursor + len(text)] = text
+        cursor += len(text)
+    new_entries = append(en, english, 0x48, len(entries) + len(texts), 16)
+    for old, dst in zip(entries, new_entries):
+        rel, count = struct.unpack_from('<qQ', english, old)
+        first = (old + rel - parts[0]) // 32
+        if count and (first < 0 or first + count > len(parts) or old + rel != parts[first]):
+            raise ValueError('original string references invalid parts')
+        struct.pack_into('<qQ', en, dst, new_parts[first] - dst if count else 0, count)
+    for dst, part in zip(new_entries[len(entries):], new_parts[len(parts):]):
+        struct.pack_into('<qQ', en, dst, part - dst, 1)
+    struct.pack_into('<Q', ix, 0, len(ix))
+    struct.pack_into('<Q', en, 0, len(en))
+    return bytes(ix), bytes(en)
