@@ -53,6 +53,16 @@ fork's opt-in native-video branch uses those comparisons before redirecting in-m
 and adds getters/setters for ids 21/22 through the same config writer as the F10 panel. Original
 packages remain unchanged. Native installation and interaction still require a live test.
 
+## Native validation checkpoint
+
+On 56578 with committed fork integration `1a58ced`, the character screen opens after fixing a
+separate self-relative formatting pointer in each relocated string part. Switching to another
+character tab still crashes while the native formatter reads an invalid string-part pointer.
+A read-only execution trace confirms that the failing lookup returns text bytes rather than a
+string-entry record. The argument and array relationship remains under investigation; this is
+an observed failure, not evidence that the new settings rows work. No graph or settings-array
+redirection was observed before that failure. The source and fork changes remain draft.
+
 ## Remaining work
 
 Test the graph connections and list expansion, provide the new labels to native string lookup, and
