@@ -428,10 +428,15 @@ class Replay:
             if not spot or (me and math.dist(me[:2], [float(v) for v in spot.split(',')]) > reach):
                 break
             fought = True
-            cover = self.cover(me)
+            # 10, 20 and 30 m back: combat2 goes further while its back-offs do not restore health.
+            cover = []
+            for back in (10.0, 20.0, 30.0):
+                c = self.cover(me, back)
+                if c and c not in cover:
+                    cover.append(c)
             out = self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '30', '--squads', self.wave,
-                         *(['--cover', f'{cover[0]:.1f},{cover[1]:.1f}'] if cover else []),
+                         *(['--cover', ';'.join(f'{c[0]:.1f},{c[1]:.1f}' for c in cover)] if cover else []),
                          '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
             if self.waves and out and 'unit changed (death)' not in out[-1] and self.died_quietly(out, me):
                 out = out + ['unit changed (death)']

@@ -117,6 +117,12 @@ class CoverTest(unittest.TestCase):
         f = Fake((31.0, 0.5, 0.0)); f.leg = LINE
         self.assertEqual(M.Replay.cover(f, f.at), LINE[4][:2])
 
+    def test_further_covers_go_further_back(self):
+        # level1-run2: 10 m back was still in junction-west's fire; combat2 takes these in turn.
+        f = Fake((31.0, 0.5, 0.0)); f.leg = LINE
+        self.assertEqual([M.Replay.cover(f, f.at, b) for b in (10.0, 20.0, 30.0)],
+                         [LINE[4][:2], LINE[2][:2], LINE[0][:2]])
+
     def test_no_cover_at_the_start_of_a_leg(self):
         f = Fake((0.5, 0.0, 0.0)); f.leg = LINE
         self.assertIsNone(M.Replay.cover(f, f.at))

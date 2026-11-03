@@ -185,11 +185,13 @@ def main():
     # dying in the Breach's waves (sense105-108).
     ap.add_argument('--retreat-at', type=float, default=0.55, help='back off below this health fraction')
     ap.add_argument('--recover-s', type=float, default=5.0, help='seconds to wait out of sight for the shield')
-    ap.add_argument('--cover', help='x,y to retreat to: the route behind the Guardian (the replay passes it)')
+    ap.add_argument('--cover', help='x,y to retreat to: the route behind the Guardian (the replay passes it); '
+                    'x,y;x,y;... for points further back, taken in turn while back-offs do not restore health')
     ap.add_argument('--idle-passes', type=int, default=8,
                     help='end the fight after this many passes in a row with nothing to shoot at (0: never)')
     a = ap.parse_args()
-    cover = tuple(float(v) for v in a.cover.split(',')) if a.cover else None
+    covers = [tuple(float(v) for v in c.split(',')) for c in a.cover.split(';')] if a.cover else []
+    cover_i = 0                                           # the cover the next back-off goes to
     only = {int(x) for x in a.squads.split(',')} if a.squads else None
     # Focus the window without a key: NumPad4 is Square (reload), and every fight began with a
     # reload under fire.
@@ -293,6 +295,8 @@ def main():
             # window, at 0.0-0.3 health against squads 27-38 m away.
             if h is not None and h <= 0.15:
                 stand_until = 0
+            if h is not None and h >= a.retreat_at:
+                cover_i = 0                                # recovered: the next back-off starts near again
             if h is not None and h < a.retreat_at and time.time() >= stand_until and not near:
                 worse = worse + 1 if last_retreat_h is not None and h < last_retreat_h - 0.03 else 0
                 last_retreat_h = h
@@ -308,10 +312,15 @@ def main():
                         away = 'S' if abs(dd) < 0.8 else 'W' if abs(dd) > 2.35 else 'A' if dd > 0 else 'D'
                         hold(away, 1500); hold('S', 500)
                         where_to = f'away from the hit at {math.degrees(dd):.0f} deg'
-                    elif cover and math.dist(me[:2], cover) > 2.5:
+                    elif covers and math.dist(me[:2], covers[min(cover_i, len(covers) - 1)]) > 2.5:
+                        # Further back each time a back-off did not restore health: level1-run2 backed
+                        # off to (421, -714), 10 m behind junction-west's lower floor, four times in a
+                        # fight at 0.00-0.17 health, still in the squads' fire, and died there five times.
+                        cover = covers[min(cover_i, len(covers) - 1)]
                         aim(W, (cover[0], cover[1], me[2] + 0.35), tries=3)
-                        hold('W', int(min(2500, 450 * math.dist(me[:2], cover))))
+                        hold('W', int(min(2500 if cover_i == 0 else 7000, 450 * math.dist(me[:2], cover))))
                         where_to = f'back to cover ({cover[0]:.0f}, {cover[1]:.0f})'
+                        cover_i += 1
                     else:
                         hold('S', 1300); hold('A' if strafe > 0 else 'D', 600)
                         where_to = 'back off'
