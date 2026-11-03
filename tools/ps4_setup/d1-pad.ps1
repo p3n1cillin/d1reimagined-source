@@ -40,9 +40,12 @@ foreach ($k in $Keys) {
     $vk = [byte][uint32][Windows.Forms.Keys]::$k
     $scan = [byte][D1Pad.W]::MapVirtualKey($vk, 0)
     if (-not (Focus)) { "focus lost before $k"; continue }
-    [D1Pad.W]::keybd_event($vk, $scan, 0, [UIntPtr]::Zero)
+    # The arrow cluster uses an E0 prefix. Without it, Down/Up/Left/Right become the
+    # numpad keys with the same scan code (2/8/4/6) in SDL instead of the d-pad arrows.
+    $keyFlags = if ($vk -ge 0x25 -and $vk -le 0x28) { [uint32]1 } else { [uint32]0 }
+    [D1Pad.W]::keybd_event($vk, $scan, $keyFlags, [UIntPtr]::Zero)
     Start-Sleep -Milliseconds $hold
-    [D1Pad.W]::keybd_event($vk, $scan, 2, [UIntPtr]::Zero)
+    [D1Pad.W]::keybd_event($vk, $scan, ($keyFlags -bor 2), [UIntPtr]::Zero)
     "pressed $k ($hold ms)"
     # Time of the last pad input, for the idle guard (d1-idle-guard.sh) that prevents the 15-minute kick.
     try { Set-Content -LiteralPath (Join-Path $PSScriptRoot 'd1-pad-last.txt') -Value ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) } catch {}
