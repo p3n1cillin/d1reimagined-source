@@ -37,8 +37,10 @@ def main():
                           candidate_sha256=hashlib.sha256(graph).hexdigest())
         manifest['graph'] = graph_info
     dest.mkdir(parents=True, exist_ok=False)
+    (dest / 'settings-original.bin').write_bytes(original)
     (dest / 'settings-candidate.bin').write_bytes(changed)
     if graph is not None:
+        (dest / 'graph-original.bin').write_bytes(graph_source)
         (dest / 'graph-candidate.bin').write_bytes(graph)
     (dest / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf8')
     print('Prepared definitions only; not installed or native-UI validated.')

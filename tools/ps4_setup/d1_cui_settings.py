@@ -72,8 +72,8 @@ def video_candidate(source, template_group):
     if not choices:
         raise ValueError('helmet must have cycling choices')
     highest = max(original.u32(o) for o in original.rows)
-    if highest > 252:
-        raise ValueError('no two spare native byte setting ids')
+    if highest > 125:
+        raise ValueError('no two spare native signed-byte setting ids')
     labels = {}
 
     def label(name, text):
