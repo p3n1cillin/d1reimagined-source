@@ -87,6 +87,21 @@ generated state. Inspect native launch and input tools before running them, and 
 emulator or service processes. Missing inputs, skips and blocked native acceptance must stay explicit:
 passing checks do not mean the game is playable.
 
+## Frame rate and resolution (lab)
+
+Destiny 1 on PS4 ran at 30 frames a second in 1080p. In the lab it can run faster and sharper:
+
+- `tools/ps4_setup/d1-video-patch.py --fps 60 --res 2560x1440 --out <file>` writes one client patch
+  for both (frame rates 10 to 1000, render sizes up to 3840x2160), passed to the lab launchers as
+  `-ClientPatch`. Above 2048 wide or high it needs the project's
+  [shadPS4 fork](https://github.com/p3n1cillin/d1reimagined-shadps4) (branch `d1`).
+- The fork also holds a rate while the game runs (`D1_FPS=N`, or `D1_FPS=0` for uncapped) and keeps
+  the game's per-tick rules (rate of fire, the jump) the same at every rate.
+- Choosing them in the game's own settings menu is the goal; it is not there yet.
+
+Details and measurements: [frame rate](notes/ps4-56578-frame-rate-2026-11-02.md),
+[resolution](notes/ps4-56578-resolution-2026-11-03.md).
+
 ## Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md). In short: a focused pull request titled `area: summary`, with what
