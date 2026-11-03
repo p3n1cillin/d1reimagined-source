@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """Build the level-1 variant of every object the A Guardian Rises tutorial serves (build 56578).
 
-    python -I d1-level1-fixtures.py [--fixtures DIR] [--out DIR]
+    python -I d1-level1-fixtures.py [--fixtures DIR] [--out DIR] [--light-native]
 
 Retail A Guardian Rises is played by a new level-1 character; the served fixtures are level 40,
 Light 385. Reads the served fixtures (ps4/fixtures/56578/characters, never written) and writes the
@@ -156,8 +156,19 @@ def main():
          [(0x18, 'u32', LEVEL, 'item level', 40)])
 
     # 2. Profiles: the Light override (+0x6FDC present = 1, +0x6FE0 {key 0, value}) value 385 -> LIGHT.
+    # The post-game pushes too (postgame5.sh): level1-run2 served the level-1 boot profiles, and
+    # the outro's pushes then put Light 385 back. postgame-l1 is a whole post-game folder
+    # (ending-run.ps1 -PostgameDir); its other files are copied unchanged.
+    P, PL = F.parent / 'postgame', OUT / 'postgame-l1'
+    PUSHES = ('profile-active164-xp0.draft.bin', 'profile-active164-xp900.draft.bin',
+              'arcadia-profile-xp900-owned.draft.bin')
+    PL.mkdir(parents=True, exist_ok=True)
+    for f in sorted(P.iterdir()):
+        if f.is_file() and f.name not in PUSHES:
+            shutil.copyfile(f, PL / f.name)
     for src, out in ((F / 'profile-tutorial-t.bin', OUT / 'profile-tutorial-t-l1.bin'),
-                     (F / 'grants' / 'profile-tutorial-th.bin', OUT / 'grants-l1' / 'profile-tutorial-th.bin')):
+                     (F / 'grants' / 'profile-tutorial-th.bin', OUT / 'grants-l1' / 'profile-tutorial-th.bin'),
+                     *((P / name, PL / name) for name in PUSHES)):
         b = decode(src, PROFILE)
         if b[0x6FDC] != 1 or u32(b, 0x6FE0) != 0:
             sys.exit(f'{src}: the Light override is not where expected')
