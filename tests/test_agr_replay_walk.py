@@ -3,6 +3,7 @@ import math
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import Mock
 
 TOOLS = Path(__file__).parents[1] / 'tools/ps4_setup'
 sys.path.insert(0, str(TOOLS))
@@ -53,6 +54,7 @@ class Fake:
         pass
 
     away, lost = M.Replay.away, M.Replay.lost
+    fixed_cover = M.Replay.fixed_cover
     walk_fighting = M.Replay.walk_fighting
 
 
@@ -113,6 +115,23 @@ class WalkFightingTest(unittest.TestCase):
 
 
 class CoverTest(unittest.TestCase):
+    def test_only_explicit_hiding_point_gets_combat_priority(self):
+        for name, expected in (('junction-west-r2-pre', True), ('other-leg-pre', False)):
+            with self.subTest(name=name):
+                replay = M.Replay.__new__(M.Replay)
+                replay.leg, replay.wave, replay.waves = LINE, '8', False
+                replay.fixed_covers = {'junction-west': (45.0, 8.0)}
+                replay.run, replay.tracked = Path('synthetic-run'), Path('synthetic-tracking')
+                replay.where = lambda: (31.0, 0.5, 0.0)
+                replay.select_retracked_position = lambda: None
+                replay.command = Mock(side_effect=lambda tag, *args, **kw:
+                                      ['32,0'] if 'skirmish-target' in tag else ['bursts 0'])
+                replay.skirmish(name, recover=False)
+                fights = [call.args[1] for call in replay.command.call_args_list
+                          if any(str(arg).endswith('combat2.py') for arg in call.args[1])]
+                self.assertEqual(len(fights), 1)
+                self.assertEqual('--cover-first' in fights[0], expected)
+
     def test_fixed_point_applies_to_named_leg_and_its_retries_only(self):
         f = Fake((31.0, 0.5, 0.0)); f.leg = LINE
         f.fixed_covers = {'junction-west': (45.0, 8.0)}

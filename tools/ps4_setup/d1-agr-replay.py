@@ -445,6 +445,7 @@ class Replay:
             out = self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '30', '--squads', self.wave,
                          *(['--cover', f'{cover[0]:.1f},{cover[1]:.1f}'] if cover else []),
+                         *(['--cover-first'] if cover and self.fixed_cover(name) else []),
                          '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
             if self.waves and out and 'unit changed (death)' not in out[-1] and self.died_quietly(out, me):
                 out = out + ['unit changed (death)']
@@ -479,10 +480,8 @@ class Replay:
             return None
         # A tested hiding point can break line of sight where retreating along the route cannot.
         # Match a leg and its retry/chunk suffixes, without changing the other legs' tactics.
-        fixed = getattr(self, 'fixed_covers', {})
-        matches = [key for key in fixed if name and (name == key or name.startswith(key + '-'))]
-        if matches:
-            point = fixed[max(matches, key=len)]
+        point = self.fixed_cover(name)
+        if point is not None:
             print(f'{name}: fixed cover {point[0]:.1f},{point[1]:.1f}', flush=True)
             return point
         i = min(range(len(leg)), key=lambda j: math.dist(leg[j][:2], me[:2]))
@@ -491,6 +490,11 @@ class Replay:
             gone += math.dist(leg[i][:2], leg[i - 1][:2])
             i -= 1
         return leg[i][:2] if gone > 2 else None
+
+    def fixed_cover(self, name):
+        fixed = getattr(self, 'fixed_covers', {})
+        matches = [key for key in fixed if name and (name == key or name.startswith(key + '-'))]
+        return fixed[max(matches, key=len)] if matches else None
 
     def walk_once(self, name, route, seconds, tolerance, extra, check=True):
         tracking = (['--native-unit', '--memory-facing'] if self.native_unit else

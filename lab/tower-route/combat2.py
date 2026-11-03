@@ -186,10 +186,14 @@ def main():
     ap.add_argument('--retreat-at', type=float, default=0.55, help='back off below this health fraction')
     ap.add_argument('--recover-s', type=float, default=5.0, help='seconds to wait out of sight for the shield')
     ap.add_argument('--cover', help='x,y to retreat to: the route behind the Guardian (the replay passes it)')
+    ap.add_argument('--cover-first', action='store_true',
+                    help='use the explicit hiding point before the damage-direction fallback')
     ap.add_argument('--idle-passes', type=int, default=8,
                     help='end the fight after this many passes in a row with nothing to shoot at (0: never)')
     a = ap.parse_args()
     cover = tuple(float(v) for v in a.cover.split(',')) if a.cover else None
+    if a.cover_first and not cover:
+        ap.error('--cover-first requires --cover')
     only = {int(x) for x in a.squads.split(',')} if a.squads else None
     # Focus the window without a key: NumPad4 is Square (reload), and every fight began with a
     # reload under fire.
@@ -296,13 +300,24 @@ def main():
             if h is not None and h < a.retreat_at and time.time() >= stand_until and not near:
                 worse = worse + 1 if last_retreat_h is not None and h < last_retreat_h - 0.03 else 0
                 last_retreat_h = h
-                if worse >= 2 and h > 0.15:
+                cover_reached = cover is not None and math.dist(me[:2], cover) <= 2.5
+                if worse >= 2 and h > 0.15 and (not a.cover_first or cover_reached):
                     stand_until, worse, last_retreat_h = time.time() + 8, 0, None
                     print(k, f'health {h:.2f}: still falling after backing off; fighting back', flush=True)
                 else:
                     release_all()
                     dd = damage_dir(img)
-                    if dd is not None:
+                    if a.cover_first:
+                        if math.dist(me[:2], cover) > 2.5:
+                            aim(W, (cover[0], cover[1], me[2] + 0.35), tries=3)
+                            hold('W', int(min(2500, 450 * math.dist(me[:2], cover))))
+                            where_to = f'to fixed cover ({cover[0]:.0f}, {cover[1]:.0f})'
+                        else:
+                            # Stay at the chosen hiding point while recovering; keep the stick
+                            # active with balanced brief nudges rather than walking back into fire.
+                            hold('A', 40); hold('D', 40)
+                            where_to = 'at fixed cover'
+                    elif dd is not None:
                         # Away from whoever is hitting it, not back along the route: sense124 backed off
                         # to its route cover at junction-west, under the same fire, three times.
                         away = 'S' if abs(dd) < 0.8 else 'W' if abs(dd) > 2.35 else 'A' if dd > 0 else 'D'
