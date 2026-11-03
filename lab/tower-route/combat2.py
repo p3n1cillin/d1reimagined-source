@@ -64,6 +64,11 @@ ENEMY_HDR = FEET + TORSO
 # Melee reach (R1 lunges): sense115 died twice to Fallen at 2.4-2.6 m, shooting and then turning its
 # back on them to reach cover. A Titan's melee kills a Dreg outright.
 MELEE_RANGE = 3.0
+# An object of an enemy's type within this of the Guardian is its own, not an enemy: newguardian-keep1
+# locked 0x37fe96290 at 0.2-0.4 m in fights minutes and metres apart at junction-west, and each pass
+# on it spent 5-6 s turning at its own feet and meleeing the air while squads 72 and 74 shot it.
+# Such locks took 7% of all fight time in sense100-133, newguardian-keep1 (270 s) and level1-run1 (151 s).
+SELF_R = 0.8
 def wrap(a): return (a + math.pi) % (2 * math.pi) - math.pi
 
 
@@ -144,7 +149,8 @@ class World:
         now = time.time()
         feet = self.feet()
         return sorted(((math.dist(me, pos), unit, pos) for unit, pos in objs
-                       if now - self.moved.get(unit, 0) < window or self.upright(pos, feet)))
+                       if math.dist(me[:2], pos[:2]) >= SELF_R
+                       and (now - self.moved.get(unit, 0) < window or self.upright(pos, feet))))
 
 
 def bearing(me, yaw, pitch, t, eye=0.35):   # unit z sits ~1.3 m above the floor; the camera ~0.35 m above that
