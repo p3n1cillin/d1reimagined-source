@@ -9,6 +9,12 @@ the vendors sell.
 
 This is how the lab's runs are made. The defaults recreate run sense73 (31 October 2026).
 
+For a supervised cover experiment, pass `-Waves -ReplayCover 'junction-west:456,-713'`.
+This changes the replay's retreat point for that leg and its retries only; other legs keep their
+route-based cover. Coordinates must be finite decimal values. This is a lab navigation tactic,
+not authored enemy behavior or a change to player health or damage. The point recovered health
+more often in earlier runs; completing the level-1 post-game with it remains unverified.
+
 ## What it needs
 
 - The lab set up as in `tools/ps4_setup/README.md`:

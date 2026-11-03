@@ -42,11 +42,26 @@ param(
     # Serve the Breach by its own triggers instead (mission/agr-steps-divide-waves.txt, made with
     # tools/ps4_setup/d1-breach-waves.py; issue #185) and fight what each wave places (--waves).
     [switch]$Waves,
+    # Named retreat points passed to the replay, e.g. junction-west:X,Y. Experimental, not native AI.
+    [string[]]$ReplayCover = @(),
     # Serve another mission schedule (its lists beside it), e.g. a staged experiment.
     [string]$Steps = '',
     [string]$Bash = 'C:\Program Files\Git\bin\bash.exe'
 )
 $ErrorActionPreference = 'Stop'
+if ($ReplayCover.Count) {
+    if (-not $Waves) { throw '-ReplayCover requires -Waves' }
+    $CoverLegs = @{}
+    foreach ($cover in $ReplayCover) {
+        # These enter a shell command. Validate before creating or launching any part of the run.
+        if ($cover -notmatch '^[a-z]+(?:-[a-z]+)*:-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?$') {
+            throw 'ReplayCover must be LEG:X,Y (finite decimal coordinates)'
+        }
+        $leg = $cover.Split(':')[0]
+        if ($CoverLegs.ContainsKey($leg)) { throw "Duplicate ReplayCover leg: $leg" }
+        $CoverLegs[$leg] = $true
+    }
+}
 $Repo = (Resolve-Path "$PSScriptRoot\..\..").Path
 . "$Repo\tools\ps4_setup\D1Paths.ps1"
 $S = $PSScriptRoot -replace '\\', '/'
@@ -99,6 +114,11 @@ if ($Waves) {
     # The replay re-arms the current wave list after a death, so it needs the lists' folder.
     $ScheduleDir = if ($Steps) { Split-Path (Resolve-Path $Steps).Path } else { Join-Path $Fix 'mission' }
     $Fallen += ' --waves --schedule-dir ' + ($ScheduleDir -replace '\\', '/')
+}
+if ($ReplayCover.Count) {
+    foreach ($cover in $ReplayCover) {
+        $Fallen += " --cover $cover"
+    }
 }
 if ($JunctionFallen) { $Fallen += ' --junction-fallen ' + ((Join-Path $Fix 'mission\agr-b-graveyard-junction.txt' -Resolve) -replace '\\', '/') }
 $jobs = @(

@@ -76,9 +76,21 @@ def wait_for(path, needle, seconds, *, offset=0, clock=time.monotonic, sleep=tim
         sleep(1)
 
 
+def parse_fixed_cover(value):
+    """A named leg and a finite point, before any route input can be sent."""
+    try:
+        name, xy = value.split(':', 1)
+        x, y = (float(v) for v in xy.split(','))
+        if not re.fullmatch(r'[a-z]+(?:-[a-z]+)*', name) or not all(map(math.isfinite, (x, y))):
+            raise ValueError
+        return name, (x, y)
+    except ValueError:
+        raise argparse.ArgumentTypeError('cover must be LEG:X,Y with finite coordinates') from None
+
+
 class Replay:
     def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None, junction=None, waves=False,
-                 schedule_dir=None):
+                 schedule_dir=None, fixed_covers=None):
         self.run, self.host_log, self.garage_clients = run, host_log, garage_clients
         self.waves, self.schedule_dir = waves, schedule_dir
         self.rearms = 0
@@ -86,6 +98,7 @@ class Replay:
         self.tracked = run / 'tracked.json'
         self.native_unit = False
         self.wave = None                   # the squads of the last wave fought, for skirmish()
+        self.fixed_covers = dict(fixed_covers or {})
         self.route_prefix = ''             # a resumed replay names its routes apart (play())
 
     def command(self, name, args, seconds, check=True):
@@ -428,7 +441,7 @@ class Replay:
             if not spot or (me and math.dist(me[:2], [float(v) for v in spot.split(',')]) > reach):
                 break
             fought = True
-            cover = self.cover(me)
+            cover = self.cover(me, name=name)
             out = self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '30', '--squads', self.wave,
                          *(['--cover', f'{cover[0]:.1f},{cover[1]:.1f}'] if cover else []),
@@ -455,7 +468,7 @@ class Replay:
                                      '--tracked', str(self.tracked), '--retrack'], 60)
             self.select_retracked_position()
 
-    def cover(self, me, back=10.0):
+    def cover(self, me, back=10.0, name=None):
         """The point `back` m behind the Guardian along the current leg, to retreat to in a fight.
 
         Backing straight off in the open did not break line of sight (sense108 died at the
@@ -464,6 +477,14 @@ class Replay:
         leg = getattr(self, 'leg', None)
         if not me or not leg:
             return None
+        # A tested hiding point can break line of sight where retreating along the route cannot.
+        # Match a leg and its retry/chunk suffixes, without changing the other legs' tactics.
+        fixed = getattr(self, 'fixed_covers', {})
+        matches = [key for key in fixed if name and (name == key or name.startswith(key + '-'))]
+        if matches:
+            point = fixed[max(matches, key=len)]
+            print(f'{name}: fixed cover {point[0]:.1f},{point[1]:.1f}', flush=True)
+            return point
         i = min(range(len(leg)), key=lambda j: math.dist(leg[j][:2], me[:2]))
         gone = 0.0
         while i > 0 and gone < back:
@@ -826,7 +847,14 @@ def main():
                     help='with --waves: the folder of the served schedule and its lists, to re-arm the waves after a death')
     ap.add_argument('--waves', action='store_true',
                     help='the schedule serves the Breach by its triggers (agr-steps-divide-waves.txt): publish nothing, fight the waves')
+    ap.add_argument('--cover', action='append', type=parse_fixed_cover, default=[], metavar='LEG:X,Y',
+                    help='with --waves: a fixed retreat point for this leg only (repeat for different legs)')
     a = ap.parse_args()
+    fixed_covers = dict(a.cover)
+    if a.cover and not a.waves:
+        ap.error('--cover requires --waves')
+    if len(fixed_covers) != len(a.cover):
+        ap.error('specify each cover leg only once')
     if a.waves and (a.breach_fallen or a.junction_fallen):
         ap.error('--waves replaces --breach-fallen and --junction-fallen')
     if a.pad is None:
@@ -852,7 +880,12 @@ def main():
             connections = a.host_log.read_bytes().count(CONNECTION.encode()) if a.host_log.exists() else 0
             client_offset = client_log.stat().st_size if client_log.exists() else 0
             replay = Replay(a.run_dir, host_log, a.garage_clients, a.pad, fallen=a.breach_fallen,
-                            junction=a.junction_fallen, waves=a.waves, schedule_dir=a.schedule_dir)
+                            junction=a.junction_fallen, waves=a.waves, schedule_dir=a.schedule_dir,
+                            fixed_covers=fixed_covers)
+            if fixed_covers:
+                known = {leg[0] for leg in replay.waves_legs([])}
+                if set(fixed_covers) - known:
+                    ap.error('unknown cover leg; choose from: ' + ', '.join(sorted(known)))
             if attempt > 1:
                 replay.route_prefix = f'attempt{attempt}-'
             try:

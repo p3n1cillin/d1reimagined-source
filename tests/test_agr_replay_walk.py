@@ -113,6 +113,20 @@ class WalkFightingTest(unittest.TestCase):
 
 
 class CoverTest(unittest.TestCase):
+    def test_fixed_point_applies_to_named_leg_and_its_retries_only(self):
+        f = Fake((31.0, 0.5, 0.0)); f.leg = LINE
+        f.fixed_covers = {'junction-west': (45.0, 8.0)}
+        self.assertEqual(M.Replay.cover(f, f.at, name='junction-west-r6-1-pre'), (45.0, 8.0))
+        self.assertEqual(M.Replay.cover(f, f.at, name='mine-crouched-r2'), LINE[4][:2])
+        self.assertEqual(M.Replay.cover(f, f.at, name='junction-western'), LINE[4][:2])
+        self.assertIsNone(M.Replay.cover(f, None, name='junction-west'))
+
+    def test_fixed_cover_input_rejects_malformed_or_nonfinite_points(self):
+        self.assertEqual(M.parse_fixed_cover('junction-west:45,-8.5'), ('junction-west', (45.0, -8.5)))
+        for value in ('junction-west:nan,2', 'junction-west:1,inf', '1,2', 'x:1,2,3', 'x;bad:1,2'):
+            with self.subTest(value=value), self.assertRaises(M.argparse.ArgumentTypeError):
+                M.parse_fixed_cover(value)
+
     def test_cover_is_ten_metres_back_along_the_leg(self):
         f = Fake((31.0, 0.5, 0.0)); f.leg = LINE
         self.assertEqual(M.Replay.cover(f, f.at), LINE[4][:2])
