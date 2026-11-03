@@ -264,6 +264,11 @@ def video_strings_candidate(index, english, labels):
     blob = array(english, 0x38, 1)
     if not parts or not blob or len(entries) != len(hashes):
         raise ValueError('string index and English entries disagree')
+    plain = [p for p in parts if not struct.unpack_from('<q', english, p)[0]
+             and struct.unpack_from('<H', english, p + 0x14)[0]
+             and blob[0] <= p + 8 + struct.unpack_from('<q', english, p + 8)[0] < blob[0] + len(blob)]
+    if not plain:
+        raise ValueError('no unformatted text part to use for new labels')
 
     def append(out, source, field, n, stride):
         _, rel = struct.unpack_from('<Qq', source, field)
@@ -317,7 +322,7 @@ def video_strings_candidate(index, english, labels):
             continue
         struct.pack_into('<q', en, dst + 8, new_blob[0] + old_text - blob[0] - dst - 8)
     for dst, text in zip(new_parts[len(parts):], texts):
-        en[dst:dst + 32] = english[parts[0]:parts[0] + 32]
+        en[dst:dst + 32] = english[plain[0]:plain[0] + 32]
         struct.pack_into('<q', en, dst + 8, cursor - dst - 8)
         struct.pack_into('<HHH', en, dst + 0x14, len(text), len(text), 0)
         en[cursor:cursor + len(text)] = text
