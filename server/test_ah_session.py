@@ -165,7 +165,8 @@ class ActivityHostSession(unittest.TestCase):
         # TEST361: an --ah-object-at step delayed the next heartbeat by the step's time (baboon)
         c = self.start("--ah-heartbeat", "0.2:-1", "--ah-baselines", "0x10/3/0",
                        "--ah-object-at", '0.5@0x10:3:0:0x80809002={"0": 5}')
-        start, pushes = self.run_client(c, 1.6)
+        # 2.4 s for the 0.2 s heartbeat: in 1.6 s a slow Windows runner collected 5, one short.
+        start, pushes = self.run_client(c, 2.4)
         sims = [(t - start, objects_in(self.schema, d)) for t, s, d in pushes if s == b.AH_SIMULATION]
         times = [t for t, _ in sims]
         self.assertGreaterEqual(len(times), 6)

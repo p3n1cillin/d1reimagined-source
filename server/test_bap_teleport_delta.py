@@ -65,7 +65,7 @@ class TeleportDeltaSession(unittest.TestCase):
     # Windows that wait for a reply use a long duration with `until`, so they return as soon as it
     # comes; 0.02-0.15 s windows failed on slow Windows runners (#192, #200). Windows that assert
     # nothing finishes stay short where a delayed finish is part of the test.
-    def collect(self, client, duration, until=None):
+    def collect(self, client, duration, until=None, at_least=None):
         worlds = []
         deadline = time.monotonic() + duration
         while time.monotonic() < deadline:
@@ -74,6 +74,8 @@ class TeleportDeltaSession(unittest.TestCase):
                 if subtype == bap.AH_ESTABLISH:
                     worlds.append(json.loads(data) if data else {"empty": True})
             if until and any(until(world) for world in worlds):
+                break
+            if at_least is not None and len(worlds) >= at_least:
                 break
         return worlds
 
@@ -104,7 +106,8 @@ class TeleportDeltaSession(unittest.TestCase):
         self.args.ah_heartbeat = bap.parse_args(["--ah-heartbeat", "0.005"]).ah_heartbeat
         client = self.start()
         started = self.queue(client)
-        pending = self.collect(client, 0.2)
+        # Until two heartbeats, not for a fixed 0.2 s: a slow Windows runner sent none in that.
+        pending = self.collect(client, 3, at_least=2)
         self.assertGreaterEqual(len(pending), 2)
         initial = next(world for world in started if world.get("teleport") == [1, *self.target])
         self.assertTrue(all(world.get("teleport") == [1, *self.target]
