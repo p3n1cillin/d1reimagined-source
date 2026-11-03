@@ -63,6 +63,18 @@ string-entry record. The argument and array relationship remains under investiga
 an observed failure, not evidence that the new settings rows work. No graph or settings-array
 redirection was observed before that failure. The source and fork changes remain draft.
 
+The later bounded trace isolated a cached language header: the failing array-head displacement
+equalled the difference between that header and the one originally redirected. Fork integration
+`fe52433` instead selects complete immutable candidate string roots at the library's lookup sites,
+leaving resident descriptors unchanged. In fresh run `native-video-j`, both Inventory and Settings
+opened with readable labels and without the earlier invalid-entry fault. This is an isolated
+native pass for that transition, not completion of the Video controls.
+
+The Video group was still absent. Read-only checks confirmed that the extra graph binding and
+settings rows were resident, but the binding-stage hook runs after component construction. An
+earlier graph selection point has been prepared so property registration sees the candidate from
+the start; its layout and interaction still need a fresh native check.
+
 ## Remaining work
 
 Test the graph connections and list expansion, provide the new labels to native string lookup, and
