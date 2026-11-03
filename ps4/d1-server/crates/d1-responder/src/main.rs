@@ -2231,6 +2231,7 @@ fn stage_loadout(loadout: &d1_loadout::Loadout, dir: &str) -> anyhow::Result<usi
 /// test. A run log must carry its own provenance - the same reason `run-boot.sh` prints its
 /// environment block at startup. If a knob is added below and not added here, that is the bug.
 const KNOBS: &[(&str, &str, &str)] = &[
+    ("D1_RESPONDER_LOG_TIME", "0", "1 = prefix every log line with the UTC time"),
     // ── ⭐ the correlation table (new, 2026-08-08) ────────────────────────────────────────────
     ("D1_BAP_DUMP_DIR", "<unset>", "write every decrypted inbound BAP body, whole, to this directory"),
     ("D1_BAP_FIFO", "1", "⭐ correlation table ON. 0 = legacy immediate-write (reproduces the Weasel)"),
@@ -2778,7 +2779,14 @@ fn check_205_503_agree() {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    tracing_subscriber::fmt().with_target(false).without_time().init();
+    // Timestamps are off by default (the log is read by diffing and grepping); D1_RESPONDER_LOG_TIME=1
+    // turns them on to place a client wait (the "Contacting Destiny Servers" toast) against the frames.
+    let log = tracing_subscriber::fmt().with_target(false);
+    if std::env::var("D1_RESPONDER_LOG_TIME").as_deref() == Ok("1") {
+        log.init();
+    } else {
+        log.without_time().init();
+    }
 
     // ⚠ RUSTLS PROVIDER - MUST be explicit, and this is not cosmetic.
     //
