@@ -33,9 +33,16 @@ The owned-input check produces twelve groups and twenty-three settings, includin
 and 22. The generated manifest says `installed: false` and `native_ui_verified: false`.
 Synthetic tests cover relocated group references, old choice preservation and corrupt bounds.
 
+With `--graph <decoded-settings-graph>`, it also prepares a graph candidate. The existing Helmet
+binding identifies its source component, named-property path and destination list. A new named
+property and a binding to the next slot in that same list are appended, preserving node ids,
+imports and all original bindings. On the owned input this adds binding 117 from options-data
+node 236 to list node 231, slot 4. The existing and appended paths re-read successfully; the
+layout and list expansion are still unverified in-game.
+
 ## Remaining work
 
-Add the Video group's graph connections, provide the new labels to native string lookup, and
+Test the graph connections and list expansion, provide the new labels to native string lookup, and
 map its two new ids to the shared video-setting writer. Load the decoded changes without
 altering the original game packages. Then test all presets in the native tab, including reload
 persistence and a 4K restart. No native row has yet been seen in a running game.

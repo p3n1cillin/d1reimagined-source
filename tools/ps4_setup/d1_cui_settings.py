@@ -154,3 +154,87 @@ def video_candidate(source, template_group):
                         'setting_ids': {'frame_rate': highest + 1, 'resolution': highest + 2},
                         'strings': {f'{k:08x}': v for k, v in labels.items()},
                         'installed': False, 'native_ui_verified': False}
+
+
+def video_graph_candidate(source, template_group, video_group):
+    """Append a named group binding to the same native list as the template group.
+
+    The graph's named-property table supplies type-4 path tokens. Bindings point to path
+    descriptors through self-relative pointers; moving either array must fix those pointers.
+    No imported template or existing node id is changed.
+    """
+    if len(source) < 0x158 or struct.unpack_from('<Q', source)[0] != len(source):
+        raise ValueError('graph self-length disagrees')
+    names = array(source, 0xc8, 4)
+    hashes = [struct.unpack_from('<I', source, o)[0] for o in names]
+    if hashes.count(template_group) != 1 or video_group in hashes:
+        raise ValueError('template name missing/ambiguous, or video already present')
+    paths = array(source, 0x48, 16)
+    bindings = array(source, 0x138, 64)
+
+    def pointer(field):
+        target = field + struct.unpack_from('<q', source, field)[0]
+        if not 0 <= target <= len(source) - 16:
+            raise ValueError('binding path outside graph')
+        return target
+
+    matches = []
+    for b in bindings:
+        path = pointer(b + 8)
+        tokens = array(source, path, 8)
+        if len(tokens) == 1 and struct.unpack_from('<HHI', source, tokens[0]) == (4, hashes.index(template_group), 0):
+            matches.append((b, path))
+    if len(matches) != 1:
+        raise ValueError('expected one direct template-group binding')
+    template, template_path = matches[0]
+    if template_path not in paths:
+        raise ValueError('template path absent from active path array')
+    target_node = struct.unpack_from('<Q', source, template + 24)[0]
+    slots = [struct.unpack_from('<Q', source, b + 40)[0] for b in bindings
+             if struct.unpack_from('<Q', source, b + 24)[0] == target_node]
+    if not slots or any(v & 0xffff for v in slots):
+        raise ValueError('target is not a flat indexed native list')
+    new_slot = max(slots) + 0x10000
+    out = bytearray(source)
+
+    def append(field, count, stride, old_field):
+        _, rel = struct.unpack_from('<Qq', source, old_field)
+        cls = struct.unpack_from('<I', source, old_field + 8 + rel + 8)[0]
+        out.extend(b'\0' * ((-len(out)) % 8))
+        head = len(out) + 8
+        out.extend(struct.pack('<IIQII', 0, ARRAY, count, cls, 0))
+        start = len(out)
+        out.extend(b'\0' * (count * stride))
+        struct.pack_into('<Qq', out, field, count, head - field - 8)
+        return [start + i * stride for i in range(count)]
+
+    new_names = append(0xc8, len(names) + 1, 4, 0xc8)
+    for pos, value in zip(new_names, hashes + [video_group]):
+        struct.pack_into('<I', out, pos, value)
+    new_paths = append(0x48, len(paths) + 1, 16, 0x48)
+    moved_paths = dict(zip(paths, new_paths))
+    for old, pos in moved_paths.items():
+        count, rel = struct.unpack_from('<Qq', source, old)
+        struct.pack_into('<Qq', out, pos, count, old + 8 + rel - pos - 8 if rel else 0)
+    token, = append(new_paths[-1], 1, 8, template_path)
+    struct.pack_into('<HHI', out, token, 4, len(names), 0)
+    new_bindings = append(0x138, len(bindings) + 1, 64, 0x138)
+    for old, pos in zip(bindings + [template], new_bindings):
+        out[pos:pos + 64] = source[old:old + 64]
+        for off in (8, 32):
+            target = pointer(old + off)
+            struct.pack_into('<q', out, pos + off, moved_paths.get(target, target) - pos - off)
+    struct.pack_into('<q', out, new_bindings[-1] + 8, new_paths[-1] - new_bindings[-1] - 8)
+    struct.pack_into('<Q', out, new_bindings[-1] + 40, new_slot)
+    struct.pack_into('<Q', out, 0, len(out))
+    # Re-read all moved descriptors and every binding path before producing a candidate.
+    for pos in array(out, 0x48, 16):
+        array(out, pos, 8)
+    for pos in array(out, 0x138, 64):
+        for off in (8, 32):
+            target = pos + off + struct.unpack_from('<q', out, pos + off)[0]
+            array(out, target, 8)
+    return bytes(out), {'source_node': struct.unpack_from('<Q', source, template)[0],
+                        'target_list_node': target_node, 'target_slot': new_slot >> 16,
+                        'named_property_index': len(names), 'bindings': len(new_bindings),
+                        'installed': False, 'native_ui_verified': False}

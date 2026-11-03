@@ -53,5 +53,41 @@ class CuiSettingsTest(unittest.TestCase):
                     M.Settings(b)
 
 
+class CuiGraphTest(unittest.TestCase):
+    def test_graph_adds_a_binding_and_preserves_existing_path_contents(self):
+        b = bytearray(0x158)
+
+        def arr(field, n, stride):
+            head = len(b) + 8
+            b.extend(struct.pack('<IIQII', 0, M.ARRAY, n, 5, 0))
+            start = len(b)
+            b.extend(b'\0' * (n * stride))
+            struct.pack_into('<Qq', b, field, n, head - field - 8)
+            return [start + i * stride for i in range(n)]
+
+        name, = arr(0xc8, 1, 4)
+        struct.pack_into('<I', b, name, 0x1234)
+        b.extend(b'\0' * (-len(b) % 8))
+        paths = arr(0x48, 2, 16)
+        for pos, value in zip(paths, (4, 0x201)):
+            token, = arr(pos, 1, 8)
+            struct.pack_into('<Q', b, token, value)
+        binding, = arr(0x138, 1, 64)
+        struct.pack_into('<QqQQqQQQ', b, binding, 20, paths[0] - binding - 8,
+                         1, 12, paths[1] - binding - 32, 0x30000, 0, 0)
+        struct.pack_into('<Q', b, 0, len(b))
+        changed, manifest = M.video_graph_candidate(bytes(b), 0x1234, 0x5678)
+        self.assertEqual(manifest['target_list_node'], 12)
+        self.assertEqual(manifest['target_slot'], 4)
+        links = M.array(changed, 0x138, 64)
+        self.assertEqual(len(links), 2)
+        for link, expected in zip(links, (0, 1)):
+            path = link + 8 + struct.unpack_from('<q', changed, link + 8)[0]
+            token, = M.array(changed, path, 8)
+            self.assertEqual(struct.unpack_from('<HHI', changed, token), (4, expected, 0))
+        with self.assertRaisesRegex(ValueError, 'already present'):
+            M.video_graph_candidate(changed, 0x1234, 0x5678)
+
+
 if __name__ == '__main__':
     unittest.main()
