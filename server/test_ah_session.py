@@ -162,20 +162,22 @@ class ActivityHostSession(unittest.TestCase):
         self.assertTrue(all(data == b"" for data in heartbeats))
 
     def test_heartbeats_keep_their_interval_across_object_steps(self):
-        # TEST361: an --ah-object-at step delayed the next heartbeat by the step's time (baboon)
+        # TEST361: an --ah-object-at step delayed the next heartbeat by the step's time (baboon):
+        # the interval took the step's 0.9 s. A gap bound of 0.6 s keeps that well out and leaves
+        # room for the Windows runner, which spaced one 0.2 s heartbeat 0.46 s (#253).
         c = self.start("--ah-heartbeat", "0.2:-1", "--ah-baselines", "0x10/3/0",
-                       "--ah-object-at", '0.5@0x10:3:0:0x80809002={"0": 5}')
+                       "--ah-object-at", '0.9@0x10:3:0:0x80809002={"0": 5}')
         # 2.4 s for the 0.2 s heartbeat: in 1.6 s a slow Windows runner collected 5, one short.
         start, pushes = self.run_client(c, 2.4)
         sims = [(t - start, objects_in(self.schema, d)) for t, s, d in pushes if s == b.AH_SIMULATION]
         times = [t for t, _ in sims]
         self.assertGreaterEqual(len(times), 6)
-        self.assertLess(max(y - x for x, y in zip(times, times[1:])), 0.45)
+        self.assertLess(max(y - x for x, y in zip(times, times[1:])), 0.6)
         states = [o[(0x10, 3, 0)] for _, o in sims]
         self.assertIsNone(states[0])
         self.assertEqual(states[-1], {0: 5})
         first_step = next(t for t, o in sims if o[(0x10, 3, 0)] == {0: 5})
-        self.assertGreaterEqual(first_step, 0.45)
+        self.assertGreaterEqual(first_step, 0.85)
 
     def test_on_rule_steps_an_object_when_the_client_reports(self):
         c = self.start("--ah-heartbeat", "0.1:-1", "--ah-baselines", "0x10/3/0,0x10/3/1",
