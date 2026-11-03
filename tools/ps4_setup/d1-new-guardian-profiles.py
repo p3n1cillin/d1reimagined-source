@@ -22,8 +22,9 @@ Rises' opening by itself in an orbit boot.
 
 Serve it with ending-run.ps1 -PostgameDir OUT/postgame, and with -ExtraEnv setting D1_PROFILE_FILE
 to OUT/characters/profile-tutorial-t.bin and D1_LOOT_GRANT to the grant with OUT's
-grants/profile-tutorial-th.bin (later values win). Untested in a run: the 94 subs may hold
-something the route relies on, so the first run with it is the test.
+grants/profile-tutorial-th.bin (later values win). With the empty record the route stays in orbit
+(run newguardian-run1); with --keep 673,731,...,2188 (the markers r2 kept; the notes list them) run
+newguardian-keep1 played A Guardian Rises from the opening to the Tower, unattended.
 """
 import argparse
 import os
