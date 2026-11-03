@@ -111,6 +111,10 @@ class CuiStringsTest(unittest.TestCase):
         english[blob[0]:blob[0] + 3] = b'One'
         control = len(english)
         english.extend(b'" ')
+        english.extend(b'\0' * (-len(english) % 16))
+        formatting = len(english)
+        english.extend(bytes(range(80)))
+        struct.pack_into('<q', english, parts[1], formatting - parts[1])
         for pos, target, length in zip(parts, (blob[0], control), (3, 2)):
             struct.pack_into('<q', english, pos + 8, target - pos - 8)
             struct.pack_into('<HHH', english, pos + 0x14, length, length, 0)
@@ -119,6 +123,9 @@ class CuiStringsTest(unittest.TestCase):
         for b in (index, english):
             struct.pack_into('<Q', b, 0, len(b))
         si, en = M.video_strings_candidate(bytes(index), bytes(english), {'0000001e': 'Frame Rate'})
+        relocated = M.array(en, 8, 32)[1]
+        fmt = relocated + struct.unpack_from('<q', en, relocated)[0]
+        self.assertEqual(en[fmt:fmt + 80], bytes(range(80)))
         decoder_spec = importlib.util.spec_from_file_location('string_decoder', Path(__file__).parents[1] /
                                                              'tools/ps4_setup/d1-scenarios.py')
         decoder = importlib.util.module_from_spec(decoder_spec)

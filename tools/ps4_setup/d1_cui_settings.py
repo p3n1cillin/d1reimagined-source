@@ -293,6 +293,14 @@ def video_strings_candidate(index, english, labels):
     cursor = new_blob[0] + len(blob)
     for old, dst in zip(parts, new_parts):
         en[dst:dst + 32] = english[old:old + 32]
+        format_rel = struct.unpack_from('<q', english, old)[0]
+        if format_rel:
+            format_target = old + format_rel
+            if not 0 <= format_target <= len(english) - 0x50:
+                raise ValueError('original formatting descriptor outside source tag')
+            # Native 8DAA3C..45 reads this separate self-relative pointer before its aligned
+            # formatting load. The text decoder alone does not exercise it.
+            struct.pack_into('<q', en, dst, format_target - dst)
         old_text = old + 8 + struct.unpack_from('<q', english, old + 8)[0]
         length = struct.unpack_from('<H', english, old + 0x14)[0]
         if old in extra:
