@@ -50,6 +50,16 @@ def parse(keys):
     return out
 
 
+def key_flags(code):
+    """The arrow cluster is E0-prefixed; without it SDL sees the matching numpad key.
+
+    Windows maps both Down and NumPad2 to scan 0x50, even with MAPVK_VK_TO_VSC_EX on
+    some layouts. Preserve the distinction explicitly for the arrow keys this driver supports.
+    See Microsoft's Keyboard Input Overview, Extended-Key Flag.
+    """
+    return 1 if 0x25 <= code <= 0x28 else 0  # KEYEVENTF_EXTENDEDKEY
+
+
 def _window():
     user32 = ctypes.windll.user32
     found = []
@@ -93,9 +103,10 @@ def press(*keys, gap=150):
         if not _focus(h):
             continue
         scan = user32.MapVirtualKeyW(code, 0)
-        user32.keybd_event(code, scan, 0, 0)
+        flags = key_flags(code)
+        user32.keybd_event(code, scan, flags, 0)
         time.sleep(hold / 1000)
-        user32.keybd_event(code, scan, 2, 0)
+        user32.keybd_event(code, scan, flags | 2, 0)
         stamp = int(time.time())
         time.sleep(gap / 1000)
     if stamp and tools:
