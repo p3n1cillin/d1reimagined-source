@@ -7,7 +7,9 @@ step 1000/60 ms. Read live (d1-frame-timing.py, 2 November 2026), the presentati
 built from those values: +0x38 holds the rate and +0x08 the period in microseconds (16,683 at 60).
 The engine then ticks at the rate (60.0 ticks/s). This rewrites the three values for N, with
 period 1001/N ms (the NTSC 1.001 of the original 33.3667 ms at 30) and step 1000/N ms. Everything
-else is kept as in the base.
+else is kept as in the base. The engine clock's ticks a second (+0x04), which the game turns seconds
+into ticks with, follows from the same values at start, so a rate set this way times weapons right
+(a rifle booted at 120 fired at 450 rounds a minute, as at 30; notes/ps4-56578-frame-rate-2026-11-02.md).
 
 For any rate but 60 the base's outer cadence entry is disabled (see patch()). Above 60 the emulator
 must present that fast too: GPU.vblank_frequency >= N in config.json, and
