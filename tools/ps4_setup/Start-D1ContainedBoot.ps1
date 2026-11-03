@@ -181,6 +181,11 @@ if ($LabIp) {
     # The emulator's own WebAPI (friend list) is configured on 127.0.0.1:31315.
     $winServers += Start-Process -FilePath (Join-Path $bin 'd1-responder.exe') -ArgumentList (@('--bind', '127.0.0.1') + $cert) -PassThru -WindowStyle Hidden `
         -RedirectStandardOutput (Join-Path $out 'responder-loopback.log') -RedirectStandardError (Join-Path $out 'responder-loopback.err.log')
+    # The client waits for each reply, and shows "Contacting Destiny Servers" when one is slow. At orbit
+    # load the emulator takes every core, and at normal priority a trivial reply waited 0.9-1.4 s
+    # (session toast-stock-b, notes/ps4-56578-new-guardian-2026-11-03.md). Above normal keeps the servers
+    # ahead of the emulator's threads; they use little CPU themselves.
+    foreach ($p in $winServers) { try { $p.PriorityClass = 'AboveNormal' } catch { } }
     $deadline = (Get-Date).AddSeconds(30)
     do {
         Start-Sleep -Milliseconds 300
