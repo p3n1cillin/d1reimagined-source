@@ -40,6 +40,19 @@ imports and all original bindings. On the owned input this adds binding 117 from
 node 236 to list node 231, slot 4. The existing and appended paths re-read successfully; the
 layout and list expansion are still unverified in-game.
 
+Optional `--string-index <decoded-index> --string-index-tag <authored-id> --english <decoded-English>`
+adds the project-authored labels. Their keys follow the original maximum, preserving every old
+hash's ordinal. The part, blob and entry arrays are relocated together; short control strings
+outside the main text blob are preserved too. The existing `d1-scenarios.py` decoder verifies all
+882 original English labels unchanged and all 15 new labels correctly decoded on the owned input.
+Four synthetic tests pass, including a control string outside the main blob. This prepares English
+only; other languages need equivalent content work.
+
+The output retains exact original tags as well as candidates for runtime byte comparison. The
+fork's opt-in native-video branch uses those comparisons before redirecting in-memory root arrays,
+and adds getters/setters for ids 21/22 through the same config writer as the F10 panel. Original
+packages remain unchanged. Native installation and interaction still require a live test.
+
 ## Remaining work
 
 Test the graph connections and list expansion, provide the new labels to native string lookup, and
