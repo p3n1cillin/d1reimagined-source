@@ -1,8 +1,8 @@
 """Measure a jump at several frame rates in the running 56578 client: d1-jump-probe.py [--rates 30,60,120].
 
 The fidelity check for the frame-rate presets: if the simulation step changes how the game plays,
-a jump shows it first (peak height and airtime). For each rate the probe writes the four values
-d1-frame-rate.py writes, presses jump (NumPad2, held --hold ms of game time, 120 by default; the
+a jump shows it first (peak height and airtime). For each rate the probe writes the rate
+d1_rate.py writes, presses jump (NumPad2, held --hold ms of game time, 120 by default; the
 jump is variable-height, so a hold must cover the same game time at every rate) and samples the Guardian's position
 every ~2 ms until it lands. Airtime is reported in real time and in game time (engine ticks times
 the tick length), so a rate the PC cannot hold (game time below real time) is not mistaken for a
@@ -13,7 +13,6 @@ import argparse
 import importlib.util
 import os
 import statistics
-import struct
 import threading
 import time
 
@@ -22,17 +21,9 @@ spec = importlib.util.spec_from_file_location('d1_winguest', os.path.join(HERE, 
 winguest = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(winguest)
 import d1_keys  # noqa: E402
+import d1_rate  # noqa: E402
 import d1_unit_tracking as ut  # noqa: E402
-
-CADENCE_PTR, CLOCK_PTR = 0x26BCD08, 0x26BC880
 LIFT = 0.03  # m above the standing height that counts as airborne
-
-
-def set_rate(p, table, clock, fps):
-    p.write(table + 8, struct.pack('<Q', round(1001000 / fps)))
-    p.write(table + 0x38, struct.pack('<Q', fps))
-    p.write(table + 0x40, struct.pack('<Q', round(1000000 / fps)))
-    p.write(clock + 8, struct.pack('<f', 1.0 / fps))
 
 
 def sample(p, base, clock, seconds):
@@ -64,9 +55,12 @@ def jump(p, base, clock, tick_s, hold_ms, seconds):
     peak = max(r[axis] for r in rows) - floor
     air = [r for r in rows if r[axis] > floor + LIFT]
     if not air:
-        return {'axis': 'xyz'[axis - 2], 'peak': peak, 'air_real': 0.0, 'air_game': 0.0, 'samples': len(rows)}
+        return {'axis': 'xyz'[axis - 2], 'peak': peak, 'drift': 0.0, 'air_real': 0.0, 'air_game': 0.0, 'samples': len(rows)}
     up, down = air[0], air[-1]
-    return {'axis': 'xyz'[axis - 2], 'peak': peak, 'air_real': down[0] - up[0],
+    # Drift: how far the Guardian moved sideways (a slope or a ledge spoils the measurement).
+    flat = [i for i in range(2, 5) if i != axis]
+    drift = sum((rows[-1][i] - rows[0][i]) ** 2 for i in flat) ** 0.5
+    return {'axis': 'xyz'[axis - 2], 'peak': peak, 'drift': drift, 'air_real': down[0] - up[0],
             'air_game': (down[1] - up[1]) * tick_s, 'samples': len(rows),
             'landed': down is not rows[-1]}
 
@@ -80,11 +74,11 @@ def main():
     a = ap.parse_args()
     rates = [int(x) for x in a.rates.split(',')]
     p, base = winguest.open_client()
-    table, clock = p.u(base + CADENCE_PTR, 'Q'), p.u(base + CLOCK_PTR, 'Q')
-    was = p.u(table + 0x38, 'Q')
+    _, clock, _ = d1_rate.pointers(p, base)
+    was = d1_rate.read(p, base)[0]
     try:
         for fps in rates:
-            set_rate(p, table, clock, fps)
+            d1_rate.set_rate(p, base, fps)
             time.sleep(a.settle)
             t0, k0 = time.monotonic(), p.u(clock + 0xC, 'I')
             time.sleep(2.0)
@@ -97,11 +91,11 @@ def main():
                 # The hold in game time too: D1's jump rises higher the longer it is held.
                 j = jump(p, base, clock, tick_s, round(a.hold / max(ticks * tick_s, 0.1)), window)
                 print(f'      jump {i + 1}: peak {j["peak"]:.3f} m ({j["axis"]}), airtime {j["air_real"]:.3f} s real,'
-                      f' {j["air_game"]:.3f} s game, {j["samples"]} samples'
+                      f' {j["air_game"]:.3f} s game, drift {j["drift"]:.2f} m, {j["samples"]} samples'
                       + ('' if j.get('landed', True) else f', NOT LANDED in {window:.1f} s'))
                 time.sleep(1.0)
     finally:
-        set_rate(p, table, clock, was)
+        d1_rate.set_rate(p, base, was)
         print(f'rate put back to {was}')
 
 
