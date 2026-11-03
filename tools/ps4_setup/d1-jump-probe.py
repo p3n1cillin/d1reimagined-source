@@ -71,8 +71,11 @@ def main():
     ap.add_argument('--jumps', type=int, default=3)
     ap.add_argument('--settle', type=float, default=3.0)
     ap.add_argument('--hold', type=int, default=120, help='jump held this many ms of game time')
+    ap.add_argument('--holds', help='a sweep: comma-separated holds in ms; ends with a table of the median peaks')
     a = ap.parse_args()
     rates = [int(x) for x in a.rates.split(',')]
+    holds = [int(x) for x in a.holds.split(',')] if a.holds else [a.hold]
+    peaks = {}
     p, base = winguest.open_client()
     _, clock, _ = d1_rate.pointers(p, base)
     was = d1_rate.read(p, base)[0]
@@ -85,15 +88,22 @@ def main():
             ticks = (p.u(clock + 0xC, 'I') - k0) / (time.monotonic() - t0)
             tick_s = p.u(clock + 8, 'f')
             print(f'{fps:4d}: engine {ticks:.1f} ticks/s, game {ticks * tick_s:.2f}x real')
-            for i in range(a.jumps):
-                # A rate the PC cannot hold runs slow: sample long enough for 2 s of game time.
-                window = max(2.5, 2.0 / max(ticks * tick_s, 0.1))
-                # The hold in game time too: D1's jump rises higher the longer it is held.
-                j = jump(p, base, clock, tick_s, round(a.hold / max(ticks * tick_s, 0.1)), window)
-                print(f'      jump {i + 1}: peak {j["peak"]:.3f} m ({j["axis"]}), airtime {j["air_real"]:.3f} s real,'
-                      f' {j["air_game"]:.3f} s game, drift {j["drift"]:.2f} m, {j["samples"]} samples'
-                      + ('' if j.get('landed', True) else f', NOT LANDED in {window:.1f} s'))
-                time.sleep(1.0)
+            for hold in holds:
+                for i in range(a.jumps):
+                    # A rate the PC cannot hold runs slow: sample long enough for 2 s of game time.
+                    window = max(2.5, 2.0 / max(ticks * tick_s, 0.1))
+                    # The hold in game time too: D1's jump rises higher the longer it is held.
+                    j = jump(p, base, clock, tick_s, round(hold / max(ticks * tick_s, 0.1)), window)
+                    peaks.setdefault((hold, fps), []).append(j['peak'])
+                    print(f'      hold {hold} ms, jump {i + 1}: peak {j["peak"]:.3f} m ({j["axis"]}), airtime'
+                          f' {j["air_real"]:.3f} s real, {j["air_game"]:.3f} s game, drift {j["drift"]:.2f} m,'
+                          f' {j["samples"]} samples' + ('' if j.get('landed', True) else f', NOT LANDED in {window:.1f} s'))
+                    time.sleep(1.0)
+        if len(holds) > 1:
+            # The median: a press lands on either side of a tick, and a missed press reads 0.
+            print('hold ms | ' + ' | '.join(f'{r}' for r in rates))
+            for hold in holds:
+                print(f'{hold:7d} | ' + ' | '.join(f'{statistics.median(peaks[(hold, r)]):.3f}' for r in rates))
     finally:
         d1_rate.set_rate(p, base, was)
         print(f'rate put back to {was}')
