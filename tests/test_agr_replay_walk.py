@@ -74,6 +74,16 @@ class WalkFightingTest(unittest.TestCase):
         f.walk_fighting('leg', LINE, (), 300, chunk=4)
         self.assertEqual(f.walks[0][1][0], LINE[6])
 
+    def test_route_aligned_fixed_cover_ends_the_stretch_before_the_drop(self):
+        for cover, expected in (((10.0, 0.2), LINE[2]), ((10.0, 3.0), LINE[4])):
+            with self.subTest(cover=cover):
+                f = Fake(LINE[0])
+                f.fixed_covers = {'junction-west': cover}
+                f.walk_fighting('junction-west-r2', LINE, (), 300, chunk=4)
+                self.assertEqual(f.walks[0][1][-1], expected)
+                self.assertEqual(f.fights[:2], ['junction-west-r2-0-pre', 'junction-west-r2-0'])
+                self.assertEqual(f.at, LINE[-1])
+
     def test_stall_backs_off_before_retrying(self):
         f = Fake((0.0, 0.0, 0.0), stall=1)
         f.walk_fighting('leg', LINE, (), 300, chunk=4)

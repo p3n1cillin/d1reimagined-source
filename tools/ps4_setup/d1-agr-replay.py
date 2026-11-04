@@ -300,6 +300,13 @@ class Replay:
         self.wave, self.leg = squads, points
         off = lambda me, i: math.dist(points[i][:2], me[:2])
         nearest = lambda me: min(range(len(points)), key=lambda i: off(me, i))
+        tolerance = 1.3
+        # Fight at a route-aligned fixed cover point before the next stretch. In the
+        # west junction that point is on the upper floor, before the irreversible drop.
+        cover = self.fixed_cover(name)
+        cover_index = nearest(cover) if cover is not None else None
+        if cover_index is not None and off(cover, cover_index) > tolerance:
+            cover_index = None
         me = self.where()
         start = nearest(me) if me else 0
         if me and off(me, start) > 15 and not rejoin:
@@ -307,6 +314,8 @@ class Replay:
         k, lost = 0, 0
         while start < len(points) - 1:
             end = min(start + chunk, len(points) - 1)
+            if cover_index is not None and start < cover_index < end:
+                end = cover_index
             attempt, stalls, hurts, under_fire = 0, 0, 0, False
             while True:
                 if stalls >= tries:
@@ -332,7 +341,7 @@ class Replay:
                     break
                 part = points[near:end + 1]
                 share = max(90, seconds * len(part) // len(points))
-                lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3,
+                lines = self.walk_once(tag, self.write_route(tag, part), share, tolerance,
                                        ('--hurt-stop', str(HURT_STOP)), check=False)
                 if lines and lines[-1].startswith('done '):
                     break
