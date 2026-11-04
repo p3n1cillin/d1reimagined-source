@@ -709,7 +709,12 @@ class Replay:
         if not healths or healths[-1] > 0.15 or not before:
             return False
         me = self.where()
-        return bool(me) and math.dist(me[:2], before[:2]) > 30
+        if me is None:
+            # The unit can vanish before the respawn's new position is available. Resolve that
+            # window here, before the next leg applies a stance or sends any movement.
+            if not self.wait_for_unit(30) or (me := self.where()) is None:
+                raise RuntimeError('No Guardian unit after a critical fight; no subsequent input sent')
+        return math.dist(me[:2], before[:2]) > 30
 
     def where(self):
         """The Guardian's position from memory (lab/tower-route/where.py), or None."""

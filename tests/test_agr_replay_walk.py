@@ -60,6 +60,13 @@ class Fake:
 
 
 class WalkFightingTest(unittest.TestCase):
+    def test_quiet_death_waits_for_respawn_position(self):
+        replay = M.Replay.__new__(M.Replay)
+        replay.where = Mock(side_effect=[None, (531, -767, 17)])
+        replay.wait_for_unit = Mock(return_value=True)
+        self.assertTrue(replay.died_quietly(['health 0.15', 'bursts 2'], (491, -722, 15)))
+        replay.wait_for_unit.assert_called_once_with(30)
+
     def test_publish_waits_for_ack_even_while_control_is_pending(self):
         with tempfile.TemporaryDirectory() as temp:
             replay = M.Replay.__new__(M.Replay)
