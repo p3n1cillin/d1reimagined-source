@@ -93,11 +93,22 @@ The native panel's panning stopped before the appended resolution choices came i
 The next test uses the existing Helmet group, which has only one original row, and logs which
 native string library receives the new label hashes.
 
+The compact placement exposes all six frame-rate and all three resolution choices. The text
+trace found a missing library on the two new headings. Run `native-video-q` on `1900d5d` showed
+both headings after the fork supplied the verified library. The individual choice labels were
+still blank. Selecting the second and third resolution choices saved 2560×1440 and 3840×2160
+while the running renderer stayed at 1920×1080. Fresh run `native-video-r-4k` on `683dd78`
+registered 3840×2160 buffers and rendered the full gameplay scene using the saved native
+selection. The screenshot was captured at the window size.
+
+An optional `--group-title Display` changes the compact group's label while preserving its
+authored graph identifier and existing Helmet row. Six synthetic tests pass, including that
+preservation. The renamed candidate still needs a native check.
+
 ## Remaining work
 
-Resolve the new labels and verify the compact group's layout. Then exercise the remaining
-presets, including reload persistence and a 4K restart. The separate Video group still needs
-a working graph binding.
+Resolve the choice labels, verify the Display group title and exercise the remaining native
+frame-rate presets. The separate Video group still needs a working graph binding.
 
 The owned input was inspected using the existing project decoder and tiger-pkg tools. See
 [the third-party attribution](../THIRD_PARTY.md); no third-party code or extracted tags are
