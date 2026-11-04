@@ -82,14 +82,22 @@ candidate appends the two rows to an authored group and keeps its original title
 and native graph binding. An owned-input candidate using Accessibility retained all 11 groups
 and appended ids 21 and 22 after its three original rows. Audio already has five rows. This is a
 separate test of the controls through the existing native group. The companion fork can load
-this form without installing either graph detour. In-game visibility and interaction remain
-unverified.
+this form without installing either graph detour.
+
+In run `native-video-o` on 4 November (fork integration `1f8d7aa`), the Settings tab showed
+its original buttons and the Accessibility panel instantiated the new frame-rate choices.
+Their titles and labels were blank. Selecting the third choice wrote 100 to the shared config
+and the live engine clock showed a 10 ms period and about 100 ticks/s while in the menu.
+Selecting the second restored the prior 60 target and the clock returned to 60 ticks/s.
+The native panel's panning stopped before the appended resolution choices came into view.
+The next test uses the existing Helmet group, which has only one original row, and logs which
+native string library receives the new label hashes.
 
 ## Remaining work
 
-Test row visibility and list expansion in the existing group, then change all presets through
-the shared setting writer, including reload persistence and a 4K restart. The separate Video
-group still needs a working graph binding. No native row has yet been seen in a running game.
+Resolve the new labels and verify the compact group's layout. Then exercise the remaining
+presets, including reload persistence and a 4K restart. The separate Video group still needs
+a working graph binding.
 
 The owned input was inspected using the existing project decoder and tiger-pkg tools. See
 [the third-party attribution](../THIRD_PARTY.md); no third-party code or extracted tags are
