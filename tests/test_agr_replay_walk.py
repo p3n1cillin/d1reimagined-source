@@ -59,6 +59,19 @@ class Fake:
 
 
 class WalkFightingTest(unittest.TestCase):
+    def test_crouch_disables_jump_in_walk_and_retrack(self):
+        replay = M.Replay.__new__(M.Replay)
+        replay.native_unit = True
+        replay.tracked = Path('synthetic-tracking')
+        replay.command = Mock()
+        for stance in ('crouch', 'stand'):
+            replay.stance = stance
+            replay.command.reset_mock()
+            replay.walk_once('mine', Path('route.json'), 30, 1.3, ())
+            replay.retrack()
+            for call in replay.command.call_args_list:
+                self.assertEqual('--no-jump' in call.args[1], stance == 'crouch')
+
     def test_off_the_leg_is_a_respawn(self):
         # sense108: respawned 40 m from the junction leg, which walked straight into a wall.
         with self.assertRaises(M.Respawned):

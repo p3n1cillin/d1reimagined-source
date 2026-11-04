@@ -50,6 +50,10 @@ class Respawned(Exception):
 # 72 and 74 stand a level below it; in sense101 the fight went down after them and the Guardian died twice.
 
 
+class WalkStalled(Respawned):
+    """Restart from a nearby leg without assuming a respawn reset the stance."""
+
+
 def contains(path, needle, offset=0):
     """Read a growing log in bounded chunks, including matches across chunk edges."""
     if not path.exists():
@@ -145,7 +149,7 @@ class Replay:
                 resumed = self.resume_route(name, route, lines)
                 if not resumed:
                     break
-                self.pad(f'Hold:{side}:600', 'NumPad2')
+                self.pad(f'Hold:{side}:600', *(() if self.stance_options() else ('NumPad2',)))
                 lines = self.walk_once(f'{name}-nudge', resumed, seconds, tolerance, extra)
                 done = bool(lines and lines[-1].startswith('done '))
         if strict and not done:
@@ -222,14 +226,15 @@ class Replay:
                                        rejoin=chosen)
                 else:
                     self.walk_waves(name, self.write_route(name, points), seconds, tolerance, (), legs=points)
-            except Respawned:
+            except Respawned as error:
                 if restarts == 0:
                     raise RuntimeError(f'{name}: too many respawns; no subsequent input sent')
                 restarts -= 1
                 restart += 1
-                self.stance = 'stand'
+                if not isinstance(error, WalkStalled):
+                    self.stance = 'stand'
                 i, chosen = self.nearest_leg(legs, upto=i), True
-                print(f'{name}: respawned; restarting from {legs[i][0]}', flush=True)
+                print(f'{name}: restarting from {legs[i][0]} after {type(error).__name__}', flush=True)
                 continue
             # The next leg may rejoin from where this one left the Guardian: it has just finished
             # the leg before, not respawned. sense123's junction leg ended with a fight that pulled
@@ -324,7 +329,7 @@ class Replay:
                     # Not the end of the run: play_waves restarts from the nearest leg (it allows six).
                     # sense124's crouched leg stalled three times and the whole replay stopped.
                     print(f'{name}: stretch {k} did not complete in {tries} tries; restarting from the nearest leg', flush=True)
-                    raise Respawned(name)
+                    raise WalkStalled(name)
                 tag = f'{name}-{k}' + (f'-retry{attempt}' if attempt else '')
                 attempt += 1
                 # Clear the way first: walking into a wave is where the Guardian died (sense105-108).
@@ -392,11 +397,15 @@ class Replay:
 
     def recover(self, name):
         """After a walk stops short (a stall, or a death): retrack, re-arm the waves, fight."""
-        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                                 '--tracked', str(self.tracked), '--retrack'], 60, check=False)
+        self.retrack(check=False)
         self.select_retracked_position()
         self.rearm(name)
         self.skirmish(name)
+
+    def retrack(self, check=True):
+        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                                 '--tracked', str(self.tracked), '--retrack', *self.stance_options()],
+                     60, check=check)
 
     def rearm(self, name):
         """Serve the current wave list again with a new arming time on its armed triggers.
@@ -463,8 +472,7 @@ class Replay:
             if self.waves and out and 'unit changed (death)' in out[-1]:
                 # Died in the fight (sense108, before the junction leg): retrack and re-arm now, and
                 # let play_waves restart from the leg nearest the respawn.
-                self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                                         '--tracked', str(self.tracked), '--retrack'], 60, check=False)
+                self.retrack(check=False)
                 self.select_retracked_position()
                 self.rearm(name)
                 raise Respawned(name)
@@ -476,8 +484,7 @@ class Replay:
                 break
             self.command(f'{name}-skirmish-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         if fought:                         # as after a wave: the fight can move the tracked copies
-            self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                                     '--tracked', str(self.tracked), '--retrack'], 60)
+            self.retrack()
             self.select_retracked_position()
 
     def cover(self, me, back=10.0, name=None):
@@ -518,8 +525,11 @@ class Replay:
         tracking = (['--native-unit', '--memory-facing'] if self.native_unit else
                     ['--tracked', str(self.tracked)])
         return self.command(name, [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-            *tracking, '--route', str(route), '--max-seconds', str(seconds),
+            *tracking, *self.stance_options(), '--route', str(route), '--max-seconds', str(seconds),
             '--tolerance', str(tolerance), '--turn-sign', '1', '--turn-rate', '2.26', *extra], seconds + 45, check)
+
+    def stance_options(self):
+        return ('--no-jump',) if getattr(self, 'stance', 'stand') == 'crouch' else ()
 
     def select_retracked_position(self):
         """A sparse heuristic retrack must not drive the fourteen-minute chest leg.
@@ -678,8 +688,7 @@ class Replay:
         else:
             if not empty:                  # only if the last round still found one
                 print(f'{label} still standing after 8 rounds; continuing the route.', flush=True)
-        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                                 '--tracked', str(self.tracked), '--retrack'], 60)
+        self.retrack()
         self.select_retracked_position()
         me = self.where()
         if me and back and min(math.dist(p[:2], me[:2]) for p in route) > 15:
@@ -761,8 +770,7 @@ class Replay:
         self.command('rifle-movement-control', [sys.executable, '-I', str(HERE/'d1-step.py'),
             '--tracked', str(self.tracked), '--trail', str(self.run/'replay-trail.json'),
             '--keys', 'Hold:S:1200,Hold:W:1300'], 20)
-        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                              '--tracked', str(self.tracked), '--retrack'], 60)
+        self.retrack()
         self.select_retracked_position()
         # The proven session chain is the existing Wall route followed by the
         # chest trail, omitting its first point at the shared junction.
@@ -781,9 +789,11 @@ class Replay:
             self.walk('chest', self.write_route('to-chest', to_chest), 840)
         self.walk('mine-stairs', self.sliced_route('mine-a', 'wall_tripmine_corridor.json', 0, 4), 90, 1.2)
         self.pad('NumPad6')
+        self.stance = 'crouch'
         # If this fails, stop crouched. Do not blindly toggle stance in a retry.
         self.walk('mine-crouched', self.sliced_route('mine-b', 'wall_tripmine_corridor.json', 3, 10), 240, 1.5)
         self.pad('NumPad6')
+        self.stance = 'stand'
         self.walk('mine-junction', self.sliced_route('mine-c', 'wall_tripmine_corridor.json', 9, None), 150, 1.2)
         if self.waves:                     # the corridor's waves (114-116) came during the mine legs
             self.wave = WAVE_SQUADS[1]
