@@ -2,8 +2,9 @@ import importlib.util
 import math
 from pathlib import Path
 import sys
+import tempfile
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 TOOLS = Path(__file__).parents[1] / 'tools/ps4_setup'
 sys.path.insert(0, str(TOOLS))
@@ -59,6 +60,28 @@ class Fake:
 
 
 class WalkFightingTest(unittest.TestCase):
+    def test_publish_waits_for_ack_even_while_control_is_pending(self):
+        with tempfile.TemporaryDirectory() as temp:
+            replay = M.Replay.__new__(M.Replay)
+            replay.run = Path(temp) / 'run'
+            replay.run.mkdir()
+            replay.host_log = replay.run / 'host.log'
+            replay.host_log.write_text('earlier log\n')
+            clients = replay.run / 'clients.txt'
+            control = replay.run.parent / 'ah-control.txt'
+
+            def acknowledge(log, needle, seconds, *, offset):
+                self.assertEqual(log, replay.host_log)
+                self.assertEqual(offset, replay.host_log.stat().st_size)
+                self.assertIn(clients.as_posix(), needle)
+                self.assertTrue(control.exists())
+                self.assertGreater(seconds, 57)
+                control.unlink()
+                return True
+
+            with patch.object(M, 'wait_for', side_effect=acknowledge):
+                replay.publish(clients, 'test control')
+
     def test_crouch_disables_jump_in_walk_and_retrack(self):
         replay = M.Replay.__new__(M.Replay)
         replay.native_unit = True

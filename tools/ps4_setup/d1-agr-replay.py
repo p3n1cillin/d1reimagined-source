@@ -428,7 +428,8 @@ class Replay:
         self.rearms += 1
         armed = ' 0x80800463 01000000' + struct.pack('<I', 1 + self.rearms).hex()
         out = self.run / f'rearm-{self.rearms}-{current}'
-        out.write_text((self.schedule_dir / current).read_text().replace(' 0x80800463 0100000001000000', armed))
+        with out.open('x') as output:
+            output.write((self.schedule_dir / current).read_text().replace(' 0x80800463 0100000001000000', armed))
         print(f'{name}: re-arming the triggers of {current} (arming time {1 + self.rearms})', flush=True)
         self.publish(out, f're-armed {current}')
 
@@ -629,16 +630,14 @@ class Replay:
         offset = self.host_log.stat().st_size
         with control.open('x', encoding='utf-8') as output:
             output.write('clients 0x4786c0e0 ' + clients.as_posix() + '\n')
-        deadline = time.monotonic() + 20
-        while control.exists() and time.monotonic() < deadline:
-            time.sleep(.5)
-        if control.exists():
-            raise RuntimeError(f'AH did not consume the {label} control; stopping')
         # Consumption is not acceptance. Require the host's answer as well: the frame served
         # ("... (N bytes)"), or dropped because a mission step installed a newer frame while it was
-        # being built ("... superseded by a mission step"; the host builds lists off its tick).
+        # being built. Share the former 20 + 60 second budget across both stages. Under load
+        # the host can consume a control late and then build it quickly.
         accepted = 'control: sensor clients ' + clients.as_posix() + ' '
-        if not wait_for(self.host_log, accepted, 60, offset=offset):
+        if not wait_for(self.host_log, accepted, 80, offset=offset):
+            if control.exists():
+                raise RuntimeError(f'AH did not consume the {label} control; stopping')
             raise RuntimeError(f'AH did not log acceptance of the {label} list; stopping')
 
     def fight(self, route, clients, squads, tag, label, back=None):
@@ -749,6 +748,11 @@ class Replay:
         return path
 
     def play(self, boot_timeout, resume):
+        # A supervised resume can reuse the instance. Preserve prior files and use a new arming
+        # time on both a resume and an automatic replay after an activity repair.
+        self.rearms = max((int(path.name.split('-', 2)[1])
+                           for path in self.run.glob('rearm-*-agr-bw-*.txt')
+                           if path.name.split('-', 2)[1].isdigit()), default=0)
         if resume:
             # The first attempt's routes stay as evidence; a route of the same name but other
             # points would be refused (run sense106's first resume stopped on one).
