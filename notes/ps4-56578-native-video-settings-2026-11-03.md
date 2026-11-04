@@ -103,12 +103,26 @@ selection. The screenshot was captured at the window size.
 
 An optional `--group-title Display` changes the compact group's label while preserving its
 authored graph identifier and existing Helmet row. Six synthetic tests pass, including that
-preservation. The renamed candidate still needs a native check.
+preservation. Pair `--existing-group` with `--group-title Display` and supply the English
+inputs described above to reproduce this placement.
+
+The choice labels use a different path from the headings. A bounded native trace found that
+the choice widget reaches its string-library registry lookup with the new hash and receives
+the missing-library sentinel. The fork now supplies the verified English library only for
+the new hashes when that lookup misses. Original labels still use their native lookup.
+
+Fresh run `native-video-u-display` on 4 November (fork integration `874fc4d`) opened the
+native Settings → Display panel. Helmet and its original labels remained available. All six
+Frame Rate labels and all three Resolution labels were readable. Each frame-rate preset was
+selected and saved. The engine clock measured approximately 30, 60, 100, 144 and 240 ticks/s
+at the corresponding capped settings while the menu was open. Uncapped saved the automatic
+target value of zero. These are menu engine-clock samples. The running render resolution
+stayed at 1920×1080 during the preset test, and the test ended with the prior 60/1080p config.
 
 ## Remaining work
 
-Resolve the choice labels, verify the Display group title and exercise the remaining native
-frame-rate presets. The separate Video group still needs a working graph binding.
+The validated placement uses the authored Helmet group. The optional graph path for a separate
+Video group remains experimental, and new labels have only been prepared for English.
 
 The owned input was inspected using the existing project decoder and tiger-pkg tools. See
 [the third-party attribution](../THIRD_PARTY.md); no third-party code or extracted tags are
