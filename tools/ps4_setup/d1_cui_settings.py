@@ -57,7 +57,7 @@ class Settings:
                 'ids': [self.u32(o) for o in self.rows]}
 
 
-def video_candidate(source, template_group, label_base=None):
+def video_candidate(source, template_group, label_base=None, *, existing_group=None):
     original = Settings(source)
     # Caller identifies the decoded Helmet group. Native group identifiers are authored hashes;
     # do not assume that hashing its displayed English label reproduces its identifier.
@@ -85,9 +85,12 @@ def video_candidate(source, template_group, label_base=None):
         labels[h] = text
         return h
 
-    group_hash = fnv('d1reimagined_video')
-    if any(original.u32(o) == group_hash for o in original.groups):
+    group_hash = fnv('d1reimagined_video') if existing_group is None else existing_group
+    group_exists = any(original.u32(o) == group_hash for o in original.groups)
+    if existing_group is None and group_exists:
         raise ValueError('video group already present')
+    if existing_group is not None and not group_exists:
+        raise ValueError('existing video destination group is absent')
     specs = [
         (highest + 1, label('frame_rate', 'Frame Rate'), label('frame_rate_help', 'Applies immediately.'),
          [(i, label('fps_' + str(rate), str(rate) if rate else 'Uncapped'))
@@ -131,7 +134,10 @@ def video_candidate(source, template_group, label_base=None):
         for pos, (value, text) in zip(new_choices, values):
             struct.pack_into('<IIII', out, pos, value, text, help_, fnv(''))
 
-    group_items = sorted([(original.u32(o), o) for o in original.groups] + [(group_hash, None)])
+    group_items = [(original.u32(o), o) for o in original.groups]
+    if existing_group is None:
+        group_items.append((group_hash, None))
+        group_items.sort()
     groups = append_array(8, len(group_items), 40, element_class(8))
     for dst, (hash_, src) in zip(groups, group_items):
         clone_record(helmet[0] if src is None else src, dst)
@@ -142,6 +148,8 @@ def video_candidate(source, template_group, label_base=None):
         else:
             targets = [moved[p + struct.unpack_from('<q', source, p)[0]]
                        for p in array(source, src + 24, 8)]
+            if hash_ == existing_group:
+                targets.extend(new_rows)
         if targets:
             members = append_array(dst + 24, len(targets), 8, element_class(helmet[0] + 24))
             for pos, target in zip(members, targets):
@@ -150,7 +158,7 @@ def video_candidate(source, template_group, label_base=None):
             struct.pack_into('<QQ', out, dst + 24, 0, 0)
     struct.pack_into('<Q', out, 0, len(out))
     check = Settings(out)
-    if len(check.groups) != len(original.groups) + 1 or len(check.rows) != len(original.rows) + 2:
+    if len(check.groups) != len(group_items) or len(check.rows) != len(original.rows) + 2:
         raise ValueError('candidate count disagreement')
     return bytes(out), {'settings': check.summary(), 'group_hash': f'{group_hash:08x}',
                         'setting_ids': {'frame_rate': highest + 1, 'resolution': highest + 2},

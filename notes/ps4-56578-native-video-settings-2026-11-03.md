@@ -71,16 +71,25 @@ opened with readable labels and without the earlier invalid-entry fault. This is
 native pass for that transition, not completion of the Video controls.
 
 The Video group was still absent. Read-only checks confirmed that the extra graph binding and
-settings rows were resident, but the binding-stage hook runs after component construction. An
-earlier graph selection point has been prepared so property registration sees the candidate from
-the start; its layout and interaction still need a fresh native check.
+settings rows were resident. Runs `native-video-k` and `native-video-l` redirected the graph during
+property application at `a8b2de` and left the Settings buttons blank. That site follows component
+allocation. Integration `940fb22` moved the early hook to the allocator's first tag read at
+`a8b073`. Run `native-video-n` reached Settings and confirmed the English lookup, but the buttons
+were still blank and the log contained no graph-redirection marker.
+
+The generator now also accepts `--existing-group` in place of `--graph`. In that mode the
+candidate appends the two rows to an authored group and keeps its original title, member order
+and native graph binding. An owned-input candidate using Accessibility retained all 11 groups
+and appended ids 21 and 22 after its three original rows. Audio already has five rows. This is a
+separate test of the controls through the existing native group. The companion fork can load
+this form without installing either graph detour. In-game visibility and interaction remain
+unverified.
 
 ## Remaining work
 
-Test the graph connections and list expansion, provide the new labels to native string lookup, and
-map its two new ids to the shared video-setting writer. Load the decoded changes without
-altering the original game packages. Then test all presets in the native tab, including reload
-persistence and a 4K restart. No native row has yet been seen in a running game.
+Test row visibility and list expansion in the existing group, then change all presets through
+the shared setting writer, including reload persistence and a 4K restart. The separate Video
+group still needs a working graph binding. No native row has yet been seen in a running game.
 
 The owned input was inspected using the existing project decoder and tiger-pkg tools. See
 [the third-party attribution](../THIRD_PARTY.md); no third-party code or extracted tags are

@@ -19,7 +19,10 @@ def main():
     p.add_argument('--template-group', type=lambda v: int(v, 0), required=True,
                    help='authored hash of the decoded Helmet group, not a hash of its English label')
     p.add_argument('--out', type=Path, required=True, help='new private directory, outside the repository')
-    p.add_argument('--graph', type=Path, help='also prepare the decoded native settings UI graph')
+    placement = p.add_mutually_exclusive_group()
+    placement.add_argument('--graph', type=Path, help='prepare a separate group in the native settings UI graph')
+    placement.add_argument('--existing-group', type=lambda v: int(v, 0),
+                           help='append rows to an existing authored settings group without changing the graph')
     p.add_argument('--string-index', type=Path, help='decoded settings string-index tag')
     p.add_argument('--string-index-tag', type=lambda v: int(v, 0), help='authored string-index tag id')
     p.add_argument('--english', type=Path, help='decoded English payload referenced by that index')
@@ -38,7 +41,10 @@ def main():
         first_label = max(struct.unpack_from('<I', si, o)[0] for o in names) + 1
     else:
         first_label = None
-    changed, manifest = video_candidate(original, a.template_group, first_label)
+    changed, manifest = video_candidate(original, a.template_group, first_label,
+                                        existing_group=a.existing_group)
+    if a.existing_group is not None:
+        manifest['existing_group'] = True
     if first_label is not None:
         index_candidate, english_candidate = video_strings_candidate(si, en, manifest['strings'])
         string_data = (si, index_candidate, en, english_candidate)

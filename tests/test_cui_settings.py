@@ -52,6 +52,21 @@ class CuiSettingsTest(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     M.Settings(b)
 
+    def test_rows_can_use_an_existing_group_without_new_graph_binding(self):
+        before = fixture()
+        changed, manifest = M.video_candidate(before, 0x1234, existing_group=0x1234)
+        tag = M.Settings(changed)
+        group, = tag.groups
+        self.assertEqual(changed[group:group + 24], before[0x40:0x58])
+        refs = M.array(changed, group + 24, 8)
+        targets = [p + struct.unpack_from('<q', changed, p)[0] for p in refs]
+        self.assertEqual(targets, tag.rows)
+        self.assertEqual([tag.u32(row) for row in targets], [4, 5, 6])
+        self.assertEqual(manifest['group_hash'], '00001234')
+        self.assertNotIn('Video', manifest['strings'].values())
+        with self.assertRaisesRegex(ValueError, 'group is absent'):
+            M.video_candidate(before, 0x1234, existing_group=0x5678)
+
 
 class CuiGraphTest(unittest.TestCase):
     def test_graph_adds_a_binding_and_preserves_existing_path_contents(self):
