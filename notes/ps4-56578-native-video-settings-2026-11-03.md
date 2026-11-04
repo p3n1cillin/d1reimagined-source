@@ -119,6 +119,15 @@ at the corresponding capped settings while the menu was open. Uncapped saved the
 target value of zero. These are menu engine-clock samples. The running render resolution
 stayed at 1920×1080 during the preset test, and the test ended with the prior 60/1080p config.
 
+The fork also checks `d1-native-video` under its user directory when D1 Video is enabled and
+`D1_NATIVE_VIDEO_DIR` is unset. Install the generated directory there to use the controls on
+ordinary launches. Keep all original and generated tags private. On integration `98542a7`,
+run `native-video-v-installed` opened the native panel with only that installation present,
+switched 30 → 60 live, and saved 1440p while running at 1080p. Fresh run
+`native-video-w-1440p` registered 2560×1440 buffers and drew the complete gameplay scene.
+The saved 1440p selection appeared in Display after the reboot. Selecting 1080p restored the
+prior saved 60/1080p config through the native panel.
+
 ## Remaining work
 
 The validated placement uses the authored Helmet group. The optional graph path for a separate
