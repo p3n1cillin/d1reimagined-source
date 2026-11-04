@@ -57,8 +57,10 @@ class Settings:
                 'ids': [self.u32(o) for o in self.rows]}
 
 
-def video_candidate(source, template_group, label_base=None, *, existing_group=None):
+def video_candidate(source, template_group, label_base=None, *, existing_group=None, group_title=None):
     original = Settings(source)
+    if group_title is not None and (existing_group is None or not group_title.strip()):
+        raise ValueError('a new group title requires an existing group and non-empty text')
     # Caller identifies the decoded Helmet group. Native group identifiers are authored hashes;
     # do not assume that hashing its displayed English label reproduces its identifier.
     helmet = [o for o in original.groups if original.u32(o) == template_group]
@@ -150,6 +152,8 @@ def video_candidate(source, template_group, label_base=None, *, existing_group=N
                        for p in array(source, src + 24, 8)]
             if hash_ == existing_group:
                 targets.extend(new_rows)
+                if group_title is not None:
+                    struct.pack_into('<I', out, dst + 4, label('title', group_title))
         if targets:
             members = append_array(dst + 24, len(targets), 8, element_class(helmet[0] + 24))
             for pos, target in zip(members, targets):

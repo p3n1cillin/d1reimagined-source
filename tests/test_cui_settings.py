@@ -67,6 +67,15 @@ class CuiSettingsTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'group is absent'):
             M.video_candidate(before, 0x1234, existing_group=0x5678)
 
+    def test_existing_group_can_be_renamed_without_changing_its_binding(self):
+        changed, manifest = M.video_candidate(fixture(), 0x1234, existing_group=0x1234,
+                                              group_title='Display')
+        tag = M.Settings(changed)
+        group, = tag.groups
+        self.assertEqual(tag.u32(group), 0x1234)
+        self.assertEqual(manifest['strings'][f'{tag.u32(group + 4):08x}'], 'Display')
+        self.assertEqual(len(M.array(changed, group + 24, 8)), 3)
+
 
 class CuiGraphTest(unittest.TestCase):
     def test_graph_adds_a_binding_and_preserves_existing_path_contents(self):

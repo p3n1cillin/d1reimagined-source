@@ -23,10 +23,13 @@ def main():
     placement.add_argument('--graph', type=Path, help='prepare a separate group in the native settings UI graph')
     placement.add_argument('--existing-group', type=lambda v: int(v, 0),
                            help='append rows to an existing authored settings group without changing the graph')
+    p.add_argument('--group-title', help='display title for --existing-group; retain its authored identifier')
     p.add_argument('--string-index', type=Path, help='decoded settings string-index tag')
     p.add_argument('--string-index-tag', type=lambda v: int(v, 0), help='authored string-index tag id')
     p.add_argument('--english', type=Path, help='decoded English payload referenced by that index')
     a = p.parse_args()
+    if a.group_title is not None and a.existing_group is None:
+        p.error('--group-title requires --existing-group')
     repo = Path(__file__).resolve().parents[2]
     dest = a.out.resolve()
     if dest.is_relative_to(repo):
@@ -42,7 +45,7 @@ def main():
     else:
         first_label = None
     changed, manifest = video_candidate(original, a.template_group, first_label,
-                                        existing_group=a.existing_group)
+                                        existing_group=a.existing_group, group_title=a.group_title)
     if a.existing_group is not None:
         manifest['existing_group'] = True
     if first_label is not None:
