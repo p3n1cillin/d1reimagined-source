@@ -41,6 +41,8 @@ CONNECTION = 'AH connection from '
 REPAIR_ATTEMPTS = 3
 RESTART = 'mission step 0 at +0 s'   # the host serving the mission from the start again
 HURT_STOP = 0.6    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; two readings in a row)
+FIGHT_WALK_TOLERANCE = 1.3
+RETREAT_DROP = 2.0  # refuse to backtrack a recorded drop taller than the standing jump
 
 
 class Respawned(Exception):
@@ -300,7 +302,7 @@ class Replay:
         self.wave, self.leg = squads, points
         off = lambda me, i: math.dist(points[i][:2], me[:2])
         nearest = lambda me: min(range(len(points)), key=lambda i: off(me, i))
-        tolerance = 1.3
+        tolerance = FIGHT_WALK_TOLERANCE
         # Fight at a route-aligned fixed cover point before the next stretch. In the
         # west junction that point is on the upper floor, before the irreversible drop.
         cover = self.fixed_cover(name)
@@ -454,7 +456,7 @@ class Replay:
             out = self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '30', '--squads', self.wave,
                          *(['--cover', f'{cover[0]:.1f},{cover[1]:.1f}'] if cover else []),
-                         *(['--cover-first'] if cover and self.fixed_cover(name) else []),
+                         *(['--cover-first'] if cover and cover == self.fixed_cover(name) else []),
                          '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
             if self.waves and out and 'unit changed (death)' not in out[-1] and self.died_quietly(out, me):
                 out = out + ['unit changed (death)']
@@ -487,15 +489,22 @@ class Replay:
         leg = getattr(self, 'leg', None)
         if not me or not leg:
             return None
-        # A tested hiding point can break line of sight where retreating along the route cannot.
-        # Match a leg and its retry/chunk suffixes, without changing the other legs' tactics.
-        point = self.fixed_cover(name)
-        if point is not None:
-            print(f'{name}: fixed cover {point[0]:.1f},{point[1]:.1f}', flush=True)
-            return point
         i = min(range(len(leg)), key=lambda j: math.dist(leg[j][:2], me[:2]))
+        point = self.fixed_cover(name)
+        retreat_limit = 0
+        if point is not None:
+            cover_index = min(range(len(leg)), key=lambda j: math.dist(leg[j][:2], point))
+            if math.dist(leg[cover_index][:2], point) <= FIGHT_WALK_TOLERANCE:
+                # Use the route's relative heights. Its absolute heights can differ from the
+                # live unit's, and a horizontal target alone cannot describe an upper floor.
+                retreat_limit = next((j for j in range(i, cover_index, -1)
+                                      if leg[j - 1][2] - leg[j][2] >= RETREAT_DROP), 0)
+            if not retreat_limit:
+                print(f'{name}: fixed cover {point[0]:.1f},{point[1]:.1f}', flush=True)
+                return point
+            print(f'{name}: upper cover lies beyond a drop; retreat stays below it', flush=True)
         gone = 0.0
-        while i > 0 and gone < back:
+        while i > retreat_limit and gone < back:
             gone += math.dist(leg[i][:2], leg[i - 1][:2])
             i -= 1
         return leg[i][:2] if gone > 2 else None

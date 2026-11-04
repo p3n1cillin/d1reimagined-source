@@ -125,6 +125,16 @@ class WalkFightingTest(unittest.TestCase):
 
 
 class CoverTest(unittest.TestCase):
+    def test_route_aligned_cover_is_replaced_after_a_drop(self):
+        replay = M.Replay.__new__(M.Replay)
+        replay.leg = [(0.0, 0.0, 5.0), (5.0, 0.0, 5.0), (10.0, 0.0, 2.5),
+                      (15.0, 0.0, 2.5), (20.0, 0.0, 2.5)]
+        replay.fixed_covers = {'junction-west': (5.0, 0.0)}
+        name = 'junction-west-r1-1'
+        self.assertEqual(replay.cover((5.0, 0.0, 5.6), name=name), (5.0, 0.0))
+        self.assertIsNone(replay.cover((10.0, 0.0, 3.1), name=name))
+        self.assertEqual(replay.cover((20.0, 0.0, 3.1), name=name), (10.0, 0.0))
+
     def test_only_explicit_hiding_point_gets_combat_priority(self):
         for name, expected in (('junction-west-r2-pre', True), ('other-leg-pre', False)):
             with self.subTest(name=name):
