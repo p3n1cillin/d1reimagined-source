@@ -25,9 +25,13 @@ public class DecompileAt extends GhidraScript {
             }
             DecompileResults result = decompiler.decompileFunction(function, 180, monitor);
             println("// ==== " + function.getName() + " @ " + function.getEntryPoint() + " (asked " + arg + ")");
-            println(result.decompileCompleted()
+            String c = result.decompileCompleted()
                 ? result.getDecompiledFunction().getC()
-                : "// decompile failed: " + result.getErrorMessage());
+                : "// decompile failed: " + result.getErrorMessage();
+            // One println per line: Ghidra prefixes only a println's first line, and d1-ghidra.ps1 keeps prefixed lines.
+            for (String line : c.split("\r?\n")) {
+                println(line);
+            }
         }
         decompiler.dispose();
     }
