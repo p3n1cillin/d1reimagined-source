@@ -6,6 +6,7 @@ is the current summary. Titles below are the notes' own.
 
 ## Start here (PS4 build 56578, current)
 
+- [PS4 56578: cinematic binding registration (5 November 2026)](ps4-56578-cine-binding-2026-11-05.md)
 - [Live-server message captures (5 November 2026)](d1-live-captures-2026-11-05.md)
 - [PS4 56578: the route-run stalls (3-5 November 2026)](ps4-56578-lab-stalls-2026-11-05.md)
 - [Native video settings: content preparation (3 November 2026)](ps4-56578-native-video-settings-2026-11-03.md)
