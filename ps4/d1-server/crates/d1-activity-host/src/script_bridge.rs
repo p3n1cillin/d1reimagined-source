@@ -19,7 +19,7 @@
 //! progression (no ticks, no events) while the rows already sent stay and heartbeats continue, so
 //! the client is not dropped. Nothing is guessed in its place.
 //!
-//! # Messages (`proto` 1; F:/d1/third-party/trawl-2026-11-05/fukugen-gap-analysis.md §4.3)
+//! # Messages (`proto` 1; the contract is in notes/ps4-56578-script-bridge-2026-11-05.md)
 //!
 //! Every line is one JSON object with a `"type"`. Item references are BullShcript's
 //! `{bundle, typeId, typeIndex}`; the bridge maps a bundle hash to the world's live group hash
@@ -1485,7 +1485,7 @@ mod tests {
             assert!(start > 0);
             play_stamp = start + 1;
         }
-        assert!(b.rows().tick(t) >= play_stamp);
+        assert!(b.rows.tick(t) >= play_stamp);
 
         // Idle: heartbeats every 3 s.
         let before = b.rows().heartbeats;
