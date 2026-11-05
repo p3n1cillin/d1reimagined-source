@@ -420,6 +420,8 @@ pub struct ActivityInstance {
     /// only when this differs from the last one it processed (`sstm+0x3B0`), so every changed
     /// re-publish advances it. Join and udt-17 refresh re-send the same number.
     membership_update: u32,
+    /// MP(H): the shared instance this connection is in (`D1_AH_SHARED_INSTANCES=1`; None = solo).
+    group: Option<crate::group::GroupLink>,
     /// Set once the sensor frame has gone out, so it is sent exactly once per instance
     /// (send-once mode; see [`Self::set_sensor_repeat`] for the repeating mode).
     sensor_sent: bool,
@@ -652,6 +654,7 @@ impl ActivityInstance {
             slice_request: None,
             membership_dirty: false,
             membership_update: 1,
+            group: None, // MP(H)
             sensor_sent: false,
             sensors_sent: 0,
             sensor_repeat: None,
@@ -660,6 +663,16 @@ impl ActivityInstance {
             sensor_last_sent: None,
             sensor_stamp: None,
         }
+    }
+
+    /// MP(H): share instances with the other connections in `link` (see [`crate::group`]).
+    pub fn set_group(&mut self, link: crate::group::GroupLink) {
+        self.group = Some(link);
+    }
+
+    /// MP(H): the shared-instance link, for the run log and tests.
+    pub fn group(&self) -> Option<&crate::group::GroupLink> {
+        self.group.as_ref()
     }
 
     /// Frame udt 5 the live way (`D1_AH_SENSOR_STAMP`, see [`SensorStamp`]).
@@ -1061,6 +1074,14 @@ impl ActivityInstance {
             );
         }
 
+        // MP(H): in a shared instance, every member's identity and properties, the occupancy masks
+        // and the elected physics host replace the solo echo (crate::group).
+        if let Some(link) = &self.group {
+            if !link.compose(&mut m.image) {
+                tracing::warn!("⚠ shared instance: membership not composed; publishing the solo echo");
+            }
+        }
+
         // ── field 2 of 2 that is OURS: the PAH-tabulated region record (rung 34 task 8) ────────
         //
         // Without it `FUN_007775B0` copies nothing into `sstm+0x490`, `FUN_0077F6B0` refuses to
@@ -1185,6 +1206,23 @@ impl ActivityInstance {
                     u128::from(u16::MAX),
                 ) as u16;
                 self.state = InstanceState::Joined;
+                // MP(H): join the shared instance the request names, and present its host id.
+                let mut group_slot = None;
+                if let Some(link) = self.group.as_mut() {
+                    match link.join(self.ah_id, struct_image) {
+                        Ok((host, j)) => {
+                            tracing::info!("⭐ shared instance {host:#018x}: slot {}, physics host {:?}, peers {:?}",
+                                j.slot, j.physics_host, link.peers());
+                            if host != self.ah_id {
+                                self.ah_id = host;
+                                result.ah_id = host;
+                            }
+                            group_slot = Some(j.slot);
+                        }
+                        Err(e) => tracing::warn!("⚠ shared instance refused the join ({e}); serving it solo"),
+                    }
+                }
+                let recipient = self.ah_id; // MP(H): the shared instance's host, if it changed
                 // Kept for `udt 17`: a membership is an echo of these bytes, so a refresh that did
                 // not have them would have to fabricate an identity.
                 self.join_request_image = Some(struct_image.clone());
@@ -1224,10 +1262,16 @@ impl ActivityInstance {
                     // way. ⚠ `activity-host-contract.md` §5's "offline seam" (`memset 0xFF`) is
                     // NOT an alternative - that branch writes `db+0x120B8`, never `ac+0x64AA`,
                     // and `ac+0x64AA` is written in exactly one place in the whole image: here.
-                    out.push(AhPush::new(
-                        recipient,
-                        AhMessage::EntitySlotsAllocated(self.entities.grant_all()),
-                    ));
+                    // MP(H): a shared instance grants by peer slot (500 each, as the live hosts did).
+                    let grant = match group_slot {
+                        Some(slot) => {
+                            self.entities.grant_all();
+                            self.entities.free(&crate::group::entity_mask(slot));
+                            self.entities.allocate(crate::group::ENTITY_INDICES_PER_PEER as u32)
+                        }
+                        None => self.entities.grant_all(),
+                    };
+                    out.push(AhPush::new(recipient, AhMessage::EntitySlotsAllocated(grant)));
 
                     // udt 1 - ⭐ NOT `empty()`. Load-bearing three times over: establish-client,
                     // the rung-31 activity NAME, and the rung-33 world transition. `FUN_01057B80`
@@ -1514,6 +1558,10 @@ impl ActivityInstance {
                 self.slice_request = None;
                 self.membership_dirty = true;
             }
+        }
+        // MP(H): another member joined or left, or the physics host moved.
+        if self.group.as_mut().is_some_and(|g| g.take_changed()) {
+            self.membership_dirty = true;
         }
         if !self.membership_dirty || !matches!(self.state, InstanceState::Live) {
             return None;

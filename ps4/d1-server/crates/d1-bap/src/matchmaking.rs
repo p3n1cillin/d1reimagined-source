@@ -276,7 +276,7 @@ impl MatchmakingCoreResponse {
     }
 }
 
-fn push_varint(out: &mut Vec<u8>, field: u32, mut value: u64) {
+pub(crate) fn push_varint(out: &mut Vec<u8>, field: u32, mut value: u64) {
     push_tag(out, field, 0);
     loop {
         let byte = (value & 0x7F) as u8;
@@ -295,7 +295,7 @@ fn push_opt_varint(out: &mut Vec<u8>, field: u32, value: Option<u64>) {
     }
 }
 
-fn push_bytes(out: &mut Vec<u8>, field: u32, value: &[u8]) {
+pub(crate) fn push_bytes(out: &mut Vec<u8>, field: u32, value: &[u8]) {
     push_tag(out, field, 2);
     let mut len = value.len() as u64;
     loop {
@@ -308,6 +308,12 @@ fn push_bytes(out: &mut Vec<u8>, field: u32, value: &[u8]) {
         out.push(byte | 0x80);
     }
     out.extend_from_slice(value);
+}
+
+/// A wire-type-5 field (a little-endian `f32`'s bits). Used by [`crate::matchmaking_sessions`].
+pub(crate) fn push_fixed32(out: &mut Vec<u8>, field: u32, bits: u32) {
+    push_tag(out, field, 5);
+    out.extend_from_slice(&bits.to_le_bytes());
 }
 
 fn push_tag(out: &mut Vec<u8>, field: u32, wire: u8) {

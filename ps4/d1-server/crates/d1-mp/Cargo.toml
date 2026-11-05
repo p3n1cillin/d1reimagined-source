@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright 2026 Destiny 1 Preservation Project
+# SPDX-License-Identifier: GPL-2.0-or-later
+[package]
+name = "d1-mp"
+description = "Multiplayer services for one local server: identities, fireteams, matchmaking, platform sessions. Pure state machines, no I/O"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+# The 42/43 matchmaking codec lives in d1-bap (one implementation per format).
+d1-bap = { path = "../d1-bap" }  # GPL-2.0-or-later, this workspace
+serde.workspace = true           # MIT OR Apache-2.0
+serde_json.workspace = true      # MIT OR Apache-2.0
+
+[lib]
+name = "d1_mp"
+path = "src/lib.rs"
