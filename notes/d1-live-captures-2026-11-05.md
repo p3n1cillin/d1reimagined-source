@@ -159,7 +159,7 @@ We serve 165 an empty sensor list. The live host served both cinematic records, 
 - cine-live2 and cine-live3: the game's own block detector crashed them in the post-game tour and the hangar.
 - cine-live5: the client stalled ("4739 milliseconds since the last network update") and dropped the host ("baboon") at junction-west.
 
-These are the stalls in `ps4-56578-level1-2026-11-02.md`'s level-1 runs since 4 November, and they still come with `D1_RATE_RULES=0` and no D1 detours installed. Run it with `ending-run.ps1 -Waves -WorldTable ps4/fixtures/56578/mission/world-table-cine-live.txt` and the watcher beside it once runs reach the post-game again.
+These are the stalls Codex's level-1 runs have hit since 4 November (draft #256), and they still come with `D1_RATE_RULES=0` and no D1 detours installed. Run it with `ending-run.ps1 -Waves -WorldTable ps4/fixtures/56578/mission/world-table-cine-live.txt` and the watcher beside it once runs reach the post-game again.
 
 ## Restoration's public start (activity 166)
 
