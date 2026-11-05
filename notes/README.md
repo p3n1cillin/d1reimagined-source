@@ -8,6 +8,13 @@ is the current summary. Titles below are the notes' own.
 
 - [Live-server message captures (5 November 2026)](d1-live-captures-2026-11-05.md)
 - [Native video settings: content preparation (3 November 2026)](ps4-56578-native-video-settings-2026-11-03.md)
+- [PS4 56578: what a PUBLIC start region needs (2 November 2026)](ps4-56578-public-sessions-2026-11-02.md)
+- [PS4 56578: booting a new Guardian (3 November 2026)](ps4-56578-new-guardian-2026-11-03.md)
+- [PS4 56578: render resolution (3 November 2026)](ps4-56578-resolution-2026-11-03.md)
+- [PS4 56578: frame-rate presets (2 November 2026)](ps4-56578-frame-rate-2026-11-02.md)
+- [PS4 56578: a level-1 tutorial Guardian (2 November 2026)](ps4-56578-level1-2026-11-02.md)
+- [PS4 56578: dismantling (2 November 2026)](ps4-56578-dismantle-2026-11-02.md)
+- [PS4 56578: drops, BABOON and "Contacting Destiny Servers" (2 November 2026)](ps4-56578-connection-2026-11-02.md)
 
 - [PS4 56578: the Breach's Fallen sequences play, but no squad spawns (31 October 2026)](ps4-56578-breach-sequences-2026-10-31.md)
 - [PS4 56578: equipping gear works end to end (31 October – 1 November 2026)](ps4-56578-equip-2026-11-01.md)
