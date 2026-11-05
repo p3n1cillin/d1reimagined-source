@@ -9,15 +9,20 @@ data and a local input: never commit it. The two tables this writes hold numbers
 each row citing its definition hash, and are committed under ps4/fixtures/56578/progression:
 
 - progression-curves.tsv: DestinyProgressionDefinition steps (progressTotal per step) for
-  character_level, character_prestige and every faction (reputation/rank) progression.
+  character_level, character_prestige, every faction (reputation/rank) progression, the Crucible
+  and Trials of Osiris rank and ticket progressions, Iron Banner's loss tokens, the record books,
+  and every progression a vendor's summary names (e.g. the Shipwright's racing rank).
   `runtime_index` is the 56578 client's own u16 ordinal for the progression, which the manifest
   does not carry: 117 character_level and 118 character_prestige are the ids the client's
   completion path reads from the investment globals (+0x166, +0x16a;
   notes/ps4-56578-postgame-2026-10-29.md). The others are `-` until someone reads them.
 - vendor-resets.tsv: DestinyVendorDefinition.summary resetIntervalMinutes / resetOffsetMinutes for
   every vendor with a schedule. A vendor resets at epoch minute m when (m + offset) mod interval == 0.
+- refund-policies.tsv: every vendor with a refundable sale (DestinyVendorDefinition.sales[]
+  refundPolicy != 0), how many of its sales are, their refundLimit (minutes) and their item hashes.
+  In the final manifest only Eververse and its Silver Dust store qualify (policy 2, 15 minutes).
 
-Read-only on the inputs; overwrites the two output files.
+Read-only on the inputs; overwrites the three output files.
 """
 import argparse
 import gzip
@@ -28,6 +33,10 @@ import sys
 RUNTIME_INDEX = {'character_level': 117, 'character_prestige': 118}
 CURVES_HEADER = ('hash', 'name', 'scope', 'repeat_last', 'runtime_index', 'steps')
 RESETS_HEADER = ('vendor_hash', 'name', 'reset_interval_minutes', 'reset_offset_minutes', 'progression_hash')
+REFUNDS_HEADER = ('vendor_hash', 'name', 'refund_policy', 'refund_limit_minutes', 'refundable_sales', 'sales',
+                  'refundable_item_hashes')
+# Rank and ticket progressions kept besides the factions (name substrings).
+RANKS = ('faction', 'trials_of_osiris', 'pvp_tournament', 'pvp_iron_banner', 'record_books')
 
 
 def load(path):
@@ -36,16 +45,18 @@ def load(path):
         return json.load(f)
 
 
-def wanted(name):
-    return name in RUNTIME_INDEX or 'faction' in name
+def wanted(name, key, vendor_progressions):
+    return name in RUNTIME_INDEX or any(r in name for r in RANKS) or int(key) in vendor_progressions
 
 
 def curves(base):
+    vendor_progressions = {int(d.get('summary', {}).get('progressionHash', 0))
+                           for d in base.get('DestinyVendorDefinition', {}).values()} - {0}
     rows = []
     for key, d in base['DestinyProgressionDefinition'].items():
         name = d.get('name') or ''
         steps = [int(s.get('progressTotal', 0)) for s in d.get('steps', [])]
-        if not wanted(name) or not steps:
+        if not wanted(name, d.get('hash', key), vendor_progressions) or not steps:
             continue
         index = RUNTIME_INDEX.get(name)
         rows.append((int(d.get('hash', key)), name, int(d.get('scope', 0)), int(bool(d.get('repeatLastStep'))),
@@ -61,9 +72,30 @@ def resets(base, strings):
         interval = int(s.get('resetIntervalMinutes', 0))
         if interval <= 0:
             continue
-        name = (names.get(key, {}).get('summary') or {}).get('vendorName') or '-'
+        name = vendor_name(names, key)
         rows.append((int(s.get('vendorHash', key)), name, interval, int(s.get('resetOffsetMinutes', 0)),
                      int(s.get('progressionHash', 0))))
+    return sorted(rows, key=lambda r: (r[1], r[0]))
+
+
+def vendor_name(names, key):
+    return ((names.get(key, {}).get('summary') or {}).get('vendorName') or '-').replace('	', ' ')
+
+
+def refunds(base, strings):
+    names = (strings or {}).get('DestinyVendorDefinition', {})
+    rows = []
+    for key, d in base['DestinyVendorDefinition'].items():
+        sales = d.get('sales', [])
+        refundable = [s for s in sales if int(s.get('refundPolicy') or 0) != 0]
+        if not refundable:
+            continue
+        policies = sorted({int(s['refundPolicy']) for s in refundable})
+        limits = sorted({int(s.get('refundLimit') or 0) for s in refundable})
+        items = sorted({int(s.get('itemHash', 0)) for s in refundable})
+        rows.append((int(d.get('summary', {}).get('vendorHash', key)), vendor_name(names, key),
+                     ','.join(map(str, policies)), ','.join(map(str, limits)), len(refundable), len(sales),
+                     ','.join(map(str, items))))
     return sorted(rows, key=lambda r: (r[1], r[0]))
 
 
@@ -86,10 +118,13 @@ def main(argv=None):
     base = load(a.manifest)
     strings = load(a.strings) if a.strings else None
     os.makedirs(a.out, exist_ok=True)
-    c, r = curves(base), resets(base, strings)
+    c, r, f = curves(base), resets(base, strings), refunds(base, strings)
     write(os.path.join(a.out, 'progression-curves.tsv'), CURVES_HEADER, c, 'DestinyProgressionDefinition')
     write(os.path.join(a.out, 'vendor-resets.tsv'), RESETS_HEADER, r, 'DestinyVendorDefinition.summary')
-    print(f'{len(c)} progression curves, {len(r)} vendor schedules -> {os.path.normpath(a.out)}')
+    write(os.path.join(a.out, 'refund-policies.tsv'), REFUNDS_HEADER, f,
+          'DestinyVendorDefinition.sales[] refundPolicy/refundLimit')
+    print(f'{len(c)} progression curves, {len(r)} vendor schedules, {len(f)} refunding vendors'
+          f' -> {os.path.normpath(a.out)}')
     return 0
 
 

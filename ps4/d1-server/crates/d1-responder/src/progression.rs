@@ -4,9 +4,10 @@
 //! reset schedules, the activity-completion rewards table, and the edits they make to the 56578
 //! profile object (`0x80801743`, decoded).
 //!
-//! Data, not code: the curves and vendor schedules are derived from Bungie's D1 manifest by
-//! `tools/ps4_setup/d1-progression-tables.py` (`ps4/fixtures/56578/progression/*.tsv`, compiled in;
-//! `D1_PROGRESSION_CURVES`, `D1_VENDOR_RESETS` and `D1_ACTIVITY_REWARDS` override them). The rewards
+//! Data, not code: the curves, vendor schedules and refund policies are derived from Bungie's D1
+//! manifest by `tools/ps4_setup/d1-progression-tables.py` (`ps4/fixtures/56578/progression/*.tsv`,
+//! compiled in; `D1_PROGRESSION_CURVES`, `D1_VENDOR_RESETS`, `D1_REFUND_POLICIES` and
+//! `D1_ACTIVITY_REWARDS` override them). The rewards
 //! table is the original servers' rules as far as anyone has them, each value labelled sourced or
 //! stand-in.
 //!
@@ -54,6 +55,7 @@ pub const CHARACTER_PRESTIGE: &str = "character_prestige";
 const BUILTIN_CURVES: &str = include_str!("../../../../fixtures/56578/progression/progression-curves.tsv");
 const BUILTIN_RESETS: &str = include_str!("../../../../fixtures/56578/progression/vendor-resets.tsv");
 const BUILTIN_REWARDS: &str = include_str!("../../../../fixtures/56578/progression/activity-rewards.tsv");
+const BUILTIN_REFUNDS: &str = include_str!("../../../../fixtures/56578/progression/refund-policies.tsv");
 
 fn table_from_env(var: &str, builtin: &'static str) -> String {
     match std::env::var(var).ok().filter(|p| !p.is_empty()) {
@@ -216,8 +218,66 @@ impl VendorResets {
         Self::parse(&table_from_env("D1_VENDOR_RESETS", BUILTIN_RESETS))
     }
 
+    #[allow(dead_code)] // for stream I's vendor stock rotation
     pub fn get(&self, vendor_hash: u32) -> Option<&VendorSchedule> {
         self.0.iter().find(|v| v.vendor_hash == vendor_hash)
+    }
+}
+
+/// A vendor whose sales can be returned (`DestinyVendorDefinition.sales[]` `refundPolicy` != 0): in
+/// the final manifest only Eververse and its Silver Dust store, 15 minutes (Bungie's FAQ of
+/// 21 October 2015 says the same: Silver purchases refundable for about 15 minutes).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RefundPolicy {
+    pub vendor_hash: u32,
+    pub name: String,
+    pub limit_minutes: u32,
+    pub refundable_sales: u32,
+    pub sales: u32,
+    /// The refundable sales' item hashes (the others at that vendor are not refundable).
+    pub item_hashes: Vec<u32>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct RefundPolicies(pub Vec<RefundPolicy>);
+
+impl RefundPolicies {
+    pub fn parse(text: &str) -> Self {
+        RefundPolicies(rows(text, "vendor_hash\t").filter_map(|f| {
+            if f.len() < 7 {
+                return None;
+            }
+            Some(RefundPolicy {
+                vendor_hash: f[0].parse().ok()?,
+                name: f[1].clone(),
+                // One limit per vendor in the manifest; a list would take its shortest.
+                limit_minutes: f[3].split(',').filter_map(|x| x.parse().ok()).min()?,
+                refundable_sales: f[4].parse().ok()?,
+                sales: f[5].parse().ok()?,
+                item_hashes: f[6].split(',').filter_map(|x| x.parse().ok()).collect(),
+            })
+        }).collect())
+    }
+
+    pub fn load() -> Self {
+        Self::parse(&table_from_env("D1_REFUND_POLICIES", BUILTIN_REFUNDS))
+    }
+
+    pub fn get(&self, vendor_hash: u32) -> Option<&RefundPolicy> {
+        self.0.iter().find(|p| p.vendor_hash == vendor_hash)
+    }
+
+    /// How long a purchase from `vendor_hash` stays refundable, in seconds; None when it can't be
+    /// returned. `item_hash` narrows it to the refundable sales when the caller knows the item's
+    /// manifest hash (vendor.rs knows only the client's content index so far).
+    pub fn window_secs(&self, vendor_hash: u32, item_hash: Option<u32>) -> Option<u64> {
+        let p = self.get(vendor_hash)?;
+        if let Some(h) = item_hash {
+            if !p.item_hashes.contains(&h) {
+                return None;
+            }
+        }
+        Some(u64::from(p.limit_minutes) * 60)
     }
 }
 
@@ -426,6 +486,8 @@ mod tests {
         assert_eq!(c.by_name(CHARACTER_PRESTIGE).unwrap().steps, vec![25_000]);
         let v = VendorResets::parse(BUILTIN_RESETS);
         assert_eq!(v.0.len(), 26);
+        let f = RefundPolicies::parse(BUILTIN_REFUNDS);
+        assert_eq!(f.0.iter().map(|p| p.name.as_str()).collect::<Vec<_>>(), ["Eververse", "Silver Dust Vendor"]);
         let r = Rewards::parse(BUILTIN_REWARDS);
         assert_eq!(r.0[&164].subs, vec![(40, 2), (673, 1)]);
         assert_eq!(r.0[&164].xp, Some(900));
@@ -467,6 +529,44 @@ mod tests {
         let xur = v.get(2796397637).unwrap();
         assert_eq!(xur.last_reset(now), (1_474_362_000 - 4 * 86_400) / 60, "Friday 09:00 UTC");
         assert_eq!(weekly.last_reset(weekly.last_reset(now)), weekly.last_reset(now), "a reset minute is its own last reset");
+    }
+
+    /// Every curve's rank thresholds are its steps' running totals; Crucible and Trials are in.
+    #[test]
+    fn rank_thresholds_follow_the_manifest_steps() {
+        let c = Curves::parse(BUILTIN_CURVES);
+        for curve in &c.0 {
+            let mut total = 0u64;
+            for (i, &step) in curve.steps.iter().enumerate() {
+                total += u64::from(step);
+                if step > 0 {
+                    assert_eq!(curve.level(total - 1), i as u32, "{} just below threshold {i}", curve.name);
+                }
+                assert!(curve.level(total) >= i as u32 + 1, "{} at threshold {i}", curve.name);
+            }
+        }
+        let crucible = c.by_name("faction_pvp").unwrap();
+        assert_eq!((crucible.hash, crucible.level(1499), crucible.level(1500), crucible.level(3500)), (1357277120, 0, 1, 2));
+        let cryptarch = c.by_name("faction_cryptarch").unwrap();
+        assert_eq!(cryptarch.level(1500 + 2500 + 3000), 3);
+        let trials = c.by_name("pvp_tournament0.wins").unwrap();
+        assert_eq!((trials.cap(), trials.level(9)), (Some(26), 9), "a Trials card: one step per win");
+        let iron_banner = c.by_name("faction_event_iron_banner").unwrap();
+        assert_eq!((iron_banner.cap(), iron_banner.level(8_500)), (Some(8_500), 5), "Iron Banner rank 5 caps");
+        let srl = c.by_name("d15.winter.racing").unwrap();
+        assert_eq!(srl.hash, 2576753410, "the Shipwright's progression comes with the vendors");
+    }
+
+    #[test]
+    fn refunds_are_eververse_only_for_15_minutes() {
+        let f = RefundPolicies::parse(BUILTIN_REFUNDS);
+        assert_eq!(f.window_secs(3917130357, None), Some(900), "Eververse");
+        assert_eq!(f.window_secs(3599585337, None), Some(900), "Silver Dust");
+        assert_eq!(f.window_secs(2668878854, None), None, "the Vanguard Quartermaster refunds nothing");
+        let ev = f.get(3917130357).unwrap();
+        assert_eq!((ev.refundable_sales, ev.sales), (67, 123));
+        assert_eq!(f.window_secs(3917130357, Some(ev.item_hashes[0])), Some(900));
+        assert_eq!(f.window_secs(3917130357, Some(1)), None, "a sale that is not refundable");
     }
 
     #[test]
