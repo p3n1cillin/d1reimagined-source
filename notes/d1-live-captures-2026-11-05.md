@@ -1,6 +1,6 @@
 # Live-server message captures (5 November 2026)
 
-A member of the project's Discord shared 49 captures of Destiny 1 played on Bungie's live servers between 27 October and 3 November 2026. There is one per mission:
+A member of the project's Discord shared 49 captures of Destiny 1 played on Bungie's live servers between 27 October and 3 November 2026, then three more strikes (The Will of Crota, The Undying Mind and The Shadow Thief, 4-5 November). There is one per mission:
 - A Guardian Rises, Restoration and the rest of the Earth, Moon, Venus and Mars story;
 - The Taken King and Rise of Iron missions;
 - strikes and patrols;
@@ -319,8 +319,11 @@ The player names in these messages are personal data and stay in the private cap
 | Winter's Run | starts 24, 72, 184, 48, 8, 176; starts 24, 72, 184 | 72, 160 |
 | Cerberus Vae III | starts 112, 72, 80, 208, 184; starts 112, 72; starts 80, 208, 184 | 112, 208 |
 | Dust Palace | starts 48, 136, 40; starts 48 | 48, 144 |
+| The Will of Crota | starts 88, 72, 80; starts 88, 72; starts 72, 80 | 0, 88 |
+| The Undying Mind | starts 104, 200, 88 | none |
+| The Shadow Thief | starts 24, 64, 56; joins 24 | 48 |
 
-**Twelve captures use only one host:** The Speaker, The Awoken, Fist of Crota, A Kell Rising, The Coming War, The Dreadnaught, Enemy of My Enemy, Lost to Light, Last Rites, Regicide, Dread Patrol and Crota's End. Eleven mark no region public; Lost to Light marks region 48 public but never starts an instance for it. These, like A Guardian Rises, need only what our host already serves: one connection, private regions. They are the natural next missions to bring up. The rest need the public instance (plan step 4).
+**Thirteen captures use only one host:** The Speaker, The Awoken, Fist of Crota, A Kell Rising, The Coming War, The Dreadnaught, Enemy of My Enemy, Lost to Light, Last Rites, Regicide, Dread Patrol, Crota's End and The Undying Mind. Twelve mark no region public; Lost to Light marks region 48 public but never starts an instance for it. These, like A Guardian Rises, need only what our host already serves: one connection, private regions. They are the natural next missions to bring up. The rest need the public instance (plan step 4).
 
 `d1-srcp.py mission CAPTURE... --activity-table activity-table.tsv` gives what a host needs for each one:
 - the activity, with the client's index, from the private activity table dump;
@@ -328,7 +331,7 @@ The player names in these messages are personal data and stay in the private cap
 - the start slice set;
 - the sensor groups the PAH served.
 
-For A Guardian Rises it gives index 164, world `0x4786C0E0` and start 113, our served values. Almost every mission uses world group `0x4786C0E0`. Crota's End (`0x24C67333`) and The Nexus (`0xF29221F5`) use their own. The sensor lists themselves (record kinds and value types) still come from the native client in the lab.
+For A Guardian Rises it gives index 164, world `0x4786C0E0` and start 113, our served values. Almost every mission uses world group `0x4786C0E0`. Crota's End (`0x24C67333`) uses its own, and The Nexus, The Undying Mind and The Shadow Thief share `0xF29221F5`. The sensor lists themselves (record kinds and value types) still come from the native client in the lab.
 
 | Mission | Activity hash | Index | World group | Start slice set | Slice sets | PAH sensor groups (records) |
 |---|---|---|---|---|---|---|
@@ -344,6 +347,7 @@ For A Guardian Rises it gives index 164, world `0x4786C0E0` and start 113, our s
 | Regicide | `0xc280b997` | 273 | `0x4786c0e0` | 8 | 8, 152, 136, 128, 104, 105 | 24 (966) |
 | Dread Patrol | `0x7c3c011b` | 237 | `0x4786c0e0` | 8 | 8, 152, 72, 128 | 19 (752) |
 | Crota's End | `0x6d7cc3bc` | 15 | `0x24c67333` | 16 | 16, 32 | 8 (417) |
+| The Undying Mind | `0x030ef564` | 306 | `0xf29221f5` | 104 | 104, 200, 88 | 7 (477) |
 
 The Speaker and The Awoken are the smallest. Their PAHs served the world block and one other group, about 22 records, so they are the cheapest first test of serving a mission besides A Guardian Rises.
 
