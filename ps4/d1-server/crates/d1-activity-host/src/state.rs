@@ -2336,7 +2336,7 @@ mod tests {
         assert!(i.advance_mission(now));
         let squad = |index, live| SquadCount { group: 0x062D_D95D, kind: 1, index, live };
         let report = |i: &mut ActivityInstance, counts: Vec<_>| {
-            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts });
+            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts, squads: vec![] });
             i.set_sense_ready(true);
         };
         report(&mut i, vec![squad(5,1)]);
