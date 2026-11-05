@@ -1,0 +1,171 @@
+{
+  "activity_id": "raid-crotas-end",
+  "name": "Crota's End",
+  "evidence": {
+    "kind": "live-capture",
+    "build": "51539 (Xbox 360)",
+    "capture": "Crotas-End",
+    "note": "one solo run (Crota's End: a fireteam); incident ids are 51539's; see notes/d1-live-captures-2026-11-05.md"
+  },
+  "host_session_s": 3118.5,
+  "hosts": 1,
+  "stages": [
+    {
+      "slice_set": 16,
+      "entered_s": 26.1,
+      "groups_first_served": [
+        "0x24c67333",
+        "0xf8b8a075",
+        "0x446cbbee",
+        "0xf72adf7f",
+        "0x51d22aa9",
+        "0xcbf226c5"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0xf8b8a075/29/40",
+        "0xf8b8a075/29/42"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 393.3
+    },
+    {
+      "slice_set": 32,
+      "entered_s": 419.4,
+      "groups_first_served": [
+        "0x94b164df",
+        "0xd60047f1"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x94b164df/29/89",
+        "0x94b164df/29/90",
+        "0x94b164df/29/86",
+        "0xf8b8a075/29/45",
+        "0xd60047f1/29/28",
+        "0xd60047f1/29/30",
+        "0xd60047f1/29/29",
+        "0xf8b8a075/29/46",
+        "0x51d22aa9/29/58",
+        "0xcbf226c5/29/58",
+        "0x51d22aa9/29/60"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 2699.1
+    }
+  ],
+  "markers": [
+    {
+      "t_s": 26.1,
+      "slice": 16
+    },
+    {
+      "t_s": 63.4,
+      "trigger": "0xf8b8a075/29/40"
+    },
+    {
+      "t_s": 112.8,
+      "trigger": "0xf8b8a075/29/42"
+    },
+    {
+      "t_s": 419.4,
+      "slice": 32
+    },
+    {
+      "t_s": 558.4,
+      "trigger": "0x94b164df/29/89"
+    },
+    {
+      "t_s": 561.0,
+      "trigger": "0x94b164df/29/90"
+    },
+    {
+      "t_s": 1552.2,
+      "trigger": "0x94b164df/29/86"
+    },
+    {
+      "t_s": 1554.7,
+      "trigger": "0xf8b8a075/29/45"
+    },
+    {
+      "t_s": 1555.0,
+      "trigger": "0xd60047f1/29/28"
+    },
+    {
+      "t_s": 1568.5,
+      "trigger": "0xd60047f1/29/30"
+    },
+    {
+      "t_s": 1570.2,
+      "trigger": "0xd60047f1/29/29"
+    },
+    {
+      "t_s": 1571.4,
+      "trigger": "0xf8b8a075/29/46"
+    },
+    {
+      "t_s": 2125.9,
+      "trigger": "0x51d22aa9/29/58"
+    },
+    {
+      "t_s": 2137.3,
+      "trigger": "0xcbf226c5/29/58"
+    },
+    {
+      "t_s": 2138.5,
+      "trigger": "0x51d22aa9/29/60"
+    }
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "begins_on": {
+        "slice_entered": 16
+      },
+      "at_s": 26.1,
+      "duration_s": 86.7
+    },
+    {
+      "index": 1,
+      "begins_on": {
+        "trigger": "0xf8b8a075/29/42"
+      },
+      "at_s": 112.8,
+      "duration_s": 306.6
+    },
+    {
+      "index": 2,
+      "begins_on": {
+        "slice_entered": 32
+      },
+      "at_s": 419.4,
+      "duration_s": 139.0
+    },
+    {
+      "index": 3,
+      "begins_on": {
+        "trigger": "0x94b164df/29/89"
+      },
+      "at_s": 558.4,
+      "duration_s": 993.8
+    },
+    {
+      "index": 4,
+      "begins_on": {
+        "trigger": "0x94b164df/29/86"
+      },
+      "at_s": 1552.2,
+      "duration_s": 573.7
+    },
+    {
+      "index": 5,
+      "begins_on": {
+        "trigger": "0x51d22aa9/29/58"
+      },
+      "at_s": 2125.9,
+      "duration_s": 992.6
+    }
+  ]
+}

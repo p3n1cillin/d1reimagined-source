@@ -1,0 +1,274 @@
+{
+  "activity_id": "strike-the-undying-mind",
+  "name": "The Undying Mind",
+  "evidence": {
+    "kind": "live-capture",
+    "build": "51539 (Xbox 360)",
+    "capture": "The-Undying-Mind",
+    "note": "one solo run (Crota's End: a fireteam); incident ids are 51539's; see notes/d1-live-captures-2026-11-05.md"
+  },
+  "host_session_s": 2114.1,
+  "hosts": 1,
+  "stages": [
+    {
+      "slice_set": 104,
+      "entered_s": 21.5,
+      "groups_first_served": [
+        "0xf29221f5",
+        "0x2762ddea",
+        "0x26b38439",
+        "0x0f0dd50d",
+        "0x8ea7860a",
+        "0x4cdabefe",
+        "0x66dc83e1"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x26b38439/29/14",
+        "0x4cdabefe/29/104",
+        "0x26b38439/29/15"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 512.3
+    },
+    {
+      "slice_set": 200,
+      "entered_s": 533.8,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x2762ddea/29/25",
+        "0x66dc83e1/29/148",
+        "0x2762ddea/29/26",
+        "0x26b38439/29/16",
+        "0x66dc83e1/29/149",
+        "0x66dc83e1/29/150",
+        "0x26b38439/29/17",
+        "0x66dc83e1/29/151",
+        "0x66dc83e1/29/152",
+        "0x66dc83e1/29/153",
+        "0x66dc83e1/29/154"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 572.9
+    },
+    {
+      "slice_set": 88,
+      "entered_s": 1106.7,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x26b38439/29/18",
+        "0x26b38439/29/22",
+        "0x26b38439/29/20",
+        "0x26b38439/29/23",
+        "0x26b38439/29/21",
+        "0x26b38439/29/24",
+        "0x26b38439/29/19",
+        "0x2762ddea/29/27",
+        "0x8ea7860a/29/59"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 1007.4
+    }
+  ],
+  "markers": [
+    {
+      "t_s": 21.5,
+      "slice": 104
+    },
+    {
+      "t_s": 37.2,
+      "trigger": "0x26b38439/29/14"
+    },
+    {
+      "t_s": 475.8,
+      "trigger": "0x4cdabefe/29/104"
+    },
+    {
+      "t_s": 529.3,
+      "trigger": "0x26b38439/29/15"
+    },
+    {
+      "t_s": 533.8,
+      "slice": 200
+    },
+    {
+      "t_s": 535.0,
+      "trigger": "0x2762ddea/29/25"
+    },
+    {
+      "t_s": 576.4,
+      "trigger": "0x66dc83e1/29/148"
+    },
+    {
+      "t_s": 592.6,
+      "trigger": "0x2762ddea/29/26"
+    },
+    {
+      "t_s": 595.7,
+      "trigger": "0x26b38439/29/16"
+    },
+    {
+      "t_s": 600.5,
+      "trigger": "0x66dc83e1/29/149"
+    },
+    {
+      "t_s": 649.1,
+      "trigger": "0x66dc83e1/29/150"
+    },
+    {
+      "t_s": 650.3,
+      "trigger": "0x26b38439/29/17"
+    },
+    {
+      "t_s": 837.1,
+      "trigger": "0x66dc83e1/29/151"
+    },
+    {
+      "t_s": 918.8,
+      "trigger": "0x66dc83e1/29/152"
+    },
+    {
+      "t_s": 978.5,
+      "trigger": "0x66dc83e1/29/153"
+    },
+    {
+      "t_s": 1072.5,
+      "trigger": "0x66dc83e1/29/154"
+    },
+    {
+      "t_s": 1106.7,
+      "slice": 88
+    },
+    {
+      "t_s": 1111.3,
+      "trigger": "0x26b38439/29/18"
+    },
+    {
+      "t_s": 1182.1,
+      "trigger": "0x26b38439/29/22"
+    },
+    {
+      "t_s": 1182.1,
+      "trigger": "0x26b38439/29/20"
+    },
+    {
+      "t_s": 1182.1,
+      "trigger": "0x26b38439/29/23"
+    },
+    {
+      "t_s": 1182.2,
+      "trigger": "0x26b38439/29/21"
+    },
+    {
+      "t_s": 1182.2,
+      "trigger": "0x26b38439/29/24"
+    },
+    {
+      "t_s": 1189.5,
+      "trigger": "0x26b38439/29/19"
+    },
+    {
+      "t_s": 1190.0,
+      "trigger": "0x2762ddea/29/27"
+    },
+    {
+      "t_s": 1195.0,
+      "trigger": "0x8ea7860a/29/59"
+    }
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "begins_on": {
+        "slice_entered": 104
+      },
+      "at_s": 21.5,
+      "duration_s": 454.3
+    },
+    {
+      "index": 1,
+      "begins_on": {
+        "trigger": "0x4cdabefe/29/104"
+      },
+      "at_s": 475.8,
+      "duration_s": 53.5
+    },
+    {
+      "index": 2,
+      "begins_on": {
+        "trigger": "0x26b38439/29/15"
+      },
+      "at_s": 529.3,
+      "duration_s": 4.5
+    },
+    {
+      "index": 3,
+      "begins_on": {
+        "slice_entered": 200
+      },
+      "at_s": 533.8,
+      "duration_s": 115.3
+    },
+    {
+      "index": 4,
+      "begins_on": {
+        "trigger": "0x66dc83e1/29/150"
+      },
+      "at_s": 649.1,
+      "duration_s": 188.0
+    },
+    {
+      "index": 5,
+      "begins_on": {
+        "trigger": "0x66dc83e1/29/151"
+      },
+      "at_s": 837.1,
+      "duration_s": 81.7
+    },
+    {
+      "index": 6,
+      "begins_on": {
+        "trigger": "0x66dc83e1/29/152"
+      },
+      "at_s": 918.8,
+      "duration_s": 59.7
+    },
+    {
+      "index": 7,
+      "begins_on": {
+        "trigger": "0x66dc83e1/29/153"
+      },
+      "at_s": 978.5,
+      "duration_s": 94.0
+    },
+    {
+      "index": 8,
+      "begins_on": {
+        "trigger": "0x66dc83e1/29/154"
+      },
+      "at_s": 1072.5,
+      "duration_s": 34.2
+    },
+    {
+      "index": 9,
+      "begins_on": {
+        "slice_entered": 88
+      },
+      "at_s": 1106.7,
+      "duration_s": 75.4
+    },
+    {
+      "index": 10,
+      "begins_on": {
+        "trigger": "0x26b38439/29/22"
+      },
+      "at_s": 1182.1,
+      "duration_s": 932.0
+    }
+  ]
+}
