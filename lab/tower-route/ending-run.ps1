@@ -57,6 +57,11 @@ $Cf = $C -replace '\\', '/'
 # Stop the previous lab yourself first (by exact PID); this script only refuses to start over a running one.
 if (Get-Process d1-activity-host, d1-responder, shadnet-server, shadPS4 -ErrorAction SilentlyContinue) { throw 'lab still running' }
 if (-not $env:D1_AUDIO_TAP) { $env:D1_AUDIO_TAP = Get-D1Path ShadPS4 '..\audio-tap' }
+# The unattended route's walks, turns and fights are timed at the PS4's 30 Hz. The deployed emulator's
+# D1 Video menu applies the user's saved frame rate (60 since 4 November) and its rate guard then
+# moves it (60 -> 50 -> 30 -> 40 in run cine-live1, whose walks wedged at the Wall and the Breach), so
+# keep it off unless a run asks for it (D1_VIDEO=1).
+if (-not $env:D1_VIDEO) { $env:D1_VIDEO = '0' }
 foreach ($f in "$C\profile-push.bin", "$C\profile-push.item", "$C\profile-push.soid", "$env:D1_AUDIO_TAP\rec.flag") { if (Test-Path $f) { Remove-Item -LiteralPath $f -Force } }
 New-Item -ItemType Directory -Force "$C\$Name" | Out-Null
 Copy-Item "$Fix\mission\breach-prop3-only.txt" "$C\$Name\"
