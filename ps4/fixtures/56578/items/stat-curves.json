@@ -1,0 +1,48 @@
+{
+  "build": "56578.17.04.12.1251.evil",
+  "generator": "d1-oracle content-tables",
+  "sources": [
+    {
+      "sha256": "efea329c89524ff381c527cf9b196f95c86495ff64b3d65318ec55d84d0fe983",
+      "tag": 2158355012
+    }
+  ],
+  "data": [
+    {"flags":0,"hash":2391494160,"index":0,"points":[[0,3],[1,5],[20,100],[40,200],[45,250],[50,300],[60,400],[70,500],[80,600]],"quality_points":[[-100,-10.0],[250,25.0]],"slot_weights":[[256,10],[512,10],[768,10],[1024,10],[1280,8],[2816,8],[4096,8],[1536,12],[1792,12],[2048,12]]},
+    {"flags":2,"hash":3897883278,"index":1,"points":[[0,3],[1,5],[20,100],[40,200],[45,250],[50,300],[60,400],[70,500],[80,600]],"quality_points":[[-100,-10.0],[250,25.0]],"slot_weights":[]},
+    {"flags":1,"hash":392767087,"index":2,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":1,"hash":2996146975,"index":3,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":1,"hash":1943323491,"index":4,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":1,"hash":144602215,"index":5,"points":[[0,5],[1,10],[20,100],[21,104],[22,108],[23,112],[24,116],[25,120],[26,124],[27,128],[28,134],[29,140],[30,146],[31,152],[32,158],[33,164],[34,170],[35,188],[36,206],[37,226],[38,248],[39,272],[40,300],[41,310],[42,320],[43,335],[44,350],[45,365],[50,440],[54,516],[60,516],[80,516]],"quality_points":[[-250,-25.0],[250,25.0]],"slot_weights":[[257,9],[768,12],[513,8],[1024,11],[4096,10],[1280,5],[2816,5]]},
+    {"flags":1,"hash":1735777505,"index":6,"points":[[0,5],[1,10],[20,100],[21,104],[22,108],[23,112],[24,116],[25,120],[26,124],[27,128],[28,134],[29,140],[30,146],[31,152],[32,158],[33,164],[34,170],[35,188],[36,206],[37,226],[38,248],[39,272],[40,300],[41,310],[42,320],[43,335],[44,350],[45,365],[50,440],[54,516],[60,516],[80,516]],"quality_points":[[-250,-25.0],[250,25.0]],"slot_weights":[[257,9],[768,12],[513,8],[1024,11],[4096,10],[1280,5],[2816,5]]},
+    {"flags":1,"hash":4244567218,"index":7,"points":[[0,5],[1,10],[20,100],[21,104],[22,108],[23,112],[24,116],[25,120],[26,124],[27,128],[28,134],[29,140],[30,146],[31,152],[32,158],[33,164],[34,170],[35,188],[36,206],[37,226],[38,248],[39,272],[40,300],[41,310],[42,320],[43,335],[44,350],[45,365],[50,440],[54,516],[60,516],[80,516]],"quality_points":[[-250,-25.0],[250,25.0]],"slot_weights":[[257,9],[768,12],[513,8],[1024,11],[4096,10],[1280,5],[2816,5]]},
+    {"flags":2,"hash":360359141,"index":8,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":1501155019,"index":9,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":3017642079,"index":10,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":368428387,"index":11,"points":[[0,3],[1,5],[20,100],[40,200],[45,250],[50,300],[60,400],[70,500],[80,600]],"quality_points":[[-100,-10.0],[250,25.0]],"slot_weights":[]},
+    {"flags":2,"hash":4284893193,"index":12,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":4043523819,"index":13,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":1240592695,"index":14,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":2961396640,"index":15,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":2523465841,"index":16,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":3614673599,"index":17,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":155624089,"index":18,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":3597844532,"index":19,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":3871231066,"index":20,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":1931675084,"index":21,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":943549884,"index":22,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":4188031367,"index":23,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":3988418950,"index":24,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":3907551967,"index":25,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":1345609583,"index":26,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":2715839340,"index":27,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":1,"hash":3555269338,"index":28,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":3291498656,"index":29,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":3291498659,"index":30,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":2,"hash":3291498658,"index":31,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":1,"hash":2837207746,"index":32,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":1,"hash":209426660,"index":33,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":1,"hash":2762071195,"index":34,"points":[],"quality_points":[],"slot_weights":[]},
+    {"flags":1,"hash":925767036,"index":35,"points":[],"quality_points":[],"slot_weights":[]}
+  ]
+}
