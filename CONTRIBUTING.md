@@ -66,5 +66,6 @@ gets a `stale` reminder; nothing is closed automatically.
 
 ## Licence
 
-PS4 contributions are GPL-2.0-or-later and keep their attribution notices. Original retained PS3 files use
-the root licence unless their notices say otherwise.
+PS4 contributions are GPL-2.0-or-later and keep their attribution notices: the "or later" lets the servers link their
+Apache-2.0 dependencies ([licensing](ps4/design/licensing.md)). Original retained PS3 files are GPL-2.0-only, as RPCS3
+is, unless their notices say otherwise. The project is GPL, not AGPL.

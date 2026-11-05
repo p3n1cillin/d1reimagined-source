@@ -6,9 +6,11 @@ is the current summary. Titles below are the notes' own.
 
 ## Start here (PS4 build 56578, current)
 
+- [PS4 56578: cinematic binding registration (5 November 2026)](ps4-56578-cine-binding-2026-11-05.md)
 - [Live-server message captures (5 November 2026)](d1-live-captures-2026-11-05.md)
 - [Bungie's own description of the activity host (GDC 2015 talk)](d1-gdc2015-activity-hosts.md)
 - [How the live host started its cinematics: lifetime phase 4, 10 Hz stamped deltas (5 November 2026)](d1-live-speaker-timeline-2026-11-05.md)
+- [PS4 56578: udt 5 stamp and init (5 November 2026)](ps4-56578-udt5-stamp-init-2026-11-05.md)
 - [PS4 56578: the route-run stalls (3-5 November 2026)](ps4-56578-lab-stalls-2026-11-05.md)
 - [Native video settings: content preparation (3 November 2026)](ps4-56578-native-video-settings-2026-11-03.md)
 - [PS4 56578: what a PUBLIC start region needs (2 November 2026)](ps4-56578-public-sessions-2026-11-02.md)
