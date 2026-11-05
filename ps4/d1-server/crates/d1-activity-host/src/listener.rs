@@ -725,6 +725,26 @@ fn log_event(peer: &str, e: &AhEvent, prefix: &str) {
 }
 
 /// One connection's read loop.
+/// A turn of the connection loop longer than this blocks every write, heartbeats included: the
+/// client declares the host crashed after 20.5 s without hearing from it.
+pub const SLOW_TURN: Duration = Duration::from_millis(1500);
+
+/// Warn when one `on_frame` or `on_tick` held the loop for longer than [`SLOW_TURN`], naming what
+/// it produced. Run cine-live9 (5 November) lost its host after the log fell silent for 16.8 s
+/// mid-mission while a large build ran on the machine; this says which step was slow.
+fn warn_if_slow(peer: &str, what: &str, took: Duration, events: &[AhEvent]) {
+    if took < SLOW_TURN {
+        return;
+    }
+    let first = events.first().map(|e| format!("{e:?}")).unwrap_or_default();
+    let first: String = first.chars().take(160).collect();
+    tracing::warn!(
+        "[{peer}] slow {what}: {} ms holding the connection loop ({} event(s); first {first})",
+        took.as_millis(),
+        events.len()
+    );
+}
+
 async fn drive(
     mut sock: tokio::net::TcpStream,
     peer: String,
@@ -758,6 +778,7 @@ async fn drive(
             Err(_elapsed) => {
                 last_tick = Instant::now();
                 let (replies, events) = conn.on_tick(last_tick);
+                warn_if_slow(&peer, "tick", last_tick.elapsed(), &events);
                 for e in events {
                     // ⭐⭐ The heartbeat path used to print EVERY event at INFO, including the
                     // codec fault that killed run 20260809-120451-MOONBASE-FRESH. Route it the
@@ -783,7 +804,9 @@ async fn drive(
                 break;
             }
             let frame: Vec<u8> = buf.drain(..6 + size).collect();
-            let (replies, events) = conn.on_frame(&frame, Instant::now());
+            let started = Instant::now();
+            let (replies, events) = conn.on_frame(&frame, started);
+            warn_if_slow(&peer, "frame", started.elapsed(), &events);
             for e in events {
                 log_event(&peer, &e, "");
             }
@@ -798,6 +821,7 @@ async fn drive(
         if last_tick.elapsed() >= poll {
             last_tick = Instant::now();
             let (replies, events) = conn.on_tick(last_tick);
+            warn_if_slow(&peer, "tick", last_tick.elapsed(), &events);
             for e in events {
                 log_event(&peer, &e, "heartbeat ");
             }
