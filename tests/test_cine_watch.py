@@ -36,6 +36,7 @@ class CineWatchTest(unittest.TestCase):
             cine = [r for r in rows if r[0] == '0x796b3b8c']
             self.assertEqual(len(cine), 1, name)
             self.assertEqual(int(cine[0][6][8:16], 16), state << 24, name)
+            self.assertEqual(int(cine[0][6][16:18], 16), int(state == 2), name + ': playing byte (+8)')
             self.assertEqual(sum(r[0] == '0x4786c0e0' for r in rows), 21, name)
         table = (MISSION / 'world-table-speaker-live.txt').read_text(encoding='utf-8')
         self.assertIn('167  cine_speaker          0x4786c0e0  sensor-clients-cine_speaker-live.txt  1', table)
@@ -46,6 +47,8 @@ class CineWatchTest(unittest.TestCase):
             rows = [r.split() for r in (MISSION / name).read_text(encoding='utf-8').splitlines()
                     if r and not r.startswith('#')]
             cine = {int(r[2]): int(r[6][8:16], 16) >> 24 for r in rows if r[0] == '0x4af77757'}
+            playing = {int(r[2]): int(r[6][16:18], 16) for r in rows if r[0] == '0x4af77757'}
+            self.assertEqual((playing[0], playing[1]), tuple(int(x == 2) for x in states), name)
             self.assertEqual((cine[0], cine[1]), states, name)
             self.assertEqual(sum(r[0] == '0x4786c0e0' for r in rows), 21, name)
         table = (MISSION / 'world-table-speaker-live.txt').read_text(encoding='utf-8')
