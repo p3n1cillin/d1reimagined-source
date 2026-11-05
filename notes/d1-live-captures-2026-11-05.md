@@ -197,6 +197,8 @@ The public instance's join and membership are echoes of the client's join reques
 - the client's fireteam id (join request +0xD8) is 0;
 - join request +0xC8 names the PAH's host id.
 
+**Entity indices are per host.** Each host's first `entity_slots_allocated` (udt 0) granted the client 500 indices by its peer slot. The PAH and the client's own public instance both granted 0-499; the other player's instance granted 500-999, the client being its second peer. So two hosts need no disjoint ranges for one client (the public-sessions note's first risk). Our host grants the whole pool at the join.
+
 ### The PAH's region records (udt 11, `replicate_membership+0x2E48`)
 
 Only the PAH serves region records. The public instances served none. `d1-srcp.py regions` follows them, decoding each membership against the previous one:
