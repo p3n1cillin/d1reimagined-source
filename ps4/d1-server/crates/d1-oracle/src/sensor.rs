@@ -1151,6 +1151,39 @@ mod tests {
         assert_eq!(d.entries[1].body_bits, 2, "fresh = 1, presence = 0: back to the default");
     }
 
+    /// The persistent encoder reuses its codecs across frames and builds the same bytes, with the
+    /// same stamp bit, as the one-shot path, frame after frame.
+    #[test]
+    fn the_frame_encoder_matches_the_one_shot_encode() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
+        let cine = |counter: u8| {
+            let mut image = vec![0u8; 0xD4];
+            image[4] = counter;
+            image[0xC..0x10].copy_from_slice(&super::FNV1_BASIS.to_le_bytes());
+            image[0x10] = 0xFF;
+            image[0x12..0x14].copy_from_slice(&(-1i16).to_le_bytes());
+            image[0x14] = 0xFF;
+            super::SensorClientRef {
+                name_hash: 0x2FE7_DBE6,
+                name_i8: 6,
+                name_sub: 0,
+                has_a: true,
+                has_b: false,
+                a_value: Some((0x8080_254D, image)),
+                b_value: None,
+            }
+        };
+        let mut enc = super::SensorFrameEncoder::new();
+        for (counter, authority) in [(1, Some(super::SensorAuthority::all_to(14, 1))), (2, None), (3, None)] {
+            let frame = super::SensorEntryFrame { gen: 2, authority, init: counter == 1, entries: vec![cine(counter)] };
+            let (bytes, stamp_bit) = enc.encode(&frame).expect("encoder");
+            assert_eq!(bytes, frame.encode().expect("one-shot"));
+            assert_eq!(super::known_stamp_bit(&bytes), Some(stamp_bit));
+        }
+    }
+
     /// A frame with extra sensor clients must still build (byte-padded) and must carry the audited
     /// phase entry unchanged as its prefix: only the terminator bit moves.
     #[test]
