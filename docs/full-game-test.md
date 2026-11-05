@@ -129,7 +129,7 @@ then stops its servers. A `-Only servers` run stops when `RUN\boot\stop` is crea
 | Public instances | #316 | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_DISTINCT_HOST_IDS=1` | unset |
 | Native RSAT codec | #317 | `D1_RSAT_NATIVE=1` | unset |
 | udt 5 stamp mode | #298 | `D1_AH_SENSOR_STAMP=1` | unset |
-| Script bridge | #319 (stream A2, `scripts/host-bridge`, not merged) | `?D1_AH_SCRIPTS=1`, `?D1_AH_SCRIPTS_SIDECAR`, `?D1_AH_SCRIPTS_ACTIVITIES` (a stand-in, [165 cine_reveal](../ps4/profiles/script-activities.txt), until stream K's table lands), `?D1_AH_SCRIPTS_INCIDENTS`. Listed as off: `?D1_AH_SCRIPTS_MISSION_PHASE` (unverified), `?D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`, `?D1_AH_ROWS_UNLISTED`, `?D1_AH_ROWS_DELTA_INIT` | unset |
+| Script bridge | #319 (stream A2) | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES` (a stand-in, [165 cine_reveal](../ps4/profiles/script-activities.txt), until stream K's table lands), `D1_AH_SCRIPTS_INCIDENTS`. Listed as off: `D1_AH_SCRIPTS_MISSION_PHASE` (unverified), `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`, `D1_AH_ROWS_UNLISTED`, `D1_AH_ROWS_DELTA_INIT` | unset |
 | Content bundles | stream K (not merged) | `D1_BUNDLES_DIR` (`[sidecar]`, from the environment; required with the bridge on) | unset |
 | Script sidecar | #310 | `D1_SCRIPTS_DIR`, `D1_TIGER_DIR` (`[sidecar]`) | unset |
 | Draw cost | fork #7 (draft) | `?D1_DRAW_STATS=1`, `?D1_DRAW_FAST=1`, `?D1_GPU_WAIT_YIELD=1` | `D1_DRAW_FAST=0`, the rest unset |
@@ -173,10 +173,10 @@ as working.
 | Multiplayer (#312) | responder, activity host | `⭐ D1_MP=1: multiplayer services on (...)`; with the store, `⭐ MP: accounts resolve through the player store's identities.json`; per connection, `⭐ MP: connection #N is '<id>', <account>, in <fireteam>`; on a 42 search, `⭐ MP matchmaking (connection #N): ...`. In the host: `⭐ shared instances on (D1_AH_SHARED_INSTANCES): one membership per named host`. | With one client: it signs on as its own account in a fireteam of one, and its 42 searches get answers. Fireteams and shared instances need a second client. |
 | Activity framework (#313) | activity host | `activity framework: <coverage summary>`. Any `activity framework: ...` warning is a data problem. `... not loaded: ...` means it failed. | The summary line has the expected counts. A strike run would drive `ActivityRun` from the host's slice and trigger reports; no run has launched one. |
 | Generated worlds (#314) | activity host | `⭐ D1_AH_WORLDS <dir>: N activities served from generated worlds (M distinct frames), K without one`. `⚠ D1_AH_WORLDS: <world> generated checksum ...` means the generated world disagrees with the measured one. | Launching Restoration (166) from the Director loads a world. Run sense125 got a black screen there. The same goes for 167, 168, 170, 172 and 186. |
-| Public instances (#316) | activity host | `⭐ D1_AH_PUBLIC_HOST=1 - N public lists from <table>, 0 frame(s) built`, then `⚠ public lists not servable yet: ...`. Both are expected until A2's entry-only frame is plugged in. A join logs `⭐ public instance <id> is <key>`; a Tower join logs `⭐ social space ...`. | A public instance's join is recognised (the role line) and its slot freed when the client leaves. Serving the instance's list waits for the encoder. |
+| Public instances (#316) | activity host | `⭐ D1_AH_PUBLIC_HOST=1 - N public lists from <table>, 0 frame(s) built`, then `⚠ public lists not servable yet: ...`. Both are expected until #319's entry-only frame (`SensorEntryFrame`) is plugged into the public host in `main.rs` (it still passes `encoder_pending()`, and the open world still has `PendingBridge`). A join logs `⭐ public instance <id> is <key>`; a Tower join logs `⭐ social space ...`. | A public instance's join is recognised (the role line) and its slot freed when the client leaves. Serving the instance's list waits for the encoder. |
 | Native RSAT (#317) | activity host | One `native RSAT: udt N encode+decode native` line for each covered udt, and `native RSAT: ... stays on the client's codec: <why>` for the rest. | The client signs on, loads the boot world and the Tower, and stays connected with no native codec error. Compare the slow-turn warnings against the baseline. |
 | udt 5 stamp (#298) | activity host | `⭐ D1_AH_SENSOR_STAMP=1 - udt 5 stamped at 10 Hz, init on full lists, 3 s heartbeats` | The client keeps the world through idle stretches (heartbeats), and the cinematics start on time. |
-| Script bridge (A2) | activity host | `⭐ D1_AH_SCRIPTS=1 - scripted activities [165]`. On launching 165: `⭐ script bridge: cine_reveal scripts start`, then `⭐ script bridge: lifetime ...` lines, then `⭐ script bridge: cine_reveal ended (Completed)`. | The reveal cinematic plays and ends, driven by its script, in the live order 0 → 1 → 4 → 6 → 8, as the step schedule did in run cine-live13. |
+| Script bridge (#319) | activity host | `⭐ D1_AH_SCRIPTS=1 - scripted activities [165]`. On launching 165: `⭐ script bridge: cine_reveal scripts start`, then `⭐ script bridge: lifetime ...` lines, then `⭐ script bridge: cine_reveal ended (Completed)`. | The reveal cinematic plays and ends, driven by its script, in the live order 0 → 1 → 4 → 6 → 8, as the step schedule did in run cine-live13. |
 | Script sidecar (#310) | activity host | Lines prefixed `sidecar:`; a `ready` with its unresolved bindings; `sidecar error:` lines are its errors | The sidecar starts once per scripted instance and answers every `tick` (no `no tick_done` warnings). |
 | PC client (fork #8) | emulator | No `Stub resolved ... libkernel_exception` line, and four `Installing signal handler for` lines (4, 8, 10, 11). Under a stall: `halt skipped (D1_HITCH_HALT=0), the game carries on`. The PC layout writes `user\input_config\d1-pc.ini`. | The checklist in fork #8's description, below. |
 | Draw cost (fork #7) | emulator | A `D1 draw stats: ...` line once a second | The A/B below. |
@@ -276,7 +276,7 @@ Collected from each stream's note. Each note has the full list.
   - 363 activities have no evidence.
   - None of the generated rows has been served in the lab.
 - **Public instances** ([note](../notes/ps4-56578-public-instances-2026-11-05.md)):
-  - No list is served until the entry-only frame (A2) is plugged in.
+  - No list is served until #319's entry-only frame is plugged into the public host, and the open world's events wait on a real bridge (`PendingBridge` still refuses).
   - The public instance publishes the mission's checksum, not the world's PUBLIC one.
   - The event schedules, patrol beacons, loot timers and social-space cap are placeholders.
   - The authority-reset exchange and peer reservations are not served.
@@ -288,7 +288,7 @@ Collected from each stream's note. Each note has the full list.
   - The responder still calls `d1-oracle`.
 - **Stamp mode** ([note](../notes/ps4-56578-udt5-stamp-init-2026-11-05.md)): static analysis only.
   No stamp-age timeout was found, but the absence is not proven for every watchdog.
-- **Script bridge** (#319, `notes/ps4-56578-script-bridge-2026-11-05.md` on `scripts/host-bridge`):
+- **Script bridge** ([note](../notes/ps4-56578-script-bridge-2026-11-05.md), #319):
   - The scripted-activity table is a one-row stand-in (`ps4/profiles/script-activities.txt`) until
     stream K generates it. Point `D1_AH_SCRIPTS_ACTIVITIES` at K's table with `-Set` when it lands.
   - The 965 body is unknown, so completion is not sent.
@@ -313,14 +313,6 @@ be missing from the code only while it has a row here.
 
 | Knob | From | Status (5 November) | Present when |
 |---|---|---|---|
-| `D1_AH_SCRIPTS` | #319 (stream A2), `scripts/host-bridge` | open, merging soon | the activity host is built from main after #319 merges |
-| `D1_AH_SCRIPTS_SIDECAR` | #319 | open | as above |
-| `D1_AH_SCRIPTS_ACTIVITIES` | #319 | open | as above |
-| `D1_AH_SCRIPTS_INCIDENTS` | #319 | open | as above |
-| `D1_AH_SCRIPTS_MISSION_PHASE` | #319 | open (kept off) | as above |
-| `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS` | #319 | open (kept off) | as above |
-| `D1_AH_ROWS_UNLISTED` | #319 | open (kept off) | as above |
-| `D1_AH_ROWS_DELTA_INIT` | #319 | open (kept off) | as above |
 | `D1_BUNDLES_DIR` | stream K, the content bundle export | being built | `tools/script-host` reads it (until then the launcher passes it on and warns) |
 | `D1_DRAW_STATS` | fork #7, `d1-perf/draw-cost` | draft | the deployed shadPS4.exe includes #7 |
 | `D1_DRAW_FAST` | fork #7 | draft | as above |

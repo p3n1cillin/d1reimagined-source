@@ -205,8 +205,10 @@ function Get-ServerState([string]$bin) {
     if (-not $ours.Count) { $s.stale += "built from $($s.builtFrom), not this checkout"; return $s }
     $newer = @($ours | Where-Object { (Test-Path -LiteralPath $_) -and (Get-Item -LiteralPath $_).LastWriteTimeUtc -gt $exeTime })
     $gone = @($ours | Where-Object { -not (Test-Path -LiteralPath $_) })
-    $manifests = @(Get-ChildItem -LiteralPath (Join-Path $Repo 'ps4/d1-server') -Filter Cargo.toml -Recurse -Depth 2 -ErrorAction SilentlyContinue) +
-        @(Get-Item -LiteralPath (Join-Path $Repo 'ps4/d1-server/Cargo.lock') -ErrorAction SilentlyContinue)
+    # The manifests of the workspace crates this binary is built from (cargo itself skips a binary
+    # whose crates did not change, so another crate's Cargo.toml or the lock file says nothing).
+    $crates = @($ours | ForEach-Object { ($_ -split '[\\/]ps4[\\/]d1-server[\\/]crates[\\/]')[1] -split '[\\/]' | Select-Object -First 1 } | Sort-Object -Unique)
+    $manifests = @($crates | ForEach-Object { Get-Item -LiteralPath (Join-Path $Repo "ps4/d1-server/crates/$_/Cargo.toml") -ErrorAction SilentlyContinue })
     $newer += @($manifests | Where-Object { $_.LastWriteTimeUtc -gt $exeTime } | ForEach-Object { $_.FullName })
     if ($newer.Count) { $s.stale += "$($newer.Count) source file(s) newer, e.g. $($newer[0] -replace [regex]::Escape($Repo + [IO.Path]::DirectorySeparatorChar), '')" }
     if ($gone.Count) { $s.stale += "$($gone.Count) source file(s) it was built from are gone" }
