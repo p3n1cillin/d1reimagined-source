@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: Copyright 2026 Destiny 1 Preservation Project
 // SPDX-License-Identifier: GPL-2.0-or-later
-//! Opt-in arithmetic for the owned investment-curve paths. The measured Windows Unicorn 2.1.5
+//! Scoped arithmetic for investment curves and RSAT quantizers. Windows Unicorn 2.1.5
 //! treats VEX scalar operations as destructive: with XMM0=2/XMM1=10,
 //! `vaddss xmm0,xmm1,xmm0` returns 4 instead of 12. Interpret the four measured
 //! register-register scalar operations only in the supplied ranges. This changes
-//! neither image bytes nor a live client; ordinary codec harnesses are unaffected.
+//! neither image bytes nor a live client. Schema harnesses opt in only for the build's
+//! statically identified quantizer range; investment curves retain their finite-only mode.
 
 use crate::error::{OracleError, Result};
 use std::{cell::RefCell, rc::Rc};
@@ -16,73 +17,89 @@ pub(crate) struct ScalarFloat {
 
 impl ScalarFloat {
     pub fn install(uc: &mut Unicorn<'static, ()>, ranges: &[(u64, u64)]) -> Result<Self> {
+        Self::install_mode(uc, ranges, false)
+    }
+
+    /// RSAT quantizers accept IEEE values before integer conversion/clamping. This is
+    /// the same instruction interpreter, allowing their nonfinite intermediates.
+    pub(crate) fn install_ieee(
+        uc: &mut Unicorn<'static, ()>,
+        ranges: &[(u64, u64)],
+    ) -> Result<Self> {
+        Self::install_mode(uc, ranges, true)
+    }
+
+    fn install_mode(
+        uc: &mut Unicorn<'static, ()>,
+        ranges: &[(u64, u64)],
+        ieee: bool,
+    ) -> Result<Self> {
         let fault = Rc::new(RefCell::new(None));
-        let error = fault.clone();
-        let ranges = ranges.to_vec();
-        uc.add_code_hook(1, 0, move |uc, address, _| {
-            if !ranges.iter().any(|(lo, hi)| (*lo..*hi).contains(&address)) {
-                return;
-            }
-            let result = (|| -> std::result::Result<(), String> {
-                let b = uc
-                    .mem_read_as_vec(address, 4)
-                    .map_err(|e| format!("{e:?}"))?;
-                // VEX2, scalar single precision, L=0, ADD/MUL/SUB/DIV.
-                if b[0] != 0xC5 || b[1] & 7 != 2 || ![0x58, 0x59, 0x5C, 0x5E].contains(&b[2]) {
-                    return Ok(());
-                }
-                let destination = ((b[3] >> 3) & 7) | (((!b[1] >> 7) & 1) << 3);
-                let first = (!b[1] >> 3) & 15;
-                if b[3] & 0xC0 != 0xC0 {
-                    // Same-source memory forms already have destructive semantics.
-                    return if first == destination {
-                        Ok(())
-                    } else {
-                        Err(format!("unsupported scalar memory form at {address:#x}"))
+        for &(lo, hi) in ranges {
+            let error = fault.clone();
+            uc.add_code_hook(lo, hi - 1, move |uc, address, _| {
+                let result = (|| -> std::result::Result<(), String> {
+                    let b = uc
+                        .mem_read_as_vec(address, 4)
+                        .map_err(|e| format!("{e:?}"))?;
+                    // VEX2, scalar single precision, L=0, ADD/MUL/SUB/DIV.
+                    if b[0] != 0xC5 || b[1] & 7 != 2 || ![0x58, 0x59, 0x5C, 0x5E].contains(&b[2]) {
+                        return Ok(());
+                    }
+                    let destination = ((b[3] >> 3) & 7) | (((!b[1] >> 7) & 1) << 3);
+                    let first = (!b[1] >> 3) & 15;
+                    if b[3] & 0xC0 != 0xC0 {
+                        // Same-source memory forms already have destructive semantics.
+                        return if first == destination {
+                            Ok(())
+                        } else {
+                            Err(format!("unsupported scalar memory form at {address:#x}"))
+                        };
+                    }
+                    let second = b[3] & 7;
+                    // Read both operands before writing; destination may alias either source.
+                    let x = uc
+                        .reg_read_long(R::XMM0 as i32 + first as i32)
+                        .map_err(|e| format!("{e:?}"))?;
+                    let y = uc
+                        .reg_read_long(R::XMM0 as i32 + second as i32)
+                        .map_err(|e| format!("{e:?}"))?;
+                    let a = f32::from_le_bytes(x[..4].try_into().unwrap());
+                    let v = f32::from_le_bytes(y[..4].try_into().unwrap());
+                    let value = match b[2] {
+                        0x58 => a + v,
+                        0x59 => a * v,
+                        0x5C => a - v,
+                        0x5E => a / v,
+                        _ => unreachable!(),
                     };
+                    if !ieee
+                        && (!a.is_finite()
+                            || !v.is_finite()
+                            || !value.is_finite()
+                            || a.is_subnormal()
+                            || v.is_subnormal()
+                            || value.is_subnormal())
+                    {
+                        return Err(format!("unsupported scalar value at {address:#x}"));
+                    }
+                    // VEX scalar forms copy source1 bits127:32 and zero bits255:128.
+                    let mut out = [0u8; 32];
+                    out[..16].copy_from_slice(&x);
+                    out[..4].copy_from_slice(&value.to_le_bytes());
+                    uc.reg_write_long(R::YMM0 as i32 + destination as i32, &out)
+                        .map_err(|e| format!("{e:?}"))?;
+                    uc.reg_write(R::RIP, address + 4)
+                        .map_err(|e| format!("{e:?}"))?;
+                    Ok(())
+                })();
+                if let Err(message) = result {
+                    *error.borrow_mut() = Some(message);
+                    let _ = uc.emu_stop();
                 }
-                let second = b[3] & 7;
-                // Read both operands before writing; destination may alias either source.
-                let x = uc
-                    .reg_read_long(R::XMM0 as i32 + first as i32)
-                    .map_err(|e| format!("{e:?}"))?;
-                let y = uc
-                    .reg_read_long(R::XMM0 as i32 + second as i32)
-                    .map_err(|e| format!("{e:?}"))?;
-                let a = f32::from_le_bytes(x[..4].try_into().unwrap());
-                let v = f32::from_le_bytes(y[..4].try_into().unwrap());
-                let value = match b[2] {
-                    0x58 => a + v,
-                    0x59 => a * v,
-                    0x5C => a - v,
-                    0x5E => a / v,
-                    _ => unreachable!(),
-                };
-                if !a.is_finite()
-                    || !v.is_finite()
-                    || !value.is_finite()
-                    || a.is_subnormal()
-                    || v.is_subnormal()
-                    || value.is_subnormal()
-                {
-                    return Err(format!("unsupported scalar value at {address:#x}"));
-                }
-                // VEX scalar forms copy source1 bits127:32 and zero bits255:128.
-                let mut out = [0u8; 32];
-                out[..16].copy_from_slice(&x);
-                out[..4].copy_from_slice(&value.to_le_bytes());
-                uc.reg_write_long(R::YMM0 as i32 + destination as i32, &out)
-                    .map_err(|e| format!("{e:?}"))?;
-                uc.reg_write(R::RIP, address + 4)
-                    .map_err(|e| format!("{e:?}"))?;
-                Ok(())
-            })();
-            if let Err(message) = result {
-                *error.borrow_mut() = Some(message);
-                let _ = uc.emu_stop();
-            }
-        })
-        .map_err(|e| OracleError::Unicorn(format!("{e:?}")))?;
+            })
+            .map_err(|e| OracleError::Unicorn(format!("{e:?}")))?;
+        }
         Ok(Self { fault })
     }
 
@@ -164,5 +181,14 @@ mod tests {
         let shim = ScalarFloat::install(&mut uc, &[(0x1000, 0x1004)]).unwrap();
         uc.emu_start(0x1000, 0x1004, 0, 1).unwrap();
         assert!(shim.check().is_err());
+    }
+
+    #[test]
+    fn rsat_mode_preserves_ieee_results_for_the_clients_integer_conversion() {
+        let mut uc = engine(&[0xC5, 0xF2, 0x5E, 0xC3]); // xmm0=xmm1/xmm3 (zero)
+        let shim = ScalarFloat::install_ieee(&mut uc, &[(0x1000, 0x1004)]).unwrap();
+        uc.emu_start(0x1000, 0x1004, 0, 1).unwrap();
+        shim.check().unwrap();
+        assert_eq!(low(&uc, R::YMM0), f32::INFINITY);
     }
 }
