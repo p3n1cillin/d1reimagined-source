@@ -62,7 +62,10 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
     every row of every activity bundle: `tools/ps4_setup/d1-bundle-rows.mjs` uses it to map each
     sensor index the host serves to its authored name.
   - Its Fukugen Daihon reconstructions of the mission scripts (`enc_breach_m0`,
-    `act_cosmo_m0_highway`) show which squads each Breach trigger places.
+    `act_cosmo_m0_highway`) show which squads each Breach trigger places. That part carries no
+    licence, and some of it is decompiled from a leaked Bungie build, so no more of it is used until
+    Blam Network grants one ([related projects](notes/related-projects.md)). Its BullShcript
+    compiler and runtime are MIT.
   - Its dictionary maps bundle hashes to names (`0xFC0E45A3` = `enc_breach_m0`). It also names
     the 2014 build's message ids.
   - Its independent `rsat` codec cross-checks ours byte for byte (`tools/rsat_crosscheck`,
