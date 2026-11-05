@@ -420,6 +420,8 @@ pub struct ActivityInstance {
     /// only when this differs from the last one it processed (`sstm+0x3B0`), so every changed
     /// re-publish advances it. Join and udt-17 refresh re-send the same number.
     membership_update: u32,
+    /// MP(H): the shared instance this connection is in (`D1_AH_SHARED_INSTANCES=1`; None = solo).
+    group: Option<crate::group::GroupLink>,
     /// Set once the sensor frame has gone out, so it is sent exactly once per instance
     /// (send-once mode; see [`Self::set_sensor_repeat`] for the repeating mode).
     sensor_sent: bool,
@@ -447,6 +449,9 @@ pub struct ActivityInstance {
     /// ⭐ D1_AH_SCRIPTS=1 hook: the script bridge ([`crate::script_bridge`]). `None` (default)
     /// leaves the host as it was; a scripted activity's udt 5 stream is the bridge's.
     script_bridge: Option<crate::script_bridge::ScriptBridge>,
+    /// ── stream G hook ── `D1_AH_PUBLIC_HOST=1`: the public-bubble host role
+    /// ([`crate::public_host`]). `None` (default) changes nothing.
+    public: Option<crate::public_host::PublicHost>,
 }
 
 /// ⭐ The live hosts' udt 5 framing (The Speaker and The Awoken; notes/d1-live-speaker-timeline-
@@ -655,6 +660,7 @@ impl ActivityInstance {
             slice_request: None,
             membership_dirty: false,
             membership_update: 1,
+            group: None, // MP(H)
             sensor_sent: false,
             sensors_sent: 0,
             sensor_repeat: None,
@@ -663,7 +669,18 @@ impl ActivityInstance {
             sensor_last_sent: None,
             sensor_stamp: None,
             script_bridge: None,
+            public: None,
         }
+    }
+
+    /// MP(H): share instances with the other connections in `link` (see [`crate::group`]).
+    pub fn set_group(&mut self, link: crate::group::GroupLink) {
+        self.group = Some(link);
+    }
+
+    /// MP(H): the shared-instance link, for the run log and tests.
+    pub fn group(&self) -> Option<&crate::group::GroupLink> {
+        self.group.as_ref()
     }
 
     /// Frame udt 5 the live way (`D1_AH_SENSOR_STAMP`, see [`SensorStamp`]).
@@ -689,6 +706,21 @@ impl ActivityInstance {
 
     pub fn ah_id(&self) -> u64 {
         self.ah_id
+    }
+
+    /// ── stream G hook ── Serve this connection as a public bubble's own host when its join names
+    /// a mission host (see [`crate::public_host`]).
+    pub fn set_public_host(&mut self, public: crate::public_host::PublicHost) {
+        self.public = Some(public);
+    }
+
+    /// The public-host role, if one was set.
+    pub fn public_host(&self) -> Option<&crate::public_host::PublicHost> {
+        self.public.as_ref()
+    }
+
+    fn is_public_instance(&self) -> bool {
+        self.public.as_ref().is_some_and(|p| p.is_public_instance())
     }
 
     /// Present another activity-host id (and the session text derived from it, as the registry
@@ -743,6 +775,19 @@ impl ActivityInstance {
             self.track_current_slice(struct_image);
             self.follow_slice_target(struct_image);
             self.track_public_session(struct_image);
+            // ── stream G hook ── a public instance learns its region from this report.
+            let world = self.activity_name.clone();
+            match self.public.as_mut().and_then(|p| p.on_slice_report(&world, struct_image, self.ah_id, now)) {
+                Some(Ok((key, frame))) => {
+                    tracing::info!("⭐ public instance: serving {key:?}'s sensor list ({} bytes)", frame.len());
+                    self.sensor_payload = Some(frame);
+                    self.sensor_sent = false;
+                    self.sensor_last_sent = None;
+                    self.frames_installed += 1;
+                }
+                Some(Err(e)) => tracing::warn!("⚠ public instance: no sensor list served: {e}"),
+                None => {}
+            }
         }
         // ⭐ udt 18 incidents: {u32 count, u32 types[count], ...}. Kept for incident-driven steps.
         if let ClientMessage::Other { user_defined_type: 18, struct_image } = msg {
@@ -910,6 +955,10 @@ impl ActivityInstance {
     ///
     /// [`Live`]: InstanceState::Live
     pub fn sensor_due(&mut self, now: Instant) -> Option<AhPush> {
+        // ── stream G hook ── the instance's public events run on the host's clock.
+        if let Some(p) = self.public.as_mut() {
+            p.tick(now);
+        }
         if !matches!(self.state, InstanceState::Live) || self.heartbeats == 0 {
             return None;
         }
@@ -1096,6 +1145,14 @@ impl ActivityInstance {
             );
         }
 
+        // MP(H): in a shared instance, every member's identity and properties, the occupancy masks
+        // and the elected physics host replace the solo echo (crate::group).
+        if let Some(link) = &self.group {
+            if !link.compose(&mut m.image) {
+                tracing::warn!("⚠ shared instance: membership not composed; publishing the solo echo");
+            }
+        }
+
         // ── field 2 of 2 that is OURS: the PAH-tabulated region record (rung 34 task 8) ────────
         //
         // Without it `FUN_007775B0` copies nothing into `sstm+0x490`, `FUN_0077F6B0` refuses to
@@ -1129,7 +1186,7 @@ impl ActivityInstance {
                      yet have valid host-tabulated data'"
                 ),
             },
-            None if first => tracing::warn!(
+            None if first && !self.is_public_instance() => tracing::warn!(
                 "⚠ D1_AH_SLICE_TOKEN=0 - publishing a ZEROED PAH tabulated region array at \
                  replicate_membership+0x{:04X}. FUN_007775B0 will match nothing, sstm+0x490 stays \
                  -1, and rung 34 parks forever on 'Region … is ready for switch, but we do not yet \
@@ -1145,6 +1202,11 @@ impl ActivityInstance {
             if let Err(e) = m.set_region_advertisement(session, host) {
                 tracing::warn!("⚠ public session not advertised: {e}");
             }
+        }
+
+        // ── stream G hook ── a public instance serves no region records: every slot 0xFFFFFFFF.
+        if self.is_public_instance() {
+            crate::public_host::clear_region_records(&mut m.image);
         }
 
         // ⚠ ANY FUTURE MEMBERSHIP FIELD GOES ABOVE THIS LINE. If you are about to add one to the
@@ -1206,6 +1268,18 @@ impl ActivityInstance {
                         self.activity_index
                     );
                 }
+                // ── stream G hook ── a join naming a mission host is a public instance: no region
+                // records, no mission steps, no frame until the client names its region (udt 21),
+                // and the slot handover answered (crate::public_host).
+                if let Some(p) = self.public.as_mut() {
+                    if p.on_join(struct_image, &self.activity_name, self.ah_id, now).is_public_instance() {
+                        self.pah_region = None;
+                        self.sensor_payload = None;
+                        self.sensor_team_frames = None;
+                        self.mission_steps.clear();
+                        self.slot_handover = true;
+                    }
+                }
                 // ⭐ Echo the client's whole request struct: `join_result`'s descriptor field [0]
                 // IS `join_request` (tag 0x80800E98) embedded at +0x00, which is why the nonce and
                 // AH id live where they do. `accepted_echoing` takes the nonce from the image, so
@@ -1220,6 +1294,23 @@ impl ActivityInstance {
                     u128::from(u16::MAX),
                 ) as u16;
                 self.state = InstanceState::Joined;
+                // MP(H): join the shared instance the request names, and present its host id.
+                let mut group_slot = None;
+                if let Some(link) = self.group.as_mut() {
+                    match link.join(self.ah_id, struct_image) {
+                        Ok((host, j)) => {
+                            tracing::info!("⭐ shared instance {host:#018x}: slot {}, physics host {:?}, peers {:?}",
+                                j.slot, j.physics_host, link.peers());
+                            if host != self.ah_id {
+                                self.ah_id = host;
+                                result.ah_id = host;
+                            }
+                            group_slot = Some(j.slot);
+                        }
+                        Err(e) => tracing::warn!("⚠ shared instance refused the join ({e}); serving it solo"),
+                    }
+                }
+                let recipient = self.ah_id; // MP(H): the shared instance's host, if it changed
                 // Kept for `udt 17`: a membership is an echo of these bytes, so a refresh that did
                 // not have them would have to fabricate an identity.
                 self.join_request_image = Some(struct_image.clone());
@@ -1259,10 +1350,16 @@ impl ActivityInstance {
                     // way. ⚠ `activity-host-contract.md` §5's "offline seam" (`memset 0xFF`) is
                     // NOT an alternative - that branch writes `db+0x120B8`, never `ac+0x64AA`,
                     // and `ac+0x64AA` is written in exactly one place in the whole image: here.
-                    out.push(AhPush::new(
-                        recipient,
-                        AhMessage::EntitySlotsAllocated(self.entities.grant_all()),
-                    ));
+                    // MP(H): a shared instance grants by peer slot (500 each, as the live hosts did).
+                    let grant = match group_slot {
+                        Some(slot) => {
+                            self.entities.grant_all();
+                            self.entities.free(&crate::group::entity_mask(slot));
+                            self.entities.allocate(crate::group::ENTITY_INDICES_PER_PEER as u32)
+                        }
+                        None => self.entities.grant_all(),
+                    };
+                    out.push(AhPush::new(recipient, AhMessage::EntitySlotsAllocated(grant)));
 
                     // udt 1 - ⭐ NOT `empty()`. Load-bearing three times over: establish-client,
                     // the rung-31 activity NAME, and the rung-33 world transition. `FUN_01057B80`
@@ -1379,6 +1476,7 @@ impl ActivityInstance {
             }
 
             ClientMessage::ConnectivityFailure { .. } => {
+                if let Some(p) = self.public.as_mut() { p.on_leave(now); } // ── stream G hook ──
                 self.state =
                     InstanceState::Evicted { reason: EvictionReason::ConnectivityFailure };
                 Vec::new()
@@ -1390,6 +1488,7 @@ impl ActivityInstance {
             // instance to `error_host_crashed` - so it is downstream of the failure by a third of a
             // second. Recording it is worth doing; "handling" it would be treating the symptom.
             ClientMessage::PeerLeaveRequest { .. } => {
+                if let Some(p) = self.public.as_mut() { p.on_leave(now); } // ── stream G hook ──
                 self.state = InstanceState::Evicted { reason: EvictionReason::ClientLeft };
                 Vec::new()
             }
@@ -1549,6 +1648,10 @@ impl ActivityInstance {
                 self.slice_request = None;
                 self.membership_dirty = true;
             }
+        }
+        // MP(H): another member joined or left, or the physics host moved.
+        if self.group.as_mut().is_some_and(|g| g.take_changed()) {
+            self.membership_dirty = true;
         }
         if !self.membership_dirty || !matches!(self.state, InstanceState::Live) {
             return None;

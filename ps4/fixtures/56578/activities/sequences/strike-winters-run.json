@@ -1,0 +1,203 @@
+{
+  "activity_id": "strike-winters-run",
+  "name": "Winter's Run",
+  "evidence": {
+    "kind": "live-capture",
+    "build": "51539 (Xbox 360)",
+    "capture": "Winters-Run",
+    "note": "one solo run (Crota's End: a fireteam); incident ids are 51539's; see notes/d1-live-captures-2026-11-05.md"
+  },
+  "host_session_s": 2089.6,
+  "hosts": 2,
+  "stages": [
+    {
+      "slice_set": 24,
+      "entered_s": 20.3,
+      "groups_first_served": [
+        "0x4786c0e0",
+        "0x8f025a50",
+        "0x989f44bc",
+        "0x38ec3ea6",
+        "0x95ea1a17",
+        "0xb51c3dae",
+        "0x29cbd99a"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [],
+      "public_hosts_opened": 1,
+      "duration_s": 42.3
+    },
+    {
+      "slice_set": 72,
+      "entered_s": 62.6,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [],
+      "public_hosts_opened": 0,
+      "duration_s": 121.1
+    },
+    {
+      "slice_set": 184,
+      "entered_s": 183.7,
+      "groups_first_served": [
+        "0x53061783"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x8f025a50/29/28",
+        "0x989f44bc/29/18",
+        "0x53061783/29/22"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 141.2
+    },
+    {
+      "slice_set": 48,
+      "entered_s": 324.9,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x8f025a50/29/29"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 427.4
+    },
+    {
+      "slice_set": 8,
+      "entered_s": 752.3,
+      "groups_first_served": [
+        "0x27ae5a6d"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [],
+      "public_hosts_opened": 0,
+      "duration_s": 239.6
+    },
+    {
+      "slice_set": 176,
+      "entered_s": 991.9,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x8f025a50/29/30",
+        "0xb51c3dae/29/55"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 1097.7
+    }
+  ],
+  "markers": [
+    {
+      "t_s": 20.3,
+      "slice": 24
+    },
+    {
+      "t_s": 62.6,
+      "slice": 72
+    },
+    {
+      "t_s": 183.7,
+      "slice": 184
+    },
+    {
+      "t_s": 184.4,
+      "trigger": "0x8f025a50/29/28"
+    },
+    {
+      "t_s": 188.9,
+      "trigger": "0x989f44bc/29/18"
+    },
+    {
+      "t_s": 206.5,
+      "trigger": "0x53061783/29/22"
+    },
+    {
+      "t_s": 324.9,
+      "slice": 48
+    },
+    {
+      "t_s": 325.6,
+      "trigger": "0x8f025a50/29/29"
+    },
+    {
+      "t_s": 752.3,
+      "slice": 8
+    },
+    {
+      "t_s": 991.9,
+      "slice": 176
+    },
+    {
+      "t_s": 992.6,
+      "trigger": "0x8f025a50/29/30"
+    },
+    {
+      "t_s": 1210.4,
+      "trigger": "0xb51c3dae/29/55"
+    }
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "begins_on": {
+        "slice_entered": 24
+      },
+      "at_s": 20.3,
+      "duration_s": 42.3
+    },
+    {
+      "index": 1,
+      "begins_on": {
+        "slice_entered": 72
+      },
+      "at_s": 62.6,
+      "duration_s": 121.1
+    },
+    {
+      "index": 2,
+      "begins_on": {
+        "slice_entered": 184
+      },
+      "at_s": 183.7,
+      "duration_s": 141.2
+    },
+    {
+      "index": 3,
+      "begins_on": {
+        "slice_entered": 48
+      },
+      "at_s": 324.9,
+      "duration_s": 427.4
+    },
+    {
+      "index": 4,
+      "begins_on": {
+        "slice_entered": 8
+      },
+      "at_s": 752.3,
+      "duration_s": 239.6
+    },
+    {
+      "index": 5,
+      "begins_on": {
+        "slice_entered": 176
+      },
+      "at_s": 991.9,
+      "duration_s": 218.5
+    },
+    {
+      "index": 6,
+      "begins_on": {
+        "trigger": "0xb51c3dae/29/55"
+      },
+      "at_s": 1210.4,
+      "duration_s": 879.2
+    }
+  ]
+}

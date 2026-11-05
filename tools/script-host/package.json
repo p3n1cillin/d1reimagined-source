@@ -1,0 +1,19 @@
+{
+  "name": "d1-script-host",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sidecar that runs Destiny 1 build 56578 mission scripts on BullShcript for d1-activity-host",
+  "license": "GPL-2.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "d1-script-host": "src/sidecar.mjs"
+  },
+  "scripts": {
+    "start": "node src/sidecar.mjs",
+    "test": "node --test",
+    "coverage": "node tools/coverage.mjs"
+  }
+}

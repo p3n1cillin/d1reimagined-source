@@ -1,0 +1,21 @@
+# What completing an activity gives a character: the player store's rewards table (d1-responder player_store).
+# The original servers ran these rules server-side (game-logic DLLs, GDC 2021 "Exploring Services Architecture at
+# Bungie"), so neither the client nor Bungie's public manifest holds most of them. Every row says where each value
+# comes from; `stand-in` values are ours until a source turns up, and are flagged as such in the store's log.
+#
+# activity      the 56578 activity index (characters/activity-table.tsv)
+# subs          profile field [11] completion bytes to set, SUB=VALUE (2 = completed, 1 = in progress)
+# xp            XP the activity awards in all (character_level, then character_prestige past level 40)
+# reputation    PROGRESSION_NAME:AMOUNT,... (names from progression-curves.tsv)
+# unlock_add / unlock_clear   unlock-flag indices (D1_UNLOCK_FLAGS) to add or clear; served from the next sign-on
+# status        sourced | stand-in (any stand-in value in the row) ; source: the evidence
+#
+# TODO(rewards): A Guardian Rises' XP. The manifest names an "XP Bonus" reward (item 1315532320) with no amount;
+#   900 is what the lab's post-game pushes serve, exactly level 2 on character_level's curve.
+# TODO(rewards): CRUCIBLE UNLOCKED's announcement marker is one of the completion subs 912-936
+#   (notes/ps4-56578-new-guardian-2026-11-03.md, rounds r4/r6); which one, and which activity sets it, is open.
+# TODO(rewards): no completion here changes an unlock flag yet: no source names one.
+activity	name	subs	xp	reputation	unlock_add	unlock_clear	status	source
+164	A Guardian Rises	40=2,673=1	900	-	-	-	stand-in	sub 40 = the mission's completion flag (flag 130; tools/ps4_setup/d1-profile-completions.py, which the Director's Earth nodes read); sub 673 = 1 is the post-game flag 2838 CONTINUE's gate reads (notes/ps4-56578-continue-tower-2026-10-29.md), as the outro profile carries it (d1-new-guardian-profiles.py); xp 900 stand-in (above)
+165	A Guardian Rises (story cinematic)	41=2	-	-	-	-	sourced	sub 41 = flag 131, activity 165's completion (d1-profile-completions.py); its manifest entry names no reward
+166	Restoration	42=2	-	-	-	-	sourced	sub 42 = flag 132, Restoration's completion (d1-profile-completions.py); XP open (manifest "XP Bonus" with no amount)
