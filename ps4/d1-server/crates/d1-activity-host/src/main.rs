@@ -887,6 +887,13 @@ fn main() -> anyhow::Result<()> {
                         if let Some(s) = sensor_repeat_s {
                             i.set_sensor_repeat(std::time::Duration::from_secs(s));
                         }
+                        // ⭐ D1_AH_SENSOR_STAMP=1: the live hosts' udt 5 framing - a 10 Hz stamp
+                        // on every frame, init only on a world's full list, 3 s heartbeats
+                        // (state::SensorStamp; notes/d1-live-speaker-timeline-2026-11-05.md).
+                        if std::env::var("D1_AH_SENSOR_STAMP").is_ok_and(|v| v.trim() == "1") {
+                            tracing::info!("⭐ D1_AH_SENSOR_STAMP=1 - udt 5 stamped at 10 Hz, init on full lists, 3 s heartbeats");
+                            i.set_sensor_stamp();
+                        }
                         if let Some((path, frames)) = sensor_phase_file.clone() {
                             i.set_sensor_phase_file(path, frames);
                         }

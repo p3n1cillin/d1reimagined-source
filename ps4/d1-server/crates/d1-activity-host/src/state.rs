@@ -441,6 +441,98 @@ pub struct ActivityInstance {
     /// the responder from the kind-4 matchmaking key) and the build's activity table
     /// (hash -> index). Re-read on every join, so one Activity Host serves whatever was launched.
     activity_follow: Option<(std::path::PathBuf, std::collections::HashMap<u32, u16>)>,
+    /// ⭐ `D1_AH_SENSOR_STAMP=1`: frame udt 5 as the live hosts did (see [`SensorStamp`]).
+    /// `None` (default) keeps every frame as built: stamp 0, `init = 1`, no heartbeats.
+    sensor_stamp: Option<SensorStamp>,
+}
+
+/// ⭐ The live hosts' udt 5 framing (The Speaker and The Awoken; notes/d1-live-speaker-timeline-
+/// 2026-11-05.md, notes/ps4-56578-udt5-stamp-init-2026-11-05.md).
+///
+/// * Every frame carries a tick at 10 Hz. The client anchors its host clock on it (two
+///   extrapolated, nondecreasing estimates) and does not reject old stamps. Ours counts from the
+///   first frame stamped, near the join as live, and runs on across world installs; the PS4
+///   runtime's own period is not yet verified, so this is not claimed to equal the live clock.
+/// * Every frame we send is a full snapshot (every entry `fresh`), so every one carries
+///   `init = 1`. The flag sets the client walker's one-shot latch that lets it consume entries;
+///   repeating it is harmless, and nothing the client sends proves which world's latch is set (a
+///   udt 6 can still arrive from the previous world), so it is never dropped. The live hosts' `init
+///   = 0` frames were true deltas, which we do not build.
+/// * After 3 s with no other udt 5, a 6-byte stamp-only heartbeat (gen, no authority table, stamp,
+///   `init = 0`, no entry), as the live idle frames.
+/// * A frame whose stamp bit is unknown is not sent (unstamped, it would re-anchor the client's
+///   clock to 0); sends then back off for 3 s.
+#[derive(Debug)]
+pub struct SensorStamp {
+    t0: Option<Instant>,
+    last_sent: Option<Instant>,
+    retry_after: Option<Instant>,
+}
+
+impl SensorStamp {
+    /// The live idle period: heartbeats at stamps 45, 75, 105, ... (3.0 s). Also the backoff after
+    /// a frame could not be stamped.
+    pub const HEARTBEAT: Duration = Duration::from_secs(3);
+
+    pub fn new() -> Self {
+        Self {
+            t0: None,
+            last_sent: None,
+            retry_after: None,
+        }
+    }
+
+    /// The 10 Hz tick at `now`, counted from the first call.
+    pub fn tick(&mut self, now: Instant) -> u32 {
+        let t0 = *self.t0.get_or_insert(now);
+        (now.saturating_duration_since(t0).as_millis() / 100) as u32
+    }
+
+    /// Whether a failed stamp is still backing sends off.
+    pub fn backing_off(&self, now: Instant) -> bool {
+        self.retry_after.is_some_and(|t| now < t)
+    }
+
+    /// Stamp `frame` for `now` (init set) with the stamp bit `measure` gives. On `Err` the frame is
+    /// unchanged, must not be sent, and sends back off for `HEARTBEAT`.
+    pub fn stamp(
+        &mut self,
+        frame: &mut [u8],
+        now: Instant,
+        measure: impl FnOnce(&[u8]) -> Result<usize, String>,
+    ) -> Result<(), String> {
+        let stamped = measure(frame).and_then(|bit| {
+            let tick = self.tick(now);
+            d1_oracle::sensor::set_frame_stamp(frame, bit, tick, true).map_err(|e| e.to_string())
+        });
+        match stamped {
+            Ok(()) => {
+                self.last_sent = Some(now);
+                self.retry_after = None;
+                Ok(())
+            }
+            Err(e) => {
+                self.retry_after = Some(now + Self::HEARTBEAT);
+                Err(e)
+            }
+        }
+    }
+
+    /// A heartbeat, if `HEARTBEAT` has passed since the last stamped frame.
+    pub fn heartbeat_due(&mut self, gen: u8, now: Instant) -> Option<Vec<u8>> {
+        let last = self.last_sent?;
+        if now.saturating_duration_since(last) < Self::HEARTBEAT {
+            return None;
+        }
+        self.last_sent = Some(now);
+        Some(d1_oracle::sensor::heartbeat_frame(gen, self.tick(now)))
+    }
+}
+
+impl Default for SensorStamp {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ActivityInstance {
@@ -566,7 +658,13 @@ impl ActivityInstance {
             sensor_phase_file: None,
             activity_follow: None,
             sensor_last_sent: None,
+            sensor_stamp: None,
         }
+    }
+
+    /// Frame udt 5 the live way (`D1_AH_SENSOR_STAMP`, see [`SensorStamp`]).
+    pub fn set_sensor_stamp(&mut self) {
+        self.sensor_stamp = Some(SensorStamp::new());
     }
 
     pub fn ah_id(&self) -> u64 {
@@ -794,23 +892,45 @@ impl ActivityInstance {
         if self.advance_mission(now) {
             self.sensor_last_sent = None;
         }
+        // Stamp mode: after a frame could not be stamped, only heartbeats until the backoff ends.
+        if self
+            .sensor_stamp
+            .as_ref()
+            .is_some_and(|s| s.backing_off(now))
+        {
+            return self.sensor_heartbeat(now);
+        }
         match self.sensor_repeat {
             // Send-once mode (default): silent forever after the first frame.
             None => {
                 if self.sensor_sent {
-                    return None;
+                    return self.sensor_heartbeat(now);
                 }
             }
             // Repeat mode: pace on the interval since the last send.
             Some(every) => {
                 if let Some(last) = self.sensor_last_sent {
                     if now.saturating_duration_since(last) < every {
-                        return None;
+                        return self.sensor_heartbeat(now);
                     }
                 }
             }
         }
-        let (payload, phase) = self.current_sensor_payload()?;
+        let (mut payload, phase) = self.current_sensor_payload()?;
+        if let Some(s) = self.sensor_stamp.as_mut() {
+            match s.stamp(
+                &mut payload,
+                now,
+                crate::codec::SchemaCodec::sensor_stamp_bit,
+            ) {
+                Ok(()) => tracing::info!("udt-5 stamped: tick {}", s.tick(now)),
+                Err(e) => {
+                    // Not sent: unstamped, it would re-anchor the client's clock to 0.
+                    tracing::warn!("udt-5 not sent, could not stamp it: {e}");
+                    return None;
+                }
+            }
+        }
         self.sensor_sent = true;
         self.sensor_last_sent = Some(now);
         self.sensors_sent += 1;
@@ -822,6 +942,20 @@ impl ActivityInstance {
             None => tracing::info!("udt-5 sensor_auth_update send #{}", self.sensors_sent),
         }
         Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }))
+    }
+
+    /// In stamp mode, the 6-byte idle udt 5 when 3 s passed with no other (see [`SensorStamp`]).
+    fn sensor_heartbeat(&mut self, now: Instant) -> Option<AhPush> {
+        let gen = self
+            .sensor_payload
+            .as_ref()
+            .and_then(|p| p.first().copied())?;
+        let payload = self.sensor_stamp.as_mut()?.heartbeat_due(gen, now)?;
+        self.last_pushed = now;
+        Some(AhPush::new(
+            self.ah_id,
+            AhMessage::SensorAuthUpdate { payload },
+        ))
     }
 
     /// The heartbeat period. The listener polls at this rate.
@@ -2418,5 +2552,91 @@ mod tests {
         assert!(i.control_builds.is_empty());
         assert_eq!(i.sensor_payload.as_deref(), Some(&[7u8][..]), "the step's frame stays");
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// The live framing (D1_AH_SENSOR_STAMP): a 10 Hz tick from the first frame, init on every
+    /// snapshot, a stamp-only heartbeat after 3 s of silence, and a frame that cannot be stamped
+    /// left as built with a 3 s backoff. The stamp offset comes from a stub, so no eboot is needed.
+    #[test]
+    fn stamp_mode_frames_udt5_like_the_live_host() {
+        let read = |f: &[u8], off: usize, n: usize| -> u64 {
+            (0..n).fold(0, |v, i| {
+                (v << 1) | u64::from((f[(off + i) >> 3] >> (7 - ((off + i) & 7))) & 1)
+            })
+        };
+        let at9 = |_: &[u8]| Ok::<_, String>(9);
+        let ms = Duration::from_millis;
+        let t0 = Instant::now();
+        let mut s = SensorStamp::new();
+        let frame = d1_oracle::sensor::heartbeat_frame(0, 0);
+        assert!(
+            s.heartbeat_due(0, t0).is_none(),
+            "no heartbeat before the first frame"
+        );
+
+        let mut first = frame.clone();
+        s.stamp(&mut first, t0, at9).unwrap();
+        assert_eq!(
+            (read(&first, 9, 32), read(&first, 41, 1)),
+            (0, 1),
+            "tick 0, init"
+        );
+        let mut later = frame.clone();
+        s.stamp(&mut later, t0 + ms(4250), at9).unwrap();
+        assert_eq!(
+            (read(&later, 9, 32), read(&later, 41, 1)),
+            (42, 1),
+            "every snapshot: init"
+        );
+        assert_eq!(
+            read(&later, 0, 9),
+            0,
+            "gen and the authority flag untouched"
+        );
+
+        assert!(
+            s.heartbeat_due(0, t0 + ms(7000)).is_none(),
+            "2.75 s of silence"
+        );
+        let hb = s
+            .heartbeat_due(0, t0 + ms(7300))
+            .expect("3.05 s of silence");
+        assert_eq!(
+            hb,
+            d1_oracle::sensor::heartbeat_frame(0, 73),
+            "init 0, no entry"
+        );
+        assert!(
+            s.heartbeat_due(0, t0 + ms(8000)).is_none(),
+            "paced from the last"
+        );
+        let mut world = frame.clone();
+        s.stamp(&mut world, t0 + ms(20_000), at9).unwrap();
+        assert_eq!(
+            read(&world, 9, 32),
+            200,
+            "the clock runs on across world installs"
+        );
+
+        let mut broken = frame.clone();
+        let mut fresh = SensorStamp::new();
+        assert!(!fresh.backing_off(t0));
+        assert!(fresh
+            .stamp(&mut broken, t0, |_| Err("not measured".into()))
+            .is_err());
+        assert_eq!(broken, frame, "an unstampable frame is left as built");
+        assert!(
+            fresh.heartbeat_due(0, t0 + ms(5000)).is_none(),
+            "nothing was sent"
+        );
+        assert!(fresh.backing_off(t0 + ms(2900)) && !fresh.backing_off(t0 + ms(3000)));
+        let mut bad_bit = frame.clone();
+        assert!(
+            fresh
+                .stamp(&mut bad_bit, t0 + ms(3000), |_| Ok(40))
+                .is_err(),
+            "past the frame"
+        );
+        assert_eq!(bad_bit, frame);
     }
 }

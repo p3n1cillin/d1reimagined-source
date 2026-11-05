@@ -307,6 +307,7 @@ impl SensorPhaseUpdate {
                 w.raw(&e.payload, e.bits as usize);
             }
         }
+        let stamp_bit = w.bits.len();
         w.put(0, 32); // stamp
         w.put(1, 1); // init
         w.put(1, 1); // has_entry
@@ -371,12 +372,51 @@ impl SensorPhaseUpdate {
             // whose width is not a byte multiple (run sense49: 5,966 bits, refused unpadded).
             w.pad_to_byte();
         }
-        w.finish().map_err(|n| {
+        let frame = w.finish().map_err(|n| {
             OracleError::Shape(format!(
                 "sensor frame is {n} bits, not a byte multiple - a field width is wrong"
             ))
-        })
+        })?;
+        remember_stamp_bit(&frame, stamp_bit);
+        Ok(frame)
     }
+}
+
+/// Stamp offsets of the frames [`SensorPhaseUpdate::encode`] built (or a host measured) in this
+/// process, so a host can restamp a frame without decoding its authority table (which needs the
+/// client's codec). Keyed by the frame's length and a hash of its bytes, so an entry is a few bytes
+/// and nothing is ever evicted: a frame a host still holds keeps its offset for the whole run.
+static STAMP_BITS: std::sync::Mutex<Option<std::collections::HashMap<(usize, u64), usize>>> =
+    std::sync::Mutex::new(None);
+
+fn frame_key(frame: &[u8]) -> (usize, u64) {
+    use std::hash::{Hash, Hasher};
+    let mut h = std::collections::hash_map::DefaultHasher::new();
+    frame.hash(&mut h);
+    (frame.len(), h.finish())
+}
+
+/// Record a frame's stamp bit (at encode, or measured with [`FrameDecoder::stamp_bit`] on a cached
+/// frame). Frames without the authority table need no entry ([`known_stamp_bit`] gives 9).
+pub fn remember_stamp_bit(frame: &[u8], bit: usize) {
+    if frame.len() >= 6 && read_bits(frame, 8, 1) == 0 {
+        return;
+    }
+    let mut known = STAMP_BITS.lock().unwrap_or_else(|e| e.into_inner());
+    known
+        .get_or_insert_with(Default::default)
+        .insert(frame_key(frame), bit);
+}
+
+/// The stamp offset of a frame this process encoded or measured, or 9 for a frame without the
+/// authority table (bit 8 clear: the stamp follows gen and the flag). `None`: an authority frame
+/// built elsewhere, whose offset only [`FrameDecoder::stamp_bit`] can measure.
+pub fn known_stamp_bit(frame: &[u8]) -> Option<usize> {
+    if frame.len() >= 6 && read_bits(frame, 8, 1) == 0 {
+        return Some(9);
+    }
+    let known = STAMP_BITS.lock().unwrap_or_else(|e| e.into_inner());
+    known.as_ref()?.get(&frame_key(frame)).copied()
 }
 
 fn hex_bytes(h: &str) -> Option<Vec<u8>> {
@@ -769,6 +809,77 @@ impl FrameDecoder {
     }
 }
 
+impl FrameDecoder {
+    /// The bit offset of a frame's `stamp` (the `init` bit follows it): 9, or after the authority
+    /// table when `has_sensor_block` is set, whose width only the client's codec knows.
+    pub fn stamp_bit(&mut self, payload: &[u8]) -> Result<usize> {
+        if payload.len() < 2 {
+            return Err(OracleError::Shape(
+                "sensor frame shorter than its header".into(),
+            ));
+        }
+        if read_bits(payload, 8, 1) == 0 {
+            return Ok(9);
+        }
+        let pos = 9 + AUTHORITY_BLOCKS;
+        let total = payload.len() * 8;
+        if pos > total {
+            return Err(OracleError::Shape(
+                "sensor frame ends inside its authority mask".into(),
+            ));
+        }
+        let d = self
+            .authority
+            .decode_replicated(&slice_bits(payload, pos, total - pos), &[])?;
+        Ok(pos + d.bits as usize)
+    }
+}
+
+/// ⭐ Set a built frame's `stamp` and `init` in place (`stamp_bit` from
+/// [`FrameDecoder::stamp_bit`]).
+///
+/// The live hosts stamped every udt 5 with a 10 Hz tick and sent `init = 1` only in the full lists
+/// at the join and the world load; the play of a cinematic was an `init = 0` delta stamped one tick
+/// after its start value (notes/d1-live-speaker-timeline-2026-11-05.md).
+pub fn set_frame_stamp(frame: &mut [u8], stamp_bit: usize, stamp: u32, init: bool) -> Result<()> {
+    if stamp_bit + 33 > frame.len() * 8 {
+        return Err(OracleError::Shape(format!(
+            "stamp at bit {stamp_bit} is past the frame"
+        )));
+    }
+    write_bits(frame, stamp_bit, 32, u64::from(stamp));
+    write_bits(frame, stamp_bit + 32, 1, u64::from(init));
+    Ok(())
+}
+
+/// ⭐ The live host's idle heartbeat: `gen`, no authority table, the stamp, `init = 0` and no
+/// entry - 43 bits in 6 bytes, sent every 3 s when nothing changed (The Speaker: stamps 45, 75,
+/// 105, ... at 3.0 s steps).
+pub fn heartbeat_frame(gen: u8, stamp: u32) -> Vec<u8> {
+    let mut w = BitWriter::default();
+    w.put(u64::from(gen), 8);
+    w.put(0, 1); // has_sensor_block
+    w.put(u64::from(stamp), 32);
+    w.put(0, 1); // init
+    w.put(0, 1); // has_entry = 0: the terminator
+    w.pad_to_byte();
+    w.finish()
+        .expect("a heartbeat is 43 bits, padded to 6 bytes")
+}
+
+/// Overwrite `n` bits of `bytes` at absolute bit `off`, MSB-first.
+fn write_bits(bytes: &mut [u8], off: usize, n: usize, v: u64) {
+    for i in 0..n {
+        let bit = (v >> (n - 1 - i)) & 1;
+        let (byte, mask) = ((off + i) >> 3, 0x80u8 >> ((off + i) & 7));
+        if bit == 1 {
+            bytes[byte] |= mask;
+        } else {
+            bytes[byte] &= !mask;
+        }
+    }
+}
+
 /// Read `n` bits from `bytes` starting at absolute bit `off`, MSB-first, as an integer.
 fn read_bits(bytes: &[u8], off: usize, n: usize) -> u64 {
     let mut v = 0u64;
@@ -823,6 +934,62 @@ mod tests {
         // The phase entry's body is `fresh, presence, value` (2 + the value's bits).
         let (value_bits, _) = frame.value_bits().expect("value");
         assert_eq!(d.entries[0].body_bits, 2 + value_bits);
+    }
+
+    /// The live host's idle udt 5 frames, byte for byte (The Speaker at 17.17 s and 19.86 s, stamps
+    /// 75 and 105), and the stamp patch on a frame with no authority table.
+    #[test]
+    fn the_heartbeat_and_stamp_match_the_live_host() {
+        assert_eq!(super::heartbeat_frame(0, 75), super::hex("000000002580"));
+        assert_eq!(super::heartbeat_frame(0, 105), super::hex("000000003480"));
+        let mut f = super::heartbeat_frame(7, 0);
+        super::set_frame_stamp(&mut f, 9, 200, false).unwrap();
+        assert_eq!(f, super::heartbeat_frame(7, 200));
+        super::set_frame_stamp(&mut f, 9, 0x1234_5678, true).unwrap();
+        assert_eq!(super::read_bits(&f, 0, 8), 7, "gen untouched");
+        assert_eq!(super::read_bits(&f, 9, 32), 0x1234_5678);
+        assert_eq!(super::read_bits(&f, 41, 1), 1, "init set");
+        assert_eq!(super::read_bits(&f, 42, 1), 0, "the terminator untouched");
+        assert!(
+            super::set_frame_stamp(&mut f, 20, 1, false).is_err(),
+            "past the 6-byte frame"
+        );
+    }
+
+    /// `stamp_bit` finds the stamp after the authority table, so a stamped frame decodes with the
+    /// stamp and init it was given and every entry unchanged.
+    #[test]
+    fn a_stamped_frame_decodes_with_its_stamp() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
+        let clients: Vec<_> = "0xC2DACAF7 0x8 0 1 1"
+            .lines()
+            .filter_map(super::SensorClientRef::parse_line)
+            .collect();
+        for authority in [None, Some(super::SensorAuthority::all_to(14, 1))] {
+            let frame = super::SensorPhaseUpdate {
+                clients: clients.clone(),
+                authority: authority.clone(),
+                ..super::audit(3, None)
+            };
+            let mut wire = frame.encode().expect("frame");
+            let before = super::decode_frame(&wire).expect("decode");
+            let mut d = super::FrameDecoder::new().expect("decoder");
+            let bit = d.stamp_bit(&wire).expect("stamp bit");
+            assert_eq!(bit == 9, authority.is_none());
+            assert_eq!(
+                super::known_stamp_bit(&wire),
+                Some(bit),
+                "encode recorded the same offset"
+            );
+            super::set_frame_stamp(&mut wire, bit, 1984, false).unwrap();
+            let after = d.decode(&wire).expect("decode stamped");
+            assert_eq!((after.stamp, after.init), (1984, false));
+            assert_eq!((before.stamp, before.init), (0, true));
+            assert_eq!(after.entries, before.entries);
+            assert_eq!(after.authority, before.authority);
+        }
     }
 
     /// A frame with extra sensor clients must still build (byte-padded) and must carry the audited
