@@ -607,7 +607,7 @@ mod tests {
         .value_image();
         assert_eq!(plain, audited);
         let p = MissionPhase { index: 1, name_hash: crate::incident_catalog::fnv1("cine_107_twr_phase"), bubble: 3 };
-        let with = lifetime_image(4, None, Some(p));
+        let with = lifetime_image(4, Some((0, 0xC2DA_CAF7)), Some(p));
         assert_eq!(&with[4..16], [1, 0, 0, 0, 0xFF, 0x27, 0x7D, 0xD7, 3, 0, 0, 0]);
         assert_eq!((with[0], &with[16..]), (4, &plain[16..]));
     }
