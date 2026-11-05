@@ -235,3 +235,35 @@ host message or changing the world phase, distinguish the wrapper's suppression,
 `0x303BA0 == -1`, and `0x4E3F70 == false` in an explicitly authorized future native
 run. Such a host retry feature should be off by default and unit-tested; it has
 not been implemented here because delivery is not proof of a safe playback retry.
+
+## Addendum: what `0x4E3F70` checks (Ghidra, 5 November 2026, Claude)
+
+A first use of `d1-ghidra.ps1 -Decompile` (#289) on `0x403140`, `0x403770` and `0x4E3F70`. This reading is described in our own words; the decompiled C stays in the lab staging folder.
+
+**`0x403140` (the setter).**
+- It copies the 0xD4-byte record to `+0x1AC` on the cinematic object, which puts the counter at `+0x1B0` and the playing byte at `+0x1B4`.
+- It returns at once if the counter didn't change.
+- Next it compares the new playing byte with the object's **applied** state byte at `+0x280`.
+  - If they match, nothing is done.
+  - A playing byte of 0 stops the cinematic.
+  - A playing byte of 1 needs a local player (`0x303BA0 != -1`) and goes on into the start.
+
+**`0x403770` (the start).**
+- It copies up to six 8-byte entries from the object into a global list. The entries are at `+0x24C` and their count is at `+0x248`; they're probably the participants.
+- It reads an id from the cinematic's bound object (field `+0x68`) and calls `0x4E3F70(id, 1)`.
+- The result **becomes the applied state** at `+0x280`. A rejected start therefore leaves the applied state at 0 while the counter has already been consumed, which matches the behaviour Codex saw.
+- It then reports through `0x403350`. One of two constants is sent: `0x02651C94` on success and `0x02651C90` on failure. These are probably the started and failed incidents. Their values are still to be read.
+
+**`0x4E3F70` (binding acceptance).**
+- It scans a global table of 0x38-byte entries; the count is at global `+0x1350` and the entries start at `+0x1320`.
+- For each entry it derives an id from the entry's two handles and compares it with the cinematic's id.
+- **No match means the start is refused.** On a match with the start flag, it activates the entry through `0x354440` and clears the entry's pending byte. Without the flag, it only marks the entry pending.
+
+**What follows.** The "binding-specific playback readiness" left open above is concrete: the cinematic's binding must already be registered in that client table when the play value arrives.
+- Something client-side registers it, probably when the cinematic's content loads for the bubble.
+- That fits cine-live8: a play sent soon after in_world was rejected.
+- It also fits the talk's model (`d1-gdc2015-activity-hosts.md`), where the host sends a play only once the console has the content.
+
+**Next.**
+- Find the writer of the global `+0x1350` count, so we know what event registers a binding.
+- Have the host send play (with a fresh counter) only after that event, or after the client's matching sense report.

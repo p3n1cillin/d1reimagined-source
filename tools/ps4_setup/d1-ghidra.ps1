@@ -38,7 +38,7 @@ $p.PriorityClass = 'Idle'
 $p.WaitForExit()
 if ($Decompile.Count) {
     # The script's println lines carry the C; Ghidra prefixes them with the script name.
-    Get-Content $log | Where-Object { $_ -match 'DecompileAt\.java> ' } | ForEach-Object { $_ -replace '^.*DecompileAt\.java> ', '' }
+    Get-Content $log | Where-Object { $_ -match 'DecompileAt\.java> ' } | ForEach-Object { $_ -replace '^.*DecompileAt\.java> ', '' -replace ' \(GhidraScript\)\s*$', '' }
 } else {
     Get-Content $log -Tail 5
 }
