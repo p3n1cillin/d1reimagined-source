@@ -1,3 +1,6 @@
+# Plus The Awoken (activity 186): world act_cinematic_queen_101 with its two cinematic records and start region 17, the
+# slice set the live client entered first. Step it with d1-cine-watch.py RUN --activity 186 --slice 17 --states
+# cine_awoken-play-0.txt cine_awoken-play-1.txt cine_awoken-done.txt
 # As world-table-cine-live.txt, plus The Speaker (activity 167): world cine_speaker with its one cinematic record
 # (sensor-clients-cine_speaker-live.txt) and start region 1, the slice set the live client entered. Play it with
 # tools/ps4_setup/d1-cine-watch.py RUN --activity 167 --slice 1 --states cine_speaker-play.txt cine_speaker-done.txt
@@ -13,3 +16,4 @@
 0    city_tower_default1   0x40aebf90  sensor-clients-city_tower_default1-squads.txt  0
 165  cine_reveal           0x4786c0e0  sensor-clients-cine_reveal-live.txt  25
 167  cine_speaker          0x4786c0e0  sensor-clients-cine_speaker-live.txt  1
+186  act_cinematic_queen_101  0x4786c0e0  sensor-clients-cine_awoken-live.txt  17

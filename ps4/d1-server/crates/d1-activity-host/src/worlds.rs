@@ -228,6 +228,23 @@ pub const CINE_SPEAKER: KnownWorld = KnownWorld {
     chosen: &[0, 1, 2, 3],
 };
 
+/// `act_cinematic_queen_101` - The Awoken (56578 activity 186, hash `0x9A7ACC78`): the Reef
+/// cinematic with the Queen. Blam Network's 2014 `activities.csv` row 206 names its scenario
+/// `0x80C02004`, 3 bubbles, bundle `story_common` (`0x4786C0E0`). Read offline from the owned 56578
+/// scenario-client record `0x80C02004`: `+0x08` = FNV-1("act_cinematic_queen_101") `0x9B5A0BBB`,
+/// PRIVATE `0x14CDA256` (cine_reveal's too), PUBLIC `0x8A286828`, 3 bubbles at `+0x48`. The live host
+/// served two cinematic records in group `0x4AF77757` (the world's unnamed cinematic bundle) plus
+/// the world block; the client entered slice set 17, then 1 (notes/d1-live-captures-2026-11-05.md).
+///
+/// ⚠ Not yet served in the lab.
+pub const ACT_CINEMATIC_QUEEN_101: KnownWorld = KnownWorld {
+    name: "act_cinematic_queen_101",
+    scenario_tag: 0x80C0_2004,
+    checksum: 0x14CD_A256,
+    bubble_count: 3,
+    chosen: &[0, 1, 2],
+};
+
 /// Every world whose scenario record has been captured or read from owned content.
 pub const KNOWN_WORLDS: &[KnownWorld] = &[
     PVP_MOONBASE,
@@ -239,6 +256,7 @@ pub const KNOWN_WORLDS: &[KnownWorld] = &[
     ACT_COSMO_M0_5_HANGAR,
     CINE_REVEAL,
     CINE_SPEAKER,
+    ACT_CINEMATIC_QUEEN_101,
 ];
 
 /// The world an Activity Host publishes when nothing overrides it.
@@ -392,5 +410,12 @@ mod tests {
         let fnv1 = |s: &str| s.bytes().fold(0x811C_9DC5u32, |h, b| h.wrapping_mul(0x0100_0193) ^ u32::from(b));
         assert_eq!(fnv1("cine_speaker"), 0x796B_3B8C);
         assert_eq!(fnv1("cine_reveal"), 0x2FE7_DBE6);
+    }
+
+    /// The Awoken's world, as its owned scenario record reads.
+    #[test]
+    fn the_awoken_cinematic_is_known_by_its_world_name() {
+        let c = lookup("act_cinematic_queen_101").expect("act_cinematic_queen_101 row");
+        assert_eq!((c.scenario_tag, c.checksum, c.bubble_count), (0x80C0_2004, 0x14CD_A256, 3));
     }
 }
