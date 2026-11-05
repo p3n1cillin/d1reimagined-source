@@ -7,6 +7,7 @@ is the current summary. Titles below are the notes' own.
 ## Start here (PS4 build 56578, current)
 
 - [Live-server message captures (5 November 2026)](d1-live-captures-2026-11-05.md)
+- [PS4 56578: the route-run stalls (3-5 November 2026)](ps4-56578-lab-stalls-2026-11-05.md)
 - [Native video settings: content preparation (3 November 2026)](ps4-56578-native-video-settings-2026-11-03.md)
 - [PS4 56578: what a PUBLIC start region needs (2 November 2026)](ps4-56578-public-sessions-2026-11-02.md)
 - [PS4 56578: booting a new Guardian (3 November 2026)](ps4-56578-new-guardian-2026-11-03.md)
