@@ -6,6 +6,7 @@ is the current summary. Titles below are the notes' own.
 
 ## Start here (PS4 build 56578, current)
 
+- [PS4 56578: the social services between activities (5 November 2026)](ps4-56578-social-and-vendors-2026-11-05.md)
 - [PS4 56578: a world for every activity, from the client's own content (5 November 2026)](ps4-56578-worlds-2026-11-05.md)
 - [PS4 56578: multiplayer infrastructure on one local server (5 November 2026)](ps4-56578-multiplayer-2026-11-05.md)
 - [PS4 56578: public instances and the bubble host (5 November 2026)](ps4-56578-public-instances-2026-11-05.md)
