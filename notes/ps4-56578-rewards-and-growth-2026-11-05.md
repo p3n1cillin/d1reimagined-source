@@ -142,9 +142,9 @@ The placeholders' values are all in `rewards/placeholders.rs`. A test checks thi
 | `quests.advance` | A step completes with its objectives; the next in the questline follows | Manifest (questline order) | community |
 
 Count:
-- 17 verified;
-- 14 community;
-- 22 placeholder.
+- 19 verified;
+- 15 community;
+- 19 placeholder.
 
 ## Evidence needed, by rule
 

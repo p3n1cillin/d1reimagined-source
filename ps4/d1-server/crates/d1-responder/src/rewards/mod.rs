@@ -25,6 +25,7 @@ pub mod item_instance;
 pub mod light;
 pub mod loot;
 pub mod placeholders;
+pub mod player_store_adapter;
 pub mod records;
 pub mod store;
 pub mod tables;
@@ -220,11 +221,29 @@ mod tests {
     }
 
     #[test]
-    fn the_note_lists_every_rule() {
+    fn the_note_lists_every_rule_with_its_status() {
         let note = include_str!("../../../../../../notes/ps4-56578-rewards-and-growth-2026-11-05.md");
-        for r in RULES {
-            assert!(note.contains(&format!("`{}`", r.id)), "the note does not list {}", r.id);
+        let mut rows = std::collections::HashMap::new();
+        for line in note.lines().filter(|l| l.starts_with("| `")) {
+            let cells: Vec<&str> = line.trim_matches('|').split('|').map(str::trim).collect();
+            if let Some(id) = cells[0].strip_prefix('`').and_then(|c| c.strip_suffix('`')) {
+                rows.insert(id.to_string(), cells.last().copied().unwrap_or_default().to_string());
+            }
         }
+        for r in RULES {
+            let want = match r.status {
+                Status::Verified => "verified",
+                Status::Community => "community",
+                Status::Placeholder => "placeholder",
+            };
+            assert_eq!(rows.get(r.id).map(String::as_str), Some(want), "the note's row for {}", r.id);
+        }
+        let count = |s: Status| RULES.iter().filter(|r| r.status == s).count();
+        let summary = format!(
+            "- {} verified;\n- {} community;\n- {} placeholder.",
+            count(Status::Verified), count(Status::Community), count(Status::Placeholder)
+        );
+        assert!(note.replace('\r', "").contains(&summary), "the note's count should read:\n{summary}");
     }
 
     #[test]
