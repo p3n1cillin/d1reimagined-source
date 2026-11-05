@@ -1933,6 +1933,65 @@ mod tests {
         assert!(none.change_unlock_flags(&[1], &[]).is_err(), "no served list, nothing to change");
     }
 
+    /// Stream O: `ps4/profiles/full-game.env`'s `[server]` knobs (#320) through the responder's
+    /// parsers. The store, its command file and rewards resolve on, the state file is the one the
+    /// activity host reads (`checkpoints::state_file_for`), and every `[server]` knob the responder
+    /// reads is in its startup table (`=== d1-responder environment`), so the table shows it SET.
+    /// The activity host's side is `d1-activity-host/tests/full_game_profile.rs`.
+    #[test]
+    fn the_full_game_profile_turns_the_store_seams_on() {
+        let repo = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../..");
+        let profile = repo.join("ps4/profiles/full-game.env");
+        if !profile.is_file() {
+            eprintln!("SKIP: no {} (#320's profile)", profile.display());
+            return;
+        }
+        fn read(path: &Path, server: &mut BTreeMap<String, String>) {
+            let mut section = String::new();
+            for line in std::fs::read_to_string(path).unwrap().lines().map(str::trim) {
+                if line.is_empty() || line.starts_with('#') {
+                    continue;
+                }
+                if let Some(f) = line.strip_prefix("@include ") {
+                    read(&path.parent().unwrap().join(f.trim()), server);
+                } else if let Some(s) = line.strip_prefix('[').and_then(|l| l.strip_suffix(']')) {
+                    section = s.to_string();
+                } else if section == "server" {
+                    let (k, v) = line.trim_start_matches('?').split_once('=').unwrap();
+                    server.insert(k.to_string(), v.replace("${RUN}", "run").replace("${STAGING}", "staging"));
+                }
+            }
+        }
+        let mut server = BTreeMap::new();
+        read(&profile, &mut server);
+        let var = |k: &str| server.get(k).filter(|v| !v.is_empty()).cloned();
+        let cfg = Config::from_vars(var).expect("D1_STORE=1 in full-game.env");
+        let control = cfg.control.clone().expect("D1_STORE_CONTROL: the activity host's checkpoints and grants");
+        assert_eq!(state_file_for(&control), Path::new("run/store-control.state.json"));
+        assert_eq!(var("D1_REWARDS").as_deref(), Some("1"), "grants are applied (rewards::enabled)");
+        // The responder's own knobs: every one it reads is in its startup table.
+        let mut source = String::new();
+        // The responder's own source and d1-mp's, whose knobs it reads through `Services::from_env`.
+        let src = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
+        let mut dirs = vec![src, PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../d1-mp/src")];
+        while let Some(d) = dirs.pop() {
+            for e in std::fs::read_dir(&d).unwrap().flatten() {
+                let p = e.path();
+                if p.is_dir() {
+                    dirs.push(p);
+                } else if p.extension().is_some_and(|x| x == "rs") {
+                    source += &std::fs::read_to_string(&p).unwrap();
+                }
+            }
+        }
+        let table: Vec<&str> = crate::KNOBS.iter().chain(crate::rewards::KNOBS).map(|(k, _, _)| *k).collect();
+        let unlisted: Vec<&String> = server
+            .keys()
+            .filter(|k| source.contains(&format!("\"{k}\"")) && !table.contains(&k.as_str()))
+            .collect();
+        assert!(unlisted.is_empty(), "the responder reads these full-game knobs but its startup table does not list them: {unlisted:?}");
+    }
+
     /// Stream O: the commands the activity host writes (checkpoint clears, lockouts, grants).
     #[test]
     fn the_hosts_commands_parse() {

@@ -204,11 +204,12 @@ fn the_full_game_tables_load() {
     assert_eq!(plans.len(), only.len());
     let public = d1_activity_host::generated::read_public_checksums(&v("D1_AH_WORLDS")).unwrap();
     assert!(!public.is_empty());
-    // #316: every public list loads, leads with the players group, and goes through the entry-only
+    // #316: every public list loads, a bubble's leads with the players group, and each goes through the entry-only
     // encoder (a recording codec here; the client's own needs the eboot).
     let lists = d1_activity_host::public_host::load_public_table(&v("D1_AH_PUBLIC_TABLE")).expect("the public table");
     assert!(!lists.is_empty());
-    for l in &lists {
+    // Public bubbles lead with player group 0xEAAF16E2; the social spaces with their own.
+    for l in lists.iter().filter(|l| matches!(l.key, d1_activity_host::public_registry::InstanceKey::Bubble { .. })) {
         assert!(d1_activity_host::public_host::players_group_leads(l), "{:?}", l.key);
     }
     let codec: std::sync::Arc<dyn d1_activity_host::codec::AhWireCodec> = std::sync::Arc::new(EntryCount);
