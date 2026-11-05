@@ -55,6 +55,9 @@ use serde_json::json;
 use tracing::{info, warn};
 
 mod vendor;
+// Stream M (rewards and growth): services behind `D1_REWARDS` (off by default), called by the
+// activity streams through `rewards::grant_activity_rewards`. The only hook here is its knobs.
+mod rewards;
 
 #[derive(Clone)]
 struct Cfg {
@@ -2341,7 +2344,8 @@ const KNOBS: &[(&str, &str, &str)] = &[
 /// Print [`KNOBS`] with each knob's effective value.
 fn print_knobs() {
     info!("=== d1-responder environment (⭐ = new for the rung 28-30 activity-host lane) ===");
-    for (name, default, meaning) in KNOBS {
+    // HOOK (stream M): the rewards module's knobs are printed with the rest.
+    for (name, default, meaning) in KNOBS.iter().chain(rewards::KNOBS) {
         match std::env::var(name) {
             Ok(v) => {
                 let v: String = v.chars().take(48).collect();
