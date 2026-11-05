@@ -13,7 +13,16 @@ in this repository. The settings generator is project code derived from the nati
 - [Destiny Item Manager](https://github.com/DestinyItemManager)'s archive of Bungie's final D1 API
   manifest: a local input to `tools/ps4_setup/d1-progression-tables.py`. The manifest is Bungie's
   data and is not committed; only the derived XP, rank, reset and refund tables in
-  `ps4/fixtures/56578/progression/` are, each citing its definition.
+  `ps4/fixtures/56578/progression/` are, each citing its definition. The same archive feeds
+  `tools/rewards_tables/gen_rewards_tables.py`, whose derived tables (item tiers and buckets,
+  progressions, talent grids, activity rewards, records, objectives) are in
+  `ps4/d1-server/crates/d1-responder/src/rewards/tables/`, each citing its input's SHA-256.
+- [nruble/cryptarch-guide](https://github.com/nruble/cryptarch-guide) (GPL-3.0): its copy of
+  Bungie's Grimoire definitions (the Grimoire card points and stat ranks), and its community-collated
+  engram contents and per-activity Legendary Mark limits, read locally by
+  `tools/rewards_tables/gen_rewards_tables.py`. Only hashes and numbers are kept, in
+  `grimoire.tsv`, `engram_pools.tsv` and `mark_limits.tsv`; the latter two are labelled as
+  community stand-ins. None of the guide's text is copied.
 
 ## The mission-script sidecar (`tools/script-host/`)
 
