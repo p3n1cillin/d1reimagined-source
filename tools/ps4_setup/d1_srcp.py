@@ -74,3 +74,20 @@ def activity_messages(data):
         if m and m[2] is not None:
             out.append((rec['t'] - t0, rec['dir'], f"{rec['ip']}:{rec['port']}", m[2], m[3]))
     return out
+
+
+def sessions(data):
+    """Activity-host sessions in time order: [(start, [(t, dir, peer, udt, body), ...])]. A session
+    starts at the plugin's `HOST:30001 state 2` note (each connection to an activity host)."""
+    out, t0 = [], None
+    for rec in records(data):
+        t0 = rec['t'] if t0 is None else t0
+        t = rec['t'] - t0
+        if rec['dir'] == 'note':
+            if rec['payload'].endswith(b' state 2') and b':30001 ' in rec['payload']:
+                out.append((t, []))
+            continue
+        m = message(rec['payload'])
+        if out and m and m[2] is not None:
+            out[-1][1].append((t, rec['dir'], f"{rec['ip']}:{rec['port']}", m[2], m[3]))
+    return out

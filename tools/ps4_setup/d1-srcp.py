@@ -4,6 +4,7 @@
     d1-srcp.py summary CAPTURE.pcap
     d1-srcp.py incidents CAPTURE.pcap [--dir s2c|c2s]   (udt 18, decoded by d1-oracle)
     d1-srcp.py sensors CAPTURE.pcap                     (udt 5 sensor_auth_update frames)
+    d1-srcp.py sessions CAPTURE.pcap [...]              (each host session's activity and slice sets)
     d1-srcp.py export CAPTURE.pcap --out PRIVATE.jsonl  (every activity-host message, hex body)
 
 Decoding uses the 56578 client's own codec (`d1-oracle activity-host decode`, with D1_EBOOT and
@@ -16,6 +17,8 @@ import argparse
 import collections
 import json
 import os
+import sqlite3
+import struct
 import subprocess
 import sys
 from pathlib import Path
@@ -80,14 +83,77 @@ def incident_types(words):
     return flat[1:1 + count]
 
 
+def activity_names():
+    """{activity hash: name} from the public manifest (DestinyActivityDefinition)."""
+    db = Path(d1paths.workspace()) / 'manifest' / 'data' / 'world_en.sqlite'
+    names = {}
+    for (js,) in sqlite3.connect(db).execute('select json from DestinyActivityDefinition'):
+        d = json.loads(js)
+        names[d['activityHash'] & 0xFFFFFFFF] = d.get('activityName', '?')
+    return names
+
+
+def hashes_in(image, known):
+    """The known 32-bit values anywhere in an image, at any bit offset, either byte order."""
+    n, bits, found = int.from_bytes(image, 'big'), len(image) * 8, []
+    for off in range(bits - 31):
+        v = (n >> (bits - off - 32)) & 0xFFFFFFFF
+        for h in (v, int.from_bytes(v.to_bytes(4, 'big'), 'little')):
+            if h in known and h not in found:
+                found.append(h)
+    return found
+
+
+def image(words):
+    b = bytearray(max(words) + 8 if words else 0)
+    for off, v in words.items():
+        struct.pack_into('<Q', b, off, v)
+    return bytes(b)
+
+
+def session_table(data, names):
+    """Per host session: start, the session type byte the client's join request carries
+    (join_result +0x38: 3 private, 2 public), the activities named by the host's join incident
+    2426 (51539's numbering), and the slice sets the client reported as current (udt 21 +0xB8)."""
+    sess = d1_srcp.sessions(data)
+    pick = [(u, b) for _, msgs in sess for _, d, _, u, b in msgs
+            if (d, u) in (('s2c', INCIDENT), ('s2c', 4), ('c2s', 21))]
+    words = decode_all(pick)
+    rows = []
+    for start, msgs in sess:
+        kind, acts, slices = None, [], []
+        for _, d, _, u, b in msgs:
+            w = words.get((u, b))
+            if not w:
+                continue
+            if u == 4 and kind is None and 0x38 in w:
+                kind = w[0x38] & 0xFF
+            elif u == INCIDENT and not acts and incident_types(w)[:1] == [2426]:
+                acts = [names[h] for h in hashes_in(image(w)[0xD8:], names)]
+            elif u == 21 and 0xB8 in w and (w[0xB8] & 0x3FF) not in (0, 0x3FF):
+                if (w[0xB8] & 0x3FF) not in slices:
+                    slices.append(w[0xB8] & 0x3FF)
+        rows.append((start, kind, acts, slices))
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'export'))
-    ap.add_argument('capture', type=Path)
+    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'sessions', 'export'))
+    ap.add_argument('capture', type=Path, nargs='+')
     ap.add_argument('--dir', choices=('s2c', 'c2s'), default='s2c')
     ap.add_argument('--out', type=Path)
     a = ap.parse_args()
-    msgs = d1_srcp.activity_messages(a.capture.read_bytes())
+    if a.command == 'sessions':
+        names = activity_names()
+        for cap in a.capture:
+            for start, kind, acts, slices in session_table(cap.read_bytes(), names):
+                kinds = {2: 'public', 3: 'private'}
+                print(f"{cap.stem[20:]:28} +{start:6.0f} s {kinds.get(kind, kind)!s:8} {', '.join(acts[:2]) or '-':28} slices {slices}")
+        return
+    if len(a.capture) != 1:
+        sys.exit(f'{a.command} takes one capture')
+    msgs = d1_srcp.activity_messages(a.capture[0].read_bytes())
     if a.command == 'summary':
         c = collections.Counter((d, peer, udt) for _, d, peer, udt, _ in msgs)
         first = {}

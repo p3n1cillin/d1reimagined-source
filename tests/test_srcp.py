@@ -35,6 +35,15 @@ class SrcpTest(unittest.TestCase):
         self.assertEqual(M.activity_messages(data), [(0.5, 's2c', '10.0.0.1:30001', 18, b'abc'),
                                                      (1.0, 'c2s', '10.0.0.1:30001', 6, b'xy')])
 
+    def test_splits_sessions_at_the_plugin_notes(self):
+        push = struct.pack('>HI', M.BC_NOT, 7) + struct.pack('>BQII', 1, 2, 4, 1) + b'j'
+        data = capture(record(10.0, 2, (0, 0, 0, 0), 0, b'10.0.0.1:30001 state 2'),
+                       record(10.5, 1, (10, 0, 0, 1), 30001, push),
+                       record(20.0, 2, (0, 0, 0, 0), 0, b'10.0.0.1:30001 state 2'),
+                       record(20.5, 1, (10, 0, 0, 1), 30001, push))
+        self.assertEqual([(t, [m[0] for m in msgs]) for t, msgs in M.sessions(data)],
+                         [(0.0, [0.5]), (10.0, [10.5])])
+
     def test_refuses_other_link_types(self):
         data = struct.pack('<IHHiIII', 0xa1b2c3d4, 2, 4, 0, 0, 0x40000, 1)
         with self.assertRaises(ValueError):
