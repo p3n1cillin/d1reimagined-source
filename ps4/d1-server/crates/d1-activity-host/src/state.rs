@@ -444,6 +444,9 @@ pub struct ActivityInstance {
     /// ⭐ `D1_AH_SENSOR_STAMP=1`: frame udt 5 as the live hosts did (see [`SensorStamp`]).
     /// `None` (default) keeps every frame as built: stamp 0, `init = 1`, no heartbeats.
     sensor_stamp: Option<SensorStamp>,
+    /// ── stream G hook ── `D1_AH_PUBLIC_HOST=1`: the public-bubble host role
+    /// ([`crate::public_host`]). `None` (default) changes nothing.
+    public: Option<crate::public_host::PublicHost>,
 }
 
 /// ⭐ The live hosts' udt 5 framing (The Speaker and The Awoken; notes/d1-live-speaker-timeline-
@@ -659,6 +662,7 @@ impl ActivityInstance {
             activity_follow: None,
             sensor_last_sent: None,
             sensor_stamp: None,
+            public: None,
         }
     }
 
@@ -669,6 +673,21 @@ impl ActivityInstance {
 
     pub fn ah_id(&self) -> u64 {
         self.ah_id
+    }
+
+    /// ── stream G hook ── Serve this connection as a public bubble's own host when its join names
+    /// a mission host (see [`crate::public_host`]).
+    pub fn set_public_host(&mut self, public: crate::public_host::PublicHost) {
+        self.public = Some(public);
+    }
+
+    /// The public-host role, if one was set.
+    pub fn public_host(&self) -> Option<&crate::public_host::PublicHost> {
+        self.public.as_ref()
+    }
+
+    fn is_public_instance(&self) -> bool {
+        self.public.as_ref().is_some_and(|p| p.is_public_instance())
     }
 
     /// Present another activity-host id (and the session text derived from it, as the registry
@@ -723,6 +742,19 @@ impl ActivityInstance {
             self.track_current_slice(struct_image);
             self.follow_slice_target(struct_image);
             self.track_public_session(struct_image);
+            // ── stream G hook ── a public instance learns its region from this report.
+            let world = self.activity_name.clone();
+            match self.public.as_mut().and_then(|p| p.on_slice_report(&world, struct_image, self.ah_id, now)) {
+                Some(Ok((key, frame))) => {
+                    tracing::info!("⭐ public instance: serving {key:?}'s sensor list ({} bytes)", frame.len());
+                    self.sensor_payload = Some(frame);
+                    self.sensor_sent = false;
+                    self.sensor_last_sent = None;
+                    self.frames_installed += 1;
+                }
+                Some(Err(e)) => tracing::warn!("⚠ public instance: no sensor list served: {e}"),
+                None => {}
+            }
         }
         // ⭐ udt 18 incidents: {u32 count, u32 types[count], ...}. Kept for incident-driven steps.
         if let ClientMessage::Other { user_defined_type: 18, struct_image } = msg {
@@ -886,6 +918,10 @@ impl ActivityInstance {
     ///
     /// [`Live`]: InstanceState::Live
     pub fn sensor_due(&mut self, now: Instant) -> Option<AhPush> {
+        // ── stream G hook ── the instance's public events run on the host's clock.
+        if let Some(p) = self.public.as_mut() {
+            p.tick(now);
+        }
         if !matches!(self.state, InstanceState::Live) || self.heartbeats == 0 {
             return None;
         }
@@ -1094,7 +1130,7 @@ impl ActivityInstance {
                      yet have valid host-tabulated data'"
                 ),
             },
-            None if first => tracing::warn!(
+            None if first && !self.is_public_instance() => tracing::warn!(
                 "⚠ D1_AH_SLICE_TOKEN=0 - publishing a ZEROED PAH tabulated region array at \
                  replicate_membership+0x{:04X}. FUN_007775B0 will match nothing, sstm+0x490 stays \
                  -1, and rung 34 parks forever on 'Region … is ready for switch, but we do not yet \
@@ -1110,6 +1146,11 @@ impl ActivityInstance {
             if let Err(e) = m.set_region_advertisement(session, host) {
                 tracing::warn!("⚠ public session not advertised: {e}");
             }
+        }
+
+        // ── stream G hook ── a public instance serves no region records: every slot 0xFFFFFFFF.
+        if self.is_public_instance() {
+            crate::public_host::clear_region_records(&mut m.image);
         }
 
         // ⚠ ANY FUTURE MEMBERSHIP FIELD GOES ABOVE THIS LINE. If you are about to add one to the
@@ -1170,6 +1211,18 @@ impl ActivityInstance {
                         if team0 { 0 } else { -1 },
                         self.activity_index
                     );
+                }
+                // ── stream G hook ── a join naming a mission host is a public instance: no region
+                // records, no mission steps, no frame until the client names its region (udt 21),
+                // and the slot handover answered (crate::public_host).
+                if let Some(p) = self.public.as_mut() {
+                    if p.on_join(struct_image, &self.activity_name, self.ah_id, now).is_public_instance() {
+                        self.pah_region = None;
+                        self.sensor_payload = None;
+                        self.sensor_team_frames = None;
+                        self.mission_steps.clear();
+                        self.slot_handover = true;
+                    }
                 }
                 // ⭐ Echo the client's whole request struct: `join_result`'s descriptor field [0]
                 // IS `join_request` (tag 0x80800E98) embedded at +0x00, which is why the nonce and
@@ -1344,6 +1397,7 @@ impl ActivityInstance {
             }
 
             ClientMessage::ConnectivityFailure { .. } => {
+                if let Some(p) = self.public.as_mut() { p.on_leave(now); } // ── stream G hook ──
                 self.state =
                     InstanceState::Evicted { reason: EvictionReason::ConnectivityFailure };
                 Vec::new()
@@ -1355,6 +1409,7 @@ impl ActivityInstance {
             // instance to `error_host_crashed` - so it is downstream of the failure by a third of a
             // second. Recording it is worth doing; "handling" it would be treating the symptom.
             ClientMessage::PeerLeaveRequest { .. } => {
+                if let Some(p) = self.public.as_mut() { p.on_leave(now); } // ── stream G hook ──
                 self.state = InstanceState::Evicted { reason: EvictionReason::ClientLeft };
                 Vec::new()
             }

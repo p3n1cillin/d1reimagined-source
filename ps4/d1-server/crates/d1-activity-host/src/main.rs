@@ -885,6 +885,45 @@ fn main() -> anyhow::Result<()> {
                     _ => anyhow::bail!("D1_AH_ACTIVITY_FOLLOW_FILE and D1_AH_ACTIVITY_TABLE go together"),
                 };
 
+            // ── stream G ── D1_AH_PUBLIC_HOST=1: serve a connection whose join names a mission host
+            // as that public region's own host (d1_activity_host::public_host), with the region
+            // lists in D1_AH_PUBLIC_TABLE (default ps4/fixtures/56578/public/public-table.txt).
+            // Off by default. Each connection must present its own id (D1_AH_DISTINCT_HOST_IDS=1).
+            let public_host = if std::env::var("D1_AH_PUBLIC_HOST").is_ok_and(|v| v.trim() == "1") {
+                let table = std::env::var("D1_AH_PUBLIC_TABLE")
+                    .unwrap_or_else(|_| "ps4/fixtures/56578/public/public-table.txt".to_string());
+                let lists = d1_activity_host::public_host::load_public_table(std::path::Path::new(&table))
+                    .map_err(|e| anyhow::anyhow!("D1_AH_PUBLIC_TABLE: {e}"))?;
+                let frames = d1_activity_host::public_host::PublicHost::build_frames(
+                    &lists,
+                    &d1_activity_host::public_host::encoder_pending(),
+                );
+                let built = frames.values().filter(|f| f.is_ok()).count();
+                tracing::info!("⭐ D1_AH_PUBLIC_HOST=1 - {} public lists from {table}, {built} frame(s) built", lists.len());
+                if let Some(Err(e)) = frames.values().find(|f| f.is_err()) {
+                    tracing::warn!("⚠ public lists not servable yet: {e}");
+                }
+                if !std::env::var("D1_AH_DISTINCT_HOST_IDS").is_ok_and(|v| v == "1") {
+                    tracing::warn!("⚠ D1_AH_PUBLIC_HOST=1 without D1_AH_DISTINCT_HOST_IDS=1: every connection presents the mission host's id");
+                }
+                // The open world (events, loot, patrol, social spaces) with stand-ins for stream A2's
+                // script bridge (refuses, so no event starts) and stream M's rewards (logged only).
+                let services = d1_activity_host::public_host::OpenWorldServices {
+                    bridge: std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::public_events::PendingBridge)),
+                    rewards: std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::open_world::LoggedRewards)),
+                };
+                Some(
+                    d1_activity_host::public_host::PublicHost::new(
+                        std::sync::Arc::new(frames),
+                        std::sync::Arc::new(std::sync::Mutex::new(
+                            d1_activity_host::public_registry::PublicRegistry::new(ah_id.wrapping_add(0x1000)),
+                        )),
+                    )
+                    .with_open_world(&lists, services),
+                )
+            } else {
+                None
+            };
             let session_id = format!("d1ah-{ah_id:016x}");
             let rt = tokio::runtime::Builder::new_multi_thread().enable_all().build()?;
             rt.block_on(serve(
@@ -952,6 +991,9 @@ fn main() -> anyhow::Result<()> {
                     // D1_AH_SLOT_HANDOVER=1: answer the client's entity-slot abandon (udt 25)
                     // and purge request (26) with 23 and 24, as the live host did.
                     i.set_slot_handover(std::env::var("D1_AH_SLOT_HANDOVER").is_ok_and(|v| v == "1"));
+                    if let Some(p) = public_host.clone() {
+                        i.set_public_host(p); // ── stream G ──
+                    }
                     i
                 },
                 codec,
