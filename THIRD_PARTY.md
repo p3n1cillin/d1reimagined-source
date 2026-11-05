@@ -11,5 +11,19 @@ in this repository. The settings generator is project code derived from the nati
   [Temurin](https://adoptium.net/) JDK 25: decompiling the owned eboot (`tools/ps4_setup/d1-ghidra.ps1`);
   its project, which holds the game's code, stays outside the repository.
 
+## The mission-script sidecar (`tools/script-host/`)
+
+- [BullShcript](https://github.com/Blam-Network/tiger/tree/main/packages/bullshcript) (MIT, Blam
+  Network; `"license": "MIT"` in its `package.json`), the BungieScript compiler and VM by Codie.
+  The sidecar imports a local, built checkout in place (`D1_TIGER_DIR` or `D1_BULLSHCRIPT_DIR`;
+  checked at tiger `82c57cb`). None of its code is copied into this repository. The sidecar's
+  native-type to row-type table was derived from BullShcript's MIT TU0 test tables, and its
+  command-script order names from BullShcript's `command_script.ts`.
+- [Fukugen Daihon](https://github.com/Blam-Network/tiger/tree/main/packages/fukugen-daihon)
+  (Blam Network; **no licence**): the restored mission scripts the sidecar runs, read from a
+  local checkout through `D1_SCRIPTS_DIR` under the owner's exception in
+  `ps4/design/licensing.md` (rule 2). Never copied, quoted or redistributed here; the repository
+  holds only activity names and counts derived from running them.
+
 Each upstream project retains its own licence. Consult that project's licence before copying
 or redistributing its implementation; these links do not grant additional rights.
