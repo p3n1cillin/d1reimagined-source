@@ -10,6 +10,10 @@ in this repository. The settings generator is project code derived from the nati
 - [Ghidra](https://github.com/NationalSecurityAgency/ghidra) (Apache-2.0), run headless on a
   [Temurin](https://adoptium.net/) JDK 25: decompiling the owned eboot (`tools/ps4_setup/d1-ghidra.ps1`);
   its project, which holds the game's code, stays outside the repository.
+- [Destiny Item Manager](https://github.com/DestinyItemManager)'s archive of Bungie's final D1 API
+  manifest: a local input to `tools/ps4_setup/d1-progression-tables.py`. The manifest is Bungie's
+  data and is not committed; only the derived XP, rank, reset and refund tables in
+  `ps4/fixtures/56578/progression/` are, each citing its definition.
 
 ## The mission-script sidecar (`tools/script-host/`)
 
