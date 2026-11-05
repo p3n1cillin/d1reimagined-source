@@ -40,6 +40,17 @@ class CineWatchTest(unittest.TestCase):
         table = (MISSION / 'world-table-speaker-live.txt').read_text(encoding='utf-8')
         self.assertIn('167  cine_speaker          0x4786c0e0  sensor-clients-cine_speaker-live.txt  1', table)
 
+    def test_the_awoken_lists_step_two_cinematics(self):
+        for name, states in (('sensor-clients-cine_awoken-live.txt', (1, 1)), ('cine_awoken-play-0.txt', (2, 1)),
+                             ('cine_awoken-play-1.txt', (4, 2)), ('cine_awoken-done.txt', (4, 4))):
+            rows = [r.split() for r in (MISSION / name).read_text(encoding='utf-8').splitlines()
+                    if r and not r.startswith('#')]
+            cine = {int(r[2]): int(r[6][8:16], 16) >> 24 for r in rows if r[0] == '0x4af77757'}
+            self.assertEqual((cine[0], cine[1]), states, name)
+            self.assertEqual(sum(r[0] == '0x4786c0e0' for r in rows), 21, name)
+        table = (MISSION / 'world-table-speaker-live.txt').read_text(encoding='utf-8')
+        self.assertIn('186  act_cinematic_queen_101  0x4786c0e0  sensor-clients-cine_awoken-live.txt  17', table)
+
 
 if __name__ == '__main__':
     unittest.main()

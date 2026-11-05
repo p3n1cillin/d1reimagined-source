@@ -368,6 +368,18 @@ The Speaker and The Awoken are the smallest. Their PAHs served the world block a
 - **The live states.** The record went idle at the join, playing about 18 s later, and done when the mission ended (197 s), with the client in slice set 1 throughout.
 - **How to serve it.** `world-table-speaker-live.txt` (activity 167, start region 1) serves it, and `d1-cine-watch.py RUN --activity 167 --slice 1 --states cine_speaker-play.txt cine_speaker-done.txt` steps it. The host needs a build with the `cine_speaker` world (`d1-activity-host`, `worlds.rs`).
 
+**The Awoken is `act_cinematic_queen_101`.**
+- **Its world.** Blam's row 206 gives scenario `0x80C02004` and 3 bubbles. The owned record gives PRIVATE `0x14CDA256` (cine_reveal's too). A Key Awaits is `act_cinematic_queen_102`, which shares cine_speaker's PRIVATE.
+- **Its cinematics.** The live host served two records in group `0x4AF77757`. That is not the world name's FNV-1 (`0x9B5A0BBB`) but its second, unnamed bundle. They played one after the other, from slice set 17.
+- **How to serve it.** `world-table-speaker-live.txt` also serves it (activity 186, start region 17). Step it with `d1-cine-watch.py RUN --activity 186 --slice 17 --states cine_awoken-play-0.txt cine_awoken-play-1.txt cine_awoken-done.txt`.
+
+**In every live cinematic the play state's start is the host's frame stamp minus one:**
+- The Speaker: `0xC7` at stamp 200;
+- The Awoken: `0xE3` at stamp 228, and `0x423` at stamp 1060;
+- flag 1 in all three.
+
+Our host stamps every frame 0, so it cannot send "one tick before now". That is the first thing to test for cine_reveal's cinematic, which reaches its world but does not start ("Serving it", above).
+
 ## Next
 
 - **Serve 165 as the live host did** (the two cinematic records, start region 25, the state steps), and retry it.
