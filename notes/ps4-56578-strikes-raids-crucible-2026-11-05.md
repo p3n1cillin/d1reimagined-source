@@ -209,11 +209,32 @@ checkpoint INDEX ENCOUNTER_INDEX ENCOUNTER_ID week=WEEK
 3. **A way to read a checkpoint at launch.** Until there is one, `seed` takes what the launcher
    knows.
 
-**Rewards.** Rewards go through stream M's `grant_activity_rewards(character, activity_hash,
-outcome)`:
-- the framework's `ActivityCompleted` or `ReturnedToOrbit` effect is the outcome, once per
-  character;
+**Rewards.** Rewards go through stream M's `rewards::grant_activity_rewards(&mut store,
+character, activity_hash, &ActivityOutcome { completed, community_page, roll_engrams, seed })`
+(#311), once per member and only when `rewards::enabled()`:
+- `ActivityRun::outcome()` gives the inputs once a run has ended: the activity hash, `completed`
+  (true after `ActivityCompleted`, false after `ReturnedToOrbit`), the definition's
+  `community_page` and the members present;
+- the raids, Prison of Elders, Challenge of the Elders and Archon's Forge carry their Cryptarch
+  page; for a strike the launcher passes the playlist's page (for example
+  `siva-crisis-heroic-strike-playlist`), since the page belongs to the playlist, not the strike;
 - `Rewards` and `RewardsLocked` carry the encounter loot and the weekly lockout.
+
+## Matchmaking (stream H)
+
+`encounter_framework::matchmaking_playlists` gives one entry per matchmade playlist, in the shape
+of stream H's `Matchmaker::add_playlist(Playlist { hash, kind, activities })` (#312, `d1-mp`):
+- **Strike playlists** (Vanguard Legacy, Taken War, SIVA Crisis, their Heroics, Vanguard
+  Nightfall): `Cooperative { max_players }` from the manifest row, the inferred members as
+  `activities`. The year-one weekly rows have no members and are left out.
+- **Crucible playlists**: `Versus { teams, team_size, min_players }` from the mode (team sizes from
+  the manifest's `maxPlayers`; free-for-all is one-player teams), with `min_players` a stand-in of
+  one full team. The rotation is every Crucible map, a stand-in: the manifest names no playlist's
+  maps.
+- A single activity (a raid, an arena) goes through `Services::launch_activity(leader, ActivityRef
+  { activity_hash, party, .. })`, with `party` the catalog row's `min_party`/`max_party`.
+
+`d1-activity-host` does not depend on `d1-mp`; the caller copies the entries across.
 
 ## Tests
 
@@ -241,7 +262,8 @@ outcome)`:
 - Crota's End wipes, keeps its checkpoint for the week and locks its loot;
 - every Crucible mode plays to an end;
 - the Trials and Iron Banner rules match the manifest;
-- the scoreboard JSON has BullShcript's shape.
+- the scoreboard JSON has BullShcript's shape;
+- the playlists map onto the matchmaker, and a finished run onto the reward call.
 
 ## Needs evidence
 

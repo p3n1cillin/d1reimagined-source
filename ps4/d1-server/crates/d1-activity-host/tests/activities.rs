@@ -233,3 +233,29 @@ fn the_scoreboard_row_has_bullshcripts_shape() {
     let score = p1["stats"].as_array().unwrap().iter().find(|s| s["nameHash"] == pvp::score_hash()).unwrap();
     assert_eq!(score["value"], 100.0);
 }
+
+#[test]
+fn playlists_map_onto_the_matchmaker_and_runs_onto_the_reward_call() {
+    use d1_activity_host::encounter_framework::{matchmaking_playlists, MatchKind};
+    let lib = lib();
+    let pls = matchmaking_playlists(&lib);
+    let legacy = pls.iter().find(|p| p.name == "Vanguard Legacy").unwrap();
+    assert_eq!(legacy.kind, MatchKind::Cooperative { max_players: 3 });
+    assert!(legacy.activities.iter().all(|h| lib.by_hash(*h).is_some_and(|a| a.kind == ActivityKind::Strike)));
+    let control = pls.iter().find(|p| p.name == "Control").unwrap();
+    assert_eq!(control.kind, MatchKind::Versus { teams: 2, team_size: 6, min_players: 6 });
+    let rumble = pls.iter().find(|p| p.name == "Rumble").unwrap();
+    assert_eq!(rumble.kind, MatchKind::Versus { teams: 6, team_size: 1, min_players: 2 });
+    let trials = pls.iter().find(|p| p.name == "Trials of Osiris").unwrap();
+    assert_eq!(trials.kind, MatchKind::Versus { teams: 2, team_size: 3, min_players: 3 });
+
+    let a = Arc::clone(lib.by_id("raid-crotas-end").unwrap());
+    let store = Arc::new(MemoryCheckpointStore::new());
+    let (mut run, _) = ActivityRun::start(Arc::clone(&a), a.activity_hashes[0], &[1, 2], Modifiers::default(), store, NOW);
+    assert!(run.outcome().is_none(), "still running");
+    run.handle(Event::ActivityCompleted);
+    let o = run.outcome().unwrap();
+    assert!(o.completed);
+    assert_eq!(o.community_page.as_deref(), Some("crotas-end-reprised"));
+    assert_eq!(o.characters, [1, 2]);
+}

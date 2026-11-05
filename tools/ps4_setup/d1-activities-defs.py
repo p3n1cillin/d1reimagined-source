@@ -240,7 +240,8 @@ def raid_defs(catalog, sequences, community):
         d = {'id': rid, 'name': name, 'kind': 'raid', 'activity_hashes': sorted(r['hash'] for r in rows),
              'bundle_hashes': sorted({r['bundle_hash'] for r in rows if r['bundle_hash']}),
              'fireteam': {'min': 1, 'max': max(r['max_party'] for r in rows)}, 'checkpoints': 'weekly',
-             'modifiers': [], 'evidence': ev('d1-knowledge', 'encounter list; the manifest holds no encounters')}
+             'modifiers': [], 'community_page': page_key,
+             'evidence': ev('d1-knowledge', 'encounter list; the manifest holds no encounters')}
         if seq:
             d['sequence'] = seq_id
         need = ['checkpoint placement (D1 knowledge)',
@@ -283,7 +284,7 @@ def arena_defs(catalog):
                  'evidence': ev('d1-knowledge', label)} for i in range(1, n + 1)]
 
     poe = [r for r in rows if r['category'] == 'arena']
-    out.append({'id': 'arena-prison-of-elders', 'name': 'Prison of Elders', 'kind': 'arena',
+    out.append({'id': 'arena-prison-of-elders', 'name': 'Prison of Elders', 'kind': 'arena', 'community_page': 'prison-of-elders',
                 'activity_hashes': sorted(r['hash'] for r in poe), 'fireteam': {'min': 1, 'max': 3},
                 'checkpoints': 'in_activity', 'modifiers': [],
                 'encounters': rounds(5, None, 'House of Wolves Prison of Elders: four rounds of waves, a boss round fifth'),
@@ -299,6 +300,7 @@ def arena_defs(catalog):
     for name, rs in sorted(challenge.items()):
         if name == 'Challenge of the Elders':
             out.append({'id': 'arena-challenge-of-the-elders', 'name': name, 'kind': 'arena_challenge',
+                        'community_page': 'challenge-of-the-elders',
                         'activity_hashes': sorted(r['hash'] for r in rs), 'fireteam': {'min': 1, 'max': 3},
                         'checkpoints': 'in_activity', 'modifiers': sorted({s for r in rs for s in r['skulls'] if s}),
                         'encounters': rounds(3, None, 'The Taken King Challenge of the Elders: three scored rounds, each ending on a boss'),
@@ -319,7 +321,7 @@ def arena_defs(catalog):
                     'evidence': ev('d1-knowledge', 'round structure'),
                     'needs_evidence': ['round count and the boss (named after the activity here)']})
     forge = [r for r in rows if r['category'] == 'patrol_event']
-    out.append({'id': 'event-archons-forge', 'name': "Archon's Forge", 'kind': 'public_event',
+    out.append({'id': 'event-archons-forge', 'name': "Archon's Forge", 'kind': 'public_event', 'community_page': 'archons-forge',
                 'activity_hashes': sorted(r['hash'] for r in forge), 'fireteam': {'min': 1, 'max': 6},
                 'checkpoints': 'in_activity', 'modifiers': [],
                 'encounters': [

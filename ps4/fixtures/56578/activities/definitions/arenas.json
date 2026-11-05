@@ -5,6 +5,7 @@
    "id": "arena-prison-of-elders",
    "name": "Prison of Elders",
    "kind": "arena",
+   "community_page": "prison-of-elders",
    "activity_hashes": [
     604017503,
     1404620600,
@@ -212,6 +213,7 @@
    "id": "arena-challenge-of-the-elders",
    "name": "Challenge of the Elders",
    "kind": "arena_challenge",
+   "community_page": "challenge-of-the-elders",
    "activity_hashes": [
     1673931290,
     2201622127,
@@ -807,6 +809,7 @@
    "id": "event-archons-forge",
    "name": "Archon's Forge",
    "kind": "public_event",
+   "community_page": "archons-forge",
    "activity_hashes": [
     355605844
    ],

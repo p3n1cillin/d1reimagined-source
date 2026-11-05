@@ -239,6 +239,10 @@ pub struct ActivityDef {
     /// Challenge of the Elders: score thresholds for the end rewards.
     #[serde(default)]
     pub score_thresholds: Vec<i64>,
+    /// The Cryptarch guide page for the activity, which stream M's rewards take as
+    /// `ActivityOutcome::community_page` (its community Legendary Mark grants and limits).
+    #[serde(default)]
+    pub community_page: Option<String>,
     pub evidence: Evidence,
     #[serde(default)]
     pub needs_evidence: Vec<String>,
@@ -1024,6 +1028,100 @@ impl ActivityRun {
     }
 }
 
+/// What stream M's `rewards::grant_activity_rewards(store, character, activity_hash,
+/// &ActivityOutcome { completed, community_page, roll_engrams, seed })` needs from a finished
+/// run, once per present member (and only when `rewards::enabled()`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RunOutcome {
+    pub activity_hash: u32,
+    pub completed: bool,
+    pub community_page: Option<String>,
+    pub characters: Vec<CharacterId>,
+}
+
+impl ActivityRun {
+    /// The reward call's inputs, once the run has ended (completed or returned to orbit).
+    pub fn outcome(&self) -> Option<RunOutcome> {
+        let completed = match self.state {
+            RunState::Completed => true,
+            RunState::Ended(_) => false,
+            _ => return None,
+        };
+        Some(RunOutcome {
+            activity_hash: self.activity_hash,
+            completed,
+            community_page: self.def.community_page.clone(),
+            characters: self.players.keys().copied().collect(),
+        })
+    }
+}
+
+/// How a matchmaking playlist fills: the shape of stream H's `d1_mp::PlaylistKind`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum MatchKind {
+    Cooperative { max_players: usize },
+    Versus { teams: usize, team_size: usize, min_players: usize },
+}
+
+/// One entry for stream H's `Matchmaker::add_playlist(Playlist { hash, kind, activities })`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MatchmakingPlaylist {
+    pub hash: u32,
+    pub name: String,
+    pub kind: MatchKind,
+    pub activities: Vec<u32>,
+    /// Where `activities` came from (inferred or stand-in; the manifest lists no members).
+    pub membership: Evidence,
+}
+
+/// Every matchmade playlist, for `d1_mp::Matchmaker::add_playlist`:
+///
+/// * the strike playlists (Vanguard Legacy, Taken War, SIVA Crisis, their Heroics, Vanguard
+///   Nightfall): cooperative, `max_players` from the manifest row, members as the catalog
+///   infers them (empty for the year-one weekly rows, which are left out);
+/// * the Crucible playlists: versus, teams and team size from the mode (the manifest's
+///   `maxPlayers`), `min_players` a stand-in of one full team, and the Crucible maps as the
+///   rotation (the manifest names no playlist's maps: a stand-in).
+pub fn matchmaking_playlists(lib: &ActivityLibrary) -> Vec<MatchmakingPlaylist> {
+    let mut out = Vec::new();
+    for p in &lib.catalog.playlists {
+        let Some(row) = lib.catalog.get(p.hash) else { continue };
+        if p.members.is_empty() {
+            continue;
+        }
+        out.push(MatchmakingPlaylist {
+            hash: p.hash,
+            name: p.name.clone(),
+            kind: MatchKind::Cooperative { max_players: usize::from(row.max_players.max(1)) },
+            activities: p.members.clone(),
+            membership: p.membership.clone(),
+        });
+    }
+    if let Some(c) = &lib.crucible {
+        let maps: Vec<u32> = c.maps.iter().map(|m| m.hash).collect();
+        for p in c.playlists.iter().filter(|p| p.matchmade) {
+            let Some(m) = c.mode(&p.mode) else { continue };
+            let kind = if m.is_ffa() {
+                MatchKind::Versus { teams: usize::from(m.max_players), team_size: 1, min_players: 2 }
+            } else {
+                let size = usize::from(m.team_size);
+                MatchKind::Versus { teams: usize::from(m.teams), team_size: size, min_players: size }
+            };
+            out.push(MatchmakingPlaylist {
+                hash: p.hash,
+                name: p.name.clone(),
+                kind,
+                activities: maps.clone(),
+                membership: Evidence {
+                    kind: EvidenceKind::StandIn,
+                    source: "every Crucible map; the manifest names no playlist's maps".into(),
+                },
+            });
+        }
+    }
+    out
+}
+
 /// The host's own reports, as framework events (the activities with no restored script).
 pub mod host_events {
     use super::Event;
@@ -1111,6 +1209,7 @@ mod tests {
             script: None,
             sequence: None,
             score_thresholds: vec![],
+            community_page: None,
             evidence: ev(EvidenceKind::StandIn),
             needs_evidence: vec![],
         })

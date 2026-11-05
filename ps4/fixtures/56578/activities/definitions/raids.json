@@ -21,6 +21,7 @@
    },
    "checkpoints": "weekly",
    "modifiers": [],
+   "community_page": "vault-of-glass-reprised",
    "evidence": {
     "kind": "d1-knowledge",
     "source": "encounter list; the manifest holds no encounters"
@@ -258,6 +259,7 @@
    },
    "checkpoints": "weekly",
    "modifiers": [],
+   "community_page": "crotas-end-reprised",
    "evidence": {
     "kind": "d1-knowledge",
     "source": "encounter list; the manifest holds no encounters"
@@ -461,6 +463,7 @@
    },
    "checkpoints": "weekly",
    "modifiers": [],
+   "community_page": "kings-fall-reprised",
    "evidence": {
     "kind": "d1-knowledge",
     "source": "encounter list; the manifest holds no encounters"
@@ -711,6 +714,7 @@
    },
    "checkpoints": "weekly",
    "modifiers": [],
+   "community_page": "wrath-of-the-machine-featured",
    "evidence": {
     "kind": "d1-knowledge",
     "source": "encounter list; the manifest holds no encounters"
