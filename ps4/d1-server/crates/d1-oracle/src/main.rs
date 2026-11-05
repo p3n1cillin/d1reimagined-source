@@ -296,9 +296,11 @@ enum AhCmd {
         #[arg(long)]
         wire: Option<String>,
     },
-    /// Decode many payloads with one codec: stdin lines `UDT HEX`, one JSON object per line on
-    /// stdout (`{"udt", "tag", "bits", "size", "words": {"0x0": "0x…"}}` or `{"udt", "error"}`).
-    /// One emulator start for the batch instead of one a payload (about 3 s each).
+    /// Decode many payloads with one codec: stdin lines `UDT HEX [STREAM]`, one JSON object per
+    /// line on stdout (`{"udt", "tag", "bits", "size", "words": {"0x0": "0x…"}}` or
+    /// `{"udt", "error"}`). One emulator start for the batch instead of one a payload (about 3 s
+    /// each). With STREAM, the replicated udts 11 and 21 decode against that stream's previous
+    /// image (they carry only what changed); without it, against zeros.
     DecodeBatch,
     /// Encode a struct image for a `user_defined_type`. The image must be exactly the struct size.
     Encode {
@@ -1200,19 +1202,31 @@ fn run_activity_host(cli: &Cli, cmd: &AhCmd) -> anyhow::Result<ExitCode> {
         AhCmd::DecodeBatch => {
             use std::io::BufRead;
             let mut codec = AhCodec::new();
+            // A third column names the stream (a host connection and direction). Replicated
+            // messages (udt 11, 21) carry only what changed, so with a stream they decode against
+            // that stream's previous image, as the receiver does; without one, against zeros.
+            let mut images: std::collections::HashMap<(String, u32), Vec<u8>> = Default::default();
             for line in std::io::stdin().lock().lines() {
                 let line = line?;
                 let mut parts = line.split_whitespace();
                 let (Some(udt), Some(h)) = (parts.next(), parts.next()) else { continue };
                 let udt: u32 = udt.parse()?;
-                let out = match hex(h).and_then(|bytes| codec.decode(udt, &bytes).map_err(Into::into)) {
-                    Ok(d) => serde_json::json!({
+                let stream = parts.next().filter(|_| activity_host::is_replicated(udt));
+                let key = stream.map(|s| (s.to_string(), udt));
+                let seed = key.as_ref().and_then(|k| images.get(k)).cloned().unwrap_or_default();
+                let out = match hex(h).and_then(|bytes| codec.decode_seeded(udt, &bytes, &seed).map_err(Into::into)) {
+                    Ok(d) => {
+                        if let Some(k) = key {
+                            images.insert(k, d.object.clone());
+                        }
+                        serde_json::json!({
                         "udt": udt, "tag": format!("{:#010x}", d.tag), "bits": d.bits,
                         "size": d.object.len(),
                         "words": d.nonzero_qwords().iter()
                             .map(|(off, v)| (format!("{off:#x}"), serde_json::json!(format!("{v:#x}"))))
                             .collect::<serde_json::Map<_, _>>(),
-                    }),
+                        })
+                    }
                     Err(e) => serde_json::json!({"udt": udt, "error": format!("{e:#}")}),
                 };
                 println!("{out}");

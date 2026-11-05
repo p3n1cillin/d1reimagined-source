@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """Summarise or decode the activity-host traffic in SRCP message captures (d1_srcp.py).
 
-    d1-srcp.py summary CAPTURE.pcap
+    d1-srcp.py summary CAPTURE.pcap                     (per activity-host id; --host ID filters any command)
     d1-srcp.py incidents CAPTURE.pcap [--dir s2c|c2s]   (udt 18, decoded by d1-oracle)
     d1-srcp.py sensors CAPTURE.pcap                     (udt 5 sensor_auth_update frames)
     d1-srcp.py sessions CAPTURE.pcap [...]              (each host session's activity and slice sets)
+    d1-srcp.py regions CAPTURE.pcap                     (the PAH region records, udt 11, as they change)
     d1-srcp.py export CAPTURE.pcap --out PRIVATE.jsonl  (every activity-host message, hex body)
 
 Decoding uses the 56578 client's own codec (`d1-oracle activity-host decode`, with D1_EBOOT and
@@ -51,8 +52,63 @@ def decode_all(pairs):
     out = {}
     for pair, line in zip(pairs, lines):
         d = json.loads(line)
+        setup_error(d)
         out[pair] = None if 'error' in d else {int(k, 16): int(v, 16) for k, v in d['words'].items()}
     return out
+
+
+def decode_ordered(rows):
+    """[words or None] for (stream, udt, body) rows in message order, one d1-oracle start. The
+    replicated udts 11 and 21 carry only what changed; each decodes against its stream's previous
+    image (`decode-batch`'s STREAM column), so nothing is deduplicated here."""
+    rows = list(rows)
+    if not rows:
+        return []
+    batch = ''.join(f'{udt} {body.hex()} {stream}\n' for stream, udt, body in rows)
+    r = subprocess.run([oracle(), 'activity-host', 'decode-batch'], input=batch, capture_output=True,
+                       text=True, cwd=d1paths.workspace(), timeout=60 + len(rows))
+    lines = r.stdout.splitlines()
+    if r.returncode or len(lines) != len(rows):
+        raise RuntimeError(f'd1-oracle decode-batch: {(r.stderr or r.stdout).strip()[-300:]}')
+    out = []
+    for line in lines:
+        d = json.loads(line)
+        setup_error(d)
+        out.append(None if 'error' in d else {int(k, 16): int(v, 16) for k, v in d['words'].items()})
+    return out
+
+
+PAH_REGIONS, PAH_REGION_STRIDE, PAH_REGION_COUNT = 0x2E48, 0xD8, 40
+
+
+def region_records(words):
+    """The PAH region records in a replicate_membership image (udt 11): [(slot, record bytes)]
+    for slots naming a region (an unused slot's region is 0xFFFFFFFF)."""
+    im = image(words)
+    recs = []
+    for i in range(PAH_REGION_COUNT):
+        rec = im[PAH_REGIONS + i * PAH_REGION_STRIDE:PAH_REGIONS + (i + 1) * PAH_REGION_STRIDE]
+        rec = rec.ljust(PAH_REGION_STRIDE, b'\0')
+        if any(rec) and rec[:4] != bytes([0xFF] * 4):
+            recs.append((i, rec))
+    return recs
+
+
+def describe_region(rec):
+    """A region record's fields without the advertised session itself (a platform session key
+    and addresses: personal data). Offsets as notes/d1-live-captures-2026-11-05.md reads them."""
+    region, public = struct.unpack_from('<II', rec, 0)
+    session = struct.unpack_from('<I', rec, 0x4C)[0]
+    host = struct.unpack_from('<Q', rec, 0xD0)[0]
+    return (f'region {region} public {public} +08 {rec[8:12].hex()} +19 {rec[0x19]} +20 {rec[0x20]} '
+            f'+38 {rec[0x38]} session {"%#x + 64 B" % session if session else "-"} '
+            f'host {"..%04x" % (host & 0xFFFF) if host else "-"}')
+
+
+def setup_error(d):
+    """A missing or unreadable eboot fails every decode; say so instead of 'refused'."""
+    if str(d.get('error', '')).startswith('eboot:'):
+        raise RuntimeError(f"d1-oracle could not read the eboot (set D1_EBOOT): {d['error']}")
 
 
 def sensor_frames(bodies):
@@ -69,6 +125,7 @@ def sensor_frames(bodies):
     out = {}
     for body, line in zip(bodies, lines):
         d = json.loads(line)
+        setup_error(d)
         out[body] = None if 'error' in d else d
     return out
 
@@ -112,15 +169,17 @@ def image(words):
 
 
 def session_table(data, names):
-    """Per host session: start, the session type byte the client's join request carries
-    (join_result +0x38: 3 private, 2 public), the activities named by the host's join incident
+    """Per host session: start, the host id, the session type byte the client's join request
+    carries (join_result +0x38; 3 on the hosts the client starts, its mission host and the public
+    sessions it creates, 2 where it joins an existing instance: another player's public session,
+    the Tower), the activities named by the host's join incident
     2426 (51539's numbering), and the slice sets the client reported as current (udt 21 +0xB8)."""
     sess = d1_srcp.sessions(data)
-    pick = [(u, b) for _, msgs in sess for _, d, _, u, b in msgs
+    pick = [(u, b) for _, _, msgs in sess for _, d, _, u, b in msgs
             if (d, u) in (('s2c', INCIDENT), ('s2c', 4), ('c2s', 21))]
     words = decode_all(pick)
     rows = []
-    for start, msgs in sess:
+    for start, host, msgs in sess:
         kind, acts, slices = None, [], []
         for _, d, _, u, b in msgs:
             w = words.get((u, b))
@@ -133,57 +192,76 @@ def session_table(data, names):
             elif u == 21 and 0xB8 in w and (w[0xB8] & 0x3FF) not in (0, 0x3FF):
                 if (w[0xB8] & 0x3FF) not in slices:
                     slices.append(w[0xB8] & 0x3FF)
-        rows.append((start, kind, acts, slices))
+        rows.append((start, host, kind, acts, slices))
     return rows
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'sessions', 'export'))
+    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'sessions', 'regions', 'export'))
     ap.add_argument('capture', type=Path, nargs='+')
     ap.add_argument('--dir', choices=('s2c', 'c2s'), default='s2c')
     ap.add_argument('--out', type=Path)
+    ap.add_argument('--host', help='only the activity host whose id ends in these hex digits')
     a = ap.parse_args()
     if a.command == 'sessions':
         names = activity_names()
         for cap in a.capture:
-            for start, kind, acts, slices in session_table(cap.read_bytes(), names):
-                kinds = {2: 'public', 3: 'private'}
-                print(f"{cap.stem[20:]:28} +{start:6.0f} s {kinds.get(kind, kind)!s:8} {', '.join(acts[:2]) or '-':28} slices {slices}")
+            for start, host, kind, acts, slices in session_table(cap.read_bytes(), names):
+                kinds = {2: 'joins', 3: 'starts'}
+                print(f"{cap.stem[20:]:28} +{start:6.0f} s host ..{host & 0xFFFF:04x} "
+                      f"{kinds.get(kind, kind)!s:8} {', '.join(acts[:2]) or '-':28} slices {slices}")
         return
     if len(a.capture) != 1:
         sys.exit(f'{a.command} takes one capture')
-    msgs = d1_srcp.activity_messages(a.capture[0].read_bytes())
+    msgs = d1_srcp.host_messages(a.capture[0].read_bytes())
+    if a.host:
+        msgs = [m for m in msgs if f'{m[3]:x}'.endswith(a.host.lower().removeprefix('0x'))]
     if a.command == 'summary':
-        c = collections.Counter((d, peer, udt) for _, d, peer, udt, _ in msgs)
-        first = {}
-        for t, d, peer, udt, _ in msgs:
-            first.setdefault((d, peer, udt), t)
-        for (d, peer, udt), n in sorted(c.items(), key=lambda kv: (kv[0][1], kv[0][0], kv[0][2])):
-            print(f'{peer:>21} {d} udt {udt:3}  x{n:<5} first {first[(d, peer, udt)]:7.1f} s')
+        c = collections.Counter((host, d, udt) for _, d, _, host, udt, _ in msgs)
+        first, last = {}, {}
+        for t, d, _, host, udt, _ in msgs:
+            first.setdefault((host, d, udt), t)
+            last[(host, d, udt)] = t
+        for k, n in sorted(c.items()):
+            host, d, udt = k
+            print(f'host {host:#018x} {d} udt {udt:3}  x{n:<5} {first[k]:7.1f}-{last[k]:7.1f} s')
+    elif a.command == 'regions':
+        mine = [m for m in msgs if m[1] == 's2c' and m[4] == 11]
+        last = {}
+        for (t, d, peer, host, udt, body), w in zip(mine, decode_ordered((m[3], 11, m[5]) for m in mine)):
+            recs = tuple(region_records(w)) if w else None
+            if w is None or last.get(host) == recs:
+                continue
+            last[host] = recs
+            print(f'{t:8.1f} host ..{host & 0xFFFF:04x} membership {w.get(0, 0) & 0xFFFFFFFF}: '
+                  f'{len(recs)} region records')
+            for slot, rec in recs:
+                print(f'           [{slot}] {describe_region(rec)}')
     elif a.command == 'incidents':
-        mine = [m for m in msgs if m[1] == a.dir and m[3] == INCIDENT]
-        words = decode_all((udt, body) for _, _, _, udt, body in mine)
-        for t, d, peer, udt, body in mine:
+        mine = [m for m in msgs if m[1] == a.dir and m[4] == INCIDENT]
+        words = decode_all((udt, body) for *_, udt, body in mine)
+        for t, d, peer, host, udt, body in mine:
             w = words[(udt, body)]
-            print(f'{t:8.1f} {peer:>21} types {incident_types(w) if w else "(refused)"}  body {len(body)} B')
+            print(f'{t:8.1f} host ..{host & 0xFFFF:04x} types {incident_types(w) if w else "(refused)"}  body {len(body)} B')
     elif a.command == 'sensors':
-        mine = [m for m in msgs if m[1] == 's2c' and m[3] == SENSOR]
+        mine = [m for m in msgs if m[1] == 's2c' and m[4] == SENSOR]
         frames = sensor_frames(body for *_, body in mine)
-        for t, d, peer, udt, body in mine:
+        for t, d, peer, host, udt, body in mine:
             f = frames[body]
             if f is None:
-                print(f'{t:8.1f} {peer:>21} (refused) {len(body)} B')
+                print(f'{t:8.1f} host ..{host & 0xFFFF:04x} (refused) {len(body)} B')
                 continue
             names = ' '.join(f"{e['hash']}/{e['i8']:#x}/{e['sub']}:{e['body_bits']}" for e in f['entries'])
             auth = f" authority {f['authority']}" if f['authority'] else ''
-            print(f"{t:8.1f} {peer:>21} gen {f['gen']} stamp {f['stamp']}{auth} {names}")
+            print(f"{t:8.1f} host ..{host & 0xFFFF:04x} gen {f['gen']} stamp {f['stamp']}{auth} {names}")
     else:
         if not a.out:
             sys.exit('export needs --out (a private path)')
         with open(a.out, 'w', encoding='utf-8') as f:
-            for t, d, peer, udt, body in msgs:
-                f.write(json.dumps({'t': round(t, 6), 'dir': d, 'peer': peer, 'udt': udt, 'body': body.hex()}) + '\n')
+            for t, d, peer, host, udt, body in msgs:
+                f.write(json.dumps({'t': round(t, 6), 'dir': d, 'peer': peer, 'host': f'{host:#018x}',
+                                    'udt': udt, 'body': body.hex()}) + '\n')
         print(f'{len(msgs)} messages -> {a.out}')
 
 

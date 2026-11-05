@@ -49,45 +49,45 @@ def records(data):
 
 
 def message(payload):
-    """(type, id, udt, body) for a BAP frame; udt and body are None for other types."""
+    """(type, id, host, udt, body) for a BAP frame; host, udt and body are None for other types.
+    host is the activity-host id the frame names (one connection per host)."""
     if len(payload) < 6:
         return None
     mtype, mid = struct.unpack_from('>HI', payload)
     if mtype == BC_NOT and len(payload) >= 23:
-        _, _, udt, length = struct.unpack_from('>BQII', payload, 6)
-        return mtype, mid, udt, payload[23:23 + length]
+        _, host, udt, length = struct.unpack_from('>BQII', payload, 6)
+        return mtype, mid, host, udt, payload[23:23 + length]
     if mtype == AH_NOT and len(payload) >= 27:
-        _, _, udt, length, _ = struct.unpack_from('>QBIII', payload, 6)
-        return mtype, mid, udt, payload[27:27 + length]
-    return mtype, mid, None, None
+        host, _, udt, length, _ = struct.unpack_from('>QBIII', payload, 6)
+        return mtype, mid, host, udt, payload[27:27 + length]
+    return mtype, mid, None, None, None
 
 
-def activity_messages(data):
+def host_messages(data):
     """Activity-host notifications and client messages in time order:
-    (seconds from the first record, 'c2s'/'s2c', server 'ip:port', udt, body)."""
+    (seconds from the first record, 'c2s'/'s2c', server 'ip:port', host id, udt, body)."""
     out, t0 = [], None
     for rec in records(data):
         t0 = rec['t'] if t0 is None else t0
         if rec['dir'] not in ('c2s', 's2c'):
             continue
         m = message(rec['payload'])
-        if m and m[2] is not None:
-            out.append((rec['t'] - t0, rec['dir'], f"{rec['ip']}:{rec['port']}", m[2], m[3]))
+        if m and m[3] is not None:
+            out.append((rec['t'] - t0, rec['dir'], f"{rec['ip']}:{rec['port']}", m[2], m[3], m[4]))
     return out
+
+
+def activity_messages(data):
+    """host_messages without the host id: (t, 'c2s'/'s2c', 'ip:port', udt, body)."""
+    return [(t, d, peer, udt, body) for t, d, peer, _, udt, body in host_messages(data)]
 
 
 def sessions(data):
-    """Activity-host sessions in time order: [(start, [(t, dir, peer, udt, body), ...])]. A session
-    starts at the plugin's `HOST:30001 state 2` note (each connection to an activity host)."""
-    out, t0 = [], None
-    for rec in records(data):
-        t0 = rec['t'] if t0 is None else t0
-        t = rec['t'] - t0
-        if rec['dir'] == 'note':
-            if rec['payload'].endswith(b' state 2') and b':30001 ' in rec['payload']:
-                out.append((t, []))
-            continue
-        m = message(rec['payload'])
-        if out and m and m[2] is not None:
-            out[-1][1].append((t, rec['dir'], f"{rec['ip']}:{rec['port']}", m[2], m[3]))
-    return out
+    """Activity-host sessions in order of their first message: [(start, host id, [(t, dir, peer,
+    udt, body), ...])]. A session is one activity-host id. The client keeps several at once: in the
+    live Restoration capture its private host stays connected all mission while a public one
+    joins beside it, so the messages are told apart by host id, not by when a connection opened."""
+    by_host = {}
+    for t, d, peer, host, udt, body in host_messages(data):
+        by_host.setdefault(host, (t, host, []))[2].append((t, d, peer, udt, body))
+    return list(by_host.values())

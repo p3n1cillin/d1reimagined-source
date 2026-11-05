@@ -48,8 +48,16 @@ and plans serving it. [V] = read in the binary or our code, [I] = inferred.
    membership, a disjoint entity-index range, the world's PUBLIC checksum and bubble count, the public
    activity index, the public bubble as its start region, and that bubble's sensor clients, all built
    with d1-oracle codecs. Its ready state (status 6) should set `+0x141 = 2`.
+   - **Live (5 Nov):** the public instance is a second activity-host connection beside the PAH,
+     which stays connected. It presents its own host id, and its join request names the PAH's.
+     It serves its own sensor groups (in Restoration `0xEAAF16E2`, the 16 player objects, and
+     four others) and no region records. Each connection presenting its own id is
+     `D1_AH_DISTINCT_HOST_IDS=1` in `d1-activity-host`.
 5. **Advertise.** Echo the reported session and AH id back in the PAH's region record (`+0x4C`,
    `+0xD0`, `+0x04 = 1`). Otherwise expect `public_activity_host_mismatch` or "has no AH ID".
+   - **Live (5 Nov):** the client reports both in its udt 21 slice-set record (session at
+     +0x14, host id at +0x98, state +0x11 = 2 once ready), and the PAH copies them unchanged.
+     `d1-activity-host` does the same (`track_public_session`).
 
 ## Risks
 
