@@ -6,6 +6,7 @@ is the current summary. Titles below are the notes' own.
 
 ## Start here (PS4 build 56578, current)
 
+- [Live-server message captures (5 November 2026)](d1-live-captures-2026-11-05.md)
 - [Native video settings: content preparation (3 November 2026)](ps4-56578-native-video-settings-2026-11-03.md)
 
 - [PS4 56578: the Breach's Fallen sequences play, but no squad spawns (31 October 2026)](ps4-56578-breach-sequences-2026-10-31.md)

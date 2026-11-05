@@ -296,6 +296,10 @@ enum AhCmd {
         #[arg(long)]
         wire: Option<String>,
     },
+    /// Decode many payloads with one codec: stdin lines `UDT HEX`, one JSON object per line on
+    /// stdout (`{"udt", "tag", "bits", "size", "words": {"0x0": "0x…"}}` or `{"udt", "error"}`).
+    /// One emulator start for the batch instead of one a payload (about 3 s each).
+    DecodeBatch,
     /// Encode a struct image for a `user_defined_type`. The image must be exactly the struct size.
     Encode {
         #[arg(long, value_parser = parse_int)]
@@ -1125,6 +1129,29 @@ fn run_activity_host(cli: &Cli, cmd: &AhCmd) -> anyhow::Result<ExitCode> {
             );
             for (off, v) in d.nonzero_qwords() {
                 println!("  +{off:#06x}  {v:#018x}");
+            }
+            Ok(ExitCode::SUCCESS)
+        }
+
+        AhCmd::DecodeBatch => {
+            use std::io::BufRead;
+            let mut codec = AhCodec::new();
+            for line in std::io::stdin().lock().lines() {
+                let line = line?;
+                let mut parts = line.split_whitespace();
+                let (Some(udt), Some(h)) = (parts.next(), parts.next()) else { continue };
+                let udt: u32 = udt.parse()?;
+                let out = match hex(h).and_then(|bytes| codec.decode(udt, &bytes).map_err(Into::into)) {
+                    Ok(d) => serde_json::json!({
+                        "udt": udt, "tag": format!("{:#010x}", d.tag), "bits": d.bits,
+                        "size": d.object.len(),
+                        "words": d.nonzero_qwords().iter()
+                            .map(|(off, v)| (format!("{off:#x}"), serde_json::json!(format!("{v:#x}"))))
+                            .collect::<serde_json::Map<_, _>>(),
+                    }),
+                    Err(e) => serde_json::json!({"udt": udt, "error": format!("{e:#}")}),
+                };
+                println!("{out}");
             }
             Ok(ExitCode::SUCCESS)
         }
