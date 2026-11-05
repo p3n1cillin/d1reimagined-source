@@ -81,6 +81,7 @@ pub mod controls;
 pub mod encounter_framework;
 pub mod entity;
 pub mod fireteam;
+pub mod generated;
 pub mod group; // MP(H): several clients in one instance
 pub mod listener;
 pub mod messages;

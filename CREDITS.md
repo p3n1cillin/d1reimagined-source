@@ -60,7 +60,12 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
   TypeScript libraries for Destiny's Tiger engine (MIT for the code packages).
   - Its `gibbon` reader, with definitions for our exact build `56578.17.04.12.1251.evil`, names
     every row of every activity bundle: `tools/ps4_setup/d1-bundle-rows.mjs` uses it to map each
-    sensor index the host serves to its authored name.
+    sensor index the host serves to its authored name. `tools/ps4_setup/d1-worlds.mjs` uses it to
+    read every world's scenario record, slice sets, bundles and spawn points for the generated world
+    tables (`ps4/fixtures/56578/worlds/`).
+  - Its 2014 activity table (`dictionary`, build 41375; no licence, used from a local checkout
+    only) binds activities to worlds for `tools/ps4_setup/d1-world-table.py`; only the derived
+    activity-to-world names are committed.
   - Its Fukugen Daihon reconstructions of the mission scripts (`enc_breach_m0`,
     `act_cosmo_m0_highway`) show which squads each Breach trigger places. Its restored scripts for
     build 56578 are the reference for how each activity runs. They carry no licence, so they are used

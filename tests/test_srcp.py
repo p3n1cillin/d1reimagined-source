@@ -97,6 +97,50 @@ class SrcpTest(unittest.TestCase):
         self.assertIn('groups 0x11111111:2 0x4786c0e0:1', row)
         self.assertNotIn('eaaf16e2', row, 'only the first host (the PAH)')
 
+    def test_hosts_rows_name_every_activity_host_and_skip_public_ones(self):
+        def push(host, body):
+            return record(10.0, 1, (10, 0, 0, 1), 30001,
+                          struct.pack('>HI', M.BC_NOT, 7) + struct.pack('>BQII', 1, host, CLI.SENSOR, len(body)) + body)
+        data = capture(push(0x1EF5E, b'w'), push(0x2A7F6, b'c'), push(0x3B000, b'p'))
+        frames = {b'w': {'entries': [{'hash': '0x4786c0e0', 'i8': 0xF, 'sub': 0}, {'hash': '0x992bb471', 'i8': 4, 'sub': 0},
+                                     {'hash': '0x992bb471', 'i8': 6, 'sub': 1}]},
+                  b'c': {'entries': [{'hash': '0x4786c0e0', 'i8': 0xF, 'sub': 0}, {'hash': '0x2fe7dbe6', 'i8': 6, 'sub': 0}]},
+                  b'p': {'entries': [{'hash': '0xeaaf16e2', 'i8': 0xC, 'sub': 0}]}}
+        saved = CLI.session_table, CLI.sensor_frames
+        CLI.session_table = lambda data, names: [(0.0, 0x1EF5E, 3, [0x6E0DAE89], [113, 112]),
+                                                 (5.0, 0x2A7F6, 3, [0x6EAF0959], [25]), (6.0, 0x3B000, 3, [], [56])]
+        CLI.sensor_frames = lambda bodies: {b: frames[b] for b in bodies}
+        try:
+            rows = CLI.hosts_tsv_rows('AGR', data, {0x6E0DAE89: 'A Guardian Rises', 0x6EAF0959: 'A Guardian Rises'},
+                                      {0x6E0DAE89: 164})
+        finally:
+            CLI.session_table, CLI.sensor_frames = saved
+        self.assertEqual([r.split('\t') for r in rows], [
+            ['AGR', 'ef5e', 'starts', '0x6e0dae89', '164', 'A Guardian Rises', '0x4786c0e0', '113', '113,112',
+             '0x992bb471:2 0x4786c0e0:1'],
+            ['AGR', 'a7f6', 'starts', '0x6eaf0959', '-', 'A Guardian Rises', '0x4786c0e0', '25', '25',
+             '0x2fe7dbe6:1 0x4786c0e0:1']])
+        self.assertEqual(len(CLI.HOSTS_COLUMNS.split('\t')), len(rows[0].split('\t')))
+
+    def test_incident_body_reads_the_length_at_d4(self):
+        img = bytearray(0x2D0)
+        struct.pack_into('<II', img, 0, 2, 965)
+        struct.pack_into('<I', img, 0xD4, 3)
+        img[0xD8:0xDC] = b'\x01\x02\x03\x04'  # the fourth byte is past the length
+        words = {o: struct.unpack_from('<Q', img, o)[0] for o in range(0, len(img), 8)}
+        self.assertEqual(CLI.incident_types(words)[:1], [965])
+        self.assertEqual(CLI.incident_body(words), b'\x01\x02\x03')
+        self.assertEqual(CLI.incident_body({}), b'')
+
+    def test_lifetime_values_are_signed_and_only_changes_print(self):
+        self.assertEqual(CLI.lifetime_value('03ff01'), 3)
+        self.assertEqual(CLI.lifetime_value('ff'), -1)
+        self.assertIsNone(CLI.lifetime_value(''))
+        rows = [(1, 0xA, 'g', 3, 0), (2, 0xA, 'g', 3, 0), (3, 0xA, 'g', 3, 1), (3, 0xB, 'g', 3, 1),
+                (4, 0xA, 'g', 3, None), (5, 0xA, 'g', 3, 6)]
+        self.assertEqual(CLI.lifetime_changes(rows),
+                         [(1, 0xA, 'g', 3, 0), (3, 0xA, 'g', 3, 1), (3, 0xB, 'g', 3, 1), (5, 0xA, 'g', 3, 6)])
+
     def test_refuses_other_link_types(self):
         data = struct.pack('<IHHiIII', 0xa1b2c3d4, 2, 4, 0, 0, 0x40000, 1)
         with self.assertRaises(ValueError):
