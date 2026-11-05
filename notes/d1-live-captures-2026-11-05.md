@@ -30,12 +30,12 @@ They are classic pcap files with link type 147 (`USER0`). Each record is one pla
 1. The sign-on (`POST /SignOn?platform=xenon&build=…` to Bungie's sign-on service).
 2. The content manifest.
 3. A BAP session to the services host. It carries the same message types our server answers, 0x0a-0x2b, 0x79, 0x7b, 0xab, 0xfa and 0x12e.
-4. One activity-host session per activity, each opened with the same "DESTINY" hello (0x1e/0x1f, 0x19/0x1a) and the 0x06/0x07 manager exchange our server implements.
+4. Activity-host sessions, each opened with the same "DESTINY" hello (0x1e/0x1f, 0x19/0x1a) and the 0x06/0x07 manager exchange our server implements. The 0x07 answer names the new host's id, and every message on that connection carries it. **The client holds several at once:** the mission's host stays connected all mission, and public instances join beside it ("Every capture's host sessions" below).
 5. The plugin notes each session's state, and ends with its packet counts.
 
 The frames are the plain frames our server builds before sealing them. The activity host's notifications are type 9 (`BC_NOT`: flag, id, udt, length, body); the client's messages to it are type 8 (`AH_NOT`).
 
-`tools/ps4_setup/d1_srcp.py` reads them. `tools/ps4_setup/d1-srcp.py` summarises a capture, decodes its incidents, or exports every activity-host message, with its hex body, to a private JSONL file.
+`tools/ps4_setup/d1_srcp.py` reads them. `tools/ps4_setup/d1-srcp.py` summarises a capture per activity-host id, decodes its incidents, sensor updates and PAH region records, lists its host sessions, or exports every activity-host message, with its host id and hex body, to a private JSONL file. `--host` limits any command to one host.
 
 ## What decodes
 
@@ -43,7 +43,7 @@ The 56578 client's own codec (`d1-oracle activity-host decode`) decodes the last
 
 | udt | Result |
 |---|---|
-| 11 (world state) | decodes |
+| 11 (`replicate_membership`) | decodes; it is replicated (only what changed), so `decode-batch` takes a stream column to decode it against the previous image |
 | 2 | decodes |
 | 18 (incidents) | decodes |
 | 1 (`global_activity_state`) | guest fault: its layout differs between the builds |
@@ -63,7 +63,7 @@ The trigger report's body has the same layout on both builds: at bit 303, the gr
 ## A Guardian Rises, as the live host ran it
 
 This is the first capture, about 20 minutes long. The host session opens about six minutes in (after the title, character select and orbit) and lasts about 11 minutes. In it:
-- **The host sent:** 569 udt-5 updates, 65 world states (11), 53 each of udt 1 and 2, 20 incidents (18), and 6 each of udt 23 and 24.
+- **The host sent:** 569 udt-5 updates, 65 memberships (11), 53 each of udt 1 and 2, 20 incidents (18), and 6 each of udt 23 and 24.
 - **The client sent:** 1,375 udt 6, 178 udt 15, 173 incidents (18), 57 udt 36, 54 udt 21, 32 udt 37, 13 udt 17, 11 udt 47 and 7 udt 32.
 
 **The host's incidents, in order** (times from the session's opening):
@@ -81,7 +81,7 @@ The next host session, 17.5 minutes into the capture, opens with 2426 again and 
 **The live timeline** (times from the host session's opening):
 - **+18.5 s to +117.7 s:** the opening cinematic, watched in full (2120, then 734, both naming `0x992BB471/6/1`).
 - **+119.9 s to +167.2 s:** the Ghost's cinematic (`.../6/2`).
-- **+168.4 s:** gameplay starts. The host sends three 2938 incidents, two world states, and udt 23 and 24.
+- **+168.4 s:** gameplay starts. The host sends three 2938 incidents, two memberships, and udt 23 and 24.
 - **From +171.7 s:** trigger reports in groups 0x992BB471, 0xECF574B5, 0x3C2F5ED5 and 0xFC0E45A3, each followed by the host's world-state (udt 11), udt 1 and udt 2 updates.
 
 That is the reference for our activity host's steps: which trigger the real host answered, when, and with what. It can be printed for any mission in the set.
@@ -163,22 +163,49 @@ These are the stalls Codex's level-1 runs have hit since 4 November (draft #256)
 
 ## Restoration's public start (activity 166)
 
-Restoration's region 56 (bubble 7) is public. That is where our client goes to a black screen (`ps4-56578-public-sessions-2026-11-02.md`). The live capture has four host sessions. Session 1 opens at 7 s, session 2 at 31 s, session 3 at 57 s, and session 4 at 324 s. Each is requested by the client from the services host (0x10/0x11, the activity-host proxy assignment).
+Restoration's region 56 (bubble 7) is public. That is where our client goes to a black screen (`ps4-56578-public-sessions-2026-11-02.md`).
 
-`join_result` echoes the client's join request in its first 0x100 bytes, so session details at +0x38 and +0xC8 are the client's. Its type byte is 3 for the first two sessions and 2 for the last two (2 for the Tower, too). From session 2 on it lists the previous sessions' host ids.
+**The client holds three activity hosts, not four in turn.** Read by host id (`d1-srcp.py summary` groups by it), the capture has:
+- **the mission host, the PAH**, from 9 s to the end at 552 s. Its join incident names Restoration, and it receives every slice set (56, then 104);
+- **a public instance the client starts**, from 33 s to the end, beside the PAH;
+- **another player's public instance, which the client joins**, from 58 s to 340 s, twice.
 
-The PAH region record in udt 11 (`replicate_membership+0x2E48`, the record our host fills with the region id and our peer token):
+Each host was requested from the services host by message 0x10/0x11 and announced by its own 0x07. The fourth "session" counted earlier was the second join to the third host.
 
-| Session | Region | +0x04 | +0x08..0x0B | +0x4C (session) | +0xD0 (host) |
-|---|---|---|---|---|---|
-| AGR | 0x71 (113, private) | 0 | `01 01 00 00` | 0 | 0 |
-| Restoration 1 | 0x38 (56) | **1** | `01 01 00 00` | 0 | 0 |
-| Restoration 2 | 0x38 | 1 | `01 01 00 00` | `4e000000 820940a1` | **session 2's own host id** |
-| Restoration 3 and 4 | 0x30 (48), back to 0x38 later | 1 | `01 01 00 00` | `4e000000 8009e170` | session 3's own host id |
+`join_result` echoes the client's join request in its first 0x100 bytes. Its type byte (+0x38) is 3 on the hosts the client starts (the PAH and its own public instance) and 2 where it joins one (the other player's, and the Tower in A Guardian Rises). So 3 most likely means "start an instance" and 2 "join one", not private and public.
 
-- **The ambassador bytes are set for private regions too.** `+0x09 = 1`, `+0x0A = 0` (the local peer) in every session, AGR included.
-- **What marks a public region is `+0x04 = 1`.** The public session's host then advertises itself, its session at +0x4C and its own host id at +0xD0. These are plan steps 2 and 5 in the public-sessions note, now with the live values.
-- **Between the two sessions,** the client exchanges services messages 0x0a (2,409 bytes) and 0x2a/0x2b with the services host, at 20 s and 25-31 s. That is the matchmaking step 3 of the plan.
+The public instance's join and membership are echoes of the client's join request, like the PAH's. They differ from the PAH's in two places:
+- the client's fireteam id (join request +0xD8) is 0;
+- join request +0xC8 names the PAH's host id.
+
+### The PAH's region records (udt 11, `replicate_membership+0x2E48`)
+
+Only the PAH serves region records. The public instances served none. `d1-srcp.py regions` follows them, decoding each membership against the previous one:
+
+| Time | Region record |
+|---|---|
+| 20.5 s | region 56: `+0x04 = 1` (public), `+0x08..0x0B = 01 01 00 00` (ambassadorship to peer 0), the client's transition token at `+0x38`, no session |
+| 20.6-25.8 s | the client searches (below) |
+| 30.7 s | `+0x19 = 1` |
+| 33.0 s | the client joins its new public instance |
+| 34.2 s | **the session at `+0x4C` (u32 0x4E, then 64 bytes) and the public instance's host id at `+0xD0`** |
+| 52.2 s | a second record: region 48, public, no session yet |
+| 60.0 s | region 48 advertises the other player's session and host, two seconds after the client joined it |
+| 341 s | region 104 (private, `+0x04 = 0`) |
+
+Notes:
+- `+0x19` goes to 1 and back as the player enters and leaves a region (region 48: 0 → 1 at 83 s → 0 at 127 s). It is most likely "the peer is in this region" [I].
+- `+0x20` is 1 in every record. `+0x38` is peer 0's transition token, as our host already serves it.
+- The session is the platform's: on the 360, a session key and the console's network address. **It is personal data and stays in the private captures.**
+
+**Where the PAH got them: the client's udt 21.** Udt 21 is also replicated. It carries the client's two slice-set records (`0x80800D9F`, 0xA0 bytes each): CURRENT at +0xB8 and TARGET at +0x158. For region 56 the TARGET record went:
+- **31.4 s:** the session at record +0x14 (0x84 bytes), with record +0x11 = 1;
+- **33.65 s:** the public instance's host id at record +0x98;
+- **33.9 s:** record +0x11 = 2.
+
+Record +0x11 is the pending region's state the 2 November note found the client writing (`sstm+0x141`): 2 is "public AH instance ready". The PAH copied the reported session and host id into its region record, unchanged.
+
+The PAH region record's `+0x4C..+0xD0` (`advertised_session`, 0x84 bytes) and `+0xD0` (`advertised_activity_host`) are byte for byte the slice-set record's +0x14..+0x98 and +0x98. So plan step 5 is an echo, not something the host builds. `d1-activity-host` does it since this note (`track_public_session`).
 
 ### Restoration's matchmaking (services messages 0x2a/0x2b)
 
@@ -187,11 +214,11 @@ Message 42 (0x2a, `d1-bap/src/matchmaking.rs`) carries protobuf bodies. The clie
 | Time | Request | Answer |
 |---|---|---|
 | 20.6 s, 25.8 s | **search** (field 2 = 1): field 5 = `0x8001_0038`, region 56; field 7 = the criteria | one candidate: a session id, another player's name, a score (0.998), 400 |
-| 30.9 s | activity-host assignment 0x10 with **host 0**: a new host | session 2 starts |
-| 31.4 s | **create/advertise** (field 2 = 2): field 8 = the new session (`820940a1…`, the value session 2's host then advertises at +0x4C) and the player's own name | a registration id (field 5) |
+| 30.9 s | activity-host assignment 0x10 with **host 0**: a new host | the client starts its public instance (host 2) |
+| 31.4 s | **create/advertise** (field 2 = 2): field 8 = the new session (the one it then reports in udt 21 and the PAH advertises) and the player's own name | a registration id (field 5) |
 | 34.7 s, 50.3 s | updates with that registration id and the slot states | the same id |
-| 52.3 s | **search**: field 5 = `0x8001_0030`, region 48 | the other player's session (`8009e170…`) |
-| 56.9 s | assignment 0x10 with **that player's host id** | session 3: a citizen join to another player's public session |
+| 52.3 s | **search**: field 5 = `0x8001_0030`, region 48 | the other player's session |
+| 56.9 s | assignment 0x10 with **that player's host id** | the client joins that instance (host 3), a citizen join |
 
 So for region 56 the client created its own public session even though the search found one. For region 48 it joined the found one.
 
@@ -199,78 +226,86 @@ This is plan steps 3-5 in the public-sessions note, as the live services ran the
 - the search answer (a found session, or none);
 - a new host on request;
 - the registration answer;
-- a join by host id.
+- a join by host id;
+- the PAH advertising what the client reports.
 
 The player names in these messages are personal data and stay in the private captures.
 
 ## Every capture's host sessions
 
-`d1-srcp.py sessions CAPTURE...` lists, per activity-host session:
-- the type the client's join request carries (private 3, public 2);
+`d1-srcp.py sessions CAPTURE...` lists one row per activity host, in the order the client joined them. Each row gives:
+- the join request's type byte: "starts" (3) or "joins" (2);
 - the activity the host's join incident (2426) names, through the public manifest;
-- the slice sets the client reported as current (udt 21), in order.
+- the slice sets the client reported to that host (udt 21), in order.
 
-A mission typically opens with a short private session naming it, with no slice set yet, while the world loads. It then plays across one or more sessions, switching between private and public as the player moves between mission and patrol bubbles. Each session's first slice set is the start region an activity host has to serve.
+`d1-srcp.py regions` gives the regions the mission's PAH marked public.
 
-| Capture | Host sessions: type, slice sets the client reported (in order) |
-|---|---|
-| A Guardian Rises | private 113, 112, 24, 96, 104, 105; private 25, 26; public 24 (Tower) |
-| Restoration | private -; private 56; public 56; public 56, 104 |
-| The Dark Within | private -; private 56; private 56, 48, 64; public 64 |
-| The Warmind | private -; public 56; private 56, 48; private 48, 88, 72 |
-| The Speaker | private 1 |
-| The Last Array | private -; public 48; private 48, 64; private 64, 72 |
-| The Dark Beyond | private 9, 8; public 8; private 8, 48, 24, 25 |
-| The Worlds Grave | private - (The World's Grave); private 8, 104, 40, 88 |
-| Sword of Crota | private - (The Sword of Crota); private 8; private 8, 16, 96 |
-| Shrine of Oryx | private -; private 16, 96, 40, 104, 72 |
-| Chamber of Night | private -; private 16; private 16, 48, 24, 25, 88 |
-| A Strangers Call | private 161, 24 (A Stranger's Call); public 24, 160, 64; public 64, 65 |
-| The Awoken | private 17, 1 |
-| Ishtar Collective | private 24; public 24, 160; private 160, 80; private 80, 224, 168 |
-| Eye of a Gate Lord | private 24; private 24, 72; private 72, 32; private 32, 224, 168, 104; private 1 (A Key Awaits); private - (Vestian Outpost) |
-| The Archive | private 24; private 24, 160, 64; private 64, 120, 208 |
-| Exclusion Zone | private 145, 144; private 144, 8, 24; public 24, 208 |
-| The Gardens Spire | private - (The Garden's Spire); private 144; private 144, 8, 160; public 160; private 160, 112, 72, 224 |
-| The Buried City | private -; private 144; private 144, 48; public 48, 136 |
-| A Rising Tide | private -; private 144; private 144, 8, 16; private 16, 192, 96, 176 |
-| The Black Garden | private -; private 144; private 144, 8, 24; private 24, 208, 32, 200, 104, 105; private 17 (A Hero's Return) |
-| Scourge of Winter | private 24; private 24, 72, 184, 48, 88 |
-| Fist of Crota | private 16, 152, 120 |
-| Siege of the Warmind | private -; private 48; public 48; private 48, 88, 144, 136 |
-| The Wakening | private -; public 8; private 8, 48, 24, 88, 80 |
-| Scourge of Winter / HoW | private 24; private 24, 72, 184, 48, 88 |
-| A Kell Rising | private 8, 48, 184 |
-| Patrol / Scattered Pack | private 24 (Patrol Venus); private 24, 72 |
-| The Silent Fang | private -; private 96, 24, 112 |
-| The Ruling House | private 120; private 120, 152; private 152, 160, 32 |
-| Wolves Gambit | private - (Wolves' Gambit); public 80, 224, 16, 128 |
-| The Queens Ransom | private - (Queen's Ransom); private 224; private 224, 32, 96, 192 |
-| The Coming War | private 25, 24, 8, 1 |
-| Caydes Stash | private 16, 168, 8 (Cayde's Stash); private 17 (Hangar Stakes) |
-| The Dreadnaught | private 129, 128, 72, 8 |
-| Enemy of My Enemy | private 8, 96, 152 |
-| Lost to Light | private 40, 88, 80, 24 |
-| The Promethean Code | private -; private 88, 144, 136, 40, 128 |
-| Last Rites | private 32 |
-| Regicide | private 8, 152, 136, 128, 104, 105 |
-| Dread Patrol | private 8, 152, 72, 128 |
-| Crotas End | private 16, 32 (Crota's End) |
-| The Devils Lair | private - (The Devils' Lair); private 160, 152, 16, 168 |
-| The Summoning Pits | private -; private 16, 96, 40, 112 |
-| Patrol / Silent Scream | private - (Patrol the Dreadnaught); private 8, 96; private 96, 88 |
-| The Nexus | private -; private 120, 56, 40, 216 |
-| Winters Run | private 24 (Winter's Run); private 24, 72, 184, 48, 8, 176 |
-| Cerberus Vae III | private -; private 112, 72, 80; private 80, 208, 184 |
-| Dust Palace | private -; private 48, 136, 40 |
+**How a mission runs on the live servers:**
+- **The PAH stays connected all mission.** The first host is the PAH: it names the mission and receives every slice set the player passes through.
+- **Public regions get extra hosts.** As the player nears a public region, the client starts that region's public instance, 20 to 90 s into the mission, or joins another player's ("joins"). These hosts run beside the PAH and receive the slice sets near their region.
+- **Only the PAH serves region records.** It advertises each public instance in them. Follow-on activities (A Guardian Rises' cine_reveal and the Tower, A Key Awaits, A Hero's Return, Hangar Stakes) get a PAH of their own.
 
+| Mission | Hosts in order: starts/joins, slice sets the client reported | Public regions (PAH `+0x04 = 1`) |
+|---|---|---|
+| A Guardian Rises | starts 113, 112, 24, 96, 104, 105; starts 25, 26; joins 24 (Tower) | none |
+| Restoration | starts 56, 104; starts 56, 104; joins 56 | 48, 56 |
+| The Dark Within | starts 56, 48, 64; starts 56, 48; starts 56, 48, 64; joins 64 | 0, 48, 56, 88 |
+| The Warmind | starts 56, 48, 88, 72; joins 56, 48; starts 56, 48, 88; starts 48, 88, 72 | 48, 56, 88 |
+| The Speaker | starts 1 | none |
+| The Last Array | starts 48, 64, 72; joins 48, 64; starts 48; starts 64, 72 | 0, 48, 56 |
+| The Dark Beyond | starts 9, 8, 48, 24, 25; joins 8; starts 8, 48, 24 | 16, 48 |
+| The World's Grave | starts 8, 104, 40, 88; starts 8, 104 | 8, 16 |
+| The Sword of Crota | starts 8, 16, 96; starts 8, 16; starts 8, 16, 96 | 8, 16, 48 |
+| Shrine of Oryx | starts 16, 96, 40, 104, 72; starts 16, 96 | 16 |
+| Chamber of Night | starts 16, 48, 24, 25, 88; starts 16, 48; starts 16, 48, 24 | 8, 16, 48 |
+| A Stranger's Call | starts 161, 24, 160, 64, 65; joins 24, 160, 64 | 80, 120, 160 |
+| The Awoken | starts 17, 1 | none |
+| Ishtar Collective | starts 24, 160, 80, 224, 168; joins 24, 160, 80; starts 160, 80, 224; starts 80, 224, 168 | 80, 160, 224 |
+| Eye of a Gate Lord | starts 24, 72, 32, 224, 168, 104; starts 24, 72, 32; starts 72, 32, 224; starts 32, 224, 168; starts 1 (A Key Awaits); starts - (Vestian Outpost) | 32, 72, 160, 224 |
+| The Archive | starts 24, 160, 64, 120, 208; starts 24, 160, 64; starts 64, 120 | 120, 160 |
+| Exclusion Zone | starts 145, 144, 8, 24, 208; starts 144, 8, 24; joins 24, 208 | 8, 48, 208 |
+| The Garden's Spire | starts 144, 8, 160, 112, 72, 224; starts 144, 8; starts 144, 8, 160; joins 160; starts 160, 112, 72 | 8, 48, 112, 144 |
+| The Buried City | starts 144, 48, 136; starts 144, 48; starts 144, 48; joins 48 | 48, 144, 192 |
+| A Rising Tide | starts 144, 8, 16, 192, 96, 176; starts 144, 8; starts 144, 8, 16; starts 16, 192, 96 | 8, 48, 144, 192 |
+| The Black Garden | starts 144, 8, 24, 208, 32, 200, 104, 105; starts 144, 8; starts 144, 8, 24; starts 24, 208, 32; starts 17 (A Hero's Return) | 8, 48, 144, 208 |
+| Scourge of Winter | starts 24, 72, 184, 48, 88; starts 24, 72, 184 | 72, 160 |
+| Fist of Crota | starts 16, 152, 120 | none |
+| Siege of the Warmind | starts 48, 88, 144, 136; starts 48, 88; joins 48; starts 48, 88, 144 | 48, 56, 88 |
+| The Wakening | starts 8, 48, 24, 88, 80; joins 8, 48; starts 8, 48, 24 | 8, 16, 48 |
+| Scourge of Winter | starts 24, 72, 184, 48, 88; starts 24, 72, 184 | 72, 160 |
+| A Kell Rising | starts 8, 48, 184 | none |
+| Patrol Venus | starts 24, 72; starts 24, 72 | 32, 72, 160 |
+| The Silent Fang | starts 96, 24, 112; starts 96, 24 | 96 |
+| The Ruling House | starts 120, 152, 160, 32; starts 120; starts 152, 160, 32 | 88, 160 |
+| Wolves' Gambit | starts 80, 224, 16, 128; joins 80, 224 | 80 |
+| Queen's Ransom | starts 224, 32, 96, 192; starts 224, 32; starts 224, 32, 96 | 32, 80, 224 |
+| The Coming War | starts 25, 24, 8, 1 | none |
+| Cayde's Stash | starts 16, 168, 8; starts 17 (Hangar Stakes) | none |
+| The Dreadnaught | starts 129, 128, 72, 8 | none |
+| Enemy of My Enemy | starts 8, 96, 152 | none |
+| Lost to Light | starts 40, 88, 80, 24 | 48 |
+| The Promethean Code | starts 88, 144, 136, 40, 128; starts 88, 144 | 88 |
+| Last Rites | starts 32 | none |
+| Regicide | starts 8, 152, 136, 128, 104, 105 | none |
+| Dread Patrol | starts 8, 152, 72, 128 | none |
+| Crota's End | starts 16, 32 | none |
+| The Devils' Lair | starts 160, 152, 16, 168; starts 160, 152 | 96, 160 |
+| The Summoning Pits | starts 16, 96, 40, 112; starts 16, 96 | 16 |
+| Patrol the Dreadnaught | starts 8, 96, 88; starts 8, 96; starts 96 | 8 |
+| The Nexus | starts 120, 56, 40, 216; starts 120, 56 | 120 |
+| Winter's Run | starts 24, 72, 184, 48, 8, 176; starts 24, 72, 184 | 72, 160 |
+| Cerberus Vae III | starts 112, 72, 80, 208, 184; starts 112, 72; starts 80, 208, 184 | 112, 208 |
+| Dust Palace | starts 48, 136, 40; starts 48 | 48, 144 |
+
+**Twelve captures use only one host:** The Speaker, The Awoken, Fist of Crota, A Kell Rising, The Coming War, The Dreadnaught, Enemy of My Enemy, Lost to Light, Last Rites, Regicide, Dread Patrol and Crota's End. Eleven mark no region public; Lost to Light marks region 48 public but never starts an instance for it. These, like A Guardian Rises, need only what our host already serves: one connection, private regions. They are the natural next missions to bring up. The rest need the public instance (plan step 4).
 
 ## Next
 
 - **Serve 165 as the live host did** (the two cinematic records, start region 25, the state steps), and retry it.
-- **Restoration's public start, by the live values:** the region record's +0x04, then the second host and its advertisement, and the services messages 0x0a/0x2a the client matchmakes with.
+- **Bring up the one-host missions** (above), which need no public instance.
+- **Restoration's public start, the rest of step 4:** the public instance's own world, its sensor groups (in Restoration `0xEAAF16E2`, the 16 player objects, and four others), and no region records. Its connection already gets its own host id (`D1_AH_DISTINCT_HOST_IDS=1`), and the PAH already advertises what the client reports (#270).
 - **Map the incident types between 51539 and 56578,** from pairs the two clients send at the same moments (cinematic start and stop), or from the builds' incident tables.
 - **Delta (`fresh = 0`) sensor updates, then field by field:** what the live host's values mean, for the records where ours differ (the squads' names, the trigger values, the objectives).
 - **The Tower: too little of it here.** Only A Guardian Rises (40 s) and Eye of a Gate Lord (36 s) reach it, not enough for its vendor, civilian and Xûr records. Group 0x8CC31436, which earlier notes called the Tower plaza, also appears in The Archive and The Nexus.
-- **Pin udt 23 and 24 in `d1-oracle`.** `d1-oracle activity-host decode-batch` (stdin `UDT HEX` lines, JSON out) decodes a whole mission in seconds; one start costs about 3 s.
-- **Compare each mission's live host timeline with what our activity host serves,** A Guardian Rises first: its incidents, world states and objective updates.
+- **Pin udt 23 and 24 in `d1-oracle`.** `d1-oracle activity-host decode-batch` (stdin `UDT HEX [STREAM]` lines, JSON out) decodes a whole mission in seconds; one start costs about 3 s.
+- **Compare each mission's live host timeline with what our activity host serves,** A Guardian Rises first: its incidents, memberships and objective updates.
