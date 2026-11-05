@@ -3,6 +3,7 @@
 
     d1-srcp.py summary CAPTURE.pcap
     d1-srcp.py incidents CAPTURE.pcap [--dir s2c|c2s]   (udt 18, decoded by d1-oracle)
+    d1-srcp.py sensors CAPTURE.pcap                     (udt 5 sensor_auth_update frames)
     d1-srcp.py export CAPTURE.pcap --out PRIVATE.jsonl  (every activity-host message, hex body)
 
 Decoding uses the 56578 client's own codec (`d1-oracle activity-host decode`, with D1_EBOOT and
@@ -24,7 +25,7 @@ sys.path.insert(0, str(HERE))
 import d1_srcp  # noqa: E402
 import d1paths  # noqa: E402
 
-INCIDENT = 18
+INCIDENT, SENSOR = 18, 5
 
 
 def oracle():
@@ -51,6 +52,24 @@ def decode_all(pairs):
     return out
 
 
+def sensor_frames(bodies):
+    """{body: frame dict or None} for udt 5 payloads (`d1-oracle sensor decode-batch`)."""
+    bodies = list(dict.fromkeys(bodies))
+    if not bodies:
+        return {}
+    batch = ''.join(b.hex() + '\n' for b in bodies)
+    r = subprocess.run([oracle(), 'sensor', 'decode-batch'], input=batch, capture_output=True, text=True,
+                       cwd=d1paths.workspace(), timeout=60 + len(bodies))
+    lines = r.stdout.splitlines()
+    if r.returncode or len(lines) != len(bodies):
+        raise RuntimeError(f'd1-oracle sensor decode-batch: {(r.stderr or r.stdout).strip()[-300:]}')
+    out = {}
+    for body, line in zip(bodies, lines):
+        d = json.loads(line)
+        out[body] = None if 'error' in d else d
+    return out
+
+
 def incident_types(words):
     """udt 18: {u32 count, u32 types[count], ...}; the struct's words are 64-bit little-endian."""
     count = words.get(0, 0) & 0xFFFFFFFF
@@ -63,7 +82,7 @@ def incident_types(words):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('command', choices=('summary', 'incidents', 'export'))
+    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'export'))
     ap.add_argument('capture', type=Path)
     ap.add_argument('--dir', choices=('s2c', 'c2s'), default='s2c')
     ap.add_argument('--out', type=Path)
@@ -82,6 +101,17 @@ def main():
         for t, d, peer, udt, body in mine:
             w = words[(udt, body)]
             print(f'{t:8.1f} {peer:>21} types {incident_types(w) if w else "(refused)"}  body {len(body)} B')
+    elif a.command == 'sensors':
+        mine = [m for m in msgs if m[1] == 's2c' and m[3] == SENSOR]
+        frames = sensor_frames(body for *_, body in mine)
+        for t, d, peer, udt, body in mine:
+            f = frames[body]
+            if f is None:
+                print(f'{t:8.1f} {peer:>21} (refused) {len(body)} B')
+                continue
+            names = ' '.join(f"{e['hash']}/{e['i8']:#x}/{e['sub']}:{e['body_bits']}" for e in f['entries'])
+            auth = f" authority {f['authority']}" if f['authority'] else ''
+            print(f"{t:8.1f} {peer:>21} gen {f['gen']} stamp {f['stamp']}{auth} {names}")
     else:
         if not a.out:
             sys.exit('export needs --out (a private path)')

@@ -652,6 +652,123 @@ pub fn run() -> Vec<Control> {
     c
 }
 
+/// One entry of a decoded `sensor_auth_update`: the name reference and its raw body bits.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FrameEntry {
+    pub name_hash: u32,
+    pub name_i8: u8,
+    pub name_sub: i16,
+    /// `body_bit_length` as sent, and the body itself (MSB-first, zero-padded to a byte).
+    pub body_bits: u32,
+    pub body: Vec<u8>,
+}
+
+/// A decoded `sensor_auth_update` frame (the framing [`SensorPhaseUpdate::encode`] writes).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Frame {
+    pub gen: u8,
+    /// The authority table's changed mask and struct image, when `has_sensor_block` is set.
+    pub authority: Option<SensorAuthority>,
+    pub stamp: u32,
+    pub init: bool,
+    pub entries: Vec<FrameEntry>,
+    /// Bits read up to and including the terminator.
+    pub bits: usize,
+}
+
+/// Bits `[off, off + n)` of `bytes`, MSB-first, as a new zero-padded buffer (the object codec
+/// reads from bit 0).
+fn slice_bits(bytes: &[u8], off: usize, n: usize) -> Vec<u8> {
+    let mut out = vec![0u8; n.div_ceil(8).max(1)];
+    for i in 0..n {
+        if (bytes[(off + i) >> 3] >> (7 - ((off + i) & 7))) & 1 == 1 {
+            out[i >> 3] |= 0x80 >> (i & 7);
+        }
+    }
+    out
+}
+
+/// ⭐ Decode a `sensor_auth_update` payload: the reverse of [`SensorPhaseUpdate::encode`]'s
+/// framing. Each embedded object goes through the client's own codec (name references, the
+/// authority table); entry bodies are kept as raw bits, sized by their own `body_bit_length`, so
+/// no value type has to be known to walk the list.
+pub fn decode_frame(payload: &[u8]) -> Result<Frame> {
+    FrameDecoder::new()?.decode(payload)
+}
+
+/// [`decode_frame`] with its two codecs kept between frames (a codec start costs about 0.4 s).
+pub struct FrameDecoder {
+    name: ObjectOracle,
+    authority: ObjectOracle,
+}
+
+impl FrameDecoder {
+    pub fn new() -> Result<Self> {
+        Ok(Self { name: ObjectOracle::new(TAG_NAME_REF)?, authority: ObjectOracle::new(TAG_AUTHORITY)? })
+    }
+
+    pub fn decode(&mut self, payload: &[u8]) -> Result<Frame> {
+        let total = payload.len() * 8;
+        let mut pos = 0usize;
+        let need = |pos: usize, n: usize| -> Result<()> {
+            if pos + n > total {
+                Err(OracleError::Shape(format!("sensor frame ends at bit {total}, needs {}", pos + n)))
+            } else {
+                Ok(())
+            }
+        };
+        need(pos, 9)?;
+        let gen = read_bits(payload, 0, 8) as u8;
+        pos += 8;
+        let has_block = read_bits(payload, pos, 1) == 1;
+        pos += 1;
+        let authority = if has_block {
+            need(pos, AUTHORITY_BLOCKS)?;
+            let mut changed = 0u128;
+            for i in 0..AUTHORITY_BLOCKS {
+                changed |= u128::from(read_bits(payload, pos + i, 1) as u8) << i;
+            }
+            pos += AUTHORITY_BLOCKS;
+            let rest = slice_bits(payload, pos, total - pos);
+            let d = self.authority.decode_replicated(&rest, &[])?;
+            pos += d.bits as usize;
+            Some(SensorAuthority { changed, image: d.object })
+        } else {
+            None
+        };
+        need(pos, 34)?;
+        let stamp = read_bits(payload, pos, 32) as u32;
+        pos += 32;
+        let init = read_bits(payload, pos, 1) == 1;
+        pos += 1;
+        let mut entries = Vec::new();
+        loop {
+            need(pos, 1)?;
+            let has_entry = read_bits(payload, pos, 1) == 1;
+            pos += 1;
+            if !has_entry {
+                break;
+            }
+            let d = self.name.decode(&slice_bits(payload, pos, total - pos))?;
+            pos += d.bits as usize;
+            need(pos, 32)?;
+            let body_bits = read_bits(payload, pos, 32) as u32;
+            pos += 32;
+            need(pos, body_bits as usize)?;
+            let o = &d.object;
+            entries.push(FrameEntry {
+                name_hash: u32::from_le_bytes([o[0], o[1], o[2], o[3]]),
+                name_i8: o[4],
+                name_sub: i16::from_le_bytes([o[6], o[7]]),
+                body_bits,
+                body: slice_bits(payload, pos, body_bits as usize),
+            });
+            pos += body_bits as usize;
+        }
+        Ok(Frame { gen, authority, stamp, init, entries, bits: pos })
+    }
+}
+
 /// Read `n` bits from `bytes` starting at absolute bit `off`, MSB-first, as an integer.
 fn read_bits(bytes: &[u8], off: usize, n: usize) -> u64 {
     let mut v = 0u64;
@@ -681,6 +798,31 @@ mod tests {
         let failed: Vec<&str> =
             super::run().into_iter().filter(|c| !c.passed).map(|c| c.name).collect();
         assert!(failed.is_empty(), "failed sensor controls: {failed:?}");
+    }
+
+    /// `decode_frame` reads back what `encode` writes: the authority table, the phase entry's name,
+    /// every client's name, and each body exactly as long as its `body_bit_length` says.
+    #[test]
+    fn decode_frame_reads_back_an_encoded_frame() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
+        let lines = "0xC2DACAF7 0x8 0 1 1
+0x39774EE1 0x4 3 0 1
+";
+        let clients: Vec<_> = lines.lines().filter_map(super::SensorClientRef::parse_line).collect();
+        let authority = Some(super::SensorAuthority::all_to(14, 1));
+        let frame = super::SensorPhaseUpdate { clients, authority: authority.clone(), ..super::audit(3, None) };
+        let wire = frame.encode().expect("frame");
+        let d = super::decode_frame(&wire).expect("decode");
+        assert_eq!(d.gen, frame.gen);
+        assert_eq!(d.authority, authority);
+        let names: Vec<_> = d.entries.iter().map(|e| (e.name_hash, e.name_i8, e.name_sub)).collect();
+        assert_eq!(names, [(frame.name_hash, frame.name_i8, frame.name_sub), (0xC2DA_CAF7, 8, 0), (0x3977_4EE1, 4, 3)]);
+        assert!(d.bits <= wire.len() * 8 && d.bits + 8 > wire.len() * 8, "only padding after the terminator");
+        // The phase entry's body is `fresh, presence, value` (2 + the value's bits).
+        let (value_bits, _) = frame.value_bits().expect("value");
+        assert_eq!(d.entries[0].body_bits, 2 + value_bits);
     }
 
     /// A frame with extra sensor clients must still build (byte-padded) and must carry the audited

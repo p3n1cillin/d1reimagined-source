@@ -47,7 +47,7 @@ The 56578 client's own codec (`d1-oracle activity-host decode`) decodes the last
 | 2 | decodes |
 | 18 (incidents) | decodes |
 | 1 (`global_activity_state`) | guest fault: its layout differs between the builds |
-| 5 (the simulation and sensor update) | not pinned in `d1-oracle`'s call sites yet |
+| 5 (`sensor_auth_update`) | `d1-oracle sensor decode-batch` walks the frames (below) |
 | 23, 24 | not pinned in `d1-oracle`'s call sites yet |
 
 **Incident types are numbered per build.** Three pairs are matched so far:
@@ -86,8 +86,41 @@ The next host session, 17.5 minutes into the capture, opens with 2426 again and 
 
 That is the reference for our activity host's steps: which trigger the real host answered, when, and with what. It can be printed for any mission in the set.
 
+## The live host's sensors (udt 5)
+
+`d1-oracle sensor decode-batch` reverses the framing our own encoder writes:
+- gen and the authority table (a 65-bit changed mask, then the replicated table);
+- a stamp and init;
+- then each entry: its name reference, decoded through the client's codec, a 32-bit `body_bit_length`, and the body.
+
+The bodies are kept as raw bits, so the list can be walked without knowing each value's type. It reads back our encoder's frames exactly (`decode_frame_reads_back_an_encoded_frame`), and all 617 of A Guardian Rises' udt-5 frames from the live host decode. `d1-srcp.py sensors` prints them.
+
+What they show:
+- **The host keeps time with them.** Between updates it sends an empty frame every 3 s, its stamp rising by 30 (a 10 Hz host clock).
+- **Our AGR lists name the same records.** All 352 records in our served AGR lists (`ps4/fixtures/56578/mission/agr*.txt`) appear in the live host's stream under the same group, kind and index. Over the mission there were seven groups:
+  - 0x4786C0E0 (world);
+  - 0x992BB471 (the mission);
+  - 0x3C2F5ED5, 0xFC0E45A3, 0x9243DFFB and 0x062DD95D (the areas);
+  - 0xECF574B5 (the opening, done by +173 s).
+- **The Tower follows the mission on the same host, from +804 s:**
+  - 0x40AEBF90 (the Tower common group: its 30 player slots, `notes/tower.md`);
+  - 0x8CC31436 (the plaza);
+  - 0x19D43443 (the hangar);
+  - 0xF2D88BD0 (the cast).
+
+  Our Tower notes call our vendor and civilian choices a reconstruction, because "the original servers' choices … are not in the assets". This is the original server's choice, on 27 October 2026.
+
+**Values.** `d1-oracle sensor decode-values` decodes an entry's value with the typed-value codec: the A value, from bit 2 after `fresh` and `presence`, with the tag our list gives that record. In the first comparison against our AGR lists (one identical, 125 different, 285 not yet decodable):
+- **Squad members (kind 1)** carry a name reference on the live host (the group's own hash, kind 3, an index). Ours carry the empty default.
+- **Triggers (kind 0x1D)** carry a changing 16-bit value at +4. Ours hold 1.
+- **Cinematic records (kind 6)** step through 1 → (start) → 4. Ours hold 2.
+- **The objective records (kind 0x20)** differ throughout.
+- **The undecodable updates** have `fresh = 0`: partial updates against the value the client holds. They need the previous value and the delta rules (`0x2D0F63..`, the walker) before they can be read.
+
 ## Next
 
 - **Map the incident types between 51539 and 56578,** from pairs the two clients send at the same moments (cinematic start and stop), or from the builds' incident tables.
-- **Pin udt 5, 23 and 24 in `d1-oracle`.** `d1-oracle activity-host decode-batch` (stdin `UDT HEX` lines, JSON out) decodes a whole mission in seconds; one start costs about 3 s.
+- **Delta (`fresh = 0`) sensor updates, then field by field:** what the live host's values mean, for the records where ours differ (the squads' names, the trigger values, the objectives).
+- **The Tower as the live host served it:** its vendor, civilian and Xûr records.
+- **Pin udt 23 and 24 in `d1-oracle`.** `d1-oracle activity-host decode-batch` (stdin `UDT HEX` lines, JSON out) decodes a whole mission in seconds; one start costs about 3 s.
 - **Compare each mission's live host timeline with what our activity host serves,** A Guardian Rises first: its incidents, world states and objective updates.
