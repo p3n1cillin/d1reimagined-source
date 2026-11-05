@@ -258,6 +258,12 @@ pub const CALL_SITES_56578: &[(u32, u64, Option<usize>)] = &[
     (48, 0x0191_A478, Some(0x004)),
     (14, 0x0191_A390, Some(0x014)),
     (21, 0x0191_A300, Some(0x220)),
+    // udt 23 and 24, which the live host sends at gameplay start and transitions (the client
+    // answers with 25 and 26): rx-dispatch entries 9 and 10 (`0x1910518` -> `0x10190F0`,
+    // `0x1910528` -> `0x1019270`) load these globals exactly as udt 0's handler loads
+    // `0x191A3A0` (`lea rax,[rip+G]`, `mov edx,-1`, `call 0xE8680`). No size is stated there.
+    (23, 0x0191_A3C8, None),
+    (24, 0x0191_A3D8, None),
 ];
 
 /// Build 56578's [`RAW_SEND`]. The same three udts pass descriptor `0xFFFFFFFF` to `0x299D10`, with
@@ -1814,6 +1820,34 @@ mod tests {
         assert_eq!(tag_for_udt(1).unwrap(), 0x8080_0E76);
         // ⭐ The fourth establish-client message, closed 2026-08-09.
         assert_eq!(tag_for_udt(11).unwrap(), 0x8080_09ED);
+    }
+
+    /// udt 23 `claim_authority_over_abandoned_entity_slots` and 24 `purge_abandoned_entity_slots`
+    /// (pinned for 56578 from rx-dispatch entries 9 and 10) derive their tags and round-trip the
+    /// shapes the live host sent (notes/d1-live-captures-2026-11-05.md): 23 {u8, slot set, u3},
+    /// 24 {u3, u8, slot set}. Skips for a build whose call sites do not pin them.
+    #[test]
+    fn the_entity_slot_handover_udts_are_pinned_and_round_trip() {
+        if !crate::test_inputs::selected_eboot() || !call_sites().iter().any(|(u, _, _)| *u == 23) {
+            return;
+        }
+        assert_eq!(tag_for_udt(23).unwrap(), 0x8080_0D58);
+        assert_eq!(tag_for_udt(24).unwrap(), 0x8080_0D10);
+        let mut codec = AhCodec::new();
+        let mut claim = vec![0u8; codec.struct_size(23).unwrap()];
+        assert_eq!(claim.len(), 0x608);
+        claim[0] = 5;
+        claim[4..8].copy_from_slice(&0xFB6F_F818u32.to_le_bytes());
+        claim[0x604] = 4;
+        let e = codec.encode(23, &claim).unwrap();
+        assert_eq!(codec.decode(23, &e.payload).unwrap().object, claim);
+        let mut purge = vec![0u8; codec.struct_size(24).unwrap()];
+        assert_eq!(purge.len(), 0x604);
+        purge[0] = 4;
+        purge[1] = 6;
+        purge[4..8].copy_from_slice(&0xFB6F_F818u32.to_le_bytes());
+        let e = codec.encode(24, &purge).unwrap();
+        assert_eq!(codec.decode(24, &e.payload).unwrap().object, purge);
     }
 
     /// ⭐ The retraction, asserted rather than only written down: `0x29CDE0` is udt **7**
