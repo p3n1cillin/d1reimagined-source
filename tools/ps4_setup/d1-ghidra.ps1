@@ -3,6 +3,7 @@
 #
 #   d1-ghidra.ps1 -Import                       # one-off, slow (CPU-heavy: never during a route run)
 #   d1-ghidra.ps1 -Decompile 0x403140,0x403770  # C of the functions containing those vaddrs
+#   d1-ghidra.ps1 -Find 0x1350                  # instructions using that value (a field offset, or a call target: its callers)
 #
 # Needs D1_GHIDRA_HOME (the unpacked ghidra_<ver>_PUBLIC folder), D1_JAVA_HOME (a JDK 25: Ghidra 12 refuses 21) and
 # D1_EBOOT. The project (it holds the game's code) goes to the staging folder, never the repo.
@@ -10,6 +11,7 @@
 param(
     [switch]$Import,
     [string[]]$Decompile = @(),
+    [string[]]$Find = @(),
     [string]$Project = 'd1-56578'
 )
 $ErrorActionPreference = 'Stop'
@@ -29,16 +31,21 @@ if ($Import) {
     $addrs = @($Decompile | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
     $args = @($dir, $Project, '-process', $name, '-noanalysis', '-readOnly',
               '-scriptPath', (Join-Path $PSScriptRoot 'ghidra'), '-postScript', 'DecompileAt.java') + $addrs
+} elseif ($Find.Count) {
+    $values = @($Find | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
+    $args = @($dir, $Project, '-process', $name, '-noanalysis', '-readOnly',
+              '-scriptPath', (Join-Path $PSScriptRoot 'ghidra'), '-postScript', 'FindScalar.java') + $values
 } else {
-    throw 'Give -Import or -Decompile ADDR[,ADDR...]'
+    throw 'Give -Import, -Decompile ADDR[,ADDR...] or -Find VALUE[,VALUE...]'
 }
 $log = Join-Path $dir "$Project-$(Get-Date -Format yyyyMMdd-HHmmss).log"
 $p = Start-Process -FilePath $headless -ArgumentList $args -NoNewWindow -PassThru -RedirectStandardOutput $log -RedirectStandardError "$log.err"
 $p.PriorityClass = 'Idle'
 $p.WaitForExit()
-if ($Decompile.Count) {
-    # The script's println lines carry the C; Ghidra prefixes them with the script name.
-    Get-Content $log | Where-Object { $_ -match 'DecompileAt\.java> ' } | ForEach-Object { $_ -replace '^.*DecompileAt\.java> ', '' -replace ' \(GhidraScript\)\s*$', '' }
+if ($Decompile.Count -or $Find.Count) {
+    # The script's println lines carry the output; Ghidra prefixes them with the script name.
+    Get-Content $log | Where-Object { $_ -match '(DecompileAt|FindScalar)\.java> ' } |
+        ForEach-Object { $_ -replace '^.*(DecompileAt|FindScalar)\.java> ', '' -replace ' \(GhidraScript\)\s*$', '' }
 } else {
     Get-Content $log -Tail 5
 }
