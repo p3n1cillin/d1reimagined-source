@@ -213,10 +213,14 @@ pub struct FieldSlot {
     /// ⚠ bits only when this is a leaf - see [`Field::raw_bits_or_count_offset`].
     pub raw_bits_or_count_offset: Option<u32>,
     pub serialized_start: Option<u32>,
+    /// `marker+0x10`: leaf parameter 0, or composite count-source selector.
+    pub raw_parameter0: Option<u32>,
+    /// `marker+0x18`: leaf parameter 2, or composite count-source data.
+    pub raw_parameter2: Option<u32>,
 }
 
 impl FieldSlot {
-    fn new(index: usize, marker: u64, f: Option<Field>) -> Self {
+    fn new(image: &Image, index: usize, marker: u64, f: Option<Field>) -> Self {
         Self {
             index,
             marker,
@@ -226,6 +230,8 @@ impl FieldSlot {
             child_tag: f.map(|f| f.child_tag),
             raw_bits_or_count_offset: f.map(|f| f.raw_bits_or_count_offset),
             serialized_start: f.map(|f| f.serialized_start),
+            raw_parameter0: f.and_then(|_| image.u32(marker + 0x10).ok()),
+            raw_parameter2: f.and_then(|_| image.u32(marker + 0x18).ok()),
         }
     }
 }
@@ -237,16 +243,24 @@ pub struct DescriptorWithFields {
     #[serde(flatten)]
     pub descriptor: Descriptor,
     pub fields: Vec<FieldSlot>,
+    /// Descriptor array header (`array-fields.py`): zero for ordinary structs.
+    /// Positive values give the maximum/fixed number of inline elements.
+    pub array_capacity: i32,
+    /// Header +0x28/+0x2c/+0x30: element strides in the two C images and bit image.
+    /// Meaningful only when `array_capacity > 0`; field offsets in arrays are strides.
+    pub array_strides: [u32; 3],
 }
 
 pub fn dump_with_fields(image: &Image, idx: &Index) -> Vec<DescriptorWithFields> {
     idx.iter()
         .map(|(_, d)| DescriptorWithFields {
             descriptor: d.clone(),
+            array_capacity: image.u32(d.anchor + 0x20).unwrap_or(0) as i32,
+            array_strides: [0x28, 0x2c, 0x30].map(|o| image.u32(d.anchor + o).unwrap_or(0)),
             fields: fields(image, d.anchor, d.field_count)
                 .into_iter()
                 .enumerate()
-                .map(|(i, (marker, f))| FieldSlot::new(i, marker, f))
+                .map(|(i, (marker, f))| FieldSlot::new(image, i, marker, f))
                 .collect(),
         })
         .collect()

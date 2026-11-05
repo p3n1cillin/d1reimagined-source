@@ -81,6 +81,12 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
+    /// Export names, vtables, inheritance and RSAT layouts without reference-build addresses.
+    WireCatalog {
+        /// Optional private investment-message definition table (content, not the executable).
+        #[arg(long)]
+        definitions: Option<String>,
+    },
     /// Program segments and the per-segment bias (ATLAS §4.1).
     Segments,
     /// Anchored RSAT/investment schema descriptors.
@@ -326,6 +332,39 @@ fn run() -> Result<ExitCode> {
     let image = Image::open(&path).with_context(|| format!("opening {path}"))?;
 
     match &cli.cmd {
+        Cmd::WireCatalog { definitions } => {
+            let definitions = definitions
+                .as_ref()
+                .map(|path| -> Result<_> {
+                    let bytes =
+                        std::fs::read(path).context("reading private service definitions")?;
+                    catalogue::investment_defs(&bytes).map_err(anyhow::Error::msg)
+                })
+                .transpose()?;
+            let r = catalogue::Reader::new(&image)?;
+            let rtti = rtti::harvest(&image)?;
+            let idx = descriptors::index(&image)?;
+            anyhow::ensure!(
+                !rtti.types.is_empty() && !idx.is_empty(),
+                "empty RTTI or RSAT export"
+            );
+            let anchors: Vec<_> = idx.iter().map(|(_, d)| d.anchor).collect();
+            // These builders derive addresses from this image. Do not call Data::build here:
+            // its policy/header tables and controls still contain 01.29-only addresses.
+            println!(
+                "{}",
+                serde_json::to_string(&serde_json::json!({
+                    "format_version": 1,
+                    "eboot_sha256": image.sha256(),
+                    "rtti": rtti,
+                    "schemas": descriptors::dump_with_fields(&image, &idx),
+                    "envelopes": catalogue::envelope_classes(&r),
+                    "instances": catalogue::schema_records(&r, &anchors),
+                    "investment_definitions": definitions,
+                }))?
+            );
+            Ok(ExitCode::SUCCESS)
+        }
         Cmd::Segments => cmd_segments(&image, cli.json),
         Cmd::Descriptors { tag, index, with_fields, raw } => {
             cmd_descriptors(&image, tag, *index, *with_fields, *raw, cli.json)

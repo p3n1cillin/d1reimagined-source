@@ -19,7 +19,8 @@ TYPE = {0: "varint", 1: "zigzag", 2: "fixed32", 3: "fixed64", 4: "bytes", 5: "st
 
 class Image:
     def __init__(self, path):
-        self.b = open(path, "rb").read()
+        with open(path, "rb") as stream:
+            self.b = stream.read()
         b = self.b
         phoff, = struct.unpack_from("<Q", b, 0x20)
         phnum, = struct.unpack_from("<H", b, 0x38)
