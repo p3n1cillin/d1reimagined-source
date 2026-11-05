@@ -140,7 +140,11 @@ class TeleportDeltaSession(unittest.TestCase):
         # Peer and group updates may advance the version before arrival. The
         # finish keeps the version of the last loading world rather than adding one.
         self.assertGreaterEqual(finished[0]["version"], initial["version"])
-        self.assertEqual(finished[0]["version"], loading[-1]["version"])
+        # A slow runner can deliver further loading worlds after the first collect stopped;
+        # compare with the last one sent before the finish.
+        before = arrived[:arrived.index(finished[0])]
+        last_loading = [world for world in loading + before if world.get("teleport") == [1, *self.target]][-1]
+        self.assertEqual(finished[0]["version"], last_loading["version"])
         self.assertTrue(any(world.get("teleport") is None and
                             world["version"] > finished[0]["version"] for world in arrived), arrived)
 
