@@ -41,8 +41,12 @@ You need the same inputs as any lab run. The launcher checks each one and names 
   - its Fukugen Daihon 56578 scripts (`D1_SCRIPTS_DIR`). These are local inputs. They are never
     vendored or committed ([Blam Network note](../notes/ps4-56578-fukugen-daihon-2026-11-05.md)).
   - Node 22 (`NODE`, default `D1_TOOLS\node\node.exe`, else `node` on PATH).
-- **Cargo**, when the servers need building. Set `CARGO_TARGET_DIR` (or pass `-TargetDir`) to the
-  target folder you build into. d1-oracle's Unicorn bindings need libclang (`LIBCLANG_PATH`); when
+  - Stream K's private content bundle export, `D1_BUNDLES_DIR` (set it in the environment, or
+    `-Set D1_BUNDLES_DIR=<folder>`). It is required while `D1_AH_SCRIPTS=1`; without it, the run
+    refuses. To run without the bridge, pass `-Set D1_AH_SCRIPTS=`.
+- **Cargo**, when the servers need building. The launcher builds into this checkout's own
+  `ps4/d1-server/target` and ignores `CARGO_TARGET_DIR`, because one target folder shared between
+  worktrees has corrupted builds. `-TargetDir` chooses another folder. d1-oracle's Unicorn bindings need libclang (`LIBCLANG_PATH`); when
   it is unset, the launcher uses `D1_TOOLS\llvm*\bin`.
 - **A quiet machine.** Builds, disk-heavy jobs and Ghidra stall the client
   ([lab stalls](../notes/ps4-56578-lab-stalls-2026-11-05.md)). The launcher builds before it starts
@@ -75,13 +79,13 @@ pwsh -File tools/ps4_setup/d1-full-game.ps1 -Name fg3 -Set D1_RSAT_NATIVE=0,serv
 | `-Set KEY=VALUE,...` | Per-knob overrides. An empty value unsets the knob. `[launch]` keys (`ACTIVITY`, `MINUTES`, ...) work too. |
 | `-Build` / `-NoBuild` | Always run cargo / never build (refuse if stale). By default it builds only when stale. |
 | `-DryRun` (`-Json`) | Resolve and check everything and print it (as JSON with `-Json`). Nothing is built, written or started. |
-| `-TargetDir` | The cargo target folder (default `CARGO_TARGET_DIR`, else `ps4/d1-server/target`). |
+| `-TargetDir` | The cargo target folder (default this checkout's `ps4/d1-server/target`). |
 
 **Stale servers.** The launcher reads each binary's cargo dep-info beside it. A binary is rebuilt
 when it is missing, when a source file or `Cargo.toml` is newer than it, or when it was built from
-another checkout. That last case happens when worktrees share one `CARGO_TARGET_DIR`: cargo finds
-this checkout's crates fresh and leaves the other checkout's binary in place. The launcher touches
-that binary's `main.rs` and builds again. Builds run at BelowNormal priority. The built binaries are
+another checkout. That last case happens when worktrees share a target folder (`-TargetDir`): cargo
+finds this checkout's crates fresh and leaves the other checkout's binary in place. The launcher
+touches that binary's `main.rs` and builds again. Builds run at BelowNormal priority. The built binaries are
 copied into the run folder, and the servers run from that copy, so the shared served target is
 never swapped.
 
@@ -117,7 +121,7 @@ then stops its servers. A `-Only servers` run stops when `RUN\boot\stop` is crea
 | Subsystem | From | Knobs on in `full-game.env` | Off in `baseline.env` |
 |---|---|---|---|
 | Player store | #307 | `D1_STORE=1`, `D1_STORE_DIR`, `D1_STORE_PLAYER=local`, `D1_STORE_CONTROL`, and the four progression tables from this checkout | all unset |
-| Social services and vendors | #309 (open) | `?D1_SOCIAL=1`, `?D1_SOCIAL_STOCK=1`, `?D1_DISMANTLE_PLACEHOLDER=1` | unset |
+| Social services and vendors | #309 | `D1_SOCIAL=1`, `D1_SOCIAL_STOCK=1`, `D1_DISMANTLE_PLACEHOLDER=1` | unset |
 | Rewards and growth | #311 | `D1_REWARDS=1`, `D1_REWARDS_SEED=0xD1F0` | unset |
 | Multiplayer | #312 | `D1_MP=1`, `D1_MM_CONFIG_FILE`, `D1_AH_SHARED_INSTANCES=1` | unset |
 | Activity framework | #313 | `D1_AH_ACTIVITY_FRAMEWORK=<fixtures>/activities` | unset |
@@ -125,7 +129,8 @@ then stops its servers. A `-Only servers` run stops when `RUN\boot\stop` is crea
 | Public instances | #316 | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_DISTINCT_HOST_IDS=1` | unset |
 | Native RSAT codec | #317 | `D1_RSAT_NATIVE=1` | unset |
 | udt 5 stamp mode | #298 | `D1_AH_SENSOR_STAMP=1` | unset |
-| Script bridge | stream A2 (`scripts/host-bridge`, not merged) | `?D1_AH_SCRIPTS=1`, `?D1_AH_SCRIPTS_SIDECAR`, `?D1_AH_SCRIPTS_ACTIVITIES` ([165 cine_reveal](../ps4/profiles/script-activities.txt)), `?D1_AH_SCRIPTS_INCIDENTS` | unset |
+| Script bridge | #319 (stream A2, `scripts/host-bridge`, not merged) | `?D1_AH_SCRIPTS=1`, `?D1_AH_SCRIPTS_SIDECAR`, `?D1_AH_SCRIPTS_ACTIVITIES` (a stand-in, [165 cine_reveal](../ps4/profiles/script-activities.txt), until stream K's table lands), `?D1_AH_SCRIPTS_INCIDENTS`. Listed as off: `?D1_AH_SCRIPTS_MISSION_PHASE` (unverified), `?D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`, `?D1_AH_ROWS_UNLISTED`, `?D1_AH_ROWS_DELTA_INIT` | unset |
+| Content bundles | stream K (not merged) | `D1_BUNDLES_DIR` (`[sidecar]`, from the environment; required with the bridge on) | unset |
 | Script sidecar | #310 | `D1_SCRIPTS_DIR`, `D1_TIGER_DIR` (`[sidecar]`) | unset |
 | Draw cost | fork #7 (draft) | `?D1_DRAW_STATS=1`, `?D1_DRAW_FAST=1`, `?D1_GPU_WAIT_YIELD=1` | `D1_DRAW_FAST=0`, the rest unset |
 | PC client | fork #8 (draft) | `?D1_EXCEPTION_HANDLERS=1`, `?D1_CLEAN_EXIT=1`, `?D1_HITCH_HALT=0`, `?D1_AUDIO_SYNC=1`, `?D1_PC_LAYOUT=1`, `?D1_PAD_KEEP_KEYBOARD=1` | `D1_EXCEPTION_HANDLERS=0`, `D1_CLEAN_EXIT=0`, the rest unset |
@@ -148,7 +153,6 @@ Some choices in this profile are worth knowing about:
   - The earlier public-session knobs (`D1_AH_PUBLIC_REGIONS`, `D1_MM_LIVE_REPLIES`,
     `D1_AH_SLOT_HANDOVER`).
   - `D1_AH_SCRIPTS_COMPLETE_BODY`. The 56578 body of incident 965 is unknown, so it is not sent.
-  - `D1_AH_SCRIPTS_MISSION_PHASE`.
   - `D1_KBM`. It doubles keys with the PC layout.
   - `D1_MP_ACCOUNTS`.
 
@@ -233,7 +237,7 @@ Collected from each stream's note. Each note has the full list.
   - Runtime indices for reputation. Until they are read, ranks live only in the store.
   - Content index ↔ manifest hash, so refunds can apply per sale instead of per vendor.
   - One player per responder process.
-- **Social and vendors** ([note on #309](https://github.com/p3n1cillin/d1reimagined-source/pull/309)):
+- **Social and vendors** ([note](../notes/ps4-56578-social-and-vendors-2026-11-05.md)):
   - Which sales a stock refresh picks.
   - Every dismantle amount (`D1_DISMANTLE_PLACEHOLDER`).
   - 902 read as "take back".
@@ -284,7 +288,9 @@ Collected from each stream's note. Each note has the full list.
   - The responder still calls `d1-oracle`.
 - **Stamp mode** ([note](../notes/ps4-56578-udt5-stamp-init-2026-11-05.md)): static analysis only.
   No stamp-age timeout was found, but the absence is not proven for every watchdog.
-- **Script bridge** (A2, `notes/ps4-56578-script-bridge-2026-11-05.md` on `scripts/host-bridge`):
+- **Script bridge** (#319, `notes/ps4-56578-script-bridge-2026-11-05.md` on `scripts/host-bridge`):
+  - The scripted-activity table is a one-row stand-in (`ps4/profiles/script-activities.txt`) until
+    stream K generates it. Point `D1_AH_SCRIPTS_ACTIVITIES` at K's table with `-Set` when it lands.
   - The 965 body is unknown, so completion is not sent.
   - The mission-phase tuple's meaning is unknown.
   - Whether the walker accepts a subset delta is unproven.
@@ -307,13 +313,15 @@ be missing from the code only while it has a row here.
 
 | Knob | From | Status (5 November) | Present when |
 |---|---|---|---|
-| `D1_SOCIAL` | #309 social and vendors | open | the responder is built from main after #309 merges |
-| `D1_SOCIAL_STOCK` | #309 | open | as above |
-| `D1_DISMANTLE_PLACEHOLDER` | #309 | open | as above |
-| `D1_AH_SCRIPTS` | stream A2, `scripts/host-bridge` | being built | the activity host is built with the bridge |
-| `D1_AH_SCRIPTS_SIDECAR` | stream A2 | being built | as above |
-| `D1_AH_SCRIPTS_ACTIVITIES` | stream A2 | being built | as above |
-| `D1_AH_SCRIPTS_INCIDENTS` | stream A2 | being built | as above |
+| `D1_AH_SCRIPTS` | #319 (stream A2), `scripts/host-bridge` | open, merging soon | the activity host is built from main after #319 merges |
+| `D1_AH_SCRIPTS_SIDECAR` | #319 | open | as above |
+| `D1_AH_SCRIPTS_ACTIVITIES` | #319 | open | as above |
+| `D1_AH_SCRIPTS_INCIDENTS` | #319 | open | as above |
+| `D1_AH_SCRIPTS_MISSION_PHASE` | #319 | open (kept off) | as above |
+| `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS` | #319 | open (kept off) | as above |
+| `D1_AH_ROWS_UNLISTED` | #319 | open (kept off) | as above |
+| `D1_AH_ROWS_DELTA_INIT` | #319 | open (kept off) | as above |
+| `D1_BUNDLES_DIR` | stream K, the content bundle export | being built | `tools/script-host` reads it (until then the launcher passes it on and warns) |
 | `D1_DRAW_STATS` | fork #7, `d1-perf/draw-cost` | draft | the deployed shadPS4.exe includes #7 |
 | `D1_DRAW_FAST` | fork #7 | draft | as above |
 | `D1_GPU_WAIT_YIELD` | fork #7 | draft | as above |

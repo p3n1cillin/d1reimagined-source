@@ -47,7 +47,7 @@ param(
     [switch]$DryRun,
     # With -DryRun: print the manifest as JSON only.
     [switch]$Json,
-    # The cargo target folder (default: CARGO_TARGET_DIR, else ps4/d1-server/target).
+    # The cargo target folder (default: this checkout's ps4/d1-server/target; CARGO_TARGET_DIR is ignored).
     [string]$TargetDir = ''
 )
 $ErrorActionPreference = 'Stop'
@@ -171,7 +171,14 @@ if ($node -and -not (Test-Path -LiteralPath $node -PathType Leaf)) {
 }
 
 # -- the binaries ---------------------------------------------------------------------------------
-if (-not $TargetDir) { $TargetDir = if ($env:CARGO_TARGET_DIR) { $env:CARGO_TARGET_DIR } else { Join-Path $Repo 'ps4/d1-server/target' } }
+# This checkout's own target folder by default: one CARGO_TARGET_DIR shared between worktrees has
+# left one checkout's binaries under another's name and corrupted builds.
+if (-not $TargetDir) {
+    $TargetDir = Join-Path $Repo 'ps4/d1-server/target'
+    if ($env:CARGO_TARGET_DIR -and (Resolve-Path -LiteralPath $env:CARGO_TARGET_DIR -ErrorAction SilentlyContinue).Path -ne (Resolve-Path -LiteralPath $TargetDir -ErrorAction SilentlyContinue).Path) {
+        Warn "CARGO_TARGET_DIR ($env:CARGO_TARGET_DIR) is ignored: building into this checkout's $TargetDir (pass -TargetDir to choose)"
+    }
+}
 $release = Join-Path $TargetDir 'release'
 $crateRoot = (Join-Path $Repo 'ps4/d1-server/crates').ToLowerInvariant().Replace('\', '/')
 function Get-DepFiles([string]$depInfo) {
@@ -388,7 +395,13 @@ if ($knobs.Contains('D1_AH_SCRIPTS_SIDECAR') -and $knobs['D1_AH_SCRIPTS_SIDECAR'
 # Knobs that need each other.
 if ((On 'D1_AH_PUBLIC_HOST') -and -not (On 'D1_AH_DISTINCT_HOST_IDS')) { Problem 'D1_AH_PUBLIC_HOST=1 needs D1_AH_DISTINCT_HOST_IDS=1 (#316)' }
 if (On 'D1_AH_SCRIPTS') {
-    foreach ($k in 'D1_AH_SCRIPTS_SIDECAR', 'D1_AH_SCRIPTS_ACTIVITIES') { if (-not (On $k)) { Problem "D1_AH_SCRIPTS=1 needs $k (stream A2)" } }
+    foreach ($k in 'D1_AH_SCRIPTS_SIDECAR', 'D1_AH_SCRIPTS_ACTIVITIES') { if (-not (On $k)) { Problem "D1_AH_SCRIPTS=1 needs $k (#319)" } }
+    # Stream K's private content bundle export: the sidecar's rows come from it.
+    if (-not ($knobs.Contains('D1_BUNDLES_DIR') -and $knobs['D1_BUNDLES_DIR'].value)) {
+        Problem 'D1_AH_SCRIPTS=1 needs D1_BUNDLES_DIR, the private content bundle export (stream K): set it in the environment, or -Set D1_BUNDLES_DIR=<folder>; or turn the bridge off with -Set D1_AH_SCRIPTS='
+    } elseif (-not (Test-Path -LiteralPath $knobs['D1_BUNDLES_DIR'].value -PathType Container)) {
+        Problem "D1_BUNDLES_DIR is not a folder: $($knobs['D1_BUNDLES_DIR'].value)"
+    }
 }
 # A knob its reader does not name: a rename, or a stale build. Only the parts this mode starts count;
 # with a build still to come (a dry run), the stale servers can't settle it.
@@ -398,6 +411,7 @@ foreach ($k in @($knobs.Keys)) {
     if ($e.state -ne 'missing') { continue }
     $m = "$k is not in the $($e.section) code that should read it ($((Readers $e.section | ForEach-Object { Split-Path $_ -Leaf }) -join ', ')): renamed, or a stale build?"
     if ($started -notcontains $e.section) { Warn "$m (not started with -Only $Only)" }
+    elseif ($e.section -eq 'sidecar') { Warn "$m (passed on anyway: the sidecar may not read it yet)" }
     elseif ($e.section -eq 'server' -and $wantBuild) { Warn "$m (checked against the current, stale build; the build is checked again)" }
     else { Problem $m }
 }
