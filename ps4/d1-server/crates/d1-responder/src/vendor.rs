@@ -96,6 +96,9 @@ struct State {
     oracle: String,
     /// Refund records sent as account field [20] (newest last, at most [`REFUND_RECORDS`]).
     refunds: Vec<RefundRecord>,
+    /// Stream I: the item instance of an account entry (the vault), written at entry `+8`. Not
+    /// persisted by the player store yet (`VendorCommit.slots` keeps content and quantity only).
+    account_instances: BTreeMap<u16, u64>,
 }
 
 /// Account field [20] (`0x8080174F`, 6248 bytes): a u32, then 30 records of 208 bytes
@@ -164,7 +167,7 @@ fn load() -> anyhow::Result<State> {
     let refunds = seed.map(|s| s.refunds).unwrap_or_default();
     let oracle = oracle_path();
     tracing::warn!("      vendor purchases on: {} sales from {sales_path}, account {account:?}", sales.len());
-    Ok(State { sales, account, profile, template, next_soid, oracle, refunds })
+    Ok(State { sales, account, profile, template, next_soid, oracle, refunds, account_instances: BTreeMap::new() })
 }
 
 /// `D1_ORACLE`, the client's codec.
@@ -428,6 +431,9 @@ fn publish(st: &State, sidecar: Option<(u64, Vec<u8>)>, what: &str, removed: Opt
         let e = 8 + 32 * *slot as usize;
         inv[e..e + 2].copy_from_slice(&ci.to_le_bytes());
         inv[e + 0x10..e + 0x14].copy_from_slice(&q.to_le_bytes());
+        if let Some(i) = st.account_instances.get(slot) {
+            inv[e + 8..e + 16].copy_from_slice(&i.to_le_bytes());
+        }
     }
     let (bits, n) = encode(&st.oracle, "0x80800fe6", &inv, "account-inventory")?;
     let acct = crate::env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
@@ -506,6 +512,10 @@ pub fn on_buy(req: Vec<u8>) {
         let Some(st) = guard.as_mut() else { return };
         let result = (|| -> anyhow::Result<String> {
             let (vendor, sale, stamp) = decode_request(&st.oracle, &req)?;
+            // ⭐ Stream I (D1_SOCIAL=1): the manifest's rules, decodes, bounties and Armsday.
+            if crate::social_hooks::enabled() {
+                return social_buy(st, vendor, sale, stamp);
+            }
             let (what, sidecar) = apply(st, vendor, sale)?;
             // The refund record the client's refund screen needs (account field [20]).
             let s = &st.sales[&(vendor, sale)];
@@ -603,6 +613,12 @@ pub fn on_equip(req: Vec<u8>) {
         let Some(st) = guard.as_mut() else { return };
         let result = (|| -> anyhow::Result<String> {
             let instance = decode_instance(&st.oracle, &req)?;
+            // ⭐ Stream I (D1_SOCIAL=1): the game's equip rules (one exotic, class gear).
+            if crate::social_hooks::enabled() {
+                let what = with_wire_store(st, |w, _| { let chr = w.character.id; crate::inventory_ops::equip(w, crate::tables::tables(), chr, instance).map_err(|e| e.to_string()) })?;
+                publish(st, None, &format!("equip: {what}"), None)?;
+                return Ok(what);
+            }
             let mut profile = st.profile.clone();
             let what = apply_equip(&mut profile, instance)?;
             st.profile = profile;
@@ -706,9 +722,13 @@ pub fn on_item_action(req: Vec<u8>) {
             let (instanced, instance, content, quantity) = decode_item_action(&st.oracle, &req)?;
             anyhow::ensure!(instanced && quantity == 0, "only an instanced item's dismantle is handled (instanced {instanced}, quantity {quantity})");
             let table = dismantle_yields();
-            let yields = table.get(&content).cloned().unwrap_or_default();
+            let yields = table.get(&content).cloned()
+                .or_else(|| crate::social_hooks::placeholder_yields(content)) // Stream I, labelled stand-ins
+                .unwrap_or_default();
             let mut what = apply_dismantle(st, instance, content, &yields)?;
-            if !table.contains_key(&content) {
+            if !table.contains_key(&content) && !yields.is_empty() {
+                what.push_str(" (PLACEHOLDER yields, D1_DISMANTLE_PLACEHOLDER=1: not sourced)");
+            } else if !table.contains_key(&content) {
                 what.push_str(" (no D1_DISMANTLE_YIELDS row for this item: nothing given back)");
             }
             publish(st, None, &format!("dismantle: {what}"), Some(instance))?;
@@ -717,6 +737,75 @@ pub fn on_item_action(req: Vec<u8>) {
         match result {
             Ok(what) => tracing::warn!("      ⭐⭐ DISMANTLE APPLIED: {what}; pushes written"),
             Err(e) => tracing::warn!("      ⛔ dismantle NOT applied: {e}"),
+        }
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════
+//  ⭐ Stream I (2026-11-05): the social services on the purchase state. The services
+//  (`crate::vendors`, `crate::inventory_ops`, ...) act on a `store::WireStore` built from this
+//  state; the result is written back and published like a purchase, so the player store (#307)
+//  persists it through `note_vendor`. Only with `D1_SOCIAL=1`.
+// ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+/// Run `f` on the state as a `WireStore` (with the receipts as the store's), and adopt the result
+/// only when `f` succeeds.
+fn with_wire_store<T>(st: &mut State, f: impl FnOnce(&mut crate::store::WireStore, &HashMap<(u8, u16), Sale>) -> Result<T, String>) -> anyhow::Result<T> {
+    let mut w = crate::social_hooks::wire_store(st.account.clone(), st.account_instances.clone(), st.profile.clone(), st.next_soid);
+    let chr = w.character.id;
+    let receipts = st.refunds.iter().map(|r| crate::social_hooks::receipt_from(r, &st.sales)).collect();
+    crate::store::PlayerStore::set_receipts(&mut w, chr, receipts);
+    let out = f(&mut w, &st.sales).map_err(|e| anyhow::anyhow!(e))?;
+    st.refunds = crate::store::PlayerStore::receipts(&w, chr).iter().map(crate::social_hooks::refund_from).collect();
+    st.account = w.account.clone();
+    st.account_instances = w.account_instances.clone();
+    st.profile = w.profile.clone();
+    st.next_soid = w.next_soid;
+    crate::social_hooks::keep_side(w.side);
+    Ok(out)
+}
+
+/// A 901 through `vendors::purchase::buy`: the sold item's element (an instance) is built from the
+/// item template as `apply` does.
+fn social_buy(st: &mut State, vendor: u8, sale: u16, stamp: u64) -> anyhow::Result<String> {
+    let opts = crate::social_hooks::buy_options(refund_window(st.sales.get(&(vendor, sale)).map(|s| s.vendor_hash).unwrap_or(0)));
+    let p = with_wire_store(st, |w, sales| {
+        let m = crate::social_hooks::market(sales);
+        let chr = w.character.id;
+        crate::vendors::purchase::buy(w, &m, chr, vendor, sale, crate::social_hooks::clock(stamp), opts).map_err(|e| e.to_string())
+    })?;
+    let sidecar = if p.item.instance != 0 {
+        let mut item = st.template.clone();
+        item[0..8].copy_from_slice(&p.item.instance.to_le_bytes());
+        item[0x24..0x26].copy_from_slice(&p.item.content.to_le_bytes());
+        Some((p.item.instance, encode(&st.oracle, "0x80801732", &item, "item")?.0))
+    } else {
+        None
+    };
+    publish(st, sidecar, &format!("purchase: {}", p.what), None)?;
+    crate::social_hooks::bridge_progressions();
+    Ok(p.what)
+}
+
+/// The 404/405/902/903/905 services: decode, apply, publish.
+pub(crate) fn on_social(id: u16, req: Vec<u8>) {
+    if state().lock().map(|s| s.is_none()).unwrap_or(true) {
+        return;
+    }
+    std::thread::spawn(move || {
+        let Ok(mut guard) = state().lock() else { return };
+        let Some(st) = guard.as_mut() else { return };
+        let oracle = st.oracle.clone();
+        let result = (|| -> anyhow::Result<String> {
+            let op = crate::social_hooks::decode(id, &oracle, &req)?;
+            let what = with_wire_store(st, |w, sales| crate::social_hooks::apply(w, sales, op))?;
+            publish(st, None, &what, None)?;
+            crate::social_hooks::bridge_progressions();
+            Ok(what)
+        })();
+        match result {
+            Ok(what) => tracing::warn!("      ⭐⭐ SOCIAL ({id}) APPLIED: {what}; pushes written"),
+            Err(e) => tracing::warn!("      ⛔ social ({id}) NOT applied: {e}"),
         }
     });
 }
@@ -735,7 +824,7 @@ mod tests {
         }
         let mut account = BTreeMap::new();
         account.insert(308, (869, glimmer));
-        State { sales: parse_sales(TSV), account, profile, template: vec![0; 184], next_soid: 0x601, oracle: String::new(), refunds: Vec::new() }
+        State { sales: parse_sales(TSV), account, profile, template: vec![0; 184], next_soid: 0x601, oracle: String::new(), refunds: Vec::new(), account_instances: BTreeMap::new() }
     }
 
     fn with_rifle(s: &mut State, slot: usize, instance: u64, equipped: bool) {

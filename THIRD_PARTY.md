@@ -13,7 +13,13 @@ in this repository. The settings generator is project code derived from the nati
 - [Destiny Item Manager](https://github.com/DestinyItemManager)'s archive of Bungie's final D1 API
   manifest: a local input to `tools/ps4_setup/d1-progression-tables.py`. The manifest is Bungie's
   data and is not committed; only the derived XP, rank, reset and refund tables in
-  `ps4/fixtures/56578/progression/` are, each citing its definition.
+  `ps4/fixtures/56578/progression/` are, each citing its definition. It is also the local input to
+  `tools/ps4_setup/d1-social-tables.py`, whose derived vendor, item, bounty, engram and activity
+  tables are in `ps4/d1-server/crates/d1-responder/data/social/`.
+- [DestinyDevs BungieNetPlatform](https://github.com/DestinyDevs/BungieNetPlatform) (MIT): the D1 API
+  enumerations the social services' statuses and rules follow (`VendorItemStatus`,
+  `TransferStatuses`, `EquipFailureReason`, `DestinyVendorItemRefundPolicy`,
+  `DestinyUnlockFlagOperator`). Nothing is copied from it.
 
 Each upstream project retains its own licence. Consult that project's licence before copying
 or redistributing its implementation; these links do not grant additional rights.

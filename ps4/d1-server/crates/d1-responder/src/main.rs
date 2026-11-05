@@ -74,6 +74,7 @@ mod store;
 mod tables;
 #[allow(dead_code)]
 mod vendors;
+mod social_hooks;
 
 #[derive(Clone)]
 struct Cfg {
@@ -2329,6 +2330,15 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_LOOT_GRANT_ROSTER", "<unset>", "roster fixtures served after a loot grant"),
     ("D1_PROFILE_PUSH_FILE", "<unset>", "on-demand family-4 profile delta: write this file (plus optional .item/.soid) to push it"),
     ("D1_ACCOUNT_PUSH_FILE", "<unset>", "on-demand family-4 account delta: write this file (a client-encoded account) to push it"),
+    ("D1_SOCIAL", "0", "1: stream I's social services on 901-905 and 402-405 (vendor rules, vault, Postmaster, refunds, bounties, Armsday, Cryptarch); social_hooks.rs"),
+    ("D1_SOCIAL_STOCK", "0", "1 (with D1_SOCIAL): refuse sales outside the vendor's current stock (the placeholder rotation)"),
+    ("D1_DISMANTLE_PLACEHOLDER", "0", "1 (with D1_SOCIAL): dismantles give the labelled PLACEHOLDER yields of inventory_ops::PLACEHOLDER_YIELDS"),
+    ("D1_VAULT_VENDOR", "<unset>", "the Vault's row in the client's vendor table (903/902 to it store and take); not yet known"),
+    ("D1_POSTMASTER_VENDOR", "<unset>", "the Postmaster's row in the client's vendor table (903 to it collects); not yet known"),
+    ("D1_CHARACTER_CLASS", "0", "the served character's class for stream I's rules (0 Titan, 1 Hunter, 2 Warlock)"),
+    ("D1_CHARACTER_LEVEL", "40", "the served character's level for stream I's rules (sale requiredLevel)"),
+    ("D1_ACTIVITY_RULES", "<unset>", "activity unlock rules (director::parse_rules) beyond the decoded Tower and A Guardian Rises ones"),
+    ("D1_STARTING_KIT", "<unset>", "a new character's starting kit per class (character_create::parse_kit)"),
     ("D1_VENDOR_SALES", "<unset>", "vendor-sales.tsv (d1-oracle vendor-sales write): apply 901 purchases and push the account and profile"),
     ("D1_VENDOR_PROFILE_OBJ", "<unset>", "the served profile as a decoded C object (purchases add items to it)"),
     ("D1_VENDOR_ITEM_TEMPLATE", "<unset>", "a decoded 0x80801732 item element, the template for bought instances"),
@@ -3727,6 +3737,9 @@ async fn main() -> Result<()> {
                                                                             vendor::on_equip(req.to_vec());
                                                                         } else if id == 402 {
                                                                             vendor::on_item_action(req.to_vec());
+                                                                        } else if social_hooks::enabled() {
+                                                                            // ⭐ Stream I: 404 unequip, 405 transfer.
+                                                                            vendor::on_social(id, req.to_vec());
                                                                         }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 905 {
@@ -3740,6 +3753,22 @@ async fn main() -> Result<()> {
                                                                         warn!("      ⭐ VENDOR REFUND (905) ({}B request): {}", req.len(),
                                                                               req.iter().map(|x| format!("{x:02x}")).collect::<String>());
                                                                         vendor::on_refund(req);
+                                                                        if social_hooks::enabled() {
+                                                                            vendor::on_social(905, req.to_vec()); // ⭐ Stream I
+                                                                        }
+                                                                        Some(d1_bap::investment_701_response_body())
+                                                                    } else if id == 902 {
+                                                                        // ⭐ Stream I: 902 vendor_buyback_item (Blam Network's name),
+                                                                        // request 0x8080180D {bool, u64, i16} + i16, response 0x808016EF,
+                                                                        // the same {u4, i32} result composite as 901/903. Read as taking an
+                                                                        // item back out of the Vault (vendors::sell::buyback), applied only
+                                                                        // with D1_SOCIAL=1. No run has sent one yet.
+                                                                        let req = plain.get(8..).unwrap_or(&[]);
+                                                                        warn!("      ⭐ VENDOR BUYBACK (902) ({}B request): {}", req.len(),
+                                                                              req.iter().map(|x| format!("{x:02x}")).collect::<String>());
+                                                                        if social_hooks::enabled() {
+                                                                            vendor::on_social(902, req.to_vec());
+                                                                        }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 901 || id == 903 {
                                                                         // 901 vendor_buy_item / 903 vendor_sell_item. Responses
@@ -3759,6 +3788,9 @@ async fn main() -> Result<()> {
                                                                             vendor::on_buy(req.to_vec());
                                                                         } else {
                                                                             vendor::on_sell(req.to_vec());
+                                                                            if social_hooks::enabled() {
+                                                                                vendor::on_social(903, req.to_vec()); // ⭐ Stream I
+                                                                            }
                                                                         }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 104 {
