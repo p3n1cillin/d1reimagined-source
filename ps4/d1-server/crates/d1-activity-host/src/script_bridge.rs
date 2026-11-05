@@ -12,35 +12,28 @@
 //! # Process model
 //!
 //! One sidecar per activity instance, spawned at the join of a scripted activity, speaking JSON
-//! lines on stdin/stdout (stderr is logged). The host owns the clock: it sends `tick` once a
-//! second with the activity time in 30 Hz ticks, and the sidecar answers with the changes that tick
-//! made, then `tick_done`. Client events go in host order between ticks, so a run replays from the
-//! host log. A sidecar that cannot start is retried twice; one that exits after `start` stops the
-//! progression (no ticks, no events) while the rows already sent stay and heartbeats continue, so
+//! lines on stdin/stdout (stderr is logged). The contract is A1's `tools/script-host/PROTOCOL.md`
+//! (protocol 1): `hello` → `loaded`; `start` (once the world's full list is out) → `ready`; then
+//! one `tick` per 10 Hz udt 5 stamp step, carrying the stamp, each answered with its changes and
+//! `tick_done`. Client events go in host order between ticks, so a run replays from the host log.
+//! A sidecar that cannot start is retried twice; one that exits after `start` (or refuses the
+//! session) stops the progression while the rows already sent stay and heartbeats continue, so
 //! the client is not dropped. Nothing is guessed in its place.
 //!
-//! # Messages (`proto` 1; the contract is in notes/ps4-56578-script-bridge-2026-11-05.md)
-//!
-//! Every line is one JSON object with a `"type"`. Item references are BullShcript's
-//! `{bundle, typeId, typeIndex}`; the bridge maps a bundle hash to the world's live group hash
-//! (`map=` in the activity table, identity otherwise).
-//!
-//! Host → sidecar ([`HostMsg`]): `hello`, `start`, `tick {now}`, `players {players:[{key, slot}]}`,
-//! `player_spawned {key}`, `player_died {key}`, `trigger {item}`, `cinematic_finished {item}`,
-//! `cinematic_skipped {item, key}`, `incident {name_hash, index}` (every other client incident),
-//! `squad_alive {item, count}`, `squad_state {item, state, flag}`, `slice {region}`, `stop`.
-//!
-//! Sidecar → host ([`SidecarMsg`]): `ready`, `rows {changes:[ItemChange]}` (BullShcript's type),
-//! `rows_cleared {items}`, `phase {index, name, region}`, `activity_flag {hash, active}`,
-//! `activity_complete`, `ended`, `hard_wipe_armed`, `all_dead`, `tick_done {now}`, `log`, `error`.
-//!
+//! Item references from the sidecar are BullShcript's `{bundle, typeId, typeIndex}`; host messages
+//! name a row by `bundle` and `type_index`. The bridge maps a bundle hash to the world's live group
+//! hash (`map=` in the activity table, identity otherwise). **Stand-in rows** (`loaded.stand_in`,
+//! no content export: their indices are not the game's) never go on the wire; only the lifetime,
+//! which the bridge keys itself, does.
+
 //! # What each message does here
 //!
 //! * **Lifetime.** A `lifetime` row change sets the world's lifetime record (the one the world's
 //!   list names) to [`lifetime_wire_state`]: pregame → 1, active → 3, cinematic hold → 4,
-//!   results → 6, ended → 8. `phase` carries the mission-phase tuple only under
-//!   `D1_AH_SCRIPTS_MISSION_PHASE=1` (its meaning on 56578 is unverified), and asks the host to
-//!   move the client to the phase's region when it is not already there.
+//!   results → 6, ended → 8 (the sidecar's `wire.phase` is checked against it). `phase` carries
+//!   the mission-phase tuple only under `D1_AH_SCRIPTS_MISSION_PHASE=1` (its meaning on 56578 is
+//!   unverified), and asks the host to move the client to the phase's region (`regions=` in the
+//!   activity table, since protocol 1 names the slice, not its id) when it is not already there.
 //! * **`activity_complete`** sends host incident **965** (`activity_complete`, from the incident
 //!   catalogue) with the body in `D1_AH_SCRIPTS_COMPLETE_BODY`. The 56578 body is not yet known
 //!   (notes/ps4-56578-fukugen-daihon-2026-11-05.md); without the knob the incident is not sent and
@@ -49,10 +42,12 @@
 //! * **Client incidents** (udt 18) are translated with the 56578 catalogue: 3403 → `trigger`
 //!   (its row from the body), 891 / 1726 → `cinematic_finished` / `cinematic_skipped` (the row named
 //!   in the body as 3403 names its trigger, else the one cinematic playing; never a guess between
-//!   two), 566 / 2014 → `player_spawned`, 2079 → `player_died`, anything else → `incident`.
+//!   two), 566 / 2014 → `player_spawned`, 2079 → `player_died`, anything else → `incident {id,
+//!   name_hash}`.
 //! * **Client senses** (udt 6, `D1_AH_SENSE_SCHEMAS`): a squad's live-member count (B `+0x0C`,
-//!   proven by the member-death control) → `squad_alive`; its state byte `+0x19` and bit `+0x1A`
-//!   (traced statically from the squad record's flags; meaning open) → `squad_state`.
+//!   proven by the member-death control) → `squad_alive`. Its state byte `+0x19` and bit `+0x1A`
+//!   (traced statically from the squad record's flags; meaning open) are decoded and logged only:
+//!   protocol 1 has no message for them.
 
 use std::collections::{HashMap, VecDeque};
 use std::sync::mpsc;
@@ -72,8 +67,8 @@ use crate::row_encoders::{
 use crate::rows::{FramePlan, Row, RowKey, RowTable};
 
 pub const PROTO: u32 = 1;
-/// The activity clock the sidecar counts in (the harness's: 30 Hz).
-pub const TICK_HZ: u32 = 30;
+/// Script ticks per second: one per udt 5 stamp step (PROTOCOL.md "Clock and ordering").
+pub const TICK_HZ: u32 = 10;
 
 // ── the protocol ─────────────────────────────────────────────────────────────────────────────────
 
@@ -87,7 +82,8 @@ pub struct ItemRef {
     pub type_index: i16,
 }
 
-/// BullShcript's `ItemChange`: `{item, kind, state, initial?}`.
+/// BullShcript's `ItemChange`: `{item, kind, state, initial?}`. The sidecar adds `wire: {phase}`
+/// to lifetime changes (PROTOCOL.md "The lifetime").
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct ItemChange {
     pub item: ItemRef,
@@ -96,6 +92,8 @@ pub struct ItemChange {
     pub state: Value,
     #[serde(default)]
     pub initial: bool,
+    #[serde(default)]
+    pub wire: Option<Value>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -104,7 +102,7 @@ pub struct PlayerInfo {
     pub slot: u32,
 }
 
-/// Host → sidecar.
+/// Host → sidecar (tools/script-host/PROTOCOL.md). A row is named by `bundle` and `type_index`.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum HostMsg {
@@ -112,31 +110,43 @@ pub enum HostMsg {
         proto: u32,
         build: String,
         activity: String,
-        activity_index: u16,
         #[serde(skip_serializing_if = "Option::is_none")]
         bundles_path: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        incidents_path: Option<String>,
         tick_hz: u32,
-        script_tick_s: f32,
     },
     Start,
     Tick { now: u64 },
     Players { players: Vec<PlayerInfo> },
     PlayerSpawned { key: String },
     PlayerDied { key: String },
-    Trigger { item: ItemRef },
-    CinematicFinished { item: ItemRef },
-    CinematicSkipped { item: ItemRef, key: String },
-    Incident { name_hash: u32, index: u32 },
-    SquadAlive { item: ItemRef, count: i32 },
-    SquadState { item: ItemRef, state: u8, flag: bool },
-    Slice { region: u32 },
-    Stop,
+    Trigger { bundle: u32, type_index: i16 },
+    CinematicFinished { bundle: u32, type_index: i16 },
+    CinematicSkipped { bundle: u32, type_index: i16, key: String },
+    Incident { id: u32, name_hash: u32 },
+    SquadAlive { bundle: u32, type_index: i16, count: i32 },
+    End,
 }
 
-/// Sidecar → host.
+/// Sidecar → host (tools/script-host/PROTOCOL.md). Fields the bridge does not use are ignored.
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum SidecarMsg {
+    /// The reply to `hello`.
+    Loaded {
+        /// Rows built from the scripts' own declarations: their indices are not the game's, so
+        /// their rows never go on the wire.
+        #[serde(default)]
+        stand_in: bool,
+        #[serde(default)]
+        stub: bool,
+        #[serde(default)]
+        drives_lifetime: bool,
+        #[serde(default)]
+        compile_errors: Vec<Value>,
+    },
+    /// The reply to `start`.
     Ready {
         #[serde(default)]
         unresolved: Vec<Value>,
@@ -153,6 +163,11 @@ pub enum SidecarMsg {
         #[serde(default)]
         name: Option<String>,
         #[serde(default)]
+        name_hash: Option<Value>,
+        #[serde(default)]
+        slice_hash: Option<Value>,
+        /// Not in protocol 1 (the phase names its slice by name and hash); accepted if sent.
+        #[serde(default)]
         region: Option<u32>,
     },
     ActivityFlag { hash: u32, active: bool },
@@ -162,7 +177,23 @@ pub enum SidecarMsg {
     AllDead {},
     TickDone { now: u64 },
     Log { text: String },
-    Error { text: String },
+    Error {
+        text: String,
+        #[serde(default)]
+        fatal: bool,
+    },
+    Done {},
+    Snapshot {},
+    Bye {},
+}
+
+/// A hash the sidecar may send as a number or a `"0x…"` string.
+fn hash_value(v: &Value) -> Option<u32> {
+    match v {
+        Value::Number(n) => n.as_u64().and_then(|n| u32::try_from(n).ok()),
+        Value::String(s) => u32::from_str_radix(s.trim_start_matches("0x"), 16).ok(),
+        _ => None,
+    }
 }
 
 /// Parse one line from the sidecar. `Ok(None)` for a blank line.
@@ -306,10 +337,13 @@ pub struct ScriptedActivity {
     pub bundles_path: Option<String>,
     /// Script bundle hash → live group hash.
     pub bundle_groups: HashMap<u32, u32>,
+    /// Mission phase index → the region (slice-set id, `bubble << 3 | state`) it runs in. The
+    /// sidecar names a phase's slice by name and hash; until content resolves those, the table says.
+    pub regions: HashMap<u32, u32>,
 }
 
 impl ScriptedActivity {
-    /// Parse `INDEX ACTIVITY GROUP LIST [hash=H] [bundles=PATH] [map=B:G,...] [team=0]`, building
+    /// Parse `INDEX ACTIVITY GROUP LIST [hash=H] [bundles=PATH] [map=B:G,...] [regions=P:R,...] [team=0]`, building
     /// the rows from LIST as the world table does (`sensor_list::params_for_list`).
     pub fn parse(
         line: &str,
@@ -318,14 +352,15 @@ impl ScriptedActivity {
     ) -> Result<Self, String> {
         let f: Vec<&str> = line.split_whitespace().collect();
         if f.len() < 4 {
-            return Err(format!("{line:?}: want `INDEX ACTIVITY GROUP LIST [hash=H] [bundles=PATH] [map=B:G,...] [team=0]`"));
+            return Err(format!("{line:?}: want `INDEX ACTIVITY GROUP LIST [hash=H] [bundles=PATH] [map=B:G,...] [regions=P:R,...] [team=0]`"));
         }
         let num = |s: &str| {
             s.strip_prefix("0x").map_or_else(|| s.parse::<u32>().ok(), |h| u32::from_str_radix(h, 16).ok())
         };
         let index: u16 = f[0].parse().map_err(|_| format!("{line:?}: bad index"))?;
         let group = num(f[2]).ok_or_else(|| format!("{line:?}: bad group"))?;
-        let (mut hash, mut bundles_path, mut bundle_groups, mut team) = (0, None, HashMap::new(), -1);
+        let (mut hash, mut bundles_path, mut team) = (0, None, -1);
+        let (mut bundle_groups, mut regions) = (HashMap::new(), HashMap::new());
         for t in &f[4..] {
             if let Some(v) = t.strip_prefix("hash=") {
                 hash = num(v).ok_or_else(|| format!("{line:?}: bad hash"))?;
@@ -337,6 +372,14 @@ impl ScriptedActivity {
                     bundle_groups.insert(
                         num(b).ok_or_else(|| format!("{line:?}: bad bundle {b:?}"))?,
                         num(g).ok_or_else(|| format!("{line:?}: bad group {g:?}"))?,
+                    );
+                }
+            } else if let Some(v) = t.strip_prefix("regions=") {
+                for pair in v.split(',') {
+                    let (p, r) = pair.split_once(':').ok_or_else(|| format!("{line:?}: bad regions {pair:?}"))?;
+                    regions.insert(
+                        num(p).ok_or_else(|| format!("{line:?}: bad phase {p:?}"))?,
+                        num(r).ok_or_else(|| format!("{line:?}: bad region {r:?}"))?,
                     );
                 }
             } else if let Some(v) = t.strip_prefix("team=") {
@@ -358,6 +401,7 @@ impl ScriptedActivity {
             authority: params.authority.clone(),
             bundles_path,
             bundle_groups,
+            regions,
         })
     }
 
@@ -386,10 +430,11 @@ pub struct ScriptConfig {
     pub tail: Option<(u32, u32)>,
     pub incidents: IncidentCatalog,
     pub complete_body: Option<Vec<u8>>,
+    /// The catalogue's path, passed to the sidecar in `hello`.
+    pub incidents_path: Option<String>,
     pub mission_phase: bool,
     pub send_unlisted: bool,
     pub delta_init: bool,
-    pub tick: Duration,
     pub scoreboard_columns: Vec<u32>,
     pub rewards: Arc<dyn ActivityRewards>,
     pub codec: CodecMaker,
@@ -442,10 +487,6 @@ impl ScriptConfig {
             Ok(h) => Some(hex_bytes(h.trim()).ok_or("D1_AH_SCRIPTS_COMPLETE_BODY is not hex")?),
             Err(_) => None,
         };
-        let tick = match std::env::var("D1_AH_SCRIPTS_TICK_MS") {
-            Ok(v) => Duration::from_millis(v.trim().parse().map_err(|_| "D1_AH_SCRIPTS_TICK_MS is not a number")?),
-            Err(_) => Duration::from_secs(1),
-        };
         let scoreboard_columns = match std::env::var("D1_AH_SCRIPTS_SCOREBOARD_COLUMNS") {
             Ok(path) => std::fs::read_to_string(&path)
                 .map_err(|e| format!("D1_AH_SCRIPTS_SCOREBOARD_COLUMNS {path}: {e}"))?
@@ -463,10 +504,10 @@ impl ScriptConfig {
             tail: base.tail,
             incidents,
             complete_body,
+            incidents_path: Some(catalogue),
             mission_phase: on("D1_AH_SCRIPTS_MISSION_PHASE"),
             send_unlisted: on("D1_AH_ROWS_UNLISTED"),
             delta_init: on("D1_AH_ROWS_DELTA_INIT"),
-            tick,
             scoreboard_columns,
             rewards: Arc::new(NoRewards),
             codec: Self::oracle_codec(),
@@ -484,18 +525,23 @@ const LAUNCH_ATTEMPTS: u32 = 3;
 const LAUNCH_RETRY: Duration = Duration::from_secs(2);
 /// A codec failure backs frames off this long (heartbeats continue).
 const CODEC_BACKOFF: Duration = Duration::from_secs(3);
+/// Ticks the sidecar may be behind (20 s at 10 Hz) before the clock waits for it.
+const MAX_TICKS_OUT: u64 = 200;
 
 struct Run {
     activity: ScriptedActivity,
     link: Option<Box<dyn SidecarLink>>,
-    t0: Instant,
     attempts: u32,
     retry_at: Option<Instant>,
-    ready: bool,
+    /// The sidecar answered `hello` with `loaded`.
+    loaded: bool,
+    /// Its rows are stand-ins (no content export): they never go on the wire.
+    stand_in: bool,
     started: bool,
     halted: Option<String>,
-    last_tick: Option<Instant>,
-    awaiting_tick: Option<(u64, Instant)>,
+    /// The last 10 Hz stamp sent as a `tick`, and how many ticks have no `tick_done` yet.
+    last_tick: Option<u32>,
+    ticks_out: u64,
     lifetime_state: i8,
     mission_phase: Option<MissionPhase>,
     complete: bool,
@@ -667,9 +713,10 @@ impl ScriptBridge {
                 if let (Some(index), Some(hash)) = (u(0xB8), u(0xBC)) {
                     let region = index & 0x3FF;
                     if !matches!(hash, 0 | 0x811C_9DC5) && region != 0x3FF {
-                        if let Some(run) = self.run.as_mut().filter(|r| r.current_slice != Some(region)) {
+                        // Protocol 1 takes `active_bundles`, which needs the slice -> bundle table
+                        // from content; until then the bridge only tracks the region (phase moves).
+                        if let Some(run) = self.run.as_mut() {
                             run.current_slice = Some(region);
-                            self.send(HostMsg::Slice { region });
                         }
                     }
                 }
@@ -681,13 +728,15 @@ impl ScriptBridge {
     /// A decoded udt 6 update, in the instance's current epoch.
     pub fn on_sense(&mut self, counts: &[crate::sense::SquadCount], squads: &[SquadSense]) {
         let Some(run) = self.run.as_ref() else { return };
-        let item = |group: u32, index: i16| ItemRef { bundle: run.activity.bundle_of(group), type_id: 1, type_index: index };
-        let mut out: Vec<HostMsg> = counts
+        let out: Vec<HostMsg> = counts
             .iter()
             .filter(|c| c.kind == 1 && c.live >= 0)
-            .map(|c| HostMsg::SquadAlive { item: item(c.group, c.index), count: c.live })
+            .map(|c| HostMsg::SquadAlive { bundle: run.activity.bundle_of(c.group), type_index: c.index, count: c.live })
             .collect();
-        out.extend(squads.iter().map(|s| HostMsg::SquadState { item: item(s.group, s.index), state: s.state, flag: s.flag }));
+        // Protocol 1 has no message for these, and what they mean in play is open: logged only.
+        for s in squads {
+            tracing::info!("squad {:#010x}/0x1/{} sense state {} flag {}", s.group, s.index, s.state, s.flag);
+        }
         for m in out {
             self.send(m);
         }
@@ -727,14 +776,14 @@ impl ScriptBridge {
             lifetime_state: activity.lifetime_state,
             activity,
             link: None,
-            t0: now,
             attempts: 0,
             retry_at: Some(now),
-            ready: false,
+            loaded: false,
+            stand_in: false,
             started: false,
             halted: None,
             last_tick: None,
-            awaiting_tick: None,
+            ticks_out: 0,
             mission_phase: None,
             complete: false,
             ended: false,
@@ -748,7 +797,7 @@ impl ScriptBridge {
 
     fn stop_run(&mut self, mut run: Run, _now: Instant) {
         if let Some(link) = run.link.as_mut() {
-            let _ = link.send(&HostMsg::Stop);
+            let _ = link.send(&HostMsg::End);
         }
         if run.started && !run.ended {
             self.reward(&mut run, ActivityOutcome::Abandoned);
@@ -771,16 +820,15 @@ impl ScriptBridge {
 
     fn translate_incident(&self, t: u32, image: &[u8]) -> Option<HostMsg> {
         let run = self.run.as_ref()?;
-        let item = |(group, kind, index): (u32, u8, u16)| ItemRef {
-            bundle: run.activity.bundle_of(group),
-            type_id: kind,
-            type_index: index as i16,
-        };
+        let item = |(group, _kind, index): (u32, u8, u16)| (run.activity.bundle_of(group), index as i16);
         let key = self.players.first().map(player_key).unwrap_or_default();
         let named = crate::state::trigger_report(image);
         Some(match t {
             _ if t == known::PLAYER_TRIGGER.index => match named {
-                Some(n) => HostMsg::Trigger { item: item(n) },
+                Some(n) => {
+                    let (bundle, type_index) = item(n);
+                    HostMsg::Trigger { bundle, type_index }
+                }
                 None => {
                     tracing::warn!("script bridge: incident 3403 names no trigger; not passed on");
                     return None;
@@ -800,16 +848,17 @@ impl ScriptBridge {
                         }
                     },
                 };
+                let (bundle, type_index) = row;
                 if t == known::CINEMATIC_FINISHED.index {
-                    HostMsg::CinematicFinished { item: row }
+                    HostMsg::CinematicFinished { bundle, type_index }
                 } else {
-                    HostMsg::CinematicSkipped { item: row, key }
+                    HostMsg::CinematicSkipped { bundle, type_index, key }
                 }
             }
             _ if t == known::PLAYER_SPAWNED.index || t == known::PLAYER_SPAWNED_INITIAL.index => HostMsg::PlayerSpawned { key },
             _ if t == known::PLAYER_DIED.index => HostMsg::PlayerDied { key },
             _ => match self.config.incidents.name_hash(t) {
-                Some(name_hash) => HostMsg::Incident { name_hash, index: t },
+                Some(name_hash) => HostMsg::Incident { id: t, name_hash },
                 None => {
                     tracing::warn!("script bridge: incident {t} is not in the 56578 catalogue; not passed on");
                     return None;
@@ -857,10 +906,9 @@ impl ScriptBridge {
                         proto: PROTO,
                         build: "56578".into(),
                         activity: run.activity.activity.clone(),
-                        activity_index: run.activity.index,
                         bundles_path: run.activity.bundles_path.clone(),
+                        incidents_path: self.config.incidents_path.clone(),
                         tick_hz: TICK_HZ,
-                        script_tick_s: self.config.tick.as_secs_f32(),
                     };
                     match link.send(&hello) {
                         Ok(()) => {
@@ -902,7 +950,7 @@ impl ScriptBridge {
                     let run = self.run.as_mut().expect("checked");
                     run.link = None;
                     if !run.started && run.attempts < LAUNCH_ATTEMPTS {
-                        run.ready = false;
+                        run.loaded = false;
                         run.retry_at = Self::retry(run, now, reason);
                     } else if run.ended {
                         tracing::info!("script bridge: {} sidecar finished", run.activity.activity);
@@ -922,10 +970,10 @@ impl ScriptBridge {
         if run.halted.is_some() || run.link.is_none() {
             return;
         }
-        // Start once the sidecar is ready and the world's full list has gone out.
-        if !run.started && run.ready && self.rows.full_delivered() {
+        // Start once the sidecar has loaded the scripts and the world's full list has gone out.
+        if !run.started && run.loaded && self.rows.full_delivered() {
             run.started = true;
-            run.last_tick = Some(now);
+            run.last_tick = Some(self.rows.tick(now));
             tracing::info!("⭐ script bridge: {} scripts start", run.activity.activity);
             let players = self
                 .players
@@ -937,19 +985,27 @@ impl ScriptBridge {
             self.send(HostMsg::Start);
             return;
         }
-        // The script clock.
-        let run = self.run.as_mut().expect("checked");
-        if run.started && !run.ended && run.last_tick.is_some_and(|t| now.saturating_duration_since(t) >= self.config.tick) {
-            if let Some((n, at)) = run.awaiting_tick {
-                if now.saturating_duration_since(at) < Duration::from_secs(10) {
-                    return;
-                }
-                tracing::warn!("script bridge: no tick_done for tick {n} in 10 s; ticking on");
+        // The script clock: one `tick` per udt 5 stamp step (10 Hz), carrying the stamp, so a row's
+        // recorded time is the stamp its frame goes out near. Polls are coarser than 100 ms, so each
+        // sends the steps since the last; a sidecar 20 s behind holds the clock rather than flooding.
+        let stamp = self.rows.tick(now);
+        let Some(run) = self.run.as_ref() else { return };
+        if !run.started || run.ended {
+            return;
+        }
+        let from = run.last_tick.map_or(stamp, |t| t + 1);
+        for s in from..=stamp {
+            let Some(run) = self.run.as_mut() else { return };
+            if run.halted.is_some() {
+                return;
             }
-            let ticks = (now.saturating_duration_since(run.t0).as_millis() * u128::from(TICK_HZ) / 1000) as u64;
-            run.last_tick = Some(now);
-            run.awaiting_tick = Some((ticks, now));
-            self.send(HostMsg::Tick { now: ticks });
+            if run.ticks_out >= MAX_TICKS_OUT {
+                tracing::warn!("script bridge: the sidecar is {} ticks behind; holding the clock", run.ticks_out);
+                return;
+            }
+            run.last_tick = Some(s);
+            run.ticks_out += 1;
+            self.send(HostMsg::Tick { now: u64::from(s) });
         }
     }
 
@@ -981,14 +1037,22 @@ impl ScriptBridge {
     fn apply(&mut self, msg: SidecarMsg, now: Instant) {
         let Some(run) = self.run.as_mut() else { return };
         match msg {
-            SidecarMsg::Ready { unresolved, drives_lifetime } => {
-                run.ready = true;
+            SidecarMsg::Loaded { stand_in, stub, drives_lifetime, compile_errors } => {
+                run.loaded = true;
+                run.stand_in = stand_in;
                 tracing::info!(
-                    "script bridge: {} sidecar ready ({} unresolved bindings{})",
+                    "script bridge: {} scripts loaded ({} compile errors{}{}{})",
                     run.activity.activity,
-                    unresolved.len(),
-                    if drives_lifetime { "" } else { "; the scripts do not drive the lifetime" }
+                    compile_errors.len(),
+                    if stub { "; a start-only stub" } else { "" },
+                    if drives_lifetime { "" } else { "; the scripts do not drive the lifetime" },
+                    if stand_in { "; STAND-IN rows: only the lifetime goes on the wire" } else { "" },
                 );
+            }
+            SidecarMsg::Ready { unresolved, .. } => {
+                if !unresolved.is_empty() {
+                    tracing::warn!("script bridge: {} has {} unresolved bindings", run.activity.activity, unresolved.len());
+                }
             }
             SidecarMsg::Rows { changes } => {
                 for c in changes {
@@ -1004,10 +1068,15 @@ impl ScriptBridge {
                     self.rows.reset(k);
                 }
             }
-            SidecarMsg::Phase { index, name, region } => {
+            SidecarMsg::Phase { index, name, name_hash, region, .. } => {
+                let region = region.or_else(|| run.activity.regions.get(&index).copied());
+                let name_hash = name_hash
+                    .as_ref()
+                    .and_then(hash_value)
+                    .unwrap_or_else(|| crate::incident_catalog::fnv1(name.as_deref().unwrap_or("")));
                 run.mission_phase = Some(MissionPhase {
                     index: index as i32,
-                    name_hash: crate::incident_catalog::fnv1(name.as_deref().unwrap_or("")),
+                    name_hash,
                     bubble: region.map_or(-1, |r| (r >> 3) as i32),
                 });
                 tracing::info!(
@@ -1049,13 +1118,16 @@ impl ScriptBridge {
             SidecarMsg::HardWipeArmed {} | SidecarMsg::AllDead {} => {
                 tracing::warn!("script bridge: the scripts asked for a hard wipe, which has no 56578 handshake yet");
             }
-            SidecarMsg::TickDone { now: n } => {
-                if run.awaiting_tick.is_some_and(|(t, _)| t == n) {
-                    run.awaiting_tick = None;
+            SidecarMsg::TickDone { .. } => run.ticks_out = run.ticks_out.saturating_sub(1),
+            SidecarMsg::Log { text } => tracing::info!("sidecar: {text}"),
+            SidecarMsg::Error { text, fatal } => {
+                if fatal {
+                    Self::halt(run, format!("the sidecar refused the session: {text}"));
+                } else {
+                    tracing::warn!("sidecar error: {text}");
                 }
             }
-            SidecarMsg::Log { text } => tracing::info!("sidecar: {text}"),
-            SidecarMsg::Error { text } => tracing::warn!("sidecar error: {text}"),
+            SidecarMsg::Done {} | SidecarMsg::Snapshot {} | SidecarMsg::Bye {} => {}
         }
     }
 
@@ -1063,7 +1135,13 @@ impl ScriptBridge {
         let Some(run) = self.run.as_mut() else { return };
         if c.kind == "lifetime" {
             let state = c.state.get("state").and_then(Value::as_i64).unwrap_or(-1);
-            match lifetime_wire_state(state) {
+            let ours = lifetime_wire_state(state);
+            if let Some(wire) = c.wire.as_ref().and_then(|w| w.get("phase")) {
+                if wire.as_i64() != ours.map(i64::from) {
+                    tracing::warn!("script bridge: the sidecar maps lifetime {state} to {wire}, the host to {ours:?}; the host's stands");
+                }
+            }
+            match ours {
                 Some(s) => {
                     if s != run.lifetime_state {
                         tracing::info!("⭐ script bridge: lifetime {} -> {s} (script state {state})", run.lifetime_state);
@@ -1075,6 +1153,12 @@ impl ScriptBridge {
                     self.set_lifetime();
                 }
                 None => tracing::warn!("script bridge: lifetime state {state} has no 56578 value; not sent"),
+            }
+            return;
+        }
+        if run.stand_in {
+            if run.unsupported.insert(format!("stand-in {}", c.kind)) {
+                tracing::warn!("script bridge: {} rows are stand-ins (no content export); not sent", c.kind);
             }
             return;
         }
@@ -1187,44 +1271,47 @@ mod tests {
     use crate::row_encoders::EncodedFrame;
     use std::sync::Mutex;
 
-    // ── the protocol ──
+    // ── the protocol (tools/script-host/PROTOCOL.md) ──
 
     #[test]
-    fn host_messages_are_the_documented_json_lines() {
-        let item = ItemRef { bundle: 0x2FE7_DBE6, type_id: 6, type_index: 1 };
+    fn host_messages_are_protocol_1_json_lines() {
         assert_eq!(host_line(&HostMsg::Start), r#"{"type":"start"}"#);
+        assert_eq!(host_line(&HostMsg::End), r#"{"type":"end"}"#);
         assert_eq!(host_line(&HostMsg::Tick { now: 30 }), r#"{"type":"tick","now":30}"#);
         assert_eq!(
-            host_line(&HostMsg::CinematicFinished { item }),
-            r#"{"type":"cinematic_finished","item":{"bundle":803724262,"typeId":6,"typeIndex":1}}"#
+            host_line(&HostMsg::CinematicFinished { bundle: 0x2FE7_DBE6, type_index: 1 }),
+            r#"{"type":"cinematic_finished","bundle":803724262,"type_index":1}"#
         );
         assert_eq!(
-            host_line(&HostMsg::Incident { name_hash: 0xBD1F_B418, index: 2899 }),
-            r#"{"type":"incident","name_hash":3172971544,"index":2899}"#
+            host_line(&HostMsg::Incident { id: 2899, name_hash: 0xBD1F_B418 }),
+            r#"{"type":"incident","id":2899,"name_hash":3172971544}"#
         );
         let hello = host_line(&HostMsg::Hello {
-            proto: 1, build: "56578".into(), activity: "cine_reveal".into(), activity_index: 165,
-            bundles_path: None, tick_hz: 30, script_tick_s: 1.0,
+            proto: 1, build: "56578".into(), activity: "cine_reveal".into(),
+            bundles_path: None, incidents_path: Some("i.tsv".into()), tick_hz: TICK_HZ,
         });
-        assert_eq!(hello, r#"{"type":"hello","proto":1,"build":"56578","activity":"cine_reveal","activity_index":165,"tick_hz":30,"script_tick_s":1.0}"#);
+        assert_eq!(hello, r#"{"type":"hello","proto":1,"build":"56578","activity":"cine_reveal","incidents_path":"i.tsv","tick_hz":10}"#);
     }
 
     #[test]
-    fn sidecar_lines_parse_bullshcript_item_changes() {
+    fn sidecar_lines_parse_protocol_1() {
         let rows = parse_sidecar_line(
-            r#"{"type":"rows","changes":[{"item":{"bundle":1,"typeId":6,"typeIndex":0},"kind":"cinematic","state":{"playing":{"startedAt":9}},"initial":true}]}"#,
+            r#"{"type":"rows","changes":[{"item":{"bundle":1,"typeId":16,"typeIndex":0},"kind":"lifetime","state":{"state":3,"joinFlag":true},"wire":{"phase":4},"initial":true}]}"#,
         )
         .unwrap()
         .unwrap();
         let SidecarMsg::Rows { changes } = rows else { panic!() };
-        assert_eq!(changes[0].item, ItemRef { bundle: 1, type_id: 6, type_index: 0 });
-        assert!(changes[0].initial && changes[0].kind == "cinematic");
-        assert_eq!(parse_sidecar_line(r#"{"type":"activity_complete"}"#).unwrap(), Some(SidecarMsg::ActivityComplete {}));
-        assert_eq!(parse_sidecar_line(r#"{"type":"ended","extra":1}"#).unwrap(), Some(SidecarMsg::Ended {}));
-        assert_eq!(
-            parse_sidecar_line(r#"{"type":"phase","index":1,"name":"cine_107_twr_phase","region":26}"#).unwrap(),
-            Some(SidecarMsg::Phase { index: 1, name: Some("cine_107_twr_phase".into()), region: Some(26) })
-        );
+        assert_eq!(changes[0].item, ItemRef { bundle: 1, type_id: 16, type_index: 0 });
+        assert_eq!(changes[0].wire.as_ref().and_then(|w| w.get("phase")).and_then(Value::as_i64), Some(4));
+        let loaded = parse_sidecar_line(r#"{"type":"loaded","activity":"cine_reveal","proto":1,"stand_in":true,"stub":false,"drives_lifetime":true,"compile_errors":[],"phases":[{"index":0}]}"#).unwrap();
+        assert!(matches!(loaded, Some(SidecarMsg::Loaded { stand_in: true, drives_lifetime: true, .. })));
+        assert_eq!(parse_sidecar_line(r#"{"type":"activity_complete","id":965,"name":"activity_complete","name_hash":1113982608}"#).unwrap(), Some(SidecarMsg::ActivityComplete {}));
+        assert_eq!(parse_sidecar_line(r#"{"type":"ended"}"#).unwrap(), Some(SidecarMsg::Ended {}));
+        let phase = parse_sidecar_line(r#"{"type":"phase","index":1,"name":"cine_107_twr_phase","name_hash":3615303679,"decl":"x","slice":"plaza","slice_hash":"0x1ad5e415"}"#).unwrap().unwrap();
+        let SidecarMsg::Phase { index: 1, name_hash: Some(h), slice_hash: Some(sh), region: None, .. } = phase else { panic!("{phase:?}") };
+        assert_eq!((hash_value(&h), hash_value(&sh)), (Some(0xD77D_27FF), Some(0x1AD5_E415)));
+        assert_eq!(parse_sidecar_line(r#"{"type":"error","text":"no script","fatal":true}"#).unwrap(), Some(SidecarMsg::Error { text: "no script".into(), fatal: true }));
+        assert_eq!(parse_sidecar_line(r#"{"type":"tick_done","now":3,"ticks":3,"time":0.3}"#).unwrap(), Some(SidecarMsg::TickDone { now: 3 }));
         assert_eq!(parse_sidecar_line("  ").unwrap(), None);
         assert!(parse_sidecar_line(r#"{"type":"nonsense"}"#).is_err());
         assert!(parse_sidecar_line("not json").is_err());
@@ -1243,21 +1330,30 @@ mod tests {
         launches: u32,
     }
 
-    /// The synthetic script, in the shape of the reveal: pregame, cinematic 0 at the cinematic
-    /// hold, phase 1 in region 26, complete, cinematic 1, results, ended.
+    /// The synthetic script, in the shape of the reveal: pregame; cinematic 0 at the cinematic
+    /// hold 2 s in; on its finish, phase 1; 4 s later complete and cinematic 1; on its finish,
+    /// results, ended.
     struct FakeSidecar {
         shared: Arc<Mutex<Shared>>,
         out: VecDeque<LinkEvent>,
         stage: u32,
+        stage_at: u64,
         die_after_start: bool,
+        stand_in: bool,
     }
 
     fn change(kind: &str, index: i16, type_id: u8, state: Value) -> ItemChange {
-        ItemChange { item: ItemRef { bundle: CINE, type_id, type_index: index }, kind: kind.into(), state, initial: false }
+        ItemChange { item: ItemRef { bundle: CINE, type_id, type_index: index }, kind: kind.into(), state, initial: false, wire: None }
     }
 
     fn lifetime(state: i64) -> ItemChange {
-        ItemChange { item: ItemRef { bundle: 0x1234, type_id: 16, type_index: 0 }, kind: "lifetime".into(), state: serde_json::json!({"joinFlag": true, "state": state}), initial: false }
+        ItemChange {
+            item: ItemRef { bundle: 0x1234, type_id: 16, type_index: 0 },
+            kind: "lifetime".into(),
+            state: serde_json::json!({"joinFlag": true, "state": state}),
+            initial: false,
+            wire: Some(serde_json::json!({"phase": lifetime_wire_state(state)})),
+        }
     }
 
     fn playing(index: i16, on: bool) -> ItemChange {
@@ -1265,38 +1361,46 @@ mod tests {
         change("cinematic", index, 6, state)
     }
 
+    fn phase(index: u32, name: &str) -> SidecarMsg {
+        SidecarMsg::Phase { index, name: Some(name.into()), name_hash: None, slice_hash: None, region: None }
+    }
+
     impl SidecarLink for FakeSidecar {
         fn send(&mut self, msg: &HostMsg) -> Result<(), String> {
             self.shared.lock().unwrap().sent.push(msg.clone());
             let mut reply = |m: SidecarMsg| self.out.push_back(LinkEvent::Msg(m));
             match msg {
-                HostMsg::Hello { .. } => reply(SidecarMsg::Ready { unresolved: Vec::new(), drives_lifetime: true }),
+                HostMsg::Hello { .. } => reply(SidecarMsg::Loaded {
+                    stand_in: self.stand_in, stub: false, drives_lifetime: true, compile_errors: Vec::new(),
+                }),
                 HostMsg::Start => {
                     if self.die_after_start {
                         self.out.push_back(LinkEvent::Closed("crashed".into()));
                         return Ok(());
                     }
+                    reply(SidecarMsg::Ready { unresolved: Vec::new(), drives_lifetime: true });
                     reply(SidecarMsg::Rows { changes: vec![lifetime(0), playing(0, false), playing(1, false)] });
-                    reply(SidecarMsg::Phase { index: 0, name: Some("cine_106_trv_phase".into()), region: Some(25) });
+                    reply(phase(0, "cine_106_trv_phase"));
                 }
                 HostMsg::Tick { now } => {
-                    if self.stage == 0 && *now >= 60 {
+                    if self.stage == 0 && *now >= 20 {
                         self.stage = 1;
                         reply(SidecarMsg::Rows { changes: vec![lifetime(3), playing(0, true)] });
                     }
+                    if self.stage == 2 && *now >= self.stage_at + 40 {
+                        self.stage = 3;
+                        reply(SidecarMsg::ActivityComplete {});
+                        reply(SidecarMsg::Rows { changes: vec![playing(1, true)] });
+                    }
+                    self.stage_at = if self.stage == 1 { *now } else { self.stage_at };
                     reply(SidecarMsg::TickDone { now: *now });
                 }
-                HostMsg::CinematicFinished { item } if self.stage == 1 && item.type_index == 0 => {
+                HostMsg::CinematicFinished { type_index: 0, .. } if self.stage == 1 => {
                     self.stage = 2;
                     reply(SidecarMsg::Rows { changes: vec![playing(0, false)] });
-                    reply(SidecarMsg::Phase { index: 1, name: Some("cine_107_twr_phase".into()), region: Some(26) });
+                    reply(phase(1, "cine_107_twr_phase"));
                 }
-                HostMsg::Slice { region: 26 } if self.stage == 2 => {
-                    self.stage = 3;
-                    reply(SidecarMsg::ActivityComplete {});
-                    reply(SidecarMsg::Rows { changes: vec![playing(1, true)] });
-                }
-                HostMsg::CinematicFinished { item } if self.stage == 3 && item.type_index == 1 => {
+                HostMsg::CinematicFinished { type_index: 1, .. } if self.stage == 3 => {
                     self.stage = 4;
                     reply(SidecarMsg::Rows { changes: vec![playing(1, false), lifetime(5)] });
                     reply(SidecarMsg::Rows { changes: vec![lifetime(6)] });
@@ -1348,9 +1452,9 @@ mod tests {
 0x4786c0e0 0xf 0 1 0
 ";
 
-    fn bridge(shared: &Arc<Mutex<Shared>>, die_after_start: bool, complete_body: Option<Vec<u8>>) -> ScriptBridge {
+    fn bridge_with(shared: &Arc<Mutex<Shared>>, die_after_start: bool, stand_in: bool, complete_body: Option<Vec<u8>>) -> ScriptBridge {
         let activity = ScriptedActivity::parse(
-            "165 cine_reveal 0x4786c0e0 list.txt hash=0x0BBD0E26",
+            "165 cine_reveal 0x4786c0e0 list.txt hash=0x0BBD0E26 regions=0:25,1:26",
             &base(),
             &|_| Ok(LIST.to_string()),
         )
@@ -1365,10 +1469,10 @@ mod tests {
             tail: None,
             incidents: crate::incident_catalog::tests::synthetic(),
             complete_body,
+            incidents_path: None,
             mission_phase: true,
             send_unlisted: false,
             delta_init: false,
-            tick: Duration::from_secs(1),
             scoreboard_columns: Vec::new(),
             rewards: Arc::new(RecordingRewards(shared.clone())),
             codec: Arc::new(move || CodecWorker::inline(Box::new(RecordingCodec(s.clone())))),
@@ -1378,9 +1482,14 @@ mod tests {
             Arc::new(config),
             Box::new(move |_| {
                 s.lock().unwrap().launches += 1;
-                Ok(Box::new(FakeSidecar { shared: s.clone(), out: VecDeque::new(), stage: 0, die_after_start }) as Box<dyn SidecarLink>)
+                Ok(Box::new(FakeSidecar { shared: s.clone(), out: VecDeque::new(), stage: 0, stage_at: 0, die_after_start, stand_in })
+                    as Box<dyn SidecarLink>)
             }),
         )
+    }
+
+    fn bridge(shared: &Arc<Mutex<Shared>>, die_after_start: bool, complete_body: Option<Vec<u8>>) -> ScriptBridge {
+        bridge_with(shared, die_after_start, false, complete_body)
     }
 
     fn join(identity: u8) -> ClientMessage {
@@ -1459,33 +1568,33 @@ mod tests {
             assert!(full.full && full.init && full.authority.is_some());
             assert_eq!(full.entries.len(), 4, "three listed rows and the lifetime");
             assert_eq!(lifetime_of(full), Some(0), "the list's @phase until the scripts set one");
-            assert!(matches!(s.sent[0], HostMsg::Hello { activity_index: 165, .. }));
+            assert!(matches!(&s.sent[0], HostMsg::Hello { activity, tick_hz: 10, .. } if activity == "cine_reveal"));
         }
         run_for(&mut b, &mut t, 0.5, &mut wire);
         {
             let s = shared.lock().unwrap();
-            assert!(s.sent.iter().any(|m| matches!(m, HostMsg::Start)), "start after the full list");
+            let start = s.sent.iter().position(|m| matches!(m, HostMsg::Start)).expect("start after loaded and the full list");
+            assert!(matches!(s.sent[start - 1], HostMsg::Players { ref players } if players.len() == 1));
             let pregame = s.frames.last().unwrap();
             assert!(!pregame.full && !pregame.init, "a delta");
             assert_eq!(lifetime_of(pregame), Some(1), "pregame -> 1");
             assert_eq!(pregame.entries.len(), 3, "the lifetime and the two cinematics it set");
         }
-        assert_eq!(b.take_region_request(), Some(25), "phase 0 is in region 25, the client is not there yet");
+        assert_eq!(b.take_region_request(), Some(25), "phase 0 runs in region 25 (the table's), the client is not there yet");
         b.on_client_message(&slice(25), 165, t);
 
-        // Ticks: at 2 s of activity time (tick 60) the first cinematic plays at the hold.
+        // Ticks follow the 10 Hz stamp: at stamp 20 the first cinematic plays at the hold.
         run_for(&mut b, &mut t, 3.0, &mut wire);
-        let play_stamp;
         {
             let s = shared.lock().unwrap();
-            assert!(s.sent.iter().any(|m| matches!(m, HostMsg::Tick { now } if *now >= 60)));
+            let ticks: Vec<u64> = s.sent.iter().filter_map(|m| match m { HostMsg::Tick { now } => Some(*now), _ => None }).collect();
+            assert!(ticks.windows(2).all(|w| w[1] == w[0] + 1), "one tick per stamp step, none skipped: {ticks:?}");
+            assert!(*ticks.last().unwrap() >= 30);
             let play = s.frames.iter().find(|p| lifetime_of(p) == Some(4)).expect("the cinematic hold");
             let (start, counter, on) = cinematic_of(play, 0).expect("cinematic 0 in the same delta");
             assert_eq!((counter, on), (2, 1), "a new counter, playing");
-            assert!(start > 0);
-            play_stamp = start + 1;
+            assert!(start >= 19, "start = the stamp - 1 ({start})");
         }
-        assert!(b.rows.tick(t) >= play_stamp);
 
         // Idle: heartbeats every 3 s.
         let before = b.rows().heartbeats;
@@ -1493,12 +1602,12 @@ mod tests {
         assert!(b.rows().heartbeats >= before + 2);
         assert!(wire.iter().any(|f| f.len() == 6), "heartbeats are the 6-byte live idle frame");
 
-        // The client reports the first cinematic finished, naming its row.
+        // The client reports the first cinematic finished, naming its row; phase 1 is region 26.
         b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, t);
         run_for(&mut b, &mut t, 0.5, &mut wire);
         assert_eq!(b.take_region_request(), Some(26), "phase 1 wants region 26");
         b.on_client_message(&slice(26), 165, t);
-        run_for(&mut b, &mut t, 0.5, &mut wire);
+        run_for(&mut b, &mut t, 4.5, &mut wire);
         assert_eq!(b.take_incident(), Some((965, vec![0xAA, 0xBB])), "activity_complete, with the configured body");
         assert_eq!(b.take_incident(), None);
         {
@@ -1515,24 +1624,37 @@ mod tests {
         // The second finish names no row: the one cinematic playing is it.
         b.on_client_message(&incident(891, None), 165, t);
         run_for(&mut b, &mut t, 1.0, &mut wire);
-        {
-            let s = shared.lock().unwrap();
-            assert!(s.sent.iter().any(|m| matches!(m, HostMsg::CinematicFinished { item } if item.type_index == 1)));
-            let states: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
-            let mut seq = states.clone();
-            seq.dedup();
-            assert_eq!(seq, [0, 1, 4, 6, 8], "the live order: 0 -> 1 -> 4 -> 6 -> 8");
-            assert_eq!(s.rewards.len(), 1, "rewards once, for the one character");
-            assert_eq!((s.rewards[0].0.identity[0], s.rewards[0].1, s.rewards[0].2), (7, 0x0BBD_0E26, ActivityOutcome::Completed));
-            let ticks = s.sent.iter().filter(|m| matches!(m, HostMsg::Tick { .. })).count();
-            drop(s);
-            run_for(&mut b, &mut t, 3.0, &mut wire);
-            let after = shared.lock().unwrap().sent.iter().filter(|m| matches!(m, HostMsg::Tick { .. })).count();
-            assert_eq!(after, ticks, "no ticks after the end");
-        }
+        let s = shared.lock().unwrap();
+        assert!(s.sent.iter().any(|m| matches!(m, HostMsg::CinematicFinished { type_index: 1, .. })));
+        let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+        seq.dedup();
+        assert_eq!(seq, [0, 1, 4, 6, 8], "the live order 0 -> 1 -> 4 -> 6 -> 8, results and ended in frames of their own");
+        assert_eq!(s.rewards.len(), 1, "rewards once, for the one character");
+        assert_eq!((s.rewards[0].0.identity[0], s.rewards[0].1, s.rewards[0].2), (7, 0x0BBD_0E26, ActivityOutcome::Completed));
+        let ticks = s.sent.iter().filter(|m| matches!(m, HostMsg::Tick { .. })).count();
+        drop(s);
+        run_for(&mut b, &mut t, 3.0, &mut wire);
+        let after = shared.lock().unwrap().sent.iter().filter(|m| matches!(m, HostMsg::Tick { .. })).count();
+        assert_eq!(after, ticks, "no ticks after the end");
         // Every frame the bridge returned is stamped (the 10 Hz clock, nondecreasing).
         let stamps: Vec<u32> = wire.iter().map(|f| ((u64::from_be_bytes([0, 0, 0, f[1], f[2], f[3], f[4], f[5]]) >> 7) & 0xFFFF_FFFF) as u32).collect();
         assert!(stamps.windows(2).all(|w| w[0] <= w[1]), "{stamps:?}");
+    }
+
+    #[test]
+    fn stand_in_rows_never_reach_the_wire() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_with(&shared, false, true, None);
+        let mut t = Instant::now();
+        b.on_client_message(&join(6), 165, t);
+        run_for(&mut b, &mut t, 3.5, &mut Vec::new());
+        let s = shared.lock().unwrap();
+        let deltas: Vec<&FramePlan> = s.frames.iter().filter(|p| !p.full).collect();
+        assert!(!deltas.is_empty());
+        assert!(deltas.iter().all(|p| p.entries.iter().all(|(k, _)| k.kind == 0x10)), "only the lifetime");
+        let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+        seq.dedup();
+        assert_eq!(seq, [0, 1, 4]);
     }
 
     #[test]
@@ -1555,11 +1677,11 @@ mod tests {
         assert_eq!(
             s.sent,
             vec![
-                HostMsg::Trigger { item: ItemRef { bundle: 0x992B_B471, type_id: 0x1D, type_index: 34 } },
+                HostMsg::Trigger { bundle: 0x992B_B471, type_index: 34 },
                 HostMsg::PlayerSpawned { key: key.clone() },
                 HostMsg::PlayerDied { key: key.clone() },
-                HostMsg::Incident { name_hash: 0xBD1F_B418, index: 2899 },
-                HostMsg::CinematicSkipped { item: ItemRef { bundle: CINE, type_id: 6, type_index: 1 }, key },
+                HostMsg::Incident { id: 2899, name_hash: 0xBD1F_B418 },
+                HostMsg::CinematicSkipped { bundle: CINE, type_index: 1, key },
             ],
             "891 with no row and no cinematic playing, and an id outside the catalogue, are not passed on"
         );
@@ -1571,12 +1693,10 @@ mod tests {
         let mut b = bridge(&shared, false, None);
         let mut t = Instant::now();
         b.on_client_message(&join(1), 165, t);
-        b.on_client_message(&slice(25), 165, t);
         run_for(&mut b, &mut t, 3.5, &mut Vec::new());
         b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, t);
-        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
-        b.on_client_message(&slice(26), 165, t);
-        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        run_for(&mut b, &mut t, 5.0, &mut Vec::new());
+        assert!(shared.lock().unwrap().frames.iter().any(|p| cinematic_of(p, 1).is_some_and(|c| c.2 == 1)), "the scripts reached completion");
         assert_eq!(b.take_incident(), None);
     }
 
@@ -1618,7 +1738,6 @@ mod tests {
         let mut b = bridge(&shared, false, None);
         let mut t = Instant::now();
         b.on_client_message(&join(4), 165, t);
-        b.on_client_message(&slice(25), 165, t);
         run_for(&mut b, &mut t, 3.5, &mut Vec::new());
         b.on_client_message(&join(4), 165, t);
         run_for(&mut b, &mut t, 0.25, &mut Vec::new());
@@ -1631,7 +1750,7 @@ mod tests {
     }
 
     #[test]
-    fn squad_senses_go_to_the_sidecar_by_bundle() {
+    fn squad_counts_go_to_the_sidecar_by_bundle() {
         let shared = Arc::new(Mutex::new(Shared::default()));
         let mut b = bridge(&shared, false, None);
         let mut t = Instant::now();
@@ -1641,10 +1760,10 @@ mod tests {
         let counts = [crate::sense::SquadCount { group: 0x9243_DFFB, kind: 1, index: 17, live: 0 }];
         let squads = [SquadSense { group: 0x9243_DFFB, index: 17, state: 2, flag: true }];
         b.on_sense(&counts, &squads);
-        let item = ItemRef { bundle: 0x9243_DFFB, type_id: 1, type_index: 17 };
         assert_eq!(
             shared.lock().unwrap().sent,
-            vec![HostMsg::SquadAlive { item, count: 0 }, HostMsg::SquadState { item, state: 2, flag: true }]
+            vec![HostMsg::SquadAlive { bundle: 0x9243_DFFB, type_index: 17, count: 0 }],
+            "squad state bytes are logged, not sent (protocol 1 has no message for them)"
         );
     }
 
@@ -1666,9 +1785,15 @@ mod tests {
     #[test]
     fn the_activity_table_line_parses_and_refuses_junk() {
         let read = |_: &str| Ok(LIST.to_string());
-        let a = ScriptedActivity::parse("165 cine_reveal 0x4786c0e0 l.txt map=0x1:0x2,3:4 bundles=x.json team=0", &base(), &read).unwrap();
+        let a = ScriptedActivity::parse(
+            "165 cine_reveal 0x4786c0e0 l.txt map=0x1:0x2,3:4 bundles=x.json regions=0:25,1:26 team=0",
+            &base(),
+            &read,
+        )
+        .unwrap();
         assert_eq!((a.group_of(1), a.group_of(3), a.group_of(9)), (2, 4, 9));
         assert_eq!((a.bundle_of(2), a.bundle_of(9)), (1, 9));
+        assert_eq!((a.regions.get(&0), a.regions.get(&1)), (Some(&25), Some(&26)));
         assert_eq!(a.rows.len(), 3);
         assert_eq!(a.bundles_path.as_deref(), Some("x.json"));
         assert!(ScriptedActivity::parse("165 cine_reveal 0x4786c0e0", &base(), &read).is_err());

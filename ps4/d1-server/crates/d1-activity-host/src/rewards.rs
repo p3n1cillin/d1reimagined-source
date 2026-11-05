@@ -6,8 +6,12 @@
 //! When a scripted activity's lifetime reaches ended, the bridge calls
 //! [`ActivityRewards::grant_activity_rewards`] once for each character that joined it. **This crate
 //! grants nothing**: what D1 gives at the end of an activity (XP, the post-game rewards, reputation)
-//! comes from the game's own data and belongs to the service that owns the character (Stream M,
-//! through d1-responder). [`NoRewards`] is the stub until that lands: it logs and grants nothing.
+//! comes from the game's own data and belongs to the service that owns the character: Stream M's
+//! `rewards::grant_activity_rewards(&mut store, CharacterId, activity_hash, &ActivityOutcome)` in
+//! d1-responder, another process (notes/ps4-56578-rewards-and-growth-2026-11-05.md). An adapter
+//! implementing this trait maps the identity to the `CharacterId` and forwards the call
+//! ([`ActivityOutcome::Completed`] is its `completed: true`). [`NoRewards`] is the stub until that
+//! adapter exists: it logs and grants nothing.
 //!
 //! The call is made on the activity host's connection loop, which must never wait (the client
 //! drops a host that stays silent, `state::HOST_SILENCE_LIMIT_MS`). An implementation must return
