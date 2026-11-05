@@ -243,6 +243,19 @@ pub enum ActivityOutcome {
     ResourceNode { bundle: u32, index: i16 },
 }
 
+impl ActivityOutcome {
+    /// Whether it counts as a completion: the `completed` of stream M's
+    /// `rewards::ActivityOutcome` (`d1-responder`), which the responder-side grant takes as
+    /// `ActivityOutcome { completed, community_page: None, roll_engrams: false, seed: None }`.
+    /// Chests, nodes and patrol missions are always completions; an event only when it was.
+    pub fn completed(&self) -> bool {
+        match self {
+            Self::PublicEvent { completed, .. } => *completed,
+            Self::PatrolMission { .. } | Self::Chest { .. } | Self::ResourceNode { .. } => true,
+        }
+    }
+}
+
 /// A public event's completion tier, as Destiny 1 showed it (bronze, silver, gold). The tier is
 /// reported by the event's script; this layer never computes one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

@@ -75,8 +75,10 @@
 //! completed an Activity-Host handshake against anything we built. The moment one does, everything
 //! downstream is `synthetic_ancestor`.
 
+pub mod checkpoints;
 pub mod codec;
 pub mod controls;
+pub mod encounter_framework;
 pub mod entity;
 pub mod fireteam;
 pub mod listener;
@@ -87,6 +89,7 @@ pub mod public_events;
 pub mod public_host;
 pub mod public_registry;
 pub mod push;
+pub mod pvp;
 pub mod registry;
 pub mod sense;
 pub mod sensor_list;

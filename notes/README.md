@@ -7,6 +7,8 @@ is the current summary. Titles below are the notes' own.
 ## Start here (PS4 build 56578, current)
 
 - [PS4 56578: public instances and the bubble host (5 November 2026)](ps4-56578-public-instances-2026-11-05.md)
+- [PS4 56578: the complete client incident catalogue (5 November 2026)](ps4-56578-incident-catalog-2026-11-05.md)
+- [PS4 56578: rewards and character growth services (5 November 2026)](ps4-56578-rewards-and-growth-2026-11-05.md)
 - [PS4 56578 wire catalogue: RTTI, schemas and open meanings (5 November 2026)](ps4-56578-wire-catalog-2026-11-05.md)
 - [PS4 56578: the persistent player store and progression (5 November 2026)](ps4-56578-player-store-2026-11-05.md)
 - [Research record: resources for the full game (5 November 2026)](ps4-56578-research-record-2026-11-05.md)
@@ -69,6 +71,7 @@ is the current summary. Titles below are the notes' own.
 - [PS4 56578: pilot programs, activity clock and combat inputs](ps4-56578-pilots-clock-combat.md)
 - [PS4 build 56578: client sensor sense updates](ps4-sensor-sense.md)
 - [Native active squad members on PS4 build 56578](ps4-native-squad-targets.md)
+- [PS4 56578: strikes, raids, arenas and the Crucible as data (5 November 2026)](ps4-56578-strikes-raids-crucible-2026-11-05.md)
 
 ## PS4: emulator, input and the 01.29 starting point
 
