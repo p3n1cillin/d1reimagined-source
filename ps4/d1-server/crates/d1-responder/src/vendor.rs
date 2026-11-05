@@ -23,7 +23,7 @@ use std::sync::{Mutex, OnceLock};
 
 /// The client's bucket table (`investment_globals->vfunc[0x98]`, read live): ordinal ->
 /// (first slot, slot count, scope 0 = profile / 1 = account).
-const BUCKETS: &[(u8, u16, u16, u8)] = &[
+pub(crate) const BUCKETS: &[(u8, u16, u16, u8)] = &[
     (0x05, 0, 20, 0), (0x01, 20, 20, 0), (0x06, 40, 3, 0), (0x07, 43, 10, 0), (0x08, 53, 10, 0),
     (0x09, 63, 10, 0), (0x0a, 73, 10, 0), (0x0b, 83, 10, 0), (0x02, 93, 10, 0), (0x03, 103, 10, 0),
     (0x04, 113, 10, 0), (0x0c, 123, 10, 0), (0x0f, 133, 10, 0), (0x0d, 143, 10, 0), (0x0e, 153, 10, 0),
@@ -496,7 +496,7 @@ const EQUIPPED: usize = 0x2B80;
 /// The equipped-array index of a bucket, read from the geared fixture (each equipped instance's
 /// inventory slot gives its bucket): subclass, the five armour pieces, the three weapons, the vehicle
 /// and the ghost. Other buckets are not known yet.
-fn equipped_index(ordinal: u8) -> Option<usize> {
+pub(crate) fn equipped_index(ordinal: u8) -> Option<usize> {
     Some(match ordinal {
         0x06 => 0,
         0x07..=0x0B => 1 + (ordinal - 0x07) as usize,

@@ -55,6 +55,23 @@ use serde_json::json;
 use tracing::{info, warn};
 
 mod vendor;
+// ⭐ Stream I (2026-11-05): the social services between activities. The service logic and its
+// tables; the wire hooks are in `social_hooks`, behind `D1_SOCIAL=1`. Parts are not called by the
+// responder yet (their wire is not decoded), hence the allow.
+#[allow(dead_code)]
+mod bounties;
+#[allow(dead_code)]
+mod character_create;
+#[allow(dead_code)]
+mod director;
+#[allow(dead_code)]
+mod inventory_ops;
+#[allow(dead_code)]
+mod store;
+#[allow(dead_code)]
+mod tables;
+#[allow(dead_code)]
+mod vendors;
 
 #[derive(Clone)]
 struct Cfg {
