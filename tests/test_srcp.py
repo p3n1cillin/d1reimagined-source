@@ -97,6 +97,25 @@ class SrcpTest(unittest.TestCase):
         self.assertIn('groups 0x11111111:2 0x4786c0e0:1', row)
         self.assertNotIn('eaaf16e2', row, 'only the first host (the PAH)')
 
+    def test_incident_body_reads_the_length_at_d4(self):
+        img = bytearray(0x2D0)
+        struct.pack_into('<II', img, 0, 2, 965)
+        struct.pack_into('<I', img, 0xD4, 3)
+        img[0xD8:0xDC] = b'\x01\x02\x03\x04'  # the fourth byte is past the length
+        words = {o: struct.unpack_from('<Q', img, o)[0] for o in range(0, len(img), 8)}
+        self.assertEqual(CLI.incident_types(words)[:1], [965])
+        self.assertEqual(CLI.incident_body(words), b'\x01\x02\x03')
+        self.assertEqual(CLI.incident_body({}), b'')
+
+    def test_lifetime_values_are_signed_and_only_changes_print(self):
+        self.assertEqual(CLI.lifetime_value('03ff01'), 3)
+        self.assertEqual(CLI.lifetime_value('ff'), -1)
+        self.assertIsNone(CLI.lifetime_value(''))
+        rows = [(1, 0xA, 'g', 3, 0), (2, 0xA, 'g', 3, 0), (3, 0xA, 'g', 3, 1), (3, 0xB, 'g', 3, 1),
+                (4, 0xA, 'g', 3, None), (5, 0xA, 'g', 3, 6)]
+        self.assertEqual(CLI.lifetime_changes(rows),
+                         [(1, 0xA, 'g', 3, 0), (3, 0xA, 'g', 3, 1), (3, 0xB, 'g', 3, 1), (5, 0xA, 'g', 3, 6)])
+
     def test_refuses_other_link_types(self):
         data = struct.pack('<IHHiIII', 0xa1b2c3d4, 2, 4, 0, 0, 0x40000, 1)
         with self.assertRaises(ValueError):

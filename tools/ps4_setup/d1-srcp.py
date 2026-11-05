@@ -4,6 +4,7 @@
     d1-srcp.py summary CAPTURE.pcap                     (per activity-host id; --host ID filters any command)
     d1-srcp.py incidents CAPTURE.pcap [--dir s2c|c2s]   (udt 18, decoded by d1-oracle)
     d1-srcp.py sensors CAPTURE.pcap                     (udt 5 sensor_auth_update frames)
+    d1-srcp.py lifetime CAPTURE.pcap                    (each host's activity lifetime values, as they change)
     d1-srcp.py sessions CAPTURE.pcap [...]              (each host session's activity and slice sets)
     d1-srcp.py mission CAPTURE.pcap [...] [--activity-table TSV]  (what a host needs: activity, world, start, groups)
     d1-srcp.py regions CAPTURE.pcap                     (the PAH region records, udt 11, as they change)
@@ -31,6 +32,7 @@ import d1_srcp  # noqa: E402
 import d1paths  # noqa: E402
 
 INCIDENT, SENSOR = 18, 5
+LIFETIME_KIND, LIFETIME_TAG = 0x10, 0x808008A3  # sensor kind 0x10 carries the 0x808008A3 lifetime value
 
 
 def oracle():
@@ -131,6 +133,25 @@ def sensor_frames(bodies):
     return out
 
 
+def sensor_values(tag, bodies):
+    """{entry body: decoded value dict or None} (`d1-oracle sensor decode-values`, one start)."""
+    bodies = list(dict.fromkeys(bodies))
+    if not bodies:
+        return {}
+    batch = ''.join(f'{tag:#x} {b}\n' for b in bodies)
+    r = subprocess.run([oracle(), 'sensor', 'decode-values'], input=batch, capture_output=True, text=True,
+                       cwd=d1paths.workspace(), timeout=120 + 2 * len(bodies))
+    lines = r.stdout.splitlines()
+    if r.returncode or len(lines) != len(bodies):
+        raise RuntimeError(f'd1-oracle sensor decode-values: {(r.stderr or r.stdout).strip()[-300:]}')
+    out = {}
+    for body, line in zip(bodies, lines):
+        d = json.loads(line)
+        setup_error(d)
+        out[body] = None if 'error' in d else d
+    return out
+
+
 def incident_types(words):
     """udt 18: {u32 count, u32 types[count], ...}; the struct's words are 64-bit little-endian."""
     count = words.get(0, 0) & 0xFFFFFFFF
@@ -139,6 +160,35 @@ def incident_types(words):
         w = words.get(off, 0)
         flat += [w & 0xFFFFFFFF, w >> 32]
     return flat[1:1 + count]
+
+
+def incident_body(words):
+    """udt 18's one metadata body: u32 length at +0xD4, bytes from +0xD8 (at most 500). The client
+    decodes it as the RSAT type its FIRST incident's body selector names (0x2554B0)."""
+    img = image(words) if words else b''
+    if len(img) < 0xD8:
+        return b''
+    n = min(struct.unpack_from('<I', img, 0xD4)[0], 500)
+    return (img + bytes(0xD8 + n))[0xD8:0xD8 + n]
+
+
+def lifetime_value(image_hex):
+    """The decoded lifetime value: the signed first byte of the 0x808008A3 image (wire nibble - 1)."""
+    if not image_hex:
+        return None
+    v = int(image_hex[:2], 16)
+    return v - 256 if v > 127 else v
+
+
+def lifetime_changes(rows):
+    """[(t, host, group, sub, value)] where each (host, group, sub) lifetime record changes value."""
+    out, last = [], {}
+    for t, host, group, sub, value in rows:
+        key = (host, group, sub)
+        if value is not None and last.get(key) != value:
+            last[key] = value
+            out.append((t, host, group, sub, value))
+    return out
 
 
 def activity_names():
@@ -219,7 +269,8 @@ def mission_row(cap, names, index):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'sessions', 'mission', 'regions', 'export'))
+    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'lifetime', 'sessions', 'mission',
+                                        'regions', 'export'))
     ap.add_argument('capture', type=Path, nargs='+')
     ap.add_argument('--dir', choices=('s2c', 'c2s'), default='s2c')
     ap.add_argument('--out', type=Path)
@@ -277,7 +328,20 @@ def main():
         words = decode_all((udt, body) for *_, udt, body in mine)
         for t, d, peer, host, udt, body in mine:
             w = words[(udt, body)]
-            print(f'{t:8.1f} host ..{host & 0xFFFF:04x} types {incident_types(w) if w else "(refused)"}  body {len(body)} B')
+            meta = f'metadata {len(incident_body(w))} B' if w else ''
+            print(f'{t:8.1f} host ..{host & 0xFFFF:04x} types {incident_types(w) if w else "(refused)"}  '
+                  f'body {len(body)} B {meta}')
+    elif a.command == 'lifetime':
+        mine = [m for m in msgs if m[1] == 's2c' and m[4] == SENSOR]
+        frames = sensor_frames(body for *_, body in mine)
+        entries = list(dict.fromkeys(e['body'] for f in frames.values() if f for e in f['entries']
+                                     if e['i8'] == LIFETIME_KIND))
+        values = sensor_values(LIFETIME_TAG, entries)
+        rows = [(t, host, e['hash'], e['sub'], lifetime_value((values.get(e['body']) or {}).get('image')))
+                for t, d, peer, host, udt, body in mine for e in (frames[body] or {}).get('entries', [])
+                if e['i8'] == LIFETIME_KIND]
+        for t, host, group, sub, value in lifetime_changes(rows):
+            print(f'{t:8.1f} host ..{host & 0xFFFF:04x} {group}/0x10/{sub} lifetime {value}')
     elif a.command == 'sensors':
         mine = [m for m in msgs if m[1] == 's2c' and m[4] == SENSOR]
         frames = sensor_frames(body for *_, body in mine)
