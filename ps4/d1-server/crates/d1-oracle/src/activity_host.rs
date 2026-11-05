@@ -293,7 +293,11 @@ pub fn is_raw_send(user_defined_type: u32) -> Option<(u64, &'static str)> {
 /// ⭐ Descriptor field kind **0x22** - a *dynamic flags* bitset, and the one field kind this oracle
 /// cannot run.
 ///
-/// Two Activity-Host messages consist of exactly one such field and nothing else - udt **33**
+/// This classification is retained for **01.29 only**. On 56578, the relocated handler
+/// pair 0x102A3D0/0x102D220 implements a typed value (handle plus payload at +0x10),
+/// including in udts 33/37; `dynamic_flags_reason` does not gate that build.
+///
+/// Two reference-build Activity-Host messages consist of exactly one such field - udt **33**
 /// `process_debug_command` (`0x80800A3D`, `0x210`) and udt **37** `send_client_heartbeat`
 /// (`0x80800D06`, `0xB1E0`). Decoding either faults, and the fault is **not** about the message:
 ///
@@ -324,6 +328,12 @@ pub const DYNAMIC_FLAGS_GROW_FN: u64 = 0x002C_6BA0;
 /// Whether a tag's top-level fields include a [`FIELD_KIND_DYNAMIC_FLAGS`] one, and if so why that
 /// is fatal here. Memoised through [`dynamic_flags_tags`].
 pub fn dynamic_flags_reason(tag: u32) -> Result<Option<String>> {
+    // The old field-kind label is build-specific. 56578's relocated 0x22 handlers
+    // are 0x102A3D0/0x102D220: handle through 0x1996050, payload at +0x10.
+    // They do not allocate a dynamic bitset. Keep the 01.29 refusal on that build.
+    if addrs() == &crate::codec::CODEC_56578 {
+        return Ok(None);
+    }
     if !dynamic_flags_tags()?.contains(&tag) {
         return Ok(None);
     }
@@ -349,6 +359,9 @@ pub fn dynamic_flags_reason(tag: u32) -> Result<Option<String>> {
 pub fn dynamic_flags_tags() -> Result<&'static BTreeSet<u32>> {
     static T: OnceLock<std::result::Result<BTreeSet<u32>, String>> = OnceLock::new();
     match T.get_or_init(|| {
+        if addrs() == &crate::codec::CODEC_56578 {
+            return Ok(BTreeSet::new());
+        }
         let image = Image::open_default().map_err(|e| e.to_string())?;
         let index = descriptors::index(&image).map_err(|e| e.to_string())?;
         let schemas = schemas().as_ref().map_err(|e| e.clone())?;
@@ -1755,10 +1768,13 @@ pub fn controls() -> Result<Vec<Control>> {
     c.push(check(
         "⭐ udts whose descriptor is a DYNAMIC FLAGS bitset are refused with their cause, and the \
          set is derived",
-        df == vec![33, 37]
-            && df_err.contains("DYNAMIC FLAGS")
-            && df_err.contains("FUN_000B0550")
-            && codec.struct_size(1).is_ok(),
+        (if addrs() != &crate::codec::CODEC_56578 {
+            df == vec![33, 37]
+                && df_err.contains("DYNAMIC FLAGS")
+                && df_err.contains("FUN_000B0550")
+        } else {
+            df.is_empty() && df_err.is_empty()
+        }) && codec.struct_size(1).is_ok(),
         format!(
             "derived {df:?} from field kind {FIELD_KIND_DYNAMIC_FLAGS:#04x}; the fault is \
              {:?} after {:#x}; udt 1 is the positive control on the same call",

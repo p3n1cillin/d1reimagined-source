@@ -111,6 +111,7 @@ impl SchemaHarness {
             h.write(guard, &[1])?;
         }
         registry::build(&mut h, &image, &index, tag, c.registry_global, &extra)?;
+        h.correct_rsat_scalar_float(c.rsat_scalar_float)?;
 
         // ⭐ Everything allocated from here on is one call's scratch. Nothing after this line may
         // allocate scaffolding that outlives a call - `begin_call` releases it.
