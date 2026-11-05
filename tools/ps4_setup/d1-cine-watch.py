@@ -3,7 +3,7 @@
 
     d1-cine-watch.py RUN                                    (cine_reveal, activity 165)
     d1-cine-watch.py RUN --activity 167 --slice 1 \
-        --states cine_speaker-phase-1.txt cine_speaker-play.txt+1 cine_speaker-done.txt
+        --states cine_speaker-phase-1.txt cine_speaker-play.txt+1 cine_speaker-done.txt cine_speaker-end.txt+1
 
 For a run served with a world table that serves the activity's cinematic records idle
 (ps4/fixtures/56578/mission/world-table-cine-live.txt for 165, world-table-speaker-live.txt adds
@@ -16,8 +16,9 @@ written `FILE+SECONDS` is served that many seconds after the previous one instea
 
 The live hosts stepped the world's lifetime phase 0 -> 1 -> 4 and played each cinematic at phase 4,
 then 6 and 8 at the end (notes/d1-live-speaker-timeline-2026-11-05.md); the lists carry it as
-`@phase`. The defaults are cine_reveal's: slice set 25, then phase 1, play-0 one second later, and
-done.
+`@phase`. The defaults are cine_reveal's: slice set 25, then phase 1, play-0 one second later, done
+on the stop (phase 6) and the end (phase 8) a second after it. Run cine-live13 (5 November) played
+the reveal this way, and at phase 8 the client closed the activity and went to orbit.
 """
 import argparse
 import glob
@@ -32,7 +33,7 @@ import d1paths  # noqa: E402
 
 MISSION = HERE.parents[1] / 'ps4' / 'fixtures' / '56578' / 'mission'
 GROUP = '0x4786c0e0'
-STATES = ['cine_reveal-phase-1.txt', 'cine_reveal-play-0.txt+1', 'cine_reveal-done.txt']
+STATES = ['cine_reveal-phase-1.txt', 'cine_reveal-play-0.txt+1', 'cine_reveal-done.txt', 'cine_reveal-end.txt+1']
 
 
 def log(msg):

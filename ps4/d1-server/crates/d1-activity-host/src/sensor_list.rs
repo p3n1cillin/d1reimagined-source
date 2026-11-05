@@ -271,6 +271,7 @@ mod tests {
             ];
             lists.extend(play.iter().map(|f| (f.to_string(), 4)));
             lists.push((format!("{world}-done.txt"), 6));
+            lists.push((format!("{world}-end.txt"), 8));
             for (file, phase) in lists {
                 let text = std::fs::read_to_string(dir.join(&file))
                     .unwrap_or_else(|e| panic!("{file}: {e}"));

@@ -28,7 +28,7 @@ class CineWatchTest(unittest.TestCase):
         self.assertEqual(M.state('cine_awoken-play-0.txt+7.5'), ('cine_awoken-play-0.txt', 7.5))
         self.assertEqual(M.state('cine_reveal-done.txt'), ('cine_reveal-done.txt', None))
         self.assertEqual(M.state('odd+name.txt'), ('odd+name.txt', None))
-        self.assertEqual([M.state(s)[1] for s in M.STATES], [None, 1.0, None])
+        self.assertEqual([M.state(s)[1] for s in M.STATES], [None, 1.0, None, 1.0])
         for name in M.STATES:
             self.assertTrue((MISSION / M.state(name)[0]).exists(), name)
 
@@ -48,6 +48,8 @@ class CineWatchTest(unittest.TestCase):
             for p in plays:
                 self.assertEqual(phase(p), 4, p)
             self.assertEqual(phase(f'{world}-done.txt'), 6, world)
+            self.assertEqual(phase(f'{world}-end.txt'), 8, world)
+            self.assertEqual(records(f'{world}-end.txt'), records(f'{world}-done.txt'), world)
             # Phase 1 is the idle world list: the same records as the join's.
             self.assertEqual(records(f'{world}-phase-1.txt'), records(f'sensor-clients-{world}-live.txt'), world)
 
