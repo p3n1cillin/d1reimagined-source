@@ -79,6 +79,7 @@ pub mod codec;
 pub mod controls;
 pub mod entity;
 pub mod fireteam;
+pub mod generated;
 pub mod listener;
 pub mod messages;
 pub mod protocol;
