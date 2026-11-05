@@ -7,10 +7,11 @@
 For a run served with a world table that serves the activity's cinematic records idle
 (ps4/fixtures/56578/mission/world-table-cine-live.txt for 165, world-table-speaker-live.txt adds
 The Speaker, 167; notes/d1-live-captures-2026-11-05.md). Follows the run's activity-host log; once
-the client is in the activity and reports its start slice set, it serves the first state through
-the host's control file (`clients GROUP PATH`), then on each "incident 891 reported by the client"
-(a cinematic stopped, 56578) the next one. The defaults are cine_reveal's: slice set 25, then
-play-0, play-1, done.
+the client is in the activity and reports its start slice set (or `--start-after` seconds after
+the join, whichever comes first: in run cine-live8 the host never logged the client's slice set in
+165), it serves the first state through the host's control file (`clients GROUP PATH`), then on
+each "incident 891 reported by the client" (a cinematic stopped, 56578) the next one. The defaults
+are cine_reveal's: slice set 25, then play-0 and done.
 """
 import argparse
 import glob
@@ -25,7 +26,7 @@ import d1paths  # noqa: E402
 
 MISSION = HERE.parents[1] / 'ps4' / 'fixtures' / '56578' / 'mission'
 GROUP = '0x4786c0e0'
-STATES = ['cine_reveal-play-0.txt', 'cine_reveal-play-1.txt', 'cine_reveal-done.txt']
+STATES = ['cine_reveal-play-0.txt', 'cine_reveal-done.txt']
 
 
 def log(msg):
@@ -46,6 +47,9 @@ def joined(line, activity):
 
 
 def main():
+    # The host's log lines carry emoji; a redirected Windows console would otherwise be cp1252
+    # and the first one ends the watcher (run cine-live8).
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('run')
     ap.add_argument('--control', default=os.path.join(str(d1paths.staging()), 'ah-control.txt'),
@@ -54,6 +58,9 @@ def main():
     ap.add_argument('--slice', type=int, default=25, help='its start slice set (default 25)')
     ap.add_argument('--group', default=GROUP, help=f'the sensor group to replace (default {GROUP})')
     ap.add_argument('--states', nargs='+', default=STATES, help='the lists to serve, in order')
+    ap.add_argument('--start-after', type=float, default=15.0,
+                    help='serve the first state this many seconds after the join if the slice-set cue '
+                         'has not come (default 15; live, the first cinematic played 12.7 s in)')
     a = ap.parse_args()
     staging = str(d1paths.staging())
     while True:
@@ -63,26 +70,34 @@ def main():
             break
         time.sleep(5)
     log(f'host log {path}')
-    pos, inside, stage = 0, False, 0
+
+    def serve(stage):
+        with open(a.control, 'a', encoding='utf-8') as c:
+            c.write(f'clients {a.group} {MISSION / a.states[stage]}\n')
+        log(f'control: clients {a.group} {a.states[stage]}')
+
+    pos, joined_at, stage = 0, None, 0
     while stage < len(a.states):
         with open(path, encoding='utf-8', errors='replace') as f:
             f.seek(pos)
             new = f.read()
             pos = f.tell()
         for line in new.splitlines():
-            if not inside:
+            if joined_at is None:
                 if joined(line, a.activity):
-                    inside = True
+                    joined_at = time.monotonic()
                     log(line.strip()[:160])
                 continue
             if stage < len(a.states) and due(stage, line, a.slice):
                 log(line.strip()[:160])
-                with open(a.control, 'a', encoding='utf-8') as c:
-                    c.write(f'clients {a.group} {MISSION / a.states[stage]}\n')
-                log(f'control: clients {a.group} {a.states[stage]}')
+                serve(stage)
                 stage += 1
             elif 'slice set' in line or 'incident' in line:
                 log(line.strip()[:160])
+        if stage == 0 and joined_at is not None and time.monotonic() - joined_at >= a.start_after:
+            log(f'no slice-set cue {a.start_after:.0f} s after the join: serving the first state')
+            serve(stage)
+            stage += 1
         time.sleep(1)
     log('all cinematic states served')
 

@@ -142,24 +142,36 @@ The cinematics then run on the host's word. Each record's value is `{u32 start, 
 | +50 s | `/6/1` | state 2: the second cinematic plays |
 | +96.7 s | `/6/1` | state 4. Then udt 23 and 24, and the client moves to the Tower |
 
-We serve 165 an empty sensor list. The live host served both cinematic records, then stepped them through these states.
+We served 165 an empty sensor list. The live host served both cinematic records, then stepped them through these states.
 
-### Serving it (5 November, not yet seen through)
+### Serving it (5 November)
 
 `ps4/fixtures/56578/mission/world-table-cine-live.txt` serves 165 with:
-- `sensor-clients-cine_reveal-live.txt`: the two cinematic records, idle, plus the world block;
+- `sensor-clients-cine_reveal-live.txt`: the cinematic record, idle, plus the world block;
 - start region 25.
 
-`tools/ps4_setup/d1-cine-watch.py RUN` then plays the cinematics through the host's control file:
-- `cine_reveal-play-0.txt` once the client reports slice set 25;
-- `-play-1.txt` and `-done.txt` on each client incident 891.
+`tools/ps4_setup/d1-cine-watch.py RUN` then steps the cinematic through the host's control file:
+- `cine_reveal-play-0.txt` once the client reports slice set 25, or 15 s after the join;
+- `cine_reveal-done.txt` on the client's incident 891.
 
-**No run has reached 165 yet:**
+**The first run to reach 165, cine-live8 (5 November, 08:59-10:17), gets into the world:**
+- It played A Guardian Rises unattended from the checkpoint to the post-game, and CONTINUE moved it to 165 at 09:57. Codex's app had been closed. The client reported no network gap during play, only one of 4.9 s while loading into orbit.
+- **Start region 25 loads.** The client transitioned to `PRV25.25`, then went through `activity:physics_join` to `activity:in_world`. With region 24 (sense124) it had sat on the loading screen.
+- **The client's own list has one cinematic record**, `0x2FE7DBE6/6/0` (`sensor-clients-cine_reveal-native.txt`, read from its memory once the world was resident). The Xbox 360 host served two. Every record we served was delivered (pending 0), so the lists now leave `/6/1` out.
+- **The cinematic did not start.** The screen stayed black, and no incident 2681 came, for each of these play states:
+  - state 2 with start 0 and flag 0;
+  - the same with the live flag 1;
+  - each again with only `/6/0`.
+
+  The live host's start was its own frame stamp (`0xC7`), which our host does not log, so that is the next thing to try. Something else the client waits on in a cinematic world is the alternative.
+- **Two watcher bugs this run found:**
+  - The host never logged "client is now in slice set 25" in 165, so the first cue never came. The watcher now falls back to 15 s after the join.
+  - It died printing the host's emoji to a cp1252 console. It now writes UTF-8.
+
+Earlier attempts did not reach 165:
 - cine-live1: the D1 Video menu's saved 60 fps wrecked its walks (hence #264).
 - cine-live2 and cine-live3: the game's own block detector crashed them in the post-game tour and the hangar.
 - cine-live5: the client stalled ("4739 milliseconds since the last network update") and dropped the host ("baboon") at junction-west.
-
-These are the stalls Codex's level-1 runs have hit since 4 November (draft #256), and they still come with `D1_RATE_RULES=0` and no D1 detours installed. Run it with `ending-run.ps1 -Waves -WorldTable ps4/fixtures/56578/mission/world-table-cine-live.txt` and the watcher beside it once runs reach the post-game again.
 
 ## Entity-slot handover (udt 23-26)
 
