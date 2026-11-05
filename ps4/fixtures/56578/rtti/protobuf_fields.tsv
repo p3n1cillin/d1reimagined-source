@@ -1,0 +1,142 @@
+descriptor	field	cardinality	codec	size	capacity	pre_pad	flag_delta	aux
+0x15b67e0	1	required	varint	8	0	0	0	
+0x15b67e0	2	required	varint	4	0	0	0	
+0x15b67e0	3	callback	bytes	16	0	4	0	
+0x15b7be0	1	optional	varint	8	0	8	-8	
+0x15b7c10	1	required	fixed32	4	0	0	0	
+0x15b7c10	2	required	fixed32	4	0	0	0	
+0x15b7c10	3	required	fixed32	4	0	0	0	
+0x15b7ec0	1	optional	varint	4	0	4	-4	
+0x15b7ec0	2	optional	varint	4	0	4	-4	
+0x15b7ec0	3	optional	varint	4	0	4	-4	
+0x15b7f20	1	optional	varint	4	0	4	-4	
+0x15b7f20	2	optional	varint	4	0	4	-4	
+0x15b7f70	1	optional	varint	4	0	4	-4	
+0x15b8a00	1	optional	varint	4	0	4	-4	
+0x15b8a00	2	optional	varint	8	0	8	-8	
+0x15b8a00	3	optional	varint	8	0	8	-8	
+0x15b9f00	1	optional	varint	8	0	8	-8	
+0x15b9f00	2	optional	varint	8	0	8	-8	
+0x15b9f50	1	optional	varint	8	0	8	-8	
+0x15b9f50	2	optional	varint	4	0	4	-4	
+0x15b9f50	3	optional	varint	4	0	4	-4	
+0x15b9f50	4	optional	fixed32	4	0	4	-4	
+0x15b9f50	5	optional	varint	1	0	1	-1	
+0x15b9f50	6	optional	varint	1	0	1	-1	
+0x15ba140	1	repeated	varint	4	64	8	-8	
+0x15ba500	1	callback	bytes	16	0	0	0	
+0x15ba500	2	repeated	varint	4	64	8	-8	
+0x15ba500	3	callback	bytes	16	0	0	0	
+0x15ba560	1	optional	string	512	0	1	-1	
+0x15ba560	2	optional	string	64	0	1	-1	
+0x15ba560	3	optional	string	64	0	1	-1	
+0x15ba560	4	required	varint	4	0	1	0	
+0x15c2990	1	required	varint	4	0	0	0	
+0x15c2990	2	required	varint	4	0	0	0	
+0x15c2990	3	optional	varint	8	0	8	-8	
+0x15c2990	4	required	bytes	145032	0	0	0	
+0x15c3710	1	optional	varint	8	0	8	-8	
+0x15c3710	2	optional	varint	8	0	8	-8	
+0x15c3710	3	optional	bytes	136	0	8	-8	
+0x15c3770	1	optional	bytes	520	0	8	-8	
+0x15c37a0	1	optional	varint	1	0	1	-1	
+0x15c37f0	1	optional	varint	4	0	4	-4	
+0x15c37f0	2	optional	varint	4	0	4	-4	
+0x15c37f0	3	optional	varint	4	0	4	-4	
+0x15c37f0	4	optional	varint	4	0	4	-4	
+0x15c37f0	5	optional	varint	1	0	1	-1	
+0x15c37f0	6	optional	varint	4	0	2	-2	
+0x15c37f0	7	optional	varint	4	0	4	-4	
+0x15c37f0	8	optional	varint	4	0	4	-4	
+0x15c37f0	9	optional	varint	4	0	4	-4	
+0x15c37f0	10	optional	fixed32	4	0	4	-4	
+0x15c37f0	11	optional	fixed32	4	0	4	-4	
+0x15c3910	1	optional	varint	4	0	4	-4	
+0x15c3910	2	optional	varint	4	0	4	-4	
+0x15c3910	3	optional	varint	4	0	4	-4	
+0x15c3910	4	optional	varint	4	0	4	-4	
+0x15c3910	5	optional	varint	4	0	4	-4	
+0x15c3910	6	optional	fixed32	4	0	4	-4	
+0x15c3910	7	optional	varint	4	0	4	-4	
+0x15c39e0	1	optional	varint	4	0	4	-4	
+0x15c39e0	2	optional	fixed32	4	0	4	-4	
+0x15c39e0	3	optional	fixed32	4	0	4	-4	
+0x15c39e0	4	optional	varint	1	0	1	-1	
+0x15c39e0	5	optional	varint	4	0	2	-2	
+0x15c39e0	6	optional	varint	8	0	8	-8	
+0x15c39e0	7	optional	varint	4	0	4	-4	
+0x15c39e0	8	optional	varint	4	0	4	-4	
+0x15c3ab0	1	optional	bytes	88	0	8	-8	
+0x15c3b00	1	optional	bytes	72	0	8	-8	
+0x15c3b00	3	optional	varint	4	0	4	-4	
+0x19108f0	1	optional	varint	4	0	4	-4	
+0x19108f0	2	repeated	message	32	20	8	-8	0x15b9f00
+0x19108f0	3	optional	varint	4	0	4	-4	
+0x1910950	1	repeated	message	48	20	8	-8	0x15b9f50
+0x1941c70	1	optional	varint	4	0	4	-4	
+0x1941c70	2	optional	message	176	0	8	-8	0x15c3710
+0x1941cc0	1	optional	varint	8	0	8	-8	
+0x1941cc0	2	optional	string	64	0	1	-1	
+0x1941cc0	3	optional	varint	1	0	1	-1	
+0x1941cc0	4	optional	message	528	0	5	-5	0x15c3770
+0x1941d40	1	optional	varint	4	0	4	-4	
+0x1941d40	2	repeated	message	616	64	8	-8	0x1941cc0
+0x1941d90	1	optional	varint	8	0	8	-8	
+0x1941d90	2	optional	string	64	0	1	-1	
+0x1941d90	3	optional	varint	4	0	3	-3	
+0x1941d90	4	optional	message	528	0	8	-8	0x15c3770
+0x1941e10	1	optional	message	344	0	8	-8	0x19422e0
+0x1941e10	2	optional	varint	4	0	4	-4	
+0x1941e10	3	optional	message	2	0	1	-1	0x15c37a0
+0x1941e70	1	optional	varint	8	0	8	-8	
+0x1941e70	2	optional	message	496	0	8	-8	0x1942400
+0x1941e70	3	optional	varint	4	0	4	-4	
+0x1941ed0	1	optional	varint	4	0	4	-4	
+0x1941ed0	2	optional	varint	4	0	4	-4	
+0x1941ed0	3	optional	varint	8	0	8	-8	
+0x1941ed0	4	optional	varint	4	0	4	-4	
+0x1941ed0	5	optional	varint	4	0	4	-4	
+0x1941ed0	6	optional	varint	4	0	4	-4	
+0x1941ed0	7	optional	message	368	0	8	-8	0x1941e10
+0x1941ed0	8	optional	message	528	0	8	-8	0x1941e70
+0x1941ed0	9	optional	message	16	0	8	-8	0x15b7be0
+0x1941ed0	10	optional	message	16	0	4	-4	0x15b7f20
+0x1941ed0	11	optional	message	24	0	4	-4	0x15b7ec0
+0x1941ff0	1	optional	message	96	0	8	-8	0x15c3ab0
+0x1941ff0	2	optional	string	32	0	1	-1	
+0x1941ff0	3	optional	fixed32	4	0	3	-3	
+0x1941ff0	5	optional	fixed32	4	0	4	-4	
+0x1942070	1	repeated	message	152	50	8	-8	0x1941ff0
+0x1942070	2	optional	varint	4	0	4	-4	
+0x19420c0	1	optional	message	56	0	4	-4	0x15c3910
+0x19420c0	2	repeated	message	56	16	12	-8	0x15c3910
+0x1942110	1	optional	message	80	0	4	-4	0x15c37f0
+0x1942110	2	optional	message	968	0	4	-4	0x19420c0
+0x1942160	1	optional	string	32	0	1	-1	
+0x1942160	2	optional	message	64	0	7	-7	0x15c39e0
+0x19421b0	1	optional	varint	4	0	4	-4	
+0x19421b0	2	optional	varint	8	0	8	-8	
+0x19421b0	3	optional	message	7616	0	8	-8	0x1942070
+0x19421b0	4	optional	message	1056	0	8	-8	0x1942110
+0x19421b0	5	optional	message	16	0	8	-8	0x15b7be0
+0x19421b0	6	optional	message	104	0	8	-8	0x1942160
+0x1942260	1	optional	message	12	0	4	-4	0x15b7c10
+0x1942260	2	optional	string	32	0	1	-1	
+0x1942260	3	optional	string	32	0	1	-1	
+0x1942260	4	optional	string	32	0	1	-1	
+0x19422e0	1	optional	varint	8	0	8	-8	
+0x19422e0	3	optional	varint	4	0	4	-4	
+0x19422e0	4	repeated	varint	4	32	8	-8	
+0x19422e0	5	optional	varint	1	0	1	-1	
+0x19422e0	6	optional	varint	4	0	2	-2	
+0x19422e0	7	optional	varint	4	0	4	-4	
+0x19422e0	8	optional	message	116	0	4	-4	0x1942260
+0x19422e0	9	optional	varint	4	0	4	-4	
+0x19422e0	11	optional	fixed32	4	0	4	-4	
+0x19422e0	13	optional	varint	8	0	8	-8	
+0x19422e0	14	optional	varint	8	0	8	-8	
+0x1942400	1	optional	message	344	0	8	-8	0x19422e0
+0x1942400	2	optional	message	96	0	8	-8	0x15c3ab0
+0x1942400	3	optional	string	33	0	1	-1	
+0x1942560	1	optional	message	88	0	8	-8	0x15c3b00
+0x1942560	2	optional	bytes	40	0	8	-8	
