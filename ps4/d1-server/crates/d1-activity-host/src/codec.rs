@@ -310,6 +310,13 @@ impl SchemaCodec {
     /// instance construction, like [`Self::prewarm`].
     pub fn build_sensor(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Result<Vec<u8>, AhError> {
         let frame = sensor_cache::cached(params, || {
+            // `D1_RSAT_NATIVE=1`: no codec worker when every value schema is covered.
+            if let Some(r) = crate::native::try_sensor_frame(params) {
+                return r.map_err(|detail| AhError::SchemaCodec {
+                    user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
+                    detail,
+                });
+            }
             oracle()
                 .call(|reply| Job::BuildSensor {
                     params: params.clone(),
@@ -330,6 +337,12 @@ impl SchemaCodec {
         params: &d1_oracle::sensor::SensorPhaseUpdate,
     ) -> Result<Vec<u8>, AhError> {
         let frame = sensor_cache::cached(params, || {
+            if let Some(r) = crate::native::try_sensor_frame(params) {
+                return r.map_err(|detail| AhError::SchemaCodec {
+                    user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
+                    detail,
+                });
+            }
             control_oracle()
                 .call(|reply| Job::BuildSensor {
                     params: params.clone(),
@@ -355,6 +368,12 @@ impl SchemaCodec {
             return;
         }
         if d1_oracle::sensor::known_stamp_bit(frame).is_some() {
+            return;
+        }
+        // `D1_RSAT_NATIVE=1`: measure natively (a cached frame's authority table decodes without
+        // the worker).
+        if let Some(Ok(bit)) = crate::native::sensor_stamp_bit(frame) {
+            d1_oracle::sensor::remember_stamp_bit(frame, bit);
             return;
         }
         let measured = worker
