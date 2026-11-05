@@ -11,7 +11,7 @@ cd ps4/d1-server
 cargo build -p d1-eboot -j 2
 cd ../..
 # D1_EBOOT points to the owned 56578 ELF. Run builds at BelowNormal on Windows.
-python3 tools/ps4_setup/d1_rtti.py --output ps4/fixtures/56578/rtti
+python3 tools/ps4_setup/d1_rtti.py --protobuf --output ps4/fixtures/56578/rtti
 python3 -m unittest discover -s tests -p test_rtti_catalog.py -v
 ```
 
@@ -20,6 +20,9 @@ private investment definition table, parsed by `catalogue::investment_defs`. Wit
 it, `services.tsv` contains only its header: **the eboot does not contain the service
 id-to-schema table**. Known mappings and their limits are recorded in the
 [wire catalogue](../../../../notes/ps4-56578-wire-catalog-2026-11-05.md).
+The checked-in export includes 101 mappings from the owned 56578 table (tag
+`0x80a5e37a`), read locally with MIT Gibbon. Pass that private table via
+`--definitions` to reproduce `services.tsv`; its hash is recorded in the manifest.
 
 | Table | Interpretation |
 |---|---|
@@ -29,7 +32,9 @@ id-to-schema table**. Known mappings and their limits are recorded in the
 | `fields.tsv` | Ordered field slots from the existing descriptor reader, including missing slots |
 | `instances.tsv` | Structurally matched instance-checksum records; this is not a QueueZ family/type routing table |
 | `envelopes.tsv` | BAP type IDs read from message-class slot 0; header class from slot 1; encode/decode method addresses |
-| `services.tsv` | Optional content-derived investment IDs, FNV-1 name hashes, request/reply tags |
+| `services.tsv` | Optional content-derived investment IDs, name hashes, request/reply tags, sizes and top-level typed field layouts |
+| `protobuf_roots.tsv` | Descriptor arguments discovered in the RTTI encode/decode methods; requires `--protobuf` |
+| `protobuf_fields.tsv` | Ordered protobuf fields, cardinalities, memory widths/capacities and nested descriptor links |
 
 An RSAT tag, an instance checksum, a BAP envelope ID, an investment service ID and an
 incident index are different identifier spaces. RTTI classes do not generally name
@@ -44,6 +49,12 @@ parameter, or a parent count offset for counted composites. `raw_parameter0` and
 `raw_parameter2` preserve the other parameter words; their interpretation depends on
 the codec. A boolean or float can have a zero raw width and still occupy wire bits.
 Array headers carry capacity and two byte strides plus a serialized bit stride.
+
+Protobuf discovery accepts RIP-relative descriptor arguments loaded into RSI in known
+RTTI methods and delegates parsing to `dump-codec-descriptor.py`. Matchmaking 42's
+eleven-field request is its positive control. Methods that use a different code shape
+are not covered: no discovery result does not establish an empty body. Callback fields
+retain their callback cardinality; an application-specific blob is not a decoded schema.
 
 These are static facts for the hash-pinned executable. Re-run extraction for another
 build; never translate these addresses by a global offset. The tests verify every

@@ -44,6 +44,17 @@ class CatalogTests(unittest.TestCase):
             self.assertEqual(count, int(schemas[tag]["field_count"]), tag)
         self.assertEqual(len(classes), manifest["counts"]["classes"])
         self.assertEqual(len(fields), manifest["counts"]["fields"])
+        services = rows("services.tsv")
+        for service in services:
+            self.assertIn(service["request_tag"], schemas)
+            self.assertIn(service["response_tag"], schemas)
+            self.assertTrue(service["request_fields"])
+            self.assertTrue(service["response_fields"])
+        proto = rows("protobuf_fields.tsv")
+        descriptors = {r["descriptor"] for r in proto}
+        for field in proto:
+            if field["codec"] == "message":
+                self.assertIn(field["aux"], descriptors)
 
     def test_vacuous_export_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "empty"):
@@ -57,6 +68,8 @@ class CatalogTests(unittest.TestCase):
         data = json.loads(result.stdout)
         checked = json.loads((TABLES / "manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(data["eboot_sha256"], checked["eboot_sha256"], "requires build 56578")
+        if "protobuf_roots" in checked["counts"]:
+            data["protobuf"] = RTTI.protobuf(os.environ["D1_EBOOT"], data)
         with tempfile.TemporaryDirectory() as tmp:
             RTTI.export(data, Path(tmp))
             # The checked export may include optional content mappings. Eboot regeneration

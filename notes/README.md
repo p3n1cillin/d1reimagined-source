@@ -6,6 +6,7 @@ is the current summary. Titles below are the notes' own.
 
 ## Start here (PS4 build 56578, current)
 
+- [PS4 56578 wire catalogue: RTTI, schemas and open meanings (5 November 2026)](ps4-56578-wire-catalog-2026-11-05.md)
 - [Research record: resources for the full game (5 November 2026)](ps4-56578-research-record-2026-11-05.md)
 - [PS4 56578: Fukugen Daihon and the reveal sequence (5 November 2026)](ps4-56578-fukugen-daihon-2026-11-05.md)
 - [PS4 56578: a native RSAT codec plan (5 November 2026)](ps4-56578-native-rsat-plan-2026-11-05.md)

@@ -333,26 +333,36 @@ fn run() -> Result<ExitCode> {
 
     match &cli.cmd {
         Cmd::WireCatalog { definitions } => {
-            let definitions = definitions.as_ref().map(|path| -> Result<_> {
-                let bytes = std::fs::read(path).context("reading private service definitions")?;
-                catalogue::investment_defs(&bytes).map_err(anyhow::Error::msg)
-            }).transpose()?;
+            let definitions = definitions
+                .as_ref()
+                .map(|path| -> Result<_> {
+                    let bytes =
+                        std::fs::read(path).context("reading private service definitions")?;
+                    catalogue::investment_defs(&bytes).map_err(anyhow::Error::msg)
+                })
+                .transpose()?;
             let r = catalogue::Reader::new(&image)?;
             let rtti = rtti::harvest(&image)?;
             let idx = descriptors::index(&image)?;
-            anyhow::ensure!(!rtti.types.is_empty() && !idx.is_empty(), "empty RTTI or RSAT export");
+            anyhow::ensure!(
+                !rtti.types.is_empty() && !idx.is_empty(),
+                "empty RTTI or RSAT export"
+            );
             let anchors: Vec<_> = idx.iter().map(|(_, d)| d.anchor).collect();
             // These builders derive addresses from this image. Do not call Data::build here:
             // its policy/header tables and controls still contain 01.29-only addresses.
-            println!("{}", serde_json::to_string(&serde_json::json!({
-                "format_version": 1,
-                "eboot_sha256": image.sha256(),
-                "rtti": rtti,
-                "schemas": descriptors::dump_with_fields(&image, &idx),
-                "envelopes": catalogue::envelope_classes(&r),
-                "instances": catalogue::schema_records(&r, &anchors),
-                "investment_definitions": definitions,
-            }))?);
+            println!(
+                "{}",
+                serde_json::to_string(&serde_json::json!({
+                    "format_version": 1,
+                    "eboot_sha256": image.sha256(),
+                    "rtti": rtti,
+                    "schemas": descriptors::dump_with_fields(&image, &idx),
+                    "envelopes": catalogue::envelope_classes(&r),
+                    "instances": catalogue::schema_records(&r, &anchors),
+                    "investment_definitions": definitions,
+                }))?
+            );
             Ok(ExitCode::SUCCESS)
         }
         Cmd::Segments => cmd_segments(&image, cli.json),
