@@ -892,6 +892,9 @@ fn main() -> anyhow::Result<()> {
                         }
                     }
                     i.set_host_heartbeat(std::time::Duration::from_millis(heartbeat_ms));
+                    // D1_AH_SLOT_HANDOVER=1: answer the client's entity-slot abandon (udt 25)
+                    // and purge request (26) with 23 and 24, as the live host did.
+                    i.set_slot_handover(std::env::var("D1_AH_SLOT_HANDOVER").is_ok_and(|v| v == "1"));
                     i
                 },
                 codec,

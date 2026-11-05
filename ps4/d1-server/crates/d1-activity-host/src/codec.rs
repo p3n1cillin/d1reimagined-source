@@ -507,6 +507,22 @@ mod tests {
             .is_ok());
     }
 
+    /// The slot handover's answers (udt 23, 24) go through the client's own codec on a build
+    /// whose call sites pin them (56578).
+    #[test]
+    fn the_slot_handover_answers_encode() {
+        if !d1_oracle::activity_host::call_sites().iter().any(|(u, _, _)| *u == 23) {
+            return;
+        }
+        for (udt, len) in [(23u32, 0x608usize), (24, 0x604)] {
+            let mut bytes = vec![0u8; len];
+            bytes[if udt == 23 { 0x604 } else { 0 }] = 4;
+            bytes[4] = 0x18;
+            let msg = AhMessage::Opaque { user_defined_type: udt, bytes };
+            assert!(SchemaCodec.encode(&msg).is_ok(), "udt {udt}");
+        }
+    }
+
     #[test]
     fn the_raw_codec_is_labelled_an_experiment_and_records_that_it_was_falsified() {
         assert!(RawStructCodec::IS_AN_EXPERIMENT);

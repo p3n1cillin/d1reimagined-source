@@ -378,6 +378,10 @@ pub struct ActivityInstance {
     time_base_ms: Option<u64>,
     /// The world tick period in ms for udt 2 `world_globals_state` (`D1_AH_WORLD_PERIOD_MS`).
     world_period_ms: Option<f32>,
+    /// Answer the client's entity-slot abandon (udt 25) and purge request (26) as the live host
+    /// did (`D1_AH_SLOT_HANDOVER=1`), and the counter the live host's answers carried.
+    slot_handover: bool,
+    slot_handover_seq: u8,
     /// ⭐ Timed mission steps per activity index, the clock start, and the step in force.
     mission_steps: std::collections::HashMap<u16, Vec<MissionStep>>,
     mission_t0: Option<Instant>,
@@ -537,6 +541,8 @@ impl ActivityInstance {
             start_region: None,
             time_base_ms: None,
             world_period_ms: None,
+            slot_handover: false,
+            slot_handover_seq: 0,
             mission_steps: std::collections::HashMap::new(),
             mission_t0: None,
             mission_step: None,
@@ -1219,6 +1225,12 @@ impl ActivityInstance {
                 Vec::new()
             }
 
+            // udt 25 abandon_entity_slots / 26 request_purge_entity_slots, answered with 23 / 24
+            // when D1_AH_SLOT_HANDOVER=1 (see [`Self::answer_slot_handover`]).
+            ClientMessage::Other { user_defined_type: udt @ (25 | 26), struct_image } if self.slot_handover => {
+                self.answer_slot_handover(*udt, struct_image).into_iter().collect()
+            }
+
             // ⭐ `udt 21 client_authoritative_data_update` - the client telling us **its own**
             // authoritative state (Aldridge's model: a client holds limited authority over its own
             // biped). `FUN_0029CC20` sends it and `FUN_002987E0`'s success branch does nothing but
@@ -1566,6 +1578,47 @@ impl ActivityInstance {
         self.mission_step = Some(i);
         self.mission_step_at = Some(now);
         true
+    }
+
+    /// Answer udt 25 and 26 (`D1_AH_SLOT_HANDOVER=1`; see [`Self::answer_slot_handover`]).
+    pub fn set_slot_handover(&mut self, on: bool) {
+        self.slot_handover = on;
+    }
+
+    /// The entity-slot handover as the live host ran it (notes/d1-live-captures-2026-11-05.md,
+    /// "Entity-slot handover"): the client abandons slots as it leaves bubbles (udt 25
+    /// `abandon_entity_slots`, {u8, slot set at +0x04, u3 at +0x604}) and the host claims them
+    /// back (udt 23 `claim_authority_over_abandoned_entity_slots`, the same layout, with the
+    /// client's set and u3 = 4); then the client asks to purge (26 `request_purge_entity_slots`,
+    /// {u3 = 4, slot set}) and the host purges (24 `purge_abandoned_entity_slots`, {u3 = 4, u8,
+    /// slot set}). The live host's u8s were one counter across its 23s and 24s, from 1.
+    ///
+    /// Not reproduced: the live host merged 25s that arrived together into one 23, and sent a few
+    /// 23s unprompted. One answer per message here.
+    fn answer_slot_handover(&mut self, udt: u32, image: &[u8]) -> Option<AhPush> {
+        const SET: std::ops::Range<usize> = 4..0x604;
+        let set = image.get(SET)?;
+        self.slot_handover_seq = self.slot_handover_seq.wrapping_add(1);
+        let seq = self.slot_handover_seq;
+        let (answer, bytes) = match udt {
+            25 => {
+                let mut b = vec![0u8; 0x608];
+                b[0] = seq;
+                b[SET].copy_from_slice(set);
+                b[0x604] = 4;
+                (23, b)
+            }
+            26 => {
+                let mut b = vec![0u8; 0x604];
+                b[0] = 4;
+                b[1] = seq;
+                b[SET].copy_from_slice(set);
+                (24, b)
+            }
+            _ => return None,
+        };
+        tracing::info!("⭐ udt {udt} from the client: answering udt {answer} with its slot set, counter {seq}");
+        Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: answer, bytes }))
     }
 
     /// Serve a world clock base in ms (see `GlobalActivityState::TIME_BASE_MS`).
@@ -1991,6 +2044,40 @@ mod tests {
         assert_eq!(&rec[0..4], &56u32.to_le_bytes());
         assert_eq!(&rec[0x4C..0xD0], &session[..]);
         assert_eq!(&rec[0xD0..0xD8], &public_host.to_le_bytes());
+    }
+
+    /// The entity-slot handover, live layout and synthetic set: 25 is answered with 23 and 26
+    /// with 24, each with the client's set and the next counter value; off, neither is answered.
+    #[test]
+    fn the_slot_handover_answers_abandon_and_purge_with_the_clients_set() {
+        let (mut i, now) = instance();
+        let mut abandon = vec![0u8; 0x608];
+        abandon[0] = 3;
+        abandon[4..8].copy_from_slice(&0xFB6F_F000u32.to_le_bytes());
+        abandon[0x604] = 3;
+        let msg = ClientMessage::Other { user_defined_type: 25, struct_image: abandon.clone() };
+        let opaque = |out: Vec<AhPush>| -> Vec<(u32, Vec<u8>)> {
+            out.into_iter()
+                .filter_map(|p| match p.message {
+                    AhMessage::Opaque { user_defined_type, bytes } if matches!(user_defined_type, 23 | 24) => {
+                        Some((user_defined_type, bytes))
+                    }
+                    _ => None,
+                })
+                .collect()
+        };
+        assert!(opaque(i.on_client_message(&msg, now)).is_empty(), "off by default");
+        i.set_slot_handover(true);
+        let [(udt, claim)] = opaque(i.on_client_message(&msg, now)).try_into().unwrap();
+        assert_eq!((udt, claim.len(), claim[0], claim[0x604]), (23, 0x608, 1, 4));
+        assert_eq!(&claim[4..0x604], &abandon[4..0x604]);
+        let mut purge = vec![0u8; 0x604];
+        purge[0] = 4;
+        purge[4..0x604].copy_from_slice(&abandon[4..0x604]);
+        let msg = ClientMessage::Other { user_defined_type: 26, struct_image: purge };
+        let [(udt, purged)] = opaque(i.on_client_message(&msg, now)).try_into().unwrap();
+        assert_eq!((udt, purged.len(), purged[0], purged[1]), (24, 0x604, 4, 2));
+        assert_eq!(&purged[4..], &abandon[4..0x604]);
     }
 
     /// ⭐ A changed membership carries the next update number, or the client never re-reads the
