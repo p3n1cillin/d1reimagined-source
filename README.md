@@ -112,7 +112,12 @@ reports go privately via [SECURITY.md](SECURITY.md).
 
 ## Licence and third-party rights
 
-Original project source is offered under GPL-2.0-only unless a file carries a different existing licence notice, including GPL-2.0-or-later annotations. See LICENSE and THIRD_PARTY_NOTICES.md, and [CREDITS.md](CREDITS.md) for whose work is used. Preserve upstream copyright and licence notices when applying patches. Source licensing does not cover Destiny assets, executables, firmware, trademarks or third-party binaries. Imported `data/` payloads retain their original ownership and are not relicensed by the project source licence.
+The project is licensed under the GNU General Public License, not the AGPL; [LICENSE](LICENSE) holds the GPL version 2 text. Each file's SPDX header gives its terms:
+
+- **The PS4 route** (`ps4/`, `tools/`, `lab/`, `tests/`) is **GPL-2.0-or-later**. The "or later" is required, not optional: the PS4 servers build on shadPS4's GPL-2.0-or-later shadNet schema and link Apache-2.0 crates (prost, ring and others), which GPLv3 can combine with and GPL-2.0-only cannot ([licensing](ps4/design/licensing.md)).
+- **The retained PS3 route** (the RPCS3 patches and the original PS3 files without their own notice) is **GPL-2.0-only**, as RPCS3 is.
+
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and [CREDITS.md](CREDITS.md) for whose work is used. Preserve upstream copyright and licence notices when applying patches. Source licensing does not cover Destiny assets, executables, firmware, trademarks or third-party binaries. Imported `data/` payloads retain their original ownership and are not relicensed by the project source licence.
 
 D1 Reimagined is not affiliated with or endorsed by Bungie, Sony Interactive Entertainment, or RPCS3. Destiny and associated names and assets belong to their respective rights holders. There is no warranty, compatibility promise, legal immunity or announced playable release.
 
