@@ -68,6 +68,8 @@ export class ActivitySession {
     this.changes = [];
     this.out = [];
     this.missing = new Map();
+    this.stubHits = new Map();
+    this.rowGaps = new Map();
     this.lifetime = undefined;
     this.endedSent = false;
     this.hardWipeArmed = false;
@@ -132,14 +134,27 @@ export class ActivitySession {
   }
 
   log(line) {
-    const missing = missingNativeOf(line);
+    const stub = /^stub56578 (.*?):(\w+) /.exec(line);
+    if (stub) {
+      this.stubHits.set(stub[2], (this.stubHits.get(stub[2]) ?? 0) + 1);
+    }
+    let missing = missingNativeOf(line);
+    if (missing && this.bs.nativeRegistry.lookup(missing.method)) {
+      // A verb BullShcript has, answering "unknown" for a row it cannot
+      // place: a binding gap (stand-in bundles, or content missing a row).
+      this.rowGaps.set(missing.method, (this.rowGaps.get(missing.method) ?? 0) + 1);
+      missing = undefined;
+    }
     if (missing) {
       const entry = this.missing.get(missing.method) ?? { calls: 0, on: new Set() };
       entry.calls += 1;
       entry.on.add(missing.on);
       this.missing.set(missing.method, entry);
     }
-    this.out.push({ text: line, type: "log" });
+    const msg = { text: line, type: "log" };
+    if (stub) msg.stub = stub[2];
+    if (missing) msg.missing = missing.method;
+    this.out.push(msg);
   }
 
   playerList() {
@@ -480,13 +495,22 @@ export class ActivitySession {
     return out;
   }
 
-  // Native names the scripts called that nothing answered, with counts.
+  // Native names the scripts called that nothing answered, with counts;
+  // and the 56578 stubs they called.
   missingNatives() {
     return [...this.missing].map(([method, e]) => ({
       calls: e.calls,
       method,
       on: [...e.on].slice(0, 5),
     }));
+  }
+
+  rowGapCalls() {
+    return [...this.rowGaps].map(([method, calls]) => ({ calls, method }));
+  }
+
+  stubCalls() {
+    return [...this.stubHits].map(([method, calls]) => ({ calls, method }));
   }
 }
 

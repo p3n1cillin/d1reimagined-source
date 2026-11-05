@@ -22,7 +22,9 @@ import { writeFileSync } from "node:fs";
 import { loadBullshcript } from "../src/bullshcript.mjs";
 import { IncidentTable } from "../src/incidents.mjs";
 import { guessAreaBundles, ScriptSet, scriptsDirFromEnv } from "../src/scripts.mjs";
-import { staticMissingNatives } from "../src/natives56578.mjs";
+import { STUB_VERBS, staticMissingNatives, unansweredByName } from "../src/natives56578.mjs";
+
+const STUB_NAMES = new Set(Object.keys(STUB_VERBS));
 import { ActivitySession } from "../src/session.mjs";
 import { lifetimeWirePhase } from "../src/types56578.mjs";
 
@@ -33,6 +35,7 @@ function args(argv) {
     if (a === "--seconds") out.seconds = Number(argv[++i]);
     else if (a === "--json") out.json = argv[++i];
     else if (a === "--idle") out.drive = false;
+    else if (a === "--waits") out.waits = true;
     else if (a === "--no-area-guess") out.areaGuess = false;
     else if (a === "--only") out.only = argv[++i].split(",");
     else if (a === "--scripts") out.scripts = argv[++i];
@@ -90,7 +93,16 @@ async function runOne({ activity, areaGuess, bs, drive, incidents, scripts, seco
   row.compiles = loaded.compile_errors.length === 0;
   row.errors.push(...loaded.compile_errors.slice(0, 3));
   row.drives_lifetime = loaded.drives_lifetime;
-  row.static_missing = staticMissingNatives(bs, scripts, session.closure);
+  // Typed: self.<native member>:<verb>() with no verb. By name: any
+  // `.name(` call nobody answers. Their union is what the scripts could call.
+  const typed = staticMissingNatives(bs, scripts, session.closure);
+  const byName = unansweredByName(bs, scripts, session.closure);
+  row.static_missing = [
+    ...typed,
+    ...byName
+      .filter((m) => !typed.some((t) => t.method === m.method))
+      .map((m) => ({ ...m, stubbed: STUB_NAMES.has(m.method), types: [] })),
+  ];
   // key -> {at, msgs}: what the driver sends at tick `at`
   const pending = new Map();
   const later = (key, after, msgs) => {
@@ -152,19 +164,26 @@ async function runOne({ activity, areaGuess, bs, drive, incidents, scripts, seco
   } catch (error) {
     row.errors.push(`run: ${error.message}`);
   }
+  // What each live thread waits on at the end (names only).
+  row.waits = session.runtime
+    .debugSnapshot()
+    .threads.filter((t) => t.state !== "dead" && t.waitingOn)
+    .map((t) => `${t.name}: ${t.waitingOn}`);
   row.missing = session.missingNatives();
+  row.stub_calls = session.stubCalls();
+  row.row_gaps = session.rowGapCalls();
   return row;
 }
 
 export function markdown({ files, results }) {
   const yes = (b) => (b ? "yes" : "no");
   const lines = [
-    "| Activity | Compiles | Phases | First phase | Phases reached | Lifetime (wire) | Ended | Missing natives (static / run) | Unresolved | Thread failures |",
-    "|---|---|---:|---|---:|---|---|---:|---:|---:|",
+    "| Activity | Compiles | Phases | First phase | Phases reached | Lifetime (wire) | Ended | Missing natives (static / run) | Unresolved bindings | Verbs on unplaced rows | Thread failures |",
+    "|---|---|---:|---|---:|---|---|---:|---:|---:|---:|",
   ];
   for (const r of results) {
     lines.push(
-      `| ${r.activity}${r.stub ? " (stub)" : ""} | ${yes(r.compiles)} | ${r.phases_authored} | ${r.stub ? "n/a" : yes(r.first_phase)} | ${r.phases_reached} | ${r.lifetime.join(" → ") || "none"} | ${yes(r.ended)} | ${r.static_missing.length} / ${r.missing.length} | ${r.unresolved} | ${r.thread_failures} |`
+      `| ${r.activity}${r.stub ? " (stub)" : ""} | ${yes(r.compiles)} | ${r.phases_authored} | ${r.stub ? "n/a" : yes(r.first_phase)} | ${r.phases_reached} | ${r.lifetime.join(" → ") || "none"} | ${yes(r.ended)} | ${r.static_missing.length} / ${r.missing.length + r.stub_calls.length} | ${r.unresolved} | ${r.row_gaps.reduce((n, g) => n + g.calls, 0)} | ${r.thread_failures} |`
     );
   }
   const total = results.length;
@@ -182,11 +201,11 @@ export function markdown({ files, results }) {
       e.stubbed ||= m.stubbed;
       for (const t of m.types) e.types.add(t);
     }
-    for (const m of r.missing) {
+    for (const m of [...r.missing, ...r.stub_calls]) {
       const e = entry(m.method);
       e.ran += 1;
       e.calls += m.calls;
-      for (const on of m.on) e.types.add(`(${on.split(".").at(-1)})`);
+      for (const on of m.on ?? []) e.types.add(`(${on.split(".").at(-1)})`);
     }
   }
   const summary = [
@@ -201,7 +220,7 @@ export function markdown({ files, results }) {
     "|---|---|---:|---:|---|",
     ...[...missing]
       .sort((a, b) => b[1].activities - a[1].activities || a[0].localeCompare(b[0]))
-      .map(([m, e]) => `| \`${m}\` | ${[...e.types].filter((t) => !t.startsWith("(")).join(", ") || "-"} | ${e.activities} | ${e.ran} (${e.calls}) | ${e.stubbed ? "yes" : "no"} |`),
+      .map(([m, e]) => `| \`${m}\` | ${[...e.types].filter((t) => !t.startsWith("(")).join(", ") || "-"} | ${e.activities} | ${e.ran} (${e.calls}) | ${e.stubbed || STUB_NAMES.has(m) ? "yes" : "no"} |`),
   ];
   return [...summary, "", ...lines, "", ...natives].join("\n");
 }
@@ -215,5 +234,10 @@ if (import.meta.url === `file://${process.argv[1].replaceAll("\\", "/").replace(
   }
   const report = await coverage({ ...a, scriptsDir });
   console.log(markdown(report));
+  if (a.waits) {
+    for (const r of report.results) {
+      console.log(`\n${r.activity} waits:\n  ${r.waits.join("\n  ") || "(none)"}`);
+    }
+  }
   if (a.json) writeFileSync(a.json, `${JSON.stringify(report, null, 2)}\n`);
 }

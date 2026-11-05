@@ -3,18 +3,30 @@
 //
 // Natives the 56578 scripts call that BullShcript's 01.29 host does not
 // answer. Each one here is a STUB: there is no 56578 evidence for what it
-// does yet, so it answers the way BullShcript's own fallback would (a
-// predicate false, a getter 0, a command true) and logs `stub56578 <verb>`
-// every time it runs, so a run says which stubs it leaned on.
+// does yet. A stub never makes a script succeed on our guess: a command
+// does nothing and answers true (as BullShcript's own fallback does), a
+// predicate answers false so the script holds where it is. Every call logs
+// `stub56578 <path>:<verb>`, so a run says which stubs it leaned on.
 //
 // Registered into BullShcript's bound-object verb table (MIT) as an
 // extension; nothing in the checkout is modified. A verb BullShcript already
 // has is never replaced.
 
-// The verbs, with what is known. Filled from the coverage report
-// (tools/coverage.mjs): every name below was called by some 56578 activity
-// and answered by nobody.
-export const STUB_VERBS = Object.freeze({});
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+// The verbs, with what they answer and what is known. From the coverage
+// report (tools/coverage.mjs): each was called by a 56578 activity and
+// answered by nobody.
+export const STUB_VERBS = Object.freeze({
+  // Utility archetypes call it on their trigger volume at load time.
+  // Command; no 56578 effect known (the name suggests it drops the volume's
+  // slice-set assignment).
+  import_only_clear_slice_set_assignment: {
+    answer: true,
+    why: "load-time wiring, effect unknown",
+  },
+});
 
 let installed;
 
@@ -27,13 +39,11 @@ export function installNatives56578(bs, log) {
     return installed.names;
   }
   installed.registry = bs.nativeRegistry;
-  const { unboundAnswer } = bs.support;
-  for (const [verb, why] of Object.entries(STUB_VERBS)) {
+  for (const [verb, { answer, why }] of Object.entries(STUB_VERBS)) {
     if (bs.nativeRegistry.lookup(verb)) {
       continue;
     }
     bs.nativeRegistry.verb(verb, (self, _args, method) => {
-      const answer = unboundAnswer(method);
       installed.log(`stub56578 ${self.path}:${method} -> ${String(answer)} (${why})`);
       return answer;
     });
@@ -100,6 +110,67 @@ export function staticMissingNatives(bs, scripts, paths) {
   return [...found.values()]
     .map((e) => ({ files: e.files.size, method: e.method, stubbed: e.stubbed, types: [...e.types].sort() }))
     .sort((a, b) => a.method.localeCompare(b.method));
+}
+
+// Every name BullShcript's host answers somewhere, read off its built
+// output: verb registrations and the string cases its dispatchers switch on
+// (library methods, thread verbs, command-script orders, row verbs), plus
+// its builtins and native base members. Generous on purpose: a name counts
+// as answered if any receiver answers it.
+let answeredCache;
+export function answeredNames(bs) {
+  if (answeredCache?.dir === bs.dir) return answeredCache.names;
+  const names = new Set();
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(path);
+      } else if (path.endsWith(".js")) {
+        const text = readFileSync(path, "utf8");
+        for (const m of text.matchAll(/(?:case |=== |verb\(|\[)\s*"([a-z_][a-z0-9_]*)"/g)) {
+          names.add(m[1]);
+        }
+        for (const m of text.matchAll(/verb\(\s*\[([^\]]*)\]/g)) {
+          for (const n of m[1].matchAll(/"([a-z_][a-z0-9_]*)"/g)) names.add(n[1]);
+        }
+      }
+    }
+  };
+  walk(join(bs.dir, "dist/host"));
+  walk(join(bs.dir, "dist/hks/env"));
+  const api = bs.api;
+  for (const n of [...api.BUILTINS, ...api.NATIVE_BASE_METHODS, ...api.NATIVE_DELEGATES]) {
+    names.add(n);
+  }
+  for (const base of api.NATIVE_BASES) for (const n of base.members) names.add(n);
+  answeredCache = { dir: bs.dir, names };
+  return names;
+}
+
+// Method-call names (`.name(`) in a set of script files that no script
+// defines and BullShcript answers nowhere, with how many files call each.
+// Reads the sources locally; only names leave.
+export function unansweredByName(bs, scripts, paths) {
+  const answered = answeredNames(bs);
+  const defined = new Set();
+  for (const decl of scripts.compiled.decls) {
+    defined.add(decl.name);
+    for (const m of decl.schema?.members ?? []) defined.add(m.name);
+  }
+  const found = new Map();
+  for (const path of paths) {
+    const text = scripts.byPath.get(path)?.text ?? "";
+    for (const m of text.replace(/#.*$/gm, "").matchAll(/\.([a-z_][a-z0-9_]*)\s*\(/g)) {
+      const name = m[1];
+      if (answered.has(name) || defined.has(name)) continue;
+      const entry = found.get(name) ?? { calls: 0, files: new Set() };
+      entry.calls += 1;
+      entry.files.add(path);
+      found.set(name, entry);
+    }
+  }
+  return [...found].map(([method, e]) => ({ calls: e.calls, files: e.files.size, method }));
 }
 
 // A runtime log line saying nothing answered a native, as BullShcript writes
