@@ -74,6 +74,8 @@ pub struct SenseUpdate {
     pub epoch: u64,
     pub generation: u8,
     pub counts: Vec<SquadCount>,
+    /// D1_AH_SCRIPTS: squad state bytes for the script bridge (`script_bridge::squad_sense`).
+    pub squads: Vec<crate::script_bridge::SquadSense>,
 }
 
 /// Evidence for an explicitly authored cohort. Zero seeds and negative counts cannot clear it.
@@ -149,6 +151,7 @@ impl SenseWorker {
             while let Ok(payload) = rx.recv() {
                 let update = decoder.decode(&payload).map(|frame| SenseUpdate {
                     epoch, generation: frame.generation, counts: squad_counts(&frame),
+                    squads: crate::script_bridge::squad_sense(&frame),
                 }).map_err(|e| e.to_string());
                 let failed = update.is_err();
                 if otx.send(update).is_err() || failed { return; }
@@ -213,7 +216,7 @@ mod tests {
     }
 
     fn apply(o: &mut SquadObservations, generation: u8, counts: Vec<SquadCount>) {
-        o.apply(SenseUpdate { epoch: o.epoch(), generation, counts });
+        o.apply(SenseUpdate { epoch: o.epoch(), generation, counts, squads: vec![] });
         o.set_ready(true);
     }
 
@@ -243,7 +246,7 @@ mod tests {
         apply(&mut o, 2, vec![count(1,5,1), count(1,5,0)]);
         let old = o.epoch();
         o.reset();
-        o.apply(SenseUpdate { epoch: old, generation: 2, counts: vec![count(1,5,1), count(1,5,0)] });
+        o.apply(SenseUpdate { epoch: old, generation: 2, counts: vec![count(1,5,1), count(1,5,0)], squads: vec![] });
         o.set_ready(true);
         assert!(!o.cleared(1, &[5]), "stale async result cannot revive old evidence");
         let independent = SquadObservations::default();
@@ -262,7 +265,7 @@ mod tests {
         w.submit(&[1]);
         assert!(!w.ready());
         assert_eq!(rx.try_recv().unwrap(), vec![1]);
-        otx.send(Ok(SenseUpdate { epoch: 7, generation: 1, counts: vec![] })).unwrap();
+        otx.send(Ok(SenseUpdate { epoch: 7, generation: 1, counts: vec![], squads: vec![] })).unwrap();
         assert_eq!(w.drain().len(), 1);
         assert!(w.ready());
         w.submit(&[2]);

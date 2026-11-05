@@ -446,6 +446,9 @@ pub struct ActivityInstance {
     /// ⭐ `D1_AH_SENSOR_STAMP=1`: frame udt 5 as the live hosts did (see [`SensorStamp`]).
     /// `None` (default) keeps every frame as built: stamp 0, `init = 1`, no heartbeats.
     sensor_stamp: Option<SensorStamp>,
+    /// ⭐ D1_AH_SCRIPTS=1 hook: the script bridge ([`crate::script_bridge`]). `None` (default)
+    /// leaves the host as it was; a scripted activity's udt 5 stream is the bridge's.
+    script_bridge: Option<crate::script_bridge::ScriptBridge>,
     /// ── stream G hook ── `D1_AH_PUBLIC_HOST=1`: the public-bubble host role
     /// ([`crate::public_host`]). `None` (default) changes nothing.
     public: Option<crate::public_host::PublicHost>,
@@ -665,6 +668,7 @@ impl ActivityInstance {
             activity_follow: None,
             sensor_last_sent: None,
             sensor_stamp: None,
+            script_bridge: None,
             public: None,
         }
     }
@@ -682,6 +686,22 @@ impl ActivityInstance {
     /// Frame udt 5 the live way (`D1_AH_SENSOR_STAMP`, see [`SensorStamp`]).
     pub fn set_sensor_stamp(&mut self) {
         self.sensor_stamp = Some(SensorStamp::new());
+    }
+
+    /// D1_AH_SCRIPTS=1 hook: let the activity's own mission scripts drive this instance.
+    pub fn set_script_bridge(&mut self, config: std::sync::Arc<crate::script_bridge::ScriptConfig>) {
+        self.script_bridge = Some(crate::script_bridge::ScriptBridge::new(config));
+    }
+
+    /// D1_AH_SCRIPTS hook: the host teleport a script phase asks for (as a mission step's region).
+    fn script_teleport(&mut self, r: u32, now: Instant) {
+        tracing::info!("⭐ script phase: moving the client to region {r}");
+        self.set_start_region(r);
+        if let Some((region, peer, token)) = self.pah_region {
+            self.pah_region = Some((region, peer, if token == u8::MAX { 1 } else { token + 1 }));
+        }
+        self.slice_request = Some((1, r, now));
+        self.membership_dirty = true;
     }
 
     pub fn ah_id(&self) -> u64 {
@@ -790,6 +810,10 @@ impl ActivityInstance {
             }
         }
         let mut out = self.reply_to(msg, now);
+        // D1_AH_SCRIPTS hook (script_bridge.rs): the bridge sees every message after the instance.
+        if let Some(b) = self.script_bridge.as_mut() {
+            b.on_client_message(msg, self.activity_index, self.ah_id, now);
+        }
         // ⭐⭐ THE HOST HEARTBEAT. If this turn produced nothing to say, and we have been silent
         // longer than [`Self::HOST_HEARTBEAT_MS`], say something anyway - because the client's
         // liveness test is `now - (when we last transmitted)` and NOT the keepalive it is sending
@@ -937,6 +961,17 @@ impl ActivityInstance {
         }
         if !matches!(self.state, InstanceState::Live) || self.heartbeats == 0 {
             return None;
+        }
+        // D1_AH_SCRIPTS hook (script_bridge.rs): a scripted activity's udt 5 is the bridge's.
+        if let Some(b) = self.script_bridge.as_mut().filter(|b| b.scripted()) {
+            let frame = b.sensor_due(now);
+            if let Some(r) = b.take_region_request() {
+                self.script_teleport(r, now);
+            }
+            let payload = frame?;
+            self.sensors_sent += 1;
+            self.last_pushed = now;
+            return Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }));
         }
         if self.advance_mission(now) {
             self.sensor_last_sent = None;
@@ -1640,6 +1675,13 @@ impl ActivityInstance {
     /// (9 bits) and `+0xD8` the body (up to 500 bytes).
     pub fn incident_due(&mut self) -> Option<AhPush> {
         self.poll_control();
+        // D1_AH_SCRIPTS hook (script_bridge.rs): the completion envelope, a whole udt 18 image
+        // (a chain of incidents and one body), once Live.
+        if matches!(self.state, InstanceState::Live) {
+            if let Some(image) = self.script_bridge.as_mut().and_then(|b| b.take_incident()) {
+                return Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 18, bytes: image }));
+            }
+        }
         if !matches!(self.state, InstanceState::Live) || self.pending_incidents.is_empty() {
             return None;
         }
@@ -1722,6 +1764,10 @@ impl ActivityInstance {
     pub fn squad_epoch(&self) -> u64 { self.squad_live.epoch() }
 
     pub fn on_sense_update(&mut self, update: crate::sense::SenseUpdate) {
+        // D1_AH_SCRIPTS hook (script_bridge.rs): squad senses of the current epoch.
+        if let Some(b) = self.script_bridge.as_mut().filter(|_| update.epoch == self.squad_live.epoch()) {
+            b.on_sense(&update.counts, &update.squads);
+        }
         self.squad_live.apply(update);
     }
 
@@ -2439,7 +2485,7 @@ mod tests {
         assert!(i.advance_mission(now));
         let squad = |index, live| SquadCount { group: 0x062D_D95D, kind: 1, index, live };
         let report = |i: &mut ActivityInstance, counts: Vec<_>| {
-            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts });
+            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts, squads: vec![] });
             i.set_sense_ready(true);
         };
         report(&mut i, vec![squad(5,1)]);
