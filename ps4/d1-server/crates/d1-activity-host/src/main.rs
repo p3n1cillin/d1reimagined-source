@@ -744,6 +744,68 @@ fn main() -> anyhow::Result<()> {
                             });
                         }
                     }
+                    // ⭐ D1_AH_WORLDS=<folder>: the generated world tables (ps4/fixtures/56578/worlds,
+                    // tools/ps4_setup/d1-world-table.py), a world for every activity the content and
+                    // captures bind. Rows from D1_AH_WORLD_TABLE win. D1_AH_WORLDS_ACTIVITIES=164,165
+                    // limits the activities (each distinct world/start costs two frame builds at
+                    // startup); D1_AH_WORLDS_PRIVATE_START=1 serves a public start slice set's world
+                    // from its first private slice set (a public region needs a public session).
+                    if let Ok(dir) = std::env::var("D1_AH_WORLDS") {
+                        let generated = d1_activity_host::generated::GeneratedWorlds::load(std::path::Path::new(&dir))
+                            .map_err(|e| anyhow::anyhow!("D1_AH_WORLDS {dir}: {e:#}"))?;
+                        let only: Option<Vec<u16>> = std::env::var("D1_AH_WORLDS_ACTIVITIES")
+                            .ok()
+                            .map(|v| v.split(',').filter_map(|s| s.trim().parse().ok()).collect());
+                        let private_start = std::env::var("D1_AH_WORLDS_PRIVATE_START").is_ok_and(|v| v == "1");
+                        let (plans, skipped) = generated.plans(only.as_deref(), private_start);
+                        let mut frames: std::collections::HashMap<(String, u32, u32), (Vec<u8>, Vec<u8>)> =
+                            std::collections::HashMap::new();
+                        let mut added = 0usize;
+                        for p in plans {
+                            if world_table.contains_key(&p.index) {
+                                continue;
+                            }
+                            if let Some(k) = d1_activity_host::worlds::lookup(&p.world.name) {
+                                if (k.checksum, k.bubble_count) != (p.world.checksum, p.world.bubble_count) {
+                                    tracing::warn!(
+                                        "⚠ D1_AH_WORLDS: {} generated checksum {:#010x}/{} bubbles, measured {:#010x}/{}",
+                                        p.world.name, p.world.checksum, p.world.bubble_count, k.checksum, k.bubble_count
+                                    );
+                                }
+                            }
+                            let key = (p.world.name.clone(), p.start_region, p.group);
+                            if !frames.contains_key(&key) {
+                                let build = |team: i32| {
+                                    let q = d1_activity_host::sensor_list::params_for_list(&params, p.group, team, &p.list)
+                                        .map_err(|e| anyhow::anyhow!("D1_AH_WORLDS activity {}: {e:#}", p.index))?;
+                                    Ok::<_, anyhow::Error>(d1_activity_host::codec::SchemaCodec::build_sensor(&q)?)
+                                };
+                                let built = (build(0)?, build(-1)?);
+                                frames.insert(key.clone(), built);
+                            }
+                            let (team0, team_minus1) = frames[&key].clone();
+                            world_table.insert(p.index, d1_activity_host::state::ServedWorld {
+                                name: p.world.name.clone(),
+                                checksum: p.world.checksum,
+                                bubble_count: p.world.bubble_count,
+                                chosen: p.world.chosen.clone(),
+                                start_region: Some(p.start_region),
+                                team0,
+                                team_minus1,
+                            });
+                            added += 1;
+                        }
+                        tracing::info!(
+                            "⭐ D1_AH_WORLDS {dir}: {added} activities served from generated worlds ({} distinct frames), {} without one",
+                            frames.len(),
+                            skipped.len()
+                        );
+                        if only.is_some() {
+                            for (i, why) in &skipped {
+                                tracing::warn!("⚠ D1_AH_WORLDS: activity {i} not served: {why}");
+                            }
+                        }
+                    }
                     // ⭐ D1_AH_MISSION_STEPS=<file>: `activity_index when sensor_group sensor_file
                     // [region]` per line, `when` = N | +N | @T|N (see `StepWhen`); a relative
                     // sensor_file is taken from the list's folder. Each step's frame is prebuilt for
