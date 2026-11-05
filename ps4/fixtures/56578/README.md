@@ -13,6 +13,27 @@ owned copy. The scripts find this folder through `D1_FIXTURES` (default: here; s
 | `mission/` | The A Guardian Rises schedule (`agr-steps-divide.txt`) with every step's sensor list, the world tables (`world-table.txt`; `world-table-tower.txt` adds the Tower as 0 and 165), the Breach prop list and the post-game phase 7 list. `agr-b-graveyard-fallen.txt` is `agr-b-graveyard.txt` with states for Breach squads 21, 26, 28 and 30 (one member each, generation 2; `tools/ps4_setup/d1-squad-states.py`), which make the Breach Fallen spawn; the route's `-BreachFallen` publishes it after the rifle. `agr-b-graveyard-junction.txt` does the same for squads 64, 68 and 76, on or by the garage route (`-JunctionFallen`). Relative names in a list are read from this folder. | `D1_AH_MISSION_STEPS`, `D1_AH_WORLD_TABLE`, the route |
 | `postgame/` | Profile pushes for the end of the mission (XP 0 and 900, the completed profile with the Arcadia) and the post-game scoreboard. | `lab/tower-route/postgame5.sh` |
 | `vendor/` | The account with Glimmer 25,000 (slot 308), Silver 500 (309) and Legendary Marks 200 (310), the profile and item template the responder applies purchases to, and the sale table (`d1-oracle vendor-sales write`). | `ending-run.ps1` (vendors on by default) |
+| `worlds/` | Generated world tables for every activity (`tools/ps4_setup/d1-world-table.py`; do not edit): the 224 worlds' scenario facts, their slice sets, each bundle's sensor clients, the insertion points, and each of the 653 activities' world and start. Identifiers only. Format below. | `D1_AH_WORLDS` (activity host), streams A2 and J |
+
+### `worlds/`: the generated world tables
+
+Tab-separated, one `# GENERATED` line, then a header. `-` is empty; lists are comma-separated; hashes
+are `0x` and eight hex digits. Regenerate with `python tools/ps4_setup/d1-world-table.py --packages
+<owned packages> --hosts <d1-srcp.py hosts TSV>` (Node, and Blam Network's tiger built, under
+`D1_TIGER`). [notes/ps4-56578-worlds-2026-11-05.md](../../../notes/ps4-56578-worlds-2026-11-05.md)
+has the method and the coverage of each activity.
+
+| File | Row | Columns |
+|---|---|---|
+| `worlds.tsv` | a world (`<world>:scenario_client`) | `world`, `scenario_tag`, `family` (+0x08, FNV-1 of the name), `private_checksum` (+0x0C, the value rung 33 compares), `public_checksum`, `bubble_count`, `chosen` (bubbles with a valid state), `public_slice_sets`, `destination`, `static_world` (the descriptors' world hashes) |
+| `slice-sets.tsv` | a slice set, `8 * bubble + state` | `world`, `slice_set`, `bubble`, `valid`, `public` (needs a public session), `region_hash`, `descriptor`, `static_world`, `static_bubble`, then the bundle tags the client loads: `global`, `authoritative`, `private` |
+| `bundles.tsv` | a bundle tag's lookup group | `bundle_tag`, `group` (the sensor group, FNV-1 of the bundle name), `lookup_bubble` (-1 = every bubble), `clients`: `TYPE:INDEX:AB` per sensor client, A and B = 1 when the row has an auth or sense value type |
+| `insertion-points.tsv` | a static world's bubble | `static_world`, `bubble`, `insertion_points`: `NAME_HASH:COUNT` per spawn-point name (`0x2ea8fb98` = `default`), `?` where unreadable |
+| `activities.tsv` | an activity index | `index`, `hash`, `name` and `type` (the manifest's), `world`, `start_region` (slice set), `start_source` (`capture`, `capture of N`, `2014 start bubble`, `only slice set`, `stand-in: first private slice set`), `start_public`, `private_start`, `sensor_group` (the group holding the lifetime record), `status` (`cross-checked`, `generated`, `missing evidence`), `evidence` |
+
+A slice set's sensor-client list is every client of its bundles whose `lookup_bubble` is -1 or the
+slice set's bubble, in global, authoritative, private order, each `(group, type, index)` once.
+`d1-world-table.py --sensor-list WORLD:SLICE_SET` prints it in the `mission/` list format.
 
 The Guardian is a Titan Striker. Every peer card carries the Striker's ability rows and perks, and
 both subclass items name grid 132 with its default nodes (`tools/ps4_setup/d1-talent-grid.py 132`,
