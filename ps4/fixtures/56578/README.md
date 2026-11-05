@@ -14,6 +14,13 @@ owned copy. The scripts find this folder through `D1_FIXTURES` (default: here; s
 | `postgame/` | Profile pushes for the end of the mission (XP 0 and 900, the completed profile with the Arcadia) and the post-game scoreboard. | `lab/tower-route/postgame5.sh` |
 | `vendor/` | The account with Glimmer 25,000 (slot 308), Silver 500 (309) and Legendary Marks 200 (310), the profile and item template the responder applies purchases to, and the sale table (`d1-oracle vendor-sales write`). | `ending-run.ps1` (vendors on by default) |
 
+[incidents-56578.tsv](incidents-56578.tsv) contains the complete client incident index,
+name hash, known name, payload selector and auxiliary values.
+[incidents-51539-to-56578.tsv](incidents-51539-to-56578.tsv) translates the legacy indices by
+name hash, leaving absent targets blank. These are offline identity facts for host and script
+tooling, not incident bodies. Regenerate with `tools/ps4_setup/d1_incidents.py`; see the
+[catalogue note](../../../notes/ps4-56578-incident-catalog-2026-11-05.md).
+
 The Guardian is a Titan Striker. Every peer card carries the Striker's ability rows and perks, and
 both subclass items name grid 132 with its default nodes (`tools/ps4_setup/d1-talent-grid.py 132`,
 written with `d1-character-fixup.py`; issue #134). Without them there is no grenade, melee or super.
