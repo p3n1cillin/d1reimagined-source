@@ -61,7 +61,7 @@ and plans serving it. [V] = read in the binary or our code, [I] = inferred.
 
 ## Risks
 
-- Two hosts handing out the same entity indices.
+- ~~Two hosts handing out the same entity indices.~~ Not a risk: live, each host has its own index space and granted the client 0-499 by its peer slot (`d1-live-captures-2026-11-05.md`).
 - Shared state in one activity-host process.
 - The ambassador's search may need a matchmaking service we don't run.
 - The client's timeouts (minimum matchmaking time, the citizen-join timeout, a 15 s re-tick at
