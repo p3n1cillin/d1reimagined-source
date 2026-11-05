@@ -313,6 +313,13 @@ enum AhCmd {
 /// `d1-oracle sensor …` - see [`d1_oracle::sensor`] for the frame grammar and the executed proof.
 #[derive(Subcommand)]
 enum SensorCmd {
+    /// Decode `sensor_auth_update` (udt 5) payloads: stdin lines of hex, one JSON object per line
+    /// (gen, the authority mask, stamp, init and each entry's name and raw body) or `{"error"}`.
+    DecodeBatch,
+    /// Decode entry values: stdin lines `TAG BODYHEX` (an entry body from `decode-batch` whose
+    /// list row has an A value), one JSON object per line with the A value's struct image, decoded
+    /// from bit 2 (after `fresh` and `presence`) with the typed-value codec, and the bits it used.
+    DecodeValues,
     /// Decode an ordered, private udt-6 capture with native-observed kind:B-tag mappings.
     DecodeSense {
         #[arg(long)]
@@ -811,6 +818,63 @@ fn run_sensor(_cli: &Cli, cmd: &SensorCmd) -> anyhow::Result<ExitCode> {
             );
             Ok(if ok { ExitCode::SUCCESS } else { ExitCode::from(2) })
         }
+        SensorCmd::DecodeBatch => {
+            use std::io::BufRead;
+            let mut frames = sensor::FrameDecoder::new()?;
+            for line in std::io::stdin().lock().lines() {
+                let line = line?;
+                let h = line.trim();
+                if h.is_empty() {
+                    continue;
+                }
+                let out = match hex(h).and_then(|b| frames.decode(&b).map_err(Into::into)) {
+                    Ok(f) => serde_json::json!({
+                        "gen": f.gen, "stamp": f.stamp, "init": f.init, "bits": f.bits,
+                        "authority": f.authority.as_ref().map(|a| format!("{:#x}", a.changed)),
+                        "entries": f.entries.iter().map(|e| serde_json::json!({
+                            "hash": format!("{:#010x}", e.name_hash), "i8": e.name_i8,
+                            "sub": e.name_sub, "body_bits": e.body_bits, "body": hexs(&e.body),
+                        })).collect::<Vec<_>>(),
+                    }),
+                    Err(e) => serde_json::json!({"error": format!("{e:#}")}),
+                };
+                println!("{out}");
+            }
+            Ok(ExitCode::SUCCESS)
+        }
+
+        SensorCmd::DecodeValues => {
+            use std::io::BufRead;
+            let mut codecs: std::collections::HashMap<u32, ObjectOracle> = std::collections::HashMap::new();
+            for line in std::io::stdin().lock().lines() {
+                let line = line?;
+                let mut parts = line.split_whitespace();
+                let (Some(tag), Some(h)) = (parts.next(), parts.next()) else { continue };
+                let result = (|| -> anyhow::Result<serde_json::Value> {
+                    let tag = u32::from_str_radix(tag.trim_start_matches("0x"), 16)?;
+                    let body = hex(h)?;
+                    if body.is_empty() || body[0] & 0xC0 != 0xC0 {
+                        anyhow::bail!("body does not start with fresh = 1, presence = 1");
+                    }
+                    // Drop the two leading bits: the value object starts at bit 2.
+                    let shifted: Vec<u8> = (0..body.len())
+                        .map(|i| (body[i] << 2) | body.get(i + 1).map_or(0, |b| b >> 6))
+                        .collect();
+                    let codec = match codecs.entry(tag) {
+                        std::collections::hash_map::Entry::Occupied(e) => e.into_mut(),
+                        std::collections::hash_map::Entry::Vacant(e) => {
+                            e.insert(ObjectOracle::with_types(tag, sensor::TYPED_VALUE_TYPES)?)
+                        }
+                    };
+                    let d = codec.decode(&shifted)?;
+                    Ok(serde_json::json!({"tag": format!("{tag:#010x}"), "bits": d.bits, "image": hexs(&d.object)}))
+                })();
+                let out = result.unwrap_or_else(|e| serde_json::json!({"error": format!("{e:#}")}));
+                println!("{out}");
+            }
+            Ok(ExitCode::SUCCESS)
+        }
+
         SensorCmd::Build { gen, name_hash, name_i8, name_sub, phase, tail_id, tail_hash } => {
             let tail = match (tail_id, tail_hash) {
                 (Some(i), Some(h)) => Some((
