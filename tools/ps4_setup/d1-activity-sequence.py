@@ -12,7 +12,10 @@ host (the PAH, which stays connected all mission), the stages the player went th
   started and stopped (51539 incidents 2120 and 734), the triggers the player crossed (51539
   incident 2665, decoded as `trigger_report` does) and the extra activity hosts that opened
   (public instances);
-- the sequence ends at the PAH's last client message.
+- the sequence ends at the PAH's last client message;
+- `markers` are the first slice entries, first trigger crossings and cinematic events in time
+  order, and `segments` the encounter boundaries read from them: a segment opens at a new slice
+  set, or at the first trigger after FIGHT_GAP_S of quiet (a heuristic over one run).
 
 Only findings leave the capture: times, slice sets, group hashes, trigger names and counts. No
 message body, no account data, no player name. The output is the framework's `CaptureSequence`

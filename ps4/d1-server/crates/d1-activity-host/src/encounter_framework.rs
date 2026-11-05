@@ -623,9 +623,17 @@ impl Modifiers {
         m
     }
 
-    /// The skulls a manifest activity row carries.
+    /// The skulls a manifest activity row carries. A Nightfall-typed row
+    /// (`ACTIVITY_TYPE_NIGHTFALL`) is a Nightfall even where its row lists only the week's skull
+    /// pool (Vanguard Nightfall's 20): the Nightfall skull itself appears on the year-one weekly
+    /// rows. A pool row lists every skull the week may draw; the launcher picks the week's.
     pub fn of_catalog(row: &CatalogActivity) -> Self {
-        Self::from_skulls(row.skulls.iter().flatten().map(String::as_str))
+        let mut m = Self::from_skulls(row.skulls.iter().flatten().map(String::as_str));
+        if row.category == "nightfall" && !m.wipe_returns_to_orbit {
+            m.wipe_returns_to_orbit = true;
+            m.skulls.push("Nightfall".into());
+        }
+        m
     }
 }
 
