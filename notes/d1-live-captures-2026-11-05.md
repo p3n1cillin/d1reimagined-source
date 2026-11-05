@@ -178,6 +178,8 @@ These are the stalls Codex's level-1 runs have hit since 4 November (draft #256)
 - **the host's u8s share one counter.** Across its 23s and 24s they run 1, 2, 3 … 11 over A Guardian Rises, with one repeat (two 23s at 934 s both carry 9);
 - **the host also sends 23 unprompted.** In A Guardian Rises it did so at 580 s and 866 s, and cine_reveal's host did once, as the cinematic ended and before the move to the Tower (its own counter starting at 1 again). The client answered with 26 as usual.
 
+**Incident 2938 comes with it.** In A Guardian Rises the host sent a 2938 within half a second of every 23/24 exchange: 524, 580, 772, 866 and 934 s, and on cine_reveal's host at its one handover. A few others came at 570, 618, 851 and 928 s, likely other slot or authority changes. Its body is 27 bytes: a counter that rises by one with each of the host's incidents, then a repeated pair of ids. The other bodies the host sent are 58 bytes for 2426 (the join), 38 for 808, 13 for 1170 and 79 for the closing chain beginning 789. Sending 2938 needs its 56578 id, which the three matched pairs only bracket ("What decodes").
+
 **Our host answers none of this**: 25 and 26 fall through unanswered. So in our runs the client's abandoned slots are never claimed or purged. Whether that costs anything (slots running out on a long run, entities left behind after a transition) is untested.
 
 ## Restoration's public start (activity 166)
