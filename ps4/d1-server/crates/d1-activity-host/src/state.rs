@@ -336,6 +336,10 @@ pub struct ActivityInstance {
     /// *"we do not yet have valid host-tabulated data for it. Waiting."* forever.
     /// `Some((region_id, peer_index, token))`. ⇒ `historicaldocs/design/rung34-task7.md`.
     pah_region: Option<(u32, usize, u8)>,
+    /// The public sessions the client reported in its udt 21 slice-set records:
+    /// `(region, session (0x84 bytes), that session's activity-host id)`, advertised in the
+    /// region record when it names that region (see [`Self::track_public_session`]).
+    public_sessions: Vec<(u32, Vec<u8>, u64)>,
     /// ⭐ The client's own `join_request` struct image, kept because a state refresh has to
     /// re-publish the membership and a membership is an **echo** of exactly these bytes. Without it
     /// a refresh would have to fabricate an identity, which `state.rs` refuses to do anywhere else.
@@ -519,6 +523,7 @@ impl ActivityInstance {
             bubble_count: 0,
             bubble_chosen: Vec::new(),
             pah_region: None,
+            public_sessions: Vec::new(),
             join_request_image: None,
             last_pushed: now,
             host_heartbeat: Duration::from_millis(Self::HOST_HEARTBEAT_MS),
@@ -560,6 +565,13 @@ impl ActivityInstance {
 
     pub fn ah_id(&self) -> u64 {
         self.ah_id
+    }
+
+    /// Present another activity-host id (and the session text derived from it, as the registry
+    /// derives it). Call before the connection starts; see [`crate::listener::serve`].
+    pub fn set_ah_id(&mut self, ah_id: u64) {
+        self.ah_id = ah_id;
+        self.session_id = format!("d1ah-{ah_id:016x}");
     }
 
     pub fn session_id(&self) -> &str {
@@ -606,6 +618,7 @@ impl ActivityInstance {
         if let ClientMessage::ClientAuthoritativeDataUpdate { struct_image } = msg {
             self.track_current_slice(struct_image);
             self.follow_slice_target(struct_image);
+            self.track_public_session(struct_image);
         }
         // ⭐ udt 18 incidents: {u32 count, u32 types[count], ...}. Kept for incident-driven steps.
         if let ClientMessage::Other { user_defined_type: 18, struct_image } = msg {
@@ -950,6 +963,13 @@ impl ActivityInstance {
                 ReplicateMembership::PAH_REGIONS
             ),
             None => {}
+        }
+        // The public session the client reported for this region (step 5), re-applied on every
+        // publish like the record itself.
+        if let Some((session, host)) = self.pah_region.and_then(|(region, _, _)| self.public_session(region)) {
+            if let Err(e) = m.set_region_advertisement(session, host) {
+                tracing::warn!("⚠ public session not advertised: {e}");
+            }
         }
 
         // ⚠ ANY FUTURE MEMBERSHIP FIELD GOES ABOVE THIS LINE. If you are about to add one to the
@@ -1614,6 +1634,52 @@ impl ActivityInstance {
         }
     }
 
+    /// Record a public session the client reports for a region, to advertise it as the live PAH
+    /// did. Each of udt 21's two slice-set records (CURRENT `+0xB8`, TARGET `+0x158`, `0xA0`
+    /// bytes, `0x80800D9F`) carries, once the client has started or joined that region's public
+    /// instance, the session at record `+0x14` (`0x84` bytes) and the instance's host id at
+    /// `+0x98`. In the live Restoration capture the client reported them to its mission host
+    /// (the PAH) about a second after joining its new public host, and the PAH's next membership
+    /// carried both in the region record (`+0x4C`, `+0xD0`). A host never advertises itself: the
+    /// live public instances served no region records. Returns true when something changed.
+    fn track_public_session(&mut self, image: &[u8]) -> bool {
+        const RECORDS: [usize; 2] = [0xB8, 0x158];
+        const SESSION: usize = 0x14;
+        const HOST: usize = 0x98;
+        let mut changed = false;
+        for base in RECORDS {
+            let (Some(region), Some(host)) = (
+                image.get(base..base + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()) & 0x3FF),
+                image.get(base + HOST..base + HOST + 8).map(|b| u64::from_le_bytes(b.try_into().unwrap())),
+            ) else {
+                continue;
+            };
+            let Some(session) = image.get(base + SESSION..base + HOST) else { continue };
+            if host == 0 || host == self.ah_id || region == 0x3FF || session.iter().all(|&b| b == 0) {
+                continue;
+            }
+            match self.public_sessions.iter_mut().find(|(r, _, _)| *r == region) {
+                Some((_, s, h)) if s.as_slice() == session && *h == host => continue,
+                Some((_, s, h)) => {
+                    *s = session.to_vec();
+                    *h = host;
+                }
+                None => self.public_sessions.push((region, session.to_vec(), host)),
+            }
+            tracing::info!("⭐ client reports the public session for region {region} on host {host:#018x}: advertising it");
+            changed = true;
+        }
+        if changed {
+            self.membership_dirty = true;
+        }
+        changed
+    }
+
+    /// The public session advertised for a region, if the client reported one.
+    pub fn public_session(&self, region: u32) -> Option<(&[u8], u64)> {
+        self.public_sessions.iter().find(|(r, _, _)| *r == region).map(|(_, s, h)| (s.as_slice(), *h))
+    }
+
     /// Serve a start region (see [`ServedWorld::start_region`]); also moves the PAH region record.
     pub fn set_start_region(&mut self, region: u32) {
         self.start_region = Some((region, 0x811C_9DC5));
@@ -1891,6 +1957,40 @@ mod tests {
         img[0x1F8] = 4;
         i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img.clone() }, now);
         assert_eq!(i.pah_region(), Some((24, 0, 4)), "a same-target retry follows the client's token");
+    }
+
+    /// ⭐ Plan step 5, as the live PAH did it in Restoration: the client's udt 21 TARGET record
+    /// for its public region names the session (record +0x14) and its new public host (+0x98);
+    /// the PAH's next membership carries both in the region record (+0x4C, +0xD0). The values
+    /// here are synthetic; the layout is the live one.
+    #[test]
+    fn the_pah_advertises_the_public_session_the_client_reports() {
+        let (mut i, now) = instance();
+        i.on_client_message(&join_request([1, 2, 3, 4]), now);
+        i.set_pah_region(56, 0, 1);
+        const TARGET: usize = 0x158;
+        let public_host = 0xD1A0_0000_0000_0002u64;
+        let mut session = vec![0u8; ReplicateMembership::PAH_ADVERTISED_SESSION_LEN];
+        session[0] = 0x4E;
+        session[4..0x44].fill(0xAB);
+        let mut img = vec![0u8; 0x220];
+        img[TARGET..TARGET + 4].copy_from_slice(&56u32.to_le_bytes());
+        img[TARGET + 4..TARGET + 8].copy_from_slice(&0x2EA8_FB98u32.to_le_bytes());
+        img[TARGET + 0x14..TARGET + 0x98].copy_from_slice(&session);
+        img[0x1F8] = 1;
+        // Its own id is not advertised: the live public instances served no region records.
+        img[TARGET + 0x98..TARGET + 0xA0].copy_from_slice(&i.ah_id().to_le_bytes());
+        i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img.clone() }, now);
+        assert_eq!(i.public_session(56), None);
+        img[TARGET + 0x98..TARGET + 0xA0].copy_from_slice(&public_host.to_le_bytes());
+        i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img }, now);
+        let AhMessage::ReplicateMembership(m) = i.membership_due(now).expect("re-published").message else {
+            panic!("expected a membership")
+        };
+        let rec = &m.image[ReplicateMembership::PAH_REGIONS..][..ReplicateMembership::PAH_REGION_STRIDE];
+        assert_eq!(&rec[0..4], &56u32.to_le_bytes());
+        assert_eq!(&rec[0x4C..0xD0], &session[..]);
+        assert_eq!(&rec[0xD0..0xD8], &public_host.to_le_bytes());
     }
 
     /// ⭐ A changed membership carries the next update number, or the client never re-reads the

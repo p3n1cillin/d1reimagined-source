@@ -843,6 +843,40 @@ impl ReplicateMembership {
         Ok(())
     }
 
+    /// Region record `+0x4C`: the advertised public session, `0x84` bytes up to `+0xD0`.
+    pub const PAH_ADVERTISED_SESSION: usize = 0x4C;
+    pub const PAH_ADVERTISED_SESSION_LEN: usize = 0x84;
+    /// Region record `+0xD0`: the advertised public session's activity-host id.
+    pub const PAH_ADVERTISED_HOST: usize = 0xD0;
+
+    /// Advertise a public session in slot 0's region record (plan step 5 in
+    /// notes/ps4-56578-public-sessions-2026-11-02.md). The live PAH copied both from the client's
+    /// own udt 21 slice-set record once the client had joined its new public instance
+    /// (notes/d1-live-captures-2026-11-05.md): the session at `+0x4C` and that instance's host
+    /// id at `+0xD0`. The session is the client's platform session, echoed, never built here.
+    pub fn set_region_advertisement(&mut self, session: &[u8], host: u64) -> Result<(), AhError> {
+        if session.len() != Self::PAH_ADVERTISED_SESSION_LEN {
+            return Err(AhError::FieldOverflow {
+                field: "replicate_membership.pah_region.advertised_session",
+                len: session.len(),
+                max: Self::PAH_ADVERTISED_SESSION_LEN,
+            });
+        }
+        let slot0 = Self::PAH_REGIONS;
+        if self.image.len() < slot0 + Self::PAH_REGION_STRIDE {
+            return Err(AhError::BadStructSize {
+                user_defined_type: protocol::UDT_REPLICATE_MEMBERSHIP,
+                got: self.image.len(),
+                want: Self::STRUCT_SIZE,
+            });
+        }
+        let s = slot0 + Self::PAH_ADVERTISED_SESSION;
+        self.image[s..s + Self::PAH_ADVERTISED_SESSION_LEN].copy_from_slice(session);
+        let h = slot0 + Self::PAH_ADVERTISED_HOST;
+        self.image[h..h + 8].copy_from_slice(&host.to_le_bytes());
+        Ok(())
+    }
+
     /// The region id currently in slot 0 of the tabulated array, for the run log and the controls.
     pub fn pah_region_id(&self) -> u32 {
         let o = Self::PAH_REGIONS + Self::PAH_REGION_ID;
