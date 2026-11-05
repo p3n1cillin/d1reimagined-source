@@ -84,20 +84,13 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
 
 ## Other games' revival servers (read for design)
 
-These servers rebuilt online games from the retail client. They were read for their designs (spawn
-phases, vendor ledgers, sessions), not copied; see [`notes/similar-projects.md`](notes/similar-projects.md).
-
-- **[Crypto137](https://github.com/Crypto137)** and contributors:
-  [MHServerEmu](https://github.com/Crypto137/MHServerEmu) (Marvel Heroes, AGPL-3.0).
-- **[NexusForever](https://github.com/NexusForever)**: [NexusForever](https://github.com/NexusForever/NexusForever)
-  (WildStar, AGPL-3.0).
-- **[spaceninjaserver](https://github.com/spaceninjaserver)**:
-  [SpaceNinjaServer](https://github.com/spaceninjaserver/SpaceNinjaServer) (Warframe, AGPL-3.0).
 - **[PocketRelay](https://github.com/PocketRelay)**: [PocketRelay](https://github.com/PocketRelay/Server)
-  (Mass Effect 3 multiplayer, MIT).
-- **[mixutin](https://github.com/mixutin)** and **[SyST3MDeV](https://github.com/SyST3MDeV)**:
-  [Dauntless Revived](https://github.com/mixutin/dauntless-revived) and
-  [Undaunted](https://github.com/SyST3MDeV/Undaunted) (Dauntless, AGPL-3.0).
+  (Mass Effect 3 multiplayer, MIT), read for its handler router and matchmaking; see
+  [`notes/similar-projects.md`](notes/similar-projects.md).
+
+AGPL projects are not used and not read ([licensing](ps4/design/licensing.md)). Four that were read on
+1 November despite that rule are listed, with the correction, in
+[`notes/similar-projects.md`](notes/similar-projects.md); nothing from them is in this repository.
 
 ## Tools used (not bundled)
 
