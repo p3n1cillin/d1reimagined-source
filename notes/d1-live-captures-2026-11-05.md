@@ -48,7 +48,7 @@ The 56578 client's own codec (`d1-oracle activity-host decode`) decodes the last
 | 18 (incidents) | decodes |
 | 1 (`global_activity_state`) | guest fault: its layout differs between the builds |
 | 5 (`sensor_auth_update`) | `d1-oracle sensor decode-batch` walks the frames (below) |
-| 23, 24 | not pinned in `d1-oracle`'s call sites yet |
+| 23, 24 | decode (pinned 5 November; "Entity-slot handover" below) |
 
 **Incident types are numbered per build.** Three pairs are matched so far:
 
@@ -160,6 +160,25 @@ We serve 165 an empty sensor list. The live host served both cinematic records, 
 - cine-live5: the client stalled ("4739 milliseconds since the last network update") and dropped the host ("baboon") at junction-west.
 
 These are the stalls Codex's level-1 runs have hit since 4 November (draft #256), and they still come with `D1_RATE_RULES=0` and no D1 detours installed. Run it with `ending-run.ps1 -Waves -WorldTable ps4/fixtures/56578/mission/world-table-cine-live.txt` and the watcher beside it once runs reach the post-game again.
+
+## Entity-slot handover (udt 23-26)
+
+`d1-oracle` pins udt 23 and 24 for 56578 from the receive table: entries 9 and 10 load their descriptor globals `0x191A3C8` and `0x191A3D8` as udt 0's handler loads its own. Our protocol table names all four:
+
+| udt | Direction | Name | Layout |
+|---|---|---|---|
+| 25 | client → host | `abandon_entity_slots` | u8 at +0x00, an entity-slot set (`0x808043A7`, 0x600 bytes) at +0x04, 3 bits at +0x604 (3) |
+| 23 | host → client | `claim_authority_over_abandoned_entity_slots` | the same layout; 3 bits at +0x604 = 4 |
+| 26 | client → host | `request_purge_entity_slots` | 3 bits at +0x00 (4), the slot set at +0x04 |
+| 24 | host → client | `purge_abandoned_entity_slots` | 3 bits at +0x00 (4), u8 at +0x01, the slot set at +0x04 |
+
+**How the live host ran it.** The client sends 25 as the player leaves bubbles (in A Guardian Rises at 524 s, 772 s, 934 s and 1042 s; in Restoration on leaving the public instance at 395 s), and then:
+- **the host answers with 23**, echoing the client's slot set. It merges 25s that arrive together: at 772 s its one 23 carries the union of the two 25s' sets;
+- **the client asks to purge (26)** with the same set, and **the host purges (24)** with the same set;
+- **the host's u8s share one counter.** Across its 23s and 24s they run 1, 2, 3 … 11 over A Guardian Rises, with one repeat (two 23s at 934 s both carry 9);
+- **the host also sends 23 unprompted.** In A Guardian Rises it did so at 580 s and 866 s, and cine_reveal's host did once, as the cinematic ended and before the move to the Tower (its own counter starting at 1 again). The client answered with 26 as usual.
+
+**Our host answers none of this**: 25 and 26 fall through unanswered. So in our runs the client's abandoned slots are never claimed or purged. Whether that costs anything (slots running out on a long run, entities left behind after a transition) is untested.
 
 ## Restoration's public start (activity 166)
 
@@ -307,5 +326,5 @@ The player names in these messages are personal data and stay in the private cap
 - **Map the incident types between 51539 and 56578,** from pairs the two clients send at the same moments (cinematic start and stop), or from the builds' incident tables.
 - **Delta (`fresh = 0`) sensor updates, then field by field:** what the live host's values mean, for the records where ours differ (the squads' names, the trigger values, the objectives).
 - **The Tower: too little of it here.** Only A Guardian Rises (40 s) and Eye of a Gate Lord (36 s) reach it, not enough for its vendor, civilian and Xûr records. Group 0x8CC31436, which earlier notes called the Tower plaza, also appears in The Archive and The Nexus.
-- **Pin udt 23 and 24 in `d1-oracle`.** `d1-oracle activity-host decode-batch` (stdin `UDT HEX [STREAM]` lines, JSON out) decodes a whole mission in seconds; one start costs about 3 s.
+- **Answer udt 25 and 26 as the live host did** ("Entity-slot handover"), and see in the lab whether it changes anything at bubble transitions.
 - **Compare each mission's live host timeline with what our activity host serves,** A Guardian Rises first: its incidents, memberships and objective updates.
