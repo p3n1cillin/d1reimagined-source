@@ -131,13 +131,14 @@ fn single_field_variations_match() {
     let Some(s) = inputs() else { return };
     let enc = Encoder::new(s);
     let mut codec = AhCodec::new();
-    let mut cases = 0;
+    let (mut cases, mut past_capacity) = (0, 0);
     for udt in [1u32, 2, 18, 0, 4] {
         let tag = activity_host::tag_for_udt(udt).unwrap();
         let d = s.get(tag).unwrap();
         let mut leaves = Vec::new();
         collect_leaves(s, d, 0, &mut leaves, 0);
-        assert!(!leaves.is_empty());
+        // A udt whose every leaf sits in an array (udt 0's slot mask) has none to vary here; the
+        // generated-image tests cover it.
         for (at, f) in leaves {
             let mut img = vec![0u8; d.struct_size as usize];
             let width = f.width().clamp(1, 64);
@@ -154,11 +155,19 @@ fn single_field_variations_match() {
             put(&mut img, at, &bytes);
             // A leaf may be an array's count: its slots' typed references must not name type 0.
             Gen::new(s, 0).null_refs(tag, &mut img);
+            // A count leaf at the top of its width can exceed its array's capacity (the launch
+            // slots' 6-bit count says 63 of 50): the client would walk past the array, the native
+            // encoder refuses. That refusal is the negative `refusals_are_named...` checks.
+            let native = if activity_host::is_replicated(udt) { enc.encode_replicated(tag, &img) } else { enc.encode(tag, &img) };
+            if matches!(native, Err(RsatError::Runtime { .. })) {
+                past_capacity += 1;
+                continue;
+            }
             compare_udt(&mut codec, &enc, udt, tag, &img, &format!("field at +{at:#x}"));
             cases += 1;
         }
     }
-    eprintln!("{cases} single-field cases");
+    eprintln!("{cases} single-field cases identical; {past_capacity} past a capacity, refused natively");
     assert!(cases > 40);
 }
 
