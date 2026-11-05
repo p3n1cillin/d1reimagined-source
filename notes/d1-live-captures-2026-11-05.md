@@ -163,12 +163,74 @@ The PAH region record in udt 11 (`replicate_membership+0x2E48`, the record our h
 - **What marks a public region is `+0x04 = 1`.** The public session's host then advertises itself, its session at +0x4C and its own host id at +0xD0. These are plan steps 2 and 5 in the public-sessions note, now with the live values.
 - **Between the two sessions,** the client exchanges services messages 0x0a (2,409 bytes) and 0x2a/0x2b with the services host, at 20 s and 25-31 s. That is the matchmaking step 3 of the plan.
 
+## Every capture's host sessions
+
+`d1-srcp.py sessions CAPTURE...` lists, per activity-host session:
+- the type the client's join request carries (private 3, public 2);
+- the activity the host's join incident (2426) names, through the public manifest;
+- the slice sets the client reported as current (udt 21), in order.
+
+A mission typically opens with a short private session naming it, with no slice set yet, while the world loads. It then plays across one or more sessions, switching between private and public as the player moves between mission and patrol bubbles. Each session's first slice set is the start region an activity host has to serve.
+
+| Capture | Host sessions: type, slice sets the client reported (in order) |
+|---|---|
+| A Guardian Rises | private 113, 112, 24, 96, 104, 105; private 25, 26; public 24 (Tower) |
+| Restoration | private -; private 56; public 56; public 56, 104 |
+| The Dark Within | private -; private 56; private 56, 48, 64; public 64 |
+| The Warmind | private -; public 56; private 56, 48; private 48, 88, 72 |
+| The Speaker | private 1 |
+| The Last Array | private -; public 48; private 48, 64; private 64, 72 |
+| The Dark Beyond | private 9, 8; public 8; private 8, 48, 24, 25 |
+| The Worlds Grave | private - (The World's Grave); private 8, 104, 40, 88 |
+| Sword of Crota | private - (The Sword of Crota); private 8; private 8, 16, 96 |
+| Shrine of Oryx | private -; private 16, 96, 40, 104, 72 |
+| Chamber of Night | private -; private 16; private 16, 48, 24, 25, 88 |
+| A Strangers Call | private 161, 24 (A Stranger's Call); public 24, 160, 64; public 64, 65 |
+| The Awoken | private 17, 1 |
+| Ishtar Collective | private 24; public 24, 160; private 160, 80; private 80, 224, 168 |
+| Eye of a Gate Lord | private 24; private 24, 72; private 72, 32; private 32, 224, 168, 104; private 1 (A Key Awaits); private - (Vestian Outpost) |
+| The Archive | private 24; private 24, 160, 64; private 64, 120, 208 |
+| Exclusion Zone | private 145, 144; private 144, 8, 24; public 24, 208 |
+| The Gardens Spire | private - (The Garden's Spire); private 144; private 144, 8, 160; public 160; private 160, 112, 72, 224 |
+| The Buried City | private -; private 144; private 144, 48; public 48, 136 |
+| A Rising Tide | private -; private 144; private 144, 8, 16; private 16, 192, 96, 176 |
+| The Black Garden | private -; private 144; private 144, 8, 24; private 24, 208, 32, 200, 104, 105; private 17 (A Hero's Return) |
+| Scourge of Winter | private 24; private 24, 72, 184, 48, 88 |
+| Fist of Crota | private 16, 152, 120 |
+| Siege of the Warmind | private -; private 48; public 48; private 48, 88, 144, 136 |
+| The Wakening | private -; public 8; private 8, 48, 24, 88, 80 |
+| Scourge of Winter / HoW | private 24; private 24, 72, 184, 48, 88 |
+| A Kell Rising | private 8, 48, 184 |
+| Patrol / Scattered Pack | private 24 (Patrol Venus); private 24, 72 |
+| The Silent Fang | private -; private 96, 24, 112 |
+| The Ruling House | private 120; private 120, 152; private 152, 160, 32 |
+| Wolves Gambit | private - (Wolves' Gambit); public 80, 224, 16, 128 |
+| The Queens Ransom | private - (Queen's Ransom); private 224; private 224, 32, 96, 192 |
+| The Coming War | private 25, 24, 8, 1 |
+| Caydes Stash | private 16, 168, 8 (Cayde's Stash); private 17 (Hangar Stakes) |
+| The Dreadnaught | private 129, 128, 72, 8 |
+| Enemy of My Enemy | private 8, 96, 152 |
+| Lost to Light | private 40, 88, 80, 24 |
+| The Promethean Code | private -; private 88, 144, 136, 40, 128 |
+| Last Rites | private 32 |
+| Regicide | private 8, 152, 136, 128, 104, 105 |
+| Dread Patrol | private 8, 152, 72, 128 |
+| Crotas End | private 16, 32 (Crota's End) |
+| The Devils Lair | private - (The Devils' Lair); private 160, 152, 16, 168 |
+| The Summoning Pits | private -; private 16, 96, 40, 112 |
+| Patrol / Silent Scream | private - (Patrol the Dreadnaught); private 8, 96; private 96, 88 |
+| The Nexus | private -; private 120, 56, 40, 216 |
+| Winters Run | private 24 (Winter's Run); private 24, 72, 184, 48, 8, 176 |
+| Cerberus Vae III | private -; private 112, 72, 80; private 80, 208, 184 |
+| Dust Palace | private -; private 48, 136, 40 |
+
+
 ## Next
 
 - **Serve 165 as the live host did** (the two cinematic records, start region 25, the state steps), and retry it.
 - **Restoration's public start, by the live values:** the region record's +0x04, then the second host and its advertisement, and the services messages 0x0a/0x2a the client matchmakes with.
 - **Map the incident types between 51539 and 56578,** from pairs the two clients send at the same moments (cinematic start and stop), or from the builds' incident tables.
 - **Delta (`fresh = 0`) sensor updates, then field by field:** what the live host's values mean, for the records where ours differ (the squads' names, the trigger values, the objectives).
-- **The Tower as the live host served it:** its vendor, civilian and Xûr records.
+- **The Tower: too little of it here.** Only A Guardian Rises (40 s) and Eye of a Gate Lord (36 s) reach it, not enough for its vendor, civilian and Xûr records. Group 0x8CC31436, which earlier notes called the Tower plaza, also appears in The Archive and The Nexus.
 - **Pin udt 23 and 24 in `d1-oracle`.** `d1-oracle activity-host decode-batch` (stdin `UDT HEX` lines, JSON out) decodes a whole mission in seconds; one start costs about 3 s.
 - **Compare each mission's live host timeline with what our activity host serves,** A Guardian Rises first: its incidents, world states and objective updates.
