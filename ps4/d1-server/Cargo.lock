@@ -1110,6 +1110,7 @@ dependencies = [
  "d1-bap",
  "d1-build",
  "d1-oracle",
+ "d1-rsat",
  "serde",
  "serde_json",
  "tokio",
@@ -1276,6 +1277,16 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "d1-rsat"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "d1-eboot",
+ "d1-oracle",
 ]
 
 [[package]]

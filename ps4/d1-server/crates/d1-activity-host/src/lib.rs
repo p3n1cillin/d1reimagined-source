@@ -85,6 +85,7 @@ pub mod generated;
 pub mod group; // MP(H): several clients in one instance
 pub mod listener;
 pub mod messages;
+pub mod native;
 pub mod open_world;
 pub mod protocol;
 pub mod public_events;

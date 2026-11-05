@@ -7,12 +7,14 @@
 #
 # Needs D1_GHIDRA_HOME (the unpacked ghidra_<ver>_PUBLIC folder), D1_JAVA_HOME (a JDK 25: Ghidra 12 refuses 21) and
 # D1_EBOOT. The project (it holds the game's code) goes to the staging folder, never the repo.
-# Runs at Idle priority: heavy CPU and disk stall route runs (notes/ps4-56578-lab-stalls-2026-11-05.md).
+# Runs at BelowNormal priority; still never during a route run (notes/ps4-56578-lab-stalls-2026-11-05.md).
+# -LogDirectory keeps logs out of the shared project folder (default: the temp folder).
 param(
     [switch]$Import,
     [string[]]$Decompile = @(),
     [string[]]$Find = @(),
-    [string]$Project = 'd1-56578'
+    [string]$Project = 'd1-56578',
+    [string]$LogDirectory = [System.IO.Path]::GetTempPath()
 )
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\D1Paths.ps1"
@@ -38,9 +40,10 @@ if ($Import) {
 } else {
     throw 'Give -Import, -Decompile ADDR[,ADDR...] or -Find VALUE[,VALUE...]'
 }
-$log = Join-Path $dir "$Project-$(Get-Date -Format yyyyMMdd-HHmmss).log"
+New-Item -ItemType Directory -Force $LogDirectory | Out-Null
+$log = Join-Path $LogDirectory "$Project-$(Get-Date -Format yyyyMMdd-HHmmss).log"
 $p = Start-Process -FilePath $headless -ArgumentList $args -NoNewWindow -PassThru -RedirectStandardOutput $log -RedirectStandardError "$log.err"
-$p.PriorityClass = 'Idle'
+$p.PriorityClass = 'BelowNormal'
 $p.WaitForExit()
 if ($Decompile.Count -or $Find.Count) {
     # The script's println lines carry the output; Ghidra prefixes them with the script name.
