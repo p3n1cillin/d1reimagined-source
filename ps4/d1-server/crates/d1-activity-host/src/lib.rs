@@ -77,12 +77,14 @@
 
 pub mod checkpoints;
 pub mod codec;
+pub mod completion;
 pub mod controls;
 pub mod encounter_framework;
 pub mod entity;
 pub mod fireteam;
 pub mod generated;
 pub mod group; // MP(H): several clients in one instance
+pub mod incident_catalog;
 pub mod listener;
 pub mod messages;
 pub mod native;
@@ -94,6 +96,10 @@ pub mod public_registry;
 pub mod push;
 pub mod pvp;
 pub mod registry;
+pub mod rewards;
+pub mod row_encoders;
+pub mod rows;
+pub mod script_bridge;
 pub mod sense;
 pub mod sensor_list;
 pub mod state;

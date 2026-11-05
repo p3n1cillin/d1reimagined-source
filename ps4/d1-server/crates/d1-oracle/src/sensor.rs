@@ -316,54 +316,7 @@ impl SensorPhaseUpdate {
         w.put(1, 1); // fresh
         w.put(1, 1); // presence
         w.raw(&value_pay, value_bits as usize);
-        if !self.clients.is_empty() {
-            let mut name = ObjectOracle::new(TAG_NAME_REF)?;
-            for c in &self.clients {
-                let e = name.encode(&c.name_ref_image(), 0x1_0000)?;
-                let value = match (&c.a_value, c.has_a) {
-                    (Some((tag, image)), true) => {
-                        Some(ObjectOracle::with_types(*tag, TYPED_VALUE_TYPES)?.encode(image, 0x1_0000)?)
-                    }
-                    _ => None,
-                };
-                let value_bits = value.as_ref().map_or(0, |v| v.bits);
-                let b_val = match (&c.b_value, c.has_b) {
-                    (Some((tag, image)), true) => {
-                        Some(ObjectOracle::with_types(*tag, TYPED_VALUE_TYPES)?.encode(image, 0x1_0000)?)
-                    }
-                    _ => None,
-                };
-                // B part: has_b, then (if set) flag + fresh + presence + object + u32.
-                let b_bits = u32::from(c.has_b) + b_val.as_ref().map_or(0, |v| 3 + v.bits + 32);
-                let body = 2 * u32::from(c.has_a) + value_bits + b_bits;
-                w.put(1, 1); // has_entry
-                w.raw(&e.payload, e.bits as usize);
-                w.put(u64::from(body), 32);
-                if c.has_a {
-                    w.put(1, 1); // fresh
-                    match &value {
-                        Some(v) => {
-                            w.put(1, 1); // presence
-                            w.raw(&v.payload, v.bits as usize);
-                        }
-                        None => w.put(0, 1), // presence = 0: keep the default fresh installed
-                    }
-                }
-                if c.has_b {
-                    match &b_val {
-                        Some(v) => {
-                            w.put(1, 1); // has_b
-                            w.put(0, 1); // flag -> client +0x16
-                            w.put(1, 1); // fresh
-                            w.put(1, 1); // presence
-                            w.raw(&v.payload, v.bits as usize);
-                            w.put(0, 32); // -> client +0x10
-                        }
-                        None => w.put(0, 1), // has_b = 0
-                    }
-                }
-            }
-        }
+        put_clients(&mut w, &self.clients, &mut EntryCodecs::default())?;
         w.put(0, 1); // terminator (has_entry = 0)
         if !self.clients.is_empty() || self.authority.is_some() {
             // Zero-pad to a byte: the walker stops at the terminator and never reads past it. The
@@ -379,6 +332,166 @@ impl SensorPhaseUpdate {
         })?;
         remember_stamp_bit(&frame, stamp_bit);
         Ok(frame)
+    }
+}
+
+/// The client codecs a frame's entries need, each started on first use: one for name references and
+/// one per value tag. A codec start costs about 0.4 s, so a frame starts each at most once, and a
+/// [`SensorFrameEncoder`] keeps them for every frame it builds.
+#[derive(Default)]
+struct EntryCodecs {
+    name: Option<ObjectOracle>,
+    values: std::collections::HashMap<u32, ObjectOracle>,
+    authority: Option<ObjectOracle>,
+}
+
+impl EntryCodecs {
+    fn name(&mut self) -> Result<&mut ObjectOracle> {
+        if self.name.is_none() {
+            self.name = Some(ObjectOracle::new(TAG_NAME_REF)?);
+        }
+        Ok(self.name.as_mut().expect("just set"))
+    }
+
+    fn value(&mut self, tag: u32) -> Result<&mut ObjectOracle> {
+        use std::collections::hash_map::Entry;
+        match self.values.entry(tag) {
+            Entry::Occupied(e) => Ok(e.into_mut()),
+            Entry::Vacant(v) => Ok(v.insert(ObjectOracle::with_types(tag, TYPED_VALUE_TYPES)?)),
+        }
+    }
+
+    fn authority(&mut self) -> Result<&mut ObjectOracle> {
+        if self.authority.is_none() {
+            self.authority = Some(ObjectOracle::new(TAG_AUTHORITY)?);
+        }
+        Ok(self.authority.as_mut().expect("just set"))
+    }
+}
+
+/// Write each client as one named entry (`has_entry`, name ref, `body_bit_length`, body). Shared by
+/// the full frame ([`SensorPhaseUpdate::encode`]) and the entry-only frame ([`SensorEntryFrame`]),
+/// so the two cannot disagree on an entry's layout.
+fn put_clients(w: &mut BitWriter, clients: &[SensorClientRef], codecs: &mut EntryCodecs) -> Result<()> {
+    for c in clients {
+        let e = codecs.name()?.encode(&c.name_ref_image(), 0x1_0000)?;
+        let value = match (&c.a_value, c.has_a) {
+            (Some((tag, image)), true) => Some(codecs.value(*tag)?.encode(image, 0x1_0000)?),
+            _ => None,
+        };
+        let value_bits = value.as_ref().map_or(0, |v| v.bits);
+        let b_val = match (&c.b_value, c.has_b) {
+            (Some((tag, image)), true) => Some(codecs.value(*tag)?.encode(image, 0x1_0000)?),
+            _ => None,
+        };
+        // B part: has_b, then (if set) flag + fresh + presence + object + u32.
+        let b_bits = u32::from(c.has_b) + b_val.as_ref().map_or(0, |v| 3 + v.bits + 32);
+        let body = 2 * u32::from(c.has_a) + value_bits + b_bits;
+        w.put(1, 1); // has_entry
+        w.raw(&e.payload, e.bits as usize);
+        w.put(u64::from(body), 32);
+        if c.has_a {
+            w.put(1, 1); // fresh
+            match &value {
+                Some(v) => {
+                    w.put(1, 1); // presence
+                    w.raw(&v.payload, v.bits as usize);
+                }
+                None => w.put(0, 1), // presence = 0: keep the default fresh installed
+            }
+        }
+        if c.has_b {
+            match &b_val {
+                Some(v) => {
+                    w.put(1, 1); // has_b
+                    w.put(0, 1); // flag -> client +0x16
+                    w.put(1, 1); // fresh
+                    w.put(1, 1); // presence
+                    w.raw(&v.payload, v.bits as usize);
+                    w.put(0, 32); // -> client +0x10
+                }
+                None => w.put(0, 1), // has_b = 0
+            }
+        }
+    }
+    Ok(())
+}
+
+/// ⭐ A `sensor_auth_update` that carries ONLY the named entries it is given: no lifetime entry is
+/// added, so a host with a row table can send just the rows that changed.
+///
+/// Each entry is written exactly as [`SensorPhaseUpdate::encode`] writes a client (`fresh = 1`,
+/// `presence` = whether a value is given, then the value), so an entry replaces the whole replica
+/// value. The live host's decodable deltas were of this kind (the cinematic play at stamp 200 decodes
+/// from bit 2 after `fresh` and `presence`, notes/d1-live-captures-2026-11-05.md "Values"); its
+/// `fresh = 0` partial overlays are not built here. The lifetime record is an ordinary entry here:
+/// A tag [`TAG_SENSOR_VALUE`], no B, the image from [`SensorPhaseUpdate::value_image`].
+///
+/// The walker clears the pending byte only of entries it receives (`0x2D1050..0x2D1079`,
+/// notes/ps4-56578-udt5-stamp-init-2026-11-05.md), so send this only after a full frame has
+/// delivered every pending client; a subset frame before that fails the completion check.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SensorEntryFrame {
+    /// Must equal the client's `world+0x1D`, as for [`SensorPhaseUpdate::gen`].
+    pub gen: u8,
+    /// The authority table, when the frame should also carry it (usually `None` for a delta).
+    pub authority: Option<SensorAuthority>,
+    /// The frame `init` bit. One sets the walker's persistent latch; repeating it is harmless.
+    pub init: bool,
+    pub entries: Vec<SensorClientRef>,
+}
+
+impl SensorEntryFrame {
+    /// Assemble the frame, stamp 0, zero-padded to a byte. [`set_frame_stamp`] can stamp it.
+    pub fn encode(&self) -> Result<Vec<u8>> {
+        self.encode_with(&mut EntryCodecs::default()).map(|(frame, _)| frame)
+    }
+
+    /// [`Self::encode`] with the given codecs, returning the frame and its stamp bit.
+    fn encode_with(&self, codecs: &mut EntryCodecs) -> Result<(Vec<u8>, usize)> {
+        let mut w = BitWriter::default();
+        w.put(u64::from(self.gen), 8);
+        match &self.authority {
+            None => w.put(0, 1),
+            Some(a) => {
+                w.put(1, 1);
+                for i in 0..AUTHORITY_BLOCKS {
+                    w.put(((a.changed >> i) & 1) as u64, 1);
+                }
+                let e = codecs.authority()?.encode_replicated(&a.image, 0x1_0000)?;
+                w.raw(&e.payload, e.bits as usize);
+            }
+        }
+        let stamp_bit = w.bits.len();
+        w.put(0, 32); // stamp
+        w.put(u64::from(self.init), 1);
+        put_clients(&mut w, &self.entries, codecs)?;
+        w.put(0, 1); // terminator
+        w.pad_to_byte();
+        let frame = w.finish().map_err(|n| {
+            OracleError::Shape(format!("entry frame is {n} bits after padding"))
+        })?;
+        remember_stamp_bit(&frame, stamp_bit);
+        Ok((frame, stamp_bit))
+    }
+}
+
+/// Builds [`SensorEntryFrame`]s with the client's codecs kept between frames, so a host sending a
+/// delta every tick starts each codec once rather than once per entry. Unicorn is `!Send`: build
+/// and use one on the thread that owns it.
+#[derive(Default)]
+pub struct SensorFrameEncoder {
+    codecs: EntryCodecs,
+}
+
+impl SensorFrameEncoder {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Encode `frame` (stamp 0), returning the bytes and the stamp's bit offset.
+    pub fn encode(&mut self, frame: &SensorEntryFrame) -> Result<(Vec<u8>, usize)> {
+        frame.encode_with(&mut self.codecs)
     }
 }
 
@@ -989,6 +1102,85 @@ mod tests {
             assert_eq!((before.stamp, before.init), (0, true));
             assert_eq!(after.entries, before.entries);
             assert_eq!(after.authority, before.authority);
+        }
+    }
+
+    /// An entry-only frame with no entries is the live idle heartbeat, byte for byte (init 0), and
+    /// needs no codec.
+    #[test]
+    fn an_empty_entry_frame_is_the_heartbeat() {
+        let f = |init| super::SensorEntryFrame { gen: 3, authority: None, init, entries: Vec::new() };
+        assert_eq!(f(false).encode().unwrap(), super::heartbeat_frame(3, 0));
+        let with_init = f(true).encode().unwrap();
+        assert_eq!(super::read_bits(&with_init, 41, 2), 0b10, "init set, then the terminator");
+        assert_eq!(super::known_stamp_bit(&with_init), Some(9));
+    }
+
+    /// ⭐ The entry-only frame carries just the entries it is given, and the lifetime record sent
+    /// as an ordinary entry has the very body the full frame's phase entry has.
+    #[test]
+    fn an_entry_frame_carries_only_its_entries_and_the_lifetime_body_matches() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
+        let phase = super::audit(4, None);
+        let lifetime = super::SensorClientRef {
+            name_hash: phase.name_hash,
+            name_i8: phase.name_i8,
+            name_sub: phase.name_sub,
+            has_a: true,
+            has_b: false,
+            a_value: Some((super::TAG_SENSOR_VALUE, phase.value_image())),
+            b_value: None,
+        };
+        let cine = super::SensorClientRef::parse_line("0x2fe7dbe6 0x6 0 1 0").unwrap();
+        let frame = super::SensorEntryFrame {
+            gen: 0,
+            authority: None,
+            init: true,
+            entries: vec![lifetime, cine],
+        };
+        let wire = frame.encode().expect("entry frame");
+        let d = super::decode_frame(&wire).expect("decode");
+        let names: Vec<_> = d.entries.iter().map(|e| (e.name_hash, e.name_i8, e.name_sub)).collect();
+        assert_eq!(names, [(0xC2DA_CAF7, 0x10, 3), (0x2FE7_DBE6, 6, 0)]);
+        assert!(d.init && d.authority.is_none() && d.stamp == 0);
+        let full = super::decode_frame(&phase.encode().unwrap()).unwrap();
+        assert_eq!(d.entries[0].body_bits, full.entries[0].body_bits);
+        assert_eq!(d.entries[0].body, full.entries[0].body);
+        assert_eq!(d.entries[1].body_bits, 2, "fresh = 1, presence = 0: back to the default");
+    }
+
+    /// The persistent encoder reuses its codecs across frames and builds the same bytes, with the
+    /// same stamp bit, as the one-shot path, frame after frame.
+    #[test]
+    fn the_frame_encoder_matches_the_one_shot_encode() {
+        if !crate::test_inputs::selected_eboot() {
+            return;
+        }
+        let cine = |counter: u8| {
+            let mut image = vec![0u8; 0xD4];
+            image[4] = counter;
+            image[0xC..0x10].copy_from_slice(&super::FNV1_BASIS.to_le_bytes());
+            image[0x10] = 0xFF;
+            image[0x12..0x14].copy_from_slice(&(-1i16).to_le_bytes());
+            image[0x14] = 0xFF;
+            super::SensorClientRef {
+                name_hash: 0x2FE7_DBE6,
+                name_i8: 6,
+                name_sub: 0,
+                has_a: true,
+                has_b: false,
+                a_value: Some((0x8080_254D, image)),
+                b_value: None,
+            }
+        };
+        let mut enc = super::SensorFrameEncoder::new();
+        for (counter, authority) in [(1, Some(super::SensorAuthority::all_to(14, 1))), (2, None), (3, None)] {
+            let frame = super::SensorEntryFrame { gen: 2, authority, init: counter == 1, entries: vec![cine(counter)] };
+            let (bytes, stamp_bit) = enc.encode(&frame).expect("encoder");
+            assert_eq!(bytes, frame.encode().expect("one-shot"));
+            assert_eq!(super::known_stamp_bit(&bytes), Some(stamp_bit));
         }
     }
 
