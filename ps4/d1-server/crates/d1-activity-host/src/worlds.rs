@@ -210,6 +210,24 @@ pub const CINE_REVEAL: KnownWorld = KnownWorld {
     chosen: &[0, 1, 2, 3],
 };
 
+/// `cine_speaker` - The Speaker (56578 activity 167, hash `0xD8B2AD53`): the Tower cinematic in
+/// which the Speaker sends the Guardian out. Blam Network's 2014 `activities.csv` row 133 names its
+/// scenario `0x80C3E011`, 4 bubbles, start bubble 3, bundles `cine_speaker` (`0x796B3B8C`) and
+/// `story_common` (`0x4786C0E0`). Read offline from the owned 56578 scenario-client record
+/// `0x80C3E011` (`d1-oracle oodle entry`, `ps4_cinematic_trv_activities`, class `0x81062140`):
+/// `+0x08` = FNV-1("cine_speaker") `0x796B3B8C`, PRIVATE `0xA3198561`, PUBLIC `0xD56DCA6E` (cine_reveal's
+/// too), 4 bubbles at `+0x48`. The live host served one cinematic record, `0x796B3B8C/6/0`, plus the
+/// world block, and the client entered slice set 1 (notes/d1-live-captures-2026-11-05.md).
+///
+/// ⚠ Not yet served in the lab.
+pub const CINE_SPEAKER: KnownWorld = KnownWorld {
+    name: "cine_speaker",
+    scenario_tag: 0x80C3_E011,
+    checksum: 0xA319_8561,
+    bubble_count: 4,
+    chosen: &[0, 1, 2, 3],
+};
+
 /// Every world whose scenario record has been captured or read from owned content.
 pub const KNOWN_WORLDS: &[KnownWorld] = &[
     PVP_MOONBASE,
@@ -220,6 +238,7 @@ pub const KNOWN_WORLDS: &[KnownWorld] = &[
     CITY_TOWER_DEFAULT1,
     ACT_COSMO_M0_5_HANGAR,
     CINE_REVEAL,
+    CINE_SPEAKER,
 ];
 
 /// The world an Activity Host publishes when nothing overrides it.
@@ -363,5 +382,15 @@ mod tests {
     fn the_reveal_cinematic_is_known_by_its_world_name() {
         let c = lookup("cine_reveal").expect("cine_reveal row");
         assert_eq!((c.scenario_tag, c.checksum, c.bubble_count), (0x80C3_E00A, 0x14CD_A256, 4));
+    }
+
+    /// The Speaker's world, and its name's FNV-1 is the cinematic record the live host served.
+    #[test]
+    fn the_speaker_cinematic_is_known_by_its_world_name() {
+        let c = lookup("cine_speaker").expect("cine_speaker row");
+        assert_eq!((c.scenario_tag, c.checksum, c.bubble_count), (0x80C3_E011, 0xA319_8561, 4));
+        let fnv1 = |s: &str| s.bytes().fold(0x811C_9DC5u32, |h, b| h.wrapping_mul(0x0100_0193) ^ u32::from(b));
+        assert_eq!(fnv1("cine_speaker"), 0x796B_3B8C);
+        assert_eq!(fnv1("cine_reveal"), 0x2FE7_DBE6);
     }
 }

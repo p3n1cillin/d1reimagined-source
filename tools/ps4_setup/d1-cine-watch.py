@@ -1,11 +1,16 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Play cine_reveal's two cinematics the way the live host did: d1-cine-watch.py RUN
+"""Play a cinematic activity's records the way the live host did: d1-cine-watch.py RUN
 
-For a run served with ps4/fixtures/56578/mission/world-table-cine-live.txt (activity 165 with its
-two cinematic records and start region 25; notes/d1-live-captures-2026-11-05.md). Follows the run's
-activity-host log; once the client is in 165 and reports slice set 25 it serves
-cine_reveal-play-0.txt through the host's control file (`clients GROUP PATH`), then on each
-"incident 891 reported by the client" (a cinematic stopped, 56578) the next state: play-1, done.
+    d1-cine-watch.py RUN                                    (cine_reveal, activity 165)
+    d1-cine-watch.py RUN --activity 167 --slice 1 --states cine_speaker-play.txt cine_speaker-done.txt
+
+For a run served with a world table that serves the activity's cinematic records idle
+(ps4/fixtures/56578/mission/world-table-cine-live.txt for 165, world-table-speaker-live.txt adds
+The Speaker, 167; notes/d1-live-captures-2026-11-05.md). Follows the run's activity-host log; once
+the client is in the activity and reports its start slice set, it serves the first state through
+the host's control file (`clients GROUP PATH`), then on each "incident 891 reported by the client"
+(a cinematic stopped, 56578) the next one. The defaults are cine_reveal's: slice set 25, then
+play-0, play-1, done.
 """
 import argparse
 import glob
@@ -27,11 +32,17 @@ def log(msg):
     print(time.strftime('%H:%M:%S'), msg, flush=True)
 
 
-def due(stage, line):
-    """Whether this host-log line is the cue for STATES[stage]."""
+def due(stage, line, slice_set=25):
+    """Whether this host-log line is the cue for the state at `stage`: the start slice set for the
+    first, then each cinematic the client reports stopped."""
     if stage == 0:
-        return 'client is now in slice set 25' in line
+        return f'client is now in slice set {slice_set} ' in line
     return 'incident 891 reported by the client' in line
+
+
+def joined(line, activity):
+    """Whether this host-log line is the host switching to the activity's world."""
+    return f'activity index {activity} -> world' in line
 
 
 def main():
@@ -39,6 +50,10 @@ def main():
     ap.add_argument('run')
     ap.add_argument('--control', default=os.path.join(str(d1paths.staging()), 'ah-control.txt'),
                     help="the activity host's D1_AH_CONTROL_FILE (d1-agr-run.ps1's default)")
+    ap.add_argument('--activity', type=int, default=165, help='the activity index (default 165)')
+    ap.add_argument('--slice', type=int, default=25, help='its start slice set (default 25)')
+    ap.add_argument('--group', default=GROUP, help=f'the sensor group to replace (default {GROUP})')
+    ap.add_argument('--states', nargs='+', default=STATES, help='the lists to serve, in order')
     a = ap.parse_args()
     staging = str(d1paths.staging())
     while True:
@@ -48,23 +63,23 @@ def main():
             break
         time.sleep(5)
     log(f'host log {path}')
-    pos, joined, stage = 0, False, 0
-    while stage < len(STATES):
+    pos, inside, stage = 0, False, 0
+    while stage < len(a.states):
         with open(path, encoding='utf-8', errors='replace') as f:
             f.seek(pos)
             new = f.read()
             pos = f.tell()
         for line in new.splitlines():
-            if not joined:
-                if 'activity index 165 -> world' in line:
-                    joined = True
+            if not inside:
+                if joined(line, a.activity):
+                    inside = True
                     log(line.strip()[:160])
                 continue
-            if stage < len(STATES) and due(stage, line):
+            if stage < len(a.states) and due(stage, line, a.slice):
                 log(line.strip()[:160])
                 with open(a.control, 'a', encoding='utf-8') as c:
-                    c.write(f'clients {GROUP} {MISSION / STATES[stage]}\n')
-                log(f'control: clients {GROUP} {STATES[stage]}')
+                    c.write(f'clients {a.group} {MISSION / a.states[stage]}\n')
+                log(f'control: clients {a.group} {a.states[stage]}')
                 stage += 1
             elif 'slice set' in line or 'incident' in line:
                 log(line.strip()[:160])
