@@ -184,3 +184,62 @@ fn second_item_talent_activation_and_record_book_requests_decode() {
         assert_eq!(decoded.object, result);
     }
 }
+
+/// Incident body selector 27 (`activity_complete` and its four companions) names
+/// `0x80800595`; notes/ps4-56578-wire-catalog-2026-11-05.md has the binding chain.
+/// Synthetic values only: a hash-like activity, a host and a player identity.
+fn activity_complete_body(counters: &[i32; 7]) -> Vec<u8> {
+    let mut body = vec![0u8; 0x80];
+    put(&mut body, 0, &0x1122_3344u32.to_le_bytes()); // activity instance word
+    body[8] = 2; // id kind, 3-bit bias 1
+    put(&mut body, 0x10, &0x0102_0304_0506_0708u64.to_le_bytes()); // activity host id
+    put(&mut body, 0x18, &0x0a0b_0c0d_0e0f_1011u64.to_le_bytes()); // participant identity
+    put(&mut body, 0x28, &0x0102_0304_0506_0708u64.to_le_bytes());
+    put(&mut body, 0x30, &0x2122_2324_2526_2728u64.to_le_bytes());
+    body[0x39] = 3;
+    body[0x3a] = 1;
+    for (i, h) in [
+        0x6e0d_ae89u32,
+        0x6489_99f4,
+        0x6489_99f4,
+        0x811c_9dc5,
+        0xb224_17ae,
+    ]
+    .iter()
+    .enumerate()
+    {
+        put(&mut body, 0x44 + 4 * i, &h.to_le_bytes()); // activity, type, type, none, place
+    }
+    for (i, c) in counters.iter().enumerate() {
+        put(&mut body, 0x60 + 4 * i, &c.to_le_bytes());
+    }
+    body
+}
+
+#[test]
+fn activity_complete_metadata_is_725_bits_and_the_51539_length_is_short() {
+    let Some(image) = image() else { return };
+    let index = descriptors::index(&image).unwrap();
+    let d = index
+        .get(0x80800595)
+        .expect("activity_complete metadata schema");
+    assert_eq!((d.struct_size, d.field_count), (128, 18));
+    let body = activity_complete_body(&[0, 0, 1, 1, 0, 0, 0]);
+    let mut oracle = ObjectOracle::new(0x80800595).expect("positive controls");
+    let (encoded, decoded) = oracle.round_trip(&body, 0x10000).expect("965 body");
+    // No presence bits: 99 + 206 + 2 + 3 + 5x32 + 1 + 32 + 7x32.
+    assert_eq!(encoded.bits, 725);
+    assert_eq!(decoded.object[..0x7c], body[..0x7c]);
+    // Changed-value control: a counter moves the payload, not its length.
+    let (other, _) = oracle
+        .round_trip(&activity_complete_body(&[0, 0, -1, -1, 0, 0, 0]), 0x10000)
+        .unwrap();
+    assert_eq!(other.bits, 725);
+    assert_ne!(other.payload, encoded.payload);
+    // The 51539 live bodies are 79 bytes (four counters). On 56578 that length is under-read.
+    let short = &encoded.payload[..79];
+    assert!(
+        oracle.decode(short).is_err(),
+        "a 79-byte body must not decode as 56578"
+    );
+}
