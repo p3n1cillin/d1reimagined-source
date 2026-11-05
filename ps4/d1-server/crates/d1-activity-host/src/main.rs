@@ -576,6 +576,7 @@ fn main() -> anyhow::Result<()> {
             let mut world_table: std::collections::HashMap<u16, d1_activity_host::state::ServedWorld> = std::collections::HashMap::new();
             let mut mission_steps: std::collections::HashMap<u16, Vec<d1_activity_host::state::MissionStep>> = std::collections::HashMap::new();
             let mut control_builder: Option<d1_activity_host::state::ControlBuilder> = None;
+            let mut script_config: Option<std::sync::Arc<d1_activity_host::script_bridge::ScriptConfig>> = None;
             let sensor_payload = match std::env::var("D1_AH_SENSOR_PHASE")
                 .ok()
                 .and_then(|s| s.trim().parse::<i8>().ok())
@@ -867,6 +868,14 @@ fn main() -> anyhow::Result<()> {
                             });
                         }
                     }
+                    // ⭐ D1_AH_SCRIPTS=1 (script_bridge.rs): the activities in D1_AH_SCRIPTS_ACTIVITIES
+                    // are driven by their own mission scripts through the sidecar. Off by default.
+                    script_config = d1_activity_host::script_bridge::ScriptConfig::from_env(&params)
+                        .map_err(|e| anyhow::anyhow!("{e}"))?
+                        .map(std::sync::Arc::new);
+                    if let Some(c) = &script_config {
+                        tracing::info!("⭐ D1_AH_SCRIPTS=1 - scripted activities {c:?}");
+                    }
                     // `clients GROUP PATH` control lines (D1_AH_CONTROL_FILE) build a frame the way a
                     // mission step does.
                     {
@@ -1070,6 +1079,10 @@ fn main() -> anyhow::Result<()> {
                         }
                         if let Some((path, frames)) = sensor_phase_file.clone() {
                             i.set_sensor_phase_file(path, frames);
+                        }
+                        // D1_AH_SCRIPTS hook (script_bridge.rs).
+                        if let Some(c) = script_config.clone() {
+                            i.set_script_bridge(c);
                         }
                     }
                     i.set_host_heartbeat(std::time::Duration::from_millis(heartbeat_ms));

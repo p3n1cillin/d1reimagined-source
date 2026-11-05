@@ -153,6 +153,71 @@ impl AhWireCodec for NativeCodec {
         };
         d.map(|d| d.object).map_err(|e| failed(udt, e))
     }
+
+    /// ── D1_AH_SCRIPTS ── The script bridge's entry-only frames, natively when every value schema
+    /// is covered; otherwise the client's own codec, as [`try_sensor_frame`] routes.
+    fn encode_sensor_entries(
+        &self,
+        frame: &d1_oracle::sensor::SensorEntryFrame,
+    ) -> Result<(Vec<u8>, usize), AhError> {
+        match try_entry_frame(frame) {
+            Some(r) => r.map_err(|detail| AhError::SchemaCodec { user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE, detail }),
+            None => crate::codec::oracle_sensor_entries(frame),
+        }
+    }
+
+    /// ── D1_AH_SCRIPTS ── An incident body, natively when its schema is covered.
+    fn encode_object(&self, tag: u32, image: &[u8]) -> Result<(u32, Vec<u8>), AhError> {
+        let covered = enabled().then(schemas).and_then(Result::ok).filter(|s| s.check(tag).is_ok());
+        match covered {
+            Some(s) => d1_rsat::Encoder::new(s)
+                .encode(tag, image)
+                .map(|e| (e.bits as u32, e.payload))
+                .map_err(|e| failed(18, e)),
+            None => crate::codec::oracle_object(tag, image),
+        }
+    }
+}
+
+/// ── D1_AH_SCRIPTS ── An entry-only udt 5 frame natively, under the same conditions as
+/// [`try_sensor_frame`]. `None`: build it with the client's codec.
+pub fn try_entry_frame(f: &d1_oracle::sensor::SensorEntryFrame) -> Option<Result<(Vec<u8>, usize), String>> {
+    use d1_rsat::sensor::{Entry, Frame, NameRef};
+    if !enabled() {
+        return None;
+    }
+    let s = schemas().ok()?;
+    let covered = f
+        .entries
+        .iter()
+        .flat_map(|c| [c.a_value.as_ref().filter(|_| c.has_a), c.b_value.as_ref().filter(|_| c.has_b)])
+        .flatten()
+        .all(|(tag, _)| s.check(*tag).is_ok());
+    if !covered {
+        return None;
+    }
+    let frame = Frame {
+        gen: f.gen,
+        authority: f.authority.as_ref().map(|a| (a.changed, a.image.clone())),
+        stamp: 0,
+        init: f.init,
+        entries: f
+            .entries
+            .iter()
+            .map(|c| Entry {
+                name: NameRef { hash: c.name_hash, i8: c.name_i8, sub: c.name_sub },
+                has_a: c.has_a,
+                a_value: c.a_value.clone(),
+                has_b: c.has_b,
+                b_value: c.b_value.clone(),
+            })
+            .collect(),
+        pad: true,
+    };
+    Some(frame.encode(s).map_err(|e| e.to_string()).map(|b| {
+        d1_oracle::sensor::remember_stamp_bit(&b.bytes, b.stamp_bit as usize);
+        (b.bytes, b.stamp_bit as usize)
+    }))
 }
 
 /// The host's udt 5 frame as `d1-rsat` assembles it: the lifetime record first, then every client.
