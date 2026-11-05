@@ -130,7 +130,12 @@ A second test runs the open world of one region-48 instance through two connecti
   - `worlds.rs` (stream E) holds only PRIVATE checksums, so for now the host publishes the mission's;
   - udt 1 of build 51539 does not decode with the 56578 codec, so the live values are unread.
 - **Values.** The lists carry names only, and every value is the default. Two kinds in the Dreadnaught, Earth 160, Mars 144 and Moon 16 lists (`0x16` and `0x24`, 11 records) are in no native list yet, so they are commented out.
-- **Matchmaking.** The search answer (services message 0x2a) should come from the registry. A second client needs the services host to hand out a running instance's id (0x10/0x11) and the connection to present it. That is stream H (`d1-responder`). Today a single client's connection registers its own instance.
+- **Matchmaking (stream H, PR #312).** Stream H's matchmaker places through `d1_mp::matchmaking::PublicInstances`. The registry gives it what that trait needs:
+  - `instance_views` and `reserve_slots`, with held slots that each arriving player takes;
+  - `DestinationInstances`, the adapter for one destination;
+  - `bubble_region`, which maps the search's bubble id (`0x8001_0038` for region 56) to its region.
+
+  `d1-mp` is not on main yet, so the trait's five-line impl is written out in `DestinationInstances`'s doc, ready to add once it lands. **The two placement rules differ:** `place_in_public` fills the *fullest* instance with room, while the registry's own `place` fills the *emptiest* first (Bungie's stated design). Which one the live matchmaker used is not in the captures, so pick one rule before both are wired. A second client still needs the services host to hand out a running instance's id and the connection to present it (`D1_AH_SHARED_INSTANCES`, stream H's `group.rs`).
 - **The authority-reset exchange** (udt 27-31, 42) and the peer reservations (12, 13).
 - **Event schedules, patrol beacons and loot timings are placeholders.** The real schedules were never public. The beacons' goals and the events' activity hashes come from content once read. Event scoring (bronze, silver, gold) belongs to each event's script.
 - **Lost sectors are not a Destiny 1 feature** (they came with Destiny 2). Their open-world equivalents here are the chests and patrol missions.
