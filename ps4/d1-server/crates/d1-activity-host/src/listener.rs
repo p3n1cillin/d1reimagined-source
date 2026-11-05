@@ -221,6 +221,7 @@ pub const BAP_TYPE_CLIENT_TO_AH_NOTIFICATION: u16 = 8;
 impl AhConnection {
     pub fn new(instance: ActivityInstance, codec: Arc<dyn AhWireCodec>) -> Self {
         let sense = crate::sense::SenseWorker::from_env(instance.squad_epoch());
+        let host_id = instance.ah_id();
         Self {
             conv: BapConversation::with_default_deadline(),
             channel: None,
@@ -230,10 +231,11 @@ impl AhConnection {
             pending_pushes: Vec::new(),
             // The endpoint here only feeds message 17, which `d1-responder` answers on the primary
             // channel; this connection never hands out an address. Placeholder, not a claim.
-            registry: crate::registry::HostRegistry::new(std::net::SocketAddrV4::new(
-                std::net::Ipv4Addr::UNSPECIFIED,
-                0,
-            )),
+            // Message 7 names the host this connection's instance presents.
+            registry: crate::registry::HostRegistry::with_first_id(
+                std::net::SocketAddrV4::new(std::net::Ipv4Addr::UNSPECIFIED, 0),
+                host_id,
+            ),
             captured: std::collections::BTreeSet::new(),
             client_update_capture: None,
             client_authoritative_image: Vec::new(),
@@ -816,6 +818,24 @@ pub async fn serve(
     codec: Arc<dyn AhWireCodec>,
 ) -> anyhow::Result<()> {
     let factory = Arc::new(instance_factory);
+    // D1_AH_DISTINCT_HOST_IDS=1: each connection presents its own activity-host id, the first
+    // the configured one and each later one the next (message 7, join_result +0x08 and every
+    // push). The live client holds several host connections at once, each a different host: in
+    // the live Restoration capture its mission host (the PAH) stays connected all mission while a
+    // public instance it starts joins beside it (notes/d1-live-captures-2026-11-05.md). Off, every
+    // connection presents the same id, as all served runs so far have.
+    let distinct_ids = std::env::var("D1_AH_DISTINCT_HOST_IDS").is_ok_and(|v| v == "1");
+    let connections = Arc::new(std::sync::atomic::AtomicU64::new(0));
+    let factory = Arc::new(move || {
+        let mut instance = factory();
+        let n = connections.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        if distinct_ids && n > 0 {
+            let id = instance.ah_id().wrapping_add(n);
+            tracing::info!("⭐ connection {n} presents activity host {id:#018x} (D1_AH_DISTINCT_HOST_IDS)");
+            instance.set_ah_id(id);
+        }
+        instance
+    });
 
     match bind {
         AhBind::Listen(addr) => {
