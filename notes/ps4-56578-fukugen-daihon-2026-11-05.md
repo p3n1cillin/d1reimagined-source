@@ -66,6 +66,12 @@ Those captures came from Xbox 360 build 51539, as [their provenance](d1-live-cap
 records. Native 56578 cine-live13 established that serving the sequence can play and leave the
 activity; it did not establish every enum name or validate every intermediate state.
 
+**Update (open-items pass, same day):** the 52 live captures and the 56578 consumers of the value
+resolve the end: gameplay activities go `6`, then `7` (the post-game screen) about 30 s later;
+cinematic-only activities go `6, 8` in one tick, and 8 is the client's own end-of-activity
+transition. The completion incident chain and its `0x80800595` body are decoded too. See
+[the wire catalogue](ps4-56578-wire-catalog-2026-11-05.md#activity-lifetime-completion-965-scoreboard-and-public-events).
+
 ## What completion sends, and what remains unknown
 
 `set_activity_complete()` calls BullShcript's completion callback. The harness treats this as the
