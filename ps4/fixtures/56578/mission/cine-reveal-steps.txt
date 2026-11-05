@@ -1,0 +1,13 @@
+# Activity 165 (cine_reveal) served as the live host did, both cinematics, from the mission schedule
+# (D1_AH_MISSION_STEPS; notes/ps4-56578-cine-live13-2026-11-05.md). Times are from the host's first sensor frame;
+# live played /6/0 12.7 s after the join, 25 s here keeps the lab boot script's skip presses off it.
+# index  when      group       list                     [region]
+165  0         0x4786c0e0  sensor-clients-cine_reveal-live.txt
+165  25        0x4786c0e0  cine_reveal-phase-1.txt
+165  +1        0x4786c0e0  cine_reveal-play-0.txt
+165  @891|900  0x4786c0e0  cine_reveal-move-26.txt  26
+# The play waits for the client's arrival in slice set 26: in cine-live15, played 4 s after the move, the client
+# reported the start (2681) but showed a loading screen; its teleport to 26 completed 20 s after the move.
+165  +20       0x4786c0e0  cine_reveal-play-1.txt
+165  @891|900  0x4786c0e0  cine_reveal-done-1.txt
+165  +1        0x4786c0e0  cine_reveal-end-1.txt

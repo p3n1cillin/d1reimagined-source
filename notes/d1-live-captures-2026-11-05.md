@@ -2,7 +2,7 @@
 
 A member of the project's Discord shared 49 captures of Destiny 1 played on Bungie's live servers between 27 October and 3 November 2026, then three more strikes (The Will of Crota, The Undying Mind and The Shadow Thief, 4-5 November). There is one per mission:
 - A Guardian Rises, Restoration and the rest of the Earth, Moon, Venus and Mars story;
-- The Taken King and Rise of Iron missions;
+- The Dark Below, House of Wolves and The Taken King missions (Rise of Iron never came to the Xbox 360);
 - strikes and patrols;
 - Crota's End;
 - Wolves' Gambit, Cerberus Vae III and Dust Palace.
@@ -10,6 +10,19 @@ A member of the project's Discord shared 49 captures of Destiny 1 played on Bung
 They were recorded on an Xbox 360 (title 415608F8, executable build `51539.16.07.26.1808`, the final last-gen build) by a console plugin that logs each message before encryption.
 
 **They stay private.** The sign-on request in each one carries the player's Xbox Live token and account identifiers. The captures, and anything exported from them, live in the private engineering folder, never in this repository. Only tools that read them, and findings, go here.
+
+## How they were recorded
+
+The person who made them described the conditions; they matter when reading a capture.
+
+- **A fresh character on the TTK-era 360 build.** Subclass nodes and Grimoire cards unlock along the way. The first capture starts at the main menu.
+- **Each capture runs orbit to orbit, solo** (except Crota's End). Every enemy is cleared before moving on. Bosses are damaged in steps, so each wave of adds spawns and is cleared before the boss takes more damage. A "Let's Play" video of the same mission can be followed alongside.
+- **The Speaker** was auto-selected (level 2) on returning to the Tower after Zavala's third and fourth missions. It plays the cutscene and returns to orbit, as its capture shows (one host, one cinematic record; "The Speaker is a cinematic world", below).
+- **Eye of a Gate Lord** goes from the mission to a cutscene and then straight into the Reef social space, which is TTK-era behaviour (the Reef came with House of Wolves). Its capture shows exactly that: after the mission, hosts start for "A Key Awaits" (`act_cinematic_queen_102`, at +1024 s) and then "Vestian Outpost", the Reef (+1257 s). The PS4 build 56578 is later (Rise of Iron era); whether it does the same there is open.
+- **Scourge of Winter appears twice.** The base game run came early because a player in the Tower used cheats that maxed the character and unlocked the missions out of order. The House of Wolves quest then started the character on it again, and that run carries a HoW suffix.
+- **Patrol.Scattered-Pack** is the House of Wolves quest step that sends the player to patrol before The Silent Fang. **Silent Scream** is the Dreadnaught patrol secret encounter.
+- **One early Earth mission includes the Defend the Warsat public event**, joined at level 3 or 4. The capturer thought it was The Dark Within, and its capture fits: a fourth host joins at +746 s in slice set 64, mid-mission. That makes it the first captured public event. The capturer offered a run without the event if a clean comparison is wanted.
+- **Crota's End** was meant to be flawless, then wiped once on purpose to capture the Ogre spawns. Crota was killed before the Ogres, and the game returned the fireteam to orbit.
 
 ## Format
 
