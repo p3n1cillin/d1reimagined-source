@@ -850,6 +850,14 @@ pub async fn serve(
     // connection presents the same id, as all served runs so far have.
     let distinct_ids = std::env::var("D1_AH_DISTINCT_HOST_IDS").is_ok_and(|v| v == "1");
     let connections = Arc::new(std::sync::atomic::AtomicU64::new(0));
+    // MP(H) D1_AH_SHARED_INSTANCES=1: connections whose join requests name the same host share one
+    // instance (one membership for all, peer slots, physics-host election; crate::group). Off,
+    // every connection is its own solo instance, as all served runs so far have been.
+    let shared = std::env::var("D1_AH_SHARED_INSTANCES").is_ok_and(|v| v == "1")
+        .then(crate::group::InstanceGroups::shared);
+    if shared.is_some() {
+        tracing::info!("⭐ shared instances on (D1_AH_SHARED_INSTANCES): one membership per named host");
+    }
     let factory = Arc::new(move || {
         let mut instance = factory();
         let n = connections.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
@@ -857,6 +865,9 @@ pub async fn serve(
             let id = instance.ah_id().wrapping_add(n);
             tracing::info!("⭐ connection {n} presents activity host {id:#018x} (D1_AH_DISTINCT_HOST_IDS)");
             instance.set_ah_id(id);
+        }
+        if let Some(groups) = &shared {
+            instance.set_group(crate::group::GroupLink::new(groups.clone(), n));
         }
         instance
     });

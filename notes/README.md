@@ -6,6 +6,8 @@ is the current summary. Titles below are the notes' own.
 
 ## Start here (PS4 build 56578, current)
 
+- [PS4 56578: multiplayer infrastructure on one local server (5 November 2026)](ps4-56578-multiplayer-2026-11-05.md)
+- [PS4 56578: public instances and the bubble host (5 November 2026)](ps4-56578-public-instances-2026-11-05.md)
 - [PS4 56578: the complete client incident catalogue (5 November 2026)](ps4-56578-incident-catalog-2026-11-05.md)
 - [PS4 56578: rewards and character growth services (5 November 2026)](ps4-56578-rewards-and-growth-2026-11-05.md)
 - [PS4 56578 wire catalogue: RTTI, schemas and open meanings (5 November 2026)](ps4-56578-wire-catalog-2026-11-05.md)
