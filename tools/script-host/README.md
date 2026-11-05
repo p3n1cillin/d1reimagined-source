@@ -23,6 +23,10 @@ node tools/coverage.mjs --seconds 600    # compile/run coverage for every activi
 node src/sidecar.mjs                     # the sidecar itself: JSON lines on stdin and stdout
 ```
 
+CI's `script-host` job builds BullShcript from the public tiger repository at a pinned commit and
+runs `node --test`. It does not check out Fukugen Daihon, so the tests that need the 56578 scripts
+skip there.
+
 ## Layout
 
 | Path | What it does |
