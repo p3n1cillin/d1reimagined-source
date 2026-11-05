@@ -163,6 +163,29 @@ The PAH region record in udt 11 (`replicate_membership+0x2E48`, the record our h
 - **What marks a public region is `+0x04 = 1`.** The public session's host then advertises itself, its session at +0x4C and its own host id at +0xD0. These are plan steps 2 and 5 in the public-sessions note, now with the live values.
 - **Between the two sessions,** the client exchanges services messages 0x0a (2,409 bytes) and 0x2a/0x2b with the services host, at 20 s and 25-31 s. That is the matchmaking step 3 of the plan.
 
+### Restoration's matchmaking (services messages 0x2a/0x2b)
+
+Message 42 (0x2a, `d1-bap/src/matchmaking.rs`) carries protobuf bodies. The client's exchange in Restoration:
+
+| Time | Request | Answer |
+|---|---|---|
+| 20.6 s, 25.8 s | **search** (field 2 = 1): field 5 = `0x8001_0038`, region 56; field 7 = the criteria | one candidate: a session id, another player's name, a score (0.998), 400 |
+| 30.9 s | activity-host assignment 0x10 with **host 0**: a new host | session 2 starts |
+| 31.4 s | **create/advertise** (field 2 = 2): field 8 = the new session (`820940a1…`, the value session 2's host then advertises at +0x4C) and the player's own name | a registration id (field 5) |
+| 34.7 s, 50.3 s | updates with that registration id and the slot states | the same id |
+| 52.3 s | **search**: field 5 = `0x8001_0030`, region 48 | the other player's session (`8009e170…`) |
+| 56.9 s | assignment 0x10 with **that player's host id** | session 3: a citizen join to another player's public session |
+
+So for region 56 the client created its own public session even though the search found one. For region 48 it joined the found one.
+
+This is plan steps 3-5 in the public-sessions note, as the live services ran them:
+- the search answer (a found session, or none);
+- a new host on request;
+- the registration answer;
+- a join by host id.
+
+The player names in these messages are personal data and stay in the private captures.
+
 ## Every capture's host sessions
 
 `d1-srcp.py sessions CAPTURE...` lists, per activity-host session:
