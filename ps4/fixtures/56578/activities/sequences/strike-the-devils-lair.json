@@ -1,0 +1,194 @@
+{
+  "activity_id": "strike-the-devils-lair",
+  "name": "The Devils' Lair",
+  "evidence": {
+    "kind": "live-capture",
+    "build": "51539 (Xbox 360)",
+    "capture": "The-Devils-Lair",
+    "note": "one solo run (Crota's End: a fireteam); incident ids are 51539's; see notes/d1-live-captures-2026-11-05.md"
+  },
+  "host_session_s": 1783.4,
+  "hosts": 2,
+  "stages": [
+    {
+      "slice_set": 160,
+      "entered_s": 25.2,
+      "groups_first_served": [
+        "0x4786c0e0",
+        "0x3c3ec728",
+        "0xc65adeef",
+        "0x4e11ec55",
+        "0x4c63792c",
+        "0xfe8501fa"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [],
+      "public_hosts_opened": 0,
+      "duration_s": 69.0
+    },
+    {
+      "slice_set": 152,
+      "entered_s": 94.2,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x3c3ec728/29/42",
+        "0x3c3ec728/29/43",
+        "0x3c3ec728/29/46",
+        "0x3c3ec728/29/45",
+        "0xc65adeef/29/37",
+        "0x3c3ec728/29/44",
+        "0x3c3ec728/29/47"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 627.3
+    },
+    {
+      "slice_set": 16,
+      "entered_s": 721.5,
+      "groups_first_served": [
+        "0x634863c2"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x3c3ec728/29/48",
+        "0xc65adeef/29/36"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 585.4
+    },
+    {
+      "slice_set": 168,
+      "entered_s": 1306.9,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x3c3ec728/29/49",
+        "0x3c3ec728/29/50",
+        "0xfe8501fa/29/37"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 476.5
+    }
+  ],
+  "markers": [
+    {
+      "t_s": 25.2,
+      "slice": 160
+    },
+    {
+      "t_s": 94.2,
+      "slice": 152
+    },
+    {
+      "t_s": 97.2,
+      "trigger": "0x3c3ec728/29/42"
+    },
+    {
+      "t_s": 136.7,
+      "trigger": "0x3c3ec728/29/43"
+    },
+    {
+      "t_s": 158.2,
+      "trigger": "0x3c3ec728/29/46"
+    },
+    {
+      "t_s": 169.6,
+      "trigger": "0x3c3ec728/29/45"
+    },
+    {
+      "t_s": 169.9,
+      "trigger": "0xc65adeef/29/37"
+    },
+    {
+      "t_s": 192.6,
+      "trigger": "0x3c3ec728/29/44"
+    },
+    {
+      "t_s": 717.0,
+      "trigger": "0x3c3ec728/29/47"
+    },
+    {
+      "t_s": 721.5,
+      "slice": 16
+    },
+    {
+      "t_s": 723.7,
+      "trigger": "0x3c3ec728/29/48"
+    },
+    {
+      "t_s": 1303.6,
+      "trigger": "0xc65adeef/29/36"
+    },
+    {
+      "t_s": 1306.9,
+      "slice": 168
+    },
+    {
+      "t_s": 1307.9,
+      "trigger": "0x3c3ec728/29/49"
+    },
+    {
+      "t_s": 1314.9,
+      "trigger": "0x3c3ec728/29/50"
+    },
+    {
+      "t_s": 1322.6,
+      "trigger": "0xfe8501fa/29/37"
+    }
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "begins_on": {
+        "slice_entered": 160
+      },
+      "at_s": 25.2,
+      "duration_s": 69.0
+    },
+    {
+      "index": 1,
+      "begins_on": {
+        "slice_entered": 152
+      },
+      "at_s": 94.2,
+      "duration_s": 622.8
+    },
+    {
+      "index": 2,
+      "begins_on": {
+        "trigger": "0x3c3ec728/29/47"
+      },
+      "at_s": 717.0,
+      "duration_s": 4.5
+    },
+    {
+      "index": 3,
+      "begins_on": {
+        "slice_entered": 16
+      },
+      "at_s": 721.5,
+      "duration_s": 582.1
+    },
+    {
+      "index": 4,
+      "begins_on": {
+        "trigger": "0xc65adeef/29/36"
+      },
+      "at_s": 1303.6,
+      "duration_s": 3.3
+    },
+    {
+      "index": 5,
+      "begins_on": {
+        "slice_entered": 168
+      },
+      "at_s": 1306.9,
+      "duration_s": 476.5
+    }
+  ]
+}

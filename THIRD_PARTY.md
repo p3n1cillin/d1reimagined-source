@@ -38,5 +38,21 @@ in this repository. The settings generator is project code derived from the nati
   `ps4/design/licensing.md` (rule 2). Never copied, quoted or redistributed here; the repository
   holds only activity names and counts derived from running them.
 
+## Activity framework sources (strikes, raids, arenas, the Crucible)
+
+`d1-activity-host`'s `encounter_framework.rs`, `pvp.rs` and the data under
+`ps4/fixtures/56578/activities/` (notes/ps4-56578-strikes-raids-crucible-2026-11-05.md) drew on:
+
+- [BullShcript](https://github.com/Blam-Network/tiger/tree/main/packages/bullshcript) (MIT, Blam
+  Network): the scoreboard row's semantics (`scoreboard_natives.ts`, `state/items.ts`), reimplemented
+  in Rust in `pvp.rs`, and the hard-wipe rules (`LANGUAGE.md`). No code was copied.
+- Fukugen Daihon (Blam Network's restored 56578 mission scripts; no licence): read locally only.
+  The definitions carry identifiers from it (activity, bundle and phase names, regions,
+  `@hard_wipe` flags), never script text.
+- [The Cryptarch guide](https://github.com/nruble/cryptarch-guide) (GPL-3.0): its raid loot tables
+  (encounter titles and item hashes), labelled `community` wherever used.
+- Bungie's Destiny 1 manifest, as [DIM](https://github.com/DestinyItemManager/DIM) distributes it,
+  and the mobile world database: a local input to `tools/ps4_setup/d1-activities-export.py`.
+
 Each upstream project retains its own licence. Consult that project's licence before copying
 or redistributing its implementation; these links do not grant additional rights.

@@ -308,9 +308,12 @@ mod tests {
     #[test]
     fn exclusive_nodes_exclude_each_other() {
         let t = tables();
-        let (g, a, b, xp) = t
-            .grids
-            .values()
+        // Grids in hash order (the table is a HashMap), and only a pair whose first node the fresh
+        // state can activate: a grid's defaults may already hold the pair's other node.
+        let mut grids: Vec<_> = t.grids.values().collect();
+        grids.sort_by_key(|g| g.hash);
+        let (g, a, b, xp) = grids
+            .into_iter()
             .find_map(|g| {
                 g.nodes.iter().find_map(|n| {
                     let x = *n.exclusive_with.first()?;
@@ -321,6 +324,11 @@ mod tests {
                         && other.exclusive_with.contains(&n.index)
                         && (g.max_grid_level == 0 || n.grid_level.max(other.grid_level) <= g.max_grid_level))
                         .then_some((g, n.index, x, xp))
+                        .filter(|&(g, a, _, xp)| {
+                            let mut s = GridState::new(g.hash, &mut Rng::new(1)).unwrap();
+                            s.xp = xp;
+                            matches!(s.can_activate(a), Ok(Ok(())))
+                        })
                 })
             })
             .unwrap();

@@ -1110,6 +1110,8 @@ dependencies = [
  "d1-bap",
  "d1-build",
  "d1-oracle",
+ "serde",
+ "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",
