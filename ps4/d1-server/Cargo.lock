@@ -1110,6 +1110,7 @@ dependencies = [
  "d1-bap",
  "d1-build",
  "d1-oracle",
+ "d1-rsat",
  "tokio",
  "tracing",
  "tracing-subscriber",

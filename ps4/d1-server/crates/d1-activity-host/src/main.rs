@@ -155,7 +155,30 @@ fn main() -> anyhow::Result<()> {
                 for a in SchemaCodec::arena_stats() {
                     tracing::info!("oracle arena {}", a.line());
                 }
-                Arc::new(SchemaCodec)
+                if d1_activity_host::native::enabled() {
+                    // ⭐ D1_RSAT_NATIVE=1: native RSAT for every schema it covers, by capability.
+                    let coverage = d1_activity_host::native::coverage();
+                    if coverage.is_empty() {
+                        tracing::warn!(
+                            "native RSAT requested ({}=1) but no native schemas for this eboot:                              every message stays on the client's codec",
+                            d1_activity_host::native::KNOB
+                        );
+                    }
+                    for (udt, enc, dec, why) in &coverage {
+                        if *enc && *dec {
+                            tracing::info!("native RSAT: udt {udt} encode+decode native");
+                        } else {
+                            tracing::info!(
+                                "native RSAT: udt {udt} encode {} decode {} - {why}",
+                                if *enc { "native" } else { "oracle" },
+                                if *dec { "native" } else { "oracle" }
+                            );
+                        }
+                    }
+                    Arc::new(d1_activity_host::native::NativeCodec) as Arc<dyn AhWireCodec>
+                } else {
+                    Arc::new(SchemaCodec)
+                }
             };
             tracing::warn!(
                 "⛔ CEILING: a stub Activity Host yields a LOADED BUT EMPTY world - no spawns, no \

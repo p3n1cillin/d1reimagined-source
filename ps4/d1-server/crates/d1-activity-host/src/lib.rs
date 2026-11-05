@@ -81,6 +81,7 @@ pub mod entity;
 pub mod fireteam;
 pub mod listener;
 pub mod messages;
+pub mod native;
 pub mod protocol;
 pub mod push;
 pub mod registry;
