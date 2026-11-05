@@ -39,8 +39,33 @@ The host played the cinematic about 70 ms after the client's third sense update,
 - Our first udt 5 (fresh) went out at 09:57:20.17. The client sent **one** udt 6 at 09:57:20.29, with the same leading pattern as the live one (`8028f0d81c036001700000…`).
 - The client sent **no further sense updates in the 20 minutes after that.** Our host sent its fresh frame every 10 s; the play states went out from the watcher (15 s after the join), and none started the cinematic.
 
+## The lifetime phase: cinematics play at phase 4
+
+Decoding every live udt 5 frame (`d1-oracle sensor decode-batch`) shows what the deltas carry. Record 3 of the world group `0x4786C0E0` (kind `0x10`) is the activity lifetime phase, the 341-bit value our `SensorPhaseUpdate` writes. The live hosts stepped it the same way in both cinematic captures:
+
+| | The Speaker (stamp) | The Awoken (stamp) |
+|---|---|---|
+| Full lists at the join and world load | phase 0 (15, 175, 185) | phase 0 (15, 136, 143) |
+| Delta | **phase 1** (188) | **phase 1** (146) |
+| Delta, 17 records | **phase 4** (198) | **phase 4** (226) |
+| Delta, the cinematic record alone: **the play** | 200 | 228 (`/6/0`); after a bubble change, a full list at phase 4, then `/6/1` at 1060 |
+| The end | phase 6 (1984), phase 8 (1985) | phase 6 (3090), phase 8 (3091) |
+
+In both, the cinematic played two ticks after the phase reached 4.
+
+**Our host sent phase 3 throughout.** cine-live8 ran with `D1_AH_SENSOR_PHASE=3`, the value A Guardian Rises spawns the player on. The cinematic lists had no `@phase`, so every frame in 165 carried phase 3, and the client never saw 0, 1 or 4.
+
+The cinematic fixtures now carry the live phases:
+- the world lists, `@phase 0`;
+- new `*-phase-1.txt`, the idle world list at phase 1;
+- the play lists, `@phase 4`;
+- the done lists, `@phase 6`.
+
+`d1-cine-watch.py` serves them in the live order: phase 1 on the start cue, the play one second later (`FILE+SECONDS`), and done on the cinematic's stop.
+
 ## What to change, in order
 
+0. **Serve the live lifetime phases** (done in the fixtures above). This is the first lab test: 165 with the new defaults.
 1. **Send deltas with a 10 Hz stamp.**
    - Keep the fresh frame for the join and the world load.
    - Then send stamped deltas, with a 6-byte heartbeat every 3 s when idle.

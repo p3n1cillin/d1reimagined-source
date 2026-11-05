@@ -23,6 +23,34 @@ class CineWatchTest(unittest.TestCase):
         self.assertTrue(M.due(1, 'incident 891 reported by the client'))
         self.assertFalse(M.due(1, 'incident 2681 reported by the client'))
 
+    def test_a_plus_suffix_times_a_state_after_the_previous_one(self):
+        self.assertEqual(M.state('cine_reveal-play-0.txt+1'), ('cine_reveal-play-0.txt', 1.0))
+        self.assertEqual(M.state('cine_awoken-play-0.txt+7.5'), ('cine_awoken-play-0.txt', 7.5))
+        self.assertEqual(M.state('cine_reveal-done.txt'), ('cine_reveal-done.txt', None))
+        self.assertEqual(M.state('odd+name.txt'), ('odd+name.txt', None))
+        self.assertEqual([M.state(s)[1] for s in M.STATES], [None, 1.0, None])
+        for name in M.STATES:
+            self.assertTrue((MISSION / M.state(name)[0]).exists(), name)
+
+    def test_the_lists_step_the_live_lifetime_phases(self):
+        def phase(name):
+            rows = [r for r in (MISSION / name).read_text(encoding='utf-8').splitlines() if r.startswith('@phase')]
+            self.assertEqual(len(rows), 1, name)
+            return int(rows[0].split()[1])
+
+        def records(name):
+            return [r for r in (MISSION / name).read_text(encoding='utf-8').splitlines()
+                    if r and not r.startswith(('#', '@'))]
+        for world, plays in (('cine_reveal', ['cine_reveal-play-0.txt']), ('cine_speaker', ['cine_speaker-play.txt']),
+                             ('cine_awoken', ['cine_awoken-play-0.txt', 'cine_awoken-play-1.txt'])):
+            self.assertEqual(phase(f'sensor-clients-{world}-live.txt'), 0, world)
+            self.assertEqual(phase(f'{world}-phase-1.txt'), 1, world)
+            for p in plays:
+                self.assertEqual(phase(p), 4, p)
+            self.assertEqual(phase(f'{world}-done.txt'), 6, world)
+            # Phase 1 is the idle world list: the same records as the join's.
+            self.assertEqual(records(f'{world}-phase-1.txt'), records(f'sensor-clients-{world}-live.txt'), world)
+
     def test_the_join_names_the_activity(self):
         line = '⭐ world table: activity index {} -> world "cine_speaker" (checksum 0xa3198561, 4 bubble(s))'
         self.assertTrue(M.joined(line.format(167), 167))
