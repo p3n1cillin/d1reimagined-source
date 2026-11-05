@@ -56,6 +56,16 @@ enum Command {
     },
     /// Print the 49 `user_defined_type` ids with their direction.
     Ids,
+    /// Check the strike, raid, arena and Crucible data (`ps4/fixtures/56578/activities`) and
+    /// print its coverage. Exit 1 if it is invalid.
+    Activities {
+        /// The activities folder (default: `$D1_ACTIVITIES_DIR`, else this checkout's fixtures).
+        #[arg(long)]
+        dir: Option<std::path::PathBuf>,
+        /// Also list every definition with what it still needs evidence for.
+        #[arg(long)]
+        verbose: bool,
+    },
 }
 
 /// The Elimination index for the selected build. 01.29's activity table has it at 407
@@ -83,8 +93,48 @@ fn main() -> anyhow::Result<()> {
             }
             Ok(())
         }
+        Command::Activities { dir, verbose } => {
+            use d1_activity_host::encounter_framework::{self as ef, ActivityLibrary};
+            let dir = dir.unwrap_or_else(ActivityLibrary::default_dir);
+            let lib = ActivityLibrary::load(&dir)?;
+            println!("{}", ef::summary(&lib));
+            if verbose {
+                for a in &lib.activities {
+                    println!("{:40} {:?} {} encounters, {:?}", a.id, a.kind, a.encounters.len(), a.evidence.kind);
+                    for n in &a.needs_evidence {
+                        println!("    needs: {n}");
+                    }
+                }
+            }
+            let problems = lib.validate();
+            for p in &problems {
+                println!("INVALID: {p}");
+            }
+            if !problems.is_empty() {
+                std::process::exit(1);
+            }
+            Ok(())
+        }
         Command::Serve { bind, ah_id, raw_struct_codec, activity } => {
             tracing_subscriber::fmt().with_env_filter("info").init();
+            // ── HOOK (stream J, activity framework) ── `D1_AH_ACTIVITY_FRAMEWORK=1` (or a folder)
+            // loads the strike/raid/arena/Crucible data and logs its coverage. Off by default;
+            // nothing on the wire changes. The script bridge and the host's event paths drive
+            // `encounter_framework::ActivityRun` / `pvp::CrucibleMatch` from here on.
+            if let Some(v) = std::env::var_os(d1_activity_host::encounter_framework::KNOB).filter(|v| !v.is_empty() && v != "0") {
+                use d1_activity_host::encounter_framework::{self as ef, ActivityLibrary};
+                let dir = if v == "1" { ActivityLibrary::default_dir() } else { std::path::PathBuf::from(v) };
+                match ActivityLibrary::load(&dir) {
+                    Ok(lib) => {
+                        tracing::info!("activity framework: {}", ef::summary(&lib));
+                        for p in lib.validate() {
+                            tracing::warn!("activity framework: {p}");
+                        }
+                    }
+                    Err(e) => tracing::warn!("activity framework: {} not loaded: {e}", dir.display()),
+                }
+            }
+            // ── end HOOK ──
             if ah_id == 0 {
                 anyhow::bail!(
                     "activity-host id 0 is the `no activity host` sentinel - FUN_00594320 issues \

@@ -1,0 +1,255 @@
+{
+  "activity_id": "strike-dust-palace",
+  "name": "Dust Palace",
+  "evidence": {
+    "kind": "live-capture",
+    "build": "51539 (Xbox 360)",
+    "capture": "Dust-Palace",
+    "note": "one solo run (Crota's End: a fireteam); incident ids are 51539's; see notes/d1-live-captures-2026-11-05.md"
+  },
+  "host_session_s": 1567.8,
+  "hosts": 2,
+  "stages": [
+    {
+      "slice_set": 48,
+      "entered_s": 25.1,
+      "groups_first_served": [
+        "0x4786c0e0",
+        "0xb1750ab0",
+        "0xedfb1e57",
+        "0xaa6b799a",
+        "0x156b66c9",
+        "0x0f0dd50d",
+        "0xb9bf56f5"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0xaa6b799a/29/47",
+        "0xb1750ab0/29/37",
+        "0xb1750ab0/29/40",
+        "0xb1750ab0/29/38",
+        "0xedfb1e57/29/23",
+        "0xedfb1e57/29/24",
+        "0xedfb1e57/29/25",
+        "0xedfb1e57/29/22",
+        "0xb1750ab0/29/39",
+        "0xedfb1e57/29/27",
+        "0xedfb1e57/29/28",
+        "0xb1750ab0/29/45",
+        "0xedfb1e57/29/26",
+        "0xedfb1e57/29/29"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 474.9
+    },
+    {
+      "slice_set": 136,
+      "entered_s": 500.0,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0xb1750ab0/29/48",
+        "0xb1750ab0/29/49",
+        "0xedfb1e57/29/30",
+        "0xedfb1e57/29/31"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 213.9
+    },
+    {
+      "slice_set": 40,
+      "entered_s": 713.9,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0xb1750ab0/29/52",
+        "0xedfb1e57/29/32",
+        "0xedfb1e57/29/35",
+        "0xedfb1e57/29/34",
+        "0xb1750ab0/29/53",
+        "0xedfb1e57/29/33"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 853.9
+    }
+  ],
+  "markers": [
+    {
+      "t_s": 25.1,
+      "slice": 48
+    },
+    {
+      "t_s": 123.9,
+      "trigger": "0xaa6b799a/29/47"
+    },
+    {
+      "t_s": 127.6,
+      "trigger": "0xb1750ab0/29/37"
+    },
+    {
+      "t_s": 131.7,
+      "trigger": "0xb1750ab0/29/40"
+    },
+    {
+      "t_s": 131.8,
+      "trigger": "0xb1750ab0/29/38"
+    },
+    {
+      "t_s": 134.8,
+      "trigger": "0xedfb1e57/29/23"
+    },
+    {
+      "t_s": 134.9,
+      "trigger": "0xedfb1e57/29/24"
+    },
+    {
+      "t_s": 134.9,
+      "trigger": "0xedfb1e57/29/25"
+    },
+    {
+      "t_s": 135.0,
+      "trigger": "0xedfb1e57/29/22"
+    },
+    {
+      "t_s": 170.3,
+      "trigger": "0xb1750ab0/29/39"
+    },
+    {
+      "t_s": 227.8,
+      "trigger": "0xedfb1e57/29/27"
+    },
+    {
+      "t_s": 227.8,
+      "trigger": "0xedfb1e57/29/28"
+    },
+    {
+      "t_s": 227.9,
+      "trigger": "0xb1750ab0/29/45"
+    },
+    {
+      "t_s": 227.9,
+      "trigger": "0xedfb1e57/29/26"
+    },
+    {
+      "t_s": 494.2,
+      "trigger": "0xedfb1e57/29/29"
+    },
+    {
+      "t_s": 500.0,
+      "slice": 136
+    },
+    {
+      "t_s": 501.0,
+      "trigger": "0xb1750ab0/29/48"
+    },
+    {
+      "t_s": 573.0,
+      "trigger": "0xb1750ab0/29/49"
+    },
+    {
+      "t_s": 573.1,
+      "trigger": "0xedfb1e57/29/30"
+    },
+    {
+      "t_s": 573.2,
+      "trigger": "0xedfb1e57/29/31"
+    },
+    {
+      "t_s": 713.9,
+      "slice": 40
+    },
+    {
+      "t_s": 714.6,
+      "trigger": "0xb1750ab0/29/52"
+    },
+    {
+      "t_s": 716.9,
+      "trigger": "0xedfb1e57/29/32"
+    },
+    {
+      "t_s": 717.4,
+      "trigger": "0xedfb1e57/29/35"
+    },
+    {
+      "t_s": 717.5,
+      "trigger": "0xedfb1e57/29/34"
+    },
+    {
+      "t_s": 717.7,
+      "trigger": "0xb1750ab0/29/53"
+    },
+    {
+      "t_s": 797.1,
+      "trigger": "0xedfb1e57/29/33"
+    }
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "begins_on": {
+        "slice_entered": 48
+      },
+      "at_s": 25.1,
+      "duration_s": 98.8
+    },
+    {
+      "index": 1,
+      "begins_on": {
+        "trigger": "0xaa6b799a/29/47"
+      },
+      "at_s": 123.9,
+      "duration_s": 103.9
+    },
+    {
+      "index": 2,
+      "begins_on": {
+        "trigger": "0xedfb1e57/29/27"
+      },
+      "at_s": 227.8,
+      "duration_s": 266.4
+    },
+    {
+      "index": 3,
+      "begins_on": {
+        "trigger": "0xedfb1e57/29/29"
+      },
+      "at_s": 494.2,
+      "duration_s": 5.8
+    },
+    {
+      "index": 4,
+      "begins_on": {
+        "slice_entered": 136
+      },
+      "at_s": 500.0,
+      "duration_s": 73.0
+    },
+    {
+      "index": 5,
+      "begins_on": {
+        "trigger": "0xb1750ab0/29/49"
+      },
+      "at_s": 573.0,
+      "duration_s": 140.9
+    },
+    {
+      "index": 6,
+      "begins_on": {
+        "slice_entered": 40
+      },
+      "at_s": 713.9,
+      "duration_s": 83.2
+    },
+    {
+      "index": 7,
+      "begins_on": {
+        "trigger": "0xedfb1e57/29/33"
+      },
+      "at_s": 797.1,
+      "duration_s": 770.7
+    }
+  ]
+}
