@@ -918,6 +918,10 @@ impl ActivityInstance {
     ///
     /// [`Live`]: InstanceState::Live
     pub fn sensor_due(&mut self, now: Instant) -> Option<AhPush> {
+        // ── stream G hook ── the instance's public events run on the host's clock.
+        if let Some(p) = self.public.as_mut() {
+            p.tick(now);
+        }
         if !matches!(self.state, InstanceState::Live) || self.heartbeats == 0 {
             return None;
         }
@@ -1212,7 +1216,7 @@ impl ActivityInstance {
                 // records, no mission steps, no frame until the client names its region (udt 21),
                 // and the slot handover answered (crate::public_host).
                 if let Some(p) = self.public.as_mut() {
-                    if p.on_join(struct_image).is_public_instance() {
+                    if p.on_join(struct_image, &self.activity_name, self.ah_id, now).is_public_instance() {
                         self.pah_region = None;
                         self.sensor_payload = None;
                         self.sensor_team_frames = None;

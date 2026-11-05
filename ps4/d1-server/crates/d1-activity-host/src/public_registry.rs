@@ -160,6 +160,9 @@ pub struct PublicInstance {
     emptied: Option<Instant>,
     /// Whether the mission host has advertised it (the client reported it back, udt 21).
     pub advertised: bool,
+    /// Slots a matchmaker holds for players on their way ([`PublicRegistry::reserve_slots`]); each
+    /// arriving member takes one.
+    held: usize,
 }
 
 impl PublicInstance {
@@ -171,8 +174,8 @@ impl PublicInstance {
         self.members.len()
     }
 
-    /// Slots held for absent fireteam members: for every fireteam with someone here, the members
-    /// of it who are not.
+    /// Slots held for absent fireteam members (for every fireteam with someone here, the members
+    /// of it who are not), plus slots a matchmaker holds for players on their way.
     pub fn reserved(&self) -> usize {
         let mut teams: BTreeMap<u64, (u8, usize)> = BTreeMap::new();
         for m in self.members.iter().filter(|m| m.fireteam != 0) {
@@ -180,7 +183,14 @@ impl PublicInstance {
             e.0 = e.0.max(m.fireteam_size);
             e.1 += 1;
         }
-        teams.values().map(|&(size, here)| (size as usize).saturating_sub(here)).sum()
+        teams.values().map(|&(size, here)| (size as usize).saturating_sub(here)).sum::<usize>() + self.held
+    }
+
+    /// A member arrived: it takes one held slot, if any.
+    fn arrive(&mut self, who: Arrival) {
+        self.members.push(who);
+        self.emptied = None;
+        self.held = self.held.saturating_sub(1);
     }
 
     /// Members plus reservations.
@@ -212,17 +222,67 @@ impl std::fmt::Display for PlaceError {
 
 impl std::error::Error for PlaceError {}
 
+/// One instance as stream H's matchmaker sees it: the fields of `d1_mp::matchmaking::PublicInstance`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct InstanceView {
+    pub host: u64,
+    pub players: usize,
+    pub reserved: usize,
+    pub capacity: usize,
+    pub started_ms: u64,
+}
+
+/// The region a matchmaking bubble id names. The live searches named Restoration's region 56 as
+/// `0x8001_0038` and region 48 as `0x8001_0030` (search field 5), so the low bits are the
+/// slice-set id; what the high half carries is not known yet, so the destination comes from the
+/// caller.
+pub fn bubble_region(bubble: u32) -> u32 {
+    bubble & 0x3FF
+}
+
+/// ⭐ **The adapter to `d1_mp::matchmaking::PublicInstances`** (stream H, PR #312), for one
+/// destination. `d1-mp` is not on main yet, so this crate cannot name its trait; once it is, the
+/// whole implementation is:
+///
+/// ```text
+/// impl d1_mp::matchmaking::PublicInstances for DestinationInstances<'_> {
+///     fn instances(&self, bubble: u32) -> Vec<d1_mp::matchmaking::PublicInstance> {
+///         self.views(bubble).into_iter().map(|v| d1_mp::matchmaking::PublicInstance {
+///             host: v.host, players: v.players, reserved: v.reserved,
+///             capacity: v.capacity, started_ms: v.started_ms,
+///         }).collect()
+///     }
+///     fn reserve(&mut self, host: u64, slots: usize) -> bool { self.reserve(host, slots) }
+/// }
+/// ```
+pub struct DestinationInstances<'a> {
+    pub registry: &'a mut PublicRegistry,
+    pub destination: Destination,
+}
+
+impl DestinationInstances<'_> {
+    pub fn views(&self, bubble: u32) -> Vec<InstanceView> {
+        self.registry.instance_views(InstanceKey::Bubble { destination: self.destination, region: bubble_region(bubble) })
+    }
+
+    pub fn reserve(&mut self, host: u64, slots: usize) -> bool {
+        self.registry.reserve_slots(host, slots)
+    }
+}
+
 /// Every running public instance.
 #[derive(Debug)]
 pub struct PublicRegistry {
     instances: BTreeMap<u64, PublicInstance>,
     next_id: u64,
+    /// The clock origin for [`InstanceView::started_ms`].
+    epoch: Instant,
 }
 
 impl PublicRegistry {
     /// Instance host ids are handed out from `first_id` (non-zero; 0 means "no activity host").
     pub fn new(first_id: u64) -> Self {
-        Self { instances: BTreeMap::new(), next_id: first_id.max(1) }
+        Self { instances: BTreeMap::new(), next_id: first_id.max(1), epoch: Instant::now() }
     }
 
     pub fn get(&self, host_id: u64) -> Option<&PublicInstance> {
@@ -279,8 +339,7 @@ impl PublicRegistry {
         match chosen {
             Some(host) => {
                 let i = self.instances.get_mut(&host).expect("chosen from the map");
-                i.members.push(who);
-                i.emptied = None;
+                i.arrive(who);
                 Ok(Placement { host_id: host, kind: JoinKind::Joins })
             }
             None => {
@@ -288,7 +347,7 @@ impl PublicRegistry {
                 self.next_id = self.next_id.wrapping_add(1).max(1);
                 self.instances.insert(
                     host,
-                    PublicInstance { host_id: host, key, started: now, members: vec![who], emptied: None, advertised: false },
+                    PublicInstance { host_id: host, key, started: now, members: vec![who], emptied: None, advertised: false, held: 0 },
                 );
                 Ok(Placement { host_id: host, kind: JoinKind::Starts })
             }
@@ -304,8 +363,7 @@ impl PublicRegistry {
             // The instance's first member is the one who started it.
             let starter = i.members.first().map(|m| m.character) == Some(character);
             if !i.members.iter().any(|m| m.character == character) {
-                i.members.push(Arrival::solo(character));
-                i.emptied = None;
+                i.arrive(Arrival::solo(character));
             }
             return if starter { JoinKind::Starts } else { JoinKind::Joins };
         }
@@ -314,7 +372,7 @@ impl PublicRegistry {
         }
         self.instances.insert(
             host_id,
-            PublicInstance { host_id, key, started: now, members: vec![Arrival::solo(character)], emptied: None, advertised: false },
+            PublicInstance { host_id, key, started: now, members: vec![Arrival::solo(character)], emptied: None, advertised: false, held: 0 },
         );
         if host_id >= self.next_id {
             self.next_id = host_id.wrapping_add(1).max(1);
@@ -344,6 +402,31 @@ impl PublicRegistry {
             i.emptied = Some(now);
         }
         Some(host)
+    }
+
+    /// ⭐ For stream H's matchmaker (`d1_mp::matchmaking::PublicInstances::instances`): every
+    /// instance at `key`, in the shape the matchmaker places by.
+    pub fn instance_views(&self, key: InstanceKey) -> Vec<InstanceView> {
+        self.instances_at(key)
+            .map(|i| InstanceView {
+                host: i.host_id,
+                players: i.player_count(),
+                reserved: i.reserved(),
+                capacity: key.player_cap(),
+                started_ms: i.started.saturating_duration_since(self.epoch).as_millis() as u64,
+            })
+            .collect()
+    }
+
+    /// ⭐ For stream H's matchmaker (`d1_mp::matchmaking::PublicInstances::reserve`): hold `slots`
+    /// in `host` for an arriving fireteam. `false` if the instance is gone or has no room.
+    pub fn reserve_slots(&mut self, host: u64, slots: usize) -> bool {
+        let Some(i) = self.instances.get_mut(&host) else { return false };
+        if i.occupancy() + slots > i.key.player_cap() {
+            return false;
+        }
+        i.held += slots;
+        true
     }
 
     /// Retire instances that have been empty for `linger` or longer. Returns their host ids.
@@ -497,6 +580,27 @@ mod tests {
         assert_eq!(swap_stage(10.0), SwapStage::Matchmaking);
         assert_eq!(swap_stage(5.0), SwapStage::Standalone);
         assert_eq!(swap_stage(0.0), SwapStage::Standalone);
+    }
+
+    /// The matchmaker's view and its reservations (stream H's `PublicInstances`).
+    #[test]
+    fn the_matchmaker_sees_each_instance_and_holds_slots_until_players_arrive() {
+        let now = Instant::now();
+        let mut r = PublicRegistry::new(FIRST);
+        r.place(STEPPES, team(1, 0xF1, 2), now).unwrap();
+        let mut d = DestinationInstances { registry: &mut r, destination: Destination::Earth };
+        assert_eq!(bubble_region(0x8001_0038), 56);
+        let [v] = d.views(0x8001_0038).try_into().unwrap();
+        assert_eq!((v.host, v.players, v.reserved, v.capacity), (FIRST, 1, 1, 6));
+        assert!(d.views(0x8001_0030).is_empty(), "region 48 has none");
+        // Hold three for an arriving fireteam: 1 + 1 + 3 = 5; four more would not fit.
+        assert!(d.reserve(FIRST, 3));
+        assert!(!d.reserve(FIRST, 2));
+        assert!(!d.reserve(FIRST + 9, 1), "no such instance");
+        // Each arrival takes a held slot.
+        r.attach(FIRST, STEPPES, 50, now);
+        let i = r.get(FIRST).unwrap();
+        assert_eq!((i.player_count(), i.reserved()), (2, 3));
     }
 
     #[test]

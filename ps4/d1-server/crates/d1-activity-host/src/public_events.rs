@@ -137,6 +137,23 @@ impl BubbleScriptBridge for RecordingBridge {
     }
 }
 
+/// The bridge a host runs with until stream A2's exists: every call is refused and named, so no
+/// event starts (the rotation goes quiet again) and nothing pretends to run a script.
+#[derive(Debug, Default)]
+pub struct PendingBridge;
+
+impl BubbleScriptBridge for PendingBridge {
+    fn start_bundles(&mut self, _host: u64, _bundles: &[u32]) -> Result<(), String> {
+        Err("no mission-script bridge yet (stream A2)".to_string())
+    }
+    fn start_event(&mut self, _host: u64, _bundle: u32, _event: &ScheduledEvent) -> Result<(), String> {
+        Err("no mission-script bridge yet (stream A2)".to_string())
+    }
+    fn stop_event(&mut self, _host: u64, _bundle: u32, _event_id: u32) -> Result<(), String> {
+        Err("no mission-script bridge yet (stream A2)".to_string())
+    }
+}
+
 /// Where a bundle's rotation is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EventPhase {
@@ -182,7 +199,7 @@ pub enum EventNotice {
 }
 
 /// One bundle's events on one bubble host.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PublicEventRunner {
     host: u64,
     schedule: &'static EventSchedule,
@@ -204,6 +221,11 @@ impl PublicEventRunner {
         };
         r.phase = EventPhase::Quiet { until: now + r.quiet() };
         r
+    }
+
+    /// The bundle whose events this runs.
+    pub fn bundle(&self) -> u32 {
+        self.schedule.bundle
     }
 
     pub fn phase(&self) -> EventPhase {

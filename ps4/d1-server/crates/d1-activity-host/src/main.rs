@@ -856,12 +856,21 @@ fn main() -> anyhow::Result<()> {
                 if !std::env::var("D1_AH_DISTINCT_HOST_IDS").is_ok_and(|v| v == "1") {
                     tracing::warn!("⚠ D1_AH_PUBLIC_HOST=1 without D1_AH_DISTINCT_HOST_IDS=1: every connection presents the mission host's id");
                 }
-                Some(d1_activity_host::public_host::PublicHost::new(
-                    std::sync::Arc::new(frames),
-                    std::sync::Arc::new(std::sync::Mutex::new(
-                        d1_activity_host::public_registry::PublicRegistry::new(ah_id.wrapping_add(0x1000)),
-                    )),
-                ))
+                // The open world (events, loot, patrol, social spaces) with stand-ins for stream A2's
+                // script bridge (refuses, so no event starts) and stream M's rewards (logged only).
+                let services = d1_activity_host::public_host::OpenWorldServices {
+                    bridge: std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::public_events::PendingBridge)),
+                    rewards: std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::open_world::LoggedRewards)),
+                };
+                Some(
+                    d1_activity_host::public_host::PublicHost::new(
+                        std::sync::Arc::new(frames),
+                        std::sync::Arc::new(std::sync::Mutex::new(
+                            d1_activity_host::public_registry::PublicRegistry::new(ah_id.wrapping_add(0x1000)),
+                        )),
+                    )
+                    .with_open_world(&lists, services),
+                )
             } else {
                 None
             };

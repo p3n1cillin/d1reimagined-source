@@ -174,3 +174,76 @@ fn two_clients_meet_in_one_public_instance() {
     assert!(!mission_b.public_host().unwrap().is_public_instance());
     assert_eq!(public_host::role_of_join(&[0u8; 0x100]).is_public_instance(), false);
 }
+
+/// The open world of one instance runs once, whichever connection ticks it: the bundles start
+/// through the bridge, the public event comes after its quiet spell and rewards everyone who
+/// engaged, a chest opens once per character, and a social space registers as a shared instance.
+#[test]
+fn the_open_world_runs_once_per_instance() {
+    use d1_activity_host::open_world::{ActivityOutcome, EventTier, RecordingRewards, SocialSpace};
+    use d1_activity_host::public_events::{BridgeCall, EventPhase, EventResult, RecordingBridge};
+    use d1_activity_host::public_host::{load_public_table, OpenWorldServices, PLACEHOLDER_LOOT_DELAY};
+
+    let t0 = Instant::now();
+    let table = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578/public/public-table.txt");
+    let lists = load_public_table(&table).unwrap();
+    let frames: HashMap<_, _> = lists.iter().map(|l| (l.key, Ok(vec![0x48]))).collect();
+    let bridge = Arc::new(Mutex::new(RecordingBridge::default()));
+    let rewards = Arc::new(Mutex::new(RecordingRewards::default()));
+    let registry = Arc::new(Mutex::new(PublicRegistry::new(0xD1A0_0000_0000_1000)));
+    let public = PublicHost::new(Arc::new(frames), registry.clone())
+        .with_open_world(&lists, OpenWorldServices { bridge: bridge.clone(), rewards: rewards.clone() });
+    let host = 0xD1A0_0000_0000_0010;
+    let (alice, bob) = (0xA11CE, 0xB0B);
+
+    // Two connections to one instance of the Cosmodrome's region 48.
+    let mut inst_a = instance(host, &public, t0);
+    inst_a.on_client_message(&join(3, 0xD1A0_0000_0000_0001, 0, alice), t0);
+    inst_a.on_client_message(&slice_report(48, 1, None), t0);
+    let mut inst_b = instance(host, &public, t0);
+    inst_b.on_client_message(&join(2, 0xD1A0_0000_0000_0002, 0, bob), t0);
+    inst_b.on_client_message(&slice_report(48, 1, None), t0);
+    let starts = |b: &RecordingBridge| b.calls.iter().filter(|c| matches!(c, BridgeCall::StartBundles { .. })).count();
+    assert_eq!(starts(&bridge.lock().unwrap()), 1, "the bundles start once per instance");
+    assert_eq!(
+        bridge.lock().unwrap().calls[0],
+        BridgeCall::StartBundles { host, bundles: vec![0xA2F6_6E1A, 0x358E_BAE1, 0xBDF9_E3C6, 0x00B0_2852] }
+    );
+
+    // The region's event bundle rotates; it starts once, though both connections tick.
+    let p = inst_a.public_host().unwrap();
+    let (events, loot) = p.with_world(|w| (w.events.len(), w.loot.visible(alice, t0 + PLACEHOLDER_LOOT_DELAY).len())).unwrap();
+    assert_eq!(events, 1);
+    assert_eq!(loot, 15, "8 chests and 7 Thorium nodes");
+    let EventPhase::Quiet { until } = p.with_world(|w| w.events[0].phase()).unwrap() else { panic!("quiet first") };
+    inst_a.sensor_due(until);
+    inst_b.sensor_due(until);
+    let events_started = bridge.lock().unwrap().calls.iter().filter(|c| matches!(c, BridgeCall::StartEvent { .. })).count();
+    assert_eq!(events_started, 1);
+
+    // Both engage; the script ends it at gold; both are rewarded.
+    inst_a.public_host().unwrap().report_engagement(0x358E_BAE1, alice);
+    inst_b.public_host().unwrap().report_engagement(0x358E_BAE1, bob);
+    inst_a.public_host().unwrap().report_event_finished(0x358E_BAE1, EventResult::Completed(EventTier::Gold), until);
+    let granted: Vec<u64> = rewards.lock().unwrap().grants.iter().map(|(c, _, _)| *c).collect();
+    assert_eq!(granted, vec![bob, alice]);
+
+    // A chest: once per character, after it shows.
+    let chest = |i: &ActivityInstance, who, at| i.public_host().unwrap().open_loot(who, 0x00B0_2852, 0, at);
+    assert!(chest(&inst_a, alice, t0).is_err());
+    let later = t0 + PLACEHOLDER_LOOT_DELAY;
+    chest(&inst_a, alice, later).unwrap();
+    assert!(chest(&inst_b, alice, later).is_err(), "the instance is shared, so is what she opened");
+    chest(&inst_b, bob, later).unwrap();
+    assert!(matches!(rewards.lock().unwrap().grants.last(), Some((c, _, ActivityOutcome::Chest { .. })) if *c == bob));
+
+    // A social space: a mission-type join (type 2 into the Tower) is its shared instance.
+    let mut tower = ActivityInstance::new(host + 1, "d1ah-tower", t0);
+    tower.set_activity_name("city_tower_default1");
+    tower.set_public_host(public.clone());
+    tower.on_connect(t0);
+    tower.on_client_message(&join(2, 0, 0xF1, alice), t0);
+    let r = registry.lock().unwrap();
+    assert_eq!(r.get(host + 1).unwrap().key, InstanceKey::Social(SocialSpace::Tower));
+    assert_eq!(r.instance_of(alice), Some(host + 1), "arriving in the Tower left the Cosmodrome instance");
+}

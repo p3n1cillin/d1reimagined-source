@@ -36,14 +36,18 @@
 //! The hooks in `state.rs` are marked `stream G` and do nothing unless the instance was given a
 //! [`PublicHost`] (`D1_AH_PUBLIC_HOST=1` in `main.rs`).
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
 use d1_oracle::sensor::SensorClientRef;
 
-use crate::open_world::{Destination, SocialSpace, PUBLIC_PLAYERS_GROUP};
+use crate::open_world::{
+    bundle_role, ActivityRewards, BundleRole, Destination, LootField, LootKind, PatrolBoard, SocialSpace,
+    PLACEHOLDER_BEACONS, PUBLIC_PLAYERS_GROUP,
+};
+use crate::public_events::{schedule_for, BubbleScriptBridge, EventNotice, EventResult, PublicEventRunner};
 use crate::public_registry::{InstanceKey, JoinKind, PublicRegistry};
 
 /// `join_request +0x38`: the session type (3 starts an instance, 2 joins one).
@@ -203,6 +207,65 @@ pub fn load_public_table(path: &Path) -> Result<Vec<PublicRegionList>, String> {
 /// the send path.
 pub type FrameEncoder = Arc<dyn Fn(&[SensorClientRef]) -> Result<Vec<u8>, String> + Send + Sync>;
 
+/// ⚠ **PLACEHOLDER**: how long after an instance starts its chests and resource nodes show. The
+/// restored scripts' notes put the Cosmodrome's at about a minute; nothing here was measured by us.
+pub const PLACEHOLDER_LOOT_DELAY: std::time::Duration = std::time::Duration::from_secs(60);
+
+/// What a region's instance runs besides its sensor list: its bundles and its chests and resource
+/// nodes, read from the region's list.
+#[derive(Debug, Clone)]
+pub struct RegionPlan {
+    pub bundles: Vec<(u32, BundleRole)>,
+    pub loot: Vec<(u32, i16, LootKind)>,
+}
+
+impl RegionPlan {
+    /// The plan for a list: every group after the players is a bundle; every kind-`0x4` record of a
+    /// chest or resource-node bundle is one loot object. Loot inferred only from its shape
+    /// ([`BundleRole::LootInferred`]) is left out: whether it is a chest or a node is not known.
+    pub fn from_list(list: &PublicRegionList) -> Self {
+        let mut kinds: Vec<(u32, BTreeMap<u8, usize>)> = Vec::new();
+        for c in &list.clients {
+            match kinds.iter_mut().find(|(h, _)| *h == c.name_hash) {
+                Some((_, k)) => *k.entry(c.name_i8).or_insert(0) += 1,
+                None => kinds.push((c.name_hash, BTreeMap::from([(c.name_i8, 1)]))),
+            }
+        }
+        let bundles: Vec<(u32, BundleRole)> = kinds
+            .iter()
+            .map(|(h, k)| (*h, bundle_role(*h, k)))
+            .filter(|(_, r)| *r != BundleRole::Players)
+            .collect();
+        let loot = list
+            .clients
+            .iter()
+            .filter(|c| c.name_i8 == 0x4)
+            .filter_map(|c| match bundles.iter().find(|(h, _)| *h == c.name_hash)?.1 {
+                BundleRole::Chests => Some((c.name_hash, c.name_sub, LootKind::Chest)),
+                BundleRole::ResourceNodes => Some((c.name_hash, c.name_sub, LootKind::ResourceNode)),
+                _ => None,
+            })
+            .collect();
+        Self { bundles, loot }
+    }
+}
+
+/// The services an instance's open world calls: stream A2's script bridge and stream M's rewards.
+#[derive(Clone)]
+pub struct OpenWorldServices {
+    pub bridge: Arc<Mutex<dyn BubbleScriptBridge + Send>>,
+    pub rewards: Arc<Mutex<dyn ActivityRewards + Send>>,
+}
+
+/// One running instance's open world: its event rotations, its loot and its patrol beacons.
+#[derive(Debug, Clone)]
+pub struct InstanceWorld {
+    pub key: InstanceKey,
+    pub events: Vec<PublicEventRunner>,
+    pub loot: LootField,
+    pub patrol: PatrolBoard,
+}
+
 /// The public-host state one activity-host connection carries.
 #[derive(Clone)]
 pub struct PublicHost {
@@ -213,6 +276,12 @@ pub struct PublicHost {
     role: Option<HostRole>,
     character: u64,
     selected: Option<InstanceKey>,
+    /// The open-world layer, when the host was given one ([`Self::with_open_world`]).
+    plans: Arc<HashMap<InstanceKey, RegionPlan>>,
+    services: Option<OpenWorldServices>,
+    /// Every running instance's open world, by host id, shared by every connection.
+    worlds: Arc<Mutex<HashMap<u64, InstanceWorld>>>,
+    host_id: u64,
 }
 
 impl std::fmt::Debug for PublicHost {
@@ -232,7 +301,129 @@ impl PublicHost {
     }
 
     pub fn new(frames: Arc<HashMap<InstanceKey, Result<Vec<u8>, String>>>, registry: Arc<Mutex<PublicRegistry>>) -> Self {
-        Self { frames, registry, role: None, character: 0, selected: None }
+        Self {
+            frames,
+            registry,
+            role: None,
+            character: 0,
+            selected: None,
+            plans: Arc::new(HashMap::new()),
+            services: None,
+            worlds: Arc::new(Mutex::new(HashMap::new())),
+            host_id: 0,
+        }
+    }
+
+    /// Run each instance's open world: start its bundles through the bridge, rotate its public
+    /// events, and keep its loot and patrol beacons, reporting rewards to `services.rewards`. The
+    /// worlds are kept per instance and shared by every connection to it.
+    pub fn with_open_world(mut self, lists: &[PublicRegionList], services: OpenWorldServices) -> Self {
+        self.plans = Arc::new(lists.iter().map(|l| (l.key, RegionPlan::from_list(l))).collect());
+        self.services = Some(services);
+        self
+    }
+
+    /// Look at this connection's instance's open world.
+    pub fn with_world<R>(&self, f: impl FnOnce(&InstanceWorld) -> R) -> Option<R> {
+        self.worlds.lock().ok()?.get(&self.host_id).map(f)
+    }
+
+    fn world_mut<R>(&self, f: impl FnOnce(&mut InstanceWorld, &OpenWorldServices) -> Result<R, String>) -> Result<R, String> {
+        let services = self.services.as_ref().ok_or("no open world on this host")?;
+        let mut worlds = self.worlds.lock().map_err(|e| e.to_string())?;
+        let world = worlds.get_mut(&self.host_id).ok_or("no instance running")?;
+        f(world, services)
+    }
+
+    /// Start the instance's open world once its place is known (once per instance: a second
+    /// connection to the same instance finds it running).
+    fn start_world(&mut self, key: InstanceKey, host_id: u64, now: Instant) {
+        self.host_id = host_id;
+        let (Some(services), Some(plan)) = (self.services.clone(), self.plans.get(&key).cloned()) else { return };
+        let Ok(mut worlds) = self.worlds.lock() else { return };
+        if worlds.contains_key(&host_id) {
+            return;
+        }
+        let bundles: Vec<u32> = plan.bundles.iter().map(|(h, _)| *h).collect();
+        if let Ok(mut b) = services.bridge.lock() {
+            if let Err(e) = b.start_bundles(host_id, &bundles) {
+                tracing::warn!("⚠ public instance {host_id:#018x}: bundles not started: {e}");
+            }
+        }
+        let events = bundles
+            .iter()
+            .filter_map(|&b| schedule_for(b))
+            .map(|s| PublicEventRunner::new(host_id, s, now))
+            .collect();
+        let loot = LootField::new(now, plan.loot.iter().map(|&(b, i, k)| (b, i, k, PLACEHOLDER_LOOT_DELAY)));
+        let patrol = match key {
+            InstanceKey::Bubble { destination, region } => PatrolBoard::new(
+                &PLACEHOLDER_BEACONS
+                    .iter()
+                    .copied()
+                    .filter(|&(d, r, _, _)| d == destination && r == region)
+                    .collect::<Vec<_>>(),
+            ),
+            InstanceKey::Social(_) => PatrolBoard::default(),
+        };
+        worlds.insert(host_id, InstanceWorld { key, events, loot, patrol });
+    }
+
+    /// Advance the instance's event rotations. Called from the host's tick; any connection to the
+    /// instance may call it, and a second call at the same time does nothing more.
+    pub fn tick(&self, now: Instant) {
+        let host = self.host_id;
+        let _ = self.world_mut(|world, services| {
+            let mut bridge = services.bridge.lock().map_err(|e| e.to_string())?;
+            let mut rewards = services.rewards.lock().map_err(|e| e.to_string())?;
+            for run in &mut world.events {
+                for n in run.tick(now, &mut *bridge, &mut *rewards) {
+                    tracing::info!("⭐ public instance {host:#018x}: {n:?}");
+                }
+            }
+            Ok(())
+        });
+    }
+
+    /// The bridge reports that `character` engaged a running event of `bundle`.
+    pub fn report_engagement(&self, bundle: u32, character: u64) {
+        let _ = self.world_mut(|world, _| {
+            if let Some(run) = world.events.iter_mut().find(|r| r.bundle() == bundle) {
+                run.on_engagement(character);
+            }
+            Ok(())
+        });
+    }
+
+    /// The bridge reports that `bundle`'s running event ended.
+    pub fn report_event_finished(&self, bundle: u32, result: EventResult, now: Instant) -> Vec<EventNotice> {
+        self.world_mut(|world, services| {
+            let run = world.events.iter_mut().find(|r| r.bundle() == bundle).ok_or("no such bundle")?;
+            let mut rewards = services.rewards.lock().map_err(|e| e.to_string())?;
+            Ok(run.on_script_finished(result, now, &mut *rewards))
+        })
+        .unwrap_or_default()
+    }
+
+    /// A character opens a chest or harvests a node in this instance.
+    pub fn open_loot(&self, character: u64, bundle: u32, index: i16, now: Instant) -> Result<(), String> {
+        self.world_mut(|world, services| {
+            let mut rewards = services.rewards.lock().map_err(|e| e.to_string())?;
+            world.loot.open(character, bundle, index, now, 0, &mut *rewards)
+        })
+    }
+
+    /// Accept a patrol beacon's mission in this instance.
+    pub fn patrol_accept(&self, character: u64, beacon: u32) -> Result<(), String> {
+        self.world_mut(|world, _| world.patrol.accept(character, beacon))
+    }
+
+    /// A character's patrol progress (a kill, a scan, an item). Returns whether it completed.
+    pub fn patrol_progress(&self, character: u64, amount: u32) -> Result<bool, String> {
+        self.world_mut(|world, services| {
+            let mut rewards = services.rewards.lock().map_err(|e| e.to_string())?;
+            world.patrol.progress(character, amount, &mut *rewards)
+        })
     }
 
     pub fn role(&self) -> Option<HostRole> {
@@ -252,16 +443,29 @@ impl PublicHost {
     }
 
     /// The client's join: note what this connection is.
-    pub fn on_join(&mut self, join_request: &[u8]) -> HostRole {
+    ///
+    /// A mission-type join to a social space's world (`world`, the activity's world name) is that
+    /// space's shared instance: it is registered under [`InstanceKey::Social`] and its open world
+    /// starts, while the world itself is still served by the world table (the Tower's lists).
+    pub fn on_join(&mut self, join_request: &[u8], world: &str, host_id: u64, now: Instant) -> HostRole {
         let role = role_of_join(join_request);
         self.role = Some(role);
         self.character = character_of_join(join_request);
         self.selected = None;
-        if let HostRole::PublicInstance { kind, mission_host } = role {
-            tracing::info!(
-                "⭐ public instance: the join names mission host {mission_host:#018x} ({kind:?}); serving no region \
-                 records and no mission steps, and waiting for the client's slice set to pick the region's list"
-            );
+        self.host_id = host_id;
+        match role {
+            HostRole::PublicInstance { kind, mission_host } => tracing::info!(
+                "⭐ public instance: the join names mission host {mission_host:#018x} ({kind:?}); serving no region                  records and no mission steps, and waiting for the client's slice set to pick the region's list"
+            ),
+            HostRole::Mission { kind, .. } => {
+                if let Some(space) = SocialSpace::from_world_name(world) {
+                    let key = InstanceKey::Social(space);
+                    self.selected = Some(key);
+                    let joined = self.registry.lock().ok().map(|mut r| r.attach(host_id, key, self.character, now));
+                    tracing::info!("⭐ social space {space:?} on host {host_id:#018x} (session {kind:?}, {joined:?})");
+                    self.start_world(key, host_id, now);
+                }
+            }
         }
         role
     }
@@ -284,8 +488,9 @@ impl PublicHost {
         let key = [target, current].into_iter().flatten().map(|region| InstanceKey::Bubble { destination, region })
             .find(|k| self.frames.contains_key(k))?;
         self.selected = Some(key);
-        let joined = self.registry.lock().map(|mut r| r.attach(host_id, key, self.character, now));
+        let joined = self.registry.lock().ok().map(|mut r| r.attach(host_id, key, self.character, now));
         tracing::info!("⭐ public instance {host_id:#018x} is {key:?} ({joined:?})");
+        self.start_world(key, host_id, now);
         Some(match &self.frames[&key] {
             Ok(frame) => Ok((key, frame.clone())),
             Err(e) => Err(format!("{key:?}: {e}")),
@@ -298,6 +503,12 @@ impl PublicHost {
             if let Ok(mut r) = self.registry.lock() {
                 r.leave(self.character, now);
             }
+            // The character's patrol ends with its visit; the instance's world runs on.
+            let character = self.character;
+            let _ = self.world_mut(|world, _| {
+                world.patrol.abandon(character);
+                Ok(())
+            });
         }
     }
 }
@@ -436,10 +647,10 @@ mod tests {
         let now = Instant::now();
         let host = 0xD1A0_0000_0000_0002;
         // A mission host never picks a public list.
-        p.on_join(&join(3, 0, 0xF1, 7));
+        p.on_join(&join(3, 0, 0xF1, 7), "act_cosmo_m1_dome_a", host, now);
         assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, Some(56)), host, now).is_none());
         // A public instance: an empty report, or one for a region with no list, picks nothing.
-        p.on_join(&join(3, 0xD1A0_0000_0000_0001, 0, 7));
+        p.on_join(&join(3, 0xD1A0_0000_0000_0001, 0, 7), "act_cosmo_m1_dome_a", host, now);
         assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, None), host, now).is_none());
         assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(Some(104), None), host, now).is_none());
         // The target names region 56: its frame, once, and the registry knows the instance.
@@ -451,7 +662,7 @@ mod tests {
         assert_eq!(p.registry().lock().unwrap().get(host).unwrap().player_count(), 0);
         // Another world's destination does not match Earth's lists, and a list without a frame is named.
         let mut q = host_with(&[(array, Err("no encoder".into()))]);
-        q.on_join(&join(3, 0xD1A0_0000_0000_0001, 0, 8));
+        q.on_join(&join(3, 0xD1A0_0000_0000_0001, 0, 8), "act_cosmo_m1_dome_a", host + 1, now);
         assert!(q.on_slice_report("act_mars_m01_valley", &udt21(None, Some(0)), host + 1, now).is_none());
         assert!(q.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, Some(0)), host + 1, now).unwrap().is_err());
     }

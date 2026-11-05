@@ -91,6 +91,12 @@ The one event start on the wire is Defend the Warsat in The Dark Within:
 
 The events run on the bubble's host, as GDC 2015 says. When the next event would come is not in any capture: Bungie's schedules were server-side.
 
+## Patrol and the social spaces
+
+**A patrol is a mission host with the same public instances.** Patrol Venus's mission host (`..69db`) serves its own patrol group (`0x7CF2807B`: 60 objective records and 59 of kind `0x23`, `[I]` the patrol missions). Its region-72 instance served exactly the groups Eye of a Gate Lord's region-72 instance did. Patrol the Dreadnaught is the same, with group `0x78708B21` (47 and 22).
+
+**The social spaces are hosts of their own.** A Tower or Reef join is a mission-type join (`+0xC8 = 0`, with the fireteam). The Tower was joined (type 2) into an instance about 98 minutes old. The Reef's Vestian Outpost was started (type 3). Both serve player group `0x40AEBF90` with 30 player objects, then their cast: the Tower its plaza, hangar and two cinematic records; the Reef `0xE525F723`, which the restored scripts name as its people. Our host already serves the Tower from `world-table-tower.txt`. What stream G adds is the shared instance: a join into a social space's world is registered under that space in the registry, so a second player can be placed into it.
+
 ## What was built (`d1-activity-host`)
 
 | Module | What |
@@ -100,13 +106,21 @@ The events run on the bubble's host, as GDC 2015 says. When the next event would
 | `public_events.rs` | `BubbleScriptBridge`, the interface to stream A2's script bridge (`RecordingBridge` stands in until it lands). One event at a time per bundle, after a quiet spell. Participation comes from engagement reports, and the end goes through the reward call. The event schedule is a labelled `PLACEHOLDER_SCHEDULE`. |
 | `open_world.rs` | Destinations and social spaces, with the regions marked public on each. Bundle roles come from the restored scripts' headers, or `[I]` from the loot shape. Also patrol beacons and missions (`PatrolBoard`, PLACEHOLDER beacons), chests and resource nodes opened once per character (`LootField`), and `ActivityRewards::grant_activity_rewards(character, activity_hash, outcome)` for stream M. |
 | `state.rs` hooks (marked `stream G`) | A join that names a mission host serves no region records, no mission steps and no frame until the region is named. It also turns on the slot handover. The udt 21 report installs the region's frame. Peer leave and connectivity failure free the registry slot. |
-| `main.rs` | `D1_AH_PUBLIC_HOST=1` loads `D1_AH_PUBLIC_TABLE` (default `ps4/fixtures/56578/public/public-table.txt`) and shares one registry between all connections. It needs `D1_AH_DISTINCT_HOST_IDS=1`. |
+| `public_host.rs`, open world | Once an instance's place is known, its open world starts once and is shared by every connection to that instance. The bridge starts the region's bundles, and each bundle with a schedule rotates its events on the host's tick. The region's chests and resource nodes (the kind-`0x4` records of the bundles the scripts name) open once per character after a PLACEHOLDER 60 s. Patrol beacons are per region. The bridge reports engagement and the event's end, and loot and patrol go through `ActivityRewards`. A social-space join registers the space's shared instance. |
+| `main.rs` | `D1_AH_PUBLIC_HOST=1` loads `D1_AH_PUBLIC_TABLE` (default `ps4/fixtures/56578/public/public-table.txt`) and shares one registry and one set of instance worlds between all connections. It needs `D1_AH_DISTINCT_HOST_IDS=1`. Until streams A2 and M land, the bridge is `PendingBridge`, which refuses (so no event starts), and rewards go to `LoggedRewards`, which logs them and gives nothing. |
 
 Tests: the registry's fill, cap, reservation, leave and retire rules; the join roles; the cleared records; all 23 fixtures loading with the live groups; the region pick; the event lifecycle; patrol and loot. `tests/public_instances.rs` runs two fake clients, each with its own mission host, into one region-56 instance:
 - the mission host's advertisement echo;
 - the public list served on both connections;
 - the slot handover;
 - a leave freeing the slot.
+
+A second test runs the open world of one region-48 instance through two connections:
+- the four bundles start once;
+- the events bundle starts one event although both connections tick;
+- both engaged players are rewarded at gold;
+- each chest opens once per character;
+- a join into the Tower registers its shared instance.
 
 ## Not there yet
 

@@ -282,6 +282,23 @@ impl ActivityRewards for RecordingRewards {
     }
 }
 
+/// The rewards a host reports with until stream M's service exists: each grant is logged, and
+/// nothing is given.
+#[derive(Debug, Default)]
+pub struct LoggedRewards;
+
+impl ActivityRewards for LoggedRewards {
+    fn grant_activity_rewards(
+        &mut self,
+        character: u64,
+        activity_hash: u32,
+        outcome: &ActivityOutcome,
+    ) -> Result<(), String> {
+        tracing::info!("open-world reward for {character:#x} (activity {activity_hash:#010x}): {outcome:?} - no progression service yet (stream M)");
+        Ok(())
+    }
+}
+
 // ── patrol ────────────────────────────────────────────────────────────────────────────────────
 
 /// The kinds of patrol mission a beacon hands out in Destiny 1.
@@ -329,7 +346,7 @@ pub struct ActivePatrol {
 }
 
 /// The patrol beacons on offer, and each character's accepted patrol (one at a time, as in D1).
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct PatrolBoard {
     beacons: BTreeMap<u32, PatrolBeacon>,
     active: BTreeMap<u64, ActivePatrol>,
@@ -417,7 +434,7 @@ pub struct LootNode {
 }
 
 /// The loot of one public instance.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct LootField {
     started: Option<Instant>,
     nodes: Vec<LootNode>,
