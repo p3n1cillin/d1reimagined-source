@@ -112,7 +112,7 @@ def plausible(t):
     return t is not None and all(math.isfinite(x) and abs(x) < 1e5 for x in t) and math.hypot(t[0], t[1]) > 50
 
 
-def retrack(client, tracked, near=None, scan_radius=25):
+def retrack(client, tracked, near=None, scan_radius=25, *, no_jump=False):
     """Drop stale copies after a death or respawn: keep the addresses that follow a short move.
 
     A respawn leaves some tracked copies frozen at the old spot, and the median then flips between
@@ -121,7 +121,10 @@ def retrack(client, tracked, near=None, scan_radius=25):
     in any direction, re-scan around `near` (the last good position); never around stray values.
     Returns the new list, or the old one when nothing better is found.
     """
-    for keys in (['Hold:W:700'], ['Hold:S:700'], ['Hold:A:700'], ['Hold:D:700'], ['NumPad2', 'Hold:W:700']):
+    moves = [('Hold:W:700',), ('Hold:S:700',), ('Hold:A:700',), ('Hold:D:700',)]
+    if not no_jump:
+        moves.append(('NumPad2', 'Hold:W:700'))
+    for keys in moves:
         before = {a: client.triple(a) for a in tracked}
         pad(*keys)
         moved = []
@@ -296,6 +299,7 @@ def main():
     ap.add_argument('--keepalive', type=float, help='only keep the Guardian active for this many seconds')
     ap.add_argument('--hurt-stop', type=float,
                     help='stop ("hurt: ...") when the screen shows health below this fraction, so the caller fights')
+    ap.add_argument('--no-jump', action='store_true', help='keep recovery moves on the ground in crouch-only routes')
     ap.add_argument('--retrack', action='store_true', help='only drop stale copies from --tracked (after a death) and rewrite it')
     ap.add_argument('--respawns', default='',
                     help='with --retrack: "x,y,z;x,y,z" respawn points to scan when the retrack keeps too few copies')
@@ -324,7 +328,10 @@ def main():
             tracked = json.load(tracked_file)
     if a.retrack:
         respawns = [[float(v) for v in p.split(',')] for p in a.respawns.split(';') if p.strip()]
-        tracked = retrack_or_rescan(c, tracked, respawns, a.radius, a.min_copies)
+        def retrack_position(client, copies, near):
+            return retrack(client, copies, near, no_jump=a.no_jump)
+
+        tracked = retrack_or_rescan(c, tracked, respawns, a.radius, a.min_copies, retrack_fn=retrack_position)
         json.dump(tracked, open(a.tracked, 'w'))
         print(len(tracked), 'tracked; position', position(c, tracked))
         return
@@ -339,6 +346,7 @@ def main():
     stuck = 0
     best, since_best, skipped = None, 0, False
     turn_err, worse = None, 0
+    jump = () if a.no_jump else ('NumPad2',)
     def corner(k):
         # The turn at waypoint k, in radians (0 = straight on).
         if k <= 0 or k + 1 >= len(route):
@@ -449,7 +457,7 @@ def main():
             continue
         if since_best >= 16 and not skipped:
             skipped = True
-            pad('Hold:S:600', 'Hold:A:500' if (i % 2) else 'Hold:D:500', 'NumPad2')
+            pad('Hold:S:600', 'Hold:A:500' if (i % 2) else 'Hold:D:500', *jump)
             # Never skip a corner (it is where the path turns around an obstacle): re-approach it.
             if sharp and i > 0 and retreats < 2:
                 i, retreats = i - 1, retreats + 1
@@ -520,7 +528,7 @@ def main():
             stuck += 1
             # Blocked, so no heading and no way to steer. Step back (the way we came is usually
             # free) and take the heading from that: facing is opposite to the back-step.
-            if stuck % 2 == 0:
+            if jump and stuck % 2 == 0:
                 # A step or ledge (the ramp at the Wall's stairs, run agr-breach16): jump and push on.
                 pad('NumPad2', 'Hold:W:600')
                 q = position(c, tracked, here) or here
@@ -535,7 +543,7 @@ def main():
                 heading = math.atan2(q0[1] - here[1], q0[0] - here[0])
             else:
                 heading = None
-                pad('NumPad2', 'Hold:A:600' if stuck % 2 else 'Hold:D:600')   # jump and side-step out
+                pad(*jump, 'Hold:A:600' if stuck % 2 else 'Hold:D:600')
                 here = position(c, tracked, here) or here
         if here[2] < target[2] - 8:
             print(f'fell off the route at {here}')

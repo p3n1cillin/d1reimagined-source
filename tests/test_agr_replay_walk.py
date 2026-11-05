@@ -2,7 +2,9 @@ import importlib.util
 import math
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest.mock import Mock, patch
 
 TOOLS = Path(__file__).parents[1] / 'tools/ps4_setup'
 sys.path.insert(0, str(TOOLS))
@@ -53,10 +55,53 @@ class Fake:
         pass
 
     away, lost = M.Replay.away, M.Replay.lost
+    fixed_cover = M.Replay.fixed_cover
     walk_fighting = M.Replay.walk_fighting
 
 
 class WalkFightingTest(unittest.TestCase):
+    def test_quiet_death_waits_for_respawn_position(self):
+        replay = M.Replay.__new__(M.Replay)
+        replay.where = Mock(side_effect=[None, (531, -767, 17)])
+        replay.wait_for_unit = Mock(return_value=True)
+        self.assertTrue(replay.died_quietly(['health 0.15', 'bursts 2'], (491, -722, 15)))
+        replay.wait_for_unit.assert_called_once_with(30)
+
+    def test_publish_waits_for_ack_even_while_control_is_pending(self):
+        with tempfile.TemporaryDirectory() as temp:
+            replay = M.Replay.__new__(M.Replay)
+            replay.run = Path(temp) / 'run'
+            replay.run.mkdir()
+            replay.host_log = replay.run / 'host.log'
+            replay.host_log.write_text('earlier log\n')
+            clients = replay.run / 'clients.txt'
+            control = replay.run.parent / 'ah-control.txt'
+
+            def acknowledge(log, needle, seconds, *, offset):
+                self.assertEqual(log, replay.host_log)
+                self.assertEqual(offset, replay.host_log.stat().st_size)
+                self.assertIn(clients.as_posix(), needle)
+                self.assertTrue(control.exists())
+                self.assertGreater(seconds, 57)
+                control.unlink()
+                return True
+
+            with patch.object(M, 'wait_for', side_effect=acknowledge):
+                replay.publish(clients, 'test control')
+
+    def test_crouch_disables_jump_in_walk_and_retrack(self):
+        replay = M.Replay.__new__(M.Replay)
+        replay.native_unit = True
+        replay.tracked = Path('synthetic-tracking')
+        replay.command = Mock()
+        for stance in ('crouch', 'stand'):
+            replay.stance = stance
+            replay.command.reset_mock()
+            replay.walk_once('mine', Path('route.json'), 30, 1.3, ())
+            replay.retrack()
+            for call in replay.command.call_args_list:
+                self.assertEqual('--no-jump' in call.args[1], stance == 'crouch')
+
     def test_off_the_leg_is_a_respawn(self):
         # sense108: respawned 40 m from the junction leg, which walked straight into a wall.
         with self.assertRaises(M.Respawned):
@@ -71,6 +116,16 @@ class WalkFightingTest(unittest.TestCase):
         f = Fake((31.0, 0.5, 0.0))
         f.walk_fighting('leg', LINE, (), 300, chunk=4)
         self.assertEqual(f.walks[0][1][0], LINE[6])
+
+    def test_route_aligned_fixed_cover_ends_the_stretch_before_the_drop(self):
+        for cover, expected in (((10.0, 0.2), LINE[2]), ((10.0, 3.0), LINE[4])):
+            with self.subTest(cover=cover):
+                f = Fake(LINE[0])
+                f.fixed_covers = {'junction-west': cover}
+                f.walk_fighting('junction-west-r2', LINE, (), 300, chunk=4)
+                self.assertEqual(f.walks[0][1][-1], expected)
+                self.assertEqual(f.fights[:2], ['junction-west-r2-0-pre', 'junction-west-r2-0'])
+                self.assertEqual(f.at, LINE[-1])
 
     def test_stall_backs_off_before_retrying(self):
         f = Fake((0.0, 0.0, 0.0), stall=1)
@@ -113,6 +168,47 @@ class WalkFightingTest(unittest.TestCase):
 
 
 class CoverTest(unittest.TestCase):
+    def test_route_aligned_cover_is_replaced_after_a_drop(self):
+        replay = M.Replay.__new__(M.Replay)
+        replay.leg = [(0.0, 0.0, 5.0), (5.0, 0.0, 5.0), (10.0, 0.0, 2.5),
+                      (15.0, 0.0, 2.5), (20.0, 0.0, 2.5)]
+        replay.fixed_covers = {'junction-west': (5.0, 0.0)}
+        name = 'junction-west-r1-1'
+        self.assertEqual(replay.cover((5.0, 0.0, 5.6), name=name), (5.0, 0.0))
+        self.assertIsNone(replay.cover((10.0, 0.0, 3.1), name=name))
+        self.assertEqual(replay.cover((20.0, 0.0, 3.1), name=name), (10.0, 0.0))
+
+    def test_only_explicit_hiding_point_gets_combat_priority(self):
+        for name, expected in (('junction-west-r2-pre', True), ('other-leg-pre', False)):
+            with self.subTest(name=name):
+                replay = M.Replay.__new__(M.Replay)
+                replay.leg, replay.wave, replay.waves = LINE, '8', False
+                replay.fixed_covers = {'junction-west': (45.0, 8.0)}
+                replay.run, replay.tracked = Path('synthetic-run'), Path('synthetic-tracking')
+                replay.where = lambda: (31.0, 0.5, 0.0)
+                replay.select_retracked_position = lambda: None
+                replay.command = Mock(side_effect=lambda tag, *args, **kw:
+                                      ['32,0'] if 'skirmish-target' in tag else ['bursts 0'])
+                replay.skirmish(name, recover=False)
+                fights = [call.args[1] for call in replay.command.call_args_list
+                          if any(str(arg).endswith('combat2.py') for arg in call.args[1])]
+                self.assertEqual(len(fights), 1)
+                self.assertEqual('--cover-first' in fights[0], expected)
+
+    def test_fixed_point_applies_to_named_leg_and_its_retries_only(self):
+        f = Fake((31.0, 0.5, 0.0)); f.leg = LINE
+        f.fixed_covers = {'junction-west': (45.0, 8.0)}
+        self.assertEqual(M.Replay.cover(f, f.at, name='junction-west-r6-1-pre'), (45.0, 8.0))
+        self.assertEqual(M.Replay.cover(f, f.at, name='mine-crouched-r2'), LINE[4][:2])
+        self.assertEqual(M.Replay.cover(f, f.at, name='junction-western'), LINE[4][:2])
+        self.assertIsNone(M.Replay.cover(f, None, name='junction-west'))
+
+    def test_fixed_cover_input_rejects_malformed_or_nonfinite_points(self):
+        self.assertEqual(M.parse_fixed_cover('junction-west:45,-8.5'), ('junction-west', (45.0, -8.5)))
+        for value in ('junction-west:nan,2', 'junction-west:1,inf', '1,2', 'x:1,2,3', 'x;bad:1,2'):
+            with self.subTest(value=value), self.assertRaises(M.argparse.ArgumentTypeError):
+                M.parse_fixed_cover(value)
+
     def test_cover_is_ten_metres_back_along_the_leg(self):
         f = Fake((31.0, 0.5, 0.0)); f.leg = LINE
         self.assertEqual(M.Replay.cover(f, f.at), LINE[4][:2])

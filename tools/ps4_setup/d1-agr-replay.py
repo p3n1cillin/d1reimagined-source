@@ -41,11 +41,17 @@ CONNECTION = 'AH connection from '
 REPAIR_ATTEMPTS = 3
 RESTART = 'mission step 0 at +0 s'   # the host serving the mission from the start again
 HURT_STOP = 0.6    # a walk stretch stops below this health to fight (d1-walk --hurt-stop; two readings in a row)
+FIGHT_WALK_TOLERANCE = 1.3
+RETREAT_DROP = 2.0  # refuse to backtrack a recorded drop taller than the standing jump
 
 
 class Respawned(Exception):
     """The Guardian came back far from the leg being walked (play_waves restarts the legs)."""   # agr-b-graveyard-junction.txt: on or by the garage route (run sense100's map).
 # 72 and 74 stand a level below it; in sense101 the fight went down after them and the Guardian died twice.
+
+
+class WalkStalled(Respawned):
+    """Restart from a nearby leg without assuming a respawn reset the stance."""
 
 
 def contains(path, needle, offset=0):
@@ -76,9 +82,21 @@ def wait_for(path, needle, seconds, *, offset=0, clock=time.monotonic, sleep=tim
         sleep(1)
 
 
+def parse_fixed_cover(value):
+    """A named leg and a finite point, before any route input can be sent."""
+    try:
+        name, xy = value.split(':', 1)
+        x, y = (float(v) for v in xy.split(','))
+        if not re.fullmatch(r'[a-z]+(?:-[a-z]+)*', name) or not all(map(math.isfinite, (x, y))):
+            raise ValueError
+        return name, (x, y)
+    except ValueError:
+        raise argparse.ArgumentTypeError('cover must be LEG:X,Y with finite coordinates') from None
+
+
 class Replay:
     def __init__(self, run, host_log, garage_clients, pad, routes=ROUTES, fallen=None, junction=None, waves=False,
-                 schedule_dir=None):
+                 schedule_dir=None, fixed_covers=None):
         self.run, self.host_log, self.garage_clients = run, host_log, garage_clients
         self.waves, self.schedule_dir = waves, schedule_dir
         self.rearms = 0
@@ -86,6 +104,7 @@ class Replay:
         self.tracked = run / 'tracked.json'
         self.native_unit = False
         self.wave = None                   # the squads of the last wave fought, for skirmish()
+        self.fixed_covers = dict(fixed_covers or {})
         self.route_prefix = ''             # a resumed replay names its routes apart (play())
 
     def command(self, name, args, seconds, check=True):
@@ -130,7 +149,7 @@ class Replay:
                 resumed = self.resume_route(name, route, lines)
                 if not resumed:
                     break
-                self.pad(f'Hold:{side}:600', 'NumPad2')
+                self.pad(f'Hold:{side}:600', *(() if self.stance_options() else ('NumPad2',)))
                 lines = self.walk_once(f'{name}-nudge', resumed, seconds, tolerance, extra)
                 done = bool(lines and lines[-1].startswith('done '))
         if strict and not done:
@@ -207,14 +226,15 @@ class Replay:
                                        rejoin=chosen)
                 else:
                     self.walk_waves(name, self.write_route(name, points), seconds, tolerance, (), legs=points)
-            except Respawned:
+            except Respawned as error:
                 if restarts == 0:
                     raise RuntimeError(f'{name}: too many respawns; no subsequent input sent')
                 restarts -= 1
                 restart += 1
-                self.stance = 'stand'
+                if not isinstance(error, WalkStalled):
+                    self.stance = 'stand'
                 i, chosen = self.nearest_leg(legs, upto=i), True
-                print(f'{name}: respawned; restarting from {legs[i][0]}', flush=True)
+                print(f'{name}: restarting from {legs[i][0]} after {type(error).__name__}', flush=True)
                 continue
             # The next leg may rejoin from where this one left the Guardian: it has just finished
             # the leg before, not respawned. sense123's junction leg ended with a fight that pulled
@@ -287,6 +307,13 @@ class Replay:
         self.wave, self.leg = squads, points
         off = lambda me, i: math.dist(points[i][:2], me[:2])
         nearest = lambda me: min(range(len(points)), key=lambda i: off(me, i))
+        tolerance = FIGHT_WALK_TOLERANCE
+        # Fight at a route-aligned fixed cover point before the next stretch. In the
+        # west junction that point is on the upper floor, before the irreversible drop.
+        cover = self.fixed_cover(name)
+        cover_index = nearest(cover) if cover is not None else None
+        if cover_index is not None and off(cover, cover_index) > tolerance:
+            cover_index = None
         me = self.where()
         start = nearest(me) if me else 0
         if me and off(me, start) > 15 and not rejoin:
@@ -294,13 +321,15 @@ class Replay:
         k, lost = 0, 0
         while start < len(points) - 1:
             end = min(start + chunk, len(points) - 1)
+            if cover_index is not None and start < cover_index < end:
+                end = cover_index
             attempt, stalls, hurts, under_fire = 0, 0, 0, False
             while True:
                 if stalls >= tries:
                     # Not the end of the run: play_waves restarts from the nearest leg (it allows six).
                     # sense124's crouched leg stalled three times and the whole replay stopped.
                     print(f'{name}: stretch {k} did not complete in {tries} tries; restarting from the nearest leg', flush=True)
-                    raise Respawned(name)
+                    raise WalkStalled(name)
                 tag = f'{name}-{k}' + (f'-retry{attempt}' if attempt else '')
                 attempt += 1
                 # Clear the way first: walking into a wave is where the Guardian died (sense105-108).
@@ -319,7 +348,7 @@ class Replay:
                     break
                 part = points[near:end + 1]
                 share = max(90, seconds * len(part) // len(points))
-                lines = self.walk_once(tag, self.write_route(tag, part), share, 1.3,
+                lines = self.walk_once(tag, self.write_route(tag, part), share, tolerance,
                                        ('--hurt-stop', str(HURT_STOP)), check=False)
                 if lines and lines[-1].startswith('done '):
                     break
@@ -368,11 +397,15 @@ class Replay:
 
     def recover(self, name):
         """After a walk stops short (a stall, or a death): retrack, re-arm the waves, fight."""
-        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                                 '--tracked', str(self.tracked), '--retrack'], 60, check=False)
+        self.retrack(check=False)
         self.select_retracked_position()
         self.rearm(name)
         self.skirmish(name)
+
+    def retrack(self, check=True):
+        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
+                                 '--tracked', str(self.tracked), '--retrack', *self.stance_options()],
+                     60, check=check)
 
     def rearm(self, name):
         """Serve the current wave list again with a new arming time on its armed triggers.
@@ -395,7 +428,8 @@ class Replay:
         self.rearms += 1
         armed = ' 0x80800463 01000000' + struct.pack('<I', 1 + self.rearms).hex()
         out = self.run / f'rearm-{self.rearms}-{current}'
-        out.write_text((self.schedule_dir / current).read_text().replace(' 0x80800463 0100000001000000', armed))
+        with out.open('x') as output:
+            output.write((self.schedule_dir / current).read_text().replace(' 0x80800463 0100000001000000', armed))
         print(f'{name}: re-arming the triggers of {current} (arming time {1 + self.rearms})', flush=True)
         self.publish(out, f're-armed {current}')
 
@@ -428,18 +462,18 @@ class Replay:
             if not spot or (me and math.dist(me[:2], [float(v) for v in spot.split(',')]) > reach):
                 break
             fought = True
-            cover = self.cover(me)
+            cover = self.cover(me, name=name)
             out = self.command(f'{name}-skirmish-{round_}', [sys.executable, '-u', '-I', str(LAB/'combat2.py'),
                          '--seconds', '30', '--squads', self.wave,
                          *(['--cover', f'{cover[0]:.1f},{cover[1]:.1f}'] if cover else []),
+                         *(['--cover-first'] if cover and cover == self.fixed_cover(name) else []),
                          '--log', str(self.run/f'{name}-skirmish.jsonl')], 90, check=False)
             if self.waves and out and 'unit changed (death)' not in out[-1] and self.died_quietly(out, me):
                 out = out + ['unit changed (death)']
             if self.waves and out and 'unit changed (death)' in out[-1]:
                 # Died in the fight (sense108, before the junction leg): retrack and re-arm now, and
                 # let play_waves restart from the leg nearest the respawn.
-                self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                                         '--tracked', str(self.tracked), '--retrack'], 60, check=False)
+                self.retrack(check=False)
                 self.select_retracked_position()
                 self.rearm(name)
                 raise Respawned(name)
@@ -451,11 +485,10 @@ class Replay:
                 break
             self.command(f'{name}-skirmish-release-{round_}', [sys.executable, '-I', str(LAB/'release.py')], 20, check=False)
         if fought:                         # as after a wave: the fight can move the tracked copies
-            self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                                     '--tracked', str(self.tracked), '--retrack'], 60)
+            self.retrack()
             self.select_retracked_position()
 
-    def cover(self, me, back=10.0):
+    def cover(self, me, back=10.0, name=None):
         """The point `back` m behind the Guardian along the current leg, to retreat to in a fight.
 
         Backing straight off in the open did not break line of sight (sense108 died at the
@@ -465,18 +498,39 @@ class Replay:
         if not me or not leg:
             return None
         i = min(range(len(leg)), key=lambda j: math.dist(leg[j][:2], me[:2]))
+        point = self.fixed_cover(name)
+        retreat_limit = 0
+        if point is not None:
+            cover_index = min(range(len(leg)), key=lambda j: math.dist(leg[j][:2], point))
+            if math.dist(leg[cover_index][:2], point) <= FIGHT_WALK_TOLERANCE:
+                # Use the route's relative heights. Its absolute heights can differ from the
+                # live unit's, and a horizontal target alone cannot describe an upper floor.
+                retreat_limit = next((j for j in range(i, cover_index, -1)
+                                      if leg[j - 1][2] - leg[j][2] >= RETREAT_DROP), 0)
+            if not retreat_limit:
+                print(f'{name}: fixed cover {point[0]:.1f},{point[1]:.1f}', flush=True)
+                return point
+            print(f'{name}: upper cover lies beyond a drop; retreat stays below it', flush=True)
         gone = 0.0
-        while i > 0 and gone < back:
+        while i > retreat_limit and gone < back:
             gone += math.dist(leg[i][:2], leg[i - 1][:2])
             i -= 1
         return leg[i][:2] if gone > 2 else None
+
+    def fixed_cover(self, name):
+        fixed = getattr(self, 'fixed_covers', {})
+        matches = [key for key in fixed if name and (name == key or name.startswith(key + '-'))]
+        return fixed[max(matches, key=len)] if matches else None
 
     def walk_once(self, name, route, seconds, tolerance, extra, check=True):
         tracking = (['--native-unit', '--memory-facing'] if self.native_unit else
                     ['--tracked', str(self.tracked)])
         return self.command(name, [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-            *tracking, '--route', str(route), '--max-seconds', str(seconds),
+            *tracking, *self.stance_options(), '--route', str(route), '--max-seconds', str(seconds),
             '--tolerance', str(tolerance), '--turn-sign', '1', '--turn-rate', '2.26', *extra], seconds + 45, check)
+
+    def stance_options(self):
+        return ('--no-jump',) if getattr(self, 'stance', 'stand') == 'crouch' else ()
 
     def select_retracked_position(self):
         """A sparse heuristic retrack must not drive the fourteen-minute chest leg.
@@ -576,16 +630,14 @@ class Replay:
         offset = self.host_log.stat().st_size
         with control.open('x', encoding='utf-8') as output:
             output.write('clients 0x4786c0e0 ' + clients.as_posix() + '\n')
-        deadline = time.monotonic() + 20
-        while control.exists() and time.monotonic() < deadline:
-            time.sleep(.5)
-        if control.exists():
-            raise RuntimeError(f'AH did not consume the {label} control; stopping')
         # Consumption is not acceptance. Require the host's answer as well: the frame served
         # ("... (N bytes)"), or dropped because a mission step installed a newer frame while it was
-        # being built ("... superseded by a mission step"; the host builds lists off its tick).
+        # being built. Share the former 20 + 60 second budget across both stages. Under load
+        # the host can consume a control late and then build it quickly.
         accepted = 'control: sensor clients ' + clients.as_posix() + ' '
-        if not wait_for(self.host_log, accepted, 60, offset=offset):
+        if not wait_for(self.host_log, accepted, 80, offset=offset):
+            if control.exists():
+                raise RuntimeError(f'AH did not consume the {label} control; stopping')
             raise RuntimeError(f'AH did not log acceptance of the {label} list; stopping')
 
     def fight(self, route, clients, squads, tag, label, back=None):
@@ -635,8 +687,7 @@ class Replay:
         else:
             if not empty:                  # only if the last round still found one
                 print(f'{label} still standing after 8 rounds; continuing the route.', flush=True)
-        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                                 '--tracked', str(self.tracked), '--retrack'], 60)
+        self.retrack()
         self.select_retracked_position()
         me = self.where()
         if me and back and min(math.dist(p[:2], me[:2]) for p in route) > 15:
@@ -658,7 +709,12 @@ class Replay:
         if not healths or healths[-1] > 0.15 or not before:
             return False
         me = self.where()
-        return bool(me) and math.dist(me[:2], before[:2]) > 30
+        if me is None:
+            # The unit can vanish before the respawn's new position is available. Resolve that
+            # window here, before the next leg applies a stance or sends any movement.
+            if not self.wait_for_unit(30) or (me := self.where()) is None:
+                raise RuntimeError('No Guardian unit after a critical fight; no subsequent input sent')
+        return math.dist(me[:2], before[:2]) > 30
 
     def where(self):
         """The Guardian's position from memory (lab/tower-route/where.py), or None."""
@@ -697,6 +753,11 @@ class Replay:
         return path
 
     def play(self, boot_timeout, resume):
+        # A supervised resume can reuse the instance. Preserve prior files and use a new arming
+        # time on both a resume and an automatic replay after an activity repair.
+        self.rearms = max((int(path.name.split('-', 2)[1])
+                           for path in self.run.glob('rearm-*-agr-bw-*.txt')
+                           if path.name.split('-', 2)[1].isdigit()), default=0)
         if resume:
             # The first attempt's routes stay as evidence; a route of the same name but other
             # points would be refused (run sense106's first resume stopped on one).
@@ -718,8 +779,7 @@ class Replay:
         self.command('rifle-movement-control', [sys.executable, '-I', str(HERE/'d1-step.py'),
             '--tracked', str(self.tracked), '--trail', str(self.run/'replay-trail.json'),
             '--keys', 'Hold:S:1200,Hold:W:1300'], 20)
-        self.command('retrack', [sys.executable, '-u', '-I', str(HERE/'d1-walk.py'),
-                              '--tracked', str(self.tracked), '--retrack'], 60)
+        self.retrack()
         self.select_retracked_position()
         # The proven session chain is the existing Wall route followed by the
         # chest trail, omitting its first point at the shared junction.
@@ -738,9 +798,11 @@ class Replay:
             self.walk('chest', self.write_route('to-chest', to_chest), 840)
         self.walk('mine-stairs', self.sliced_route('mine-a', 'wall_tripmine_corridor.json', 0, 4), 90, 1.2)
         self.pad('NumPad6')
+        self.stance = 'crouch'
         # If this fails, stop crouched. Do not blindly toggle stance in a retry.
         self.walk('mine-crouched', self.sliced_route('mine-b', 'wall_tripmine_corridor.json', 3, 10), 240, 1.5)
         self.pad('NumPad6')
+        self.stance = 'stand'
         self.walk('mine-junction', self.sliced_route('mine-c', 'wall_tripmine_corridor.json', 9, None), 150, 1.2)
         if self.waves:                     # the corridor's waves (114-116) came during the mine legs
             self.wave = WAVE_SQUADS[1]
@@ -826,7 +888,14 @@ def main():
                     help='with --waves: the folder of the served schedule and its lists, to re-arm the waves after a death')
     ap.add_argument('--waves', action='store_true',
                     help='the schedule serves the Breach by its triggers (agr-steps-divide-waves.txt): publish nothing, fight the waves')
+    ap.add_argument('--cover', action='append', type=parse_fixed_cover, default=[], metavar='LEG:X,Y',
+                    help='with --waves: a fixed retreat point for this leg only (repeat for different legs)')
     a = ap.parse_args()
+    fixed_covers = dict(a.cover)
+    if a.cover and not a.waves:
+        ap.error('--cover requires --waves')
+    if len(fixed_covers) != len(a.cover):
+        ap.error('specify each cover leg only once')
     if a.waves and (a.breach_fallen or a.junction_fallen):
         ap.error('--waves replaces --breach-fallen and --junction-fallen')
     if a.pad is None:
@@ -852,7 +921,12 @@ def main():
             connections = a.host_log.read_bytes().count(CONNECTION.encode()) if a.host_log.exists() else 0
             client_offset = client_log.stat().st_size if client_log.exists() else 0
             replay = Replay(a.run_dir, host_log, a.garage_clients, a.pad, fallen=a.breach_fallen,
-                            junction=a.junction_fallen, waves=a.waves, schedule_dir=a.schedule_dir)
+                            junction=a.junction_fallen, waves=a.waves, schedule_dir=a.schedule_dir,
+                            fixed_covers=fixed_covers)
+            if fixed_covers:
+                known = {leg[0] for leg in replay.waves_legs([])}
+                if set(fixed_covers) - known:
+                    ap.error('unknown cover leg; choose from: ' + ', '.join(sorted(known)))
             if attempt > 1:
                 replay.route_prefix = f'attempt{attempt}-'
             try:
