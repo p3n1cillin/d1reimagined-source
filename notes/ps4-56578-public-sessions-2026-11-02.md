@@ -34,6 +34,9 @@ and plans serving it. [V] = read in the binary or our code, [I] = inferred.
 
 ## Plan, smallest first
 
+**5 November: the live values.** A live-server capture of Restoration (`d1-live-captures-2026-11-05.md`, "Restoration's public start") shows what the original PAH served. The region record has `+0x04 = 1` for the public region, and `+0x09 = 1`, `+0x0A = 0` (set for private regions too). The public session's host fills `+0x4C` (session) and `+0xD0` (its own host id). The client matchmakes with services messages 0x0a/0x2a between the two sessions.
+
+
 1. **Observe.** Launch a mission at a public region and read the client's
    `slice_set_transition_manager` lines for the task it sits in. Restoration at bubble 7 (region 56)
    is being tried in sense121.
