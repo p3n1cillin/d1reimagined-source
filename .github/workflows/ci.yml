@@ -103,6 +103,34 @@ jobs:
       - name: d1-live library tests
         run: cargo test --locked -p d1-live --lib
 
+  # The mission-script sidecar's Node tests (tools/script-host), against BullShcript (MIT) built
+  # from Blam Network's public tiger repository at a pinned commit. The sparse checkout leaves out
+  # packages/fukugen-daihon: those scripts are unlicensed and stay out of CI as well as the repo,
+  # so the tests that need them skip here. Not a required check.
+  script-host:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TIGER_COMMIT: 82c57cb482767e0ba07030e988b7bfaa6b1a4bd9
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Build BullShcript
+        run: |
+          git clone --quiet --filter=blob:none --no-checkout https://github.com/Blam-Network/tiger.git "$RUNNER_TEMP/tiger"
+          cd "$RUNNER_TEMP/tiger"
+          git sparse-checkout set --cone packages/bullshcript packages/gibbon packages/poodle packages/rsat packages/datamine packages/tiger-packets scripts
+          git checkout --quiet "$TIGER_COMMIT"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build -w @blamnetwork/bullshcript
+      - name: Node tests
+        working-directory: tools/script-host
+        env:
+          D1_TIGER_DIR: ${{ runner.temp }}/tiger
+        run: node --test
+
   # No game files, firmware, keys or large binaries. After reviewing an exception, a maintainer labels
   # the PR "inputs-reviewed" and re-runs this job.
   inputs:
