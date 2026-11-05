@@ -35,9 +35,29 @@ param(
     [switch]$AllowUnredirected,
     # The isolated "D1 Lab" adapter address from d1-lab-net.cmd (the game rejects a loopback-only
     # transport). Empty = the original loopback setup.
-    [ValidateSet('', '10.77.0.2')][string]$LabIp = ''
+    [ValidateSet('', '10.77.0.2')][string]$LabIp = '',
+    # The run's evidence folder (must not exist yet). Empty = cfw-staging\contained-boot\<utc>-<Name>.
+    [string]$OutDir = '',
+    # With -LabIp: the folder the Windows servers are started from. Empty = the workspace's
+    # d1-server\target\release (d1-full-game.ps1 passes a per-run snapshot of the binaries).
+    [string]$ServerBin = '',
+    # A file of D1_KEY=VALUE lines (blank lines and # comments skipped), applied before
+    # -ExtraServerEnv. An empty VALUE unsets the knob. Avoids passing long lists through -File.
+    [string]$ServerEnvFile = '',
+    # With -LabIp: start the servers only. They run until a file named `stop` appears in the
+    # output folder or -Minutes pass. Containment is checked as for a full boot.
+    [switch]$NoEmulator,
+    # With -LabIp: start the emulator only, against servers already listening on <LabIp>:443
+    # (for example from a -NoEmulator run). Containment is checked as for a full boot.
+    [switch]$NoServers
 )
 $ErrorActionPreference = 'Stop'
+if ($NoEmulator -and $NoServers) { throw '-NoEmulator and -NoServers exclude each other' }
+if (($NoEmulator -or $NoServers -or $ServerBin) -and -not $LabIp) { throw '-NoEmulator, -NoServers and -ServerBin need -LabIp (the Windows servers)' }
+if ($ServerEnvFile) {
+    $fromFile = @(Get-Content -LiteralPath $ServerEnvFile | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') })
+    $ExtraServerEnv = $fromFile + @($ExtraServerEnv)
+}
 # A contained Windows boot of the selected build: shadPS4 on Windows, the existing servers in WSL
 # bound to loopback. Containment is checked first and the run refuses on any failure: the exact
 # emulator has an enabled outbound block on every profile, all firewall profiles are on, and the
@@ -53,7 +73,7 @@ $entry = $registry.builds.$Build
 if ($null -eq $entry) { throw "Unknown build: $Build" }
 $launch = Join-Path $Repo $entry.launch
 if (-not $Manifest) { $Manifest = Join-Path $Repo $entry.manifest }
-$out = Join-Path $Repo "cfw-staging\contained-boot\$((Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss'))-$Name"
+$out = if ($OutDir) { $OutDir } else { Join-Path $Repo "cfw-staging\contained-boot\$((Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss'))-$Name" }
 if (Test-Path -LiteralPath $out) { throw "Refusing existing output: $out" }
 New-Item -ItemType Directory -Path $out | Out-Null
 $checks = [ordered]@{}
@@ -112,6 +132,7 @@ $receipt = [ordered]@{
         sha256 = (Get-FileHash -LiteralPath $ClientPatch).Hash.ToLowerInvariant(); synthetic = $true } } else { $null }
     input = if ($OperatorInput) { 'operator' } else { "virtual key $TitleKey x$TitleTaps after ${TitleDelaySeconds}s; up to $WizardTaps wizard taps every ${WizardIntervalSeconds}s while in profile_setup" }
     checks = $checks
+    mode = if ($NoEmulator) { 'servers only' } elseif ($NoServers) { 'emulator only' } else { 'servers and emulator' }
 }
 $failed = @($checks.Keys | Where-Object { -not $checks[$_].pass })
 if ($failed.Count) {
@@ -131,8 +152,14 @@ function Stop-WinServers {
     "stopped $([DateTime]::UtcNow.ToString('o')): $(@($winServers.Id) -join ' ') alive=$($alive -join ' ')" |
         Set-Content -LiteralPath (Join-Path $out 'servers-stopped.txt')
 }
-if ($LabIp) {
-    $bin = Join-Path $Repo 'd1-server\target\release'
+if ($NoServers) {
+    # Emulator only: the servers of an earlier -NoEmulator run must already be listening.
+    $up = @(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.LocalAddress -eq $LabIp -and $_.LocalPort -eq 443 })
+    if (-not $up.Count) { throw "Refusing: -NoServers but nothing listens on ${LabIp}:443 (start the servers first)" }
+    $receipt.serverPids = @($up.OwningProcess | Sort-Object -Unique)
+} elseif ($LabIp) {
+    $bin = if ($ServerBin) { (Get-Item -LiteralPath $ServerBin).FullName } else { Join-Path $Repo 'd1-server\target\release' }
+    $receipt.serverBin = $bin
     $openssl = 'C:\Program Files\Git\mingw64\bin\openssl.exe'
     & $openssl req -x509 -newkey rsa:2048 -nodes -keyout (Join-Path $out 'tls.key') -out (Join-Path $out 'tls.crt') -days 2 `
         -subj '/CN=signon.deadorbit.net' `
@@ -217,6 +244,21 @@ while (-not (Test-Path -LiteralPath (Join-Path $out 'servers.ready'))) {
 }
 $tcp = Test-NetConnection -ComputerName $target -Port 443 -WarningAction SilentlyContinue
 $receipt.windowsReaches443 = [ordered]@{ address = $target; ok = $tcp.TcpTestSucceeded }
+if ($NoEmulator) {
+    # Servers only: hold them until `stop` appears in the output folder or the time is up.
+    $receipt.serverPids = @($winServers.Id)
+    $receipt | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $out 'receipt.json') -Encoding utf8
+    "Servers up (pids $(@($winServers.Id) -join ' ')); create $(Join-Path $out 'stop') to stop them"
+    $end = (Get-Date).AddMinutes($Minutes)
+    while ((Get-Date) -lt $end -and -not (Test-Path -LiteralPath (Join-Path $out 'stop')) -and
+        -not @($winServers | Where-Object HasExited).Count) { Start-Sleep -Seconds 1 }
+    $receipt.serversExitedByThemselves = @($winServers | Where-Object HasExited | ForEach-Object { $_.Id })
+    Stop-WinServers
+    $receipt.endedUtc = [DateTime]::UtcNow.ToString('o')
+    $receipt | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $out 'receipt.json') -Encoding utf8
+    "Run evidence: $out"
+    return
+}
 
 # -- emulator -------------------------------------------------------------------------------------
 Add-Type -Namespace D1 -Name Win -MemberDefinition @'
