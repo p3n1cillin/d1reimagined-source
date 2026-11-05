@@ -2502,6 +2502,9 @@ mod tests {
     /// exits 2 on. Two instruments, one answer.
     #[test]
     fn every_control_passes() {
+        if !crate::eboot_or_skip("every_control_passes") {
+            return;
+        }
         let failed: Vec<&str> =
             super::run().into_iter().filter(|c| !c.passed).map(|c| c.name).collect();
         assert!(failed.is_empty(), "failed controls: {failed:?}");
@@ -2509,6 +2512,9 @@ mod tests {
 
     #[test]
     fn there_are_enough_controls_to_be_worth_running() {
+        if !crate::eboot_or_skip("there_are_enough_controls_to_be_worth_running") {
+            return;
+        }
         assert!(super::run().len() >= 20, "a controls suite this thin is decoration");
     }
 }
