@@ -742,6 +742,26 @@ impl ReplicateMembership {
     pub const PAH_AMBASSADORSHIP: usize = 0x09;
     /// Region record `+0x0A`: the ambassador's peer index.
     pub const PAH_AMBASSADOR_PEER: usize = 0x0A;
+    /// Region record `+0x04`: 1 for a PUBLIC region. The live host set it for Restoration's public
+    /// regions 56 and 48 and left it 0 for A Guardian Rises' private ones
+    /// (notes/d1-live-captures-2026-11-05.md, "Restoration's public start").
+    pub const PAH_REGION_PUBLIC: usize = 0x04;
+    /// Region record `+0x08`: 1 alongside the ambassadorship in every live record, private regions
+    /// included. `[U]` meaning.
+    pub const PAH_REGION_08: usize = 0x08;
+
+    /// The live host's flags for one region record: with `ambassador`, `+0x08 = 1`, `+0x09 = 1`
+    /// and `+0x0A = peer_index` (every live session); with `public`, also `+0x04 = 1`.
+    pub fn apply_region_flags(record: &mut [u8], peer_index: usize, ambassador: bool, public: bool) {
+        if ambassador {
+            record[Self::PAH_REGION_08] = 1;
+            record[Self::PAH_AMBASSADORSHIP] = 1;
+            record[Self::PAH_AMBASSADOR_PEER] = peer_index as u8;
+        }
+        if public {
+            record[Self::PAH_REGION_PUBLIC] = 1;
+        }
+    }
 
     /// ⭐⭐ Publish **one** PAH-tabulated region record, in slot 0, and terminate the array.
     ///
@@ -808,11 +828,14 @@ impl ReplicateMembership {
             .copy_from_slice(&region_id.to_le_bytes());
         self.image[slot0 + Self::PAH_PEER_TOKENS + peer_index] = token;
         // D1_AH_PUBLIC_AMBASSADOR=1: assign the region's ambassadorship to this peer (step 2 of
-        // the public-session plan). Set here so every re-publish path re-applies it.
-        if std::env::var("D1_AH_PUBLIC_AMBASSADOR").is_ok_and(|v| v == "1") {
-            self.image[slot0 + Self::PAH_AMBASSADORSHIP] = 1;
-            self.image[slot0 + Self::PAH_AMBASSADOR_PEER] = peer_index as u8;
-        }
+        // the public-session plan), as the live host did for every region; D1_AH_PUBLIC_REGIONS
+        // (comma-separated region ids) marks those regions public. Set here so every re-publish
+        // path re-applies them.
+        let ambassador = std::env::var("D1_AH_PUBLIC_AMBASSADOR").is_ok_and(|v| v == "1");
+        let public = std::env::var("D1_AH_PUBLIC_REGIONS").is_ok_and(|v| {
+            v.split(',').any(|r| r.trim().parse::<u32>().is_ok_and(|r| r == region_id))
+        });
+        Self::apply_region_flags(&mut self.image[slot0..slot0 + Self::PAH_REGION_STRIDE], peer_index, ambassador, public);
         // The terminator. See the doc comment - this is load-bearing, not hygiene.
         let slot1 = Self::PAH_REGIONS + Self::PAH_REGION_STRIDE;
         self.image[slot1 + Self::PAH_REGION_ID..slot1 + Self::PAH_REGION_ID + 4]
@@ -1084,6 +1107,21 @@ impl ClientMessage {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The region record's flags as the live host set them.
+    #[test]
+    fn region_flags_match_the_live_records() {
+        // notes/d1-live-captures-2026-11-05.md: private `01 01 00 00` at +0x08, public also +0x04 = 1.
+        let mut private = vec![0u8; ReplicateMembership::PAH_REGION_STRIDE];
+        ReplicateMembership::apply_region_flags(&mut private, 0, true, false);
+        assert_eq!(&private[0x04..0x0C], &[0, 0, 0, 0, 1, 1, 0, 0]);
+        let mut public = vec![0u8; ReplicateMembership::PAH_REGION_STRIDE];
+        ReplicateMembership::apply_region_flags(&mut public, 0, true, true);
+        assert_eq!(&public[0x04..0x0C], &[1, 0, 0, 0, 1, 1, 0, 0]);
+        let mut off = vec![0u8; ReplicateMembership::PAH_REGION_STRIDE];
+        ReplicateMembership::apply_region_flags(&mut off, 3, false, false);
+        assert!(off.iter().all(|b| *b == 0));
+    }
 
     /// Every offset in the `join_result` doc-comment, asserted at the byte. If one of these ever
     /// moves, the client silently reads a different field - there is no error path for it.
