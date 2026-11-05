@@ -5,6 +5,7 @@
     d1-srcp.py incidents CAPTURE.pcap [--dir s2c|c2s]   (udt 18, decoded by d1-oracle)
     d1-srcp.py sensors CAPTURE.pcap                     (udt 5 sensor_auth_update frames)
     d1-srcp.py sessions CAPTURE.pcap [...]              (each host session's activity and slice sets)
+    d1-srcp.py mission CAPTURE.pcap [...] [--activity-table TSV]  (what a host needs: activity, world, start, groups)
     d1-srcp.py regions CAPTURE.pcap                     (the PAH region records, udt 11, as they change)
     d1-srcp.py export CAPTURE.pcap --out PRIVATE.jsonl  (every activity-host message, hex body)
 
@@ -172,7 +173,7 @@ def session_table(data, names):
     """Per host session: start, the host id, the session type byte the client's join request
     carries (join_result +0x38; 3 on the hosts the client starts, its mission host and the public
     sessions it creates, 2 where it joins an existing instance: another player's public session,
-    the Tower), the activities named by the host's join incident
+    the Tower), the activity hashes named by the host's join incident
     2426 (51539's numbering), and the slice sets the client reported as current (udt 21 +0xB8)."""
     sess = d1_srcp.sessions(data)
     pick = [(u, b) for _, _, msgs in sess for _, d, _, u, b in msgs
@@ -188,7 +189,7 @@ def session_table(data, names):
             if u == 4 and kind is None and 0x38 in w:
                 kind = w[0x38] & 0xFF
             elif u == INCIDENT and not acts and incident_types(w)[:1] == [2426]:
-                acts = [names[h] for h in hashes_in(image(w)[0xD8:], names)]
+                acts = hashes_in(image(w)[0xD8:], names)
             elif u == 21 and 0xB8 in w and (w[0xB8] & 0x3FF) not in (0, 0x3FF):
                 if (w[0xB8] & 0x3FF) not in slices:
                     slices.append(w[0xB8] & 0x3FF)
@@ -196,21 +197,54 @@ def session_table(data, names):
     return rows
 
 
+def mission_row(cap, names, index):
+    """What an activity host needs to serve a capture's mission, from its first host (the PAH):
+    the activity (hash, name, the client's index when `index` maps it), the world group (the
+    first group in the PAH's first non-empty sensor frame, the block our world tables call the
+    world), the start slice set, and the sensor groups the PAH served, most records first."""
+    data = cap.read_bytes()
+    start, host, kind, acts, slices = session_table(data, names)[0]
+    bodies = [b for _, d, _, h, u, b in d1_srcp.host_messages(data) if h == host and d == 's2c' and u == SENSOR]
+    frames = sensor_frames(bodies)
+    world, records = None, collections.defaultdict(set)
+    for b in bodies:
+        for e in (frames[b] or {}).get('entries', []):
+            world = world or e['hash']
+            records[e['hash']].add((e['i8'], e['sub']))
+    act = ', '.join(f'{names[h]} {h:#010x}' + (f' (index {index[h]})' if h in index else '') for h in acts[:1])
+    groups = ' '.join(f'{g}:{len(r)}' for g, r in sorted(records.items(), key=lambda kv: -len(kv[1])))
+    return (f'{cap.stem[20:]:24} {act or "-"} | world {world or "-"} | start {slices[:1] or "-"} '
+            f'slices {slices} | groups {groups}')
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'sessions', 'regions', 'export'))
+    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'sessions', 'mission', 'regions', 'export'))
     ap.add_argument('capture', type=Path, nargs='+')
     ap.add_argument('--dir', choices=('s2c', 'c2s'), default='s2c')
     ap.add_argument('--out', type=Path)
     ap.add_argument('--host', help='only the activity host whose id ends in these hex digits')
+    ap.add_argument('--activity-table', type=Path,
+                    help='mission: the client\'s index -> activity hash TSV (activity-table.tsv)')
     a = ap.parse_args()
     if a.command == 'sessions':
         names = activity_names()
         for cap in a.capture:
             for start, host, kind, acts, slices in session_table(cap.read_bytes(), names):
                 kinds = {2: 'joins', 3: 'starts'}
+                acts = ', '.join(names[h] for h in acts[:2])
                 print(f"{cap.stem[20:]:28} +{start:6.0f} s host ..{host & 0xFFFF:04x} "
-                      f"{kinds.get(kind, kind)!s:8} {', '.join(acts[:2]) or '-':28} slices {slices}")
+                      f"{kinds.get(kind, kind)!s:8} {acts or '-':28} slices {slices}")
+        return
+    if a.command == 'mission':
+        names = activity_names()
+        index = {}
+        if a.activity_table:
+            for line in a.activity_table.read_text().splitlines()[1:]:
+                i, h = line.split('\t')[:2]
+                index.setdefault(int(h, 16), int(i))
+        for cap in a.capture:
+            print(mission_row(cap, names, index))
         return
     if len(a.capture) != 1:
         sys.exit(f'{a.command} takes one capture')

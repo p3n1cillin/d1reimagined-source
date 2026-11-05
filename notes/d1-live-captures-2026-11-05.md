@@ -320,6 +320,31 @@ The player names in these messages are personal data and stay in the private cap
 
 **Twelve captures use only one host:** The Speaker, The Awoken, Fist of Crota, A Kell Rising, The Coming War, The Dreadnaught, Enemy of My Enemy, Lost to Light, Last Rites, Regicide, Dread Patrol and Crota's End. Eleven mark no region public; Lost to Light marks region 48 public but never starts an instance for it. These, like A Guardian Rises, need only what our host already serves: one connection, private regions. They are the natural next missions to bring up. The rest need the public instance (plan step 4).
 
+`d1-srcp.py mission CAPTURE... --activity-table activity-table.tsv` gives what a host needs for each one:
+- the activity, with the client's index, from the private activity table dump;
+- the world group (the first group in the PAH's first sensor frame);
+- the start slice set;
+- the sensor groups the PAH served.
+
+For A Guardian Rises it gives index 164, world `0x4786C0E0` and start 113, our served values. Almost every mission uses world group `0x4786C0E0`. Crota's End (`0x24C67333`) and The Nexus (`0xF29221F5`) use their own. The sensor lists themselves (record kinds and value types) still come from the native client in the lab.
+
+| Mission | Activity hash | Index | World group | Start slice set | Slice sets | PAH sensor groups (records) |
+|---|---|---|---|---|---|---|
+| The Speaker | `0xd8b2ad53` | 167 | `0x4786c0e0` | 1 | 1 | 2 (22) |
+| The Awoken | `0x9a7acc78` | 186 | `0x4786c0e0` | 17 | 17, 1 | 2 (23) |
+| Fist of Crota | `0xcf0e39ac` | 207 | `0x4786c0e0` | 16 | 16, 152, 120 | 7 (220) |
+| A Kell Rising | `0xaec1f80e` | 214 | `0x4786c0e0` | 8 | 8, 48, 184 | 7 (195) |
+| The Coming War | `0x8c78c021` | 235 | `0x4786c0e0` | 25 | 25, 24, 8, 1 | 6 (265) |
+| The Dreadnaught | `0xbe2a2b4d` | 275 | `0x4786c0e0` | 129 | 129, 128, 72, 8 | 19 (509) |
+| Enemy of My Enemy | `0xece80ead` | 254 | `0x4786c0e0` | 8 | 8, 96, 152 | 14 (342) |
+| Lost to Light | `0x4f2ca5ee` | 238 | `0x4786c0e0` | 40 | 40, 88, 80, 24 | 9 (295) |
+| Last Rites | `0x953d15fb` | 268 | `0x4786c0e0` | 32 | 32 | 8 (230) |
+| Regicide | `0xc280b997` | 273 | `0x4786c0e0` | 8 | 8, 152, 136, 128, 104, 105 | 24 (966) |
+| Dread Patrol | `0x7c3c011b` | 237 | `0x4786c0e0` | 8 | 8, 152, 72, 128 | 19 (752) |
+| Crota's End | `0x6d7cc3bc` | 15 | `0x24c67333` | 16 | 16, 32 | 8 (417) |
+
+The Speaker and The Awoken are the smallest. Their PAHs served the world block and one other group, about 22 records, so they are the cheapest first test of serving a mission besides A Guardian Rises.
+
 ## Next
 
 - **Serve 165 as the live host did** (the two cinematic records, start region 25, the state steps), and retry it.

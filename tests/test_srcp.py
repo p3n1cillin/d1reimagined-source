@@ -3,6 +3,7 @@
 import importlib.util
 from pathlib import Path
 import struct
+import tempfile
 import unittest
 
 spec = importlib.util.spec_from_file_location('srcp', Path(__file__).parents[1] / 'tools/ps4_setup/d1_srcp.py')
@@ -73,6 +74,28 @@ class SrcpTest(unittest.TestCase):
         text = CLI.describe_region(got)
         self.assertEqual(text, 'region 56 public 1 +08 01010000 +19 0 +20 0 +38 2 session 0x4e + 64 B host ..efd9')
         self.assertNotIn('abab', text)
+
+    def test_mission_row_reads_the_first_hosts_world_and_groups(self):
+        def push(host, body):
+            return record(10.0, 1, (10, 0, 0, 1), 30001,
+                          struct.pack('>HI', M.BC_NOT, 7) + struct.pack('>BQII', 1, host, CLI.SENSOR, len(body)) + body)
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        cap = Path(tmp.name) / 'synthetic.pcap'
+        cap.write_bytes(capture(push(0xA, b'w'), push(0xB, b'p')))
+        frames = {b'w': {'entries': [{'hash': '0x4786c0e0', 'i8': 0xF, 'sub': 0}, {'hash': '0x11111111', 'i8': 5, 'sub': 1},
+                                     {'hash': '0x11111111', 'i8': 5, 'sub': 2}]},
+                  b'p': {'entries': [{'hash': '0xeaaf16e2', 'i8': 0xC, 'sub': 0}]}}
+        saved = CLI.session_table, CLI.sensor_frames
+        CLI.session_table = lambda data, names: [(0.0, 0xA, 3, [0x6E0DAE89], [113, 112]), (5.0, 0xB, 3, [], [56])]
+        CLI.sensor_frames = lambda bodies: {b: frames[b] for b in bodies}
+        try:
+            row = CLI.mission_row(cap, {0x6E0DAE89: 'A Guardian Rises'}, {0x6E0DAE89: 164})
+        finally:
+            CLI.session_table, CLI.sensor_frames = saved
+        self.assertIn('A Guardian Rises 0x6e0dae89 (index 164) | world 0x4786c0e0 | start [113]', row)
+        self.assertIn('groups 0x11111111:2 0x4786c0e0:1', row)
+        self.assertNotIn('eaaf16e2', row, 'only the first host (the PAH)')
 
     def test_refuses_other_link_types(self):
         data = struct.pack('<IHHiIII', 0xa1b2c3d4, 2, 4, 0, 0, 0x40000, 1)
