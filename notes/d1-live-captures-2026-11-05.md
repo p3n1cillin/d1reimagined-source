@@ -117,8 +117,56 @@ What they show:
 - **The objective records (kind 0x20)** differ throughout.
 - **The undecodable updates** have `fresh = 0`: partial updates against the value the client holds. They need the previous value and the delta rules (`0x2D0F63..`, the walker) before they can be read.
 
+## Where the live client went (udt 21)
+
+The client's own state (udt 21, `client_authoritative_data_update`) holds its current slice set at +0xB8: a 10-bit index and a name hash.
+- **A Guardian Rises:** the live client entered slice set **113** first (hash 0xEAEC2335), our start region for 164. Then 112, 24, and **96** (hash 0x10FF7418), the Divide.
+- **`cine_reveal` (165):** **25**, then **26** for its second cinematic. We start 165 at region 24; it stalled there on the loading screen (sense124, `ps4-56578-dismantle-2026-11-02.md`).
+- **Restoration (166):** **56**, our start region for 166, then 104.
+
+## The reveal cinematic (activity 165) as the live host ran it
+
+The AGR capture's second host session, 17.5 to 19 minutes in, is `cine_reveal`. Its join is the usual one (udt 4, 0, 11, 1, 2), followed by incident 2426. About 10 s later one udt-5 frame:
+- sets the authority mask to `0x10000000000000007`;
+- serves **two cinematic records**, `0x2FE7DBE6/6/0` and `/6/1` (tag 0x8080254D);
+- serves the world group's block, `0x4786C0E0` kinds 0xF, 0x22, 0x11, 0x10 and 0x27, and the player slots `0xC/5..20`. This is the same block our AGR highway list serves.
+
+The cinematics then run on the host's word. Each record's value is `{u32 start, u32 state, u32 flag}`:
+
+| Time from join | Record | Value |
+|---|---|---|
+| +10 s | both | state 1 (idle) |
+| +12.7 s | `/6/0` | start = the host's stamp, state 2, flag 1 (playing). The client reports a cinematic started (2120) |
+| +44.5 s | | the client reports it stopped (734) |
+| +45.8 s | `/6/0` | state 4 (done) |
+| +50 s | `/6/1` | state 2: the second cinematic plays |
+| +96.7 s | `/6/1` | state 4. Then udt 23 and 24, and the client moves to the Tower |
+
+We serve 165 an empty sensor list. The live host served both cinematic records, then stepped them through these states.
+
+## Restoration's public start (activity 166)
+
+Restoration's region 56 (bubble 7) is public. That is where our client goes to a black screen (`ps4-56578-public-sessions-2026-11-02.md`). The live capture has four host sessions. Session 1 opens at 7 s, session 2 at 31 s, session 3 at 57 s, and session 4 at 324 s. Each is requested by the client from the services host (0x10/0x11, the activity-host proxy assignment).
+
+`join_result` echoes the client's join request in its first 0x100 bytes, so session details at +0x38 and +0xC8 are the client's. Its type byte is 3 for the first two sessions and 2 for the last two (2 for the Tower, too). From session 2 on it lists the previous sessions' host ids.
+
+The PAH region record in udt 11 (`replicate_membership+0x2E48`, the record our host fills with the region id and our peer token):
+
+| Session | Region | +0x04 | +0x08..0x0B | +0x4C (session) | +0xD0 (host) |
+|---|---|---|---|---|---|
+| AGR | 0x71 (113, private) | 0 | `01 01 00 00` | 0 | 0 |
+| Restoration 1 | 0x38 (56) | **1** | `01 01 00 00` | 0 | 0 |
+| Restoration 2 | 0x38 | 1 | `01 01 00 00` | `4e000000 820940a1` | **session 2's own host id** |
+| Restoration 3 and 4 | 0x30 (48), back to 0x38 later | 1 | `01 01 00 00` | `4e000000 8009e170` | session 3's own host id |
+
+- **The ambassador bytes are set for private regions too.** `+0x09 = 1`, `+0x0A = 0` (the local peer) in every session, AGR included.
+- **What marks a public region is `+0x04 = 1`.** The public session's host then advertises itself, its session at +0x4C and its own host id at +0xD0. These are plan steps 2 and 5 in the public-sessions note, now with the live values.
+- **Between the two sessions,** the client exchanges services messages 0x0a (2,409 bytes) and 0x2a/0x2b with the services host, at 20 s and 25-31 s. That is the matchmaking step 3 of the plan.
+
 ## Next
 
+- **Serve 165 as the live host did** (the two cinematic records, start region 25, the state steps), and retry it.
+- **Restoration's public start, by the live values:** the region record's +0x04, then the second host and its advertisement, and the services messages 0x0a/0x2a the client matchmakes with.
 - **Map the incident types between 51539 and 56578,** from pairs the two clients send at the same moments (cinematic start and stop), or from the builds' incident tables.
 - **Delta (`fresh = 0`) sensor updates, then field by field:** what the live host's values mean, for the records where ours differ (the squads' names, the trigger values, the objectives).
 - **The Tower as the live host served it:** its vendor, civilian and Xûr records.
