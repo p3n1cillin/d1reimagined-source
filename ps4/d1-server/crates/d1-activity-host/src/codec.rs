@@ -136,6 +136,12 @@ enum Job {
         params: d1_oracle::sensor::SensorPhaseUpdate,
         reply: Sender<Result<Vec<u8>, String>>,
     },
+    /// The stamp bit of a udt-5 frame built elsewhere (the sensor cache): measuring the authority
+    /// table needs the client's codec, so it runs here too.
+    StampBit {
+        frame: Vec<u8>,
+        reply: Sender<Result<Vec<u8>, String>>,
+    },
     /// ⭐ The oracle's bump-arena accounting, per udt. See [`OracleWorker::arena_stats`].
     Arena { reply: Sender<Vec<ArenaStats>> },
 }
@@ -158,6 +164,7 @@ impl OracleWorker {
             .name("d1-ah-oracle".into())
             .spawn(move || {
                 let mut codec = d1_oracle::activity_host::AhCodec::new();
+                let mut frames: Option<d1_oracle::sensor::FrameDecoder> = None;
                 while let Ok(job) = rx.recv() {
                     match job {
                         Job::Encode { udt, image, reply } => {
@@ -183,6 +190,17 @@ impl OracleWorker {
                         }
                         Job::BuildSensor { params, reply } => {
                             let r = params.encode().map_err(|e| e.to_string());
+                            let _ = reply.send(r);
+                        }
+                        Job::StampBit { frame, reply } => {
+                            let r = (|| {
+                                if frames.is_none() {
+                                    frames = Some(d1_oracle::sensor::FrameDecoder::new()?);
+                                }
+                                frames.as_mut().expect("just set").stamp_bit(&frame)
+                            })()
+                            .map(|b| (b as u64).to_le_bytes().to_vec())
+                            .map_err(|e| e.to_string());
                             let _ = reply.send(r);
                         }
                         Job::Arena { reply } => {
@@ -291,27 +309,76 @@ impl SchemaCodec {
     /// ~4 s of `ObjectOracle` setup never lands on the heartbeat or the join path. Call it at
     /// instance construction, like [`Self::prewarm`].
     pub fn build_sensor(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Result<Vec<u8>, AhError> {
-        sensor_cache::cached(params, || {
+        let frame = sensor_cache::cached(params, || {
             oracle()
-                .call(|reply| Job::BuildSensor { params: params.clone(), reply })
+                .call(|reply| Job::BuildSensor {
+                    params: params.clone(),
+                    reply,
+                })
                 .map_err(|detail| AhError::SchemaCodec {
                     user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
                     detail,
                 })
-        })
+        })?;
+        Self::measure_stamp_bit(oracle(), &frame);
+        Ok(frame)
     }
 
     /// [`Self::build_sensor`] on [`control_oracle`], so the build doesn't queue the host's own
     /// encodes behind it. For operator control lines, which are built off the tick.
-    pub fn build_sensor_aside(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Result<Vec<u8>, AhError> {
-        sensor_cache::cached(params, || {
+    pub fn build_sensor_aside(
+        params: &d1_oracle::sensor::SensorPhaseUpdate,
+    ) -> Result<Vec<u8>, AhError> {
+        let frame = sensor_cache::cached(params, || {
             control_oracle()
-                .call(|reply| Job::BuildSensor { params: params.clone(), reply })
+                .call(|reply| Job::BuildSensor {
+                    params: params.clone(),
+                    reply,
+                })
                 .map_err(|detail| AhError::SchemaCodec {
                     user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
                     detail,
                 })
-        })
+        })?;
+        Self::measure_stamp_bit(control_oracle(), &frame);
+        Ok(frame)
+    }
+
+    /// In stamp mode (`D1_AH_SENSOR_STAMP=1`), make sure a built frame's stamp bit is known before
+    /// the frame reaches a connection: a sensor-cache hit skips the encode that records it, so it is
+    /// measured here, on the building thread (startup, or a control build's own thread) and never on
+    /// a connection loop, where a codec queued behind a long build would hold it past the client's
+    /// silence limit. Off otherwise: measuring every cached frame would slow every start.
+    fn measure_stamp_bit(worker: &OracleWorker, frame: &[u8]) {
+        static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+        if !*ON.get_or_init(|| std::env::var("D1_AH_SENSOR_STAMP").is_ok_and(|v| v.trim() == "1")) {
+            return;
+        }
+        if d1_oracle::sensor::known_stamp_bit(frame).is_some() {
+            return;
+        }
+        let measured = worker
+            .call(|reply| Job::StampBit {
+                frame: frame.to_vec(),
+                reply,
+            })
+            .and_then(|b| {
+                <[u8; 8]>::try_from(b.as_slice()).map_err(|_| "stamp bit reply size".to_string())
+            });
+        match measured {
+            Ok(b) => d1_oracle::sensor::remember_stamp_bit(frame, u64::from_le_bytes(b) as usize),
+            Err(e) => tracing::warn!(
+                "udt-5 frame's stamp bit not measured ({e}); it will not be sent in stamp mode"
+            ),
+        }
+    }
+
+    /// Where a built udt-5 frame's `stamp` sits, if known: recorded at encode, or measured when the
+    /// frame was built ([`Self::measure_stamp_bit`]). Never runs the codec, so a connection loop
+    /// may call it.
+    pub fn sensor_stamp_bit(frame: &[u8]) -> Result<usize, String> {
+        d1_oracle::sensor::known_stamp_bit(frame)
+            .ok_or_else(|| "its stamp bit was not measured when it was built".to_string())
     }
 
     /// The struct size the schema declares, for callers that must build an exact image.
