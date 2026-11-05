@@ -144,6 +144,23 @@ The cinematics then run on the host's word. Each record's value is `{u32 start, 
 
 We serve 165 an empty sensor list. The live host served both cinematic records, then stepped them through these states.
 
+### Serving it (5 November, not yet seen through)
+
+`ps4/fixtures/56578/mission/world-table-cine-live.txt` serves 165 with:
+- `sensor-clients-cine_reveal-live.txt`: the two cinematic records, idle, plus the world block;
+- start region 25.
+
+`tools/ps4_setup/d1-cine-watch.py RUN` then plays the cinematics through the host's control file:
+- `cine_reveal-play-0.txt` once the client reports slice set 25;
+- `-play-1.txt` and `-done.txt` on each client incident 891.
+
+**No run has reached 165 yet:**
+- cine-live1: the D1 Video menu's saved 60 fps wrecked its walks (hence #264).
+- cine-live2 and cine-live3: the game's own block detector crashed them in the post-game tour and the hangar.
+- cine-live5: the client stalled ("4739 milliseconds since the last network update") and dropped the host ("baboon") at junction-west.
+
+These are the stalls in `ps4-56578-level1-2026-11-02.md`'s level-1 runs since 4 November, and they still come with `D1_RATE_RULES=0` and no D1 detours installed. Run it with `ending-run.ps1 -Waves -WorldTable ps4/fixtures/56578/mission/world-table-cine-live.txt` and the watcher beside it once runs reach the post-game again.
+
 ## Restoration's public start (activity 166)
 
 Restoration's region 56 (bubble 7) is public. That is where our client goes to a black screen (`ps4-56578-public-sessions-2026-11-02.md`). The live capture has four host sessions. Session 1 opens at 7 s, session 2 at 31 s, session 3 at 57 s, and session 4 at 324 s. Each is requested by the client from the services host (0x10/0x11, the activity-host proxy assignment).
