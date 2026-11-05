@@ -68,6 +68,10 @@ pub struct CodecAddrs {
     pub encode_obj: u64,
     pub decode_obj: u64,
     pub decode_obj_replicated: u64,
+    /// Caller-mask replicated encoder, counterpart of `decode_obj_replicated`.
+    pub encode_obj_replicated: u64,
+    /// Scalar arithmetic ranges needing the measured Windows Unicorn VEX correction.
+    pub rsat_scalar_float: &'static [(u64, u64)],
     /// `[lo, hi)`: where a direct `call memset` may clear a stack bitset. See [`crate::object`].
     pub codec_lo: u64,
     pub codec_hi: u64,
@@ -110,6 +114,8 @@ pub const CODEC_0129: CodecAddrs = CodecAddrs {
     encode_obj: crate::object::ENCODE_OBJ,
     decode_obj: crate::object::DECODE_OBJ,
     decode_obj_replicated: crate::object::DECODE_OBJ_REPLICATED,
+    encode_obj_replicated: 0x2C_9290,
+    rsat_scalar_float: &[],
     codec_lo: crate::object::CODEC_LO,
     codec_hi: crate::object::CODEC_HI,
     msg_encoder: crate::message::ENCODER,
@@ -142,6 +148,8 @@ pub const CODEC_56578: CodecAddrs = CodecAddrs {
     encode_obj: 0x2C_9A80,
     decode_obj: 0x2C_9A90,
     decode_obj_replicated: 0x2C_9AE0,
+    encode_obj_replicated: 0x2C_9D20,
+    rsat_scalar_float: &[(0x9_17C0, 0x9_18D9)],
     codec_lo: 0x2C_6A90,
     codec_hi: 0x2C_9E20,
     msg_encoder: 0x26_1E90,

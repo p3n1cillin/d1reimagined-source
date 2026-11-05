@@ -5,11 +5,14 @@
 
 use d1_oracle::activity_host;
 use d1_rsat::schema::{Descriptor, Field, Schemas, KIND_COMPOSITE, KIND_TYPED_REF};
-use d1_rsat::RsatError;
 
-/// The schemas, or `None` (with the reason printed) when the owned executable is absent or is a
-/// build without a measured native table.
+/// The schemas, or `None` (with the reason printed) when D1_EBOOT is absent/missing.
+/// A supplied existing image that cannot load is a failure, not an empty pass.
 pub fn inputs() -> Option<&'static Schemas> {
+    if std::env::var_os("D1_EBOOT").is_none() {
+        eprintln!("SKIP: set D1_EBOOT to the owned build 56578 executable");
+        return None;
+    }
     let path = d1_eboot::image::default_eboot();
     if !std::path::Path::new(&path).is_file() {
         eprintln!("SKIP: selected game executable is absent; set D1_EBOOT to an owned image");
@@ -17,10 +20,6 @@ pub fn inputs() -> Option<&'static Schemas> {
     }
     match d1_rsat::schemas() {
         Ok(s) => Some(s),
-        Err(RsatError::Build(why)) => {
-            eprintln!("SKIP: {why}");
-            None
-        }
         Err(e) => panic!("the owned executable is present but its schemas did not load: {e}"),
     }
 }
@@ -110,11 +109,37 @@ impl<'a> Gen<'a> {
             self.walk(child, img, at, pass, depth + 1);
             return;
         }
-        if f.kind == KIND_TYPED_REF {
+        if matches!(f.kind, KIND_TYPED_REF | 0x22) {
             // Null references: a present one names a type the oracle's registry may not hold. The
             // present case has its own test.
             if pass != Pass::Leaves {
                 put(img, at, &u32::MAX.to_le_bytes());
+            }
+            return;
+        }
+        if f.kind == 0x26 {
+            if pass == Pass::Counts {
+                // Raw images still need valid union selectors and schema-valid payloads.
+                let p = self.below(self.s.cells.atom_primary.len() as u64) as u8;
+                let q = self.below(self.s.cells.atom_secondary.len() as u64) as u8;
+                put(img, at, &[p]);
+                put(img, at + 4, &[q]);
+                self.walk(
+                    self.s.get(self.s.cells.atom_primary[p as usize].1).unwrap(),
+                    img,
+                    at + 16,
+                    Pass::Leaves,
+                    depth + 1,
+                );
+                self.walk(
+                    self.s
+                        .get(self.s.cells.atom_secondary[q as usize].1)
+                        .unwrap(),
+                    img,
+                    at + 8,
+                    Pass::Leaves,
+                    depth + 1,
+                );
             }
             return;
         }

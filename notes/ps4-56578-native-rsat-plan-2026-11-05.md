@@ -7,16 +7,15 @@ test oracle. aknumbers (Destiny 1 Preservation Project) advises, as supplied for
 The immediate engineering reason is the connection-loop latency recorded in
 [the stall investigation](ps4-56578-lab-stalls-2026-11-05.md).
 
-**Stage 1 status (evening):** the native encoder, decoder and udt 5 framing exist in `d1-rsat`,
-byte-identical to `d1-oracle` on every comparison run (offline), behind `D1_RSAT_NATIVE=1`;
-see [§5](#5-stage-1-status-5-november-2026-evening).
+**Stage 2 status:** all fixture mission sensor lists can be built natively behind
+`D1_RSAT_NATIVE=1`; caller-mask replicated encoding is also implemented. Results and limits
+are offline, recorded in [§5](#5-native-codec-status-5-november-2026).
 
-This is **source analysis and a proposed validation programme**, against repository revision
-`33b6589`. No codec controls, capture decodes, builds, tests, Ghidra or emulator operations were
-run for this note: a route run was in progress. Controls below are existing executable assertions,
-not new passing results. Historical observations retain their original scope and build. There is
-no new in-game claim here, and this note does not establish an emulator commit for the cited runs;
-future native-run reports must name both build 56578 and the emulator commit.
+Sections 1–4 began as **source analysis and a proposed validation programme** against revision
+`33b6589`, without running tools during the route run then in progress. Section 5 records the
+subsequent static analysis, offline controls, differential tests and benchmark. Historical
+observations retain their original scope and build. No game or lab run was performed for either
+native stage; future native-run reports must name both build 56578 and the emulator commit.
 
 ## 1. What RSAT means here
 
@@ -71,7 +70,7 @@ re-derivation. No cross-build address arithmetic is part of this proposal.
 | Replicated object | Extra leading presence bit, then the object grammar under a change mask. Full-state encode uses an all-ones mask. Partial decode overlays a prior image; it must preserve fields absent from the update. |
 | Sensor `fresh` | Separate from presence. It controls replica initialization before an overlay. A fresh default with no value is meaningful. Do not generalize the audited lifetime entry's discard behaviour to every sensor delta. |
 | Typed/boxed value | Resolve a nullable runtime type handle and dispatch the selected schema. Registry/type-cell state matters; null must still emit its required encoding. Unknown selected types must refuse. |
-| Dynamic flags, kind `0x22` | Existing AH classification identifies udts 33 and 37 as runtime-pool-backed bitsets. Their static-harness refusal is a known allocator limitation; it is not evidence of their wire grammar. Keep gated until independently controlled. |
+| Typed value, kind `0x22` on 56578 | The relocated handler pair writes/reads a handle through its type cell, then the named object at `+0x10`. This includes udts 33/37. The old dynamic-flags refusal belongs to the 01.29 classification, not this dispatch; see §5's controls. The walker's change-mask bitset is a separate construct. |
 
 The array proof is [array-fields.py](../ps4/capture-rig/array-fields.py), especially `PROOF` groups
 A-E and H: it separates the two kind bytes, parent count-source at `m+0x10`, count offset at
@@ -136,12 +135,13 @@ Typed values need special care: `sensor::TYPED_VALUE_TYPES`,
 `typed_value_tests::a_prop_command_round_trips`, `ObjectOracle::with_types`, and
 [SchemaHarness::new_with_types](../ps4/d1-server/crates/d1-oracle/src/schema.rs) demonstrate
 resolving prop-command and reward types outside the static schema tree. The same sources call
-these “kind 0x22 typed values”, while AH code calls kind 0x22 dynamic flags. Older
-[01.24 nullable-field findings](ghost-light-0124.md) also describe nullable handles and typed
-values. **This terminology is not a proven single 56578 dispatch rule.** Retain schema context,
-re-derive the 56578 handler/parameter distinction, and add null/present/unknown-type and flags
-controls before implementing either branch. Sensor entity kind numbers are a further, separate
-namespace. Kind `0x23` identity boxes and atom selector tables likewise require the measured
+these “kind 0x22 typed values”; AH code inherited a dynamic-flags label from 01.29.
+**Stage 2 resolves the 56578 conflict:** the relocated encode/decode table entries are
+`0x102A3D0`/`0x102D220`, the same typed-value grammar in both contexts. Null/present values,
+four payload types in udts 33/37, and populated prop commands now have differential controls.
+[01.24 nullable-field findings](ghost-light-0124.md) remain historical, not an address source.
+Sensor entity kind numbers are a separate namespace. Kind `0x23` identity boxes and atom
+selector tables likewise require the measured
 56578 type cells in `codec.rs`; do not reduce them to a generic integer by size.
 
 ## 2. What actually runs on the connection loop
@@ -360,94 +360,141 @@ fixture/capture comparison passes. Report unresolved cases individually. Complet
 enabled production encode/decode path executes native code, including sensor subobjects; the
 oracle remains available for tests and research, and unsupported protocol work remains a named gate.
 
-## 5. Stage 1 status (5 November 2026, evening)
+## 5. Native codec status (5 November 2026)
 
-**Built and unit-tested; not run in the game or the lab.** The crate is
-[`ps4/d1-server/crates/d1-rsat`](../ps4/d1-server/crates/d1-rsat/src/lib.rs). It reads the
-descriptors from the owned eboot (`D1_EBOOT`) at start-up and ships no game bytes. It links no
-Unicorn and runs no guest code. Its differential tests need the eboot and skip without it. Build
-56578 (eboot sha256 `672f0341…0833`). Every result below is offline.
+**Stage 2 is implemented and tested offline; no game or lab run.** The
+[`d1-rsat` crate](../ps4/d1-server/crates/d1-rsat/src/lib.rs) reads descriptors from the owned
+56578 executable (`D1_EBOOT`, SHA-256 `672f0341…0833`). Production native code links no Unicorn
+and executes no guest code. `D1_RSAT_NATIVE=1` remains opt-in; unsupported schemas route by
+capability, while a failure on a covered schema is an error, never an oracle retry.
 
-### What was built
+### New handlers and their evidence
 
-- **Encoder** ([encode.rs](../ps4/d1-server/crates/d1-rsat/src/encode.rs)). This is the object
-  encoder `0x2C9A80` → `0x2C8EB0`, with an all-ones change mask and mask base 1, and the walker
-  `0x101C220`. It covers composites, fixed and parent-count arrays, and presence bits. The leaf
-  table at `0x1912C70` covers kinds 2-11, 0x15-0x17 and 0x29. The bit writer
-  ([bits.rs](../ps4/d1-server/crates/d1-rsat/src/bits.rs)) copies the client's accumulator,
-  including how an out-of-width value pollutes the bits before it. Replicated full state is the
-  presence bit plus the body.
-- **Decoder** ([decode.rs](../ps4/d1-server/crates/d1-rsat/src/decode.rs)). This is `0x2C9A90` →
-  `0x2C9110` and the walker `0x101EB30`. Its leaf table is at `0x19131B0` (`0x1913060 + 0x150`):
-  kinds 3 and 7, 4 and 8, 5 and 9, and 6 and 10 share their handlers. Values are read, the bias
-  is subtracted, and the low bytes are stored. The nullable handle stores `-1` when its bit is
-  clear. The replicated decoder `0x2C9AE0` reads its presence bit and then walks over the
-  caller's seed. A count past a capacity refuses as `Runtime`. A body that ends early refuses as
-  `Wire`, which the client also rejects (`bits <= len * 8`).
-- **udt 5 frames** ([sensor.rs](../ps4/d1-server/crates/d1-rsat/src/sensor.rs)). The `0x2A1210`
-  framing is restated around natively coded objects: the name reference, the lifetime value, the
-  replicated authority table, and each entry's A and B values. It decodes frames and finds the
-  stamp offset natively. It also decodes an entry body for known A/B types over a caller-given
-  seed, because `fresh = 0` needs the prior replica.
-- **Drop-in**
-  ([d1-activity-host native.rs](../ps4/d1-server/crates/d1-activity-host/src/native.rs)).
-  `NativeCodec` implements the host's `AhWireCodec` trait. It is selected only with
-  **`D1_RSAT_NATIVE=1`**, and the start-up log lists each udt's direction as native or oracle.
-  Routing is by static schema capability: a schema the native codec does not implement goes to
-  `SchemaCodec`, logged once. A native failure on a covered schema is an error and is never
-  retried through the oracle. Under the knob, `SchemaCodec::build_sensor` builds a frame natively
-  when every value schema it carries is covered. The frame's stamp bit is recorded, so stamp mode
-  needs no codec worker. With the knob unset the host is unchanged.
+The 56578 encoder table at `0x1912C70` and decoder table at `0x19131B0` contain relocations,
+not file qwords. `tests/stage2.rs` asserts each handler pair against those relocations and checks
+all type-cell rows and atom-table order against the existing oracle table. Tags in the type
+cells also have anchored descriptors in the owned image. No object bytes or binary fixtures
+were added to the repository.
 
-### Byte-equality results (`cargo test -p d1-rsat`, D1_EBOOT set)
-
-| Comparison | Result |
-|---|---|
-| Encode, every native AH udt: zero image + 16 seeds × (in-range, raw bytes) | **1,023 images across 31 udts, identical bytes and bit counts** |
-| Encode, hot udts 0, 1, 2, 4, 11, 18 | 384 more generated images, identical |
-| Encode, one leaf at a time (udts 0, 1, 2, 4, 18) | **49 identical**. 5 count leaves set to the top of their width pass a capacity (the launch slots' 6-bit count reads 63 of 50): the client walks past the array there, and the native encoder refuses |
-| Encode, sensor name / value / replicated authority (phases -1..14, tails, 4 authority tables, 72 generated) | identical |
-| Encode, kind 0x29 typed references in 1, 2 and 50 live launch slots, null and present | identical |
-| Decode, every native AH udt on the client's own encodings | **395 bodies across 31 udts: identical images, every byte, and bit counts**. 8 raw-image bodies, whose out-of-width values the client's encoder ORs into neighbouring fields, read back short in both decoders or past a capacity |
-| Decode, flipped-bit and truncated bodies, replicated udts over a non-zero seed | **310 bodies: 184 identical images and bit counts, 124 short bodies that both refuse, 2 counts past a capacity that the native walk refuses before the client would overrun**. Nothing decoded differently |
-| Decode, presence 0 over a seed (11, 21) | the seed comes back unchanged in both |
-| Decode, sensor objects and present typed references | identical |
-| Fixture sensor values (A and B) in `ps4/fixtures/56578`, encode and decode | **390 values across 64 lists identical** (encode bytes, decode images). The other 392 are on the oracle by schema (table below) |
-| Whole udt 5 frames vs `SensorPhaseUpdate::encode` (audited phases, tail, authority, value-less and valued A/B clients, fully native fixture lists) | **10 frames byte-identical**, with the stamp bit and both decoders' entries agreeing. Only 1 fixture list is fully native |
-| Responder schemas (profile, item, character, roster contact, card, peer and peer contact), generated images | **48 identical, encode and decode**. 1 generated profile has a count past a capacity and refuses natively |
-| Served profiles and items in `ps4/fixtures/56578` | **6 profiles (to 166,105 bits) and 25 items**: the native decode equals the client's, and the native re-encode is the served file byte for byte. The vendor `.obj` images encode identically |
-
-The negatives still hold. Dynamic flags refuse statically. A count past a capacity, a typed
-reference that names no type, a wrong-size image or seed, an unknown tag and an empty body each
-refuse with a named error. The same-size decoy schema encodes differently.
-
-### Coverage: covered, and still on the oracle
-
-| Structure | Status | Why |
+| Kind | 56578 encode / decode | Native behaviour and scope |
 |---|---|---|
-| AH udts 0, 1, 2, 3, 4, 11, 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 28, 30, 31, 32, 35, 36, 41, 44-48 (31 schemas) | **native, encode and decode** | Their closures use only kinds 1-11, 0x15-0x17 and 0x29, and every comparison above passes |
-| AH udts 33, 37 | oracle | Dynamic flags (kind 0x22), which both codecs gate (stage 3) |
-| AH raw 6, 8, 15 | not RSAT | They are sent verbatim, as before. Raw 6's schema-coded B objects remain the sense worker's |
-| udt 5 framing, name, lifetime value, authority | **native** | |
-| udt 5 values `0x80800463`, `0x8080071E`, `0x808029A1`, `0x8080279A` | **native** | |
-| udt 5 values `0x80802A1B` | oracle | Its closure has kind 0x0D (`0x8080293C` field 4), not ported |
-| udt 5 values `0x808007D9` (prop state) | oracle | Kind 0x22 (`0x80804153` field 0). Here 0x22 is the *typed value* that carries the prop command: the terminology conflict in §1 is real and stays a stage 3 gate |
-| udt 5 values `0x80800868` | oracle | Kind 0x26 (`0x80804242`), not ported |
-| udt 5 values `0x808022A5` (player bundle), `0x8080254D`, `0x808008D0` (scoreboard row) | oracle | Kind 0x23 boxes through type cells (stage 3) |
-| Quantized f32 (kind 11 with 1-31 bits) | refuses statically | The quantizer `0x726A0` is not ported. No covered schema uses it |
-| Integer leaves of width 0, decode only | refuses statically | `0x72C70` returns its cached word; this is not modelled. No covered schema uses it |
-| Responder profile `0x80801743`, item `0x80801732`, character `0x80801954`, roster `0x808018B7`, `0x80801810`, `0x808017FD`, `0x80801921` | **native in the library** | The responder still calls the `d1-oracle` binary as before. Wiring it in is follow-up work |
+| `0x23` | `0x102A450` / `0x102D280` | Identity box through the selected type cell: byte-array `0x808004AC` or platform integer `0x80801932`. Both directions and both selector arms are compared on nonsymmetric identities. `Schemas::identity_format` makes the out-of-band choice explicit; the default is the existing offline oracle/server's byte-array arm. There is no selector in the wire body. Covers the player bundle `0x808022A5`, `0x8080254D` and scoreboard `0x808008D0`. |
+| `0x22` | `0x102A3D0` / `0x102D220` | Typed value: encode/decode the handle through cell `0x1996050` (`0x80800046`), then, unless null, the named schema at `+0x10`. The gap is not transmitted. This is the same handler in udts 33/37 and prop state `0x808007D9`; it is **not** a dynamic-flags field on 56578. The 01.29 refusal is retained only for that build. The walker's separate change-mask bitset still exists. |
+| `0x26` | `0x102A500` / `0x102D330` | Atom selectors at `+0`/`+4` through their two schemas; primary payload at `+0x10`, secondary at `+8`. All ten primary and three secondary variants are checked. The decoder reproduces `0x1C0950`'s initialization and preserves its padding. This closes `0x80800868`. Invalid selectors refuse before indexing a table. |
+| `0x0D` | `0x1028780` / `0x102C8D0` | Position in the existing server/oracle's **unbounded-world mode**: three raw f32 lanes, with the decoded fourth SIMD lane read from the executable. IEEE edge cases compare in both directions. This closes `0x80802A1B` for fixture frame construction. Runtime world-bounds compression is a different, still-unimplemented mode; no bounds are guessed from sample positions. |
 
-A udt 5 frame is native only when every value schema it carries is native. Otherwise the whole
-frame is built by the oracle, as today. Most mission lists carry a kind-0x23 player bundle or a
-kind-0x22 prop, so under the knob those frames still use the control worker. The next native
-gain is kinds 0x23/0x22/0x26/0x0D, from 56578 handler evidence with their own controls.
+The atom secondary type `0x8080046B` reaches a quantized kind-11 real32. Its endpoint-preserving
+quantizer (`0x917C0`/`0x91850`, called by `0x726A0`/`0x72C20`) is now native too, preserving f32
+operation order, integer conversion and clamping. The exhaustive control covers every one of
+its 2,048 wire codes, plus IEEE encode edges.
 
-### Gates not passed yet
+That control exposed the Windows Unicorn 2.1.5 scalar-VEX aliasing defect already documented in
+[`scalar_float.rs`](../ps4/d1-server/crates/d1-oracle/src/scalar_float.rs): a three-source
+instruction can execute destructively. The existing instruction interpreter is reused in the
+statically identified RSAT quantizer range only, with independent aliasing/IEEE controls. The
+native codec follows the executable's instructions, not that emulator defect. No guest image
+bytes are patched. Investment-curve users keep the interpreter's finite-only mode.
 
-- No replicated delta encoder. Only full state is encoded, and the captured-delta byte identity
-  in §4.5 is still unpassed.
-- Not compared against private captures.
-- No latency benchmark.
-- The knob has not been tried in a run, so there is no in-game claim. A native run must name build
-  56578 and the emulator commit.
+### Coverage before and after
+
+| Structure | Stage 1 | Stage 2 |
+|---|---|---|
+| Pinned schema-coded AH udts | 31 native, 33/37 gated | **33 native, encode and decode**; none of the pinned schema-coded udts falls back |
+| Sensor value schemas represented in fixture lists | Four native, six gated | **All ten native**, including all four kinds above |
+| Fully native nonempty fixture lists | **1 / 64** | **64 / 64** |
+| Empty / authority-only fixture lists | Omitted from the collector | **2 / 2**, explicitly checked |
+| Total fixture sensor lists now collected | 64 | **66 / 66 native**: 65 mission and one postgame |
+| Fixture A/B values | **390 native**, 392 on oracle | **782 / 782 native**, encode bytes and decode images identical |
+| Raw AH 6, 8, 15 | Verbatim | Verbatim; schema-coded raw-6 subobjects remain separate work |
+| Responder schemas | Native in library | Same; the responder still invokes the oracle executable |
+
+The newly included lists are `mission/sensor-clients-cine_reveal-empty.txt` and
+`mission/agr-postgame-phase7.draft.txt` (authority only). World tables and step schedules are not
+sensor lists. Frame comparisons combine each fixture's clients and authority with a synthetic
+lifetime record; they do not claim to execute its mission schedule.
+
+### Byte equality (owned 56578 input present)
+
+All comparisons require equal bit counts as well as the corresponding bytes; decode compares
+**every struct byte**, including padding/default initialization, not selected offsets.
+
+| Comparison | Stage 2 result |
+|---|---|
+| Every native AH udt, zero/null image plus 16 seeds × in-range/raw images | **1,089 images across 33 udts**, identical encoding (stage 1: 1,023 / 31) |
+| Hot AH udts 0, 1, 2, 4, 11, 18 | **384** additional images, identical |
+| Single-field variations | **49** identical; five counts above capacity safely refused |
+| Decode the generated AH encodings | **421** identical bodies across 33 udts; eight raw-overflow bodies refused as before (stage 1: 395 / 31) |
+| Mutated/truncated AH bodies | **330** cases: 195 identical, 133 short bodies refused by both, two unsafe counts refused before client overrun |
+| Fixture A/B values | **782** identical encodings and decoded images across the 66 collected lists |
+| Whole udt 5 frames | **75 cases**: 73 in the complete nonempty/synthetic sweep, plus the two newly collected empty/authority-only fixtures checked separately. Both frame decoders agree on entries, bit counts, authority and stamp position |
+| Identity / typed values / atom arrays / raw positions | **32 / 83 / 30 / 8** additional images identical, both directions; the 30 arrays cover every atom selector combination |
+| Atom quantized real32 | **2,056** cases: every 11-bit code plus eight IEEE encode edges, identical |
+| Explicit-mask replicated deltas | **763** byte-identical encodings and identical ordered overlays over nonzero seeds |
+| Responder generated objects | **48** identical encode/decode; one unsafe profile count refused |
+| Served responder bodies | **Six profiles and 25 items**, decoded images identical and re-encodings reproduce served bytes; vendor object images still agree |
+
+The normal whole-frame test now enumerates all 66 lists without filtering by native capability
+or taking a small prefix. Any gated fixture fails the test. Differential tests print `SKIP`
+without `D1_EBOOT`; a supplied existing executable that cannot load fails. Missing fixture
+directories fail rather than silently producing an empty corpus.
+
+### Replicated deltas
+
+`Encoder::encode_replicated_masked` accepts explicit low-bit-first u32 mask words. Bit zero
+controls whole-object presence; field traversal begins at bit one. Unselected optional fields
+preserve the seed on decode; nonoptional fields still serialize when the root is present.
+Nested typed objects start their own full masks, as the client does.
+
+`ObjectOracle::encode_replicated_masked` independently calls the client's actual `0x2C9D20`
+entry with an external change-mask object, avoiding the live mask allocator. Its full-mask
+output is controlled against the pre-existing full-state composition before comparing deltas.
+Tests cover zero, root-only, every one-hot bit, full and generated masks for udts 11/21 and the
+sensor authority table, advancing native and oracle seeds through the same ordered stream.
+Wrong mask lengths and dirty padding refuse. This API does not infer dirty fields or change
+production's existing full-state default. Captured-delta identity remains unpassed.
+
+### Latency micro-benchmark
+
+The ignored release test `latency_per_fixture_udt5_frame` selects the smallest, median-size
+and largest fixture frames
+from the full corpus. It includes native routing, image cloning, packing and stamp-cache
+insertion, and compares the current oracle `SensorPhaseUpdate::encode` path, including its
+per-object harness construction. Startup schema loading, cold control/filesystem work, socket
+queues and scheduling delay are outside the timed samples. Each case uses five batches of 100
+native frames and five oracle frames; results are medians, not an in-game liveness claim.
+
+Measured on Windows at BelowNormal priority, release build, with no competing test process:
+
+| Fixture / frame size | Native, microseconds per frame | Existing oracle builder, milliseconds per frame |
+|---|---:|---:|
+| `mission/sensor-clients-cine_reveal-empty.txt`, 59 bytes | **1.365** | **874.295** |
+| `mission/agr-wall-done.txt`, 2,074 bytes | **30.178** | **3,833.022** |
+| `mission/agr-bw-107.txt`, 7,054 bytes | **112.739** | **39,209.590** |
+
+All three frames were checked byte-identical before timing. The timed workload was 1,500
+native builds and 15 oracle builds, selected from 66 eligible lists. The large ratios include
+the oracle builder repeatedly loading/scaffolding its object harnesses; these are full frame
+builder measurements, not a comparison of cached primitive leaf operations. The benchmark
+passed in 270.62 seconds. It measures neither cold startup nor end-to-end network latency.
+
+### Validation and remaining gates
+
+- The full `d1-rsat --release` differential run passed. Subsequent focused runs passed the final
+  source changes and added empty-list cases; the 64 nonempty whole-frame comparisons were not
+  rerun after adding those two collector cases. The benchmark is opt-in and ignored normally.
+- `d1-activity-host --release`: **197 tests passed**, including native trait integration and the
+  corrected build-specific udt-37 control.
+- `d1-oracle --release --lib`: **69 passed, one unrelated failure**: character controls require
+  the absent private `item-content-index.tsv`. Cinematic-start and native-atom integration:
+  **four passed**. The 01.29 Oodle probe skipped with its stated build/input reason. The older
+  vector suite had **11 passes and three failures**: two 01.29 size assertions against 56578,
+  and an unconditionally opened absent reference executable. These were not changed or counted
+  as passing codec gates. All **five 56578 wire-catalog integration tests passed** separately.
+- Workspace-wide `cargo test --workspace --release --no-run` fails on Windows because existing
+  `d1-live` code requires Unix APIs (`waitpid`, `std::os::unix`, signals). No live tools ran.
+- No comparison against private captures, no native game/lab run, no claim about connection-loop
+  liveness. Those remain separate gates.
+- Runtime world-bounds position compression, integer-width-zero decoding, raw-6 sensor worker
+  subobjects, production mask generation and responder integration remain follow-up work.
+
+AI-assisted: yes. No pull request was opened for this branch.

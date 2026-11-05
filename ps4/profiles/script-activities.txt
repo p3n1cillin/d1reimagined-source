@@ -1,0 +1,6 @@
+# The activities stream A2's script bridge drives (D1_AH_SCRIPTS_ACTIVITIES, full-game.env), in its
+# format: INDEX ACTIVITY GROUP LIST [hash=H] [bundles=PATH] [map=B:G,...] [team=0]
+# (notes/ps4-56578-script-bridge-2026-11-05.md on scripts/host-bridge). LIST is relative to this file.
+# 165 cine_reveal is the bridge's first native run: the same world, group and live records the
+# step-driven schedule plays (world-table-cine-live.txt), hash from ps4/fixtures/56578/worlds.
+165  cine_reveal  0x4786c0e0  ../fixtures/56578/mission/sensor-clients-cine_reveal-live.txt  hash=0x6eaf0959
