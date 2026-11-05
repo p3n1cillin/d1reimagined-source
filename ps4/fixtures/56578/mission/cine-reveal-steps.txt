@@ -1,14 +1,24 @@
-# Activity 165 (cine_reveal) served as the live host did, both cinematics, from the mission schedule
-# (D1_AH_MISSION_STEPS; notes/ps4-56578-cine-live13-2026-11-05.md). Times are from the host's first sensor frame;
-# live played /6/0 12.7 s after the join; 60 s here keeps the lab boot script's skip presses off it (at 25 s they
-# landed on it in cine-live15).
+# Activity 165: supported portion of the reconstructed 56578 sequence, NOT retail-complete.
+# See notes/ps4-56578-fukugen-daihon-2026-11-05.md for the missing mission-phase fields and
+# activity_complete incident body. No unlicensed script text or captured incident bytes are included.
+# D1_AH_MISSION_STEPS; times start at the host's first sensor frame. The initial 60 s is an
+# operator cushion for the existing boot inputs, not a script wait or a retail loading rule.
 # index  when      group       list                     [region]
 165  0         0x4786c0e0  sensor-clients-cine_reveal-live.txt
 165  60        0x4786c0e0  cine_reveal-phase-1.txt
 165  +1        0x4786c0e0  cine_reveal-play-0.txt
 165  @891|900  0x4786c0e0  cine_reveal-move-26.txt  26
-# The play waits for the client's arrival in slice set 26: in cine-live15, played 4 s after the move, the client
-# reported the start (2681) but showed a loading screen; its teleport to 26 completed 20 s after the move.
-165  +20       0x4786c0e0  cine_reveal-play-1.txt
+# /6/0 finished: stop its row and request plaza state 2 (3 << 3 | 2 = 26).
+# This region request is the existing host's approximation of the mission-phase change.
+# Wait for CURRENT slice 26 before starting the reconstructed four-second sleep. The existing
+# % gate's 900 s fallback is diagnostic; it does not prove arrival if it expires.
+165  %26|900   0x4786c0e0  cine_reveal-move-26.txt
+# set_activity_complete belongs HERE, while lifetime stays at 4 and /6/1 remains idle.
+# Its content-derived PS4 incident type is 965, but the metadata body is unresolved. This line
+# only republishes idle state; it DOES NOT mark the activity complete. Do not use an empty body
+# or paste the 51539 capture's wire bytes into incident=TYPE:BODYHEX.
+165  +4        0x4786c0e0  cine_reveal-move-26.txt
+# The half-second separation is an explicit diagnostic scheduling choice, not part of sleep(4).
+165  +0.5      0x4786c0e0  cine_reveal-play-1.txt
 165  @891|900  0x4786c0e0  cine_reveal-done-1.txt
 165  +1        0x4786c0e0  cine_reveal-end-1.txt
