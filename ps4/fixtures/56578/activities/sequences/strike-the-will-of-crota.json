@@ -1,0 +1,224 @@
+{
+  "activity_id": "strike-the-will-of-crota",
+  "name": "The Will of Crota",
+  "evidence": {
+    "kind": "live-capture",
+    "build": "51539 (Xbox 360)",
+    "capture": "The-Will-of-Crota",
+    "note": "one solo run (Crota's End: a fireteam); incident ids are 51539's; see notes/d1-live-captures-2026-11-05.md"
+  },
+  "host_session_s": 1949.7,
+  "hosts": 3,
+  "stages": [
+    {
+      "slice_set": 88,
+      "entered_s": 25.5,
+      "groups_first_served": [
+        "0x4786c0e0",
+        "0x7edbc161",
+        "0x63a7c9c8",
+        "0x51f665ba",
+        "0x4e11ec55",
+        "0x5485bb38",
+        "0x74d68dd5",
+        "0x6071a5f0",
+        "0xbdf3e29c"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [],
+      "public_hosts_opened": 0,
+      "duration_s": 38.9
+    },
+    {
+      "slice_set": 72,
+      "entered_s": 64.4,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x7edbc161/29/35",
+        "0x7edbc161/29/34",
+        "0x5485bb38/29/82",
+        "0x7edbc161/29/36",
+        "0x7edbc161/29/33",
+        "0x7edbc161/29/38",
+        "0x5485bb38/29/80",
+        "0x5485bb38/29/81"
+      ],
+      "public_hosts_opened": 1,
+      "duration_s": 731.8
+    },
+    {
+      "slice_set": 80,
+      "entered_s": 796.2,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x74d68dd5/29/136",
+        "0x74d68dd5/29/137",
+        "0x7edbc161/29/43",
+        "0x74d68dd5/29/138",
+        "0x74d68dd5/29/140",
+        "0x74d68dd5/29/139",
+        "0x74d68dd5/29/141",
+        "0x7edbc161/29/44"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 1153.5
+    }
+  ],
+  "markers": [
+    {
+      "t_s": 25.5,
+      "slice": 88
+    },
+    {
+      "t_s": 64.4,
+      "slice": 72
+    },
+    {
+      "t_s": 87.8,
+      "trigger": "0x7edbc161/29/35"
+    },
+    {
+      "t_s": 96.2,
+      "trigger": "0x7edbc161/29/34"
+    },
+    {
+      "t_s": 395.7,
+      "trigger": "0x5485bb38/29/82"
+    },
+    {
+      "t_s": 395.9,
+      "trigger": "0x7edbc161/29/36"
+    },
+    {
+      "t_s": 396.4,
+      "trigger": "0x7edbc161/29/33"
+    },
+    {
+      "t_s": 452.2,
+      "trigger": "0x7edbc161/29/38"
+    },
+    {
+      "t_s": 690.8,
+      "trigger": "0x5485bb38/29/80"
+    },
+    {
+      "t_s": 740.1,
+      "trigger": "0x5485bb38/29/81"
+    },
+    {
+      "t_s": 796.2,
+      "slice": 80
+    },
+    {
+      "t_s": 825.8,
+      "trigger": "0x74d68dd5/29/136"
+    },
+    {
+      "t_s": 856.4,
+      "trigger": "0x74d68dd5/29/137"
+    },
+    {
+      "t_s": 857.2,
+      "trigger": "0x7edbc161/29/43"
+    },
+    {
+      "t_s": 872.0,
+      "trigger": "0x74d68dd5/29/138"
+    },
+    {
+      "t_s": 1022.5,
+      "trigger": "0x74d68dd5/29/140"
+    },
+    {
+      "t_s": 1043.7,
+      "trigger": "0x74d68dd5/29/139"
+    },
+    {
+      "t_s": 1052.7,
+      "trigger": "0x74d68dd5/29/141"
+    },
+    {
+      "t_s": 1328.3,
+      "trigger": "0x7edbc161/29/44"
+    }
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "begins_on": {
+        "slice_entered": 88
+      },
+      "at_s": 25.5,
+      "duration_s": 38.9
+    },
+    {
+      "index": 1,
+      "begins_on": {
+        "slice_entered": 72
+      },
+      "at_s": 64.4,
+      "duration_s": 331.3
+    },
+    {
+      "index": 2,
+      "begins_on": {
+        "trigger": "0x5485bb38/29/82"
+      },
+      "at_s": 395.7,
+      "duration_s": 56.5
+    },
+    {
+      "index": 3,
+      "begins_on": {
+        "trigger": "0x7edbc161/29/38"
+      },
+      "at_s": 452.2,
+      "duration_s": 238.6
+    },
+    {
+      "index": 4,
+      "begins_on": {
+        "trigger": "0x5485bb38/29/80"
+      },
+      "at_s": 690.8,
+      "duration_s": 49.3
+    },
+    {
+      "index": 5,
+      "begins_on": {
+        "trigger": "0x5485bb38/29/81"
+      },
+      "at_s": 740.1,
+      "duration_s": 56.1
+    },
+    {
+      "index": 6,
+      "begins_on": {
+        "slice_entered": 80
+      },
+      "at_s": 796.2,
+      "duration_s": 226.3
+    },
+    {
+      "index": 7,
+      "begins_on": {
+        "trigger": "0x74d68dd5/29/140"
+      },
+      "at_s": 1022.5,
+      "duration_s": 305.8
+    },
+    {
+      "index": 8,
+      "begins_on": {
+        "trigger": "0x7edbc161/29/44"
+      },
+      "at_s": 1328.3,
+      "duration_s": 621.4
+    }
+  ]
+}
