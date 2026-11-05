@@ -122,6 +122,42 @@ pub trait AhWireCodec: Send + Sync {
     fn decode_seeded(&self, user_defined_type: u32, wire: &[u8], _seed: &[u8]) -> Result<Vec<u8>, AhError> {
         self.decode(user_defined_type, wire)
     }
+
+    /// ── D1_AH_SCRIPTS (script_bridge.rs) ── A udt 5 frame of exactly these entries (the script
+    /// bridge's full lists and deltas), stamp 0, with the stamp's bit offset. The client's own codec
+    /// on [`rows_oracle`] by default; `native::NativeCodec` builds it natively where it can.
+    fn encode_sensor_entries(
+        &self,
+        frame: &d1_oracle::sensor::SensorEntryFrame,
+    ) -> Result<(Vec<u8>, usize), AhError> {
+        oracle_sensor_entries(frame)
+    }
+
+    /// ── D1_AH_SCRIPTS (script_bridge.rs) ── One RSAT object by schema tag, `(bits, payload)`: an
+    /// incident's metadata body (`0x80800595` for `activity_complete`). Same routing as above.
+    fn encode_object(&self, tag: u32, image: &[u8]) -> Result<(u32, Vec<u8>), AhError> {
+        oracle_object(tag, image)
+    }
+}
+
+/// [`AhWireCodec::encode_sensor_entries`] through the client's own codec, on [`rows_oracle`].
+pub fn oracle_sensor_entries(
+    frame: &d1_oracle::sensor::SensorEntryFrame,
+) -> Result<(Vec<u8>, usize), AhError> {
+    let b = rows_oracle()
+        .call(|reply| Job::BuildEntries { frame: frame.clone(), reply })
+        .map_err(|detail| AhError::SchemaCodec { user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE, detail })?;
+    let (bit, bytes) = b.split_at(8);
+    Ok((bytes.to_vec(), u64::from_le_bytes(bit.try_into().expect("8 bytes")) as usize))
+}
+
+/// [`AhWireCodec::encode_object`] through the client's own codec, on [`rows_oracle`].
+pub fn oracle_object(tag: u32, image: &[u8]) -> Result<(u32, Vec<u8>), AhError> {
+    let b = rows_oracle()
+        .call(|reply| Job::EncodeObject { tag, image: image.to_vec(), reply })
+        .map_err(|detail| AhError::SchemaCodec { user_defined_type: 18, detail })?;
+    let (bits, payload) = b.split_at(4);
+    Ok((u32::from_le_bytes(bits.try_into().expect("4 bytes")), payload.to_vec()))
 }
 
 // ── the oracle worker ────────────────────────────────────────────────────────────────────────────
@@ -144,6 +180,17 @@ enum Job {
     },
     /// ⭐ The oracle's bump-arena accounting, per udt. See [`OracleWorker::arena_stats`].
     Arena { reply: Sender<Vec<ArenaStats>> },
+    /// D1_AH_SCRIPTS: an entry-only udt 5 frame; the reply is the stamp bit (u64 LE), then the frame.
+    BuildEntries {
+        frame: d1_oracle::sensor::SensorEntryFrame,
+        reply: Sender<Result<Vec<u8>, String>>,
+    },
+    /// D1_AH_SCRIPTS: one object by tag; the reply is its bit count (u32 LE), then the payload.
+    EncodeObject {
+        tag: u32,
+        image: Vec<u8>,
+        reply: Sender<Result<Vec<u8>, String>>,
+    },
 }
 
 pub use d1_oracle::activity_host::ArenaStats;
@@ -165,6 +212,10 @@ impl OracleWorker {
             .spawn(move || {
                 let mut codec = d1_oracle::activity_host::AhCodec::new();
                 let mut frames: Option<d1_oracle::sensor::FrameDecoder> = None;
+                // D1_AH_SCRIPTS: kept between frames, so each codec starts once.
+                let mut entries = d1_oracle::sensor::SensorFrameEncoder::new();
+                let mut objects: std::collections::HashMap<u32, d1_oracle::object::ObjectOracle> =
+                    std::collections::HashMap::new();
                 while let Ok(job) = rx.recv() {
                     match job {
                         Job::Encode { udt, image, reply } => {
@@ -205,6 +256,29 @@ impl OracleWorker {
                         }
                         Job::Arena { reply } => {
                             let _ = reply.send(codec.arena_stats());
+                        }
+                        Job::BuildEntries { frame, reply } => {
+                            let r = entries
+                                .encode(&frame)
+                                .map(|(bytes, bit)| [(bit as u64).to_le_bytes().to_vec(), bytes].concat())
+                                .map_err(|e| e.to_string());
+                            let _ = reply.send(r);
+                        }
+                        Job::EncodeObject { tag, image, reply } => {
+                            let r = (|| {
+                                use std::collections::hash_map::Entry;
+                                let o = match objects.entry(tag) {
+                                    Entry::Occupied(e) => e.into_mut(),
+                                    Entry::Vacant(v) => v.insert(d1_oracle::object::ObjectOracle::with_types(
+                                        tag,
+                                        d1_oracle::sensor::TYPED_VALUE_TYPES,
+                                    )?),
+                                };
+                                o.encode(&image, 0x1_0000)
+                            })()
+                            .map(|e| [e.bits.to_le_bytes().to_vec(), e.payload].concat())
+                            .map_err(|e| e.to_string());
+                            let _ = reply.send(r);
                         }
                     }
                 }
@@ -259,6 +333,13 @@ pub fn oracle() -> &'static OracleWorker {
 /// worker run in turn, so a long list built on [`oracle`] held every per-tick encode behind it:
 /// 30 Breach squad states took 31 s, the host went silent and the client dropped it (run sense99).
 pub fn control_oracle() -> &'static OracleWorker {
+    static W: OnceLock<OracleWorker> = OnceLock::new();
+    W.get_or_init(OracleWorker::spawn)
+}
+
+/// D1_AH_SCRIPTS: a third worker for the script bridge's frames and incident bodies, so a script
+/// tick's encodes never queue behind the host's own (or an operator's control build).
+pub fn rows_oracle() -> &'static OracleWorker {
     static W: OnceLock<OracleWorker> = OnceLock::new();
     W.get_or_init(OracleWorker::spawn)
 }

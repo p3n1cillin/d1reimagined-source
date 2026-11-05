@@ -298,6 +298,11 @@ impl RowTable {
     /// Stamp an encoded frame for `now`, keeping its `init` bit.
     pub fn stamp(&mut self, frame: &mut [u8], stamp_bit: usize, init: bool, now: Instant) -> Result<(), String> {
         let tick = self.tick(now);
+        self.stamp_at(frame, stamp_bit, init, tick)
+    }
+
+    /// Stamp an encoded frame with a given tick (a frame that belongs to an earlier one's tick).
+    pub fn stamp_at(&mut self, frame: &mut [u8], stamp_bit: usize, init: bool, tick: u32) -> Result<(), String> {
         d1_oracle::sensor::set_frame_stamp(frame, stamp_bit, tick, init).map_err(|e| e.to_string())
     }
 

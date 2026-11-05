@@ -812,7 +812,7 @@ impl ActivityInstance {
         let mut out = self.reply_to(msg, now);
         // D1_AH_SCRIPTS hook (script_bridge.rs): the bridge sees every message after the instance.
         if let Some(b) = self.script_bridge.as_mut() {
-            b.on_client_message(msg, self.activity_index, now);
+            b.on_client_message(msg, self.activity_index, self.ah_id, now);
         }
         // ⭐⭐ THE HOST HEARTBEAT. If this turn produced nothing to say, and we have been silent
         // longer than [`Self::HOST_HEARTBEAT_MS`], say something anyway - because the client's
@@ -1675,10 +1675,11 @@ impl ActivityInstance {
     /// (9 bits) and `+0xD8` the body (up to 500 bytes).
     pub fn incident_due(&mut self) -> Option<AhPush> {
         self.poll_control();
-        // D1_AH_SCRIPTS hook (script_bridge.rs): host incidents the scripts asked for.
-        if let Some(b) = self.script_bridge.as_mut() {
-            while let Some(i) = b.take_incident() {
-                self.pending_incidents.push(i);
+        // D1_AH_SCRIPTS hook (script_bridge.rs): the completion envelope, a whole udt 18 image
+        // (a chain of incidents and one body), once Live.
+        if matches!(self.state, InstanceState::Live) {
+            if let Some(image) = self.script_bridge.as_mut().and_then(|b| b.take_incident()) {
+                return Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 18, bytes: image }));
             }
         }
         if !matches!(self.state, InstanceState::Live) || self.pending_incidents.is_empty() {

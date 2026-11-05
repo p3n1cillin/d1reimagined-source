@@ -77,6 +77,7 @@
 
 pub mod checkpoints;
 pub mod codec;
+pub mod completion;
 pub mod controls;
 pub mod encounter_framework;
 pub mod entity;

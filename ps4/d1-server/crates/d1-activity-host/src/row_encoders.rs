@@ -11,17 +11,17 @@
 //!   the world's base list (or the client's default), and each script field we cannot place is
 //!   logged once as not encoded. A kind with no 56578 field map returns [`Encoded::Unsupported`]
 //!   and the row keeps its served value. The per-kind evidence is in each encoder's doc.
-//! * **[`RowCodec`]** turns a planned frame into wire bytes. [`OracleRowCodec`] runs the client's
-//!   own object codec under Unicorn (`d1_oracle::sensor::SensorFrameEncoder`). Stream B's native
-//!   RSAT codec (crate `d1-rsat`, notes/ps4-56578-native-rsat-plan-2026-11-05.md) implements the
-//!   same trait and replaces it; [`CodecWorker`] runs whichever one on its own thread, off the
-//!   connection loop, because the oracle takes about 0.4 s per codec start and Unicorn is `!Send`.
+//! * **The host's wire codec** ([`AhWireCodec`]) turns a planned frame into wire bytes, through
+//!   its `encode_sensor_entries` and `encode_object` methods: the client's own codec by default
+//!   (`d1_oracle::sensor::SensorFrameEncoder`, codecs kept between frames), stream B's native RSAT
+//!   codec (`native::NativeCodec`, `D1_RSAT_NATIVE=1`) where it covers every schema. There is no
+//!   second codec abstraction. [`CodecWorker`] runs it off the connection loop.
 //!
 //! # What the evidence supports, per row kind
 //!
 //! | Kind (type id) | A tag | Written from the script | Evidence |
 //! |---|---|---|---|
-//! | lifetime (16) | `0x808008A3` | state (+0), optional mission-phase tuple (+4/+8/+0xC) | spawn gate, live order 0→1→4→6→8; tuple geometry from the descriptor, meaning from TU0 (unverified) |
+//! | lifetime (16) | `0x808008A3` | state (+0), optional mission-phase tuple (+4/+8/+0xC) | 52 live captures: 0→1→3, 4 around cinematics, gameplay ends 6→(30 s)→7, cinematic-only 6,8; tuple geometry from the descriptor, meaning from TU0 (unverified) |
 //! | cinematic (6) | `0x8080254D` | start (+0), change counter (+4), playing (+8) | `0x403140` setter; live start = stamp − 1 |
 //! | player trigger (29) | `0x80800463` | enabled (+0), arming (+4, 16 bits) | our armed images; live +4 changes |
 //! | squad (1) | `0x8080071E` | objective ref (+0), count (+0x2C/+0x30), generation (+0x44) | d1-squad-states.py layout; live objective ref |
@@ -32,6 +32,9 @@
 
 use std::collections::{HashMap, HashSet};
 use std::sync::mpsc::{channel, Receiver, Sender, TryRecvError};
+use std::sync::Arc;
+
+use crate::codec::AhWireCodec;
 
 use serde_json::Value;
 
@@ -46,58 +49,59 @@ pub struct EncodedFrame {
     pub stamp_bit: usize,
 }
 
-/// Encodes a planned udt 5 frame. Implemented by [`OracleRowCodec`] now and by the native RSAT
-/// codec (Stream B, `d1-rsat`) later. Built and used on one thread ([`CodecWorker`]), so an
-/// implementation need not be `Send`.
-pub trait RowCodec {
-    fn name(&self) -> &'static str;
-    fn encode_frame(&mut self, plan: &FramePlan) -> Result<EncodedFrame, String>;
+/// Work for the codec: a planned frame, or one object (an incident's metadata body).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum CodecJob {
+    Frame(FramePlan),
+    Object { tag: u32, image: Vec<u8> },
 }
 
-/// The client's own codec, under Unicorn, with its codecs kept between frames.
-#[derive(Default)]
-pub struct OracleRowCodec {
-    encoder: d1_oracle::sensor::SensorFrameEncoder,
+/// A finished job, in submission order.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum CodecDone {
+    Frame(Result<EncodedFrame, String>),
+    /// `(bits, payload)`.
+    Object(Result<(u32, Vec<u8>), String>),
 }
 
-impl RowCodec for OracleRowCodec {
-    fn name(&self) -> &'static str {
-        "d1-oracle (the client's own codec)"
+/// Run one job through the host's wire codec: [`AhWireCodec::encode_sensor_entries`] and
+/// [`AhWireCodec::encode_object`], the client's own codec by default and stream B's native one
+/// (`native::NativeCodec`, `D1_RSAT_NATIVE=1`) where it covers the schemas.
+pub fn run_job(codec: &dyn AhWireCodec, job: &CodecJob) -> CodecDone {
+    match job {
+        CodecJob::Frame(plan) => CodecDone::Frame(
+            codec
+                .encode_sensor_entries(&plan.to_entry_frame())
+                .map(|(bytes, stamp_bit)| EncodedFrame { bytes, stamp_bit })
+                .map_err(|e| e.to_string()),
+        ),
+        CodecJob::Object { tag, image } => {
+            CodecDone::Object(codec.encode_object(*tag, image).map_err(|e| e.to_string()))
+        }
     }
-
-    fn encode_frame(&mut self, plan: &FramePlan) -> Result<EncodedFrame, String> {
-        let (bytes, stamp_bit) = self.encoder.encode(&plan.to_entry_frame()).map_err(|e| e.to_string())?;
-        Ok(EncodedFrame { bytes, stamp_bit })
-    }
 }
 
-/// Builds a codec on the thread that will use it.
-pub type CodecFactory = Box<dyn FnOnce() -> Result<Box<dyn RowCodec>, String> + Send>;
+/// A codec run on the caller's thread (tests).
+pub type InlineCodec = Box<dyn FnMut(&CodecJob) -> CodecDone + Send>;
 
-/// Runs a [`RowCodec`] off the connection loop: [`Self::submit`] queues a plan and returns at once,
-/// [`Self::poll`] takes the result when it is ready. One plan at a time (the row table plans one).
+/// Runs the host's codec off the connection loop: the client's codec waits on its oracle worker,
+/// so [`Self::submit`] queues a job and returns at once, and [`Self::poll`] takes each result when
+/// it is ready. `Err` from [`Self::poll`]: the worker is gone.
 pub struct CodecWorker {
-    tx: Option<Sender<FramePlan>>,
-    rx: Option<Receiver<Result<EncodedFrame, String>>>,
-    inline: Option<(Box<dyn RowCodec + Send>, Option<Result<EncodedFrame, String>>)>,
+    tx: Option<Sender<CodecJob>>,
+    rx: Option<Receiver<CodecDone>>,
+    inline: Option<(InlineCodec, std::collections::VecDeque<CodecDone>)>,
 }
 
 impl CodecWorker {
-    /// A worker thread that builds its codec with `factory`.
-    pub fn spawn(factory: CodecFactory) -> Self {
-        let (tx, jobs) = channel::<FramePlan>();
+    /// A worker thread running `codec`.
+    pub fn spawn(codec: Arc<dyn AhWireCodec>) -> Self {
+        let (tx, jobs) = channel::<CodecJob>();
         let (done, rx) = channel();
         let spawned = std::thread::Builder::new().name("d1-ah-rows".into()).spawn(move || {
-            let mut codec = match factory() {
-                Ok(c) => c,
-                Err(e) => {
-                    let _ = done.send(Err(format!("row codec did not start: {e}")));
-                    return;
-                }
-            };
-            tracing::info!("udt 5 row codec: {}", codec.name());
-            while let Ok(plan) = jobs.recv() {
-                if done.send(codec.encode_frame(&plan)).is_err() {
+            tracing::info!("udt 5 rows and incident bodies: {}", codec.name());
+            while let Ok(job) = jobs.recv() {
+                if done.send(run_job(&*codec, &job)).is_err() {
                     return;
                 }
             }
@@ -105,38 +109,37 @@ impl CodecWorker {
         match spawned {
             Ok(_) => Self { tx: Some(tx), rx: Some(rx), inline: None },
             Err(e) => {
-                tracing::error!("udt 5 row codec thread did not start: {e}");
+                tracing::error!("the row codec thread did not start: {e}");
                 Self { tx: None, rx: None, inline: None }
             }
         }
     }
 
-    /// Encode on the caller's thread (tests; a codec that is cheap enough).
-    pub fn inline(codec: Box<dyn RowCodec + Send>) -> Self {
-        Self { tx: None, rx: None, inline: Some((codec, None)) }
+    /// Encode on the caller's thread.
+    pub fn inline(codec: InlineCodec) -> Self {
+        Self { tx: None, rx: None, inline: Some((codec, Default::default())) }
     }
 
-    pub fn submit(&mut self, plan: &FramePlan) {
+    pub fn submit(&mut self, job: CodecJob) {
         if let Some((codec, out)) = self.inline.as_mut() {
-            *out = Some(codec.encode_frame(plan));
+            out.push_back(codec(&job));
             return;
         }
-        let sent = self.tx.as_ref().is_some_and(|tx| tx.send(plan.clone()).is_ok());
+        let sent = self.tx.as_ref().is_some_and(|tx| tx.send(job).is_ok());
         if !sent {
             self.tx = None;
         }
     }
 
-    /// The result of the plan submitted last, once it is ready.
-    pub fn poll(&mut self) -> Option<Result<EncodedFrame, String>> {
+    pub fn poll(&mut self) -> Option<Result<CodecDone, String>> {
         if let Some((_, out)) = self.inline.as_mut() {
-            return out.take();
+            return out.pop_front().map(Ok);
         }
         let Some(rx) = self.rx.as_ref() else {
             return Some(Err("the row codec thread is gone".into()));
         };
         match rx.try_recv() {
-            Ok(r) => Some(r),
+            Ok(r) => Some(Ok(r)),
             Err(TryRecvError::Empty) if self.tx.is_some() => None,
             Err(_) => {
                 self.rx = None;
@@ -166,28 +169,45 @@ pub const KIND_PLAYER_OBJECTIVE: u8 = 32;
 
 const NONE_HASH: u32 = 0x811C_9DC5;
 
+/// How an activity ends: the live captures end the two kinds differently
+/// (notes/ps4-56578-wire-catalog-2026-11-05.md, "Who reads the value").
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum EndKind {
+    /// A playable activity: results 6, then 7 about 30 s later (36 of the 39 that reached 7; the
+    /// scripts' `end_game(30)` is the delay). 7 opens the post-game screens and freezes the
+    /// scoreboard.
+    #[default]
+    Gameplay,
+    /// A cinematic-only activity (The Speaker, the reveal): 6 and 8 in one tick, no 7. 8 is the
+    /// client's own end-of-activity transition (back to orbit, or the rematch decision).
+    Cinematic,
+}
+
 /// ⭐ BullShcript's lifetime state (`native_support.ts`: pregame 0, countdown 1, active 2, the
-/// cinematic hold 3, results 5, ended 6) as the 56578 decoded value the spawn gate reads (the first
-/// byte of the `0x808008A3` image; the oracle adds the wire's bias of one):
+/// cinematic hold 3, results 5, ended 6) as the 56578 decoded value (the first byte of the
+/// `0x808008A3` image; the oracle adds the wire's bias of one). Live order 0 → 1 → 3, with 4 around
+/// each cinematic:
 ///
 /// | runtime | 56578 | evidence |
 /// |---|---|---|
-/// | pregame 0 | 1 | live cinematic hosts 0 → 1 → 4; TU0's +1 |
-/// | countdown 1 | 2 | TU0's +1 only; not seen on 56578 |
+/// | pregame 0 | 1 | about 20 s after 0 in every live activity |
+/// | countdown 1 | 2 | never served in PvE (BullShcript's +1 only) |
 /// | active 2 | 3 | the spawn gate accepts 3 |
-/// | cinematic hold 3 | 4 | live: plays two ticks after 4 |
-/// | results 5 | 6 | the spawn gate accepts 6; post-game |
-/// | ended 6 | 8 | live: the client closed the activity at 8 (TU0 has 7; 56578's 7 is the post-game screens) |
+/// | cinematic hold 3 | 4 | before each scripted cinematic |
+/// | results 5 | 6 | the completion tick |
+/// | ended 6 | **7** (gameplay) / **8** (cinematic-only) | see [`EndKind`] |
 ///
-/// Runtime 4 has no name in BullShcript and no mapping here.
-pub fn lifetime_wire_state(runtime: i64) -> Option<i8> {
-    Some(match runtime {
-        0 => 1,
-        1 => 2,
-        2 => 3,
-        3 => 4,
-        5 => 6,
-        6 => 8,
+/// Runtime 4 has no name in BullShcript and no mapping here; 56578's 5 and 9 are never served in
+/// PvE (the client treats 9 like 7).
+pub fn lifetime_wire_state(runtime: i64, end: EndKind) -> Option<i8> {
+    Some(match (runtime, end) {
+        (0, _) => 1,
+        (1, _) => 2,
+        (2, _) => 3,
+        (3, _) => 4,
+        (5, _) => 6,
+        (6, EndKind::Gameplay) => 7,
+        (6, EndKind::Cinematic) => 8,
         _ => return None,
     })
 }
@@ -593,8 +613,10 @@ mod tests {
 
     #[test]
     fn lifetime_states_map_as_the_live_hosts_numbered_them() {
-        let got: Vec<_> = (0..=7).map(lifetime_wire_state).collect();
-        assert_eq!(got, [Some(1), Some(2), Some(3), Some(4), None, Some(6), Some(8), None]);
+        let gameplay: Vec<_> = (0..=7).map(|s| lifetime_wire_state(s, EndKind::Gameplay)).collect();
+        assert_eq!(gameplay, [Some(1), Some(2), Some(3), Some(4), None, Some(6), Some(7), None]);
+        let cinematic: Vec<_> = (0..=7).map(|s| lifetime_wire_state(s, EndKind::Cinematic)).collect();
+        assert_eq!(cinematic, [Some(1), Some(2), Some(3), Some(4), None, Some(6), Some(8), None]);
     }
 
     #[test]
@@ -693,37 +715,41 @@ mod tests {
         }
     }
 
+    /// A wire codec that only builds frames, recording nothing.
     struct Fake;
-    impl RowCodec for Fake {
+    impl AhWireCodec for Fake {
         fn name(&self) -> &'static str {
             "fake"
         }
-        fn encode_frame(&mut self, plan: &FramePlan) -> Result<EncodedFrame, String> {
-            Ok(EncodedFrame { bytes: vec![plan.gen, plan.entries.len() as u8], stamp_bit: 9 })
+        fn encode(&self, _: &crate::messages::AhMessage) -> Result<Vec<u8>, crate::AhError> {
+            Ok(Vec::new())
+        }
+        fn decode(&self, _: u32, w: &[u8]) -> Result<Vec<u8>, crate::AhError> {
+            Ok(w.to_vec())
+        }
+        fn encode_sensor_entries(&self, f: &d1_oracle::sensor::SensorEntryFrame) -> Result<(Vec<u8>, usize), crate::AhError> {
+            Ok((vec![f.gen, f.entries.len() as u8], 9))
+        }
+        fn encode_object(&self, tag: u32, _: &[u8]) -> Result<(u32, Vec<u8>), crate::AhError> {
+            Err(crate::AhError::SchemaCodec { user_defined_type: 18, detail: format!("no {tag:#x}") })
         }
     }
 
     #[test]
-    fn the_worker_encodes_off_the_calling_thread() {
+    fn the_worker_runs_the_host_codec_off_the_calling_thread_in_order() {
         let plan = FramePlan { gen: 4, full: true, init: true, authority: None, entries: Vec::new() };
-        let mut w = CodecWorker::spawn(Box::new(|| Ok(Box::new(Fake) as Box<dyn RowCodec>)));
-        w.submit(&plan);
-        let got = loop {
+        let mut w = CodecWorker::spawn(Arc::new(Fake));
+        w.submit(CodecJob::Frame(plan));
+        w.submit(CodecJob::Object { tag: 0x8080_0595, image: vec![0; 128] });
+        let mut got = Vec::new();
+        while got.len() < 2 {
             if let Some(r) = w.poll() {
-                break r;
+                got.push(r.expect("worker alive"));
             }
             std::thread::yield_now();
-        };
-        assert_eq!(got, Ok(EncodedFrame { bytes: vec![4, 0], stamp_bit: 9 }));
-        let mut bad = CodecWorker::spawn(Box::new(|| Err("no eboot".to_string())));
-        bad.submit(&plan);
-        let got = loop {
-            if let Some(r) = bad.poll() {
-                break r;
-            }
-            std::thread::yield_now();
-        };
-        assert!(got.unwrap_err().contains("no eboot"));
+        }
+        assert_eq!(got[0], CodecDone::Frame(Ok(EncodedFrame { bytes: vec![4, 0], stamp_bit: 9 })));
+        assert!(matches!(&got[1], CodecDone::Object(Err(e)) if e.contains("0x80800595")));
     }
 
     fn hex(s: &str) -> Vec<u8> {

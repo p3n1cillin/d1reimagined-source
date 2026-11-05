@@ -30,14 +30,15 @@
 //!
 //! * **Lifetime.** A `lifetime` row change sets the world's lifetime record (the one the world's
 //!   list names) to [`lifetime_wire_state`]: pregame → 1, active → 3, cinematic hold → 4,
-//!   results → 6, ended → 8 (the sidecar's `wire.phase` is checked against it). `phase` carries
-//!   the mission-phase tuple only under `D1_AH_SCRIPTS_MISSION_PHASE=1` (its meaning on 56578 is
-//!   unverified), and asks the host to move the client to the phase's region (`regions=` in the
-//!   activity table, since protocol 1 names the slice, not its id) when it is not already there.
-//! * **`activity_complete`** sends host incident **965** (`activity_complete`, from the incident
-//!   catalogue) with the body in `D1_AH_SCRIPTS_COMPLETE_BODY`. The 56578 body is not yet known
-//!   (notes/ps4-56578-fukugen-daihon-2026-11-05.md); without the knob the incident is not sent and
-//!   the log says so, rather than sending an empty or captured body.
+//!   results → 6, and ended → 7 for a gameplay activity or 8 for a cinematic-only one
+//!   (`kind=cinematic`; notes/ps4-56578-wire-catalog-2026-11-05.md). The sidecar's `wire.phase` is
+//!   checked against it. `phase` carries the mission-phase tuple only under
+//!   `D1_AH_SCRIPTS_MISSION_PHASE=1` (its meaning on 56578 is unverified), and asks the host to move
+//!   the client to the phase's region (`regions=` in the activity table, since protocol 1 names the
+//!   slice, not its id) when it is not already there.
+//! * **`activity_complete`** sends one udt 18: 965, 3235, 2937, 2009 and 614 (3235 left out for a
+//!   cinematic-only activity) with one `0x80800595` body built from the activity's manifest hashes
+//!   ([`crate::completion`]); without the hashes it is not sent, and the log says so.
 //! * **`ended`** calls [`ActivityRewards::grant_activity_rewards`] for each joined character.
 //! * **Client incidents** (udt 18) are translated with the 56578 catalogue: 3403 → `trigger`
 //!   (its row from the body), 891 / 1726 → `cinematic_finished` / `cinematic_skipped` (the row named
@@ -60,9 +61,10 @@ use serde_json::Value;
 use crate::incident_catalog::{known, IncidentCatalog};
 use crate::messages::ClientMessage;
 use crate::rewards::{ActivityOutcome, ActivityRewards, CharacterRef, NoRewards};
+use crate::completion::{ActivityHashes, CompletionBody};
 use crate::row_encoders::{
-    lifetime_image, lifetime_wire_state, CodecWorker, EncodeContext, Encoded, MappedRef, MissionPhase,
-    OracleRowCodec, RowCodec, RowEncoders, TAG_LIFETIME,
+    lifetime_image, lifetime_wire_state, CodecDone, CodecJob, CodecWorker, EncodeContext, Encoded, EndKind,
+    MappedRef, MissionPhase, RowEncoders, TAG_LIFETIME,
 };
 use crate::rows::{FramePlan, Row, RowKey, RowTable};
 
@@ -126,6 +128,8 @@ pub enum HostMsg {
     CinematicSkipped { bundle: u32, type_index: i16, key: String },
     Incident { id: u32, name_hash: u32 },
     SquadAlive { bundle: u32, type_index: i16, count: i32 },
+    /// The bundles whose threads run (a public bubble's, from stream G).
+    ActiveBundles { bundles: Vec<u32> },
     End,
 }
 
@@ -340,10 +344,17 @@ pub struct ScriptedActivity {
     /// Mission phase index → the region (slice-set id, `bubble << 3 | state`) it runs in. The
     /// sidecar names a phase's slice by name and hash; until content resolves those, the table says.
     pub regions: HashMap<u32, u32>,
+    /// How the activity ends (`kind=cinematic`; gameplay otherwise): the lifetime's last value and
+    /// the completion chain differ.
+    pub end: EndKind,
+    /// The activity's manifest hashes for the `activity_complete` body (`type=`, `type2=`,
+    /// `place=`, with `hash=`). Without them the completion is not sent.
+    pub hashes: Option<ActivityHashes>,
 }
 
 impl ScriptedActivity {
-    /// Parse `INDEX ACTIVITY GROUP LIST [hash=H] [bundles=PATH] [map=B:G,...] [regions=P:R,...] [team=0]`, building
+    /// Parse `INDEX ACTIVITY GROUP LIST [hash=H] [kind=cinematic] [type=H type2=H place=H]
+    /// [bundles=PATH] [map=B:G,...] [regions=P:R,...] [team=0]`, building
     /// the rows from LIST as the world table does (`sensor_list::params_for_list`).
     pub fn parse(
         line: &str,
@@ -352,7 +363,7 @@ impl ScriptedActivity {
     ) -> Result<Self, String> {
         let f: Vec<&str> = line.split_whitespace().collect();
         if f.len() < 4 {
-            return Err(format!("{line:?}: want `INDEX ACTIVITY GROUP LIST [hash=H] [bundles=PATH] [map=B:G,...] [regions=P:R,...] [team=0]`"));
+            return Err(format!("{line:?}: want `INDEX ACTIVITY GROUP LIST [hash=H] [kind=cinematic] [type=H type2=H place=H] [bundles=PATH] [map=B:G,...] [regions=P:R,...] [team=0]`"));
         }
         let num = |s: &str| {
             s.strip_prefix("0x").map_or_else(|| s.parse::<u32>().ok(), |h| u32::from_str_radix(h, 16).ok())
@@ -361,6 +372,7 @@ impl ScriptedActivity {
         let group = num(f[2]).ok_or_else(|| format!("{line:?}: bad group"))?;
         let (mut hash, mut bundles_path, mut team) = (0, None, -1);
         let (mut bundle_groups, mut regions) = (HashMap::new(), HashMap::new());
+        let (mut end, mut kind, mut kind2, mut place) = (EndKind::Gameplay, None, None, None);
         for t in &f[4..] {
             if let Some(v) = t.strip_prefix("hash=") {
                 hash = num(v).ok_or_else(|| format!("{line:?}: bad hash"))?;
@@ -382,6 +394,18 @@ impl ScriptedActivity {
                         num(r).ok_or_else(|| format!("{line:?}: bad region {r:?}"))?,
                     );
                 }
+            } else if let Some(v) = t.strip_prefix("kind=") {
+                end = match v {
+                    "cinematic" => EndKind::Cinematic,
+                    "gameplay" => EndKind::Gameplay,
+                    _ => return Err(format!("{line:?}: kind is cinematic or gameplay")),
+                };
+            } else if let Some(v) = t.strip_prefix("type2=") {
+                kind2 = Some(num(v).ok_or_else(|| format!("{line:?}: bad type2"))?);
+            } else if let Some(v) = t.strip_prefix("type=") {
+                kind = Some(num(v).ok_or_else(|| format!("{line:?}: bad type"))?);
+            } else if let Some(v) = t.strip_prefix("place=") {
+                place = Some(num(v).ok_or_else(|| format!("{line:?}: bad place"))?);
             } else if let Some(v) = t.strip_prefix("team=") {
                 team = v.parse().map_err(|_| format!("{line:?}: bad team"))?;
             } else {
@@ -402,6 +426,14 @@ impl ScriptedActivity {
             bundles_path,
             bundle_groups,
             regions,
+            end,
+            hashes: match (kind, kind2, place) {
+                (Some(kind), Some(kind2), Some(place)) if hash != 0 => {
+                    Some(ActivityHashes { activity: hash, kind, kind2, place })
+                }
+                (None, None, None) => None,
+                _ => return Err(format!("{line:?}: the completion body needs hash=, type=, type2= and place= together")),
+            },
         })
     }
 
@@ -429,7 +461,6 @@ pub struct ScriptConfig {
     pub gen: u8,
     pub tail: Option<(u32, u32)>,
     pub incidents: IncidentCatalog,
-    pub complete_body: Option<Vec<u8>>,
     /// The catalogue's path, passed to the sidecar in `hello`.
     pub incidents_path: Option<String>,
     pub mission_phase: bool,
@@ -448,15 +479,19 @@ impl std::fmt::Debug for ScriptConfig {
     }
 }
 
-fn hex_bytes(s: &str) -> Option<Vec<u8>> {
-    (s.len() % 2 == 0).then_some(())?;
-    (0..s.len()).step_by(2).map(|i| u8::from_str_radix(s.get(i..i + 2)?, 16).ok()).collect()
-}
-
 impl ScriptConfig {
     /// The oracle codec on its own thread.
-    pub fn oracle_codec() -> CodecMaker {
-        Arc::new(|| CodecWorker::spawn(Box::new(|| Ok(Box::new(OracleRowCodec::default()) as Box<dyn RowCodec>))))
+    /// The host's wire codec, as the listener chooses it: stream B's native one under
+    /// `D1_RSAT_NATIVE=1` (the client's own for schemas it does not cover), else the client's own.
+    pub fn host_codec() -> CodecMaker {
+        Arc::new(|| {
+            let codec: Arc<dyn crate::codec::AhWireCodec> = if crate::native::enabled() {
+                Arc::new(crate::native::NativeCodec)
+            } else {
+                Arc::new(crate::codec::SchemaCodec)
+            };
+            CodecWorker::spawn(codec)
+        })
     }
 
     /// `D1_AH_SCRIPTS=1` and its knobs (see the module doc and the note). `Ok(None)` when off.
@@ -483,10 +518,6 @@ impl ScriptConfig {
         let incidents = IncidentCatalog::load(std::path::Path::new(&catalogue)).map_err(|e| {
             format!("D1_AH_SCRIPTS_INCIDENTS: {e} (the 56578 incident catalogue, PR #306)")
         })?;
-        let complete_body = match std::env::var("D1_AH_SCRIPTS_COMPLETE_BODY") {
-            Ok(h) => Some(hex_bytes(h.trim()).ok_or("D1_AH_SCRIPTS_COMPLETE_BODY is not hex")?),
-            Err(_) => None,
-        };
         let scoreboard_columns = match std::env::var("D1_AH_SCRIPTS_SCOREBOARD_COLUMNS") {
             Ok(path) => std::fs::read_to_string(&path)
                 .map_err(|e| format!("D1_AH_SCRIPTS_SCOREBOARD_COLUMNS {path}: {e}"))?
@@ -503,14 +534,13 @@ impl ScriptConfig {
             gen: base.gen,
             tail: base.tail,
             incidents,
-            complete_body,
             incidents_path: Some(catalogue),
             mission_phase: on("D1_AH_SCRIPTS_MISSION_PHASE"),
             send_unlisted: on("D1_AH_ROWS_UNLISTED"),
             delta_init: on("D1_AH_ROWS_DELTA_INIT"),
             scoreboard_columns,
             rewards: Arc::new(NoRewards),
-            codec: Self::oracle_codec(),
+            codec: Self::host_codec(),
         }))
     }
 }
@@ -551,6 +581,10 @@ struct Run {
     unsupported: std::collections::HashSet<String>,
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
+    /// The last lifetime value a frame carried, and that frame's stamp.
+    lifetime_sent: Option<(i8, u32)>,
+    /// The sidecar's lifetime numbering disagreed with the host's (logged once).
+    wire_disagreed: bool,
     /// Sidecar messages waiting for the pending lifetime value to go out (see [`Self::holds`]).
     held: VecDeque<SidecarMsg>,
 }
@@ -568,7 +602,7 @@ impl Run {
             SidecarMsg::Ended {} => true,
             SidecarMsg::Rows { changes } => changes.iter().any(|c| {
                 c.kind == "lifetime"
-                    && c.state.get("state").and_then(Value::as_i64).and_then(lifetime_wire_state)
+                    && c.state.get("state").and_then(Value::as_i64).and_then(|s| lifetime_wire_state(s, self.activity.end))
                         .is_some_and(|s| s != self.lifetime_state)
             }),
             _ => false,
@@ -587,8 +621,12 @@ pub struct ScriptBridge {
     codec_retry: Option<Instant>,
     run: Option<Run>,
     players: Vec<CharacterRef>,
-    incidents_out: VecDeque<(u32, Vec<u8>)>,
+    /// Host udt 18 struct images to send (the completion envelope).
+    incidents_out: VecDeque<Vec<u8>>,
+    /// Completion chains whose body is being encoded, in submission order.
+    bodies_pending: VecDeque<&'static [u32]>,
     region_out: Option<u32>,
+    host_id: u64,
     pub frames_sent: u64,
 }
 
@@ -667,7 +705,9 @@ impl ScriptBridge {
             run: None,
             players: Vec::new(),
             incidents_out: VecDeque::new(),
+            bodies_pending: VecDeque::new(),
             region_out: None,
+            host_id: 0,
             frames_sent: 0,
         }
     }
@@ -681,8 +721,8 @@ impl ScriptBridge {
         &self.rows
     }
 
-    /// A host incident to send (`activity_complete`).
-    pub fn take_incident(&mut self) -> Option<(u32, Vec<u8>)> {
+    /// A host udt 18 struct image to send (the `activity_complete` envelope).
+    pub fn take_incident(&mut self) -> Option<Vec<u8>> {
         self.incidents_out.pop_front()
     }
 
@@ -694,8 +734,9 @@ impl ScriptBridge {
     // ── inputs ────────────────────────────────────────────────────────────────────────────────
 
     /// Every client message, after the instance has handled it (`activity_index` is the activity it
-    /// then serves).
-    pub fn on_client_message(&mut self, msg: &ClientMessage, activity_index: u16, now: Instant) {
+    /// then serves, `host_id` this activity host's id).
+    pub fn on_client_message(&mut self, msg: &ClientMessage, activity_index: u16, host_id: u64, now: Instant) {
+        self.host_id = host_id;
         match msg {
             ClientMessage::JoinRequest { struct_image } => {
                 use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
@@ -791,6 +832,8 @@ impl ScriptBridge {
             current_slice: None,
             unsupported: Default::default(),
             lifetime_unsent: false,
+            lifetime_sent: None,
+            wire_disagreed: false,
             held: VecDeque::new(),
         });
     }
@@ -1094,16 +1137,37 @@ impl ScriptBridge {
             }
             SidecarMsg::ActivityComplete {} => {
                 run.complete = true;
-                let k = known::ACTIVITY_COMPLETE;
-                match &self.config.complete_body {
-                    Some(body) => {
-                        tracing::info!("⭐ script bridge: activity complete; host incident {} {}", k.index, k.name);
-                        self.incidents_out.push_back((k.index, body.clone()));
+                let player = self.players.first().map(|c| {
+                    u64::from_le_bytes(c.identity.get(..8).and_then(|b| b.try_into().ok()).unwrap_or([0; 8]))
+                });
+                match (run.activity.hashes, player) {
+                    (Some(hashes), Some(player)) => {
+                        let body = CompletionBody {
+                            // A stand-in: the live word is per instance and consecutive per member.
+                            instance_word: self.host_id as u32,
+                            host: self.host_id,
+                            player,
+                            hashes,
+                            end: run.activity.end,
+                        };
+                        tracing::info!(
+                            "⭐ script bridge: {} complete; host incidents {:?} with one 0x80800595 body",
+                            run.activity.activity,
+                            crate::completion::chain(run.activity.end)
+                        );
+                        self.bodies_pending.push_back(crate::completion::chain(run.activity.end));
+                        let image = body.image();
+                        let codec = self.codec.get_or_insert_with(|| (self.config.codec)());
+                        codec.submit(CodecJob::Object { tag: crate::completion::BODY_TAG, image });
                     }
-                    None => tracing::warn!(
-                        "** NAMED GATE ** script bridge: the scripts completed {}, but incident {} \
-                         ({}) is not sent: its 56578 body is unknown (D1_AH_SCRIPTS_COMPLETE_BODY)",
-                        run.activity.activity, k.index, k.name
+                    (None, _) => tracing::warn!(
+                        "** NAMED GATE ** script bridge: the scripts completed {}, but incident 965 is not \
+                         sent: its body needs the activity's manifest hashes (hash=, type=, type2=, place=)",
+                        run.activity.activity
+                    ),
+                    (_, None) => tracing::warn!(
+                        "** NAMED GATE ** script bridge: {} completed with no joined player; incident 965 not sent",
+                        run.activity.activity
                     ),
                 }
             }
@@ -1135,10 +1199,15 @@ impl ScriptBridge {
         let Some(run) = self.run.as_mut() else { return };
         if c.kind == "lifetime" {
             let state = c.state.get("state").and_then(Value::as_i64).unwrap_or(-1);
-            let ours = lifetime_wire_state(state);
+            let ours = lifetime_wire_state(state, run.activity.end);
             if let Some(wire) = c.wire.as_ref().and_then(|w| w.get("phase")) {
-                if wire.as_i64() != ours.map(i64::from) {
-                    tracing::warn!("script bridge: the sidecar maps lifetime {state} to {wire}, the host to {ours:?}; the host's stands");
+                if wire.as_i64() != ours.map(i64::from) && !run.wire_disagreed {
+                    run.wire_disagreed = true;
+                    tracing::warn!(
+                        "script bridge: the sidecar maps lifetime {state} to {wire}, the host to {ours:?} \
+                         ({:?} activity; notes/ps4-56578-wire-catalog-2026-11-05.md); the host's stands",
+                        run.activity.end
+                    );
                 }
             }
             match ours {
@@ -1204,32 +1273,56 @@ impl ScriptBridge {
     pub fn sensor_due(&mut self, now: Instant) -> Option<Vec<u8>> {
         self.run.as_ref()?;
         self.drive(now);
-        if let Some(plan) = self.in_flight.take() {
-            match self.codec.as_mut().and_then(CodecWorker::poll) {
-                None => self.in_flight = Some(plan),
-                Some(r) => {
-                    if let Some(frame) = self.finish(plan, r, now) {
-                        return Some(frame);
+        let mut frame = None;
+        // Results come back in submission order: frames and completion bodies.
+        while let Some(done) = self.codec.as_mut().and_then(CodecWorker::poll) {
+            match done {
+                Ok(CodecDone::Frame(r)) => {
+                    if let Some(plan) = self.in_flight.take() {
+                        frame = frame.or(self.finish(plan, r, now));
                     }
                 }
+                Ok(CodecDone::Object(r)) => self.body_done(r),
+                Err(e) => {
+                    if let Some(plan) = self.in_flight.take() {
+                        self.finish(plan, Err(e.clone()), now);
+                    }
+                    for chain in self.bodies_pending.drain(..) {
+                        tracing::warn!("incident chain {chain:?} not sent: {e}");
+                    }
+                    self.codec = None;
+                    break;
+                }
             }
+        }
+        if frame.is_some() {
+            return frame;
         }
         let backing_off = self.codec_retry.is_some_and(|t| now < t);
         if self.in_flight.is_none() && !backing_off {
             if let Some(plan) = self.rows.plan() {
                 let codec = self.codec.get_or_insert_with(|| (self.config.codec)());
-                codec.submit(&plan);
-                match codec.poll() {
-                    None => self.in_flight = Some(plan),
-                    Some(r) => {
-                        if let Some(frame) = self.finish(plan, r, now) {
-                            return Some(frame);
-                        }
+                codec.submit(CodecJob::Frame(plan.clone()));
+                self.in_flight = Some(plan);
+                // An inline codec answers at once.
+                if let Some(Ok(CodecDone::Frame(r))) = self.codec.as_mut().and_then(CodecWorker::poll) {
+                    let plan = self.in_flight.take().expect("just set");
+                    if let Some(f) = self.finish(plan, r, now) {
+                        return Some(f);
                     }
                 }
             }
         }
         self.rows.heartbeat_due(now)
+    }
+
+    /// A completion body came back from the codec: its envelope is ready to send.
+    fn body_done(&mut self, r: Result<(u32, Vec<u8>), String>) {
+        let Some(chain) = self.bodies_pending.pop_front() else { return };
+        match r.and_then(|(bits, payload)| crate::completion::envelope(chain, &payload, bits)) {
+            Ok(image) => self.incidents_out.push_back(image),
+            Err(e) => tracing::warn!("** NAMED GATE ** incident chain {chain:?} not sent: its body did not encode: {e}"),
+        }
     }
 
     fn finish(&mut self, plan: FramePlan, result: Result<crate::row_encoders::EncodedFrame, String>, now: Instant) -> Option<Vec<u8>> {
@@ -1240,28 +1333,65 @@ impl ScriptBridge {
             None
         };
         match result {
-            Ok(mut f) => match self.rows.stamp(&mut f.bytes, f.stamp_bit, plan.init, now) {
+            Ok(mut f) => {
+                // A cinematic-only activity's 6 and 8 went out in one tick on the live hosts: the
+                // 8 takes the 6's stamp.
+                let lifetime = self.run.as_ref().and_then(|run| {
+                    let (_, row) = plan.entries.iter().find(|(k, _)| *k == run.activity.lifetime)?;
+                    row.a.as_ref().map(|(_, image)| image[0] as i8)
+                });
+                let pinned = self.run.as_ref().and_then(|run| match (run.activity.end, run.lifetime_sent, lifetime) {
+                    (EndKind::Cinematic, Some((6, at)), Some(8)) => Some(at),
+                    _ => None,
+                });
+                let stamp = pinned.unwrap_or_else(|| self.rows.tick(now));
+                match self.rows.stamp_at(&mut f.bytes, f.stamp_bit, plan.init, stamp) {
                 Ok(()) => {
                     self.rows.sent(&plan, now);
-                    if let Some(run) = self.run.as_mut() {
-                        if plan.entries.iter().any(|(k, _)| *k == run.activity.lifetime) {
-                            run.lifetime_unsent = false;
-                        }
+                    if let (Some(run), Some(value)) = (self.run.as_mut(), lifetime) {
+                        run.lifetime_unsent = false;
+                        run.lifetime_sent = Some((value, stamp));
                     }
                     self.codec_retry = None;
                     self.frames_sent += 1;
                     tracing::info!(
-                        "udt 5 {} ({} rows, stamp {})",
+                        "udt 5 {} ({} rows, stamp {stamp})",
                         if plan.full { "full list, init" } else { "delta" },
                         plan.entries.len(),
-                        self.rows.tick(now)
                     );
                     Some(f.bytes)
                 }
                 Err(e) => failed(self, plan, e),
-            },
+                }
+            }
             Err(e) => failed(self, plan, e),
         }
+    }
+}
+
+/// Stream G's seam (`public_events::BubbleScriptBridge`): a public bubble's host asks the bridge
+/// to run its bundles. Protocol 1 can say which bundles run (`active_bundles`); it has no message to
+/// start or stop one event, which runs from its own bundle's `@startup` once that bundle is active,
+/// so those two calls are refused rather than pretended.
+impl crate::public_events::BubbleScriptBridge for ScriptBridge {
+    fn start_bundles(&mut self, host: u64, bundles: &[u32]) -> Result<(), String> {
+        if !self.run.as_ref().is_some_and(|r| r.started && r.halted.is_none()) {
+            return Err("no scripted activity is running on this bridge".into());
+        }
+        self.host_id = host;
+        self.send(HostMsg::ActiveBundles { bundles: bundles.to_vec() });
+        Ok(())
+    }
+
+    fn start_event(&mut self, _host: u64, bundle: u32, event: &crate::public_events::ScheduledEvent) -> Result<(), String> {
+        Err(format!(
+            "protocol 1 has no message to start event {} of bundle {bundle:#010x}: it runs from the bundle's own scripts",
+            event.id
+        ))
+    }
+
+    fn stop_event(&mut self, _host: u64, bundle: u32, event_id: u32) -> Result<(), String> {
+        Err(format!("protocol 1 has no message to stop event {event_id} of bundle {bundle:#010x}"))
     }
 }
 
@@ -1326,6 +1456,7 @@ mod tests {
     struct Shared {
         sent: Vec<HostMsg>,
         frames: Vec<FramePlan>,
+        bodies: Vec<(u32, Vec<u8>)>,
         rewards: Vec<(CharacterRef, u32, ActivityOutcome)>,
         launches: u32,
     }
@@ -1352,7 +1483,7 @@ mod tests {
             kind: "lifetime".into(),
             state: serde_json::json!({"joinFlag": true, "state": state}),
             initial: false,
-            wire: Some(serde_json::json!({"phase": lifetime_wire_state(state)})),
+            wire: Some(serde_json::json!({"phase": lifetime_wire_state(state, EndKind::Cinematic)})), // the sidecar always ends on 8
         }
     }
 
@@ -1416,18 +1547,21 @@ mod tests {
         }
     }
 
-    /// Records each plan; the bytes are a heartbeat-shaped header (stamp at bit 9) plus a count.
-    struct RecordingCodec(Arc<Mutex<Shared>>);
-    impl RowCodec for RecordingCodec {
-        fn name(&self) -> &'static str {
-            "recording"
-        }
-        fn encode_frame(&mut self, plan: &FramePlan) -> Result<EncodedFrame, String> {
-            self.0.lock().unwrap().frames.push(plan.clone());
-            let mut bytes = d1_oracle::sensor::heartbeat_frame(plan.gen, 0);
-            bytes.push(plan.entries.len() as u8);
-            Ok(EncodedFrame { bytes, stamp_bit: 9 })
-        }
+    /// Records each job; a frame's bytes are a heartbeat-shaped header (stamp at bit 9) plus a
+    /// count, a body encodes to 725 bits of 0xCC.
+    fn recording(shared: Arc<Mutex<Shared>>) -> crate::row_encoders::InlineCodec {
+        Box::new(move |job| match job {
+            CodecJob::Frame(plan) => {
+                shared.lock().unwrap().frames.push(plan.clone());
+                let mut bytes = d1_oracle::sensor::heartbeat_frame(plan.gen, 0);
+                bytes.push(plan.entries.len() as u8);
+                CodecDone::Frame(Ok(EncodedFrame { bytes, stamp_bit: 9 }))
+            }
+            CodecJob::Object { tag, image } => {
+                shared.lock().unwrap().bodies.push((*tag, image.clone()));
+                CodecDone::Object(Ok((725, vec![0xCC; 91])))
+            }
+        })
     }
 
     struct RecordingRewards(Arc<Mutex<Shared>>);
@@ -1452,13 +1586,18 @@ mod tests {
 0x4786c0e0 0xf 0 1 0
 ";
 
-    fn bridge_with(shared: &Arc<Mutex<Shared>>, die_after_start: bool, stand_in: bool, complete_body: Option<Vec<u8>>) -> ScriptBridge {
-        let activity = ScriptedActivity::parse(
-            "165 cine_reveal 0x4786c0e0 list.txt hash=0x0BBD0E26 regions=0:25,1:26",
-            &base(),
-            &|_| Ok(LIST.to_string()),
-        )
-        .unwrap();
+    /// The reveal: cinematic-only, with its manifest hashes (synthetic values).
+    const CINE_LINE: &str = "165 cine_reveal 0x4786c0e0 list.txt hash=0x0BBD0E26 kind=cinematic \
+        type=0x648999F4 type2=0x4D78882E place=0xB22417AE regions=0:25,1:26";
+    /// The same world served as a gameplay activity.
+    const GAMEPLAY_LINE: &str = "165 cine_reveal 0x4786c0e0 list.txt hash=0x0BBD0E26 \
+        type=0x648999F4 type2=0x648999F4 place=0xB22417AE regions=0:25,1:26";
+    /// No manifest hashes: no completion body.
+    const BARE_LINE: &str = "165 cine_reveal 0x4786c0e0 list.txt hash=0x0BBD0E26 kind=cinematic regions=0:25,1:26";
+    const HOST: u64 = 0xD1A0_0000_0000_0042;
+
+    fn bridge_with(shared: &Arc<Mutex<Shared>>, die_after_start: bool, stand_in: bool, line: &str) -> ScriptBridge {
+        let activity = ScriptedActivity::parse(line, &base(), &|_| Ok(LIST.to_string())).unwrap();
         assert_eq!(activity.lifetime, RowKey { group: GROUP, kind: 0x10, index: 3 });
         assert_eq!(activity.machine(), 13);
         let s = shared.clone();
@@ -1468,14 +1607,13 @@ mod tests {
             gen: 0,
             tail: None,
             incidents: crate::incident_catalog::tests::synthetic(),
-            complete_body,
             incidents_path: None,
             mission_phase: true,
             send_unlisted: false,
             delta_init: false,
             scoreboard_columns: Vec::new(),
             rewards: Arc::new(RecordingRewards(shared.clone())),
-            codec: Arc::new(move || CodecWorker::inline(Box::new(RecordingCodec(s.clone())))),
+            codec: Arc::new(move || CodecWorker::inline(recording(s.clone()))),
         };
         let s = shared.clone();
         ScriptBridge::with_launcher(
@@ -1488,8 +1626,8 @@ mod tests {
         )
     }
 
-    fn bridge(shared: &Arc<Mutex<Shared>>, die_after_start: bool, complete_body: Option<Vec<u8>>) -> ScriptBridge {
-        bridge_with(shared, die_after_start, false, complete_body)
+    fn bridge(shared: &Arc<Mutex<Shared>>, die_after_start: bool) -> ScriptBridge {
+        bridge_with(shared, die_after_start, false, CINE_LINE)
     }
 
     fn join(identity: u8) -> ClientMessage {
@@ -1551,13 +1689,13 @@ mod tests {
     #[test]
     fn a_fake_sidecar_drives_a_whole_synthetic_activity() {
         let shared = Arc::new(Mutex::new(Shared::default()));
-        let mut b = bridge(&shared, false, Some(vec![0xAA, 0xBB]));
+        let mut b = bridge(&shared, false);
         let mut t = Instant::now();
         let mut wire = Vec::new();
         assert!(b.sensor_due(t).is_none(), "nothing before a join");
-        b.on_client_message(&join(7), 99, t);
+        b.on_client_message(&join(7), 99, HOST, t);
         assert!(!b.scripted(), "an activity the table does not name stays unscripted");
-        b.on_client_message(&join(7), 165, t);
+        b.on_client_message(&join(7), 165, HOST, t);
         assert!(b.scripted());
 
         // The join: the full list (every row, init, authority) goes out first; then start.
@@ -1581,7 +1719,7 @@ mod tests {
             assert_eq!(pregame.entries.len(), 3, "the lifetime and the two cinematics it set");
         }
         assert_eq!(b.take_region_request(), Some(25), "phase 0 runs in region 25 (the table's), the client is not there yet");
-        b.on_client_message(&slice(25), 165, t);
+        b.on_client_message(&slice(25), 165, HOST, t);
 
         // Ticks follow the 10 Hz stamp: at stamp 20 the first cinematic plays at the hold.
         run_for(&mut b, &mut t, 3.0, &mut wire);
@@ -1603,13 +1741,27 @@ mod tests {
         assert!(wire.iter().any(|f| f.len() == 6), "heartbeats are the 6-byte live idle frame");
 
         // The client reports the first cinematic finished, naming its row; phase 1 is region 26.
-        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, t);
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
         run_for(&mut b, &mut t, 0.5, &mut wire);
         assert_eq!(b.take_region_request(), Some(26), "phase 1 wants region 26");
-        b.on_client_message(&slice(26), 165, t);
+        b.on_client_message(&slice(26), 165, HOST, t);
         run_for(&mut b, &mut t, 4.5, &mut wire);
-        assert_eq!(b.take_incident(), Some((965, vec![0xAA, 0xBB])), "activity_complete, with the configured body");
+        let envelope = b.take_incident().expect("the completion envelope");
         assert_eq!(b.take_incident(), None);
+        let u32_at_e = |at: usize| u32::from_le_bytes(envelope[at..at + 4].try_into().unwrap());
+        assert_eq!(envelope.len(), crate::completion::ENVELOPE_SIZE);
+        assert_eq!([u32_at_e(0), u32_at_e(4), u32_at_e(8), u32_at_e(12), u32_at_e(16)], [4, 965, 2937, 2009, 614], "cinematic-only: no 3235");
+        assert_eq!(u32_at_e(0xD4), 91, "one 725-bit body");
+        {
+            let s = shared.lock().unwrap();
+            let (tag, body) = &s.bodies[0];
+            assert_eq!(*tag, 0x8080_0595);
+            assert_eq!(u32_at(body, 0x44), 0x0BBD_0E26, "the activity hash from the table");
+            assert_eq!(u32_at(body, 0x4c), 0x4D78_882E);
+            assert_eq!(&body[0x10..0x18], HOST.to_le_bytes(), "this host");
+            assert_eq!(&body[0x18..0x20], [7; 8], "the joined player");
+            assert_eq!(&body[0x68..0x70], [0xFF; 8], "cinematic-only counters -1, -1");
+        }
         {
             let s = shared.lock().unwrap();
             let phase1 = s.frames.iter().rev().find(|p| lifetime_of(p).is_some()).unwrap();
@@ -1622,13 +1774,19 @@ mod tests {
         }
 
         // The second finish names no row: the one cinematic playing is it.
-        b.on_client_message(&incident(891, None), 165, t);
+        b.on_client_message(&incident(891, None), 165, HOST, t);
         run_for(&mut b, &mut t, 1.0, &mut wire);
         let s = shared.lock().unwrap();
         assert!(s.sent.iter().any(|m| matches!(m, HostMsg::CinematicFinished { type_index: 1, .. })));
         let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
         seq.dedup();
-        assert_eq!(seq, [0, 1, 4, 6, 8], "the live order 0 -> 1 -> 4 -> 6 -> 8, results and ended in frames of their own");
+        assert_eq!(seq, [0, 1, 4, 6, 8], "cinematic-only: 0 -> 1 -> 4 -> 6 -> 8, results and ended in frames of their own");
+        // ... in one tick: the 8 frame carries the 6 frame's stamp.
+        let coded: Vec<&Vec<u8>> = wire.iter().filter(|f| f.len() == 7).collect();
+        assert_eq!(coded.len(), s.frames.len(), "every encoded frame was sent, in order");
+        let stamp = |f: &[u8]| ((u64::from_be_bytes([0, 0, 0, f[1], f[2], f[3], f[4], f[5]]) >> 7) & 0xFFFF_FFFF) as u32;
+        let at = |v: i8| s.frames.iter().rposition(|p| lifetime_of(p) == Some(v)).unwrap();
+        assert_eq!(stamp(coded[at(6)]), stamp(coded[at(8)]));
         assert_eq!(s.rewards.len(), 1, "rewards once, for the one character");
         assert_eq!((s.rewards[0].0.identity[0], s.rewards[0].1, s.rewards[0].2), (7, 0x0BBD_0E26, ActivityOutcome::Completed));
         let ticks = s.sent.iter().filter(|m| matches!(m, HostMsg::Tick { .. })).count();
@@ -1644,9 +1802,9 @@ mod tests {
     #[test]
     fn stand_in_rows_never_reach_the_wire() {
         let shared = Arc::new(Mutex::new(Shared::default()));
-        let mut b = bridge_with(&shared, false, true, None);
+        let mut b = bridge_with(&shared, false, true, CINE_LINE);
         let mut t = Instant::now();
-        b.on_client_message(&join(6), 165, t);
+        b.on_client_message(&join(6), 165, HOST, t);
         run_for(&mut b, &mut t, 3.5, &mut Vec::new());
         let s = shared.lock().unwrap();
         let deltas: Vec<&FramePlan> = s.frames.iter().filter(|p| !p.full).collect();
@@ -1660,18 +1818,18 @@ mod tests {
     #[test]
     fn incidents_translate_through_the_catalogue() {
         let shared = Arc::new(Mutex::new(Shared::default()));
-        let mut b = bridge(&shared, false, None);
+        let mut b = bridge(&shared, false);
         let mut t = Instant::now();
-        b.on_client_message(&join(1), 165, t);
+        b.on_client_message(&join(1), 165, HOST, t);
         run_for(&mut b, &mut t, 1.0, &mut Vec::new());
         shared.lock().unwrap().sent.clear();
-        b.on_client_message(&incident(3403, Some((0x992B_B471, 0x1D, 34))), 165, t);
-        b.on_client_message(&incident(566, None), 165, t);
-        b.on_client_message(&incident(2079, None), 165, t);
-        b.on_client_message(&incident(2899, None), 165, t);
-        b.on_client_message(&incident(1726, Some((CINE, 6, 1))), 165, t);
-        b.on_client_message(&incident(891, None), 165, t);
-        b.on_client_message(&incident(77777, None), 165, t);
+        b.on_client_message(&incident(3403, Some((0x992B_B471, 0x1D, 34))), 165, HOST, t);
+        b.on_client_message(&incident(566, None), 165, HOST, t);
+        b.on_client_message(&incident(2079, None), 165, HOST, t);
+        b.on_client_message(&incident(2899, None), 165, HOST, t);
+        b.on_client_message(&incident(1726, Some((CINE, 6, 1))), 165, HOST, t);
+        b.on_client_message(&incident(891, None), 165, HOST, t);
+        b.on_client_message(&incident(77777, None), 165, HOST, t);
         let s = shared.lock().unwrap();
         let key = "0101010101010101".to_string();
         assert_eq!(
@@ -1688,24 +1846,65 @@ mod tests {
     }
 
     #[test]
-    fn activity_complete_without_a_known_body_is_not_sent() {
+    fn activity_complete_without_manifest_hashes_is_not_sent() {
         let shared = Arc::new(Mutex::new(Shared::default()));
-        let mut b = bridge(&shared, false, None);
+        let mut b = bridge_with(&shared, false, false, BARE_LINE);
         let mut t = Instant::now();
-        b.on_client_message(&join(1), 165, t);
+        b.on_client_message(&join(1), 165, HOST, t);
         run_for(&mut b, &mut t, 3.5, &mut Vec::new());
-        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, t);
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
         run_for(&mut b, &mut t, 5.0, &mut Vec::new());
         assert!(shared.lock().unwrap().frames.iter().any(|p| cinematic_of(p, 1).is_some_and(|c| c.2 == 1)), "the scripts reached completion");
         assert_eq!(b.take_incident(), None);
+        assert!(shared.lock().unwrap().bodies.is_empty());
+    }
+
+    #[test]
+    fn a_gameplay_activity_ends_on_7_and_sends_all_five_incidents() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_with(&shared, false, false, GAMEPLAY_LINE);
+        let mut t = Instant::now();
+        b.on_client_message(&join(9), 165, HOST, t);
+        b.on_client_message(&slice(25), 165, HOST, t);
+        run_for(&mut b, &mut t, 3.5, &mut Vec::new());
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        run_for(&mut b, &mut t, 5.0, &mut Vec::new());
+        let envelope = b.take_incident().expect("the completion envelope");
+        let u32_at_e = |at: usize| u32::from_le_bytes(envelope[at..at + 4].try_into().unwrap());
+        assert_eq!([u32_at_e(0), u32_at_e(4), u32_at_e(8), u32_at_e(12), u32_at_e(16), u32_at_e(20)], [5, 965, 3235, 2937, 2009, 614]);
+        b.on_client_message(&incident(891, None), 165, HOST, t);
+        run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+        let s = shared.lock().unwrap();
+        let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+        seq.dedup();
+        assert_eq!(seq, [0, 1, 4, 6, 7], "gameplay: results 6, then the post-game 7");
+        assert_eq!(&s.bodies[0].1[0x68..0x70], [1, 0, 0, 0, 1, 0, 0, 0], "completion counters 1, 1");
+    }
+
+    #[test]
+    fn a_public_bubble_can_name_its_bundles_but_not_start_one_event() {
+        use crate::public_events::BubbleScriptBridge;
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge(&shared, false);
+        assert!(b.start_bundles(HOST, &[1, 2]).is_err(), "nothing running yet");
+        let mut t = Instant::now();
+        b.on_client_message(&join(1), 165, HOST, t);
+        run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+        assert!(b.start_bundles(HOST, &[1, 2]).is_ok());
+        assert_eq!(shared.lock().unwrap().sent.last(), Some(&HostMsg::ActiveBundles { bundles: vec![1, 2] }));
+        let event = crate::public_events::ScheduledEvent {
+            id: 3, kind: crate::public_events::EventKind::Defend, activity_hash: 0, time_limit: Duration::from_secs(60),
+        };
+        assert!(b.start_event(HOST, 1, &event).is_err());
+        assert!(b.stop_event(HOST, 1, 3).is_err());
     }
 
     #[test]
     fn a_sidecar_that_dies_after_start_halts_progression_but_not_the_heartbeat() {
         let shared = Arc::new(Mutex::new(Shared::default()));
-        let mut b = bridge(&shared, true, None);
+        let mut b = bridge(&shared, true);
         let mut t = Instant::now();
-        b.on_client_message(&join(2), 165, t);
+        b.on_client_message(&join(2), 165, HOST, t);
         let mut wire = Vec::new();
         run_for(&mut b, &mut t, 10.0, &mut wire);
         let s = shared.lock().unwrap();
@@ -1719,14 +1918,14 @@ mod tests {
     #[test]
     fn a_sidecar_that_will_not_start_is_tried_three_times() {
         let shared = Arc::new(Mutex::new(Shared::default()));
-        let mut b = bridge(&shared, false, None);
+        let mut b = bridge(&shared, false);
         let s = shared.clone();
         b.launch = Box::new(move |_| {
             s.lock().unwrap().launches += 1;
             Err("node: not found".into())
         });
         let mut t = Instant::now();
-        b.on_client_message(&join(3), 165, t);
+        b.on_client_message(&join(3), 165, HOST, t);
         run_for(&mut b, &mut t, 10.0, &mut Vec::new());
         assert_eq!(shared.lock().unwrap().launches, 3);
         assert!(b.scripted(), "the world is still served from the table");
@@ -1735,11 +1934,11 @@ mod tests {
     #[test]
     fn a_rejoin_resends_the_full_list_with_current_values() {
         let shared = Arc::new(Mutex::new(Shared::default()));
-        let mut b = bridge(&shared, false, None);
+        let mut b = bridge(&shared, false);
         let mut t = Instant::now();
-        b.on_client_message(&join(4), 165, t);
+        b.on_client_message(&join(4), 165, HOST, t);
         run_for(&mut b, &mut t, 3.5, &mut Vec::new());
-        b.on_client_message(&join(4), 165, t);
+        b.on_client_message(&join(4), 165, HOST, t);
         run_for(&mut b, &mut t, 0.25, &mut Vec::new());
         let s = shared.lock().unwrap();
         let full = s.frames.last().unwrap();
@@ -1752,9 +1951,9 @@ mod tests {
     #[test]
     fn squad_counts_go_to_the_sidecar_by_bundle() {
         let shared = Arc::new(Mutex::new(Shared::default()));
-        let mut b = bridge(&shared, false, None);
+        let mut b = bridge(&shared, false);
         let mut t = Instant::now();
-        b.on_client_message(&join(5), 165, t);
+        b.on_client_message(&join(5), 165, HOST, t);
         run_for(&mut b, &mut t, 0.5, &mut Vec::new());
         shared.lock().unwrap().sent.clear();
         let counts = [crate::sense::SquadCount { group: 0x9243_DFFB, kind: 1, index: 17, live: 0 }];
@@ -1799,5 +1998,12 @@ mod tests {
         assert!(ScriptedActivity::parse("165 cine_reveal 0x4786c0e0", &base(), &read).is_err());
         assert!(ScriptedActivity::parse("165 cine_reveal 0x4786c0e0 l.txt colour=red", &base(), &read).is_err());
         assert!(ScriptedActivity::parse("x cine_reveal 0x4786c0e0 l.txt", &base(), &read).is_err());
+        let c = ScriptedActivity::parse(CINE_LINE, &base(), &read).unwrap();
+        assert_eq!(c.end, EndKind::Cinematic);
+        assert_eq!(c.hashes.map(|h| (h.activity, h.kind, h.kind2, h.place)), Some((0x0BBD_0E26, 0x6489_99F4, 0x4D78_882E, 0xB224_17AE)));
+        assert_eq!(a.end, EndKind::Gameplay);
+        assert!(a.hashes.is_none());
+        assert!(ScriptedActivity::parse("165 a 0x1 l.txt hash=0x5 type=0x1", &base(), &read).is_err(), "all four or none");
+        assert!(ScriptedActivity::parse("165 a 0x1 l.txt kind=pvp", &base(), &read).is_err());
     }
 }
