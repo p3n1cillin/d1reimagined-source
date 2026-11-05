@@ -406,14 +406,75 @@ export function guessAreaBundles(scripts, activity) {
 
 // A host-supplied content export: ActivityBundleTag[] as JSON
 // ({bundle, tag, rows:[{name?, nameHash, typeId, typeIndex, ...}]}), hashes
-// as numbers or "0x" strings.
+// as numbers or "0x" strings, or tools/export-bundles.mjs's per-world file
+// ({world, bundles: ActivityBundleTag[], slices}).
 export function parseBundles(json) {
+  const list = Array.isArray(json) ? json : json?.bundles;
+  if (!Array.isArray(list)) {
+    throw new Error("a bundle export is an ActivityBundleTag[] or {bundles: [...]}");
+  }
   const num = (v) =>
     typeof v === "string" ? Number.parseInt(v, v.startsWith("0x") ? 16 : 10) >>> 0 : v;
-  return json.map((tag) => ({
+  return list.map((tag) => ({
     ...tag,
     bundle: num(tag.bundle),
     rows: tag.rows.map((row) => ({ ...row, nameHash: num(row.nameHash) })),
     tag: num(tag.tag),
   }));
+}
+
+// Content rows the scripts' own declarations explain further. The packages
+// name an Encounter row's archetype only through its host's script tag, which
+// the script folder does not key, so an Encounter row takes the class its
+// stand-in twin (same bundle, same name) declares. Nothing else is copied:
+// cells, tasks and indices stay the content's. Returns how many rows gained a
+// childScript.
+export function annotateContent(bundles, standIn, types) {
+  const twins = new Map();
+  for (const tag of standIn) {
+    for (const row of tag.rows) {
+      if (row.childScript && row.name) twins.set(`${tag.bundle}:${row.name}`, row.childScript);
+    }
+  }
+  let annotated = 0;
+  for (const tag of bundles) {
+    for (const row of tag.rows) {
+      if (row.typeId !== types.Encounter || row.childScript || !row.name) continue;
+      const child = twins.get(`${tag.bundle}:${row.name}`);
+      if (child) {
+        row.childScript = child;
+        annotated += 1;
+      }
+    }
+  }
+  return annotated;
+}
+
+// Script members whose restored name is a prefix of the content's: a member
+// `thorium_dome` declared in a bundle whose content has exactly one row of
+// the member's type named `thorium_dome_<suffix>` (and no row of its own name)
+// binds that row. The alias is a second entry with the script's name and the
+// content row's type and index, so the row itself, and what reaches the wire,
+// stay the content's. Only top-level members of a bundle's own script are
+// aliased, never two members to one row. Returns how many were added.
+export function aliasContent(bundles, standIn, fnv1) {
+  let added = 0;
+  const byBundle = new Map(bundles.map((t) => [t.bundle, t]));
+  for (const twin of standIn) {
+    const tag = byBundle.get(twin.bundle);
+    if (!tag) continue;
+    const names = new Set(tag.rows.map((r) => r.name));
+    const claimed = new Set();
+    const wanted = twin.rows.filter((r) => r.name && !r.name.includes(".") && !r.name.includes("[") && !names.has(r.name));
+    for (const member of wanted) {
+      const hits = tag.rows.filter(
+        (r) => r.typeId === member.typeId && r.name?.startsWith(`${member.name}_`) && !twin.rows.some((t) => t.name === r.name)
+      );
+      if (hits.length !== 1 || claimed.has(hits[0].typeIndex)) continue;
+      claimed.add(hits[0].typeIndex);
+      tag.rows = [...tag.rows, { ...hits[0], aliasOf: hits[0].name, name: member.name, nameHash: fnv1(member.name) >>> 0 }];
+      added += 1;
+    }
+  }
+  return added;
 }

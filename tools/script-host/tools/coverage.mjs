@@ -7,7 +7,10 @@
 // nothing answers. Prints a Markdown table (names and counts only, never
 // script text) and, with --json, the same as JSON.
 //
-//   D1_SCRIPTS_DIR=<scripts> node tools/coverage.mjs [--seconds 60] [--json out.json]
+//   D1_SCRIPTS_DIR=<scripts> node tools/coverage.mjs [--seconds 60] [--json out.json] [--bundles D1_BUNDLES_DIR]
+//
+// With --bundles, an activity runs on its world's content export (tools/export-bundles.mjs) when one
+// is there, and on stand-ins otherwise.
 //
 // Each activity runs on stand-in bundles (src/scripts.mjs), plus the area
 // encounters guessed from names (--no-area-guess to leave them out), at
@@ -15,7 +18,10 @@
 // A synthetic driver stands in for the client (--idle turns it off): a
 // cinematic that starts playing finishes 2 s later, an armed player trigger
 // fires 3 s later, and a squad that is placed reports one member alive, then
-// none 5 s later. Nothing else is simulated, so the phases reached measure
+// none 5 s later. On content (--bundles) the driver also reports the losses of
+// a squad with an import identifier as the client's tally (the runtime trusts
+// a tally or kill incidents over the live count for such squads), and walks into a player trigger the client
+// arms from its own content once a thread has polled it for 3 s. Nothing else is simulated, so the phases reached measure
 // the scripts and natives, not the game.
 
 import { writeFileSync } from "node:fs";
@@ -25,7 +31,7 @@ import { guessAreaBundles, ScriptSet, scriptsDirFromEnv } from "../src/scripts.m
 import { STUB_VERBS, staticMissingNatives, unansweredByName } from "../src/natives56578.mjs";
 
 const STUB_NAMES = new Set(Object.keys(STUB_VERBS));
-import { ActivitySession } from "../src/session.mjs";
+import { ActivitySession, bundlesPathFor, readBundlesFile } from "../src/session.mjs";
 import { lifetimeWirePhase } from "../src/types56578.mjs";
 
 function args(argv) {
@@ -39,28 +45,33 @@ function args(argv) {
     else if (a === "--no-area-guess") out.areaGuess = false;
     else if (a === "--only") out.only = argv[++i].split(",");
     else if (a === "--scripts") out.scripts = argv[++i];
+    else if (a === "--bundles") out.bundlesDir = argv[++i];
     else throw new Error(`unknown argument ${a}`);
   }
   return out;
 }
 
-export async function coverage({ scriptsDir, seconds = 60, drive = true, areaGuess = true, only } = {}) {
+export async function coverage({ scriptsDir, seconds = 60, drive = true, areaGuess = true, only, bundlesDir } = {}) {
   const bs = await loadBullshcript();
   const scripts = ScriptSet.fromDir(bs.api, scriptsDir);
   const incidents = IncidentTable.load();
   const results = [];
   for (const activity of scripts.activities()) {
     if (only && !only.includes(activity.name)) continue;
-    results.push(await runOne({ activity, areaGuess, bs, drive, incidents, scripts, seconds }));
+    const path = bundlesDir ? bundlesPathFor(activity.name, { D1_BUNDLES_DIR: bundlesDir }) : undefined;
+    const bundles = path ? readBundlesFile(path) : undefined;
+    results.push(await runOne({ activity, areaGuess, bs, bundles, drive, incidents, scripts, seconds }));
   }
   return { files: scripts.files.length, results };
 }
 
-async function runOne({ activity, areaGuess, bs, drive, incidents, scripts, seconds }) {
-  const area = areaGuess ? guessAreaBundles(scripts, activity) : [];
+export async function runOne({ activity, areaGuess = true, bs, bundles, drive = true, incidents, scripts, seconds, transcript }) {
+  // Content names the bundles an activity loads; the name guess is for stand-ins only.
+  const area = areaGuess && !bundles ? guessAreaBundles(scripts, activity) : [];
   const row = {
     activity: activity.name,
     area_bundles: area,
+    content: bundles !== undefined,
     compiles: false,
     ended: false,
     errors: [],
@@ -80,6 +91,7 @@ async function runOne({ activity, areaGuess, bs, drive, incidents, scripts, seco
     session = await ActivitySession.create({
       activity: activity.name,
       bs,
+      bundles,
       emit: () => undefined,
       extraBundles: area,
       incidents,
@@ -109,6 +121,20 @@ async function runOne({ activity, areaGuess, bs, drive, incidents, scripts, seco
     if (drive && !pending.has(key)) pending.set(key, { at: session.ticks + after, msgs });
   };
   const ref = (i) => ({ bundle: i.bundle, type_index: i.typeIndex });
+  // Content only: a squad's import identifier (its kills come as incidents the
+  // runtime counts), and the player triggers by name, for the triggers the
+  // client's own content arms (no script enables them).
+  const idents = new Map();
+  const triggers = new Map();
+  for (const tag of bundles?.bundles ?? (Array.isArray(bundles) ? bundles : [])) {
+    for (const r of tag.rows) {
+      if (r.importIdent !== undefined && r.typeId === 1 /* Squad */) idents.set(`${tag.bundle}:${r.typeIndex}`, r.importIdent);
+      if (r.typeId === 29 /* PlayerTrigger */ && r.name) {
+        const last = r.name.slice(r.name.lastIndexOf(".") + 1);
+        triggers.set(last, triggers.has(last) ? null : { bundle: tag.bundle, type_index: r.typeIndex });
+      }
+    }
+  }
   const seen = (msgs) => {
     for (const m of msgs) {
       if (m.type === "phase") {
@@ -129,8 +155,15 @@ async function runOne({ activity, areaGuess, bs, drive, incidents, scripts, seco
             later(`${key}:${c.state.placedAt}:${c.state.wave}`, 1, [
               { ...ref(c.item), count: 1, type: "squad_alive" },
             ]);
+            // A squad with an import identifier counts its losses from the
+            // client's tally (an identifier shared by several squads credits
+            // a kill incident to none without a position).
+            const tally = idents.has(`${c.item.bundle}:${c.item.typeIndex}`)
+              ? [{ ...ref(c.item), tally: c.state.roster ?? [c.state.bodies ?? 1], type: "squad_tally" }]
+              : [];
             later(`${key}:${c.state.placedAt}:${c.state.wave}:dead`, 50, [
               { ...ref(c.item), count: 0, type: "squad_alive" },
+              ...tally,
             ]);
           }
         }
@@ -144,6 +177,17 @@ async function runOne({ activity, areaGuess, bs, drive, incidents, scripts, seco
       }
     }
   };
+  // With `transcript`, every message in and out is recorded in order ({in} / {out} lines): a run
+  // that replays exactly (tools/replay.mjs).
+  if (transcript) {
+    const handle = session.handle.bind(session);
+    session.handle = (msg) => {
+      transcript.push({ in: msg });
+      const out = handle(msg);
+      for (const m of out) transcript.push({ out: m });
+      return out;
+    };
+  }
   try {
     const started = session.handle({ type: "start" });
     seen(started);
@@ -160,6 +204,16 @@ async function runOne({ activity, areaGuess, bs, drive, incidents, scripts, seco
         }
       }
       seen(session.handle({ now: t, type: "tick" }));
+      // Content only: a trigger the client arms from content (no script
+      // enables it) that a thread has polled for 3 s is walked into.
+      if (drive && triggers.size > 0 && t % 30 === 0) {
+        for (const th of session.runtime.debugSnapshot().threads) {
+          for (const m of (th.waitingOn ?? "").matchAll(/([A-Za-z_]\w*)\.is_triggered\(\)/g)) {
+            const at = triggers.get(m[1]);
+            if (at) later(`content-trigger:${at.bundle}:${at.type_index}`, 0, [{ ...at, type: "trigger" }]);
+          }
+        }
+      }
     }
   } catch (error) {
     row.errors.push(`run: ${error.message}`);
@@ -183,7 +237,7 @@ export function markdown({ files, results }) {
   ];
   for (const r of results) {
     lines.push(
-      `| ${r.activity}${r.stub ? " (stub)" : ""} | ${yes(r.compiles)} | ${r.phases_authored} | ${r.stub ? "n/a" : yes(r.first_phase)} | ${r.phases_reached} | ${r.lifetime.join(" → ") || "none"} | ${yes(r.ended)} | ${r.static_missing.length} / ${r.missing.length + r.stub_calls.length} | ${r.unresolved} | ${r.row_gaps.reduce((n, g) => n + g.calls, 0)} | ${r.thread_failures} |`
+      `| ${r.activity}${r.stub ? " (stub)" : ""}${r.content === false && results.some((x) => x.content) ? " (stand-in)" : ""} | ${yes(r.compiles)} | ${r.phases_authored} | ${r.stub ? "n/a" : yes(r.first_phase)} | ${r.phases_reached} | ${r.lifetime.join(" → ") || "none"} | ${yes(r.ended)} | ${r.static_missing.length} / ${r.missing.length + r.stub_calls.length} | ${r.unresolved} | ${r.row_gaps.reduce((n, g) => n + g.calls, 0)} | ${r.thread_failures} |`
     );
   }
   const total = results.length;
@@ -212,7 +266,7 @@ export function markdown({ files, results }) {
     `Files: ${files}. Activities: ${total} (${count((r) => r.stub)} start-only stubs).`,
     `Compile: ${count((r) => r.compiles)}/${total}. Load: ${count((r) => r.loads)}/${total}.`,
     `First phase: ${count((r) => !r.stub && r.first_phase)}/${count((r) => !r.stub)} written activities.`,
-    `Area encounters loaded by name guess: ${count((r) => r.area_bundles.length > 0)} activities.`,
+    `Content bundles: ${count((r) => r.content)} activities. Area encounters loaded by name guess: ${count((r) => r.area_bundles.length > 0)} activities.`,
     `Ended within the run: ${count((r) => r.ended)}. Distinct missing natives: ${missing.size}.`,
   ];
   const natives = [
