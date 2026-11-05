@@ -347,6 +347,11 @@ For A Guardian Rises it gives index 164, world `0x4786C0E0` and start 113, our s
 
 The Speaker and The Awoken are the smallest. Their PAHs served the world block and one other group, about 22 records, so they are the cheapest first test of serving a mission besides A Guardian Rises.
 
+**The Speaker is a cinematic world, served like cine_reveal.**
+- **Its world.** It is `cine_speaker`: Blam Network's 2014 activity table gives scenario `0x80C3E011` and 4 bubbles. The owned 56578 record gives PRIVATE `0xA3198561`, and its name's FNV-1, `0x796B3B8C`, is the one extra group the live PAH served: a single cinematic record (`/6/0`, tag `0x8080254D`).
+- **The live states.** The record went idle at the join, playing about 18 s later, and done when the mission ended (197 s), with the client in slice set 1 throughout.
+- **How to serve it.** `world-table-speaker-live.txt` (activity 167, start region 1) serves it, and `d1-cine-watch.py RUN --activity 167 --slice 1 --states cine_speaker-play.txt cine_speaker-done.txt` steps it. The host needs a build with the `cine_speaker` world (`d1-activity-host`, `worlds.rs`).
+
 ## Next
 
 - **Serve 165 as the live host did** (the two cinematic records, start region 25, the state steps), and retry it.

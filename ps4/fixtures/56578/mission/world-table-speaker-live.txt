@@ -1,0 +1,15 @@
+# As world-table-cine-live.txt, plus The Speaker (activity 167): world cine_speaker with its one cinematic record
+# (sensor-clients-cine_speaker-live.txt) and start region 1, the slice set the live client entered. Play it with
+# tools/ps4_setup/d1-cine-watch.py RUN --activity 167 --slice 1 --states cine_speaker-play.txt cine_speaker-done.txt
+# As world-table-cine.txt, with cine_reveal served as the live host served it: its cinematic records (sensor-clients-cine_reveal-live.txt) and start region 25, the slice set the live client entered (notes/d1-live-captures-2026-11-05.md).
+# As world-table-tower.txt, but activity 165 is its own world: cine_reveal, the cinematic between A
+# Guardian Rises and the Tower (live 2014 activity table: next activity 0, the Tower). Start region
+# 24 = bubble 3, the table's start bubble. The 0 row serves the Tower the cinematic hands over to.
+# sense58+: as sense57, with the Tower squads given desired counts (DIAGNOSTIC values copied from the hangar; spawns civilians and Patches 99-40). 165->Tower is a bypass.
+410  pvp_moonbase          0xc2dacaf7  sensor-clients-pvp_moonbase-bundle7-team0.txt
+416  pvp_moonbase          0xc2dacaf7  sensor-clients-pvp_moonbase-bundle7-team0.txt
+164  act_cosmo_m0_highway  0x4786c0e0  sensor-clients-act_cosmo_m0_highway-r113-cine.txt  113
+168  act_cosmo_m1_dome_a   0x4786c0e0  sensor-clients-act_cosmo_m1_dome_a-bundle.txt  8
+0    city_tower_default1   0x40aebf90  sensor-clients-city_tower_default1-squads.txt  0
+165  cine_reveal           0x4786c0e0  sensor-clients-cine_reveal-live.txt  25
+167  cine_speaker          0x4786c0e0  sensor-clients-cine_speaker-live.txt  1
