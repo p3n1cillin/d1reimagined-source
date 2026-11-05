@@ -1267,6 +1267,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "d1-rsat"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "d1-eboot",
+ "d1-oracle",
+]
+
+[[package]]
 name = "d1-run"
 version = "0.1.0"
 dependencies = [

@@ -14,6 +14,7 @@ members = [
     "crates/d1-pkg",
     "crates/d1-replay",
     "crates/d1-responder",
+    "crates/d1-rsat",
     "crates/d1-run",
     "crates/shadnet-proto",
     "crates/shadnet-wire",

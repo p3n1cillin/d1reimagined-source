@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: Copyright 2026 Destiny 1 Preservation Project
+# SPDX-License-Identifier: GPL-2.0-or-later
+[package]
+name = "d1-rsat"
+description = "Native RSAT: the client's schema-driven object encoder, reimplemented in Rust from the eboot's own descriptors and walker, with d1-oracle as its differential test oracle"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+# Licences checked (CLAUDE.md non-negotiable): nothing incompatible with GPL-2.0-or-later and
+# nothing sourced from AGPL-3.0 or unlicensed prior art. This crate deliberately does NOT depend on
+# `d1-oracle`, so production encoding links no Unicorn (GPL-2.0) and executes no guest code.
+anyhow.workspace = true            # MIT OR Apache-2.0
+clap.workspace = true              # MIT OR Apache-2.0
+d1-eboot = { path = "../d1-eboot" } # GPL-2.0-or-later, this workspace (image + descriptor reader)
+
+[dev-dependencies]
+# The differential oracle: the client's own codec under Unicorn. Tests only.
+d1-oracle = { path = "../d1-oracle" } # GPL-2.0-or-later, this workspace
+
+[lib]
+name = "d1_rsat"
+path = "src/lib.rs"
+
+[[bin]]
+name = "d1-rsat"
+path = "src/main.rs"
