@@ -28,28 +28,31 @@ export const STUB_VERBS = Object.freeze({
   },
 });
 
-let installed;
+// Per verb table (one per BullShcript checkout): the names registered and
+// where their calls are logged. The table is a module singleton, so this is
+// too; the latest session's log receives the calls.
+const installs = new Map();
 
-// Registers the stubs once per process (the registry is a module
-// singleton). Returns the names registered. `log` receives each stub call.
+// Registers the stubs once per verb table. Returns the names registered:
+// a verb the table already has is left to it.
 export function installNatives56578(bs, log) {
-  installed ??= { log, names: new Set() };
-  installed.log = log;
-  if (installed.registry === bs.nativeRegistry) {
-    return installed.names;
-  }
-  installed.registry = bs.nativeRegistry;
-  for (const [verb, { answer, why }] of Object.entries(STUB_VERBS)) {
-    if (bs.nativeRegistry.lookup(verb)) {
-      continue;
+  let entry = installs.get(bs.nativeRegistry);
+  if (!entry) {
+    entry = { log, names: new Set() };
+    installs.set(bs.nativeRegistry, entry);
+    for (const [verb, { answer, why }] of Object.entries(STUB_VERBS)) {
+      if (bs.nativeRegistry.lookup(verb)) {
+        continue;
+      }
+      bs.nativeRegistry.verb(verb, (self, _args, method) => {
+        entry.log(`stub56578 ${self.path}:${method} -> ${String(answer)} (${why})`);
+        return answer;
+      });
+      entry.names.add(verb);
     }
-    bs.nativeRegistry.verb(verb, (self, _args, method) => {
-      installed.log(`stub56578 ${self.path}:${method} -> ${String(answer)} (${why})`);
-      return answer;
-    });
-    installed.names.add(verb);
   }
-  return installed.names;
+  entry.log = log;
+  return entry.names;
 }
 
 // Row types whose verbs BullShcript answers per row type (rowVerb), which
@@ -97,7 +100,7 @@ export function staticMissingNatives(bs, scripts, paths) {
           if (COMMAND_SCRIPT_TYPES.has(type) ? COMMAND_SCRIPT_ORDERS.has(method) : scriptDefined.has(method)) {
             continue;
           }
-          const stubbed = installed?.names.has(method) === true;
+          const stubbed = installs.get(bs.nativeRegistry)?.names.has(method) === true;
           if (bs.nativeRegistry.lookup(method) && !stubbed) continue;
           const entry = found.get(method) ?? { files: new Set(), method, stubbed, types: new Set() };
           entry.files.add(path);
