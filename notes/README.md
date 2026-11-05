@@ -6,6 +6,8 @@ is the current summary. Titles below are the notes' own.
 
 ## Start here (PS4 build 56578, current)
 
+- [Native video settings: content preparation (3 November 2026)](ps4-56578-native-video-settings-2026-11-03.md)
+
 - [PS4 56578: the Breach's Fallen sequences play, but no squad spawns (31 October 2026)](ps4-56578-breach-sequences-2026-10-31.md)
 - [PS4 56578: equipping gear works end to end (31 October – 1 November 2026)](ps4-56578-equip-2026-11-01.md)
 - [PS4 56578: currencies and the first vendor purchase (30 October 2026, evening)](ps4-56578-vendor-purchase-2026-10-30.md)
