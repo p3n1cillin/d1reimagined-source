@@ -1,0 +1,211 @@
+{
+  "activity_id": "strike-cerberus-vae-iii",
+  "name": "Cerberus Vae III",
+  "evidence": {
+    "kind": "live-capture",
+    "build": "51539 (Xbox 360)",
+    "capture": "Cerberus-Vae-III",
+    "note": "one solo run (Crota's End: a fireteam); incident ids are 51539's; see notes/d1-live-captures-2026-11-05.md"
+  },
+  "host_session_s": 1787.6,
+  "hosts": 3,
+  "stages": [
+    {
+      "slice_set": 112,
+      "entered_s": 24.9,
+      "groups_first_served": [
+        "0x4786c0e0",
+        "0x3637bb69",
+        "0x83f52850",
+        "0x70def2b4",
+        "0x01e519cc",
+        "0xa27c9787"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [],
+      "public_hosts_opened": 0,
+      "duration_s": 182.4
+    },
+    {
+      "slice_set": 72,
+      "entered_s": 207.3,
+      "groups_first_served": [
+        "0x8f0e5f60"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x83f52850/29/16"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 205.8
+    },
+    {
+      "slice_set": 80,
+      "entered_s": 413.1,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x3637bb69/29/30",
+        "0x83f52850/29/18",
+        "0x83f52850/29/17",
+        "0x83f52850/29/19",
+        "0x3637bb69/29/32",
+        "0x3637bb69/29/31"
+      ],
+      "public_hosts_opened": 1,
+      "duration_s": 593.0
+    },
+    {
+      "slice_set": 208,
+      "entered_s": 1006.1,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [],
+      "public_hosts_opened": 0,
+      "duration_s": 110.4
+    },
+    {
+      "slice_set": 184,
+      "entered_s": 1116.5,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x3637bb69/29/34",
+        "0xa27c9787/29/44",
+        "0x83f52850/29/22",
+        "0x83f52850/29/21"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 671.1
+    }
+  ],
+  "markers": [
+    {
+      "t_s": 24.9,
+      "slice": 112
+    },
+    {
+      "t_s": 207.3,
+      "slice": 72
+    },
+    {
+      "t_s": 408.6,
+      "trigger": "0x83f52850/29/16"
+    },
+    {
+      "t_s": 413.1,
+      "slice": 80
+    },
+    {
+      "t_s": 413.7,
+      "trigger": "0x3637bb69/29/30"
+    },
+    {
+      "t_s": 443.3,
+      "trigger": "0x83f52850/29/18"
+    },
+    {
+      "t_s": 443.4,
+      "trigger": "0x83f52850/29/17"
+    },
+    {
+      "t_s": 453.4,
+      "trigger": "0x83f52850/29/19"
+    },
+    {
+      "t_s": 492.7,
+      "trigger": "0x3637bb69/29/32"
+    },
+    {
+      "t_s": 570.6,
+      "trigger": "0x3637bb69/29/31"
+    },
+    {
+      "t_s": 1006.1,
+      "slice": 208
+    },
+    {
+      "t_s": 1116.5,
+      "slice": 184
+    },
+    {
+      "t_s": 1117.1,
+      "trigger": "0x3637bb69/29/34"
+    },
+    {
+      "t_s": 1160.5,
+      "trigger": "0xa27c9787/29/44"
+    },
+    {
+      "t_s": 1161.7,
+      "trigger": "0x83f52850/29/22"
+    },
+    {
+      "t_s": 1161.7,
+      "trigger": "0x83f52850/29/21"
+    }
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "begins_on": {
+        "slice_entered": 112
+      },
+      "at_s": 24.9,
+      "duration_s": 182.4
+    },
+    {
+      "index": 1,
+      "begins_on": {
+        "slice_entered": 72
+      },
+      "at_s": 207.3,
+      "duration_s": 201.3
+    },
+    {
+      "index": 2,
+      "begins_on": {
+        "trigger": "0x83f52850/29/16"
+      },
+      "at_s": 408.6,
+      "duration_s": 4.5
+    },
+    {
+      "index": 3,
+      "begins_on": {
+        "slice_entered": 80
+      },
+      "at_s": 413.1,
+      "duration_s": 157.5
+    },
+    {
+      "index": 4,
+      "begins_on": {
+        "trigger": "0x3637bb69/29/31"
+      },
+      "at_s": 570.6,
+      "duration_s": 435.5
+    },
+    {
+      "index": 5,
+      "begins_on": {
+        "slice_entered": 208
+      },
+      "at_s": 1006.1,
+      "duration_s": 110.4
+    },
+    {
+      "index": 6,
+      "begins_on": {
+        "slice_entered": 184
+      },
+      "at_s": 1116.5,
+      "duration_s": 671.1
+    }
+  ]
+}

@@ -1111,6 +1111,8 @@ dependencies = [
  "d1-build",
  "d1-oracle",
  "d1-rsat",
+ "serde",
+ "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -1207,6 +1209,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "d1-mp"
+version = "0.1.0"
+dependencies = [
+ "d1-bap",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "d1-oracle"
 version = "0.1.0"
 dependencies = [
@@ -1259,6 +1270,7 @@ dependencies = [
  "clap",
  "d1-bap",
  "d1-loadout",
+ "d1-mp",
  "rustls",
  "serde",
  "serde_json",

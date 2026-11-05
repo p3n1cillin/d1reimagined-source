@@ -13,6 +13,7 @@ path = "src/main.rs"
 [dependencies]
 anyhow.workspace = true
 d1-bap = { path = "../d1-bap" }
+d1-mp = { path = "../d1-mp" } # MP(H): multiplayer services, D1_MP=1
 d1-loadout = { path = "../d1-loadout" }
 axum.workspace = true
 axum-server = { version = "0.7", features = ["tls-rustls"] }

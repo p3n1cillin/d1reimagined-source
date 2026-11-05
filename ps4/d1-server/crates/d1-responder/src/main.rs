@@ -54,7 +54,13 @@ use clap::Parser;
 use serde_json::json;
 use tracing::{info, warn};
 
+mod player_store;
+mod progression;
 mod vendor;
+mod mp; // MP(H): multiplayer services, D1_MP=1
+// Stream M (rewards and growth): services behind `D1_REWARDS` (off by default), called by the
+// activity streams through `rewards::grant_activity_rewards`. The only hook here is its knobs.
+mod rewards;
 
 #[derive(Clone)]
 struct Cfg {
@@ -211,8 +217,9 @@ const SESSION_ID: &str = "000-d1000000-0000-4000-8000-000000000001";
 /// PSN answers with the created session's id. `sessionId` is the field the client needs back;
 /// everything else here is shape, not contract. Reach tag: **`synthetic-minimal`** - invented, and
 /// therefore `[U]` until a capture or the client's own parser confirms the field set.
-async fn create_session(headers: HeaderMap, body: Bytes) -> impl IntoResponse {
+async fn create_session(headers: HeaderMap, body: Bytes) -> axum::response::Response {
     log_req("POST", &headers, "/v1/sessions", &body);
+    if let Some(r) = mp::create_session(&headers, &body) { return r; } // MP(H)
     // ⚠ THE SHAPE MATTERS. The first attempt returned `d1-fireteam-0000000000000001` and the client
     // could not parse it: it immediately did `PUT /v1/sessions/000-00000000-0000-0000-0000-000000000000`
     // - an ALL-ZERO id - proving it had parsed our string into nothing. PSN session ids are
@@ -220,7 +227,7 @@ async fn create_session(headers: HeaderMap, body: Bytes) -> impl IntoResponse {
     let session_id = SESSION_ID;
     warn!("<-- 201 ** PSN SESSION CREATED ** /v1/sessions ({}B body) -> sessionId={session_id}",
           body.len());
-    (StatusCode::CREATED, Json(json!({"sessionId": session_id})))
+    (StatusCode::CREATED, Json(json!({"sessionId": session_id}))).into_response()
 }
 
 /// `DELETE /v1/users/{npid}/presence/gameStatus` - also 404'd in the same run. Presence teardown;
@@ -228,10 +235,11 @@ async fn create_session(headers: HeaderMap, body: Bytes) -> impl IntoResponse {
 async fn delete_game_status(
     AxPath(npid): AxPath<String>,
     headers: HeaderMap,
-) -> impl IntoResponse {
+) -> axum::response::Response {
     log_req("DELETE", &headers, &format!("/v1/users/{npid}/presence/gameStatus"), &Bytes::new());
+    if let Some(r) = mp::delete_game_status(&npid) { return r; } // MP(H)
     info!("<-- 204 presence gameStatus cleared");
-    StatusCode::NO_CONTENT
+    StatusCode::NO_CONTENT.into_response()
 }
 
 
@@ -243,15 +251,16 @@ async fn update_session(
     AxPath(id): AxPath<String>,
     headers: HeaderMap,
     body: Bytes,
-) -> impl IntoResponse {
+) -> axum::response::Response {
     log_req("PUT", &headers, &format!("/v1/sessions/{id}"), &body);
+    if let Some(r) = mp::update_session(&id, &body) { return r; } // MP(H)
     if id != SESSION_ID {
         warn!("<-- 200 session update for UNEXPECTED id {id} (we issued {SESSION_ID}) - \
                accepting anyway, but the id round-trip is broken");
     } else {
         info!("<-- 200 session updated ({}B)", body.len());
     }
-    (StatusCode::OK, Json(json!({"sessionId": id})))
+    (StatusCode::OK, Json(json!({"sessionId": id}))).into_response()
 }
 
 /// `PUT /v1/users/{npid}/presence/gameData` - presence payload alongside the session. Also 404'd.
@@ -259,10 +268,11 @@ async fn put_game_data(
     AxPath(npid): AxPath<String>,
     headers: HeaderMap,
     body: Bytes,
-) -> impl IntoResponse {
+) -> axum::response::Response {
     log_req("PUT", &headers, &format!("/v1/users/{npid}/presence/gameData"), &body);
+    if let Some(r) = mp::put_game_data(&npid, &body) { return r; } // MP(H)
     info!("<-- 204 presence gameData accepted ({}B)", body.len());
-    StatusCode::NO_CONTENT
+    StatusCode::NO_CONTENT.into_response()
 }
 
 /// Anything unimplemented: a **named gate**, in PSN's error shape so the client can parse the refusal.
@@ -1002,13 +1012,14 @@ fn router(cfg: Cfg) -> Router {
         .route("/v1/users/{npid}/friendList", get(friend_list))
         // PSN session creation - the platform-session gate (see `create_session`).
         .route("/v1/sessions", post(create_session))
-        .route("/v1/sessions/{id}", put(update_session))
+        .route("/v1/sessions/{id}", put(update_session).get(mp::get_session)) // MP(H): GET 404s unless D1_MP=1
         .route("/v1/users/{npid}/presence/gameData", put(put_game_data))
         .route("/v1/users/{npid}/presence/gameStatus", delete(delete_game_status))
         // ⭐ The loadout editor's control plane. NOT a game protocol message - a call between our
         // own tools. `d1_loadout::APPLY_PATH` is the single constant both sides use so the path
         // cannot drift in two string literals.
         .route(d1_loadout::APPLY_PATH, post(loadout_apply))
+        .merge(mp::add_routes(Router::new())) // MP(H): sessions, members, invitations
         .fallback(any(fallback))
         .with_state(cfg)
 }
@@ -1760,46 +1771,33 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                         // `d1guest tag`. That premise was "believed, not
                                                                         // measured" until then, and it is what makes the whole
                                                                         // gear lane viable.
-                                                                        if let Ok(spec) = std::env::var("D1_INVENTORY") {
-                                                                            let mut files: Vec<std::path::PathBuf> = Vec::new();
-                                                                            let path = std::path::Path::new(&spec);
-                                                                            if path.is_dir() {
-                                                                                if let Ok(rd) = std::fs::read_dir(path) {
-                                                                                    let mut v: Vec<_> = rd.filter_map(|e| e.ok().map(|e| e.path()))
-                                                                                        .filter(|p| p.extension().map(|e| e == "bin").unwrap_or(false))
-                                                                                        .collect();
-                                                                                    v.sort();
-                                                                                    files = v;
-                                                                                }
-                                                                            } else if !spec.is_empty() {
-                                                                                files.push(path.to_path_buf());
-                                                                            }
-                                                                            // Item instance SOIDs are ours to mint; the client
-                                                                            // keys the registry slot by them, and they must be
-                                                                            // distinct or later items overwrite earlier ones.
-                                                                            let base = env_soid("D1_ITEM_SOID_BASE", 0xD100_0000_0000_0301);
-                                                                            for (i, f) in files.iter().enumerate() {
-                                                                                match std::fs::read(f) {
-                                                                                    Ok(raw) => {
-                                                                                        let key = base + i as u64;
-                                                                                        warn!("      ⭐ inventory item {i}: {} ({} B, instance {:#010x}, key {key:#018x})",
-                                                                                              f.file_name().unwrap_or_default().to_string_lossy(),
-                                                                                              raw.len(), d1_bap::INVENTORY_INSTANCE_TYPE);
-                                                                                        extras.push((d1_bap::INVENTORY_INSTANCE_TYPE, key, raw));
-                                                                                    }
-                                                                                    Err(e) => warn!("      ⛔ D1_INVENTORY {}: {e}", f.display()),
-                                                                                }
-                                                                            }
+                                                                        // ⭐ D1_STORE=1: the items the player store keeps (seeded from these
+                                                                        // same files, so its first serve is identical), else the files.
+                                                                        let items: Option<Vec<(u64, Vec<u8>, String)>> = player_store::view(|s| s.chr().items.iter()
+                                                                            .map(|i| (i.soid, i.element.clone(), "player store".to_string())).collect())
+                                                                            .or_else(|| std::env::var("D1_INVENTORY").ok().map(|spec| {
+                                                                                // Item instance SOIDs are ours to mint; the client
+                                                                                // keys the registry slot by them, and they must be
+                                                                                // distinct or later items overwrite earlier ones.
+                                                                                let base = env_soid("D1_ITEM_SOID_BASE", 0xD100_0000_0000_0301);
+                                                                                player_store::read_inventory(&spec, base)
+                                                                            }));
+                                                                        for (i, (key, raw, name)) in items.unwrap_or_default().into_iter().enumerate() {
+                                                                            warn!("      ⭐ inventory item {i}: {name} ({} B, instance {:#010x}, key {key:#018x})",
+                                                                                  raw.len(), d1_bap::INVENTORY_INSTANCE_TYPE);
+                                                                            extras.push((d1_bap::INVENTORY_INSTANCE_TYPE, key, raw));
                                                                         }
                                                                         // ⚠ BOTH branches must receive `unlocks`. The live boot
                                                                         // route goes through D1_PROFILE_FILE; wiring only the
                                                                         // other branch would silently do nothing on the path
                                                                         // that actually runs.
-                                                                        match std::env::var("D1_PROFILE_FILE").ok()
-                                                                            .and_then(|p| std::fs::read(&p).ok())
+                                                                        let stored_profile = player_store::view(|s| s.chr().profile.clone());
+                                                                        match stored_profile.clone().unwrap_or_else(|| std::env::var("D1_PROFILE_FILE").ok()
+                                                                            .and_then(|p| std::fs::read(&p).ok()))
                                                                         {
                                                                             Some(raw) => {
-                                                                                warn!("      ⭐ profile from D1_PROFILE_FILE ({} B, oracle-encoded full object)", raw.len());
+                                                                                warn!("      ⭐ profile from {} ({} B, oracle-encoded full object)",
+                                                                                      if stored_profile.is_some() { "the player store" } else { "D1_PROFILE_FILE" }, raw.len());
                                                                                 // `D1_ACCOUNT_FILE`: the account verbatim as well, e.g. with
                                                                                 // currencies in its inventory (field [6]). ⚠ Encode only the
                                                                                 // fields you mean to send: a full re-encode of a decoded
@@ -1809,12 +1807,13 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                                 // post-creation shape: before creation the account must
                                                                                 // withhold the profile SOID (see above), which a fixed
                                                                                 // file cannot follow.
-                                                                                let account = std::env::var("D1_ACCOUNT_FILE").ok()
-                                                                                    .filter(|_| prof != 0)
-                                                                                    .and_then(|p| std::fs::read(&p).ok());
+                                                                                let account = player_store::view(|s| s.record.account.payload.clone())
+                                                                                    .unwrap_or_else(|| std::env::var("D1_ACCOUNT_FILE").ok().and_then(|p| std::fs::read(&p).ok()))
+                                                                                    .filter(|_| prof != 0);
                                                                                 match account {
                                                                                     Some(a) => {
-                                                                                        warn!("      ⭐ account from D1_ACCOUNT_FILE ({} B, oracle-encoded full object)", a.len());
+                                                                                        warn!("      ⭐ account from {} ({} B, oracle-encoded full object)",
+                                                                                              if stored_profile.is_some() { "the player store" } else { "D1_ACCOUNT_FILE" }, a.len());
                                                                                         d1_bap::queuez_family4_baseline_body_raw_account_and_profile(
                                                                                             acct, prof, &a, &raw, unlocks.as_deref(), &extras)
                                                                                     }
@@ -1903,14 +1902,17 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                         // struct>`. The built-in encoder emits identity only -
                                                                         // no level, no light, no gear - which is exactly what
                                                                         // the operator sees on a blank character.
-                                                                        let raw_char = std::env::var("D1_CHARACTER_FILE").ok()
+                                                                        let raw_char = match player_store::view(|s| s.chr().character.clone()) {
+                                                                            Some(stored) => stored,
+                                                                            None => std::env::var("D1_CHARACTER_FILE").ok()
                                                                             .and_then(|p| match std::fs::read(&p) {
                                                                                 Ok(b) => { warn!("      ⭐ character from D1_CHARACTER_FILE ({} B, oracle-encoded full object)", b.len()); Some(b) }
                                                                                 // Loud: silently falling back to the identity-only
                                                                                 // character would look like "the full object made
                                                                                 // no difference".
                                                                                 Err(e) => { warn!("      ⛔ D1_CHARACTER_FILE={p}: {e} - falling back to identity-only"); None }
-                                                                            });
+                                                                            }),
+                                                                        };
                                                                         warn!("      QUEUEZ family 3 baseline: roster (instance {:#010x}) + character (instance {:#010x})",
                                                                               d1_bap::ROSTER_INSTANCE_TYPE,
                                                                               d1_bap::CHARACTER_INSTANCE_TYPE);
@@ -2042,19 +2044,12 @@ const ROSTER_INSTANCE_TYPES: &[((u32, u32), u32)] = &[
 ///
 /// ⚠ `D1_ANSWER_FAMILIES` is still required - this supplies CONTENTS, not the subscription answer.
 fn build_roster_family_body(family: u32, root_soid: u64) -> Option<Vec<u8>> {
-    let dir = std::env::var("D1_ROSTER_DIR").ok().filter(|d| !d.is_empty())?;
-    let mut files: Vec<std::path::PathBuf> = std::fs::read_dir(&dir)
-        .map_err(|e| warn!("      ⛔ D1_ROSTER_DIR {dir}: {e}"))
-        .ok()?
-        .flatten()
-        .map(|e| e.path())
-        .filter(|p| p.extension().map(|x| x == "bin").unwrap_or(false))
-        .collect();
-    files.sort();
-
+    // ⭐ D1_STORE=1: the player store's cards (seeded from this directory, then the loot grants'), else
+    // the directory itself, sorted by name.
+    let cards = player_store::roster_cards()?;
     let mut items: Vec<(u32, u64, Vec<u8>)> = Vec::new();
-    for f in &files {
-        let name = f.file_name().and_then(|s| s.to_str()).unwrap_or_default();
+    for (name, raw) in cards {
+        let name = name.as_str();
         let parsed = name
             .strip_suffix(".bin")
             .and_then(|s| s.strip_prefix('f'))
@@ -2079,14 +2074,8 @@ fn build_roster_family_body(family: u32, root_soid: u64) -> Option<Vec<u8>> {
             warn!("      ⛔ D1_ROSTER_DIR: family {fam}/type {ty} has no known instance checksum - SKIPPED");
             continue;
         };
-        match std::fs::read(f) {
-            Ok(raw) => {
-                warn!("      ⭐ roster {fam}/{ty}: {name} ({} B, instance {instance:#010x}, key {key:#018x})",
-                      raw.len());
-                items.push((instance, key, raw));
-            }
-            Err(e) => warn!("      ⛔ D1_ROSTER_DIR {}: {e}", f.display()),
-        }
+        warn!("      ⭐ roster {fam}/{ty}: {name} ({} B, instance {instance:#010x}, key {key:#018x})", raw.len());
+        items.push((instance, key, raw));
     }
     if items.is_empty() {
         return None;
@@ -2336,12 +2325,24 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_VENDOR_PROFILE_OBJ", "<unset>", "the served profile as a decoded C object (purchases add items to it)"),
     ("D1_VENDOR_ITEM_TEMPLATE", "<unset>", "a decoded 0x80801732 item element, the template for bought instances"),
     ("D1_VENDOR_ACCOUNT_SLOTS", "<unset>", "slot:content:quantity,... - the account slots D1_ACCOUNT_FILE serves (e.g. 308:869:25000 = Glimmer)"),
+    // ── the player store (notes/ps4-56578-player-store-2026-11-05.md) ──────────────────────────
+    ("D1_STORE", "<unset>", "💾 1 = persist the account and character (seeded from the knobs above on first sign-on, then served from it). Unset = off, as before"),
+    ("D1_STORE_DIR", "<%LOCALAPPDATA%/d1reimagined/player-store>", "💾 where the store keeps identities.json and account-<soid>.json (OUTSIDE the repo)"),
+    ("D1_STORE_PLAYER", "local", "💾 the player name the identity is filed under (the first player gets the D1_*_SOID knobs)"),
+    ("D1_STORE_SAVE_SECS", "300", "💾 the periodic save (important events save at once)"),
+    ("D1_STORE_CONTROL", "<unset>", "💾 a command file the store polls: activity N | xp N | complete N | checkpoint N STEP | reputation NAME N | unlock +N -N"),
+    ("D1_REFUND_WINDOW", "<1800; with D1_STORE=1 the manifest's>", "seconds a vendor purchase stays refundable (forces it for every vendor; D1_STORE=1 alone gives Eververse/Silver Dust 900, others none)"),
+    ("D1_REFUND_POLICIES", "<repo table>", "override ps4/fixtures/56578/progression/refund-policies.tsv (which vendors refund, and for how long)"),
+    ("D1_PROGRESSION_CURVES", "<repo table>", "override ps4/fixtures/56578/progression/progression-curves.tsv (XP and rank curves)"),
+    ("D1_VENDOR_RESETS", "<repo table>", "override ps4/fixtures/56578/progression/vendor-resets.tsv (vendor reset schedules)"),
+    ("D1_ACTIVITY_REWARDS", "<repo table>", "override ps4/fixtures/56578/progression/activity-rewards.tsv (what completing an activity gives)"),
 ];
 
 /// Print [`KNOBS`] with each knob's effective value.
 fn print_knobs() {
     info!("=== d1-responder environment (⭐ = new for the rung 28-30 activity-host lane) ===");
-    for (name, default, meaning) in KNOBS {
+    // HOOK (stream M): the rewards module's knobs are printed with the rest.
+    for (name, default, meaning) in KNOBS.iter().chain(rewards::KNOBS) {
         match std::env::var(name) {
             Ok(v) => {
                 let v: String = v.chars().take(48).collect();
@@ -2449,7 +2450,8 @@ fn served_205_body() -> Vec<u8> {
 /// ⛔ More than 50 is refused (container `0x80804717` is 50 x 4 B), and the bodies are decoded back
 /// before use: a body that reads back as anything other than exactly this list is not served.
 fn unlock_flag_override() -> Option<(Vec<u8>, Vec<u8>)> {
-    let spec = std::env::var("D1_UNLOCK_FLAGS").ok().filter(|v| !v.is_empty())?;
+    // D1_STORE=1: the player store's list (seeded from D1_UNLOCK_FLAGS, changed by completions).
+    let spec = player_store::unlock_flag_spec()?;
     let indices: Vec<u16> = match spec.split(',').map(|s| s.trim().parse::<u16>()).collect() {
         Ok(v) => v,
         Err(e) => {
@@ -2853,6 +2855,7 @@ async fn main() -> Result<()> {
         }
     }
     let cfg = Cfg { npid: args.npid.clone(), account_id: args.account_id };
+    mp::init(&args.npid, env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001)); // MP(H)
 
     let mut tasks = Vec::new();
 
@@ -2890,6 +2893,7 @@ async fn main() -> Result<()> {
                                 let conn_index = BAP_CONNECTIONS.fetch_add(1, Ordering::SeqCst);
                                 warn!("=== BAP TCP CONNECT #{conn_index} from {peer} ===");
                                 tokio::spawn(async move {
+                                    let _mp_guard = mp::ConnGuard(conn_index); // MP(H): sign-off on close
                                     use tokio::io::AsyncReadExt;
                                     // HOLD THE CONNECTION OPEN. The first version read once and
                                     // dropped the socket, and the client reported
@@ -3294,8 +3298,9 @@ async fn main() -> Result<()> {
                                                                                          &d[..d.iter().position(|&c| c == 0).unwrap_or(d.len())])
                                                                                          .to_string())
                                                                                      .collect::<Vec<_>>());
-                                                                            let entries: Vec<_> =
-                                                                                ids.iter().map(|id| (*id, acct)).collect();
+                                                                            // MP(H): each platform id its own account.
+                                                                            let entries: Vec<_> = mp::translate(conn_index, &ids)
+                                                                                .unwrap_or_else(|| ids.iter().map(|id| (*id, acct)).collect());
                                                                             warn!("      -> 0x0018 rsp: {} id(s) -> account SOID {acct:#018x}, \
                                                                                    seq {}", entries.len(), i.sequence);
                                                                             Some(d1_bap::account_id_translation_response(
@@ -4235,7 +4240,8 @@ async fn main() -> Result<()> {
                                                                                 d1_bap::matchmaking::MM_KIND_MATCHMAKING_CONFIGURATION, 0)
                                                                         }
                                                                     };
-                                                                    let b = rsp.encode();
+                                                                    // MP(H): the shared session directory answers when D1_MP=1.
+                                                                    let b = mp::matchmaking_reply(conn_index, body).unwrap_or_else(|| rsp.encode());
                                                                     warn!("      -> msg 43 matchmaking_core_response: kind={:?} nonce={:?} \
                                                                            f4 present={} ({}B body: {})",
                                                                           rsp.kind, rsp.nonce, rsp.configuration.is_some(), b.len(),
@@ -4639,6 +4645,7 @@ async fn main() -> Result<()> {
                                                                                               profile.as_ref().map(|p| format!(" + {}B profile", p.len())).unwrap_or_default());
                                                                                         family4_version = Some(version);
                                                                                         server_seq += 1;
+                                                                                        player_store::note_loot_grant(soid, &element, profile.as_deref());
                                                                                     }
                                                                                 }
                                                                             }
@@ -4709,6 +4716,8 @@ async fn main() -> Result<()> {
                                                                                               item.as_ref().map(|(s, e)| format!(" + item {s:#018x} {}B", e.len())).unwrap_or_default());
                                                                                         family4_version = Some(version);
                                                                                         server_seq += 1;
+                                                                                        player_store::note_profile_delivered(
+                                                                                            &payload, item.as_ref().map(|(s, e)| (*s, e.as_slice())));
                                                                                     }
                                                                                 }
                                                                             }
@@ -4734,6 +4743,7 @@ async fn main() -> Result<()> {
                                                                                               path.display(), payload.len());
                                                                                         family4_version = Some(version);
                                                                                         server_seq += 1;
+                                                                                        player_store::note_account_delivered(&payload);
                                                                                     }
                                                                                 }
                                                                             }

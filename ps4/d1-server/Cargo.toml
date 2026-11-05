@@ -10,6 +10,7 @@ members = [
     "crates/d1-harness",
     "crates/d1-live",
     "crates/d1-loadout",
+    "crates/d1-mp",
     "crates/d1-oracle",
     "crates/d1-pkg",
     "crates/d1-replay",

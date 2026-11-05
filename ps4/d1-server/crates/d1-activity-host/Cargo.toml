@@ -13,6 +13,8 @@ publish.workspace = true
 # form. The only protocol source is our own eboot.
 anyhow.workspace = true            # MIT OR Apache-2.0
 clap.workspace = true              # MIT OR Apache-2.0
+serde.workspace = true             # MIT OR Apache-2.0 (activity data: encounter_framework, pvp)
+serde_json.workspace = true        # MIT OR Apache-2.0
 tokio.workspace = true             # MIT
 tracing.workspace = true           # MIT
 tracing-subscriber.workspace = true # MIT
