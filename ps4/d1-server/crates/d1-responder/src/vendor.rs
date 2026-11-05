@@ -40,6 +40,8 @@ const ACCOUNT_ENTRIES: usize = 326;
 /// One sale: item content index, its bucket and instanced flag, and `(content, quantity, bucket)` costs.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Sale {
+    /// The vendor's manifest hash (`DestinyVendorDefinition`), which the refund policies key on.
+    pub vendor_hash: u32,
     pub item: u16,
     pub bucket: u8,
     pub instanced: bool,
@@ -69,7 +71,8 @@ pub fn parse_sales(text: &str) -> HashMap<(u8, u16), Sale> {
                 Some((p.first()?.parse().ok()?, p.get(1)?.parse().ok()?, hex(p.get(2)?)?))
             }).collect()
         };
-        out.insert((v, s), Sale { item, bucket, instanced: f[5] == "1", costs });
+        let vendor_hash = u32::from_str_radix(f[2].trim_start_matches("0x"), 16).unwrap_or(0);
+        out.insert((v, s), Sale { vendor_hash, item, bucket, instanced: f[5] == "1", costs });
     }
     out
 }
@@ -105,7 +108,7 @@ const REFUND_RECORDS: usize = 30;
 const REFUND_FIELD_BYTES: usize = 6248;
 const REFUND_RECORD_BYTES: usize = 208;
 
-/// The records persist with the player store (`D1_PLAYER_STORE`), so they are its type.
+/// The records persist with the player store (`D1_STORE=1`), so they are its type.
 use crate::player_store::Refund as RefundRecord;
 
 /// The 6248-byte `0x8080174F` object for `records` (oldest first).
@@ -140,7 +143,7 @@ fn state() -> &'static Mutex<Option<State>> {
 }
 
 /// The first item instance a purchase mints, when the player store has no later one.
-const FIRST_PURCHASE_SOID: u64 = 0xD100_0000_0000_0601;
+const FIRST_PURCHASE_SOID: u64 = crate::player_store::FIRST_ITEM_SOID;
 
 fn load() -> anyhow::Result<State> {
     let sales_path = std::env::var("D1_VENDOR_SALES")?;
@@ -506,20 +509,46 @@ pub fn on_buy(req: Vec<u8>) {
             let (what, sidecar) = apply(st, vendor, sale)?;
             // The refund record the client's refund screen needs (account field [20]).
             let s = &st.sales[&(vendor, sale)];
-            let window: u64 = std::env::var("D1_REFUND_WINDOW").ok().and_then(|v| v.parse().ok()).unwrap_or(1800);
-            st.refunds.push(RefundRecord {
-                vendor, sale, item: s.item, instance: sidecar.as_ref().map(|x| x.0).unwrap_or(0),
-                costs: s.costs.iter().map(|&(content, quantity, _)| (content, quantity)).collect(),
-                bought: stamp, expires: stamp.saturating_add(window),
-            });
+            let window = refund_window(s.vendor_hash);
+            let note = match window {
+                Some(window) => {
+                    st.refunds.push(RefundRecord {
+                        vendor, sale, item: s.item, instance: sidecar.as_ref().map(|x| x.0).unwrap_or(0),
+                        costs: s.costs.iter().map(|&(content, quantity, _)| (content, quantity)).collect(),
+                        bought: stamp, expires: stamp.saturating_add(window),
+                    });
+                    format!("refund record until {:#x} (bought at {stamp:#x})", stamp.saturating_add(window))
+                }
+                None => format!("vendor {:#x} refunds nothing (refund-policies.tsv): no refund record", s.vendor_hash),
+            };
             publish(st, sidecar, &format!("purchase: {what}"), None)?;
-            Ok(format!("{what}; refund record until {:#x} (bought at {stamp:#x})", stamp.saturating_add(window)))
+            Ok(format!("{what}; {note}"))
         })();
         match result {
             Ok(what) => tracing::warn!("      ⭐⭐ VENDOR PURCHASE APPLIED: {what}; pushes written"),
             Err(e) => tracing::warn!("      ⛔ vendor purchase NOT applied: {e}"),
         }
     });
+}
+
+/// How long a purchase from `vendor_hash` can be returned (seconds of the 901's clock), or None.
+/// `D1_REFUND_WINDOW` (seconds) forces one for every vendor. Otherwise, with the player store on
+/// (`D1_STORE=1`), D1's rule from the manifest: Eververse and its Silver Dust store only, 15 minutes
+/// (progression::RefundPolicies). With it off, every purchase gets 1,800, as the lab has run since
+/// #167, so the lab's behaviour is unchanged.
+fn refund_window(vendor_hash: u32) -> Option<u64> {
+    let forced = std::env::var("D1_REFUND_WINDOW").ok().and_then(|v| v.parse().ok());
+    let store = crate::player_store::enabled().then(crate::progression::RefundPolicies::load);
+    refund_window_with(vendor_hash, forced, store.as_ref())
+}
+
+/// [`refund_window`] without the environment: `policies` is Some when the store is on.
+fn refund_window_with(vendor_hash: u32, forced: Option<u64>, policies: Option<&crate::progression::RefundPolicies>) -> Option<u64> {
+    match (forced, policies) {
+        (Some(w), _) => Some(w),
+        (None, Some(p)) => p.window_secs(vendor_hash, None),
+        (None, None) => Some(1800),
+    }
 }
 
 /// The profile's equipped item SOIDs: 20 x u64 at +0x2B80 (`d1-oracle profile layout`).
@@ -746,7 +775,23 @@ mod tests {
     #[test]
     fn the_table_parses() {
         let s = parse_sales(TSV);
-        assert_eq!(s[&(6, 23)], Sale { item: 840, bucket: 0x19, instanced: true, costs: vec![(869, 570, 0x1F)] });
+        assert_eq!(s[&(6, 23)], Sale { vendor_hash: 0x080760b4, item: 840, bucket: 0x19, instanced: true, costs: vec![(869, 570, 0x1F)] });
+    }
+
+    /// With the store on, D1's rule: Tess's purchases are refundable for 15 minutes, Eva's are not.
+    /// With it off, every purchase keeps the lab's 1,800.
+    #[test]
+    fn refund_records_follow_the_manifest_with_the_store() {
+        let p = crate::progression::RefundPolicies::load();
+        let (eververse, eva) = (0xe97a_aa75, 0x0807_60b4);
+        assert_eq!(refund_window_with(eververse, None, Some(&p)), Some(900));
+        assert_eq!(refund_window_with(eva, None, Some(&p)), None);
+        assert_eq!(refund_window_with(eva, None, None), Some(1800), "store off: as before");
+        assert_eq!(refund_window_with(eva, Some(60), Some(&p)), Some(60), "D1_REFUND_WINDOW forces one");
+        let real = parse_sales(&std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"),
+            "/../../../fixtures/56578/vendor/vendor-sales.tsv")).unwrap());
+        assert_eq!(real[&(12, 0)].vendor_hash, eververse, "client vendor 12 is Eververse");
+        assert_eq!(real[&(6, 23)].vendor_hash, eva);
     }
 
     #[test]
@@ -778,7 +823,7 @@ mod tests {
     #[test]
     fn a_profile_held_cost_is_taken_from_its_stacks() {
         let mut s = st(0);
-        s.sales.insert((5, 0), Sale { item: 900, bucket: 0x05, instanced: false, costs: vec![(872, 30, 0x05)] });
+        s.sales.insert((5, 0), Sale { vendor_hash: 0, item: 900, bucket: 0x05, instanced: false, costs: vec![(872, 30, 0x05)] });
         let put = |p: &mut Vec<u8>, slot: usize, ci: u16, q: u32| {
             let e = PROFILE_SLOTS + 32 * slot;
             p[e..e + 2].copy_from_slice(&ci.to_le_bytes());

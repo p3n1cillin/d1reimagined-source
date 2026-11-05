@@ -1762,7 +1762,7 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                         // `d1guest tag`. That premise was "believed, not
                                                                         // measured" until then, and it is what makes the whole
                                                                         // gear lane viable.
-                                                                        // ⭐ D1_PLAYER_STORE: the items the store keeps (seeded from these
+                                                                        // ⭐ D1_STORE=1: the items the player store keeps (seeded from these
                                                                         // same files, so its first serve is identical), else the files.
                                                                         let items: Option<Vec<(u64, Vec<u8>, String)>> = player_store::view(|s| s.chr().items.iter()
                                                                             .map(|i| (i.soid, i.element.clone(), "player store".to_string())).collect())
@@ -2035,7 +2035,7 @@ const ROSTER_INSTANCE_TYPES: &[((u32, u32), u32)] = &[
 ///
 /// ⚠ `D1_ANSWER_FAMILIES` is still required - this supplies CONTENTS, not the subscription answer.
 fn build_roster_family_body(family: u32, root_soid: u64) -> Option<Vec<u8>> {
-    // ⭐ D1_PLAYER_STORE: the store's cards (seeded from this directory, then the loot grants'), else
+    // ⭐ D1_STORE=1: the player store's cards (seeded from this directory, then the loot grants'), else
     // the directory itself, sorted by name.
     let cards = player_store::roster_cards()?;
     let mut items: Vec<(u32, u64, Vec<u8>)> = Vec::new();
@@ -2317,8 +2317,13 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_VENDOR_ITEM_TEMPLATE", "<unset>", "a decoded 0x80801732 item element, the template for bought instances"),
     ("D1_VENDOR_ACCOUNT_SLOTS", "<unset>", "slot:content:quantity,... - the account slots D1_ACCOUNT_FILE serves (e.g. 308:869:25000 = Glimmer)"),
     // ── the player store (notes/ps4-56578-player-store-2026-11-05.md) ──────────────────────────
-    ("D1_PLAYER_STORE", "<unset>", "💾 a directory OUTSIDE the repo: persist the account and character (seeded from the knobs above on first sign-on, then served from it). Unset = off"),
-    ("D1_PLAYER_STORE_CONTROL", "<unset>", "💾 a command file the store polls: activity N | xp N | complete N | checkpoint N STEP | reputation NAME N | unlock +N -N"),
+    ("D1_STORE", "<unset>", "💾 1 = persist the account and character (seeded from the knobs above on first sign-on, then served from it). Unset = off, as before"),
+    ("D1_STORE_DIR", "<%LOCALAPPDATA%/d1reimagined/player-store>", "💾 where the store keeps identities.json and account-<soid>.json (OUTSIDE the repo)"),
+    ("D1_STORE_PLAYER", "local", "💾 the player name the identity is filed under (the first player gets the D1_*_SOID knobs)"),
+    ("D1_STORE_SAVE_SECS", "300", "💾 the periodic save (important events save at once)"),
+    ("D1_STORE_CONTROL", "<unset>", "💾 a command file the store polls: activity N | xp N | complete N | checkpoint N STEP | reputation NAME N | unlock +N -N"),
+    ("D1_REFUND_WINDOW", "<1800; with D1_STORE=1 the manifest's>", "seconds a vendor purchase stays refundable (forces it for every vendor; D1_STORE=1 alone gives Eververse/Silver Dust 900, others none)"),
+    ("D1_REFUND_POLICIES", "<repo table>", "override ps4/fixtures/56578/progression/refund-policies.tsv (which vendors refund, and for how long)"),
     ("D1_PROGRESSION_CURVES", "<repo table>", "override ps4/fixtures/56578/progression/progression-curves.tsv (XP and rank curves)"),
     ("D1_VENDOR_RESETS", "<repo table>", "override ps4/fixtures/56578/progression/vendor-resets.tsv (vendor reset schedules)"),
     ("D1_ACTIVITY_REWARDS", "<repo table>", "override ps4/fixtures/56578/progression/activity-rewards.tsv (what completing an activity gives)"),
@@ -2435,7 +2440,7 @@ fn served_205_body() -> Vec<u8> {
 /// ⛔ More than 50 is refused (container `0x80804717` is 50 x 4 B), and the bodies are decoded back
 /// before use: a body that reads back as anything other than exactly this list is not served.
 fn unlock_flag_override() -> Option<(Vec<u8>, Vec<u8>)> {
-    // D1_PLAYER_STORE: the store's list (seeded from D1_UNLOCK_FLAGS, changed by completions).
+    // D1_STORE=1: the player store's list (seeded from D1_UNLOCK_FLAGS, changed by completions).
     let spec = player_store::unlock_flag_spec()?;
     let indices: Vec<u16> = match spec.split(',').map(|s| s.trim().parse::<u16>()).collect() {
         Ok(v) => v,

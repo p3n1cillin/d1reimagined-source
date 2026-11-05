@@ -4,11 +4,15 @@
 //! responder restarts, as Bungie's world server kept character data (in memory, persisted, with
 //! an immediate save on important events; GDC 2021, "Exploring Services Architecture at Bungie").
 //!
-//! **Off unless `D1_PLAYER_STORE=<dir>` is set** (outside the repository). Without it nothing here
-//! runs and every object is read from the fixture knobs at each sign-on, as before.
+//! **Off unless `D1_STORE=1`.** Without it nothing here runs and every object is read from the
+//! fixture knobs at each sign-on, as before. With it, the store lives in `D1_STORE_DIR` (outside the
+//! repository; default [`default_dir`]):
 //!
-//! With it, `<dir>/account-<soid:016x>.json` holds one account and its characters (schema
-//! [`SCHEMA_VERSION`], documented in notes/ps4-56578-player-store-2026-11-05.md):
+//! * `identities.json`: player name -> the account, character and profile SOIDs ([`Identity`]),
+//!   allocated once and never reused, so a player keeps one identity across sessions (and stream H's
+//!   multiplayer sessions name the same one);
+//! * `account-<soid:016x>.json`: one account and its characters (schema [`SCHEMA_VERSION`],
+//!   documented in notes/ps4-56578-player-store-2026-11-05.md):
 //!
 //! * the served objects, byte for byte: the profile (`0x80801743` payload), the account, the
 //!   character, the family-4/3 item elements and the roster cards;
@@ -25,10 +29,17 @@
 //! `D1_UNLOCK_FLAGS`, `D1_VENDOR_ACCOUNT_SLOTS`) through the same readers the serving code uses, so
 //! an empty store serves what the fixtures serve. From then on the store is the source.
 //!
-//! **Writes** go through on every change, then the record is saved (write to `.tmp`, keep the old
-//! file as `.prev`, rename): vendor purchases (901), equips (403), dismantles (402), loot grants,
-//! every delivered profile and account push (the post-game rewards among them), unlock-flag
-//! changes, and the control commands (`D1_PLAYER_STORE_CONTROL`).
+//! **Saving** is Bungie's world-server pattern: the record is held in memory, important events save
+//! at once ([`PlayerStore::save_now`]: vendor purchases (901), equips (403), dismantles (402), loot
+//! grants, delivered profile and account pushes, completions, unlock-flag changes, checkpoints, the
+//! control commands of `D1_STORE_CONTROL`), and everything else marks the record dirty
+//! ([`PlayerStore::mark_dirty`]) for the periodic save, every `D1_STORE_SAVE_SECS` (300, the five
+//! minutes of the GDC talk). A save writes `<file>.tmp`, flushes it to disk, keeps the old file as
+//! `.prev` and renames the new one over it, so a crash leaves either the old or the new record,
+//! never half of one; an unreadable record (a disk fault) falls back to `.prev` and is kept aside.
+//!
+//! **The trait** other streams use is [`PlayerStore`] (vendors and inventory, rewards, Light,
+//! Grimoire, checkpoints, identity); [`with_store`] lends the responder's store through it.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -37,7 +48,7 @@ use std::sync::{Mutex, OnceLock};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::progression::{self, layout, Curves, Rewards, VendorResets};
+use crate::progression::{self, layout, Curves, RefundPolicies, Rewards, VendorResets, XpGrant};
 
 /// Bump on any change a version-1 reader would misread, and add the step to [`migrate`].
 pub const SCHEMA_VERSION: u32 = 1;
@@ -63,6 +74,9 @@ pub struct Record {
     /// The newest changes, oldest first (at most 200).
     #[serde(default)]
     pub history: Vec<Change>,
+    /// The player name `identities.json` gives this account under (empty for records made before it).
+    #[serde(default)]
+    pub player: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
@@ -84,6 +98,9 @@ pub struct Account {
     /// Vendor hash -> the latest reset seen (epoch minutes; progression::VendorSchedule).
     #[serde(default)]
     pub vendor_resets: BTreeMap<u32, i64>,
+    /// Grimoire cards acquired: card id -> the score it gives (the account-wide Grimoire score is the sum).
+    #[serde(default)]
+    pub grimoire: BTreeMap<u32, u32>,
     #[serde(default)]
     pub attributes: BTreeMap<String, Value>,
 }
@@ -135,8 +152,32 @@ pub struct Character {
     /// Progress of progressions the profile has no known entry for (reputation): name -> progress.
     #[serde(default)]
     pub progress: BTreeMap<String, u64>,
+    /// The character's Light as the rewards stream last computed it (the client derives the shown
+    /// value from the equipped gear; this is the server's copy for matchmaking and gates).
+    #[serde(default)]
+    pub light: Option<u32>,
+    /// Bounties held, by item hash.
+    #[serde(default)]
+    pub bounties: BTreeMap<u32, Bounty>,
+    /// `profile_object` was edited after `profile` was encoded: the payload must be re-encoded
+    /// before it is served (the responder does it at sign-on and on [`push_profile`]).
+    #[serde(default)]
+    pub profile_stale: bool,
     #[serde(default)]
     pub attributes: BTreeMap<String, Value>,
+}
+
+/// A bounty a character holds: its objectives' progress, in the definition's order.
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Default)]
+pub struct Bounty {
+    pub item_hash: u32,
+    #[serde(default)]
+    pub objectives: Vec<u32>,
+    #[serde(default)]
+    pub completed: bool,
+    /// Unix seconds.
+    #[serde(default)]
+    pub acquired: u64,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
@@ -218,6 +259,120 @@ fn soid_key(soid: u64) -> String {
 
 fn unix_now() -> u64 {
     std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0)
+}
+
+// ── crash-safe files ────────────────────────────────────────────────────────────────────────
+
+/// Write `bytes` to `path` so that a crash at any point leaves the old file or the new one: write
+/// `<path>.tmp` and flush it to the disk, copy the old file to `<path>.prev`, rename the new one
+/// over it (an atomic replace on NTFS and POSIX file systems).
+pub fn atomic_write(path: &Path, bytes: &[u8]) -> anyhow::Result<()> {
+    use std::io::Write;
+    let tmp = sidecar(path, "tmp");
+    {
+        let mut f = std::fs::File::create(&tmp)?;
+        f.write_all(bytes)?;
+        f.sync_all()?;
+    }
+    if path.exists() {
+        let _ = std::fs::copy(path, sidecar(path, "prev"));
+    }
+    std::fs::rename(&tmp, path)?;
+    Ok(())
+}
+
+/// `<path>.<ext>` (`account-….json.tmp`).
+pub fn sidecar(path: &Path, ext: &str) -> PathBuf {
+    let mut s = path.as_os_str().to_os_string();
+    s.push(".");
+    s.push(ext);
+    PathBuf::from(s)
+}
+
+/// Read a JSON file written by [`atomic_write`]. A file that does not parse (a disk fault, or a
+/// hand edit gone wrong) is moved aside to `<path>.corrupt-<unix>` and `<path>.prev` is read
+/// instead; the second value says so. A leftover `.tmp` (a crash before the rename) is ignored.
+pub fn read_json_recovering(path: &Path) -> anyhow::Result<(Value, Option<String>)> {
+    let bytes = std::fs::read(path)?;
+    match serde_json::from_slice::<Value>(&bytes) {
+        Ok(v) => Ok((v, None)),
+        Err(e) => {
+            let prev = sidecar(path, "prev");
+            let v: Value = serde_json::from_slice(&std::fs::read(&prev)
+                .map_err(|p| anyhow::anyhow!("{}: {e}, and no {}: {p}", path.display(), prev.display()))?)
+                .map_err(|p| anyhow::anyhow!("{}: {e}, and {} too: {p}", path.display(), prev.display()))?;
+            let aside = sidecar(path, &format!("corrupt-{}", unix_now()));
+            std::fs::rename(path, &aside)?;
+            Ok((v, Some(format!("{} did not parse ({e}); moved to {} and read {}", path.display(), aside.display(), prev.display()))))
+        }
+    }
+}
+
+// ── identity ────────────────────────────────────────────────────────────────────────────────
+
+/// A player's SOIDs. The first player's are the responder's knobs (`D1_ACCOUNT_SOID`,
+/// `D1_CHARACTER_SOID`, `D1_PROFILE_SOID`), so turning the store on changes no served id; later
+/// players get [`Identity::allocated`] ones.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Identity {
+    #[serde(with = "hex64")]
+    pub account: u64,
+    #[serde(with = "hex64")]
+    pub character: u64,
+    #[serde(with = "hex64")]
+    pub profile: u64,
+}
+
+impl Identity {
+    /// The responder's own knobs (and their defaults).
+    pub fn from_env() -> Self {
+        Identity {
+            account: crate::env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001),
+            character: crate::env_soid("D1_CHARACTER_SOID", 0xD100_0000_0000_0101),
+            profile: crate::env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201),
+        }
+    }
+
+    /// Player `n`'s (n >= 1) identity: `0xD101_0000_nnnn_n001` / `...101` / `...201`, outside the
+    /// `0xD100_...` range the knobs, items and purchases use.
+    pub fn allocated(n: u32) -> Self {
+        let base = 0xD101_0000_0000_0000u64 | (u64::from(n) << 12);
+        Identity { account: base | 0x001, character: base | 0x101, profile: base | 0x201 }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Default)]
+pub struct Identities {
+    pub schema: u32,
+    /// How many identities have been allocated (the n-th gets [`Identity::allocated`]`(n)`).
+    pub allocated: u32,
+    pub players: BTreeMap<String, Identity>,
+}
+
+/// `identities.json` in `dir`: the player's identity, allocated (and saved) on first sight. The
+/// first player ever seen gets `first`; ids are never reused.
+pub fn identity_for(dir: &Path, player: &str, first: Identity) -> anyhow::Result<Identity> {
+    anyhow::ensure!(!player.is_empty(), "an empty player name");
+    std::fs::create_dir_all(dir)?;
+    let path = dir.join("identities.json");
+    let mut ids: Identities = if path.exists() {
+        let (v, recovered) = read_json_recovering(&path)?;
+        if let Some(r) = recovered {
+            tracing::warn!("      ⛔ player store: {r}");
+        }
+        serde_json::from_value(v)?
+    } else {
+        Identities { schema: 1, ..Default::default() }
+    };
+    if let Some(id) = ids.players.get(player) {
+        return Ok(*id);
+    }
+    let id = if ids.allocated == 0 { first } else { Identity::allocated(ids.allocated) };
+    anyhow::ensure!(!ids.players.values().any(|o| o.account == id.account), "identity {:#x} is already taken", id.account);
+    ids.allocated += 1;
+    ids.players.insert(player.to_string(), id);
+    atomic_write(&path, &serde_json::to_vec_pretty(&ids)?)?;
+    Ok(id)
 }
 
 // ── seeding: the readers the serving code uses ──────────────────────────────────────────────
@@ -358,17 +513,22 @@ pub fn seed(src: &Sources, account: u64, character: u64, profile_soid: u64) -> R
         account: acct,
         characters: BTreeMap::from([(soid_key(character), chr)]),
         history: Vec::new(),
+        player: String::new(),
     }
 }
 
 // ── the store ───────────────────────────────────────────────────────────────────────────────
 
 pub struct Store {
-    path: PathBuf,
+    /// None: in memory only ([`Store::in_memory`], for tests and for streams without a disk).
+    path: Option<PathBuf>,
     pub record: Record,
     character: u64,
     pub curves: Curves,
     pub rewards: Rewards,
+    pub refund_policies: RefundPolicies,
+    /// Changes since the last save that wait for the periodic one.
+    dirty: Vec<String>,
 }
 
 /// What a vendor change (901, 403, 402) leaves: vendor.rs's state after it, encoded.
@@ -389,6 +549,24 @@ impl Store {
         dir.join(format!("account-{account:016x}.json"))
     }
 
+    /// A store with no file: saves only count revisions. What the other streams' tests can use.
+    #[allow(dead_code)] // an entry point for streams I, M, J and H; not called by the responder yet
+    pub fn in_memory(id: Identity, src: &Sources) -> Store {
+        Store { path: None, record: seed(src, id.account, id.character, id.profile), character: id.character,
+                curves: Curves::load(), rewards: Rewards::load(), refund_policies: RefundPolicies::load(), dirty: Vec::new() }
+    }
+
+    /// [`Store::open`] for a player named in `identities.json` (allocated on first sight).
+    pub fn open_player(dir: &Path, player: &str, first: Identity, src: &Sources) -> anyhow::Result<Store> {
+        let id = identity_for(dir, player, first)?;
+        let mut s = Store::open(dir, id.account, id.character, id.profile, src)?;
+        if s.record.player != player {
+            s.record.player = player.to_string();
+            s.save(&format!("player {player}"))?;
+        }
+        Ok(s)
+    }
+
     /// Load the account's record, or seed it from `src` (and save) when there is none. A record
     /// without this character gets the character seeded beside the others.
     pub fn open(dir: &Path, account: u64, character: u64, profile_soid: u64, src: &Sources) -> anyhow::Result<Store> {
@@ -396,15 +574,19 @@ impl Store {
         let path = Self::file_for(dir, account);
         let mut seeded = false;
         let record = if path.exists() {
-            let r = migrate(serde_json::from_slice(&std::fs::read(&path)?)?)
-                .map_err(|e| anyhow::anyhow!("{}: {e}", path.display()))?;
+            let (v, recovered) = read_json_recovering(&path)?;
+            if let Some(r) = &recovered {
+                tracing::warn!("      ⛔⛔ player store: {r}");
+            }
+            let r = migrate(v).map_err(|e| anyhow::anyhow!("{}: {e}", path.display()))?;
             anyhow::ensure!(r.account_soid == account, "{} holds account {:#x}, not {account:#x}", path.display(), r.account_soid);
             r
         } else {
             seeded = true;
             seed(src, account, character, profile_soid)
         };
-        let mut s = Store { path, record, character, curves: Curves::load(), rewards: Rewards::load() };
+        let mut s = Store { path: Some(path), record, character, curves: Curves::load(), rewards: Rewards::load(),
+                            refund_policies: RefundPolicies::load(), dirty: Vec::new() };
         if !s.record.characters.contains_key(&soid_key(character)) {
             let mut extra = BTreeMap::new();
             let chr = seed_character(src, profile_soid, &mut extra);
@@ -416,8 +598,9 @@ impl Store {
         Ok(s)
     }
 
-    pub fn path(&self) -> &Path {
-        &self.path
+    /// The record's file (None for an in-memory store).
+    pub fn path(&self) -> Option<&Path> {
+        self.path.as_deref()
     }
 
     pub fn chr(&self) -> &Character {
@@ -428,20 +611,41 @@ impl Store {
         self.record.characters.get_mut(&soid_key(self.character)).expect("the character is seeded at open")
     }
 
-    /// Persist now: `.tmp`, then the old file to `.prev`, then rename.
+    /// Persist now (with whatever was waiting for the periodic save): [`atomic_write`].
     pub fn save(&mut self, what: &str) -> anyhow::Result<()> {
         self.record.revision += 1;
-        self.record.history.push(Change { revision: self.record.revision, at: unix_now(), what: what.to_string() });
+        let what = match self.dirty.len() {
+            0 => what.to_string(),
+            n => format!("{what} (+{n} pending: {})", self.dirty.join("; ")),
+        };
+        self.record.history.push(Change { revision: self.record.revision, at: unix_now(), what: what.clone() });
         let excess = self.record.history.len().saturating_sub(HISTORY);
         self.record.history.drain(..excess);
-        let tmp = self.path.with_extension("json.tmp");
-        std::fs::write(&tmp, serde_json::to_vec_pretty(&self.record)?)?;
-        if self.path.exists() {
-            let _ = std::fs::copy(&self.path, self.path.with_extension("json.prev"));
+        if let Some(path) = &self.path {
+            atomic_write(path, &serde_json::to_vec_pretty(&self.record)?)?;
+            tracing::warn!("      💾 player store r{}: {what}", self.record.revision);
         }
-        std::fs::rename(&tmp, &self.path)?;
-        tracing::warn!("      💾 player store r{}: {what}", self.record.revision);
+        self.dirty.clear();
         Ok(())
+    }
+
+    /// A change the periodic save picks up.
+    pub fn touch(&mut self, what: &str) {
+        self.dirty.push(what.to_string());
+    }
+
+    #[allow(dead_code)] // tests, and streams checking before a save
+    pub fn is_dirty(&self) -> bool {
+        !self.dirty.is_empty()
+    }
+
+    /// The periodic save: saves only when something is waiting.
+    pub fn flush(&mut self) -> anyhow::Result<bool> {
+        if self.dirty.is_empty() {
+            return Ok(false);
+        }
+        self.save("periodic save")?;
+        Ok(true)
     }
 
     /// A profile payload the client now has (or will on the next echo). A new payload makes the
@@ -454,6 +658,7 @@ impl Store {
         c.profile = Some(payload.to_vec());
         c.profile_source = source.to_string();
         c.profile_object = None;
+        c.profile_stale = false;
         true
     }
 
@@ -591,16 +796,240 @@ impl Store {
         for v in &schedules.0 {
             let last = v.last_reset(now);
             match self.record.account.vendor_resets.insert(v.vendor_hash, last) {
-                Some(prev) if prev < last => out.push(format!("{} ({}) reset since r{}", v.name, v.vendor_hash, self.record.revision)),
+                Some(prev) if prev < last => out.push(format!("{} ({}) reset since r{}; next at epoch minute {}",
+                                                               v.name, v.vendor_hash, self.record.revision, v.next_reset(now))),
                 _ => {}
             }
         }
         out
     }
 
-    pub fn checkpoint(&mut self, activity: u16, step: &str) {
+}
+
+// ── the trait the other streams plug into ───────────────────────────────────────────────────
+
+/// The first item instance a purchase mints when the store has none recorded (vendor.rs's too).
+pub const FIRST_ITEM_SOID: u64 = 0xD100_0000_0000_0601;
+
+/// The persistent player store as the other streams see it: one account and the character signed
+/// on. [`Store`] implements it on disk ([`Store::open`]) or in memory ([`Store::in_memory`]);
+/// [`with_store`] lends the responder's. Mutators change the in-memory record only: an important
+/// event then calls [`PlayerStore::save_now`], anything else [`PlayerStore::mark_dirty`] (the
+/// periodic save). Values the client reads from the profile object (XP, completions) are edited
+/// there and flagged for re-encoding ([`Character::profile_stale`]).
+///
+/// Streams: I (vendors, inventory, bounties), M (rewards, Light, Grimoire), J (checkpoints),
+/// H (identity). notes/ps4-56578-player-store-2026-11-05.md has the table.
+#[allow(dead_code)] // an entry point for streams I, M, J and H; not called by the responder yet
+pub trait PlayerStore {
+    // ── identity (H) ──
+    fn identity(&self) -> Identity;
+    /// The player name the identity is filed under (empty for an unnamed store).
+    fn player(&self) -> &str;
+
+    // ── persistence ──
+    /// Save now (an important event); whatever waited for the periodic save goes with it.
+    fn save_now(&mut self, what: &str) -> anyhow::Result<()>;
+    /// Note a change for the periodic save.
+    fn mark_dirty(&mut self, what: &str);
+
+    // ── inventory and vendors (I) ──
+    fn items(&self) -> &[Item];
+    /// Add an item instance, or replace its element.
+    fn put_item(&mut self, soid: u64, element: &[u8]);
+    /// Whether it was there.
+    fn remove_item(&mut self, soid: u64) -> bool;
+    /// A fresh item instance SOID (never handed out before on this account).
+    fn mint_item_soid(&mut self) -> u64;
+    /// The quantity of a currency or material held in the account's slots (by content index).
+    fn currency(&self, content: u16) -> u32;
+    /// Add `delta` (negative: spend). Refuses to go below zero, or to add a content no slot holds.
+    fn adjust_currency(&mut self, content: u16, delta: i64) -> anyhow::Result<u32>;
+    fn refunds(&self) -> &[Refund];
+    fn push_refund(&mut self, r: Refund);
+    /// Take back the refund record for `instance` if it hasn't expired at `now` (the 901's clock).
+    fn take_refund(&mut self, instance: u64, now: u64) -> Option<Refund>;
+    /// How long a purchase from `vendor_hash` can be returned, in seconds (None: never). From the
+    /// manifest: Eververse and Silver Dust, 15 minutes.
+    fn refund_window(&self, vendor_hash: u32, item_hash: Option<u32>) -> Option<u64>;
+    fn bounties(&self) -> &BTreeMap<u32, Bounty>;
+    fn put_bounty(&mut self, b: Bounty);
+    fn remove_bounty(&mut self, item_hash: u32) -> Option<Bounty>;
+    /// Record the resets since the last look (epoch minutes); returns those that happened.
+    fn roll_vendor_resets(&mut self, schedules: &VendorResets, now: i64) -> Vec<String>;
+
+    // ── rewards, Light, Grimoire (M) ──
+    /// character_level + character_prestige progress (None until the profile is decoded).
+    fn xp(&self) -> Option<u64>;
+    /// XP through the curves into the profile object (level 40 = 346,000, then prestige).
+    fn add_xp(&mut self, amount: u32) -> anyhow::Result<XpGrant>;
+    /// Reputation (rank progress) by progression name; returns what changed.
+    fn add_reputation(&mut self, progression: &str, amount: u32) -> String;
+    /// `(progress, rank)` for a progression the store keeps.
+    fn reputation(&self, progression: &str) -> Option<(u64, u32)>;
+    fn light(&self) -> Option<u32>;
+    fn set_light(&mut self, light: Option<u32>);
+    /// The account's Grimoire score (the sum of its cards' scores).
+    fn grimoire_score(&self) -> u32;
+    /// Whether the card is new.
+    fn add_grimoire_card(&mut self, card: u32, score: u32) -> bool;
+    fn completions(&self) -> &BTreeMap<u16, Completion>;
+    fn unlock_flags(&self) -> Option<&[u16]>;
+    fn change_unlock_flags(&mut self, add: &[u16], clear: &[u16]) -> anyhow::Result<String>;
+
+    // ── checkpoints (J) ──
+    fn checkpoint(&self, activity: u16) -> Option<&Checkpoint>;
+    fn set_checkpoint(&mut self, activity: u16, step: &str);
+    fn clear_checkpoint(&mut self, activity: u16) -> bool;
+}
+
+impl PlayerStore for Store {
+    fn identity(&self) -> Identity {
+        Identity { account: self.record.account_soid, character: self.character, profile: self.chr().profile_soid }
+    }
+
+    fn player(&self) -> &str {
+        &self.record.player
+    }
+
+    fn save_now(&mut self, what: &str) -> anyhow::Result<()> {
+        self.save(what)
+    }
+
+    fn mark_dirty(&mut self, what: &str) {
+        self.touch(what)
+    }
+
+    fn items(&self) -> &[Item] {
+        &self.chr().items
+    }
+
+    fn put_item(&mut self, soid: u64, element: &[u8]) {
+        Store::put_item(self, soid, element)
+    }
+
+    fn remove_item(&mut self, soid: u64) -> bool {
+        let before = self.chr().items.len();
+        Store::remove_item(self, soid);
+        self.chr().items.len() != before
+    }
+
+    fn mint_item_soid(&mut self) -> u64 {
+        let next = self.record.account.next_item_soid.unwrap_or(FIRST_ITEM_SOID);
+        self.record.account.next_item_soid = Some(next + 1);
+        next
+    }
+
+    fn currency(&self, content: u16) -> u32 {
+        self.record.account.slots.values().filter(|(c, _)| *c == content).map(|(_, q)| *q).sum()
+    }
+
+    fn adjust_currency(&mut self, content: u16, delta: i64) -> anyhow::Result<u32> {
+        let slot = self.record.account.slots.iter_mut().find(|(_, (c, _))| *c == content)
+            .ok_or_else(|| anyhow::anyhow!("no account slot holds content {content}"))?;
+        let after = i64::from(slot.1 .1) + delta;
+        anyhow::ensure!((0..=i64::from(u32::MAX)).contains(&after), "content {content}: {} {delta:+} is out of range", slot.1 .1);
+        slot.1 .1 = after as u32;
+        Ok(after as u32)
+    }
+
+    fn refunds(&self) -> &[Refund] {
+        &self.record.account.refunds
+    }
+
+    fn push_refund(&mut self, r: Refund) {
+        self.record.account.refunds.push(r)
+    }
+
+    fn take_refund(&mut self, instance: u64, now: u64) -> Option<Refund> {
+        let refunds = &mut self.record.account.refunds;
+        let i = refunds.iter().position(|r| r.instance == instance && now < r.expires)?;
+        Some(refunds.remove(i))
+    }
+
+    fn refund_window(&self, vendor_hash: u32, item_hash: Option<u32>) -> Option<u64> {
+        self.refund_policies.window_secs(vendor_hash, item_hash)
+    }
+
+    fn bounties(&self) -> &BTreeMap<u32, Bounty> {
+        &self.chr().bounties
+    }
+
+    fn put_bounty(&mut self, b: Bounty) {
+        self.chr_mut().bounties.insert(b.item_hash, b);
+    }
+
+    fn remove_bounty(&mut self, item_hash: u32) -> Option<Bounty> {
+        self.chr_mut().bounties.remove(&item_hash)
+    }
+
+    fn roll_vendor_resets(&mut self, schedules: &VendorResets, now: i64) -> Vec<String> {
+        Store::roll_vendor_resets(self, schedules, now)
+    }
+
+    fn xp(&self) -> Option<u64> {
+        self.chr().profile_object.as_ref().map(|o| progression::total_xp(o, &self.curves))
+    }
+
+    fn add_xp(&mut self, amount: u32) -> anyhow::Result<XpGrant> {
+        let curves = self.curves.clone();
+        let c = self.chr_mut();
+        let obj = c.profile_object.as_mut().ok_or_else(|| anyhow::anyhow!("the profile is not decoded yet"))?;
+        let g = progression::add_xp(obj, &curves, amount)?;
+        c.profile_stale = true;
+        let summary = summarize(c.profile_object.as_ref().unwrap(), &curves);
+        c.summary = Some(summary);
+        Ok(g)
+    }
+
+    fn add_reputation(&mut self, progression: &str, amount: u32) -> String {
+        Store::add_reputation(self, progression, amount)
+    }
+
+    fn reputation(&self, progression: &str) -> Option<(u64, u32)> {
+        let p = *self.chr().progress.get(progression)?;
+        Some((p, self.curves.by_name(progression)?.level(p)))
+    }
+
+    fn light(&self) -> Option<u32> {
+        self.chr().light
+    }
+
+    fn set_light(&mut self, light: Option<u32>) {
+        self.chr_mut().light = light;
+    }
+
+    fn grimoire_score(&self) -> u32 {
+        self.record.account.grimoire.values().sum()
+    }
+
+    fn add_grimoire_card(&mut self, card: u32, score: u32) -> bool {
+        self.record.account.grimoire.insert(card, score).is_none()
+    }
+
+    fn completions(&self) -> &BTreeMap<u16, Completion> {
+        &self.chr().completions
+    }
+
+    fn unlock_flags(&self) -> Option<&[u16]> {
+        self.record.account.unlock_flags.as_deref()
+    }
+
+    fn change_unlock_flags(&mut self, add: &[u16], clear: &[u16]) -> anyhow::Result<String> {
+        Store::change_unlock_flags(self, add, clear)
+    }
+
+    fn checkpoint(&self, activity: u16) -> Option<&Checkpoint> {
+        self.chr().checkpoints.get(&activity)
+    }
+
+    fn set_checkpoint(&mut self, activity: u16, step: &str) {
         let revision = self.record.revision + 1;
         self.chr_mut().checkpoints.insert(activity, Checkpoint { step: step.to_string(), revision });
+    }
+
+    fn clear_checkpoint(&mut self, activity: u16) -> bool {
+        self.chr_mut().checkpoints.remove(&activity).is_some()
     }
 }
 
@@ -633,16 +1062,65 @@ pub fn summarize(obj: &[u8], curves: &Curves) -> Summary {
 
 // ── the responder's store ───────────────────────────────────────────────────────────────────
 
+/// The responder's store settings (`D1_STORE*`); None when the store is off.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Config {
+    pub dir: PathBuf,
+    pub player: String,
+    pub save_every: std::time::Duration,
+    pub control: Option<PathBuf>,
+}
+
+/// Where the store lives when `D1_STORE_DIR` is unset: `%LOCALAPPDATA%\d1reimagined\player-store`,
+/// else `$HOME/.d1reimagined/player-store` (never the repository).
+pub fn default_dir() -> PathBuf {
+    match std::env::var_os("LOCALAPPDATA") {
+        Some(d) => PathBuf::from(d).join("d1reimagined").join("player-store"),
+        None => PathBuf::from(std::env::var_os("HOME").unwrap_or_else(|| ".".into())).join(".d1reimagined").join("player-store"),
+    }
+}
+
+impl Config {
+    /// `D1_STORE=1` turns it on; `D1_STORE_DIR`, `D1_STORE_PLAYER` (the identity's name, default
+    /// `local`), `D1_STORE_SAVE_SECS` (300) and `D1_STORE_CONTROL` set it up.
+    pub fn from_vars(var: impl Fn(&str) -> Option<String>) -> Option<Config> {
+        if var("D1_STORE").as_deref().map(str::trim) != Some("1") {
+            return None;
+        }
+        let secs = var("D1_STORE_SAVE_SECS").and_then(|v| v.trim().parse::<u64>().ok()).filter(|&n| n > 0).unwrap_or(300);
+        Some(Config {
+            dir: var("D1_STORE_DIR").filter(|d| !d.is_empty()).map(PathBuf::from).unwrap_or_else(default_dir),
+            player: var("D1_STORE_PLAYER").filter(|p| !p.is_empty()).unwrap_or_else(|| "local".into()),
+            save_every: std::time::Duration::from_secs(secs),
+            control: var("D1_STORE_CONTROL").filter(|p| !p.is_empty()).map(PathBuf::from),
+        })
+    }
+
+    pub fn from_env() -> Option<Config> {
+        Self::from_vars(|k| std::env::var(k).ok())
+    }
+}
+
+/// Whether the responder runs with the store (`D1_STORE=1`).
+pub fn enabled() -> bool {
+    Config::from_env().is_some()
+}
+
 fn global() -> Option<&'static Mutex<Store>> {
     static G: OnceLock<Option<Mutex<Store>>> = OnceLock::new();
     G.get_or_init(|| {
-        let dir = std::env::var("D1_PLAYER_STORE").ok().filter(|d| !d.is_empty())?;
-        let account = crate::env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
-        let character = crate::env_soid("D1_CHARACTER_SOID", 0xD100_0000_0000_0101);
-        let profile = crate::env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201);
-        match Store::open(Path::new(&dir), account, character, profile, &Sources::from_env()) {
+        let cfg = Config::from_env()?;
+        match Store::open_player(&cfg.dir, &cfg.player, Identity::from_env(), &Sources::from_env()) {
             Ok(mut s) => {
-                tracing::warn!("      💾 player store ON: {} (r{}, schema {})", s.path().display(), s.record.revision, s.record.schema);
+                tracing::warn!("      💾 player store ON: {} (player {}, r{}, schema {}, saved every {:?})",
+                               s.path().map(|p| p.display().to_string()).unwrap_or_default(), cfg.player,
+                               s.record.revision, s.record.schema, cfg.save_every);
+                if s.chr().profile_stale {
+                    match reencode(&mut s) {
+                        Ok(()) => tracing::warn!("      💾 the stored profile was edited since it was encoded: re-encoded"),
+                        Err(e) => tracing::warn!("      ⛔ player store: re-encoding the edited profile failed ({e:#}); serving the last encoding"),
+                    }
+                }
                 let now = (unix_now() / 60) as i64;
                 let resets = s.roll_vendor_resets(&VendorResets::load(), now);
                 for r in &resets {
@@ -651,17 +1129,83 @@ fn global() -> Option<&'static Mutex<Store>> {
                 if let Err(e) = s.save(&format!("signed on; {} vendor reset(s) since the last session", resets.len())) {
                     tracing::warn!("      ⛔ player store: {e}");
                 }
-                if let Some(path) = std::env::var_os("D1_PLAYER_STORE_CONTROL") {
-                    start_control(PathBuf::from(path));
+                if let Some(path) = cfg.control.clone() {
+                    start_control(path);
                 }
+                start_periodic_save(cfg.save_every);
                 Some(Mutex::new(s))
             }
             Err(e) => {
-                tracing::warn!("      ⛔⛔ player store {dir} NOT USED ({e:#}): serving the fixtures; the record is left as it is");
+                tracing::warn!("      ⛔⛔ player store {} NOT USED ({e:#}): serving the fixtures; the record is left as it is", cfg.dir.display());
                 None
             }
         }
     }).as_ref()
+}
+
+/// The world server's periodic save: every `every`, save if anything is waiting.
+fn start_periodic_save(every: std::time::Duration) {
+    std::thread::spawn(move || loop {
+        std::thread::sleep(every);
+        let Some(m) = global() else { return };
+        if let Ok(mut s) = m.lock() {
+            if let Err(e) = s.flush() {
+                tracing::warn!("      ⛔ player store periodic save: {e:#}");
+            }
+        }
+    });
+}
+
+/// Encode the edited profile object into the served payload (the client's codec).
+fn reencode(s: &mut Store) -> anyhow::Result<()> {
+    let obj = s.chr().profile_object.clone().ok_or_else(|| anyhow::anyhow!("no profile object"))?;
+    let oracle = crate::vendor::oracle_path();
+    let (encoded, _) = crate::vendor::encode(&oracle, "0x80801743", &obj, &crate::vendor::unique_name("store-reencode"))?;
+    let c = s.chr_mut();
+    c.profile = Some(encoded);
+    c.profile_source = "store".into();
+    c.profile_stale = false;
+    Ok(())
+}
+
+/// Lend the responder's store to another stream: None when it is off (`D1_STORE` unset).
+#[allow(dead_code)] // an entry point for streams I, M, J and H; not called by the responder yet
+pub fn with_store<T>(f: impl FnOnce(&mut dyn PlayerStore) -> T) -> Option<T> {
+    let m = global()?;
+    let mut s = m.lock().ok()?;
+    Some(f(&mut *s))
+}
+
+/// After a [`PlayerStore`] edit to the profile (XP): re-encode it, save, and push it to the client
+/// (`D1_PROFILE_PUSH_FILE`) as the control commands do. Nothing to do when it isn't stale.
+#[allow(dead_code)] // an entry point for streams I, M, J and H; not called by the responder yet
+pub fn push_profile(what: &str) -> anyhow::Result<()> {
+    let m = global().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
+    let encoded = {
+        let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+        if !s.chr().profile_stale {
+            return Ok(());
+        }
+        reencode(&mut s)?;
+        s.save(what)?;
+        s.chr().profile.clone().unwrap_or_default()
+    };
+    write_push(&encoded)
+}
+
+/// Write a profile push for the responder to deliver, one at a time.
+fn write_push(encoded: &[u8]) -> anyhow::Result<()> {
+    if let Some(push) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(PathBuf::from) {
+        // One push at a time: wait for the previous one to be delivered.
+        for _ in 0..120 {
+            if !push.exists() {
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_secs(1));
+        }
+        std::fs::write(&push, encoded)?;
+    }
+    Ok(())
 }
 
 /// Read from the store: None when it is off (the caller serves the knobs as before).
@@ -701,7 +1245,11 @@ fn decode_later(payload: Vec<u8>) {
         match crate::vendor::decode_object(&oracle, "0x80801743", &payload, "store-profile") {
             Ok(obj) => with("profile", |s| {
                 let events = s.adopt_object(&payload, obj)?;
-                s.save("profile decoded")?;
+                if events.iter().any(|e| e.contains("completed") || e.contains("unlock")) {
+                    s.save("profile decoded: a completion")?;
+                } else {
+                    s.touch("profile decoded");
+                }
                 Ok(events)
             }),
             Err(e) => tracing::warn!("      ⛔ player store: the delivered profile did not decode ({e:#}); its summary waits"),
@@ -799,7 +1347,7 @@ pub fn vendor_seed() -> Option<VendorSeed> {
 
 // ── control commands ────────────────────────────────────────────────────────────────────────
 
-/// One `D1_PLAYER_STORE_CONTROL` command.
+/// One `D1_STORE_CONTROL` command.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command {
     /// The character enters an activity (field [6]).
@@ -864,7 +1412,7 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
     match &cmd {
         Command::Checkpoint(a, step) => {
             let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
-            s.checkpoint(*a, step);
+            s.set_checkpoint(*a, step);
             s.save(&format!("checkpoint {a} {step}"))?;
             return Ok(format!("checkpoint {a}: {step}"));
         }
@@ -907,16 +1455,7 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
     for e in &events {
         tracing::warn!("      💾 {e}");
     }
-    if let Some(push) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(PathBuf::from) {
-        // One push at a time: wait for the previous one to be delivered.
-        for _ in 0..120 {
-            if !push.exists() {
-                break;
-            }
-            std::thread::sleep(std::time::Duration::from_secs(1));
-        }
-        std::fs::write(&push, &encoded)?;
-    }
+    write_push(&encoded)?;
     Ok(what)
 }
 
@@ -1121,7 +1660,7 @@ mod tests {
         let d = tempdir("schema");
         let mut s = open(&d.0, &Sources::default());
         s.save("x").unwrap();
-        let path = s.path().to_path_buf();
+        let path = s.path().unwrap().to_path_buf();
         drop(s);
         let mut v: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
         assert_eq!(v["schema"], SCHEMA_VERSION);
@@ -1232,7 +1771,7 @@ mod tests {
         assert_eq!(s.record.account.unlock_flags.as_ref().unwrap(), &flags, "a refused change changes nothing");
         assert!(s.add_reputation("faction_fotc_vanguard", 1600).contains("rank 0 -> 1"));
         assert!(s.add_reputation("nonsense", 1).starts_with("⛔"));
-        s.checkpoint(164, "dock 13");
+        s.set_checkpoint(164, "dock 13");
         let resets = VendorResets::parse("vendor_hash\tname\ti\to\tp\n2668878854\tVanguard Quartermaster\t10080\t2340\t0\n");
         let tue = 1_474_372_800 / 60;
         assert!(s.roll_vendor_resets(&resets, tue).is_empty(), "the first look records, it doesn't report");
@@ -1273,5 +1812,202 @@ mod tests {
         assert_eq!(names, sorted);
         names.dedup();
         assert_eq!(names.len(), s.chr().roster.len(), "replaced by name, not duplicated");
+    }
+
+    // ── crash safety ──
+
+    /// A crash after the `.tmp` is written but before the rename: the old record loads, whole, and
+    /// the next save replaces the leftover.
+    #[test]
+    fn a_crash_before_the_rename_leaves_the_old_record() {
+        let d = tempdir("crash-tmp");
+        let mut s = open(&d.0, &lab_sources());
+        s.save("before the crash").unwrap();
+        let path = s.path().unwrap().to_path_buf();
+        let on_disk = std::fs::read(&path).unwrap();
+        let before = s.record.clone();
+        // What a crash mid-save leaves: a half-written .tmp beside the old file.
+        std::fs::write(sidecar(&path, "tmp"), &on_disk[..on_disk.len() / 2]).unwrap();
+        drop(s);
+        let mut s = open(&d.0, &Sources::default());
+        assert_eq!(s.record, before, "the old record, untouched by the half-written one");
+        s.save("after").unwrap();
+        assert!(!sidecar(&path, "tmp").exists(), "the next save renames its own .tmp over the file");
+        let v: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+        assert_eq!(v["revision"], before.revision + 1);
+    }
+
+    /// A record that doesn't parse (a torn write on a failing disk, a bad hand edit) falls back to
+    /// the `.prev` copy, and the bad file is kept aside rather than overwritten.
+    #[test]
+    fn an_unreadable_record_falls_back_to_the_previous_one() {
+        let d = tempdir("crash-prev");
+        let mut s = open(&d.0, &lab_sources());
+        s.record.account.slots.insert(308, (869, 1234));
+        s.save("first").unwrap();
+        s.record.account.slots.insert(308, (869, 999));
+        s.save("second").unwrap();
+        let path = s.path().unwrap().to_path_buf();
+        drop(s);
+        std::fs::write(&path, b"{\"schema\": 1, \"account_so").unwrap();
+        let s = open(&d.0, &Sources::default());
+        assert_eq!(s.record.account.slots[&308], (869, 1234), "the record before the last save");
+        let aside: Vec<_> = std::fs::read_dir(&d.0).unwrap().map(|e| e.unwrap().file_name().to_string_lossy().into_owned())
+            .filter(|n| n.contains(".corrupt-")).collect();
+        assert_eq!(aside.len(), 1, "the unreadable file is kept: {aside:?}");
+        // With neither readable, the store refuses rather than seeding over them.
+        std::fs::write(&path, b"x").unwrap();
+        std::fs::write(sidecar(&path, "prev"), b"y").unwrap();
+        assert!(Store::open(&d.0, ACCT, CHR, PROF, &lab_sources()).is_err());
+        assert_eq!(std::fs::read(&path).unwrap(), b"x");
+    }
+
+    #[test]
+    fn atomic_write_replaces_and_keeps_the_previous() {
+        let d = tempdir("atomic");
+        let f = d.0.join("x.json");
+        atomic_write(&f, b"1").unwrap();
+        assert!(!sidecar(&f, "prev").exists());
+        atomic_write(&f, b"2").unwrap();
+        assert_eq!((std::fs::read(&f).unwrap(), std::fs::read(sidecar(&f, "prev")).unwrap()), (b"2".to_vec(), b"1".to_vec()));
+        assert!(!sidecar(&f, "tmp").exists());
+    }
+
+    // ── saving ──
+
+    #[test]
+    fn small_changes_wait_for_the_periodic_save() {
+        let d = tempdir("periodic");
+        let mut s = open(&d.0, &lab_sources());
+        let path = s.path().unwrap().to_path_buf();
+        let saved = |p: &Path| -> u64 { serde_json::from_slice::<Value>(&std::fs::read(p).unwrap()).unwrap()["revision"].as_u64().unwrap() };
+        let r0 = saved(&path);
+        assert!(!s.flush().unwrap(), "nothing waiting, nothing written");
+        s.set_light(Some(5));
+        s.mark_dirty("light 5");
+        assert!(s.is_dirty());
+        assert_eq!(saved(&path), r0, "not yet on disk");
+        assert!(s.flush().unwrap());
+        assert_eq!(saved(&path), r0 + 1);
+        assert!(!s.is_dirty());
+        s.mark_dirty("bounty progress");
+        s.save_now("purchase").unwrap();
+        assert!(s.record.history.last().unwrap().what.contains("bounty progress"), "an important save carries what waited");
+        assert!(!s.flush().unwrap());
+    }
+
+    #[test]
+    fn the_store_is_off_unless_d1_store_is_1() {
+        let vars = |pairs: &'static [(&'static str, &'static str)]| move |k: &str| pairs.iter().find(|(n, _)| *n == k).map(|(_, v)| v.to_string());
+        assert_eq!(Config::from_vars(vars(&[])), None);
+        assert_eq!(Config::from_vars(vars(&[("D1_STORE", "0"), ("D1_STORE_DIR", "x")])), None);
+        let c = Config::from_vars(vars(&[("D1_STORE", "1"), ("D1_STORE_DIR", "F:/store")])).unwrap();
+        assert_eq!((c.dir, c.player.as_str(), c.save_every.as_secs(), c.control), (PathBuf::from("F:/store"), "local", 300, None));
+        let c = Config::from_vars(vars(&[("D1_STORE", "1"), ("D1_STORE_SAVE_SECS", "30"), ("D1_STORE_PLAYER", "p2"),
+                                         ("D1_STORE_CONTROL", "c.txt")])).unwrap();
+        assert_eq!((c.player.as_str(), c.save_every.as_secs(), c.control), ("p2", 30, Some(PathBuf::from("c.txt"))));
+        assert_eq!(c.dir, default_dir());
+        assert!(!default_dir().starts_with(env!("CARGO_MANIFEST_DIR")), "never inside the repository");
+    }
+
+    // ── identity ──
+
+    #[test]
+    fn identities_are_stable_and_never_reused() {
+        let d = tempdir("ids");
+        let first = Identity { account: ACCT, character: CHR, profile: PROF };
+        let a = identity_for(&d.0, "local", first).unwrap();
+        assert_eq!(a, first, "the first player keeps the knobs' ids");
+        let b = identity_for(&d.0, "guardian2", first).unwrap();
+        assert_eq!(b, Identity::allocated(1));
+        assert_eq!((b.account, b.character, b.profile), (0xD101_0000_0000_1001, 0xD101_0000_0000_1101, 0xD101_0000_0000_1201));
+        assert_eq!(identity_for(&d.0, "local", Identity::allocated(9)).unwrap(), a, "a known player keeps theirs");
+        assert_eq!(identity_for(&d.0, "guardian2", first).unwrap(), b);
+        assert_eq!(identity_for(&d.0, "guardian3", first).unwrap(), Identity::allocated(2));
+        assert!(identity_for(&d.0, "", first).is_err());
+        // Each identity opens its own record.
+        let s = Store::open_player(&d.0, "guardian2", first, &Sources::default()).unwrap();
+        assert_eq!((s.identity(), s.player()), (b, "guardian2"));
+        assert!(Store::file_for(&d.0, b.account).exists());
+        drop(s);
+        let s = Store::open_player(&d.0, "guardian2", first, &Sources::default()).unwrap();
+        assert_eq!(s.identity(), b);
+    }
+
+    // ── the trait ──
+
+    /// What the other streams do through [`PlayerStore`], on the in-memory store.
+    fn exercise(st: &mut dyn PlayerStore) {
+        // I: inventory, currencies, refunds, bounties.
+        let soid = st.mint_item_soid();
+        assert_eq!(soid, FIRST_ITEM_SOID);
+        assert_eq!(st.mint_item_soid(), FIRST_ITEM_SOID + 1);
+        st.put_item(soid, b"gjallarhorn");
+        assert!(st.items().iter().any(|i| i.soid == soid));
+        assert!(st.remove_item(soid) && !st.remove_item(soid));
+        assert_eq!(st.currency(869), 25_000);
+        assert_eq!(st.adjust_currency(869, -570).unwrap(), 24_430);
+        assert!(st.adjust_currency(869, -100_000).is_err(), "no debt");
+        assert!(st.adjust_currency(1, 5).is_err(), "no slot holds it");
+        assert_eq!(st.refund_window(3917130357, None), Some(900));
+        assert_eq!(st.refund_window(1990950, None), None);
+        st.push_refund(Refund { vendor: 12, sale: 0, item: 4604, instance: 0x77, costs: vec![(873, 1000)], bought: 100, expires: 1000 });
+        assert!(st.take_refund(0x77, 1000).is_none(), "expired");
+        assert_eq!(st.take_refund(0x77, 999).unwrap().costs, vec![(873, 1000)]);
+        assert!(st.refunds().is_empty());
+        st.put_bounty(Bounty { item_hash: 2874376956, objectives: vec![1], completed: false, acquired: 5 });
+        assert_eq!(st.bounties()[&2874376956].objectives, vec![1]);
+        assert!(st.remove_bounty(2874376956).is_some());
+        // M: XP, reputation, Light, Grimoire, completions, unlocks.
+        assert!(st.add_xp(10).is_err(), "no decoded profile yet");
+        assert!(st.add_reputation("faction_pvp", 2000).contains("rank 0 -> 1"));
+        assert_eq!(st.reputation("faction_pvp"), Some((2000, 1)));
+        st.set_light(Some(400));
+        assert_eq!(st.light(), Some(400));
+        assert!(st.add_grimoire_card(700_100, 40) && st.add_grimoire_card(700_200, 10) && !st.add_grimoire_card(700_100, 40));
+        assert_eq!(st.grimoire_score(), 50);
+        assert!(st.completions().is_empty());
+        st.change_unlock_flags(&[2838], &[]).unwrap();
+        assert!(st.unlock_flags().unwrap().contains(&2838));
+        // J: checkpoints.
+        st.set_checkpoint(164, "the wall");
+        assert_eq!(st.checkpoint(164).unwrap().step, "the wall");
+        assert!(st.clear_checkpoint(164) && st.checkpoint(164).is_none());
+        // H: identity.
+        assert_eq!(st.identity(), Identity { account: ACCT, character: CHR, profile: PROF });
+        st.mark_dirty("exercised");
+        st.save_now("exercised").unwrap();
+    }
+
+    #[test]
+    fn the_trait_works_in_memory_and_on_disk() {
+        let id = Identity { account: ACCT, character: CHR, profile: PROF };
+        let mut m = Store::in_memory(id, &lab_sources());
+        exercise(&mut m);
+        assert_eq!(m.path(), None);
+        let d = tempdir("trait");
+        let mut s = open(&d.0, &lab_sources());
+        exercise(&mut s);
+        drop(s);
+        let s = open(&d.0, &Sources::default());
+        assert_eq!((s.currency(869), s.grimoire_score(), s.light()), (24_430, 50, Some(400)), "what the streams wrote persists");
+        assert_eq!(s.record.account.next_item_soid, Some(FIRST_ITEM_SOID + 2));
+    }
+
+    /// XP through the trait edits the decoded profile and marks it for re-encoding.
+    #[test]
+    fn xp_through_the_trait_follows_the_curve() {
+        let id = Identity { account: ACCT, character: CHR, profile: PROF };
+        let mut s = Store::in_memory(id, &Sources::default());
+        s.chr_mut().profile_object = Some(profile_object());
+        let g = s.add_xp(346_000).unwrap();
+        assert_eq!((g.level_before, g.level_after, g.prestige_after), (1, 40, 0), "level 40 = 346,000 XP");
+        let g = s.add_xp(25_000).unwrap();
+        assert_eq!((g.level_xp, g.prestige_xp, g.prestige_after), (346_000, 25_000, 1));
+        assert_eq!(s.xp(), Some(371_000));
+        assert!(s.chr().profile_stale);
+        assert_eq!(s.chr().summary.as_ref().unwrap().level, 40);
+        assert!(s.set_profile(b"re-encoded", "store"));
+        assert!(!s.chr().profile_stale, "a new payload is the profile again");
     }
 }
