@@ -284,6 +284,16 @@ function Readers([string]$section) {
         default { @() }
     }
 }
+function Test-Named([string]$text, [string]$k) {
+    # Ordinal search (a regex over a 60 MB emulator binary is far too slow).
+    $i = 0
+    while (($i = $text.IndexOf($k, $i, [StringComparison]::Ordinal)) -ge 0) {
+        $after = $i + $k.Length
+        if ($after -ge $text.Length -or $text[$after] -ne '_') { return $true }
+        $i = $after
+    }
+    $false
+}
 function Test-Knobs {
     foreach ($k in @($knobs.Keys)) {
         $e = $knobs[$k]
@@ -293,8 +303,7 @@ function Test-Knobs {
         $readers = if ($pending) { @() } else { @(Readers $e.section | Where-Object { $null -ne (Get-Text $_) }) }
         # The name, not a longer knob it begins (D1_SOCIAL is not D1_SOCIAL_INACTIVITY_MS). Literals
         # sit packed in a binary's data, so only a following `_` is taken as a longer name.
-        $named = [regex]::new([regex]::Escape($k) + '(?!_)')
-        $found = if ($readers.Count) { [bool]@($readers | Where-Object { $named.IsMatch((Get-Text $_)) }).Count } else { $null }
+        $found = if ($readers.Count) { [bool]@($readers | Where-Object { Test-Named (Get-Text $_) $k }).Count } else { $null }
         $e.inCode = $found
         if ($e.value -eq '') { $e.state = 'unset'; continue }
         if ($null -eq $found) { $e.state = if ($pending) { 'build' } else { 'unchecked' }; continue }
