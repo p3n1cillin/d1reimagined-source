@@ -46,7 +46,8 @@ from them goes in the repository.
    [`ps4/README.md`](../ps4/README.md#local-paths) for where the tools look for your files (`D1_ROOT`).
 3. **Play the first mission:** take the pad with `tools/ps4_setup/d1-agr-run.ps1`, or let
    [`lab/tower-route`](../lab/tower-route/README.md) play A Guardian Rises unattended, from boot to
-   Tower North.
+   Tower North. To try every subsystem at once, see [the full-game test](full-game-test.md)
+   (`tools/ps4_setup/d1-full-game.ps1 -DryRun` first).
 4. **Where it stands:** [STATUS.md](STATUS.md) lists what works, what doesn't, and where to start.
 
 ## Before you open a pull request

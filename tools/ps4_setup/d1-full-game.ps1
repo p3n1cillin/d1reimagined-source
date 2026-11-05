@@ -227,11 +227,20 @@ if (-not $DryRun) {
     if ($wantBuild) {
         if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) { Say 'cargo is not on PATH'; exit 3 }
         $env:CARGO_TARGET_DIR = $TargetDir
+        # unicorn-engine-sys runs bindgen, which needs libclang: use the lab's LLVM when unset.
+        if (-not $env:LIBCLANG_PATH) {
+            $clang = @(Get-ChildItem -Path (Join-Path $loc.TOOLS 'llvm*\bin\libclang.dll'), (Join-Path $loc.TOOLS 'LLVM*\bin\libclang.dll') -ErrorAction SilentlyContinue | Sort-Object FullName -Descending)
+            if ($clang.Count) { $env:LIBCLANG_PATH = $clang[0].DirectoryName; Say "LIBCLANG_PATH=$($env:LIBCLANG_PATH)" }
+        }
         for ($try = 1; $try -le 2; $try++) {
-            Say "build ($try): $buildCmd at BelowNormal priority, log $($loc.RUN)\build.log"
-            $p = Start-Process cmd.exe -WorkingDirectory (Join-Path $Repo 'ps4/d1-server') -Wait -PassThru -NoNewWindow `
-                -ArgumentList "/c start `"`" /BELOWNORMAL /B /WAIT $buildCmd >> `"$($loc.RUN)\build.log`" 2>&1"
-            if ($p.ExitCode -ne 0) { Say "build failed (exit $($p.ExitCode)); see build.log"; exit 3 }
+            Say "build ($try): $buildCmd at BelowNormal priority, log $($loc.RUN)\build-$try.log"
+            $cargoArgs = @('build', '--release') + @($Servers | ForEach-Object { '-p', $_ })
+            $p = Start-Process cargo -ArgumentList $cargoArgs -WorkingDirectory (Join-Path $Repo 'ps4/d1-server') -PassThru -NoNewWindow `
+                -RedirectStandardOutput (Join-Path $loc.RUN "build-$try.out.log") -RedirectStandardError (Join-Path $loc.RUN "build-$try.log")
+            # rustc and the build scripts start after this and inherit the class.
+            try { $p.PriorityClass = 'BelowNormal' } catch { }
+            $null = $p.Handle; $p.WaitForExit()
+            if ($p.ExitCode -ne 0) { Say "build failed (exit $($p.ExitCode)); see build-$try.log"; exit 3 }
             foreach ($b in $Servers) { $serverState[$b] = Get-ServerState $b }
             $other = @($Servers | Where-Object { $serverState[$_].stale -match 'not this checkout' })
             if (-not $other.Count) { break }
@@ -275,7 +284,10 @@ function Test-Knobs {
         # A dry run with a build to come can't judge the servers by the stale (or absent) binaries.
         $pending = $e.section -eq 'server' -and $wantBuild
         $readers = if ($pending) { @() } else { @(Readers $e.section | Where-Object { $null -ne (Get-Text $_) }) }
-        $found = if ($readers.Count) { [bool]@($readers | Where-Object { (Get-Text $_).Contains($k) }).Count } else { $null }
+        # The name, not a longer knob it begins (D1_SOCIAL is not D1_SOCIAL_INACTIVITY_MS). Literals
+        # sit packed in a binary's data, so only a following `_` is taken as a longer name.
+        $named = [regex]::new([regex]::Escape($k) + '(?!_)')
+        $found = if ($readers.Count) { [bool]@($readers | Where-Object { $named.IsMatch((Get-Text $_)) }).Count } else { $null }
         $e.inCode = $found
         if ($e.value -eq '') { $e.state = 'unset'; continue }
         if ($null -eq $found) { $e.state = if ($pending) { 'build' } else { 'unchecked' }; continue }
