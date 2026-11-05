@@ -2232,6 +2232,7 @@ fn stage_loadout(loadout: &d1_loadout::Loadout, dir: &str) -> anyhow::Result<usi
 /// environment block at startup. If a knob is added below and not added here, that is the bug.
 const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_RESPONDER_LOG_TIME", "0", "1 = prefix every log line with the UTC time"),
+    ("D1_MM_LIVE_REPLIES", "0", "1 = answer matchmaking searches (no sessions found) and advertisements (an id) as the live services did"),
     // ── ⭐ the correlation table (new, 2026-08-08) ────────────────────────────────────────────
     ("D1_BAP_DUMP_DIR", "<unset>", "write every decrypted inbound BAP body, whole, to this directory"),
     ("D1_BAP_FIFO", "1", "⭐ correlation table ON. 0 = legacy immediate-write (reproduces the Weasel)"),
@@ -4201,15 +4202,30 @@ async fn main() -> Result<()> {
                                                                                     }
                                                                                 }
                                                                             }
-                                                                            if req.request_kind
-                                                                                != Some(d1_bap::matchmaking::MM_KIND_MATCHMAKING_CONFIGURATION)
-                                                                            {
-                                                                                warn!("      ⚠ kind is not 4 (matchmaking_configuration) - \
-                                                                                       kinds 1/2/3 are session search and advertisement, and \
-                                                                                       we answer them with the same minimal configuration. \
-                                                                                       That is a stub, not a contract.");
+                                                                            // ⭐ D1_MM_LIVE_REPLIES=1: kinds 1 and 2 as the live services answered them
+                                                                            // (notes/d1-live-captures-2026-11-05.md): a search finds no session (the solo
+                                                                            // answer), and an advertisement gets an id that its updates repeat in f8.1.
+                                                                            let live = env_flag("D1_MM_LIVE_REPLIES", false);
+                                                                            let nonce = req.nonce.unwrap_or(0);
+                                                                            match req.request_kind {
+                                                                                Some(d1_bap::matchmaking::MM_KIND_SESSION_SEARCH) if live => {
+                                                                                    warn!("      ⭐ session search: answering no sessions found");
+                                                                                    d1_bap::matchmaking::MatchmakingCoreResponse::search_found_none(nonce)
+                                                                                }
+                                                                                Some(d1_bap::matchmaking::MM_KIND_UPDATE_ADVERTISEMENT) if live => {
+                                                                                    static NEXT_AD: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
+                                                                                    let id = req.advertisement_id
+                                                                                        .unwrap_or_else(|| NEXT_AD.fetch_add(1, std::sync::atomic::Ordering::Relaxed));
+                                                                                    warn!("      ⭐ advertisement acknowledged as {id:#x}");
+                                                                                    d1_bap::matchmaking::MatchmakingCoreResponse::advertisement_acknowledged(nonce, id)
+                                                                                }
+                                                                                kind => {
+                                                                                    if kind != Some(d1_bap::matchmaking::MM_KIND_MATCHMAKING_CONFIGURATION) {
+                                                                                        warn!("      ⚠ kind {kind:?} is not 4 (matchmaking_configuration): answered with the minimal configuration (D1_MM_LIVE_REPLIES=1 answers searches and advertisements as the live services did)");
+                                                                                    }
+                                                                                    d1_bap::matchmaking::MatchmakingCoreResponse::echoing(&req)
+                                                                                }
                                                                             }
-                                                                            d1_bap::matchmaking::MatchmakingCoreResponse::echoing(&req)
                                                                         }
                                                                         Err(e) => {
                                                                             warn!("      ** NAMED GATE ** msg 42 body did not decode ({}B): \
