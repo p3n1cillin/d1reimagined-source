@@ -58,6 +58,7 @@ This note summarises the talk in our own words, with timestamps. It then checks 
 
 ## What this means for our host
 
+- **Correction (5 November, [public instances](ps4-56578-public-instances-2026-11-05.md)):** the captures' "PAH" is the *mission* host (it names the mission and alone serves region records). The bubble host is the public instance's own connection, whose join request names the PAH at `+0xC8`. Read the first bullet below with that in mind.
 - **It matches what the captures show.**
   - The captures' long-lived "PAH" connection, which alone carries region records, plays the *bubble activity host* role: one per public instance, staying up for the whole time in it.
   - Concurrent public instances are separate bubble-host connections.

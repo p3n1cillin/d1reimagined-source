@@ -9,6 +9,7 @@
     d1-srcp.py hosts CAPTURE.pcap [...] [--activity-table TSV]    (the same for every host naming an activity, as TSV)
     d1-srcp.py regions CAPTURE.pcap                     (the PAH region records, udt 11, as they change)
     d1-srcp.py export CAPTURE.pcap --out PRIVATE.jsonl  (every activity-host message, hex body)
+    d1-srcp.py matchmaking CAPTURE.pcap [...]           (message 42/43 protobuf shapes, values redacted)
 
 Decoding uses the 56578 client's own codec (`d1-oracle activity-host decode`, with D1_EBOOT and
 D1_ORACLE as for the server); the last-gen captures' struct layouts decode with it, but content
@@ -255,9 +256,55 @@ def hosts_tsv_rows(label, data, names, index):
     return out
 
 
+MM_REQUEST, MM_RESPONSE, MM_HEADER = 42, 43, {42: 6, 43: 8}
+
+
+def pb_shape(b, depth=0):
+    """A protobuf body's shape: field numbers, wire types, small integers. Values of 4096 or
+    more (nonces, ids, hashes), bytes and strings are redacted, so the output can be shared
+    without the capture's personal data (sessions, names, tokens)."""
+    def varint(i):
+        v = s = 0
+        while True:
+            c = b[i]
+            i += 1
+            v |= (c & 0x7f) << s
+            s += 7
+            if not c & 0x80:
+                return v, i
+    out, i = [], 0
+    try:
+        while i < len(b):
+            tag, i = varint(i)
+            f, wt = tag >> 3, tag & 7
+            if f == 0:
+                return None
+            if wt == 0:
+                v, i = varint(i)
+                out.append(f'{f}={v if v < 4096 else "BIG"}')
+            elif wt == 2:
+                n, i = varint(i)
+                if i + n > len(b):
+                    return None
+                inner = pb_shape(b[i:i + n], depth + 1) if depth < 4 and n else None
+                out.append(f'{f}{{{" ".join(inner)}}}' if inner else f'{f}:len{n}')
+                i += n
+            elif wt == 5:
+                out.append(f'{f}:f32')
+                i += 4
+            elif wt == 1:
+                out.append(f'{f}:f64')
+                i += 8
+            else:
+                return None
+    except IndexError:
+        return None
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'sessions', 'mission', 'hosts', 'regions', 'export'))
+    ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'sessions', 'mission', 'hosts', 'regions', 'export', 'matchmaking'))
     ap.add_argument('capture', type=Path, nargs='+')
     ap.add_argument('--dir', choices=('s2c', 'c2s'), default='s2c')
     ap.add_argument('--out', type=Path)
@@ -273,6 +320,19 @@ def main():
                 acts = ', '.join(names[h] for h in acts[:2])
                 print(f"{cap.stem[20:]:28} +{start:6.0f} s host ..{host & 0xFFFF:04x} "
                       f"{kinds.get(kind, kind)!s:8} {acts or '-':28} slices {slices}")
+        return
+    if a.command == 'matchmaking':
+        for cap in a.capture:
+            t0 = None
+            for rec in d1_srcp.records(cap.read_bytes()):
+                t0 = rec['t'] if t0 is None else t0
+                p = rec['payload']
+                mtype = int.from_bytes(p[:2], 'big') if len(p) >= 6 else None
+                if rec['dir'] not in ('c2s', 's2c') or mtype not in MM_HEADER:
+                    continue
+                shape = pb_shape(p[MM_HEADER[mtype]:])
+                print(f"{cap.stem[20:]:28} {rec['t'] - t0:8.1f} {mtype} "
+                      f"{' '.join(shape) if shape is not None else 'undecodable'}")
         return
     if a.command in ('mission', 'hosts'):
         names = activity_names()

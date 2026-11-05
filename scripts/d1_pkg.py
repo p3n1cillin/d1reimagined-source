@@ -382,7 +382,17 @@ def fnv1(data, h=0x811c9dc5):
     return h
 
 
-def dyn_array(data, field):
+def dyn_array(data, field, *, ps4=False):
+    """Read a tag array; PS4 uses u64 counts and an i64 pointer-field-relative link."""
+    if ps4:
+        count, rel = struct.unpack_from("<Qq", data, field)
+        head = field + 8 + rel
+        if head < 4 or head + 16 > len(data):
+            raise ValueError(f"array header exceeds input at +{field:#x}")
+        marker, count2, elem_class = struct.unpack_from("<IQI", data, head - 4)
+        if marker != 0x80800184 or count2 != count:
+            raise ValueError(f"no array header at +{field:#x}")
+        return count, head + 16, elem_class
     count, rel = struct.unpack_from(">II", data, field)
     head = field + rel
     marker, count2, elem_class = struct.unpack_from(">III", data, head)

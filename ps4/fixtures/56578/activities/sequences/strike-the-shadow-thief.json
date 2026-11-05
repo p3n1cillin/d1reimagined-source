@@ -1,0 +1,252 @@
+{
+  "activity_id": "strike-the-shadow-thief",
+  "name": "The Shadow Thief",
+  "evidence": {
+    "kind": "live-capture",
+    "build": "51539 (Xbox 360)",
+    "capture": "The-Shadow-Thief",
+    "note": "one solo run (Crota's End: a fireteam); incident ids are 51539's; see notes/d1-live-captures-2026-11-05.md"
+  },
+  "host_session_s": 1883.5,
+  "hosts": 2,
+  "stages": [
+    {
+      "slice_set": 24,
+      "entered_s": 22.4,
+      "groups_first_served": [
+        "0xf29221f5",
+        "0xc33d6bb8",
+        "0x651ac41f",
+        "0x9f24395b",
+        "0xb4046ff3",
+        "0x26f3186d",
+        "0x61b7ee6b",
+        "0xd733da5c"
+      ],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0xd733da5c/29/19",
+        "0xc33d6bb8/29/49",
+        "0xd733da5c/29/21",
+        "0xd733da5c/29/22",
+        "0xd733da5c/29/25",
+        "0xd733da5c/29/23",
+        "0xd733da5c/29/26"
+      ],
+      "public_hosts_opened": 1,
+      "duration_s": 281.8
+    },
+    {
+      "slice_set": 64,
+      "entered_s": 304.2,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0xb4046ff3/29/33",
+        "0xc33d6bb8/29/50",
+        "0xb4046ff3/29/35",
+        "0xb4046ff3/29/34"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 174.8
+    },
+    {
+      "slice_set": 56,
+      "entered_s": 479.0,
+      "groups_first_served": [],
+      "cinematics_started": 0,
+      "cinematics_stopped": 0,
+      "triggers": [
+        "0x9f24395b/29/185",
+        "0xc33d6bb8/29/52",
+        "0x9f24395b/29/180",
+        "0xc33d6bb8/29/53",
+        "0x9f24395b/29/181",
+        "0x9f24395b/29/182",
+        "0xc33d6bb8/29/54",
+        "0x9f24395b/29/183",
+        "0x9f24395b/29/187"
+      ],
+      "public_hosts_opened": 0,
+      "duration_s": 1404.5
+    }
+  ],
+  "markers": [
+    {
+      "t_s": 22.4,
+      "slice": 24
+    },
+    {
+      "t_s": 57.0,
+      "trigger": "0xd733da5c/29/19"
+    },
+    {
+      "t_s": 64.6,
+      "trigger": "0xc33d6bb8/29/49"
+    },
+    {
+      "t_s": 125.0,
+      "trigger": "0xd733da5c/29/21"
+    },
+    {
+      "t_s": 134.5,
+      "trigger": "0xd733da5c/29/22"
+    },
+    {
+      "t_s": 196.4,
+      "trigger": "0xd733da5c/29/25"
+    },
+    {
+      "t_s": 198.1,
+      "trigger": "0xd733da5c/29/23"
+    },
+    {
+      "t_s": 294.4,
+      "trigger": "0xd733da5c/29/26"
+    },
+    {
+      "t_s": 304.2,
+      "slice": 64
+    },
+    {
+      "t_s": 305.6,
+      "trigger": "0xb4046ff3/29/33"
+    },
+    {
+      "t_s": 461.6,
+      "trigger": "0xc33d6bb8/29/50"
+    },
+    {
+      "t_s": 461.7,
+      "trigger": "0xb4046ff3/29/35"
+    },
+    {
+      "t_s": 467.3,
+      "trigger": "0xb4046ff3/29/34"
+    },
+    {
+      "t_s": 479.0,
+      "slice": 56
+    },
+    {
+      "t_s": 491.8,
+      "trigger": "0x9f24395b/29/185"
+    },
+    {
+      "t_s": 707.5,
+      "trigger": "0xc33d6bb8/29/52"
+    },
+    {
+      "t_s": 709.4,
+      "trigger": "0x9f24395b/29/180"
+    },
+    {
+      "t_s": 712.9,
+      "trigger": "0xc33d6bb8/29/53"
+    },
+    {
+      "t_s": 718.7,
+      "trigger": "0x9f24395b/29/181"
+    },
+    {
+      "t_s": 1408.7,
+      "trigger": "0x9f24395b/29/182"
+    },
+    {
+      "t_s": 1468.6,
+      "trigger": "0xc33d6bb8/29/54"
+    },
+    {
+      "t_s": 1470.7,
+      "trigger": "0x9f24395b/29/183"
+    },
+    {
+      "t_s": 1470.8,
+      "trigger": "0x9f24395b/29/187"
+    }
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "begins_on": {
+        "slice_entered": 24
+      },
+      "at_s": 22.4,
+      "duration_s": 102.6
+    },
+    {
+      "index": 1,
+      "begins_on": {
+        "trigger": "0xd733da5c/29/21"
+      },
+      "at_s": 125.0,
+      "duration_s": 71.4
+    },
+    {
+      "index": 2,
+      "begins_on": {
+        "trigger": "0xd733da5c/29/25"
+      },
+      "at_s": 196.4,
+      "duration_s": 98.0
+    },
+    {
+      "index": 3,
+      "begins_on": {
+        "trigger": "0xd733da5c/29/26"
+      },
+      "at_s": 294.4,
+      "duration_s": 9.8
+    },
+    {
+      "index": 4,
+      "begins_on": {
+        "slice_entered": 64
+      },
+      "at_s": 304.2,
+      "duration_s": 157.4
+    },
+    {
+      "index": 5,
+      "begins_on": {
+        "trigger": "0xc33d6bb8/29/50"
+      },
+      "at_s": 461.6,
+      "duration_s": 17.4
+    },
+    {
+      "index": 6,
+      "begins_on": {
+        "slice_entered": 56
+      },
+      "at_s": 479.0,
+      "duration_s": 228.5
+    },
+    {
+      "index": 7,
+      "begins_on": {
+        "trigger": "0xc33d6bb8/29/52"
+      },
+      "at_s": 707.5,
+      "duration_s": 701.2
+    },
+    {
+      "index": 8,
+      "begins_on": {
+        "trigger": "0x9f24395b/29/182"
+      },
+      "at_s": 1408.7,
+      "duration_s": 59.9
+    },
+    {
+      "index": 9,
+      "begins_on": {
+        "trigger": "0xc33d6bb8/29/54"
+      },
+      "at_s": 1468.6,
+      "duration_s": 414.9
+    }
+  ]
+}

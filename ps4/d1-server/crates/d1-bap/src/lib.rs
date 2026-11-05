@@ -134,6 +134,8 @@ pub mod character_lifecycle;
 pub mod loot;
 /// Messages 42/43 - matchmaking configuration.
 pub mod matchmaking;
+/// Messages 42/43 - the session directory's searches, advertisements and results (stream H).
+pub mod matchmaking_sessions;
 /// Session-parameter payloads. **Reference only - the server can never set one.**
 pub mod session_params;
 

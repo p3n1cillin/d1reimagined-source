@@ -57,6 +57,7 @@ use tracing::{info, warn};
 mod player_store;
 mod progression;
 mod vendor;
+mod mp; // MP(H): multiplayer services, D1_MP=1
 // Stream M (rewards and growth): services behind `D1_REWARDS` (off by default), called by the
 // activity streams through `rewards::grant_activity_rewards`. The only hook here is its knobs.
 mod rewards;
@@ -216,8 +217,9 @@ const SESSION_ID: &str = "000-d1000000-0000-4000-8000-000000000001";
 /// PSN answers with the created session's id. `sessionId` is the field the client needs back;
 /// everything else here is shape, not contract. Reach tag: **`synthetic-minimal`** - invented, and
 /// therefore `[U]` until a capture or the client's own parser confirms the field set.
-async fn create_session(headers: HeaderMap, body: Bytes) -> impl IntoResponse {
+async fn create_session(headers: HeaderMap, body: Bytes) -> axum::response::Response {
     log_req("POST", &headers, "/v1/sessions", &body);
+    if let Some(r) = mp::create_session(&headers, &body) { return r; } // MP(H)
     // ⚠ THE SHAPE MATTERS. The first attempt returned `d1-fireteam-0000000000000001` and the client
     // could not parse it: it immediately did `PUT /v1/sessions/000-00000000-0000-0000-0000-000000000000`
     // - an ALL-ZERO id - proving it had parsed our string into nothing. PSN session ids are
@@ -225,7 +227,7 @@ async fn create_session(headers: HeaderMap, body: Bytes) -> impl IntoResponse {
     let session_id = SESSION_ID;
     warn!("<-- 201 ** PSN SESSION CREATED ** /v1/sessions ({}B body) -> sessionId={session_id}",
           body.len());
-    (StatusCode::CREATED, Json(json!({"sessionId": session_id})))
+    (StatusCode::CREATED, Json(json!({"sessionId": session_id}))).into_response()
 }
 
 /// `DELETE /v1/users/{npid}/presence/gameStatus` - also 404'd in the same run. Presence teardown;
@@ -233,10 +235,11 @@ async fn create_session(headers: HeaderMap, body: Bytes) -> impl IntoResponse {
 async fn delete_game_status(
     AxPath(npid): AxPath<String>,
     headers: HeaderMap,
-) -> impl IntoResponse {
+) -> axum::response::Response {
     log_req("DELETE", &headers, &format!("/v1/users/{npid}/presence/gameStatus"), &Bytes::new());
+    if let Some(r) = mp::delete_game_status(&npid) { return r; } // MP(H)
     info!("<-- 204 presence gameStatus cleared");
-    StatusCode::NO_CONTENT
+    StatusCode::NO_CONTENT.into_response()
 }
 
 
@@ -248,15 +251,16 @@ async fn update_session(
     AxPath(id): AxPath<String>,
     headers: HeaderMap,
     body: Bytes,
-) -> impl IntoResponse {
+) -> axum::response::Response {
     log_req("PUT", &headers, &format!("/v1/sessions/{id}"), &body);
+    if let Some(r) = mp::update_session(&id, &body) { return r; } // MP(H)
     if id != SESSION_ID {
         warn!("<-- 200 session update for UNEXPECTED id {id} (we issued {SESSION_ID}) - \
                accepting anyway, but the id round-trip is broken");
     } else {
         info!("<-- 200 session updated ({}B)", body.len());
     }
-    (StatusCode::OK, Json(json!({"sessionId": id})))
+    (StatusCode::OK, Json(json!({"sessionId": id}))).into_response()
 }
 
 /// `PUT /v1/users/{npid}/presence/gameData` - presence payload alongside the session. Also 404'd.
@@ -264,10 +268,11 @@ async fn put_game_data(
     AxPath(npid): AxPath<String>,
     headers: HeaderMap,
     body: Bytes,
-) -> impl IntoResponse {
+) -> axum::response::Response {
     log_req("PUT", &headers, &format!("/v1/users/{npid}/presence/gameData"), &body);
+    if let Some(r) = mp::put_game_data(&npid, &body) { return r; } // MP(H)
     info!("<-- 204 presence gameData accepted ({}B)", body.len());
-    StatusCode::NO_CONTENT
+    StatusCode::NO_CONTENT.into_response()
 }
 
 /// Anything unimplemented: a **named gate**, in PSN's error shape so the client can parse the refusal.
@@ -1007,13 +1012,14 @@ fn router(cfg: Cfg) -> Router {
         .route("/v1/users/{npid}/friendList", get(friend_list))
         // PSN session creation - the platform-session gate (see `create_session`).
         .route("/v1/sessions", post(create_session))
-        .route("/v1/sessions/{id}", put(update_session))
+        .route("/v1/sessions/{id}", put(update_session).get(mp::get_session)) // MP(H): GET 404s unless D1_MP=1
         .route("/v1/users/{npid}/presence/gameData", put(put_game_data))
         .route("/v1/users/{npid}/presence/gameStatus", delete(delete_game_status))
         // ⭐ The loadout editor's control plane. NOT a game protocol message - a call between our
         // own tools. `d1_loadout::APPLY_PATH` is the single constant both sides use so the path
         // cannot drift in two string literals.
         .route(d1_loadout::APPLY_PATH, post(loadout_apply))
+        .merge(mp::add_routes(Router::new())) // MP(H): sessions, members, invitations
         .fallback(any(fallback))
         .with_state(cfg)
 }
@@ -2849,6 +2855,7 @@ async fn main() -> Result<()> {
         }
     }
     let cfg = Cfg { npid: args.npid.clone(), account_id: args.account_id };
+    mp::init(&args.npid, env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001)); // MP(H)
 
     let mut tasks = Vec::new();
 
@@ -2886,6 +2893,7 @@ async fn main() -> Result<()> {
                                 let conn_index = BAP_CONNECTIONS.fetch_add(1, Ordering::SeqCst);
                                 warn!("=== BAP TCP CONNECT #{conn_index} from {peer} ===");
                                 tokio::spawn(async move {
+                                    let _mp_guard = mp::ConnGuard(conn_index); // MP(H): sign-off on close
                                     use tokio::io::AsyncReadExt;
                                     // HOLD THE CONNECTION OPEN. The first version read once and
                                     // dropped the socket, and the client reported
@@ -3290,8 +3298,9 @@ async fn main() -> Result<()> {
                                                                                          &d[..d.iter().position(|&c| c == 0).unwrap_or(d.len())])
                                                                                          .to_string())
                                                                                      .collect::<Vec<_>>());
-                                                                            let entries: Vec<_> =
-                                                                                ids.iter().map(|id| (*id, acct)).collect();
+                                                                            // MP(H): each platform id its own account.
+                                                                            let entries: Vec<_> = mp::translate(conn_index, &ids)
+                                                                                .unwrap_or_else(|| ids.iter().map(|id| (*id, acct)).collect());
                                                                             warn!("      -> 0x0018 rsp: {} id(s) -> account SOID {acct:#018x}, \
                                                                                    seq {}", entries.len(), i.sequence);
                                                                             Some(d1_bap::account_id_translation_response(
@@ -4231,7 +4240,8 @@ async fn main() -> Result<()> {
                                                                                 d1_bap::matchmaking::MM_KIND_MATCHMAKING_CONFIGURATION, 0)
                                                                         }
                                                                     };
-                                                                    let b = rsp.encode();
+                                                                    // MP(H): the shared session directory answers when D1_MP=1.
+                                                                    let b = mp::matchmaking_reply(conn_index, body).unwrap_or_else(|| rsp.encode());
                                                                     warn!("      -> msg 43 matchmaking_core_response: kind={:?} nonce={:?} \
                                                                            f4 present={} ({}B body: {})",
                                                                           rsp.kind, rsp.nonce, rsp.configuration.is_some(), b.len(),
