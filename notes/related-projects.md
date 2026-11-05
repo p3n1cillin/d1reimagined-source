@@ -26,7 +26,7 @@ aknumbers (Destiny 1 Preservation Project) advised using Codie's (Blam Network's
 - **`packages/fukugen-daihon`: no licence.** About 1,190 restored D1 mission scripts, for builds from the 2013 alpha to release. Its README says the alpha's scripts were *decompiled from a leaked `release_internal` Bungie build*; the later builds' scripts are reconstructions.
   - Unlicensed means all rights reserved by its authors, and the decompiled scripts are Bungie's own code. Our rules allow neither ([licensing](../ps4/design/licensing.md), rule 2).
   - We already rely on it: the Breach's wave and squad data comes from its `enc_breach_m0` reconstruction (`tools/ps4_setup/d1-breach-waves.py`, `d1-member-states.py`).
-  - **Until Blam Network grants an explicit licence**, don't use more of it. Nothing from it is vendored. Where we already use it, plan to rederive the data from the client's own content (the `gibbon` bundle rows) and the live captures.
+  - **Update, the same day:** the project owner decided to use it in full, as a local external input only ([licensing](../ps4/design/licensing.md), rule 2's exception). Nothing from it is vendored or redistributed, and a licence is still being sought. It includes a restored set for **our exact build**, `v56578_17_04_12_1251_evil`: 380 files covering A Guardian Rises, the reveal and Tower cinematics, The Speaker and The Awoken, Restoration and the Tower.
 
 ## Codie (craftycodie) and Blam Network: what is public, and what each licence allows (5 November 2026)
 
@@ -40,9 +40,9 @@ Codie runs Blam Network and wrote the Xbox 360 plugin that recorded the live cap
 | tiger `datamine` | MIT | Bungie's event and datamine log format | Usable: event logs in the game's own format |
 | tiger `poodle` | MIT | Oodle LZH decompressor for early Destiny packages | Not needed for 56578 |
 | [cstruct](https://github.com/craftycodie/cstruct) | MIT | Declarative packed binary readers and writers (TypeScript) | Available; checked out under `third-party` |
-| tiger `fukugen-daihon`, `dictionary`, `bullshcript-debugger` | none | Restored mission scripts (part decompiled from a leaked alpha), the name dictionary, a debugger | Not read further until Blam Network grants a licence (above) |
-| [tiger_test_harness](https://github.com/Blam-Network/tiger_test_harness) | `UNLICENSED` (all rights reserved) | A test server for D1 builds from the 2013 alpha to 41375 (launch): sign-on, BAP, and an activity host running BullShcript mission scripts | Not read. Its README calls it a test harness, "not meant for production or as a foundation". Ask Codie before any use. |
-| [Datamine-Explorer](https://github.com/craftycodie/Datamine-Explorer) | none | Desktop and browser viewer for Bungie event logs and datamine files | Its released app may be run as an external tool (rule 4); its code is not read |
+| tiger `fukugen-daihon`, `dictionary`, `bullshcript-debugger` | none | Restored mission scripts (part decompiled from a leaked alpha), the name dictionary, a debugger | Used locally as an external input, never vendored (rule 2's exception) |
+| [tiger_test_harness](https://github.com/Blam-Network/tiger_test_harness) | `UNLICENSED` (all rights reserved) | A test server for D1 builds from the 2013 alpha to 41375 (launch): sign-on, BAP, and an activity host running BullShcript mission scripts | Read and run locally as a reference (rule 2's exception), never vendored. Its README calls it a test harness, "not meant for production or as a foundation". |
+| [Datamine-Explorer](https://github.com/craftycodie/Datamine-Explorer) | none | Desktop and browser viewer for Bungie event logs and datamine files | Its released app (or its browser version) may be run as an external tool (rule 4) |
 
 The rest of both accounts is Halo, Minecraft and other projects.
 
