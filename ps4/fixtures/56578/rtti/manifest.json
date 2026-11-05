@@ -1,0 +1,25 @@
+{
+  "format_version": 1,
+  "eboot_sha256": "672f03411c0503dfbcda804cbb9fb27cdd9a8d73a8bcb71bf0c4f688073b0833",
+  "evidence": "static executable metadata; no native game run",
+  "counts": {
+    "classes": 2633,
+    "vtables": 2430,
+    "vtable_slots": 22920,
+    "schemas": 4566,
+    "fields": 6861,
+    "incomplete_schemas": 1,
+    "envelopes": 63,
+    "instances": 1690,
+    "services": 101
+  },
+  "tables_sha256": {
+    "classes.tsv": "e3ea4036ec9e3f3c869fba39fcc605f5e66492c338fc4d088a5b8f3997d3259f",
+    "envelopes.tsv": "ced887a0cc1dda039c3e3c4f8a9f75cfd3d001c7ea0e3e27d1871acfa304027a",
+    "fields.tsv": "b2e71f35cda62239f752a2c1116c267e3703f014ec723a84e699e071c5cccb4f",
+    "instances.tsv": "78be888c79edf8df0df9a97b29106f8a7d3a688f5d40077d7cd9031b53269d6b",
+    "schemas.tsv": "8200cd6326198b8e92b5de9213d7ed159d64ce27ed7cf26ff2d2684ef3b9650a",
+    "services.tsv": "a084cb1d6ffe56f71ace61a361ef43940f6fe4cc10a991dbae950f31ddbe31ba",
+    "vtables.tsv": "119e3c032882f9c2dd310cb87a37d624674364ddba235231fce250bfb9ceb91b"
+  }
+}
