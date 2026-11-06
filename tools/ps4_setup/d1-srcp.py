@@ -720,6 +720,13 @@ def main():
                 continue
             names = ' '.join(f"{e['hash']}/{e['i8']:#x}/{e['sub']}:{e['body_bits']}" for e in f['entries'])
             auth = f" authority {f['authority']}" if f['authority'] else ''
+            # The changed blocks grouped by (peer, seq, applied): "peer 7 seq 1 applied 1 x19".
+            blocks = f.get('authority_blocks') or []
+            groups = {}
+            for b in blocks:
+                groups.setdefault((b['peer'], b['seq'], b['applied']), []).append(b['block'])
+            auth += ''.join(f" [peer {p} seq {s} applied {ap} blocks {min(bs)}-{max(bs)} x{len(bs)}]"
+                            for (p, s, ap), bs in sorted(groups.items()))
             print(f"{t:8.1f} host ..{host & 0xFFFF:04x} gen {f['gen']} stamp {f['stamp']}{auth} {names}")
     else:
         if not a.out:

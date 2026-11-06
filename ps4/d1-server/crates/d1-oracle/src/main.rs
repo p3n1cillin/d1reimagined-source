@@ -838,6 +838,19 @@ fn run_sensor(_cli: &Cli, cmd: &SensorCmd) -> anyhow::Result<ExitCode> {
                     Ok(f) => serde_json::json!({
                         "gen": f.gen, "stamp": f.stamp, "init": f.init, "bits": f.bits,
                         "authority": f.authority.as_ref().map(|a| format!("{:#x}", a.changed)),
+                        // Each changed authority block: {block, peer (the machine), seq, applied}
+                        // (entry layout `{peer u8 @+1, seq u16 @+8, applied @+0xA}`, 12 bytes after
+                        // a 4-byte head; see `SensorAuthority`).
+                        "authority_blocks": f.authority.as_ref().map(|a| (0..128usize)
+                            .filter(|i| (a.changed >> i) & 1 == 1)
+                            .filter_map(|i| {
+                                let e = a.image.get(4 + 12 * i..4 + 12 * i + 12)?;
+                                Some(serde_json::json!({
+                                    "block": i, "peer": e[1],
+                                    "seq": u16::from_le_bytes([e[8], e[9]]), "applied": e[0xA],
+                                }))
+                            })
+                            .collect::<Vec<_>>()),
                         "entries": f.entries.iter().map(|e| serde_json::json!({
                             "hash": format!("{:#010x}", e.name_hash), "i8": e.name_i8,
                             "sub": e.name_sub, "body_bits": e.body_bits, "body": hexs(&e.body),
