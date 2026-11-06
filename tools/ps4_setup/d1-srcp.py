@@ -16,6 +16,9 @@
     d1-srcp.py queuez CAPTURE.pcap [...]                (QueueZ 123 pushes: family, type checksum, length)
     d1-srcp.py stacks CAPTURE.pcap [...]                (the account and profile slots each push writes:
                                                         content, quantity and its change; d1-rsat)
+    d1-srcp.py current CAPTURE.pcap [...]               (each profile push's current activity, field [6]:
+                                                        its activity index and completed flag, and the
+                                                        byte ranges the push writes, offsets only; d1-rsat)
 
 Decoding uses the 56578 client's own codec (`d1-oracle activity-host decode`, with D1_EBOOT and
 D1_ORACLE as for the server); the last-gen captures' struct layouts decode with it, but content
@@ -482,6 +485,44 @@ def stack_rows(data, decode=rsat_decode):
     return rows
 
 
+# The profile's field [6], the current activity (struct 0x808017b9 at +0x2c20): its activity index
+# (u16 @+0x2c20, the build's own numbering) and its completed flag (+0x2c38).
+CURRENT_ACTIVITY, CURRENT_COMPLETED = 0x2C20, 0x2C38
+
+
+def byte_ranges(present):
+    """Sorted byte offsets as [(first, last)] runs."""
+    runs = []
+    for i in sorted(present):
+        if runs and i == runs[-1][1] + 1:
+            runs[-1][1] = i
+        else:
+            runs.append([i, i])
+    return [tuple(r) for r in runs]
+
+
+def current_rows(data, decode=rsat_decode):
+    """Each profile push's current activity: [(t, version, index or None, completed or None,
+    [(first, last)] byte ranges written)]. Only offsets and the two field-[6] values are kept, so
+    the output carries none of the capture's identifiers."""
+    objs = [(t, ver, body) for t, fams in d1_srcp.queuez_updates(data) for fam, ver, flags, os_ in fams
+            for it, _, body in os_ if it == 0xEB4B8439]
+    res = decode((0x80801743, body, 0, fill) for _, _, body in objs for fill in ('00', 'ff'))
+    rows = []
+    for k, (t, ver, body) in enumerate(objs):
+        z, o = res[2 * k], res[2 * k + 1]
+        zi, oi = z.get('object') or z.get('partial'), o.get('object') or o.get('partial')
+        if zi is None or oi is None:
+            continue
+        zi, oi = bytes.fromhex(zi), bytes.fromhex(oi)
+        present = present_bytes(zi, oi)
+        index = (struct.unpack_from('<H', zi, CURRENT_ACTIVITY)[0]
+                 if {CURRENT_ACTIVITY, CURRENT_ACTIVITY + 1} <= present else None)
+        done = zi[CURRENT_COMPLETED] if CURRENT_COMPLETED in present else None
+        rows.append((t, ver, index, done, byte_ranges(present)))
+    return rows
+
+
 def queuez_summary(fams):
     """One push as `family:type-checksum:length` per object (no keys, no roots)."""
     return ' | '.join(f'f{fam}{"B" if flags & 1 else ""} ' + ' '.join(f'{it:08x}:{len(b)}' for it, _, b in objs)
@@ -538,7 +579,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'lifetime', 'sessions', 'mission',
                                         'hosts', 'regions', 'export', 'matchmaking', 'investment', 'queuez',
-                                        'stacks'))
+                                        'stacks', 'current'))
     ap.add_argument('--skip', default='702',
                     help='investment: service ids to leave out (comma-separated; default 702, the periodic one)')
     ap.add_argument('capture', type=Path, nargs='+')
@@ -569,6 +610,14 @@ def main():
                 shape = pb_shape(p[MM_HEADER[mtype]:])
                 print(f"{cap.stem[20:]:28} {rec['t'] - t0:8.1f} {mtype} "
                       f"{' '.join(shape) if shape is not None else 'undecodable'}")
+        return
+    if a.command == 'current':
+        for cap in a.capture:
+            for t, ver, index, done, ranges in current_rows(cap.read_bytes()):
+                six = '' if index is None and done is None else \
+                    f' field[6] activity {"ffff" if index == 0xFFFF else index} completed {done}'
+                print(f'{cap.stem[20:]:20} {t:8.1f} profile v{ver}{six} writes '
+                      + ' '.join(f'+{a:#x}' + (f'..+{b:#x}' if b != a else '') for a, b in ranges))
         return
     if a.command == 'stacks':
         for cap in a.capture:
@@ -671,6 +720,13 @@ def main():
                 continue
             names = ' '.join(f"{e['hash']}/{e['i8']:#x}/{e['sub']}:{e['body_bits']}" for e in f['entries'])
             auth = f" authority {f['authority']}" if f['authority'] else ''
+            # The changed blocks grouped by (peer, seq, applied): "peer 7 seq 1 applied 1 x19".
+            blocks = f.get('authority_blocks') or []
+            groups = {}
+            for b in blocks:
+                groups.setdefault((b['peer'], b['seq'], b['applied']), []).append(b['block'])
+            auth += ''.join(f" [peer {p} seq {s} applied {ap} blocks {min(bs)}-{max(bs)} x{len(bs)}]"
+                            for (p, s, ap), bs in sorted(groups.items()))
             print(f"{t:8.1f} host ..{host & 0xFFFF:04x} gen {f['gen']} stamp {f['stamp']}{auth} {names}")
     else:
         if not a.out:

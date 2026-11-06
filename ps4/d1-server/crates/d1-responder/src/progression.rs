@@ -388,8 +388,36 @@ pub fn ensure_progressions(obj: &mut [u8], indices: &[u16]) -> anyhow::Result<()
 /// Field [6]: `(activity, completed)`, or None when the record is all zero (never set).
 pub fn activity_record(obj: &[u8]) -> Option<(u16, bool)> {
     let rec = &obj[layout::ACTIVITY..layout::ACTIVITY + layout::ACTIVITY_RECORD_BYTES];
-    rec.iter().any(|&b| b != 0)
-        .then(|| (u16::from_le_bytes([rec[0], rec[1]]), obj[layout::ACTIVITY_COMPLETED] != 0))
+    let index = u16::from_le_bytes([rec[0], rec[1]]);
+    // `ffff` is no current activity: the live host's reset after a cinematic's 8 (run fg2j).
+    (rec.iter().any(|&b| b != 0) && index != NO_ACTIVITY)
+        .then(|| (index, obj[layout::ACTIVITY_COMPLETED] != 0))
+}
+
+/// Field [6]'s index for "no current activity".
+pub const NO_ACTIVITY: u16 = 0xFFFF;
+
+/// No current activity: field [6] as the live host reset it 4.5 s after the reveal's 8, in the push
+/// answering the client's 104 (A Guardian Rises capture, `d1-srcp.py current`): `ffff ffff`, then
+/// zeros through `+0x2c2b`, and zeros from `+0x2c30` through the completed flag. `+0x2c2c..+0x2c2f`
+/// is left as it is, as the live push left it.
+pub fn clear_activity(obj: &mut [u8]) -> anyhow::Result<String> {
+    check(obj)?;
+    let a = layout::ACTIVITY;
+    obj[a..a + 4].copy_from_slice(&[0xFF; 4]);
+    obj[a + 4..a + 0xC].fill(0);
+    obj[a + 0x10..=layout::ACTIVITY_COMPLETED].fill(0);
+    Ok("no current activity (field [6] = ffff)".into())
+}
+
+/// [`complete_activity`] for an activity that is not the current one (the lab's remap stand-in,
+/// `D1_STORE_SEED_COMPLETED`): its completion subs and XP, with field [6] left as it was.
+pub fn complete_aside(obj: &mut [u8], curves: &Curves, activity: u16, reward: Option<&Reward>) -> anyhow::Result<(String, Option<XpGrant>)> {
+    check(obj)?;
+    let keep = obj[layout::ACTIVITY..layout::ACTIVITY + layout::ACTIVITY_RECORD_BYTES].to_vec();
+    let r = complete_activity(obj, curves, activity, reward, None)?;
+    obj[layout::ACTIVITY..layout::ACTIVITY + layout::ACTIVITY_RECORD_BYTES].copy_from_slice(&keep);
+    Ok((format!("{} (aside: field [6] kept)", r.0), r.1))
 }
 
 pub fn completion_subs(obj: &[u8]) -> BTreeMap<u16, u8> {
@@ -475,6 +503,26 @@ mod tests {
 
     fn obj() -> Vec<u8> {
         vec![0u8; layout::OBJECT_BYTES]
+    }
+
+    #[test]
+    fn the_live_reset_clears_field_6_and_an_aside_completion_keeps_it() {
+        let curves = Curves::load();
+        let mut o = obj();
+        start_activity(&mut o, 165).unwrap();
+        assert_eq!(activity_record(&o), Some((165, false)));
+        let before = o.clone();
+        let reward = Reward { subs: vec![(40, 2), (673, 1)], xp: Some(900), ..Reward::default() };
+        let (what, xp) = complete_aside(&mut o, &curves, 164, Some(&reward)).unwrap();
+        assert!(what.contains("aside"), "{what}");
+        assert!(xp.is_some(), "164's XP is paid");
+        assert_eq!(activity_record(&o), Some((165, false)), "field [6] still names the served activity");
+        assert_eq!(&o[layout::ACTIVITY..layout::ACTIVITY + layout::ACTIVITY_RECORD_BYTES], &before[layout::ACTIVITY..layout::ACTIVITY + layout::ACTIVITY_RECORD_BYTES]);
+        assert_eq!((o[layout::COMPLETIONS + 40], o[layout::COMPLETIONS + 673]), (2, 1));
+        clear_activity(&mut o).unwrap();
+        assert_eq!(activity_record(&o), None, "ffff is no current activity");
+        assert_eq!(&o[layout::ACTIVITY..layout::ACTIVITY + 4], &[0xFF; 4]);
+        assert_eq!(o[layout::ACTIVITY_COMPLETED], 0);
     }
 
     #[test]

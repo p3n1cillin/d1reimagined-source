@@ -192,7 +192,12 @@ if ($NoServers) {
         if ($kv -notmatch '^(D1_[A-Z0-9_]+)=(.*)$') { throw "ExtraServerEnv entry is not D1_KEY=VALUE: $kv" }
         $serverEnv[$Matches[1]] = $Matches[2]
     }
-    foreach ($k in $serverEnv.Keys) { Set-Item -Path "env:$k" -Value $serverEnv[$k] }
+    # An empty value UNSETS the knob. PowerShell 7.6 keeps a variable that Set-Item gives an empty
+    # value, and a server reading an empty knob as a path or number fails (run fg1, 6 Nov 2026).
+    foreach ($k in $serverEnv.Keys) {
+        if ($serverEnv[$k] -eq '') { Remove-Item -Path "env:$k" -ErrorAction SilentlyContinue }
+        else { Set-Item -Path "env:$k" -Value $serverEnv[$k] }
+    }
     $serverEnv.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" } | Set-Content -LiteralPath (Join-Path $out 'server-environment.txt')
     $cert = @('--cert', (Join-Path $out 'tls.crt'), '--key', (Join-Path $out 'tls.key'))
     $winServers += Start-Process -FilePath (Join-Path $bin 'shadnet-server.exe') -ArgumentList @('--bind', '127.0.0.1:31313') -PassThru -WindowStyle Hidden `
@@ -227,7 +232,9 @@ if ($NoServers) {
     # (session toast-stock-b, notes/ps4-56578-new-guardian-2026-11-03.md). Above normal keeps the servers
     # ahead of the emulator's threads; they use little CPU themselves.
     foreach ($p in $winServers) { try { $p.PriorityClass = 'AboveNormal' } catch { } }
-    $deadline = (Get-Date).AddSeconds(30)
+    # A first start (a new player store being seeded, a new server path being scanned) took longer
+    # than 30 s (run fg2b, 6 Nov 2026); a normal start listens within a few seconds.
+    $deadline = (Get-Date).AddSeconds(90)
     do {
         Start-Sleep -Milliseconds 300
         $listen = @(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -in $winServers.Id })
@@ -336,8 +343,11 @@ $receipt.emulatorPid = $emu.Id
 $taps = 0; $nextSnap = $started.AddSeconds(15); $shot = 0
 $shadLog = Join-Path $userDir 'log\shad_log.txt'
 $logPos = 0L; $inWizard = $false; $wizardTapCount = 0; $nextWizardTap = Get-Date; $nextLogRead = Get-Date
+$atTitle = $false; $titleStateTaps = 0; $nextTitleStateTap = Get-Date
 $end = $started.AddMinutes($Minutes)
-while (-not $emu.HasExited -and (Get-Date) -lt $end) {
+# A stuck run can end early and cleanly: create OUT\stop (as with -ServersOnly); the evidence still runs.
+$stopFile = Join-Path $out 'stop'
+while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -LiteralPath $stopFile)) {
     Start-Sleep -Milliseconds 500
     $emu.Refresh()
     $h = $emu.MainWindowHandle
@@ -360,12 +370,20 @@ while (-not $emu.HasExited -and (Get-Date) -lt $end) {
                 $text = (New-Object IO.StreamReader($fs)).ReadToEnd()
                 $logPos = $fs.Length
             } finally { $fs.Dispose() }
+            # The timed taps can all land before the title: a boot that compiles shaders reached it
+            # 4 minutes in (run base1, 6 Nov 2026). Tap again while the log says the title is up.
+            if ($text -match "Entering state 'bootflow:intro_screen_display'") { $atTitle = $true }
+            if ($text -match "Leaving state 'bootflow:intro_screen_display'") { $atTitle = $false }
             if ($text -match "Entering state 'bootflow:profile_setup'") { $inWizard = $true }
             if ($text -match "Leaving state 'bootflow:profile_setup'") {
                 $inWizard = $false
                 Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) left profile_setup after $wizardTapCount wizard tap(s)"
             }
         } catch { }
+    }
+    if (-not $OperatorInput -and $atTitle -and $titleStateTaps -lt $TitleTaps -and (Get-Date) -ge $nextTitleStateTap) {
+        $how = Tap $h $TitleKey; $titleStateTaps++; $nextTitleStateTap = (Get-Date).AddSeconds($TapIntervalSeconds)
+        Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) title tap $TitleKey ($titleStateTaps, $how; the log shows the title)"
     }
     if ($inWizard -and $wizardTapCount -lt $WizardTaps -and (Get-Date) -ge $nextWizardTap) {
         $how = Tap $h $TitleKey; $wizardTapCount++; $nextWizardTap = (Get-Date).AddSeconds($WizardIntervalSeconds)
@@ -379,7 +397,7 @@ $receipt.emulatorExitCode = if ($emu.HasExited) { $emu.ExitCode } else { $null }
 $receipt.endedUtc = [DateTime]::UtcNow.ToString('o')
 
 # -- evidence -------------------------------------------------------------------------------------
-New-Item -ItemType File -Path (Join-Path $out 'stop') | Out-Null
+New-Item -ItemType File -Path (Join-Path $out 'stop') -Force | Out-Null
 if ($LabIp) { Stop-WinServers } else { $server.WaitForExit(30000) | Out-Null }
 $receipt.serverHost = if ($LabIp) { 'windows' } else { 'wsl' }
 $receipt.serversStopped = Test-Path -LiteralPath (Join-Path $out 'servers-stopped.txt')

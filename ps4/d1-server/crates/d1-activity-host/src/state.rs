@@ -267,6 +267,9 @@ pub struct ServedWorld {
     pub chosen: Vec<usize>,
     /// The slice-set id (`8 * bubble + n`) the mission starts in, or `None` for 0.
     pub start_region: Option<u32>,
+    /// The world's public slice sets (`GeneratedWorlds::public_slice_sets`); empty when unknown
+    /// (a `D1_AH_WORLD_TABLE` row).
+    pub public_regions: Vec<u32>,
     pub team0: Vec<u8>,
     pub team_minus1: Vec<u8>,
 }
@@ -340,6 +343,11 @@ pub struct ActivityInstance {
     /// `(region, session (0x84 bytes), that session's activity-host id)`, advertised in the
     /// region record when it names that region (see [`Self::track_public_session`]).
     public_sessions: Vec<(u32, Vec<u8>, u64)>,
+    /// The served world's public slice sets (see [`ServedWorld::public_regions`]).
+    public_regions: Vec<u32>,
+    /// ⭐ The ambassador's matchmaking threshold for the PAH region record: (region, when the
+    /// record first named it, reached). See [`Self::update_public_threshold`].
+    public_threshold: Option<(u32, Instant, bool)>,
     /// ⭐ The client's own `join_request` struct image, kept because a state refresh has to
     /// re-publish the membership and a membership is an **echo** of exactly these bytes. Without it
     /// a refresh would have to fabricate an identity, which `state.rs` refuses to do anywhere else.
@@ -443,6 +451,10 @@ pub struct ActivityInstance {
     /// the responder from the kind-4 matchmaking key) and the build's activity table
     /// (hash -> index). Re-read on every join, so one Activity Host serves whatever was launched.
     activity_follow: Option<(std::path::PathBuf, std::collections::HashMap<u32, u16>)>,
+    /// The launched hashes `D1_AH_ACTIVITY_REMAP` publishes as another activity (a lab stand-in).
+    activity_remaps: std::collections::HashSet<u32>,
+    /// This join's launched hash, when a remap served another activity in its place.
+    remapped_launch: Option<u32>,
     /// ⭐ `D1_AH_SENSOR_STAMP=1`: frame udt 5 as the live hosts did (see [`SensorStamp`]).
     /// `None` (default) keeps every frame as built: stamp 0, `init = 1`, no heartbeats.
     sensor_stamp: Option<SensorStamp>,
@@ -645,6 +657,8 @@ impl ActivityInstance {
             bubble_chosen: Vec::new(),
             pah_region: None,
             public_sessions: Vec::new(),
+            public_regions: Vec::new(),
+            public_threshold: None,
             join_request_image: None,
             last_pushed: now,
             host_heartbeat: Duration::from_millis(Self::HOST_HEARTBEAT_MS),
@@ -683,6 +697,8 @@ impl ActivityInstance {
             sensor_repeat: None,
             sensor_phase_file: None,
             activity_follow: None,
+            activity_remaps: std::collections::HashSet::new(),
+            remapped_launch: None,
             sensor_last_sent: None,
             sensor_stamp: None,
             script_bridge: None,
@@ -761,6 +777,15 @@ impl ActivityInstance {
 
     /// D1_AH_SCRIPTS hook: the host teleport a script phase asks for (as a mission step's region).
     fn script_teleport(&mut self, r: u32, now: Instant) {
+        // Run fg2 (6 November): a phase's teleport to the start slice set, sent while the client
+        // was still loading it, de-instantiated the CURRENT slice set and the initial load never
+        // finished. The client loads its start region at the join (and the region of each host
+        // teleport after it); until it reports a slice set of its own (udt 21), a request for the
+        // region the host serves now is no move.
+        if self.current_slice.is_none() && self.start_region.is_some_and(|(s, _)| s == r) {
+            tracing::info!("⭐ script phase: region {r} is the slice set the client was served and is loading; no teleport");
+            return;
+        }
         tracing::info!("⭐ script phase: moving the client to region {r}");
         self.set_start_region(r);
         if let Some((region, peer, token)) = self.pah_region {
@@ -878,6 +903,12 @@ impl ActivityInstance {
         let mut out = self.reply_to(msg, now);
         // D1_AH_SCRIPTS hook (script_bridge.rs): the bridge sees every message after the instance.
         if let Some(b) = self.script_bridge.as_mut() {
+            if matches!(msg, ClientMessage::JoinRequest { .. }) {
+                // The start slice set this join serves: a script phase there needs no teleport.
+                b.set_served_start(self.start_region.map(|(r, _)| r));
+                // Run fg2i: the activity the client launched, when a remap served another.
+                b.set_remapped_launch(self.remapped_launch);
+            }
             b.on_client_message(msg, self.activity_index, self.ah_id, now);
         }
         // ── stream O2 hook ── the activity framework's run (activity_driver.rs).
@@ -991,6 +1022,11 @@ impl ActivityInstance {
         table: std::collections::HashMap<u32, u16>,
     ) {
         self.activity_follow = Some((path, table));
+    }
+
+    /// The launched hashes `D1_AH_ACTIVITY_REMAP` serves as another activity (`main.rs`).
+    pub fn set_activity_remaps(&mut self, hashes: std::collections::HashSet<u32>) {
+        self.activity_remaps = hashes;
     }
 
     /// The `(hash, index)` the followed file names, if the table knows it.
@@ -1284,6 +1320,20 @@ impl ActivityInstance {
             ),
             None => {}
         }
+        // The region's public flag from the served world's content, and the ambassador's
+        // matchmaking threshold (`update_public_threshold`), re-applied on every publish.
+        if let Some((region, _, _)) = self.pah_region {
+            if self.region_is_public(region) {
+                if let Err(e) = m.set_region_public() {
+                    tracing::warn!("⚠ region {region} not marked public: {e}");
+                }
+            }
+            if matches!(self.public_threshold, Some((r, _, true)) if r == region) {
+                if let Err(e) = m.set_region_threshold(true) {
+                    tracing::warn!("⚠ region {region}'s matchmaking threshold not written: {e}");
+                }
+            }
+        }
         // The public session the client reported for this region (step 5), re-applied on every
         // publish like the record itself.
         if let Some((session, host)) = self.pah_region.and_then(|(region, _, _)| self.public_session(region)) {
@@ -1310,7 +1360,9 @@ impl ActivityInstance {
             // ── rung: wait 4 join_result ───────────────────────────────────────────────────────
             ClientMessage::JoinRequest { struct_image } => {
                 self.squad_live.reset();
-                if let Some((hash, index)) = self.followed_activity_index() {
+                let followed = self.followed_activity_index();
+                self.remapped_launch = followed.map(|(h, _)| h).filter(|h| self.activity_remaps.contains(h));
+                if let Some((hash, index)) = followed {
                     if index != self.activity_index {
                         tracing::info!(
                             "⭐ activity follow: the client launched activity hash {hash:#010x} = index \
@@ -1334,6 +1386,7 @@ impl ActivityInstance {
                     self.activity_checksum = w.checksum;
                     self.bubble_count = w.bubble_count;
                     self.bubble_chosen = w.chosen;
+                    self.public_regions = w.public_regions;
                     // The PAH region record must name the same region the client will wait on.
                     self.start_region = w.start_region.map(|r| (r, 0x811C_9DC5));
                     let region = w.start_region.unwrap_or(0);
@@ -1830,11 +1883,19 @@ impl ActivityInstance {
             } else if state == 3 && age >= Self::TELEPORT_DROP_AFTER {
                 self.slice_request = None;
                 self.membership_dirty = true;
+                // D1_AH_SCRIPTS hook (run fg2e): the teleport finished on these timers (the client
+                // sends nothing when it arrives); a scripted phase's held clock takes it as arrival.
+                if let Some(b) = self.script_bridge.as_mut() {
+                    b.teleport_finished(index, now);
+                }
             }
         }
         // MP(H): another member joined or left, or the physics host moved.
         if self.group.as_mut().is_some_and(|g| g.take_changed()) {
             self.membership_dirty = true;
+        }
+        if matches!(self.state, InstanceState::Live) {
+            self.update_public_threshold(now);
         }
         if !self.membership_dirty || !matches!(self.state, InstanceState::Live) {
             return None;
@@ -1953,6 +2014,14 @@ impl ActivityInstance {
 
     /// Epoch changes invalidate both counts and queued native decoder results.
     pub fn squad_epoch(&self) -> u64 { self.squad_live.epoch() }
+
+    /// D1_AH_SCRIPTS hook (run fg2f): the client sent a udt 6 (`sensor_sense_update`), decoded or
+    /// not; the script bridge takes the first as its answer to the full list.
+    pub fn on_sense_payload(&mut self, now: Instant) {
+        if let Some(b) = self.script_bridge.as_mut() {
+            b.client_sensed(now);
+        }
+    }
 
     pub fn on_sense_update(&mut self, update: crate::sense::SenseUpdate) {
         // D1_AH_SCRIPTS hook (script_bridge.rs): squad senses of the current epoch.
@@ -2207,6 +2276,77 @@ impl ActivityInstance {
         self.public_sessions.iter().find(|(r, _, _)| *r == region).map(|(_, s, h)| (s.as_slice(), *h))
     }
 
+    /// A region is public when the served world's content says so (`slice-sets.tsv`), or when
+    /// `D1_AH_PUBLIC_REGIONS` (comma-separated ids) names it.
+    pub fn region_is_public(&self, region: u32) -> bool {
+        self.public_regions.contains(&region)
+            || std::env::var("D1_AH_PUBLIC_REGIONS").is_ok_and(|v| {
+                v.split(',').any(|r| r.trim().parse::<u32>().is_ok_and(|r| r == region))
+            })
+    }
+
+    /// The default wait before a public region's ambassador is released (see
+    /// [`Self::update_public_threshold`]): the client's own minimum matchmaking time for an
+    /// initial public transition ("using initial transition minimum matchmaking time of: 10000
+    /// ms"), and the live PAH's 10.2 s in Restoration.
+    pub const PUBLIC_THRESHOLD: Duration = Duration::from_secs(10);
+
+    /// ⭐ Release a public region's ambassador to start the public session: region record
+    /// `+0x19` ([`ReplicateMembership::PAH_REGION_THRESHOLD`]). The ambassador (the client, with
+    /// `D1_AH_PUBLIC_AMBASSADOR=1`) searches for an existing session; finding none it keeps
+    /// searching until the PAH says a player has reached the region's matchmaking threshold, and
+    /// only then spins up its own public activity session (`FUN_0077C3D0`). The live PAH set it
+    /// 10.2 s after it first published Restoration's public region 56.
+    ///
+    /// ⚠ A stand-in for the live trigger, which the captures do not show (in a later region it
+    /// went to 1 as the player arrived): the threshold is reached `D1_AH_PUBLIC_THRESHOLD_MS`
+    /// (default 10 000; 0 = never) after the record first names a public region, if no session
+    /// has been reported for it by then.
+    fn update_public_threshold(&mut self, now: Instant) {
+        let Some((region, _, _)) = self.pah_region else { return };
+        let ambassador = std::env::var("D1_AH_PUBLIC_AMBASSADOR").is_ok_and(|v| v == "1");
+        if self.is_public_instance() || !ambassador || !self.region_is_public(region) {
+            self.public_threshold = None;
+            return;
+        }
+        let wait = match std::env::var("D1_AH_PUBLIC_THRESHOLD_MS").ok().and_then(|v| v.trim().parse::<u64>().ok()) {
+            Some(0) => return,
+            Some(ms) => Duration::from_millis(ms),
+            None => Self::PUBLIC_THRESHOLD,
+        };
+        let has_session = self.public_session(region).is_some();
+        let (next, released) = Self::next_threshold(self.public_threshold, region, has_session, now, wait);
+        self.public_threshold = Some(next);
+        if released {
+            self.membership_dirty = true;
+            tracing::info!(
+                "⭐ public region {region}: no public session after {} ms of ambassador matchmaking; \
+                 the region record's +0x19 releases the ambassador to start one (the live PAH: \
+                 10.2 s; ⚠ a stand-in trigger, D1_AH_PUBLIC_THRESHOLD_MS)",
+                wait.as_millis()
+            );
+        }
+    }
+
+    /// One step of the threshold: a new region starts its wait; the wait ends (`true`: release
+    /// now) once `wait` has passed with no session reported; a released region stays released.
+    fn next_threshold(
+        prev: Option<(u32, Instant, bool)>,
+        region: u32,
+        has_session: bool,
+        now: Instant,
+        wait: Duration,
+    ) -> ((u32, Instant, bool), bool) {
+        match prev {
+            Some((r, since, false)) if r == region => {
+                let due = !has_session && now.saturating_duration_since(since) >= wait;
+                ((r, since, due), due)
+            }
+            Some(p @ (r, _, true)) if r == region => (p, false),
+            _ => ((region, now, false), false),
+        }
+    }
+
     /// Serve a start region (see [`ServedWorld::start_region`]); also moves the PAH region record.
     pub fn set_start_region(&mut self, region: u32) {
         self.start_region = Some((region, 0x811C_9DC5));
@@ -2229,6 +2369,29 @@ impl ActivityInstance {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The ambassador's matchmaking threshold (region record `+0x19`): released after the wait
+    /// with no session, never while a session is reported, once per region, and a new target
+    /// region starts its own wait (run fg5b; the live PAH's 10.2 s).
+    #[test]
+    fn the_public_threshold_releases_a_lone_ambassador_after_the_wait() {
+        let t0 = Instant::now();
+        let wait = ActivityInstance::PUBLIC_THRESHOLD;
+        let step = ActivityInstance::next_threshold;
+        let (s, rel) = step(None, 56, false, t0, wait);
+        assert_eq!((s, rel), ((56, t0, false), false), "the record first names region 56: the wait starts");
+        let (s, rel) = step(Some(s), 56, false, t0 + Duration::from_secs(9), wait);
+        assert!(!rel && !s.2, "9 s: still matchmaking");
+        let (s2, rel) = step(Some(s), 56, true, t0 + Duration::from_secs(11), wait);
+        assert!(!rel && !s2.2, "a reported session: nothing to release");
+        let (s, rel) = step(Some(s), 56, false, t0 + Duration::from_secs(10), wait);
+        assert!(rel && s.2, "10 s with no session: released");
+        let (s, rel) = step(Some(s), 56, false, t0 + Duration::from_secs(20), wait);
+        assert!(!rel && s.2, "released once, and stays released");
+        let t1 = t0 + Duration::from_secs(30);
+        let (s, rel) = step(Some(s), 48, false, t1, wait);
+        assert_eq!((s, rel), ((48, t1, false), false), "a new target region waits again");
+    }
 
     fn instance() -> (ActivityInstance, Instant) {
         let now = Instant::now();
@@ -2416,6 +2579,29 @@ mod tests {
         k.set_activity_follow(file.clone(), table);
         k.on_client_message(&join_request([0; 4]), now);
         assert_eq!(k.activity_index(), 416, "an unknown hash keeps the configured index");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// Run fg2i: a join whose launched hash a remap published as another activity names that hash
+    /// (for the bridge's lab completion); an unremapped launch names none.
+    #[test]
+    fn a_remapped_launch_is_known_at_the_join() {
+        let dir = std::env::temp_dir().join(format!("d1ah-remap-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let file = dir.join("launched.txt");
+        // D1_AH_ACTIVITY_REMAP=164:165 as main.rs applies it: 164's hash now names 165.
+        let table: std::collections::HashMap<u32, u16> = [(0x6E0D_AE89u32, 165u16), (0x6EAF_0959, 165)].into_iter().collect();
+        let remaps: std::collections::HashSet<u32> = [0x6E0D_AE89u32].into_iter().collect();
+        for (launched, want) in [(0x6E0D_AE89u32, Some(0x6E0D_AE89u32)), (0x6EAF_0959, None)] {
+            std::fs::write(&file, format!("{launched}
+")).unwrap();
+            let (mut i, now) = instance();
+            i.set_activity_follow(file.clone(), table.clone());
+            i.set_activity_remaps(remaps.clone());
+            i.on_client_message(&join_request([0; 4]), now);
+            assert_eq!(i.activity_index(), 165);
+            assert_eq!(i.remapped_launch, want, "{launched:#x}");
+        }
         let _ = std::fs::remove_dir_all(&dir);
     }
 
@@ -2735,6 +2921,31 @@ mod tests {
         assert_eq!(req(i.membership_due(now + Duration::from_secs(21))), Some((3, 112)), "state 3 finishes");
         assert_eq!(req(i.membership_due(now + Duration::from_secs(31))), Some((0, 0)), "then the request is dropped");
         assert_eq!(i.pah_region(), Some((112, 0, 2)), "the teleport is the second transition");
+    }
+
+    /// Run fg2 (6 November): a script phase in the start slice set, while the client still loads
+    /// it, is no teleport (one de-instantiated the initial slice set and the load never ended);
+    /// another region is, and so is the start region once the client has reported a slice set.
+    #[test]
+    fn a_script_phase_in_the_loading_start_slice_set_sends_no_teleport() {
+        let (mut i, now) = instance();
+        i.set_pah_region(25, 0, 1);
+        i.set_start_region(25);
+        i.on_client_message(&join_request([0; 4]), now);
+        let _ = i.membership_due(now);
+        i.script_teleport(25, now);
+        assert_eq!(i.slice_request, None, "no request while the client loads 25");
+        assert_eq!(i.pah_region(), Some((25, 0, 1)), "the token does not move");
+        i.script_teleport(26, now);
+        assert_eq!(i.slice_request.map(|(s, r, _)| (s, r)), Some((1, 26)), "another region moves the client");
+        assert_eq!(i.pah_region(), Some((26, 0, 2)));
+        let mut image = vec![0; 0xC0];
+        image[0xB8..0xBC].copy_from_slice(&26u32.to_le_bytes());
+        image[0xBC..0xC0].copy_from_slice(&0x1AD5_E415u32.to_le_bytes());
+        i.track_current_slice(&image);
+        i.slice_request = None;
+        i.script_teleport(25, now);
+        assert_eq!(i.slice_request.map(|(s, r, _)| (s, r)), Some((1, 25)), "back to 25 once the client is in 26");
     }
 
     /// ⭐⭐ A state refresh must not re-grant indices the client already holds: its apply ORs the

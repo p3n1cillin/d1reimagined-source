@@ -74,7 +74,10 @@ foreach ($pair in @(@('ROOT', 'Root'), @('TOOLS', 'Tools'), @('WORKSPACE', 'Work
 }
 $stamp = [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss')
 $loc['RUN'] = Join-Path (Join-Path $loc.STAGING 'full-game') "$stamp-$Name"
-$loc['BIN'] = Join-Path $loc.RUN 'bin'
+# One fixed folder for the servers a run uses. Windows Firewall keys its answer to a program's path,
+# so a new folder per run asked again on every run (6 Nov 2026). Only one lab runs at a time (the
+# launcher refuses over a running one), and each manifest records the SHA-256 of what it ran.
+$loc['BIN'] = Join-Path (Join-Path $loc.STAGING 'full-game') 'bin'
 
 # -- the profile ----------------------------------------------------------------------------------
 function Resolve-ProfilePath([string]$p, [string]$base) {
@@ -231,7 +234,7 @@ if (-not $DryRun) {
     if ($Only -ne 'emulator' -and $running.Count) { Write-Error "d1-full-game: a lab run is active (process ids $($running.Id -join ', ')); end it first"; exit 2 }
     if ($Only -eq 'emulator' -and @($running | Where-Object ProcessName -eq 'shadPS4').Count) { Write-Error 'd1-full-game: an emulator is already running'; exit 2 }
     if ($problems.Count) { $problems | ForEach-Object { Write-Error "d1-full-game: $_" -ErrorAction Continue }; exit 2 }
-    New-Item -ItemType Directory -Force (Join-Path $loc.RUN 'bin') | Out-Null
+    New-Item -ItemType Directory -Force $loc.RUN, $loc.BIN | Out-Null
     Say "d1-full-game $Name ($Only), profile $profilePath"
     if ($wantBuild) {
         if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) { Say 'cargo is not on PATH'; exit 3 }
@@ -260,6 +263,15 @@ if (-not $DryRun) {
                 Say "  $b was built from $($serverState[$b].builtFrom): touching $main"
                 (Get-Item -LiteralPath $main).LastWriteTimeUtc = [DateTime]::UtcNow
             }
+        }
+        # A file whose time changed but whose content did not (a git checkout rewrites mtimes) is
+        # fresh to cargo, which then leaves the binary alone, so the time check still calls it stale
+        # (run fg1, 6 Nov 2026). Cargo's clean exit is the authority: bring the binary's time forward.
+        foreach ($b in @($Servers | Where-Object { $serverState[$_].stale.Count -and
+                -not @($serverState[$_].stale | Where-Object { $_ -notmatch 'newer' }).Count })) {
+            Say "  $b is fresh to cargo; only file times were newer: touching the binary"
+            (Get-Item -LiteralPath $serverState[$b].path).LastWriteTimeUtc = [DateTime]::UtcNow
+            $serverState[$b] = Get-ServerState $b
         }
         $still = @($Servers | Where-Object { $serverState[$_].stale.Count })
         if ($still.Count) { Say "still stale after building: $(($still | ForEach-Object { "${_}: $($serverState[$_].stale -join '; ')" }) -join ' | ')"; exit 3 }
@@ -522,7 +534,7 @@ if ($Only -ne 'emulator') {
         $dest = Join-Path $loc.BIN "$b.exe"
         Copy-Item -LiteralPath $serverState[$b].path -Destination $dest
         $serverState[$b].sha256 = (Get-FileHash -LiteralPath $dest).Hash.ToLowerInvariant()
-        Say "  $b.exe -> bin (sha256 $($serverState[$b].sha256.Substring(0, 12)))"
+        Say "  $b.exe -> $($loc.BIN) (sha256 $($serverState[$b].sha256.Substring(0, 12)))"
     }
 }
 $manifest.servers = @($Servers | ForEach-Object { $serverState[$_] })

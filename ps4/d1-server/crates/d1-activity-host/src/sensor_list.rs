@@ -80,6 +80,24 @@ pub fn params_for_list(
     Ok(params)
 }
 
+/// The lifetime phase a list names itself with `@phase N`, if it does. [`params_for_list`] falls
+/// back to the launch phase (`D1_AH_SENSOR_PHASE`) without one; the script bridge does not (it
+/// starts every world at the live hosts' first value, 0).
+pub fn listed_phase(text: &str) -> Option<i8> {
+    text.lines()
+        .map(|l| l.split('#').next().unwrap_or("").trim())
+        .find(|l| l.split_whitespace().next() == Some("@phase"))
+        .and_then(|l| l.trim_start_matches("@phase").trim().parse().ok())
+        .filter(|p| (-1..=14).contains(p))
+}
+
+/// Whether a list names its own launch authority (`@authority`).
+pub fn lists_authority(text: &str) -> bool {
+    text.lines()
+        .map(|l| l.split('#').next().unwrap_or("").trim())
+        .any(|l| l.split_whitespace().next() == Some("@authority"))
+}
+
 fn parse_authority(value: &str) -> Result<SensorAuthority> {
     let fields: Vec<&str> = value.split(',').map(str::trim).collect();
     if !(1..=3).contains(&fields.len()) || fields.iter().any(|f| f.is_empty()) {
@@ -295,5 +313,14 @@ mod tests {
             assert!(error.to_string().contains("line 1"), "{value}: {error}");
         }
         assert!(params_for_list(&base(), 99, -1, "@phase 7\n@phase 3").is_err());
+    }
+
+    #[test]
+    fn a_list_names_its_phase_and_authority_or_does_not() {
+        assert_eq!(listed_phase("# x\n @phase 0 # the live first value\n99 1 4 1 0"), Some(0));
+        assert_eq!(listed_phase("99 1 4 1 0\n# @phase 4"), None, "a comment is not a phase");
+        assert_eq!(listed_phase("99 1 4 1 0"), None, "params_for_list's launch phase is not the list's");
+        assert!(lists_authority("@authority 12"));
+        assert!(!lists_authority("# @authority 12\n99 1 4 1 0"));
     }
 }

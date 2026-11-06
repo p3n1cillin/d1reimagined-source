@@ -79,6 +79,9 @@ fn script_config() -> Arc<ScriptConfig> {
         rewards: Arc::new(Mutex::new(RecordingRewards::default())),
         codec: ScriptConfig::host_codec(),
         active_bundles: true,
+        start_delay: std::time::Duration::ZERO,
+        arrival_cushion: std::time::Duration::ZERO,
+        list_retry: None,
     })
 }
 

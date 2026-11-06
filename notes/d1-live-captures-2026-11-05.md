@@ -155,6 +155,17 @@ The cinematics then run on the host's word. Each record's value is `{u32 start, 
 | +50 s | `/6/1` | state 2: the second cinematic plays |
 | +96.7 s | `/6/1` | state 4. Then udt 23 and 24, and the client moves to the Tower |
 
+**How the client got to the Tower** (read 6 November with `d1-srcp.py current`, `investment` and
+`matchmaking`):
+- At the host's closing incident chain (+49.6 s from the join), the profile push set field [6]
+  (cine_reveal, index 162 on 51539) completed 1 and completion byte `+0x53e9` = 2.
+- Lifetime 6 and 8 came in one tick at +97.5 s.
+- Then the client itself sent matchmaking 42, kind 4, for the Tower (`0xdf283afb`, 4.6 s after
+  the 8), and joined the Tower's public instance.
+
+No server message named the Tower
+([script-bridge note, run fg2h](ps4-56578-script-bridge-2026-11-05.md#run-fg2h-the-reveal-ends-in-orbit-not-the-tower-the-live-host-completed-it-48-s-earlier)).
+
 We served 165 an empty sensor list. The live host served both cinematic records, then stepped them through these states.
 
 ### Serving it (5 November)
@@ -242,7 +253,7 @@ Only the PAH serves region records. The public instances served none. `d1-srcp.p
 | 341 s | region 104 (private, `+0x04 = 0`) |
 
 Notes:
-- `+0x19` goes to 1 and back as the player enters and leaves a region (region 48: 0 → 1 at 83 s → 0 at 127 s). It is most likely "the peer is in this region" [I].
+- `+0x19` goes to 1 and back as the player enters and leaves a region (region 48: 0 → 1 at 83 s → 0 at 127 s). It is most likely "the peer is in this region" [I]. **6 November [V]:** the client's ambassador task `FUN_0077C3D0` reads it as "a player has reached the matchmaking threshold for region '%s'". When it is set, the client stops searching and spins up its own public session. That is why the client asked for its new host 0.2 s after the 30.7 s change ([public-sessions note](ps4-56578-public-sessions-2026-11-02.md), step 3).
 - `+0x20` is 1 in every record. `+0x38` is peer 0's transition token, as our host already serves it.
 - The session is the platform's: on the 360, a session key and the console's network address. **It is personal data and stays in the private captures.**
 

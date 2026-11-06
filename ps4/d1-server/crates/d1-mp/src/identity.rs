@@ -106,6 +106,11 @@ impl fmt::Display for OnlineId {
 
 /// The 40-byte member identity (`0x80800C2D`) of a `join_request` (at `+0x10`) and of each
 /// `replicate_membership` member (at `+0x00`).
+///
+/// ⚠ `character` is what the client writes at `+0x18`, and run fg2g (6 November) measured it to
+/// be the player's **profile** SOID (`0xD100_0000_0000_0201` for the responder's own player,
+/// whose character is `...101`). The responder matches it against a player's character or
+/// profile (`player_store::Identity::named_by`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct MemberIdentity {
     pub machine: [u8; 8],

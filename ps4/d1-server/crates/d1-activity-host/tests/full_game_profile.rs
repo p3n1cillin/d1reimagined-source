@@ -250,7 +250,7 @@ fn the_script_bridge_configures_from_the_profile() {
     let Some(s) = full_game(&run) else { return };
     // This test binary's own environment: only this test sets it.
     for (k, v) in &s.vars {
-        if k.starts_with("D1_AH_SCRIPTS") || k.starts_with("D1_AH_ROWS") || k == "D1_AH_WORLDS" || k == "D1_BUNDLES_DIR" {
+        if k.starts_with("D1_AH_SCRIPTS") || k.starts_with("D1_AH_ROWS") || k == "D1_AH_WORLDS" || k == "D1_AH_WORLD_TABLE" || k == "D1_BUNDLES_DIR" {
             std::env::set_var(k, v);
         }
     }
@@ -277,6 +277,23 @@ fn the_script_bridge_configures_from_the_profile() {
     // profile's table and in the older one-row stand-in.
     let reveal = c.activities.get(&165).expect("the profile's table scripts cine_reveal (165)");
     assert_eq!(reveal.end, d1_activity_host::row_encoders::EndKind::Cinematic, "165 ends 6 then 8");
+    // Runs fg2 and fg3b (6 November): the reveal starts from the world table's own list, the live
+    // one fg3b served (21 records, two with values), at lifetime 0 (never D1_AH_SENSOR_PHASE's 3),
+    // in its start slice set 25, and its scripts wait the stand-in start cushion.
+    assert!(s.vars.contains_key("D1_AH_WORLD_TABLE"), "lab-base.env's hand world table");
+    assert_eq!(reveal.initial_lifetime(), 0, "the first full list carries lifetime 0");
+    assert_eq!(reveal.rows.len(), 21);
+    assert_eq!(reveal.rows.iter().filter(|(_, r)| r.a.is_some()).count(), 2, "/6/0 and the player bundle's spawn value");
+    assert_eq!(reveal.start, Some(25));
+    // Run fg2c: at the move to 26 the list the client holds adds the Tower cinematic /6/1, as the
+    // step schedule's cine_reveal-move-26.txt (22 records) does.
+    let tower = d1_activity_host::rows::RowKey { group: 0x2FE7_DBE6, kind: 6, index: 1 };
+    assert!(reveal.slice_list(26).is_some_and(|l| l.len() == 22 && l.iter().any(|(k, _)| *k == tower)));
+    // Run fg2d: /6/1 takes the step schedule's served value (D1_AH_SCRIPTS_SLICE_LISTS), its cast.
+    assert!(reveal.served_value(&tower).and_then(|r| r.a).is_some_and(|(tag, image)| tag == 0x8080_254D && image[0x9C] == 1));
+    assert_eq!(c.start_delay, std::time::Duration::from_secs(60), "D1_AH_SCRIPTS_START_DELAY");
+    assert_eq!(c.arrival_cushion, std::time::Duration::from_secs(20), "D1_AH_SCRIPTS_ARRIVAL_CUSHION");
+    assert_eq!(c.list_retry, Some(std::time::Duration::from_secs(10)), "D1_AH_SCRIPTS_LIST_RETRY");
     let stand_in = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../profiles/script-activities.txt");
     let text = std::fs::read_to_string(&stand_in).unwrap();
     let dir = stand_in.parent().unwrap().to_path_buf();

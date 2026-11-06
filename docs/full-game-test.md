@@ -85,9 +85,14 @@ pwsh -File tools/ps4_setup/d1-full-game.ps1 -Name fg3 -Set D1_RSAT_NATIVE=0,serv
 when it is missing, when a source file or `Cargo.toml` is newer than it, or when it was built from
 another checkout. That last case happens when worktrees share a target folder (`-TargetDir`): cargo
 finds this checkout's crates fresh and leaves the other checkout's binary in place. The launcher
-touches that binary's `main.rs` and builds again. Builds run at BelowNormal priority. The built binaries are
-copied into the run folder, and the servers run from that copy, so the shared served target is
-never swapped.
+touches that binary's `main.rs` and builds again. A file whose time changed but not its content
+(after a git checkout) is fresh to cargo, so after a clean build the launcher brings that binary's
+time forward instead of refusing. Builds run at BelowNormal priority.
+
+The built binaries are copied to one fixed folder, `D1_STAGING\full-game\bin\`, and the servers run
+from that copy, so the shared served target is never swapped. The folder is the same for every run
+because Windows Firewall remembers its answer per program path: a new folder per run asked again
+each time. Each run's `manifest.json` records the SHA-256 of the servers it ran.
 
 **Knob checks.** Every knob's name must be in the code that reads it:
 - `[server]` knobs in the servers' binaries;
@@ -106,7 +111,6 @@ reported as `dropped`.
 | `plan.txt` | The dry-run printout of this run. |
 | `server.env`, `emulator.env` | The knobs passed (an empty value unsets). |
 | `launcher.log`, `build-1.log` (`build-2.log`) | The launcher's steps and cargo's output (a second build when a shared target held another checkout's binaries). |
-| `bin\` | The servers this run uses. |
 | `boot\` | The contained boot's evidence: `receipt.json`, `server-environment.txt`, `responder.log`, `activity-host.log`, `shadnet.log`, `emulator.log`, frames. |
 | `launched-activity.txt`, `store-control.txt`, `profile-push.bin`, `account-push.bin`, `ah-control.txt` | The live files the servers read. Write `profile-push.bin` here to push a profile. |
 
@@ -125,11 +129,11 @@ then stops its servers. A `-Only servers` run stops when `RUN\boot\stop` is crea
 | Rewards and growth | #311 | `D1_REWARDS=1`, `D1_REWARDS_SEED=0xD1F0` | unset |
 | Multiplayer | #312 | `D1_MP=1`, `D1_MM_CONFIG_FILE`, `D1_AH_SHARED_INSTANCES=1` | unset |
 | Activity framework | #313 | `D1_AH_ACTIVITY_FRAMEWORK=<fixtures>/activities` | unset |
-| Generated worlds | #314, stream Q | `D1_AH_WORLDS`, `D1_AH_WORLDS_ACTIVITIES=all` (every activity with a world), `D1_AH_WORLDS_PRIVATE_START=1` | unset |
-| Public instances | #316 | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_DISTINCT_HOST_IDS=1`; stream O2: `D1_AH_PUBLIC_INSTANCES_FILE` (the host's instances for the responder's matchmaker) | unset |
+| Generated worlds | #314, stream Q | `D1_AH_WORLDS`, `D1_AH_WORLDS_ACTIVITIES=all` (every activity with a world), `D1_AH_WORLDS_PRIVATE_START=0` (public starts served as live) | unset |
+| Public instances | #316 | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_DISTINCT_HOST_IDS=1`, `D1_AH_PUBLIC_AMBASSADOR=1` (every region's ambassadorship to the player, as live); stream O2: `D1_AH_PUBLIC_INSTANCES_FILE` (the host's instances for the responder's matchmaker) | unset |
 | Native RSAT codec | #317 | `D1_RSAT_NATIVE=1` | unset |
 | udt 5 stamp mode | #298 | `D1_AH_SENSOR_STAMP=1` | unset |
-| Script bridge | #319 (stream A2) | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES` (a stand-in, [165 cine_reveal](../ps4/profiles/script-activities.txt), until stream K's table lands), `D1_AH_SCRIPTS_INCIDENTS`. Listed as off: `D1_AH_SCRIPTS_MISSION_PHASE` (unverified), `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`, `D1_AH_ROWS_UNLISTED`, `D1_AH_ROWS_DELTA_INIT` | unset |
+| Script bridge | #319 (stream A2) | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES` (a stand-in, [165 cine_reveal](../ps4/profiles/script-activities.txt), until stream K's table lands), `D1_AH_SCRIPTS_INCIDENTS`, `D1_AH_SCRIPTS_SLICE_LISTS` (the step schedule's served values, run fg2d), `D1_AH_SCRIPTS_START_DELAY=60` (a stand-in start cushion, [runs fg2 and fg3b](../notes/ps4-56578-script-bridge-2026-11-05.md#the-first-integrated-run-6-november)). Listed as off: `D1_AH_SCRIPTS_MISSION_PHASE` (unverified), `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`, `D1_AH_ROWS_UNLISTED`, `D1_AH_ROWS_DELTA_INIT` | unset |
 | Content bundles | stream K (not merged) | `D1_BUNDLES_DIR` (`[sidecar]`, from the environment; required with the bridge on) | unset |
 | Script sidecar | #310 | `D1_SCRIPTS_DIR`, `D1_TIGER_DIR` (`[sidecar]`) | unset |
 | Draw cost | fork #7 (draft) | `?D1_DRAW_STATS=1`, `?D1_DRAW_FAST=1`, `?D1_GPU_WAIT_YIELD=1` | `D1_DRAW_FAST=0`, the rest unset |
@@ -144,10 +148,12 @@ Some choices in this profile are worth knowing about:
   udt 5 frames before the host listens; `tests/all_worlds.rs` measures that cost (see the note).
   The hand table's rows (164, 165, 168, 0, 410, 416) still win over generated ones. To serve a few,
   pass `-Set D1_AH_WORLDS_ACTIVITIES=166,167`.
-- **Public starts.** `D1_AH_WORLDS_PRIVATE_START=1` serves Restoration from its private stand-in.
-  Public instances now encode their lists as entry-only frames ([integration
-  note](../notes/ps4-56578-integration-wiring-2026-11-05.md)), but none has been served to the client
-  yet. To try the public start, pass `-Set D1_AH_WORLDS_PRIVATE_START=`.
+- **Public starts.** Restoration starts in its live public region 56. The private stand-in
+  (`D1_AH_WORLDS_PRIVATE_START=1`) stalled the load, so it is off ([test note](../notes/ps4-56578-full-game-test-2026-11-06.md),
+  F26). With `D1_AH_PUBLIC_AMBASSADOR=1` the client is the region's ambassador and searches for a
+  public session. The world content marks the public regions. After `D1_AH_PUBLIC_THRESHOLD_MS`
+  (default 10000, a stand-in for the live trigger) with none found, the region record's `+0x19`
+  releases it to start its own (F29, F30).
 - **`D1_HITCH_HALT=0`** is the "on" value: the game reports the stall and carries on, where unset
   keeps the console's halt.
 - **Session knobs.** `lab-base.env` serves the geared Guardian, the Director flags without 308 and
