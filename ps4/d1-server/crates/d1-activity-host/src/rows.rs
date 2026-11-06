@@ -133,8 +133,6 @@ pub struct RowTable {
     listed: BTreeSet<RowKey>,
     dirty: BTreeSet<RowKey>,
     authority: Option<SensorAuthority>,
-    /// Authority changes for their own frames, in order (F39: the live host's bubble move).
-    authority_queue: std::collections::VecDeque<SensorAuthority>,
     full_wanted: bool,
     full_delivered: bool,
     in_flight: bool,
@@ -159,7 +157,6 @@ impl RowTable {
             listed: BTreeSet::new(),
             dirty: BTreeSet::new(),
             authority: None,
-            authority_queue: std::collections::VecDeque::new(),
             full_wanted: false,
             full_delivered: false,
             in_flight: false,
@@ -190,19 +187,10 @@ impl RowTable {
         self.listed = rows.iter().map(|(k, _)| *k).collect();
         self.rows = rows.into_iter().collect();
         self.authority = authority;
-        self.authority_queue.clear();
         self.dirty.clear();
         self.held_logged.clear();
         self.full_wanted = true;
         self.full_delivered = false;
-    }
-
-    /// Send `changes` in order, each in a frame of its own (a delta naming no row), once the world's
-    /// first full list has gone out, and before a full list wanted since. Later full lists carry no authority table: the live host's full list after a
-    /// bubble move had none, and the join grant would undo the changes (F39).
-    pub fn push_authority(&mut self, changes: impl IntoIterator<Item = SensorAuthority>) {
-        self.authority_queue.extend(changes);
-        self.authority = None;
     }
 
     /// The client moved to another slice set of the same world, whose list names other rows (the
@@ -290,14 +278,6 @@ impl RowTable {
         if self.in_flight {
             return None;
         }
-        // Authority changes go before a list the move brings (live: the release at 580.3 s, the
-        // Breach's list at 581.0 s), once the world's first full list is out.
-        if self.full_frames > 0 {
-            if let Some(a) = self.authority_queue.pop_front() {
-                self.in_flight = true;
-                return Some(FramePlan { gen: self.gen, full: false, init: self.delta_init, authority: Some(a), entries: Vec::new() });
-            }
-        }
         if self.full_wanted {
             self.full_wanted = false;
             self.dirty.clear();
@@ -348,9 +328,6 @@ impl RowTable {
         if plan.full {
             self.full_wanted = true;
         } else {
-            if let Some(a) = plan.authority {
-                self.authority_queue.push_front(a);
-            }
             self.dirty.extend(plan.entries.into_iter().map(|(k, _)| k));
         }
     }
@@ -421,33 +398,6 @@ mod tests {
         let mut odd = Row { has_a: true, has_b: true, a: Some((1, vec![1])), b: Some((2, vec![2])) };
         reshape(&mut odd, false, false);
         assert_eq!(odd, Row { has_a: false, has_b: false, a: None, b: None }, "a part the shape lacks is dropped");
-    }
-
-    #[test]
-    fn queued_authority_changes_go_out_alone_in_order_after_the_full_list() {
-        let t0 = Instant::now();
-        let mut t = RowTable::new(1);
-        let grant = SensorAuthority::grant([1; 8], [0, 1, 64], 1, false);
-        t.load_world(vec![(RowKey { group: 1, kind: 4, index: 0 }, Row { has_a: true, has_b: false, a: None, b: None })], Some(grant));
-        let release = SensorAuthority::grant([0; 8], [0, 64], 0, false);
-        let regrant = SensorAuthority::grant([1; 8], [1], 2, false);
-        t.push_authority([release.clone(), regrant.clone()]);
-        let full = t.plan().unwrap();
-        assert!(full.full && full.authority.is_none(), "the full list waits for nothing and carries no grant now");
-        t.sent(&full, t0);
-        let a = t.plan().unwrap();
-        assert!(!a.full && a.entries.is_empty() && a.authority == Some(release));
-        t.failed(a);
-        let a = t.plan().unwrap();
-        assert_eq!(a.authority.as_ref().map(|x| x.changed), Some((1 << 0) | (1u128 << 64)), "a failed change goes out again first");
-        t.sent(&a, t0);
-        let b = t.plan().unwrap();
-        assert_eq!(b.authority, Some(regrant));
-        t.sent(&b, t0);
-        assert!(t.plan().is_none());
-        t.push_authority([SensorAuthority::grant([0; 8], [5], 0, false)]);
-        t.request_full();
-        assert!(!t.plan().unwrap().full, "the authority change goes before the list the move brings");
     }
 
     #[test]

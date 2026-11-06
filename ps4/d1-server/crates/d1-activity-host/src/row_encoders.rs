@@ -161,6 +161,11 @@ pub const TAG_PLAYER_TRIGGER: u32 = 0x8080_0463;
 pub const TAG_SQUAD: u32 = 0x8080_071E;
 pub const TAG_PLAYER_OBJECTIVE: u32 = d1_oracle::sensor_objective::TAG;
 pub const TAG_OBJECT: u32 = 0x8080_07D9;
+/// A prop command's typed value: three (i32, i32, f32) channels (JOIN210, 01.24; the Breach's
+/// activation in the step schedule). F41.
+pub const TAG_DEVICE_COMMAND: u32 = 0x8080_279A;
+/// The prop state image must reach past the command's third channel.
+const DEVICE_COMMAND_END: usize = 0x40 + 3 * 0xC;
 pub const TAG_SCOREBOARD: u32 = 0x8080_08D0;
 pub const TAG_SEQUENCE: u32 = 0x8080_29A1;
 pub const TAG_ACTOR: u32 = 0x8080_0868;
@@ -596,13 +601,28 @@ impl RowEncoders {
                 let incarnation = state.get("incarnation").and_then(Value::as_u64).unwrap_or(1) as u32;
                 put_u32(&mut image, 0, incarnation.max(1));
                 image[8] = u8::from(state.get("present").and_then(Value::as_bool).unwrap_or(false));
-                // F41 ⚠ inferred: a device's position at +4, the u32 the 56578 prop state added after
-                // 01.24 (blockers-2026-10-15). The Breach's light-up sets o_breach_control and
-                // o_breach_gating_lights to position 1 (enc_breach_m0's sc_ghost_light_up), and the
-                // step schedule's activation, built from the reference, set those props' +4 to 1.
-                // BullShcript's position stamp (`revision`) has no known field yet.
-                if let Some(position) = state.get("device").and_then(|d| d.get("position")).and_then(Value::as_u64) {
-                    put_u32(&mut image, 4, position as u32);
+                // F41: a device's position. The step schedule's activation of the Breach props
+                // (agr-b-activate-c.txt, from the 01.24 reference, JOIN210: the command that opens the
+                // grey barrier) is `+4` = 1 and one command in the block at `+0x20`: count 1 at
+                // `+0x20`, the typed value `0x8080279A` at `+0x30`, and its three (i32, i32, f32)
+                // channels at `+0x40`, each (1, 1, 1.0). The light-up sets o_breach_control and
+                // o_breach_gating_lights to position 1 with BullShcript's stamp (`revision`) 1.
+                // ⚠ Inferred beyond those values: `+4` and each channel's first i32 carry the stamp,
+                // the second the position as an integer, the float the position.
+                if let Some(d) = state.get("device") {
+                    let position = d.get("position").and_then(Value::as_f64).unwrap_or(0.0);
+                    let revision = d.get("revision").and_then(Value::as_u64).unwrap_or(1) as u32;
+                    if image.len() >= DEVICE_COMMAND_END {
+                        put_u32(&mut image, 4, revision);
+                        put_u32(&mut image, 0x20, 1);
+                        put_u32(&mut image, 0x30, TAG_DEVICE_COMMAND);
+                        for c in 0..3 {
+                            let at = 0x40 + 0xC * c;
+                            put_u32(&mut image, at, revision);
+                            put_u32(&mut image, at + 4, position.round() as i32 as u32);
+                            image[at + 8..at + 12].copy_from_slice(&(position as f32).to_le_bytes());
+                        }
+                    }
                 }
                 with_a(TAG_OBJECT, image)
             }
@@ -947,7 +967,12 @@ mod tests {
         assert_eq!((u32_at(i, 0x48), i[0x74]), (Some(NONE_HASH), 0xFF));
 
         let ob = e.encode(RowKey { group: 1, kind: 4, index: 2 }, "object", &json!({"incarnation": 3, "present": true, "device": {"position": 1, "revision": 1}}), None, CTX, &no_map);
-        assert_eq!(&image(&ob)[0..0x14], &hex("030000000100000001000000c59d1c81ff00ffff"), "the device position at +4 (F41)");
+        assert_eq!(&image(&ob)[0..0x14], &hex("030000000100000001000000c59d1c81ff00ffff"), "the stamp at +4 (F41)");
+        // The step schedule's activation image (agr-b-activate-c.txt) from +0x20 to the third channel.
+        assert_eq!(
+            &image(&ob)[0x20..0x64],
+            &hex("010000000000000000000000000000009a27808000000000000000000000000001000000010000000000803f01000000010000000000803f01000000010000000000803f")
+        );
         let plain = e.encode(RowKey { group: 1, kind: 4, index: 3 }, "object", &json!({"incarnation": 1, "present": true}), None, CTX, &no_map);
         assert_eq!(&image(&plain)[0..0x0C], &hex("010000000000000001000000"), "no device, +4 stays 0");
 

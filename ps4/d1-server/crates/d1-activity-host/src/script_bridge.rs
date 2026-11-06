@@ -841,36 +841,6 @@ pub fn live_trigger_defaults(rows: &mut [(RowKey, Row)]) -> usize {
     n
 }
 
-/// F39: the live host's authority changes when the client's slice set changes. In A Guardian
-/// Rises' capture (`d1-srcp.py sensors`) each change came as two frames of authority alone: the
-/// first released every block but one to no machine (seq 0), the next re-granted that one block to
-/// the client with its next seq. The block was the bubble of the slice set the client had been in
-/// (at its first report, the one it was in): 14 seq 2 as play began in 113, 14 seq 3 at 112, 14
-/// seq 4 on entering 24, 3 seq 2 on entering 96, 12 seq 2 on entering 104, 13 on the outro's 105;
-/// the reveal's host did the same with its block 3 at 25 and 26. Our host granted every block once
-/// at the join and never again. ⚠ Why the host kept the previous bubble is not known; this follows
-/// the capture, and it did not by itself make the Breach's triggers report (runs agr6–agr8).
-fn authority_move(
-    grant: Option<([u8; 8], usize)>,
-    block_seq: &mut HashMap<usize, u16>,
-    before: Option<u32>,
-    now_in: u32,
-) -> Option<Vec<d1_oracle::sensor::SensorAuthority>> {
-    use d1_oracle::sensor::SensorAuthority;
-    let (machine, bubbles) = grant?;
-    let block = (before.unwrap_or(now_in) >> 3) as usize;
-    let seq = block_seq.entry(block).or_insert(1);
-    *seq = seq.wrapping_add(1).max(1);
-    let domain = 64;
-    tracing::info!(
-        "⭐ script bridge: slice set {before:?} -> {now_in}: the other blocks are released, then block {block} goes to the player again with seq {seq} (F39)"
-    );
-    Some(vec![
-        SensorAuthority::grant([0; 8], (0..bubbles.min(domain)).chain([domain]).filter(|&b| b != block), 0, false),
-        SensorAuthority::grant(machine, [block], *seq, false),
-    ])
-}
-
 /// `D1_AH_DUMP_FRAMES=<file>` (a diagnostic): each udt 5 frame the bridge sends is appended as a
 /// JSON line, `{stamp, full, frame, entries: [[row, tag, image hex]...]}`, so a run's frames can be
 /// read back with the client's own codec (`tools/ps4_setup/d1-frames.py`). Unset: nothing. The
@@ -1192,10 +1162,6 @@ struct Run {
     ended: bool,
     rewarded: bool,
     current_slice: Option<u32>,
-    /// F39: the join grant's machine and bubble count, when this run serves the join grant (the
-    /// list names no `@authority`), and each block's last granted seq (the join grant's is 1).
-    grant: Option<([u8; 8], usize)>,
-    block_seq: HashMap<usize, u16>,
     unsupported: std::collections::HashSet<String>,
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
@@ -1571,17 +1537,8 @@ impl ScriptBridge {
                     let region = index & 0x3FF;
                     if !matches!(hash, 0 | 0x811C_9DC5) && region != 0x3FF {
                         if let Some(run) = self.run.as_mut() {
-                            // Our client reports no slice set for 113 or 112 (their hash comes
-                            // empty), so the one it was in is the bridge's belief: the start, or a
-                            // phase's move (run agr6 re-granted the bubble it entered instead).
-                            let before = run.current_slice.or(run.believed_slice);
                             run.current_slice = Some(region);
                             run.believed_slice = Some(region);
-                            if before != Some(region) {
-                                if let Some(changes) = authority_move(run.grant, &mut run.block_seq, before, region) {
-                                    self.rows.push_authority(changes);
-                                }
-                            }
                         }
                         self.activate_slice(region, now);
                     }
@@ -1665,10 +1622,6 @@ impl ScriptBridge {
         if armed > 0 {
             tracing::info!("⭐ script bridge: {armed} player triggers in the world's list go out enabled at arming 0, as live (F36)");
         }
-        let grant = match (activity.authority.is_none(), self.players.last(), self.world_bubbles) {
-            (true, Some(p), Some(b)) => crate::row_encoders::machine_of_identity(&p.identity).map(|m| (m, b)),
-            _ => None,
-        };
         let authority = Self::personalise(
             &mut rows,
             activity.authority.clone(),
@@ -1704,8 +1657,6 @@ impl ScriptBridge {
             ended: false,
             rewarded: false,
             current_slice: None,
-            grant,
-            block_seq: HashMap::new(),
             unsupported: Default::default(),
             lifetime_unsent: false,
             lifetime_sent: None,
@@ -3983,27 +3934,6 @@ mod tests {
         assert_eq!(a.world, "cine_reveal", "the activity name when world= is absent");
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=0", &base(), &read).is_err());
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=70000:0x1", &base(), &read).is_err());
-    }
-
-    #[test]
-    fn a_slice_set_change_releases_the_other_blocks_then_regrants_the_previous_bubbles() {
-        let mut seq = HashMap::new();
-        let g = Some(([9u8; 8], 22));
-        assert!(authority_move(None, &mut seq, None, 113).is_none(), "no join grant, no change");
-        let first = authority_move(g, &mut seq, None, 113).unwrap();
-        assert_eq!(first.len(), 2);
-        let all = ((1u128 << 22) - 1) | (1u128 << 64);
-        assert_eq!(first[0].changed, all & !(1 << 14), "every block but 14 released");
-        assert_eq!(&first[0].image[4..14], &[0u8; 10], "to no machine, seq 0");
-        assert_eq!(first[1].changed, 1 << 14);
-        assert_eq!(&first[1].image[4 + 12 * 14..4 + 12 * 14 + 10], &[9, 9, 9, 9, 9, 9, 9, 9, 2, 0], "14 seq 2 as play begins");
-        let seq_of = |a: &d1_oracle::sensor::SensorAuthority, b: usize| u16::from_le_bytes([a.image[4 + 12 * b + 8], a.image[4 + 12 * b + 9]]);
-        assert_eq!(seq_of(&authority_move(g, &mut seq, Some(113), 112).unwrap()[1], 14), 3);
-        let into_breach = authority_move(g, &mut seq, Some(112), 24).unwrap();
-        assert_eq!(into_breach[1].changed, 1 << 14, "entering 24 re-grants the bubble left, as live");
-        assert_eq!(seq_of(&into_breach[1], 14), 4);
-        let into_divide = authority_move(g, &mut seq, Some(24), 96).unwrap();
-        assert_eq!((into_divide[1].changed, seq_of(&into_divide[1], 3)), (1 << 3, 2));
     }
 
     #[test]
