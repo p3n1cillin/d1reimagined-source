@@ -153,6 +153,13 @@ pub struct ItemChange {
 pub struct PlayerInfo {
     pub key: String,
     pub slot: u32,
+    /// The scripts' `all_players_are_ready()`. Without it the sidecar waits for a
+    /// `player_spawned`, but the client spawns only once the lifetime is active, which the
+    /// scripts set only after that wait: Restoration sat at pregame in-world, black (run fg7).
+    /// ⚠ A stand-in: ready once the client answered a full list with its senses (udt 6). Live the
+    /// host copied the client's own player-bundle state (B, whose `+8` it writes each tick) into
+    /// the bundle's A about 0.6 s after its first senses; that copy is not decoded here yet.
+    pub ready: bool,
 }
 
 /// Host → sidecar (tools/script-host/PROTOCOL.md). A row is named by `bundle` and `type_index`.
@@ -1809,11 +1816,12 @@ impl ScriptBridge {
                 run.full_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64()),
                 run.sensed_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64())
             );
+            let ready = run.sensed_at.is_some();
             let players = self
                 .players
                 .iter()
                 .enumerate()
-                .map(|(slot, c)| PlayerInfo { key: player_key(c), slot: slot as u32 })
+                .map(|(slot, c)| PlayerInfo { key: player_key(c), slot: slot as u32, ready })
                 .collect();
             self.send(HostMsg::Players { players });
             self.send(HostMsg::Start);
