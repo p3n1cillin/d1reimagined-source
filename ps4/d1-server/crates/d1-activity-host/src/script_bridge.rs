@@ -779,6 +779,9 @@ pub struct ScriptBridge {
     region_out: Option<u32>,
     host_id: u64,
     pub frames_sent: u64,
+    /// Stream O2: the scripts' phases, wipes and completion as activity-framework events, for the
+    /// instance's `activity_driver::RunDriver` ([`Self::take_framework_events`]).
+    framework_events: Vec<crate::encounter_framework::Event>,
 }
 
 impl std::fmt::Debug for ScriptBridge {
@@ -860,7 +863,15 @@ impl ScriptBridge {
             region_out: None,
             host_id: 0,
             frames_sent: 0,
+            framework_events: Vec::new(),
         }
+    }
+
+    /// The activity-framework events since the last call (stream O2): `phase` →
+    /// `ScriptPhase(name)`, `all_dead` → `AllPlayersDead`, `activity_complete` →
+    /// `ActivityCompleted`.
+    pub fn take_framework_events(&mut self) -> Vec<crate::encounter_framework::Event> {
+        std::mem::take(&mut self.framework_events)
     }
 
     /// Whether the activity now served is scripted (the bridge owns its udt 5 stream).
@@ -1330,6 +1341,9 @@ impl ScriptBridge {
                     run.activity.activity,
                     name.as_deref().unwrap_or("")
                 );
+                if let Some(n) = name.clone().filter(|n| !n.is_empty()) {
+                    self.framework_events.push(crate::encounter_framework::Event::ScriptPhase(n));
+                }
                 if let Some(r) = region.filter(|r| run.current_slice != Some(*r)) {
                     self.region_out = Some(r);
                 }
@@ -1346,6 +1360,7 @@ impl ScriptBridge {
             }
             SidecarMsg::ActivityComplete {} => {
                 run.complete = true;
+                self.framework_events.push(crate::encounter_framework::Event::ActivityCompleted);
                 let player = self.players.first().map(|c| {
                     u64::from_le_bytes(c.identity.get(..8).and_then(|b| b.try_into().ok()).unwrap_or([0; 8]))
                 });
@@ -1389,8 +1404,12 @@ impl ScriptBridge {
                 self.reward(&mut run, outcome);
                 self.run = Some(run);
             }
-            SidecarMsg::HardWipeArmed {} | SidecarMsg::AllDead {} => {
+            SidecarMsg::HardWipeArmed {} => {
                 tracing::warn!("script bridge: the scripts asked for a hard wipe, which has no 56578 handshake yet");
+            }
+            SidecarMsg::AllDead {} => {
+                tracing::warn!("script bridge: the scripts report every player dead (the activity framework decides the wipe; no 56578 handshake yet)");
+                self.framework_events.push(crate::encounter_framework::Event::AllPlayersDead);
             }
             SidecarMsg::TickDone { .. } => run.ticks_out = run.ticks_out.saturating_sub(1),
             SidecarMsg::Log { text } => tracing::info!("sidecar: {text}"),

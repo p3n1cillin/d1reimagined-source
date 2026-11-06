@@ -452,6 +452,12 @@ pub struct ActivityInstance {
     /// ── stream G hook ── `D1_AH_PUBLIC_HOST=1`: the public-bubble host role
     /// ([`crate::public_host`]). `None` (default) changes nothing.
     public: Option<crate::public_host::PublicHost>,
+    /// ── stream O2 hook ── the activity framework's run of the activity this instance serves
+    /// ([`crate::activity_driver`]), when `D1_AH_ACTIVITY_FRAMEWORK` installed the framework and
+    /// a definition runs the launched hash. `None` otherwise: nothing changes.
+    run_driver: Option<crate::activity_driver::RunDriver>,
+    /// The identities that joined (the run's players).
+    framework_players: Vec<crate::rewards::CharacterRef>,
 }
 
 /// ⭐ The live hosts' udt 5 framing (The Speaker and The Awoken; notes/d1-live-speaker-timeline-
@@ -670,6 +676,8 @@ impl ActivityInstance {
             sensor_stamp: None,
             script_bridge: None,
             public: None,
+            run_driver: None,
+            framework_players: Vec::new(),
         }
     }
 
@@ -814,6 +822,8 @@ impl ActivityInstance {
         if let Some(b) = self.script_bridge.as_mut() {
             b.on_client_message(msg, self.activity_index, self.ah_id, now);
         }
+        // ── stream O2 hook ── the activity framework's run (activity_driver.rs).
+        self.drive_framework(msg);
         // ⭐⭐ THE HOST HEARTBEAT. If this turn produced nothing to say, and we have been silent
         // longer than [`Self::HOST_HEARTBEAT_MS`], say something anyway - because the client's
         // liveness test is `now - (when we last transmitted)` and NOT the keepalive it is sending
@@ -1573,6 +1583,70 @@ impl ActivityInstance {
     /// The activity index this instance publishes at `global_activity_state+0x680`.
     pub fn activity_index(&self) -> u16 {
         self.activity_index
+    }
+
+    /// The activity framework's run, if one is going (stream O2).
+    pub fn run_driver(&self) -> Option<&crate::activity_driver::RunDriver> {
+        self.run_driver.as_ref()
+    }
+
+    /// ── stream O2 ── feed the activity framework's run: a join starts it (or adds a member), the
+    /// script bridge's phases and completion drive a scripted activity, the client's slice sets
+    /// and trigger reports drive the rest, and its deaths and respawns drive wipes.
+    fn drive_framework(&mut self, msg: &ClientMessage) {
+        use crate::activity_driver::{Framework, RunDriver};
+        let Some(fw) = Framework::get() else { return };
+        let scripted = self.script_bridge.as_ref().is_some_and(|b| b.scripted());
+        if let ClientMessage::JoinRequest { struct_image } = msg {
+            use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
+            if let Some(id) = struct_image.get(JOIN_REQUEST_IDENTITY..JOIN_REQUEST_IDENTITY + IDENTITY_SIZE) {
+                let c = crate::rewards::CharacterRef { identity: id.to_vec() };
+                if !self.framework_players.contains(&c) {
+                    self.framework_players.push(c.clone());
+                }
+                let hash = fw.activity_hash(self.followed_activity_index().map(|(h, _)| h), self.activity_index);
+                match (self.run_driver.as_mut(), hash) {
+                    (Some(d), Some(h)) if d.activity_hash() == h && !d.finished() => {
+                        d.join(&c);
+                    }
+                    (_, Some(h)) => {
+                        self.run_driver = RunDriver::start_installed(h, &self.framework_players, scripted).map(|(d, _)| d);
+                        if let Some(d) = &self.run_driver {
+                            tracing::info!(
+                                "⭐ activity framework: running {} for activity {h:#010x} ({})",
+                                d.run().definition().id,
+                                if scripted { "the scripts drive it" } else { "the client's reports drive it" }
+                            );
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        let events = self.script_bridge.as_mut().map(|b| b.take_framework_events()).unwrap_or_default();
+        let Some(d) = self.run_driver.as_mut() else { return };
+        for ev in events {
+            d.feed(ev);
+        }
+        match msg {
+            ClientMessage::ClientAuthoritativeDataUpdate { struct_image } => {
+                let u = |o: usize| struct_image.get(o..o + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()));
+                if let (Some(index), Some(hash)) = (u(0xB8), u(0xBC)) {
+                    if !matches!(hash, 0 | 0x811C_9DC5) {
+                        d.on_slice(index, scripted);
+                    }
+                }
+            }
+            ClientMessage::Other { user_defined_type: 18, struct_image } => {
+                let n = struct_image.get(0..4).map_or(0, |b| u32::from_le_bytes(b.try_into().unwrap()));
+                let types: Vec<u32> = (0..n.min(8) as usize)
+                    .filter_map(|k| struct_image.get(4 + 4 * k..8 + 4 * k).map(|b| u32::from_le_bytes(b.try_into().unwrap())))
+                    .collect();
+                d.on_incidents(&types, struct_image, scripted);
+            }
+            _ => {}
+        }
+        d.tick(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |t| t.as_secs()));
     }
 
     /// ⭐⭐ Override the activity index. Takes effect on the next `global_activity_state`.
