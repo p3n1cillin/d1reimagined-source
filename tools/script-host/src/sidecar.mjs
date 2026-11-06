@@ -74,9 +74,10 @@ export class Sidecar {
     const incidents = IncidentTable.load(msg.incidents_path);
     const bundlesPath = msg.bundles_path ?? bundlesPathFor(msg.activity, env);
     const bundles = msg.bundles ?? (bundlesPath ? readBundlesFile(bundlesPath) : undefined);
-    const activity = scripts.activity(msg.activity);
+    // No script starts it: a start-only stub on the content bundles, when there are some.
+    const activity = scripts.activity(msg.activity) ?? (bundles ? scripts.stubActivity(msg.activity) : undefined);
     if (!activity) {
-      return this.error(`no script starts activity ${msg.activity}`, true);
+      return this.error(`no script starts activity ${msg.activity} (and no content bundles for a start-only stub)`, true);
     }
     const extraBundles =
       msg.extra_bundles === "guess" ? guessAreaBundles(scripts, activity) : (msg.extra_bundles ?? []);
@@ -90,6 +91,7 @@ export class Sidecar {
       phaseIndex: msg.phase_index,
       scripts,
       seed: msg.seed,
+      stub: activity.synthesized === true,
       tickHz: msg.tick_hz ?? DEFAULT_TICK_HZ,
     });
     const loaded = this.session.loaded();

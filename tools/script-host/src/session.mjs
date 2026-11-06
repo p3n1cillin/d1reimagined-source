@@ -61,7 +61,9 @@ export class ActivitySession {
     this.emit = options.emit;
     this.types = types56578(this.api.ActivityBundleItemType);
     this.stubs = installNatives56578(bs, (line) => this.log(line));
-    this.activity = scripts.activity(options.activity);
+    this.activity =
+      scripts.activity(options.activity) ??
+      (options.stub && options.bundles ? scripts.stubActivity(options.activity) : undefined);
     if (!this.activity) {
       throw new Error(`no script starts activity ${options.activity}`);
     }
@@ -95,6 +97,9 @@ export class ActivitySession {
       if (n > 0) this.bundleNotes.push(`content: ${n} Encounter rows take their archetype from the scripts`);
       const aliases = aliasContent(this.bundles, twins.bundles, this.api.fnv1);
       if (aliases > 0) this.bundleNotes.push(`content: ${aliases} script members bound to the one content row their name prefixes`);
+      if (this.activity.synthesized) {
+        this.bundleNotes.push(`no script starts ${this.activity.name}: a start-only stub on its content bundles`);
+      }
     } else {
       const made = standInBundles(scripts, this.activity, this.types, {
         extra: options.extraBundles ?? [],
