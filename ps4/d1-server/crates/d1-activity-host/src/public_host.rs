@@ -489,6 +489,13 @@ impl PublicHost {
                 "⭐ public instance: the join names mission host {mission_host:#018x} ({kind:?}); serving no region                  records and no mission steps, and waiting for the client's slice set to pick the region's list"
             ),
             HostRole::Mission { kind, .. } => {
+                // Stream O3: the player's destination, for the responder's bubble placement.
+                if let Some(d) = Destination::from_world_name(world) {
+                    if let Ok(mut r) = self.registry.lock() {
+                        r.note_mission(&self.identity, d);
+                        crate::public_registry::sync_with_responder(&mut r);
+                    }
+                }
                 if let Some(space) = SocialSpace::from_world_name(world) {
                     let key = InstanceKey::Social(space);
                     self.selected = Some(key);
