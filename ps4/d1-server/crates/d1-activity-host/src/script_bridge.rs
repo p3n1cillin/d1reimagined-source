@@ -794,6 +794,87 @@ pub struct ScriptConfig {
     /// [`LIST_RETRIES`] times), and the start cushion counts from the answer. `None`: the cushion
     /// counts from the first full list, and nothing is re-sent. ⚠ A stand-in.
     pub list_retry: Option<Duration>,
+    /// `D1_AH_SCRIPTS_WORLD_LOOT` (F42): world-loot drops the host announces when the scripts
+    /// create their row (the starter rifle's `o_weapon`).
+    pub world_loot: Vec<WorldLoot>,
+}
+
+/// A world-loot drop the host announces with incident 1851 (`gather_material`, body `0x80800CB6`)
+/// when the scripts create its row: in 56578 the loot exists only once the host announces it, and
+/// the client claims it with service 601 (notes/ps4-56578-blockers-2026-10-26.md).
+#[derive(Clone, Debug, PartialEq)]
+pub struct WorldLoot {
+    pub activity: u16,
+    pub row: RowKey,
+    /// The nonce `{key, id}` the claim names (the character's pending loot record).
+    pub key: u32,
+    pub id: u64,
+    pub position: [f32; 3],
+    /// The world field: the bubble the loot spawns in (the client spawns it only there).
+    pub world: u32,
+}
+
+/// The world-loot drop incident (`gather_material`) and its body's tag.
+pub const WORLD_LOOT_CHAIN: &[u32] = &[1851];
+pub const WORLD_LOOT_TAG: u32 = 0x8080_0CB6;
+
+impl WorldLoot {
+    /// `activity group/kind/index key id x y z world` lines (`#` comments), as
+    /// `D1_AH_SCRIPTS_WORLD_LOOT` names.
+    pub fn parse_table(text: &str) -> Result<Vec<Self>, String> {
+        fn num(v: &str) -> Option<u64> {
+            match v.strip_prefix("0x") {
+                Some(h) => u64::from_str_radix(h, 16).ok(),
+                None => v.parse().ok(),
+            }
+        }
+        text.lines()
+            .map(|l| l.split('#').next().unwrap_or("").trim())
+            .filter(|l| !l.is_empty())
+            .map(|l| {
+                let f: Vec<&str> = l.split_whitespace().collect();
+                let bad = || format!("world loot line {l:?}: want activity group/kind/index key id x y z world");
+                if f.len() != 8 {
+                    return Err(bad());
+                }
+                let r: Vec<&str> = f[1].split('/').collect();
+                if r.len() != 3 {
+                    return Err(bad());
+                }
+                let row = RowKey {
+                    group: num(r[0]).ok_or_else(bad)? as u32,
+                    kind: num(r[1]).ok_or_else(bad)? as u8,
+                    index: r[2].parse().map_err(|_| bad())?,
+                };
+                let f32_at = |i: usize| f[i].parse::<f32>().map_err(|_| bad());
+                Ok(Self {
+                    activity: f[0].parse().map_err(|_| bad())?,
+                    row,
+                    key: num(f[2]).ok_or_else(bad)? as u32,
+                    id: num(f[3]).ok_or_else(bad)?,
+                    position: [f32_at(4)?, f32_at(5)?, f32_at(6)?],
+                    world: num(f[7]).ok_or_else(bad)? as u32,
+                })
+            })
+            .collect()
+    }
+
+    /// The `0x80800CB6` image: nonce `{key @0, flag @8, id @0x10}`, the recipient (an empty handle
+    /// at `+0x18`, the id at `+0x40`), the position at `+0x60` (w 1.0) and the world at `+0x70`
+    /// (`lab/history/lab-scripts-2026-10-29/lootbody.py`, which the step schedule's drop used).
+    pub fn image(&self, recipient: u64) -> Vec<u8> {
+        let mut b = vec![0u8; 128];
+        b[0..4].copy_from_slice(&self.key.to_le_bytes());
+        b[8] = 1;
+        b[0x10..0x18].copy_from_slice(&self.id.to_le_bytes());
+        b[0x18..0x20].fill(0xFF);
+        b[0x40..0x48].copy_from_slice(&recipient.to_le_bytes());
+        for (i, v) in self.position.iter().chain([1.0f32].iter()).enumerate() {
+            b[0x60 + 4 * i..0x64 + 4 * i].copy_from_slice(&v.to_le_bytes());
+        }
+        b[0x70..0x74].copy_from_slice(&self.world.to_le_bytes());
+        b
+    }
 }
 
 /// `D1_AH_SCRIPTS_LIST_RETRY`, in seconds; `0` turns the retry and the udt 6 gate off.
@@ -1085,6 +1166,15 @@ impl ScriptConfig {
                 }
             }
         }
+        let world_loot = match std::env::var("D1_AH_SCRIPTS_WORLD_LOOT").ok().filter(|p| !p.trim().is_empty()) {
+            Some(path) => {
+                let text = std::fs::read_to_string(&path).map_err(|e| format!("D1_AH_SCRIPTS_WORLD_LOOT {path}: {e}"))?;
+                let drops = WorldLoot::parse_table(&text)?;
+                tracing::info!("script bridge: {} world-loot drops from {path} (D1_AH_SCRIPTS_WORLD_LOOT)", drops.len());
+                drops
+            }
+            None => Vec::new(),
+        };
         let start_delay = start_delay_from(std::env::var("D1_AH_SCRIPTS_START_DELAY").ok().as_deref())?;
         let arrival_cushion = arrival_cushion_from(std::env::var("D1_AH_SCRIPTS_ARRIVAL_CUSHION").ok().as_deref())?;
         let list_retry = list_retry_from(std::env::var("D1_AH_SCRIPTS_LIST_RETRY").ok().as_deref())?;
@@ -1125,6 +1215,7 @@ impl ScriptConfig {
             start_delay,
             arrival_cushion,
             list_retry,
+            world_loot,
         }))
     }
 }
@@ -1162,6 +1253,8 @@ struct Run {
     ended: bool,
     rewarded: bool,
     current_slice: Option<u32>,
+    /// F42: world-loot rows already announced in this run.
+    loot_announced: std::collections::BTreeSet<RowKey>,
     unsupported: std::collections::HashSet<String>,
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
@@ -1657,6 +1750,7 @@ impl ScriptBridge {
             ended: false,
             rewarded: false,
             current_slice: None,
+            loot_announced: Default::default(),
             unsupported: Default::default(),
             lifetime_unsent: false,
             lifetime_sent: None,
@@ -2286,7 +2380,12 @@ impl ScriptBridge {
             .or(held);
         match self.encoders.encode(key, &c.kind, &c.state, base.as_ref(), ctx, &map) {
             Encoded::Row(row) => {
+                let created = key.kind == crate::row_encoders::KIND_OBJECT
+                    && row.a.as_ref().is_some_and(|(_, image)| image.get(8) == Some(&1));
                 self.rows.set(key, row);
+                if created {
+                    self.world_loot_due(key);
+                }
             }
             Encoded::Unsupported(why) => {
                 let run = self.run.as_mut().expect("checked");
@@ -2372,6 +2471,27 @@ impl ScriptBridge {
     }
 
     /// A completion body came back from the codec: its envelope is ready to send.
+    /// F42: the scripts created `key`; if it is a world-loot drop of this activity not yet
+    /// announced in this run, announce it (incident 1851 with its `0x80800CB6` body, recipient =
+    /// this host's id).
+    fn world_loot_due(&mut self, key: RowKey) {
+        let Some(run) = self.run.as_mut() else { return };
+        let Some(drop) = self.config.world_loot.iter().find(|d| d.activity == run.activity.index && d.row == key).cloned() else {
+            return;
+        };
+        if !run.loot_announced.insert(key) {
+            return;
+        }
+        tracing::info!(
+            "⭐ script bridge: {key} created: world-loot drop {{{}, {:#x}}} at {:?} in world {} (incident 1851, F42)",
+            drop.key, drop.id, drop.position, drop.world
+        );
+        self.bodies_pending.push_back(WORLD_LOOT_CHAIN);
+        let image = drop.image(self.host_id);
+        let codec = self.codec.get_or_insert_with(|| (self.config.codec)());
+        codec.submit(CodecJob::Object { tag: WORLD_LOOT_TAG, image });
+    }
+
     fn body_done(&mut self, r: Result<(u32, Vec<u8>), String>) {
         let Some(chain) = self.bodies_pending.pop_front() else { return };
         match r.and_then(|(bits, payload)| crate::completion::envelope(chain, &payload, bits)) {
@@ -2758,6 +2878,7 @@ mod tests {
             start_delay,
             arrival_cushion: Duration::ZERO,
             list_retry: None,
+            world_loot: Vec::new(),
         };
         let s = shared.clone();
         ScriptBridge::with_launcher(
@@ -3934,6 +4055,22 @@ mod tests {
         assert_eq!(a.world, "cine_reveal", "the activity name when world= is absent");
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=0", &base(), &read).is_err());
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=70000:0x1", &base(), &read).is_err());
+    }
+
+    #[test]
+    fn world_loot_parses_and_builds_the_step_schedules_drop_body_image() {
+        let table = "# the starter rifle\n164 0x992bb471/0x4/6 1 0x827dbaf0 410.644 -794.385 17.723 3  # o_weapon\n";
+        let drops = WorldLoot::parse_table(table).unwrap();
+        assert_eq!(drops.len(), 1);
+        let d = &drops[0];
+        assert_eq!((d.activity, d.row, d.key, d.id, d.world), (164, RowKey { group: 0x992b_b471, kind: 4, index: 6 }, 1, 0x827d_baf0, 3));
+        let img = d.image(0xD1A0_0000_0000_0001);
+        assert_eq!(img.len(), 128);
+        assert_eq!((&img[0..4], img[8], &img[0x10..0x18]), (&[1u8, 0, 0, 0][..], 1, &0x827d_baf0u64.to_le_bytes()[..]));
+        assert_eq!((&img[0x18..0x20], &img[0x40..0x48]), (&[0xFFu8; 8][..], &0xD1A0_0000_0000_0001u64.to_le_bytes()[..]));
+        assert_eq!(f32::from_le_bytes(img[0x60..0x64].try_into().unwrap()), 410.644);
+        assert_eq!((f32::from_le_bytes(img[0x6C..0x70].try_into().unwrap()), &img[0x70..0x74]), (1.0, &[3u8, 0, 0, 0][..]));
+        assert!(WorldLoot::parse_table("164 0x992bb471/0x4 1 2 0 0 0 3").is_err(), "a bad row");
     }
 
     #[test]
