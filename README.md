@@ -37,7 +37,7 @@ The [PS4 source tree](ps4/README.md) now includes the Rust services, protocol
 libraries, diagnostic tools, canonical harness and generators from aknumbers'
 [Destiny 1 Preservation Project](CREDITS.md#aknumbers-the-destiny-1-preservation-project), with the latest preparation and content-reader fixes.
 The retained PlayStation 3 implementation targets version 01.24 with RPCS3.
-See [current results and contribution priorities](docs/STATUS.md). The first
+See [current results and contribution priorities](docs/STATUS.md) and [the full-game coverage matrix](docs/COVERAGE.md). The first
 mission, A Guardian Rises, now runs from the Cosmodrome through the Divide and
 Dock 13 to its outro and post-game screens, with the project's services driving
 its steps. The Breach's Fallen come on the mission script's own triggers and play their authored
@@ -64,7 +64,7 @@ This is a research repository, not a ready-to-play installer. The `data/` direct
 | `tools/ps4_setup/` | Original preparation helpers and narrow patches for the PS4 runtime |
 | `tests/` | Additional regression cases |
 | `ps4/` | Active Rust preservation services, tools, research docs and canonical harness |
-| `docs/` | Current contributor checkpoint and publication provenance |
+| `docs/` | Current contributor checkpoint, full-game coverage matrix and publication provenance |
 | `notes/` | Imported PS3/PS4 research journals and historical evidence |
 | `data/` | Derived PS3 schemas, logs, update diffs and checksum manifest (no game files) |
 
