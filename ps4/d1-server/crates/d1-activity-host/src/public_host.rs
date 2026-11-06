@@ -101,13 +101,16 @@ pub fn identity_of_join(image: &[u8]) -> crate::rewards::CharacterRef {
     crate::rewards::CharacterRef { identity: image.get(JOIN_IDENTITY..end).unwrap_or_default().to_vec() }
 }
 
-/// The two slice-set records of a udt 21 image: `(CURRENT, TARGET)` region ids, each present only
-/// when its name hash is set (the update is a delta).
+/// The two slice-set records of a udt 21 image: `(CURRENT, TARGET)` region ids. A record is absent
+/// when it is all zeros (the update is a delta) or its index is `0x3FF`. Its name hash may be the
+/// FNV-1 of the empty name (`0x811C9DC5`): on its new public instance the client's TARGET was
+/// region 56 with that hash (run fg6c: `0x38`/`0x811c9dc5`, CURRENT still zero), and treating it as
+/// unset left the instance with no list to serve.
 pub fn slice_regions(image: &[u8]) -> (Option<u32>, Option<u32>) {
     let rec = |base: usize| {
         let index = image.get(base..base + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()) & 0x3FF)?;
         let hash = image.get(base + 4..base + 8).map(|b| u32::from_le_bytes(b.try_into().unwrap()))?;
-        (!matches!(hash, 0 | 0x811C_9DC5) && index != 0x3FF).then_some(index)
+        (hash != 0 && index != 0x3FF).then_some(index)
     };
     (rec(0xB8), rec(0x158))
 }
@@ -769,6 +772,18 @@ mod tests {
             }
         }
         img
+    }
+
+    /// Run fg6c's first udt 21 on the client's new public instance: CURRENT all zeros, TARGET
+    /// region 56 (`0x38`) with the empty-name hash. The TARGET counts; the zeroed CURRENT does not.
+    #[test]
+    fn a_target_with_the_empty_name_hash_still_names_its_region() {
+        let mut img = vec![0u8; 0x220];
+        img[0x158..0x15C].copy_from_slice(&0x38u32.to_le_bytes());
+        img[0x15C..0x160].copy_from_slice(&0x811C_9DC5u32.to_le_bytes());
+        assert_eq!(slice_regions(&img), (None, Some(56)));
+        img[0x158..0x15C].copy_from_slice(&0x3FFu32.to_le_bytes());
+        assert_eq!(slice_regions(&img), (None, None), "0x3FF is no region");
     }
 
     fn host_with(keys: &[(InstanceKey, Result<Vec<u8>, String>)]) -> PublicHost {
