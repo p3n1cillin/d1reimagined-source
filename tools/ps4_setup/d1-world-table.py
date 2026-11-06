@@ -12,10 +12,14 @@ Inputs, all local:
   - the client's activity table (`ps4/fixtures/56578/characters/activity-table.tsv`, index -> hash);
   - Bungie's final D1 manifest (`world_en.sqlite`, through d1paths): each activity's name, type,
     destination and whether it is a playlist;
+  - the client's own activity table, in the same worlds JSON: each activity definition's name,
+    which is the world the activity loads (`<name>:scenario_client`);
   - Blam Network's 2014 activity table (build 41375, `activities.csv` in tiger's dictionary, a local
-    external input): the host-side activity -> world binding the 56578 client does not carry;
+    external input): the 2014 binding and start bubbles, for what the client's table leaves open;
   - optional `d1-srcp.py hosts` TSVs from the live captures (private): the world each live host
-    actually served, and the slice set its client started in.
+    actually served, and the slice set its client started in. For the captures not given, the
+    cross-checked rows of the committed activities.tsv (the captures' result) stand in, so the
+    table regenerates byte for byte from the owned content alone.
 
 Outputs, identifiers only (hashes, indexes, names; no game bytes), in `ps4/fixtures/56578/worlds/`:
   worlds.tsv            every world's scenario facts (the activity host's rung-33 values)
@@ -48,6 +52,7 @@ DEFAULT_INSERTION = 0x2EA8FB98  # fnv1("default"): the spawn the client picks wi
 LEGACY_TABLE = 'packages/dictionary/destiny1/v41375_14_07_03_1501_live/activities.csv'
 CINEMATIC_TYPES = {'STORY_CINEMATIC', 'CREDITS'}
 STATUS = ('cross-checked', 'generated', 'missing evidence')
+CLIENT = "client's activity definition"
 
 WORLDS_COLUMNS = 'world\tscenario_tag\tfamily\tprivate_checksum\tpublic_checksum\tbubble_count\tchosen\tpublic_slice_sets\tdestination\tstatic_world'
 SLICE_COLUMNS = 'world\tslice_set\tbubble\tvalid\tpublic\tregion_hash\tdescriptor\tstatic_world\tstatic_bubble\tglobal\tauthoritative\tprivate'
@@ -145,6 +150,25 @@ def read_hosts(paths):
     return out
 
 
+def read_captured(path):
+    """{activity hash: (capture label, world, start slice set or None)}: the cross-checked rows of a
+    committed activities.tsv. They are the captures' result (identifiers only), so they stand in
+    for the private captures when the table is regenerated without them."""
+    if not path or not Path(path).exists():
+        return {}
+    lines = [x for x in Path(path).read_text(encoding='utf-8').splitlines() if x and not x.startswith('#')]
+    cols = lines[0].split('	')
+    out = {}
+    for line in lines[1:]:
+        r = dict(zip(cols, line.split('	')))
+        if r.get('status') != 'cross-checked' or not r.get('evidence', '').startswith('live capture '):
+            continue
+        label = r['evidence'][len('live capture '):].split(';')[0]
+        start = int(r['start_region']) if r['start_source'] == 'capture' else None
+        out[int(r['hash'], 16)] = (label, r['world'], start)
+    return out
+
+
 # ---------------------------------------------------------------- content model
 
 class Content:
@@ -157,6 +181,8 @@ class Content:
         self.bundles = data['bundles']
         self.insertion = data.get('insertion_points', {})
         self.problems = data.get('problems', [])
+        # The client's activity table, when the worlds JSON has it (d1-worlds.mjs readActivityTable).
+        self.activities = {a['index']: a for a in data.get('activities') or []}
         self.world_groups = {}
         self.group_worlds = collections.defaultdict(set)
         for name, w in self.worlds.items():
@@ -167,6 +193,14 @@ class Content:
             self.world_groups[name] = gs
             for g in gs:
                 self.group_worlds[g].add(name)
+
+    def client_name(self, index, ahash):
+        """The name the client's own definition of activity `index` carries: the world it loads.
+        '' when it names none; None when the table is absent or its row is another activity."""
+        a = self.activities.get(index)
+        if a is None or h32(a['hash']) != ahash:
+            return None
+        return a.get('name') or ''
 
     @staticmethod
     def states(w):
@@ -280,17 +314,46 @@ def legacy_candidates(legacy, worlds, ahash, meta):
     return [], None, None
 
 
-def bind(content, activities, manifest, legacy, hosts):
+def legacy_world_bubble(legacy, world):
+    """The 2014 table's start bubble for a world, when its rows agree on one."""
+    starts = {r['start_bubble'] for r in legacy if r['codename'] == world}
+    return starts.pop() if len(starts) == 1 else None
+
+
+def client_note(client, world=None):
+    """What the client's own activity definition says, for the evidence column."""
+    if client == '':
+        return f'{CLIENT} names no world'
+    if world is not None and client == world:
+        return f'{CLIENT} agrees'
+    return f'{CLIENT} names {client}' + ('' if world is not None else ', which has no scenario in this build')
+
+
+def bind(content, activities, manifest, legacy, hosts, captured=None):
+    """Each activity's world, start slice set and evidence. Strongest evidence first:
+
+    1. a live host: the captures (`hosts`), or, with none at hand, the cross-checked rows of the
+       committed table (`captured`, read_captured), which are the captures' result;
+    2. the client's own activity definition (`d1-worlds.mjs` readActivityTable): its name is the
+       world the activity loads, when 56578 has that world's scenario;
+    3. Blam Network's 2014 table;
+    4. twins (siblings).
+    """
+    captured = captured or {}
     out = []
     for index, ahash in activities:
         meta = manifest.get(ahash)
         names, how, legacy_bubble = legacy_candidates(legacy, content.worlds, ahash, meta)
+        client = content.client_name(index, ahash)
+        client_world = client if client and client in content.worlds else None
         cap_world, cap_start, cap_label = None, None, None
         for label, start, groups in hosts.get(ahash, []):
             w, _ = content.capture_world(groups, start)
             if w:
                 cap_world, cap_start, cap_label = w, start, label
                 break
+        if cap_world is None and ahash in captured and captured[ahash][1] in content.worlds:
+            cap_label, cap_world, cap_start = captured[ahash]
         row = {'index': index, 'hash': ahash, 'name': meta['name'] if meta else '',
                'type': meta['type'] if meta else '', 'world': None, 'start_region': None,
                'start_source': '-', 'status': 'missing evidence', 'evidence': ''}
@@ -302,34 +365,59 @@ def bind(content, activities, manifest, legacy, hosts):
                 ev += f'; {how}'
             elif names:
                 ev += f'; {how} said {"/".join(names)}'
+            if client is not None:
+                ev += '; ' + client_note(client, cap_world if client in content.worlds or client == '' else None)
             row['evidence'] = ev
+        elif client_world and not (meta and meta['playlist']):
+            row['world'] = client_world
+            row['status'] = 'generated'
+            ev = f'{CLIENT} names it'
+            if names and client_world in names:
+                ev += f'; {how}'
+            elif names:
+                ev += f'; {how} said {"/".join(names)}'
+            row['evidence'] = ev
+            if names != [client_world]:
+                legacy_bubble = legacy_world_bubble(legacy, client_world)
         elif len(names) == 1:
             row['world'] = names[0]
             row['status'] = 'generated'
-            row['evidence'] = how
+            row['evidence'] = how + ('' if client is None else '; ' + client_note(client))
         elif names:
-            row['evidence'] = f'{how}: ambiguous {"/".join(names)}'
+            row['evidence'] = f'{how}: ambiguous {"/".join(names)}' + ('' if client is None else '; ' + client_note(client))
         elif meta and meta['playlist']:
-            row['evidence'] = 'playlist: launches another activity'
+            # A playlist picks one of its entries: the bundle its own definition names is not its world.
+            row['evidence'] = 'playlist: launches another activity' + (
+                '' if not client else f'; {CLIENT} names {client}' if client_world else f'; {client_note(client)}')
+        elif client is not None:
+            row['evidence'] = client_note(client)
         elif meta and not meta['name']:
             row['evidence'] = 'unnamed in the manifest'
         else:
             row['evidence'] = 'no binding in the 2014 table or the captures'
         row['_start'] = (cap_start if cap_world else None, 'capture', legacy_bubble)
+        row['_client'] = client
         out.append(row)
-    siblings(out, manifest)
-    seen = {}
+    siblings(out, manifest, content.worlds)
+    seen, seen_world = {}, {}
     for row in out:
         meta = manifest.get(row['hash'])
         if row['status'] == 'cross-checked' and row['_start'][0] is not None and meta and meta['name']:
             seen.setdefault((meta['name'], meta['destination'], row['world']), (row['index'], row['_start'][0]))
+        if row['status'] == 'cross-checked' and row['_start'][0] is not None and content.activities:
+            # With the client's table, a world's copies under other names (a nightfall, a weekly
+            # heroic) start where the live host started that world.
+            seen_world.setdefault(row['world'], (row['index'], row['_start'][0]))
     for row in out:
         cap_start, cap_source, legacy_bubble = row.pop('_start')
+        row.pop('_client')
         w = row['world']
         meta = manifest.get(row['hash'])
         twin = seen.get((meta['name'], meta['destination'], w)) if meta and w else None
         if cap_start is None and twin is not None and twin[0] != row['index']:
             cap_start, cap_source = twin[1], f'capture of {twin[0]}'
+        elif cap_start is None and w in seen_world and seen_world[w][0] != row['index']:
+            cap_start, cap_source = seen_world[w][1], f'capture of {seen_world[w][0]} (same world)'
         if w:
             if cap_start is not None:
                 row['start_region'], row['start_source'] = cap_start, cap_source
@@ -343,15 +431,21 @@ def bind(content, activities, manifest, legacy, hosts):
                     row['start_region'], row['start_source'] = sets[0], 'only slice set'
                 elif private is not None:
                     row['start_region'], row['start_source'] = private, 'stand-in: first private slice set'
+                elif sets:
+                    # A world with public slice sets only (the Lighthouse's social space).
+                    row['start_region'], row['start_source'] = sets[0], 'stand-in: first slice set (all public)'
     return out
 
 
-def siblings(rows, manifest):
+def siblings(rows, manifest, worlds=()):
     """An unbound activity takes the world of the bound activities with its name and destination
     (a mission's heroic and playlist copies, a strike's nightfall), when one of them was seen on a
     live host and none disagrees. Generic names that rotate between worlds ("Weekly Nightfall
     Strike") are never seen whole on one host, so they stay unbound. Status `generated`: the copy
-    itself was never seen."""
+    itself was never seen.
+
+    An activity whose own definition names a bundle 56578 has no scenario for (the 2014 patrols'
+    `cosmo_patrols_1` ...) may also take a twin the client's table binds: the copy the build kept."""
     by_key = collections.defaultdict(list)
     for r in rows:
         meta = manifest.get(r['hash'])
@@ -362,13 +456,17 @@ def siblings(rows, manifest):
         if r['world'] or not meta or not meta['name'] or meta['playlist']:
             continue
         known = by_key.get((meta['name'], meta['destination']), [])
-        worlds = {k['world'] for k in known}
-        if len(worlds) != 1 or not any(k['status'] == 'cross-checked' for k in known):
+        found = {k['world'] for k in known}
+        stale = bool(r.get('_client')) and r['_client'] not in worlds
+        if len(found) != 1 or not any(k['status'] == 'cross-checked' or (stale and k.get('_client') == k['world'])
+                                      for k in known):
             continue
         src = min(known, key=lambda k: (k['status'] != 'cross-checked', k['index']))
         r['world'] = src['world']
         r['status'] = 'generated'
         r['evidence'] = f"same name and destination as {src['index']} ({src['status']})"
+        if r.get('_client') is not None:
+            r['evidence'] += '; ' + client_note(r['_client'])
         if src['_start'][0] is not None:
             # The live host's start for the activity it was seen on, not for this copy.
             r['_start'] = (src['_start'][0], f"capture of {src['index']}", None)
@@ -510,6 +608,9 @@ def main(argv=None):
     ap.add_argument('--manifest', type=Path, default=None)
     ap.add_argument('--legacy-table', type=Path, default=None, help="Blam Network's 2014 activities.csv")
     ap.add_argument('--hosts', type=Path, action='append', default=[], help='d1-srcp.py hosts TSV (private)')
+    ap.add_argument('--captured-table', type=Path, default=None,
+                    help='the activities.tsv whose cross-checked rows stand in for captures not passed with --hosts '
+                         '(default: the one in --out; pass an empty file to use --hosts alone)')
     ap.add_argument('--out', type=Path, default=None)
     ap.add_argument('--coverage-md', type=Path)
     ap.add_argument('--sensor-list', metavar='WORLD:SLICE_SET',
@@ -544,7 +645,12 @@ def main(argv=None):
     legacy = read_legacy(a.legacy_table)
     if not legacy:
         print(f'warning: no 2014 activity table at {a.legacy_table}', file=sys.stderr)
-    bound = bind(content, read_activity_table(a.activity_table), manifest, legacy, read_hosts(a.hosts))
+    captured = read_captured(a.captured_table or a.out / 'activities.tsv')
+    print(f'{len(captured)} cross-checked rows of the committed table stand in for captures not given with --hosts',
+          file=sys.stderr)
+    if not content.activities:
+        print('warning: the worlds JSON has no client activity table (an older d1-worlds.mjs output)', file=sys.stderr)
+    bound = bind(content, read_activity_table(a.activity_table), manifest, legacy, read_hosts(a.hosts), captured)
     write_tables(content, bound, a.out)
     if a.coverage_md:
         a.coverage_md.write_text(coverage_markdown(bound), encoding='utf-8', newline='\n')

@@ -162,6 +162,17 @@ pub fn read_public_checksums(dir: &Path) -> Result<HashMap<String, u32>> {
     Ok(out)
 }
 
+/// `D1_AH_WORLDS_ACTIVITIES`: the activity indexes to serve. `all` (or `*`) serves every activity
+/// with a world, as an unset knob does; otherwise a comma list (`166,167,0`), unparsable items
+/// dropped.
+pub fn parse_activities(value: &str) -> Option<Vec<u16>> {
+    let v = value.trim();
+    if v.eq_ignore_ascii_case("all") || v == "*" {
+        return None;
+    }
+    Some(v.split(',').filter_map(|s| s.trim().parse().ok()).collect())
+}
+
 impl GeneratedWorlds {
     /// Read `worlds.tsv`, `slice-sets.tsv`, `bundles.tsv` and `activities.tsv` from `dir`.
     pub fn load(dir: &Path) -> Result<Self> {
@@ -382,7 +393,8 @@ impl GeneratedWorlds {
 
     /// What to serve for activity `index`, or why not. With `private_start`, a public start slice set
     /// (which needs a public session the host cannot serve yet) is replaced by the world's first
-    /// private one.
+    /// private one. A world with no private slice set at all (the Lighthouse's social space) keeps
+    /// its public start: there is nothing private to stand in.
     pub fn plan(&self, index: u16, private_start: bool) -> Result<Plan> {
         let a = self
             .activities
@@ -400,9 +412,9 @@ impl GeneratedWorlds {
             .start_region
             .ok_or_else(|| anyhow!("activity {index}: no start slice set"))?;
         if private_start && a.start_public {
-            start = a.private_start.ok_or_else(|| {
-                anyhow!("activity {index}: public start and no private slice set")
-            })?;
+            if let Some(private) = a.private_start {
+                start = private;
+            }
         }
         let clients = self.sensor_clients(name, start);
         let group = clients
@@ -511,6 +523,14 @@ mod tests {
             skipped[0].1
         );
         assert!(g.plans(Some(&[9]), false).1[0].1.contains("no row"));
+    }
+
+    #[test]
+    fn a_public_only_world_keeps_its_public_start() {
+        let acts = format!("{ACTIVITIES}10\t0x1\tPublic Only\tSOCIAL\ttest_world\t0\tstand-in\t1\t-\t0x4786c0e0\tgenerated\tx\n");
+        let g = GeneratedWorlds::parse(WORLDS, SLICES, BUNDLES, &acts).unwrap();
+        assert_eq!(g.plan(10, true).unwrap().start_region, 0, "nothing private to stand in");
+        assert_eq!(g.plan(7, true).unwrap().start_region, 16, "the private stand-in");
     }
 
     #[test]

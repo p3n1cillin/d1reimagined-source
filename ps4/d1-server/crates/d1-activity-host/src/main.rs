@@ -795,14 +795,15 @@ fn main() -> anyhow::Result<()> {
                     // tools/ps4_setup/d1-world-table.py), a world for every activity the content and
                     // captures bind. Rows from D1_AH_WORLD_TABLE win. D1_AH_WORLDS_ACTIVITIES=164,165
                     // limits the activities (each distinct world/start costs two frame builds at
-                    // startup); D1_AH_WORLDS_PRIVATE_START=1 serves a public start slice set's world
+                    // startup; `all` or unset = every activity with a world, tests/all_worlds.rs
+                    // measures that cost); D1_AH_WORLDS_PRIVATE_START=1 serves a public start slice set's world
                     // from its first private slice set (a public region needs a public session).
                     if let Ok(dir) = std::env::var("D1_AH_WORLDS") {
                         let generated = d1_activity_host::generated::GeneratedWorlds::load(std::path::Path::new(&dir))
                             .map_err(|e| anyhow::anyhow!("D1_AH_WORLDS {dir}: {e:#}"))?;
                         let only: Option<Vec<u16>> = std::env::var("D1_AH_WORLDS_ACTIVITIES")
                             .ok()
-                            .map(|v| v.split(',').filter_map(|s| s.trim().parse().ok()).collect());
+                            .and_then(|v| d1_activity_host::generated::parse_activities(&v));
                         let private_start = std::env::var("D1_AH_WORLDS_PRIVATE_START").is_ok_and(|v| v == "1");
                         let (plans, skipped) = generated.plans(only.as_deref(), private_start);
                         let mut frames: std::collections::HashMap<(String, u32, u32), (Vec<u8>, Vec<u8>)> =

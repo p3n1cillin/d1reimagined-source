@@ -7,7 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { fnv1, hex, loadGibbon, readWorlds, readInsertionPoints } from "../tools/ps4_setup/d1-worlds.mjs";
+import { fnv1, hex, loadGibbon, readActivityTable, readWorlds, readInsertionPoints } from "../tools/ps4_setup/d1-worlds.mjs";
 
 const tiger = process.env.D1_TIGER ?? "F:/d1/third-party/Blam-Network_tiger";
 const packages =
@@ -43,4 +43,18 @@ test("the owned packages give the measured scenario records", { skip: !owned && 
   assert.ok(rows.some((r) => r[1] === 0x10));
   const points = readInsertionPoints(g, set, [s0.world_hash]);
   assert.ok(points[s0.world_hash][0].length > 0, "the Tower's bubble 0 has spawn points");
+});
+
+test("the client's activity table names each activity's world", { skip: !owned && "owned packages or tiger absent" }, () => {
+  const g = loadGibbon(tiger);
+  const set = g.c_package_set.open_directory(packages);
+  const problems = [];
+  const acts = readActivityTable(g, set, problems);
+  assert.deepEqual(problems, []);
+  assert.equal(acts.length, 653);
+  const by = Object.fromEntries(acts.map((a) => [a.index, a]));
+  assert.deepEqual([by[164].hash, by[164].name], ["0x6e0dae89", "act_cosmo_m0_highway"]);
+  assert.equal(by[165].name, "cine_reveal");
+  assert.equal(by[0].name, null, "the first Tower row names no world");
+  assert.equal(by[8].fallback_name, "action_mock");
 });

@@ -18,6 +18,7 @@ M = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(M)
 FIXTURES = ROOT / 'ps4/fixtures/56578'
 TABLES = FIXTURES / 'worlds'
+TAB, NL = chr(9), chr(10)
 
 
 def state(slice_set, glob=(), auth=(), priv=(), public=False, valid=1):
@@ -113,6 +114,61 @@ class ContentTest(unittest.TestCase):
         self.assertEqual(rows[500]['start_source'], 'stand-in: first private slice set', 'a twin needs the same destination')
         self.assertEqual(M.coverage(rows.values()), {'cross-checked': 1, 'generated': 4, 'missing evidence': 2})
 
+    def test_the_clients_own_activity_table_binds_and_outranks_the_2014_table(self):
+        data = synthetic()
+        data['worlds'].append({'name': 'social_test', 'scenario_tag': '0x81540003', 'family': hex(M.fnv1('social_test')),
+                               'private': '0xbfcedaa5', 'public': '0x72730527', 'destination': 'mercury',
+                               'world_hash': '0xdddddddd',
+                               'bubbles': [{'region_name_hash': '0x7', 'states': [state(0, ['0x80000001'], public=True),
+                                                                                  state(1, ['0x80000001'], public=True)]}]})
+        data['activities'] = [
+            {'index': 1, 'hash': '0x00000011', 'name': 'act_test_mission', 'fallback_name': None},
+            {'index': 2, 'hash': '0x00000012', 'name': 'act_test_mission', 'fallback_name': None},
+            {'index': 3, 'hash': '0x00000013', 'name': 'old_patrols_1', 'fallback_name': 'action_mock'},
+            {'index': 4, 'hash': '0x00000014', 'name': None, 'fallback_name': None},
+            {'index': 5, 'hash': '0x00000015', 'name': 'social_test', 'fallback_name': None},
+            {'index': 6, 'hash': '0x00000016', 'name': 'cine_test', 'fallback_name': None},
+            {'index': 7, 'hash': '0x99999999', 'name': 'pvp_test', 'fallback_name': None},
+        ]
+        c = M.Content(data)
+        self.assertEqual((c.client_name(1, 0x11), c.client_name(4, 0x14), c.client_name(7, 0x17)), ('act_test_mission', '', None))
+        acts = [(1, 0x11), (2, 0x12), (3, 0x13), (4, 0x14), (5, 0x15), (6, 0x16)]
+        manifest = {0x11: meta('A Test Rises'), 0x12: meta('Weekly Test'), 0x13: meta('A Test Rises'),
+                    0x14: meta('Clash', 'PVP', 'The Crucible'), 0x15: meta('Lighthouse', 'SOCIAL', 'Mercury'),
+                    0x16: meta('A Test Cinematic', 'STORY_CINEMATIC')}
+        legacy = [{'hash': 0x12, 'codename': 'pvp_test', 'name': 'Weekly Test', 'description': '', 'start_bubble': None},
+                  {'hash': 0x77, 'codename': 'act_test_mission', 'name': 'Other', 'description': '', 'start_bubble': 3}]
+        captured = {0x11: ('AGR', 'act_test_mission', 25)}
+        rows = {r['index']: r for r in M.bind(c, acts, manifest, legacy, {}, captured)}
+        # The committed table's cross-checked row stands in for the capture; the client agrees.
+        self.assertEqual((rows[1]['status'], rows[1]['start_region'], rows[1]['start_source']), ('cross-checked', 25, 'capture'))
+        self.assertEqual(rows[1]['evidence'], f"live capture AGR; {M.CLIENT} agrees")
+        # The client's own name outranks the 2014 table, and the world's other captured start is its start.
+        self.assertEqual((rows[2]['world'], rows[2]['status']), ('act_test_mission', 'generated'))
+        self.assertEqual(rows[2]['evidence'], f'{M.CLIENT} names it; 2014 table, same hash said pvp_test')
+        self.assertEqual((rows[2]['start_region'], rows[2]['start_source']), (25, 'capture of 1 (same world)'))
+        # A bundle the build has no scenario for: the twin the client's table binds.
+        self.assertEqual(rows[3]['world'], 'act_test_mission')
+        self.assertIn('names old_patrols_1, which has no scenario', rows[3]['evidence'])
+        self.assertEqual((rows[4]['world'], rows[4]['evidence']), (None, f'{M.CLIENT} names no world'))
+        # A world with public slice sets only starts in its first.
+        self.assertEqual((rows[5]['world'], rows[5]['start_region'], rows[5]['start_source']),
+                         ('social_test', 0, 'stand-in: first slice set (all public)'))
+        self.assertEqual(rows[6]['world'], 'cine_test')
+
+    def test_captured_rows_read_back_from_a_table(self):
+        rows = [M.ACTIVITY_COLUMNS.split(TAB),
+                ['1', '0x00000011', 'A', 'T', 'act_test_mission', '25', 'capture', '0', '8', '0x1', 'cross-checked',
+                 'live capture AGR; 2014 table, same hash'],
+                ['2', '0x00000012', 'B', 'T', 'social_landing', '0', 'stand-in: first private slice set', '0', '0', '0x1',
+                 'cross-checked', 'live capture Eye'],
+                ['3', '0x00000013', 'C', 'T', 'act_test_mission', '8', 'capture of 1', '0', '8', '0x1', 'generated', 'same name']]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'activities.tsv'
+            path.write_text(''.join(TAB.join(r) + NL for r in [['# x']] + rows), encoding='utf-8')
+            self.assertEqual(M.read_captured(path), {0x11: ('AGR', 'act_test_mission', 25), 0x12: ('Eye', 'social_landing', None)})
+        self.assertEqual(M.read_captured(None), {})
+
     def test_tables_round_trip_to_the_same_sensor_lists(self):
         rows = M.bind(self.c, [(0, 0x1)], {0x1: meta('A Test Rises')},
                       [{'hash': 0x1, 'codename': 'act_test_mission', 'name': '', 'description': '', 'start_bubble': 1}], {})
@@ -196,6 +252,22 @@ class CommittedTablesTest(unittest.TestCase):
         self.assertEqual(a[0]['world'], 'city_tower_default1')
         self.assertEqual(a[168]['world'], 'act_cosmo_m1_dome_a')
 
+    def test_the_clients_activity_table_binds_the_later_content(self):
+        a = self.t.activities
+        # Every live host the captures cross-check served the world the client's own definition names.
+        for i, r in a.items():
+            if r['status'] == 'cross-checked' and 'names no world' not in r['evidence']:
+                self.assertIn(f'{M.CLIENT} agrees', r['evidence'], i)
+        for i, world in ((160, 'raid_epiphany'), (380, 'raid_promise'), (27, 'arena_champion'), (336, 'arena_goldfish'),
+                         (337, 'arena_angelfish'), (398, 'social_observatory'), (40, 'mercury_social'),
+                         (424, 'plaguelands_patrol'), (391, 'mission_hound')):
+            self.assertEqual((a[i]['world'], a[i]['status']), (world, 'generated'), i)
+            self.assertIn(f'{M.CLIENT} names it', a[i]['evidence'], i)
+        # What stays unbound names no world of this build: playlists, the Crucible's modes, credits.
+        for i, r in a.items():
+            if r['world'] == '-':
+                self.assertRegex(r['evidence'], r'^(playlist|client.s activity definition names)', i)
+
 
 @unittest.skipUnless(os.environ.get('D1_WORLDS_JSON'), 'private: set D1_WORLDS_JSON to a d1-worlds.mjs output')
 class RegenerateTest(unittest.TestCase):
@@ -205,6 +277,23 @@ class RegenerateTest(unittest.TestCase):
             M.write_tables(content, [], tmp)
             for name in ('worlds.tsv', 'slice-sets.tsv', 'bundles.tsv', 'insertion-points.tsv'):
                 self.assertEqual((Path(tmp) / name).read_bytes(), (TABLES / name).read_bytes(), name)
+
+    def test_the_activity_bindings_regenerate_byte_for_byte(self):
+        # The bindings also need the client's activity table in the worlds JSON (d1-worlds.mjs since
+        # stream Q), Bungie's manifest and the 2014 table (local inputs). The captures are not needed:
+        # the committed cross-checked rows stand in for them.
+        data = json.loads(Path(os.environ['D1_WORLDS_JSON']).read_text(encoding='utf-8'))
+        manifest = Path(os.environ.get('D1_MANIFEST_SQLITE', 'F:/d1/d1preservation-main/manifest/data/world_en.sqlite'))
+        legacy = Path(os.environ.get('D1_TIGER', 'F:/d1/third-party/Blam-Network_tiger')) / M.LEGACY_TABLE
+        if not data.get('activities') or not manifest.exists() or not legacy.exists():
+            self.skipTest('private: a worlds JSON with the activity table, the manifest and the 2014 table')
+        content = M.Content(data)
+        acts = M.read_activity_table(FIXTURES / 'characters' / 'activity-table.tsv')
+        bound = M.bind(content, acts, M.read_manifest(manifest), M.read_legacy(legacy), {},
+                       M.read_captured(TABLES / 'activities.tsv'))
+        with tempfile.TemporaryDirectory() as tmp:
+            M.write_tables(content, bound, tmp)
+            self.assertEqual((Path(tmp) / 'activities.tsv').read_bytes(), (TABLES / 'activities.tsv').read_bytes())
 
 
 if __name__ == '__main__':

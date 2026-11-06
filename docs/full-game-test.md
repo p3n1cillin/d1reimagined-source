@@ -125,7 +125,7 @@ then stops its servers. A `-Only servers` run stops when `RUN\boot\stop` is crea
 | Rewards and growth | #311 | `D1_REWARDS=1`, `D1_REWARDS_SEED=0xD1F0` | unset |
 | Multiplayer | #312 | `D1_MP=1`, `D1_MM_CONFIG_FILE`, `D1_AH_SHARED_INSTANCES=1` | unset |
 | Activity framework | #313 | `D1_AH_ACTIVITY_FRAMEWORK=<fixtures>/activities` | unset |
-| Generated worlds | #314 | `D1_AH_WORLDS`, `D1_AH_WORLDS_ACTIVITIES=166,167,168,170,172,186`, `D1_AH_WORLDS_PRIVATE_START=1` | unset |
+| Generated worlds | #314, stream Q | `D1_AH_WORLDS`, `D1_AH_WORLDS_ACTIVITIES=all` (every activity with a world), `D1_AH_WORLDS_PRIVATE_START=1` | unset |
 | Public instances | #316 | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_DISTINCT_HOST_IDS=1`; stream O2: `D1_AH_PUBLIC_INSTANCES_FILE` (the host's instances for the responder's matchmaker) | unset |
 | Native RSAT codec | #317 | `D1_RSAT_NATIVE=1` | unset |
 | udt 5 stamp mode | #298 | `D1_AH_SENSOR_STAMP=1` | unset |
@@ -138,9 +138,12 @@ then stops its servers. A `-Only servers` run stops when `RUN\boot\stop` is crea
 
 Some choices in this profile are worth knowing about:
 
-- **`D1_AH_WORLDS_ACTIVITIES`.** The list is limited because each distinct world and start costs
-  two frame builds before the host listens. The hand table's rows (164, 165, 168, 0, 410, 416)
-  still win over generated ones.
+- **`D1_AH_WORLDS_ACTIVITIES=all`.** Since stream Q the profile serves every activity the world
+  tables bind: 534 of 653, from the client's own activity table
+  ([worlds note](../notes/ps4-56578-worlds-2026-11-05.md)). Each distinct world and start costs two
+  udt 5 frames before the host listens; `tests/all_worlds.rs` measures that cost (see the note).
+  The hand table's rows (164, 165, 168, 0, 410, 416) still win over generated ones. To serve a few,
+  pass `-Set D1_AH_WORLDS_ACTIVITIES=166,167`.
 - **Public starts.** `D1_AH_WORLDS_PRIVATE_START=1` serves Restoration from its private stand-in.
   Public instances now encode their lists as entry-only frames ([integration
   note](../notes/ps4-56578-integration-wiring-2026-11-05.md)), but none has been served to the client
@@ -174,7 +177,7 @@ as working.
 | Rewards (#311) | activity host, responder | Host: `⭐ rewards: grants go to the player store through <store-control.txt>`, then `⭐ rewards: forwarded to the store: grant ...` when an activity ends. Responder: `💾 control "grant ...": ... for 0x...: N currency line(s), ...`; `store-control.state.json` lists the grant. | A completed scripted activity's grant reaches the store (`rewards.grants` in the character's attributes) and a changed wallet is pushed. Only Glimmer has a content index ([integration note](../notes/ps4-56578-integration-wiring-2026-11-05.md)). |
 | Multiplayer (#312) | responder, activity host | `⭐ D1_MP=1: multiplayer services on (...)`; with the store, `⭐ MP: accounts resolve through the player store's identities.json`; per connection, `⭐ MP: connection #N is '<id>', <account>, in <fireteam>`; on a 42 search, `⭐ MP matchmaking (connection #N): ...`. In the host: `⭐ shared instances on (D1_AH_SHARED_INSTANCES): one membership per named host`. | With one client: it signs on as its own account in a fireteam of one, and its 42 searches get answers. Fireteams and shared instances need a second client. |
 | Activity framework (#313) | activity host | `activity framework: <coverage summary>`. Any `activity framework: ...` warning is a data problem. `... not loaded: ...` means it failed. | The summary line has the expected counts. A strike run would drive `ActivityRun` from the host's slice and trigger reports; no run has launched one. |
-| Generated worlds (#314) | activity host | `⭐ D1_AH_WORLDS <dir>: N activities served from generated worlds (M distinct frames), K without one`. `⚠ D1_AH_WORLDS: <world> generated checksum ...` means the generated world disagrees with the measured one. | Launching Restoration (166) from the Director loads a world. Run sense125 got a black screen there. The same goes for 167, 168, 170, 172 and 186. |
+| Generated worlds (#314) | activity host | `⭐ D1_AH_WORLDS <dir>: N activities served from generated worlds (M distinct frames), K without one`. `⚠ D1_AH_WORLDS: <world> generated checksum ...` means the generated world disagrees with the measured one. | Launching Restoration (166) from the Director loads a world. Run sense125 got a black screen there. The same goes for any bound activity (King's Fall 160, Prison of Elders 27, Felwinter Peak 398, ...); none has been launched yet. |
 | Public instances (#316) | activity host | `public lists encoded as entry-only frames (gen 0) in ...`, then `⭐ D1_AH_PUBLIC_HOST=1 - N public lists from <table>, N frame(s) built`; `⭐ public instances: bundles go to the script bridge`; `⭐ public instances: M worlds' PUBLIC checksums`. A join logs `⭐ public instance: publishing ...'s PUBLIC checksum` and `⭐ public instance <id> is <key>`; a Tower join logs `⭐ social space ...`. | A public instance's join is recognised, its region's list is served (`⭐ public instance: serving ...'s sensor list`), and its slot is freed when the client leaves. Its events still wait on stream K's sidecar message. |
 | Native RSAT (#317) | activity host | One `native RSAT: udt N encode+decode native` line for each covered udt, and `native RSAT: ... stays on the client's codec: <why>` for the rest. | The client signs on, loads the boot world and the Tower, and stays connected with no native codec error. Compare the slow-turn warnings against the baseline. |
 | udt 5 stamp (#298) | activity host | `⭐ D1_AH_SENSOR_STAMP=1 - udt 5 stamped at 10 Hz, init on full lists, 3 s heartbeats` | The client keeps the world through idle stretches (heartbeats), and the cinematics start on time. |

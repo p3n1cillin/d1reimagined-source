@@ -57,7 +57,7 @@ deployed emulator (98542a7, fork #6) has neither.
 |---|---|---|---|---|---|---|
 | Orbit (load, Set Destination, announcements) | yes | verified | lab-base | earlier | baseline native (cine-live13 arrived in orbit with "Crucible Unlocked") | – |
 | Director rules: launch, join and visibility (653 programs) | partial | verified (all 653 launch programs and 28 shared groups) | `D1_SOCIAL=1` | #309, #322 | unit | The server-side predictor reads every unlock value as zero. What the Director lists still follows the served unlock flags. |
-| Activity → world binding | partial | capture (56 activities cross-checked); 2014 activity table (234 generated) | `D1_AH_WORLDS`; `D1_AH_WORLDS_ACTIVITIES=166,167,168,170,172,186` | #314 | unit | 363 of 653 activities have no evidence. Generated lists carry default values. None has been served in the lab. Only the six listed activities load from generated worlds in full-game, because each world costs two frame builds; the hand rows (164, 165, 168, 0, 410, 416) win. |
+| Activity → world binding | partial | verified (the client's own activity table names each activity's world: 477 generated); capture (57 cross-checked, all agreeing with the client's table) | `D1_AH_WORLDS`; `D1_AH_WORLDS_ACTIVITIES=all` | #314, stream Q | unit (`tests/all_worlds.rs`: every bound activity plans; 330 frames build natively in 0.2 s) | 534 of 653 activities have a world. The 119 without one name none: 82 playlists, 24 Private Match modes, 10 credits and cinematics, three rows naming 2014 bundles with no scenario. 235 starts are stand-ins (the first private slice set). Generated lists carry default values. None has been served in the lab; the hand rows (164, 165, 168, 0, 410, 416) win. [worlds note](../notes/ps4-56578-worlds-2026-11-05.md). |
 | Launch requirements (fireteam size) | partial | verified (`minParty`/`maxParty`) | `D1_MP=1` | #312 | unit | – |
 | Insertion points | partial | verified (`insertion-points.tsv`) | – | #314 | unit | The host sends no transition name, so the client always takes `default`. |
 | Story progression: CONTINUE and the next activity | partial | verified (profile field [6]); 2014 table (`next=`) | `D1_STORE=1`, `D1_REWARDS=1` | earlier, #324, #327 | baseline native: CONTINUE 164 → 165 ([29 Oct](../notes/ps4-56578-continue-tower-2026-10-29.md)); the 165 → Tower hand-off unit | After 165, ours went to orbit, where retail went to the Tower. The hand-off is wired but unseen. Only 165 has a `next=`. |
@@ -67,78 +67,112 @@ deployed emulator (98542a7, fork #6) has neither.
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Missions driven by Destiny's own scripts (sidecar and bridge) | partial | restored 56578 scripts (Fukugen Daihon; a local input, unlicensed) on verified content | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES`, `D1_SCRIPTS_DIR`, `D1_BUNDLES_DIR` | #310, #319, #324, #327 | unit (a deterministic replay of 164 and 165) | 30 written scripts, 33 start-only stubs, six worlds with no script. Timer, hard-wipe and object-filter rows are refused. One bridge per connection, so a fireteam runs N copies (review 9, 10). BullShcript answers natives with 01.29 semantics. [Story missions](../notes/ps4-56578-story-missions-2026-11-05.md). |
+| Missions driven by Destiny's own scripts (sidecar and bridge) | partial | restored 56578 scripts (Fukugen Daihon; a local input, unlicensed) on verified content | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES`, `D1_SCRIPTS_DIR`, `D1_BUNDLES_DIR` | #310, #319, #324, #327 | unit (a deterministic replay of 164 and 165) | The bridge's table lists every bound PvE activity (473: story, cinematic, quest, strike, raid, arena); 250 name a world no restored script starts, which the sidecar serves as a start-only stub on its content bundles (stream Q). Timer, hard-wipe and object-filter rows are refused. One bridge per connection, so a fireteam runs N copies (review 9, 10). BullShcript answers natives with 01.29 semantics. [Story missions](../notes/ps4-56578-story-missions-2026-11-05.md). |
 | Missions driven by step schedules (the earlier route) | partial (164 and 165 only) | capture and memory reads | lab-base (`D1_AH_MISSION_STEPS`) | earlier | baseline native (sense116: all of A Guardian Rises; cine-live13: 165) | Perching Fallen, the Ghost's performances and dialogue fidelity; some cutscenes skipped. |
 | Completion and post-game (965, lifetime 6 → 7/8, reward screens) | partial | verified (965 body decoded, #318); capture (lifetime order); placeholder (A Guardian Rises' 900 XP, the counters and session id) | `D1_REWARDS=1`, `D1_STORE=1` | #318, #324, #327 | baseline native (AGR post-game, [29 Oct](../notes/ps4-56578-postgame-2026-10-29.md)); scripted path unit | The scripted grant now runs the store's completion (review 6, fixed in #327), unseen. `D1_AH_SCRIPTS_MISSION_PHASE` stays off (meaning unknown). |
 | Enemies and squads | partial | verified (squad states, cells) | lab-base; script bridge | earlier, #324 | baseline native (the Breach's waves) | Combat runs on the clients. Squad task and roster fields have no map. |
 | Every mission and cinematic | – | see below | – | – | – | – |
 
-The 43 story, cinematic and quest activities with a bound world, from the generated
+The 78 story, cinematic and quest missions with a bound world (201 activities), from the generated
 [`scripts/activities.txt`](../ps4/fixtures/56578/scripts/activities.txt) and stream K's offline
 replay. "Phases" is phases reached of phases written in 600 s of synthetic play, which measures
-the driver, not a player. Only the activities marked FG load in the default full-game profile.
+the driver, not a player. Every row loads in the default full-game profile
+(`D1_AH_WORLDS_ACTIVITIES=all`, stream Q). "none (start-only stub)": no restored script starts the
+world, so the sidecar serves it on its content bundles alone; "restored (not replayed)": a script
+exists but stream K's replay did not cover the world.
 
-| Mission | Index | Kind | World | World evidence | Script | Phases, end (offline) | FG | Native |
-|---|---|---|---|---|---|---|---|---|
-| A Guardian Rises | 164 | story | `act_cosmo_m0_highway` | cross-checked | written | 5/7, no end | FG | baseline (step-driven) |
-| A Guardian Rises (the reveal) | 165 | cinematic | `cine_reveal` | cross-checked | written | 2/2, ends | FG | baseline (step-driven) |
-| Restoration | 166, 606 | story | `act_cosmo_m0_5_hangar` | cross-checked | written | 1/3, no end | FG | black screen (sense125) |
-| The Speaker | 167 | cinematic | `cine_speaker` | cross-checked | stub | – | FG | none |
-| The Dark Within | 168, 169, 607 | story | `act_cosmo_m1_dome_a` | cross-checked | written | 1/3, no end | FG | none |
-| The Warmind | 170, 171, 608 | story | `act_cosmo_m2_dome_c` | cross-checked | written | 3/5, no end | FG | none |
-| The Last Array | 172, 173, 520, 578 | story | `act_cosmo_m4_dome_c` | cross-checked | written | 1/4, no end | FG | none |
-| The Dark Beyond | 174, 175, 609 | story | `act_moon_m1_launchtubes` | cross-checked | written | 2/9, no end | | none |
-| The World's Grave | 176, 177, 610 | story | `act_moon_m3_lowercitadel` | cross-checked | written | 2/5, no end | | none |
-| The Sword of Crota | 178, 179, 521, 579 | story | `act_moon_m4_uppercitadel` | cross-checked | stub | – | | none |
-| Chamber of Night | 180, 181, 522, 580 | story | `act_moon_m5_strength` | cross-checked | written | 7/8, no end | | none |
-| Shrine of Oryx | 182, 183, 523, 581 | story | `act_moon_m6_reactor` | cross-checked | stub | – | | none |
-| A Stranger's Call | 184, 185, 616 | story | `act_venus_m01_engineering` | cross-checked | written | 4/6, no end | | none |
-| The Awoken | 186 | cinematic | `act_cinematic_queen_101` | cross-checked | stub | – | FG | none |
-| Ishtar Collective | 187, 188, 617 | story | `act_venus_m02_southern_tides` | cross-checked | stub | – | | none |
-| The Archive | 189, 190, 524, 582 | story | `act_venus_m05_vault` | cross-checked | stub | – | | none |
-| Scourge of Winter | 191, 192, 525, 583 | story | `act_venus_m06_ketch` | cross-checked | stub | – | | none |
-| Eye of a Gate Lord | 193, 194, 526, 584 | story | `act_venus_m07_northern_tides` | cross-checked | written | 1/5, no end | | none |
-| A Key Awaits | 195 | cinematic | `act_cinematic_queen_102` | cross-checked | stub | – | | none |
-| Exclusion Zone | 196, 197, 618 | story | `act_mars_m01_valley` | cross-checked | written | 3/6, no end | | none |
-| The Buried City | 198, 199, 527, 585 | story | `act_mars_m03_penthouse` | cross-checked | stub | – | | none |
-| The Garden's Spire | 200, 201, 528, 586 | story | `act_mars_m05_warbase` | cross-checked | written | 3/9, no end | | none |
-| A Rising Tide | 202, 203, 529, 587 | story | `act_mars_m06_subway` | cross-checked | written | 2/8, no end | | none |
-| The Black Garden | 204, 205, 530, 588 | story | `act_mars_m07_lowergarden` | cross-checked | written | 4/10, no end | | none |
-| A Hero's Return | 206 | cinematic | `cine_end` | cross-checked | stub | – | | none |
-| Fist of Crota | 207, 208, 611 | story | `quest_bonzo_dlc01` | cross-checked | written | 2/2, no end | | none |
-| Siege of the Warmind | 209, 210, 531, 589 | story | `act_cosmo_m6_rasputin` | cross-checked | stub | – | | none |
-| The Wakening | 211, 212, 532, 590 | story | `act_moon_m7_selection` | cross-checked | stub | – | | none |
-| A Kell Rising | 214, 215, 613 | story | `mission_pursuit` | cross-checked | written | 5/5, ends | | none |
-| The Ruling House | 216, 217, 533, 591 | story | `mission_pact` | cross-checked | written | 5/5, ends (one thread failure: a BullShcript hash collision) | | none |
-| Queen's Ransom | 218, 219, 534, 592 | story | `mission_traitor` | cross-checked | written | 2/6, no end | | none |
-| The Silent Fang | 220, 221, 614 | story | `quest_infidel` | cross-checked | written | 3/4, no end | | none |
-| Wolves' Gambit | 223, 224, 615 | story | `quest_safari` | cross-checked | written | 3/5, no end | | none |
-| Hangar Stakes | 229 | credits | `cine_hangar` | cross-checked | written | 1/1, ends | | none |
-| Lost to Light | 230, 238, 239, 537, 594 | story and cinematic | `mission_deja` | cross-checked | none | – | | none |
-| The Coming War | 234, 235, 236, 536, 593 | story and cinematic | `mission_darksnow` | cross-checked | written | 7/7, ends | | none |
-| Dread Patrol | 237 | quest | `quest_deadflower` | cross-checked | none | – | | none |
-| Cayde's Stash | 241, 242, 538, 595 | story | `mission_elevator` | cross-checked | written | 4/5, no end | | none |
-| Enemy of My Enemy | 254, 255, 540, 596 | story | `mission_omen` | cross-checked | none | – | | none |
-| Last Rites | 268, 269, 545, 597 | story | `mission_souvenir` | cross-checked | none | – | | none |
-| Regicide | 273, 274, 547, 598 | story | `mission_topknot` | cross-checked | none | – | | none |
-| The Dreadnaught | 275, 276, 548, 599 | story | `mission_touchdown` | cross-checked | written | 4/6, no end | | none |
-| The Promethean Code | 277, 278, 279, 549, 600 | story | `mission_turing` | cross-checked | none | – | | none |
+| Mission | Index | Kind | World | World evidence | Script | Phases, end (offline) | Native |
+|---|---|---|---|---|---|---|---|
+| A Guardian Rises | 164 | story | `act_cosmo_m0_highway` | cross-checked | written | 5/7, no end | baseline (step-driven) |
+| A Guardian Rises (the reveal) | 165 | cinematic | `cine_reveal` | cross-checked | written | 2/2, ends | baseline (step-driven) |
+| Restoration | 166, 606 | story | `act_cosmo_m0_5_hangar` | cross-checked | written | 1/3, no end | black screen (sense125) |
+| The Speaker | 167 | cinematic | `cine_speaker` | cross-checked | stub | – | none |
+| The Dark Within | 168, 169, 607 | story | `act_cosmo_m1_dome_a` | cross-checked | written | 1/3, no end | none |
+| The Warmind | 170, 171, 608 | story | `act_cosmo_m2_dome_c` | cross-checked | written | 3/5, no end | none |
+| The Last Array | 172, 173, 520, 578 | story | `act_cosmo_m4_dome_c` | cross-checked | written | 1/4, no end | none |
+| The Dark Beyond | 174, 175, 609 | story | `act_moon_m1_launchtubes` | cross-checked | written | 2/9, no end | none |
+| The World's Grave | 176, 177, 610 | story | `act_moon_m3_lowercitadel` | cross-checked | written | 2/5, no end | none |
+| The Sword of Crota | 178, 179, 521, 579 | story | `act_moon_m4_uppercitadel` | cross-checked | stub | – | none |
+| Chamber of Night | 180, 181, 522, 580 | story | `act_moon_m5_strength` | cross-checked | written | 7/8, no end | none |
+| Shrine of Oryx | 182, 183, 523, 581 | story | `act_moon_m6_reactor` | cross-checked | stub | – | none |
+| A Stranger's Call | 184, 185, 616 | story | `act_venus_m01_engineering` | cross-checked | written | 4/6, no end | none |
+| The Awoken | 186 | cinematic | `act_cinematic_queen_101` | cross-checked | stub | – | none |
+| Ishtar Collective | 187, 188, 617 | story | `act_venus_m02_southern_tides` | cross-checked | stub | – | none |
+| The Archive | 189, 190, 524, 582 | story | `act_venus_m05_vault` | cross-checked | stub | – | none |
+| Scourge of Winter | 191, 192, 525, 583 | story | `act_venus_m06_ketch` | cross-checked | stub | – | none |
+| Eye of a Gate Lord | 193, 194, 526, 584 | story | `act_venus_m07_northern_tides` | cross-checked | written | 1/5, no end | none |
+| A Key Awaits | 195 | cinematic | `act_cinematic_queen_102` | cross-checked | stub | – | none |
+| Exclusion Zone | 196, 197, 618 | story | `act_mars_m01_valley` | cross-checked | written | 3/6, no end | none |
+| The Buried City | 198, 199, 527, 585 | story | `act_mars_m03_penthouse` | cross-checked | stub | – | none |
+| The Garden's Spire | 200, 201, 528, 586 | story | `act_mars_m05_warbase` | cross-checked | written | 3/9, no end | none |
+| A Rising Tide | 202, 203, 529, 587 | story | `act_mars_m06_subway` | cross-checked | written | 2/8, no end | none |
+| The Black Garden | 204, 205, 530, 588 | story | `act_mars_m07_lowergarden` | cross-checked | written | 4/10, no end | none |
+| A Hero's Return | 206 | cinematic | `cine_end` | cross-checked | stub | – | none |
+| Fist of Crota | 207, 208, 611 | story | `quest_bonzo_dlc01` | cross-checked | written | 2/2, no end | none |
+| Siege of the Warmind | 209, 210, 531, 589 | story | `act_cosmo_m6_rasputin` | cross-checked | stub | – | none |
+| The Wakening | 211, 212, 532, 590 | story | `act_moon_m7_selection` | cross-checked | stub | – | none |
+| Ritual of Sacrifice | 213, 612 | quest | `quest_screw_dlc01` | generated | none (start-only stub) | – | none |
+| A Kell Rising | 214, 215, 613 | story | `mission_pursuit` | cross-checked | written | 5/5, ends | none |
+| The Ruling House | 216, 217, 533, 591 | story | `mission_pact` | cross-checked | written | 5/5, ends (one thread failure: a BullShcript hash collision) | none |
+| Queen's Ransom | 218, 219, 534, 592 | story | `mission_traitor` | cross-checked | written | 2/6, no end | none |
+| The Silent Fang | 220, 221, 614 | story | `quest_infidel` | cross-checked | written | 3/4, no end | none |
+| The Archon-Slayer | 222 | quest | `quest_nightcrawler` | generated | none (start-only stub) | – | none |
+| Wolves' Gambit | 223, 224, 615 | story | `quest_safari` | cross-checked | written | 3/5, no end | none |
+| Tenebrous Tunnels | 225 | quest | `quest_apollo` | generated | none (start-only stub) | – | none |
+| Shadows at Twilight | 226 | quest (solo) | `pvp_city_defense_carbon` | generated | none (start-only stub) | – | none |
+| Entropy's Pinnacle | 227, 228, 535 | quest | `quest_catalyst` | generated | none (start-only stub) | – | none |
+| Hangar Stakes | 229 | credits | `cine_hangar` | cross-checked | written | 1/1, ends | none |
+| Lost to Light | 230, 238, 239, 537, 594 | cinematic | `mission_deja` | cross-checked | none | – | none |
+| The Coming War | 234, 235, 236, 536, 593 | cinematic | `mission_darksnow` | cross-checked | written | 7/7, ends | none |
+| Dread Patrol | 237 | quest | `quest_deadflower` | cross-checked | none | – | none |
+| Summoner's Circle | 240 | story | `mission_destroyer` | generated | none (start-only stub) | – | none |
+| Cayde's Stash | 241, 242, 538, 595 | story | `mission_elevator` | cross-checked | written | 4/5, no end | none |
+| Shadow Call | 243 | quest (solo) | `quest_helium` | generated | none (start-only stub) | – | none |
+| The Prime's Path | 244, 245, 539 | quest | `quest_hydrogen` | generated | none (start-only stub) | – | none |
+| Knock Knock | 246 | quest | `quest_lithium` | generated | none (start-only stub) | – | none |
+| A Ranger Found | 247 | quest (solo) | `mission_marathon_hunter` | generated | none (start-only stub) | – | none |
+| Bound by Fire | 248 | quest (solo) | `mission_marathon_titan` | generated | none (start-only stub) | – | none |
+| Bottle the Arc | 249 | quest (solo) | `mission_marathon_warlock` | generated | none (start-only stub) | – | none |
+| Fear's Embrace | 250, 251, 252 | quest | `mission_microwave` | generated | none (start-only stub) | – | none |
+| Blood in the Garden | 253 | quest | `quest_nitrogen` | generated | none (start-only stub) | – | none |
+| Enemy of My Enemy | 254, 255, 540, 596 | story | `mission_omen` | cross-checked | none | – | none |
+| A New Den | 256, 257, 541 | quest | `quest_oxygen` | generated | none (start-only stub) | – | none |
+| A Spark in Shadow | 258 | quest (solo) | `quest_paper` | generated | none (start-only stub) | – | none |
+| Paradox | 259, 260, 542 | story | `mission_paradox` | generated | none (start-only stub) | – | none |
+| Blighted Coven | 261, 262, 543 | quest | `quest_peekaboo` | generated | none (start-only stub) | – | none |
+| The First Firewall | 263 | quest | `quest_radium` | generated | none (start-only stub) | – | none |
+| A March of Fire | 264 | quest (solo) | `quest_rock` | generated | none (start-only stub) | – | none |
+| A Ranger Lost | 265 | quest (solo) | `quest_scissors` | generated | none (start-only stub) | – | none |
+| Kings of Decay | 266, 267, 544 | quest | `quest_sightline` | generated | none (start-only stub) | – | none |
+| Last Rites | 268, 269, 545, 597 | story | `mission_souvenir` | cross-checked | none | – | none |
+| Outbound Signal | 270, 271, 272, 546 | story | `mission_toaster` | generated | none (start-only stub) | – | none |
+| Regicide | 273, 274, 547, 598 | story | `mission_topknot` | cross-checked | none | – | none |
+| The Dreadnaught | 275, 276, 548, 599 | story | `mission_touchdown` | cross-checked | written | 4/6, no end | none |
+| The Promethean Code | 277, 278, 279, 549, 600 | story | `mission_turing` | cross-checked | none | – | none |
+| Pretender to the Throne | 339 | quest | `mission_rook` | generated | none (start-only stub) | – | none |
+| - | 382 | cinematic | `cinematic_peace` | generated | none (start-only stub) | – | none |
+| - | 384 | cinematic | `cinematic_fall` | generated | none (start-only stub) | – | none |
+| King of the Mountain | 387, 388, 601 | story | `mission_pug` | generated | none (start-only stub) | – | none |
+| The Walls Come Down | 389, 390, 602 | story | `mission_beagle` | generated | none (start-only stub) | – | none |
+| The Plaguelands | 391, 392, 603 | story | `mission_hound` | generated | none (start-only stub) | – | none |
+| Download Complete | 393, 394, 604 | story | `mission_pitbull` | generated | none (start-only stub) | – | none |
+| The Iron Tomb | 395, 396, 605 | story | `mission_mutt` | generated | none (start-only stub) | – | none |
+| Bad Blood | 457 | quest | `mission_word` | generated | none (start-only stub) | – | none |
+| A Khvostov Rising | 458 | quest | `mission_memory` | generated | none (start-only stub) | – | none |
+| A Symbol of Honor | 459 | quest | `mission_research` | generated | none (start-only stub) | – | none |
+| Beauty in Delivery | 460 | quest | `mission_fireworks` | generated | none (start-only stub) | – | none |
 
-**No world bound (78 activities; built: no).** No capture or 2014 row names their world. Story:
-Summoner's Circle, Paradox, Outbound Signal, King of the Mountain, The Walls Come Down, The
-Plaguelands, Download Complete, The Iron Tomb, Ritual of Sacrifice, Earth and Moon, Mars and
-Venus, Dark Champions, The Taken War and The Iron Lords. Cinematics and credits: Oryx Triumphant,
-King of the Mountain, The Taken King and Rise of Iron preludes, Destiny Credits, The Dawning, Age
-of Triumph, Destiny 2 Pre-Order and three unnamed ones. The rest are quests (for example The
-Archon-Slayer, Shadows at Twilight, A Khvostov Rising). Rise of Iron's missions are all here: no
-360 capture of Rise of Iron exists. Evidence: Codie's world bindings, a PS4 capture, or an eboot
-or content read of the activity → world rule (the host publishes it at `global_activity_state+0x688`).
+**No world (15 story-kind activities; built: no).** Their definitions in the client's own activity
+table name no world: the five story playlists (Earth and Moon, Mars and Venus, Dark Champions, The
+Taken War, The Iron Lords), Oryx Triumphant, King of the Mountain's cinematic (386), the Taken King
+and Rise of Iron preludes, Destiny Credits, The Dawning, Age of Triumph (2), Destiny 2 Pre-Order and
+one unnamed cinematic (233). They play a video or launch another activity.
 
 ## 5. Patrol and public events
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Patrol zones (a mission host beside public instances) | partial | capture (Patrol Venus and the Dreadnaught cross-checked; the Cosmodrome patrol in #328, pending) | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE` | #316, #323, #327, #328 | unit | Patrol Cosmodrome, Moon, Mars and the Plaguelands have no world binding (indices 8, 9, 11, 93, 424). None is in `D1_AH_WORLDS_ACTIVITIES`. |
+| Patrol zones (a mission host beside public instances) | partial | capture (Patrol Venus, the Dreadnaught and the Cosmodrome cross-checked); verified (the client's activity table binds the Moon, Mars and the Plaguelands) | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_WORLDS_ACTIVITIES=all` | #316, #323, #327, #328, stream Q | unit | Patrol Cosmodrome (8), a 2014 row whose `cosmo_patrols_1` has no scenario, stays unbound (93 is the Taken King's). The Plaguelands patrol (424) starts in a stand-in. |
 | Public instances (region lists, joins, the bubble swap, the slot handover) | partial | capture (every region's groups and timings) | `D1_AH_PUBLIC_HOST=1`, `D1_AH_DISTINCT_HOST_IDS=1`, `D1_AH_PUBLIC_INSTANCES_FILE` | #316, #323, #327 | unit | The entry-only lists carry default values and have never been served. The PUBLIC checksum is the client's own index reading, not measured. The authority reset (udt 27–31, 42) and peer reservations (12, 13) are not served. The registry never enforces its cap and forgets no player on a TCP drop (review 23). [Public instances](../notes/ps4-56578-public-instances-2026-11-05.md). |
 | Restoration's public start | partial | capture | `D1_AH_WORLDS_PRIVATE_START=1` serves a private stand-in | #314, #316 | baseline native: a black screen (sense125) | Try the public start with `-Set D1_AH_WORLDS_PRIVATE_START=`. |
 | Patrol beacons | partial | capture: six live beacons by region, accept and `bounty_complete` incidents (#328, pending); placeholder: goals | `D1_AH_PUBLIC_HOST=1` | #316, #328 | unit | Beacon rewards past the Glimmer cap and their XP are unread. Accept incidents have no names. |
@@ -153,7 +187,7 @@ or content read of the activity → world rule (the host publishes it at `global
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
 | Strike runs (encounters, checkpoints, darkness zones, wipes) | partial | restored scripts (5 strikes); capture (4); placeholder (8: one encounter each) | `D1_AH_ACTIVITY_FRAMEWORK` | #313, #327 | unit | O2 drives `ActivityRun` from the wire; never run. "A respawn after a wipe ends it" is a stand-in. [Strikes, raids, Crucible](../notes/ps4-56578-strikes-raids-crucible-2026-11-05.md). |
-| Strike worlds | partial | capture (9 cross-checked); 2014 table (115 generated); 115 missing (counting heroic and Nightfall copies) | `D1_AH_WORLDS` | #314 | unit | No strike is in `D1_AH_WORLDS_ACTIVITIES`, so none loads in the default full-game profile. |
+| Strike worlds | yes | verified (the client's activity table: 230 generated); capture (9 cross-checked) | `D1_AH_WORLDS` | #314, stream Q | unit | Every one of the 239 strike rows (heroic, Nightfall, weekly and playlist copies) has a world and loads in the default full-game profile. The client's table moved 60 rows off the 2014 worlds (the Taken King's `mars_portal_*_com01`, `venus_portal_2_redux`, `strike_oyster`, `strike_lobster`, `strike_dolphin_dlc03`). Starts for uncaptured strikes are stand-ins. |
 | The 17 strikes | partial | scripts: The Devils' Lair, The Summoning Pits, The Nexus, The Undying Mind, The Shadow Thief. Capture: The Will of Crota, Winter's Run, Cerberus Vae III, Dust Palace. Neither: Fallen S.A.B.E.R., Shield Brothers, The Sunless Cell, Blighted Chalice, Echo Chamber, Sepiks Perfected, The Wretched Eye, The Abomination Heist | as above | #313 | unit | The eight with neither are one encounter, `needs-evidence`. Capture-derived checkpoints and bosses are guesses. |
 | Strike playlists (Vanguard Legacy, Taken War, SIVA Crisis and Heroics) | partial | verified (manifest rows); members inferred and labelled | `D1_MP=1`, `D1_AH_ACTIVITY_FRAMEWORK` | #312, #313, #327 | unit | The year-one weekly rows name no strike. |
 | Nightfall | partial | verified (the skull's own text: a wipe returns to orbit) | `D1_AH_ACTIVITY_FRAMEWORK` | #313 | unit | Which strike and skulls run each week was server-side: no rotation is built. |
@@ -165,10 +199,10 @@ or content read of the activity → world rule (the host publishes it at `global
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
 | Raid framework: weekly checkpoints, the leader's checkpoint, loot lockouts | yes | community (D1's rules) | `D1_AH_ACTIVITY_FRAMEWORK`, `D1_STORE_CONTROL` | #313, #323, #327 | unit | Checkpoints and lockouts reach the store and are read back at launch; never run. |
-| Vault of Glass | partial | world generated (2014 table, start 120); script a start-only stub; encounters community | as above | #313, #314 | none | Not in `D1_AH_WORLDS_ACTIVITIES`. No capture. |
+| Vault of Glass | partial | world generated (the client's table and the 2014 table agree, start 120); script a start-only stub; encounters community | as above | #313, #314 | none | No capture. |
 | Crota's End | partial | capture (encounter sequence; world cross-checked); encounters community | as above | #313, #314 | none | Which segment is which encounter is our reading. |
-| King's Fall | partial (definition only) | community | as above | #313 | none | No world, script or capture. |
-| Wrath of the Machine | partial (definition only) | community | as above | #313 | none | No world, script or capture. |
+| King's Fall | partial | world verified (the client's table: `raid_epiphany`); encounters community | as above | #313, stream Q | none | No script (a start-only stub on content) and no capture; the start is a stand-in (slice set 0). |
+| Wrath of the Machine | partial | world verified (the client's table: `raid_promise`); encounters community | as above | #313, stream Q | none | No script (a start-only stub on content) and no capture; the start is a stand-in (slice set 0). |
 | Raid loot | partial | community (Cryptarch loot tables, item hashes only) | `D1_REWARDS=1` | #311, #313 | unit | – |
 | Difficulties and Age of Triumph challenges | no | – | – | – | none | Needs evidence. |
 
@@ -176,10 +210,10 @@ or content read of the activity → world rule (the host publishes it at `global
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Prison of Elders (and Prison of Elders: Taken) | partial | community (five rounds, the last a boss) | `D1_AH_ACTIVITY_FRAMEWORK` | #313 | unit | All 16 arena activities lack a world binding. Waves and bosses need evidence. |
-| Challenge arenas (Skolas's Revenge and the others) | partial | community | as above | #313 | unit | As above. |
+| Prison of Elders (and Prison of Elders: Taken) | partial | world verified (the client's table: `arena_champion`, Taken `arena_goldfish`); community (five rounds, the last a boss) | `D1_AH_ACTIVITY_FRAMEWORK` | #313, stream Q | unit | Waves and bosses need evidence. The two arena playlists (332, 333, 334) name no world. |
+| Challenge arenas (Skolas's Revenge and the others) | partial | world verified (the client's table: `arena_champion`, Challenge of the Elders `arena_angelfish`); community | as above | #313, stream Q | unit | As above. |
 | Challenge of the Elders (scored rounds) | partial | placeholder (threshold 30,000) | as above | #313 | unit | Scoring needs evidence. |
-| Archon's Forge | partial | community, `needs-evidence` (no manifest row of its own) | as above | #313 | unit | Plaguelands patrol has no world; Rise of Iron was never on the 360, so no capture. Tiers, timer and SIVA offerings are unknown. |
+| Archon's Forge | partial | community, `needs-evidence` (no manifest row of its own) | as above | #313 | unit | The Plaguelands patrol (424) now has its world (`plaguelands_patrol`, the client's table). Rise of Iron was never on the 360, so no capture. Tiers, timer and SIVA offerings are unknown. |
 
 ## 9. Crucible, Iron Banner and Trials
 
@@ -188,11 +222,11 @@ or content read of the activity → world rule (the host publishes it at `global
 | Match flow (lobby, countdown, rounds, sudden death, mercy, results) | partial | placeholder (every limit) | `D1_AH_ACTIVITY_FRAMEWORK` | #313, #326 | unit (every mode plays to an end) | No `CrucibleMatch` is driven from the wire. Combat is peer to peer on a physics host. |
 | Modes (Control, Zone Control, Clash, Mayhem, Rumble, Skirmish, Doubles, Salvage, Rift, Supremacy, Rumble Supremacy, Elimination, Trials, Combined Arms, Sparrow Racing, Arsenal) | partial | verified: team and party sizes; placeholder: score limits, time limits, points, mercy, rounds | as above | #313, #326 | unit | The client reads only `score_to_win`; no matchmade playlist sets it in content, and `time_limit` is server-side ([limits](../notes/ps4-56578-strikes-raids-crucible-2026-11-05.md#needs-evidence)). A capture of a Crucible match settles it. |
 | Scoreboard (row 15) | partial | verified: layout, 23 exported scoreboard programs; placeholder: which program a mode uses | `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS` (unset) | #313, #322 | unit | Other players' rows are not encoded. |
-| Maps (36) | partial | verified (map rows); worlds: 12 generated, 48 of 60 activities missing | `D1_AH_WORLDS` (none listed) | #314 | baseline native: `pvp_city_defense` (Twilight Gap) loaded and spawned armed (citydef, [14 Oct](../notes/ps4-56578-blockers-2026-10-14.md)); `pvp_moonbase` is the lab's boot world | The rotation is a stand-in (every map). |
+| Maps (36) | partial | verified (map rows); worlds: 35 of 60 activities bound by the client's table; the 24 Private Match modes and one unnamed row name none | `D1_AH_WORLDS_ACTIVITIES=all` | #314, stream Q | baseline native: `pvp_city_defense` (Twilight Gap) loaded and spawned armed (citydef, [14 Oct](../notes/ps4-56578-blockers-2026-10-14.md)); `pvp_moonbase` is the lab's boot world | The rotation is a stand-in (every map). |
 | Playlists and matchmaking (86) | partial | verified (manifest playlists); placeholder (`min_players`) | `D1_MP=1`, `D1_AH_ACTIVITY_FRAMEWORK` | #312, #313, #327 | unit | Teams are assigned peer-side. A match can form with one team empty (review 22). |
 | Private matches | partial | lab hand rows (First Light) | lab-base | earlier | none | – |
 | Iron Banner | partial | verified: level 40, level advantages, its progression | as above | #307, #313 | unit | The Iron Banner Tower (`city_tower_iron_banner`) has no world. |
-| Trials of Osiris (cards, boons, the Lighthouse) | partial | community (nine wins, three losses, the boons); verified (passage progressions, fireteam of 3) | as above | #307, #313 | unit | The Lighthouse (40) has no world. Trials could form from one fireteam (review 22). |
+| Trials of Osiris (cards, boons, the Lighthouse) | partial | community (nine wins, three losses, the boons); verified (passage progressions, fireteam of 3) | as above | #307, #313 | unit | The Lighthouse (40) has its world (`mercury_social`, public slice sets only, so it starts public). Trials could form from one fireteam (review 22). |
 | Crucible rewards | partial | verified (playlist reward items); placeholder (drop chances) | `D1_REWARDS=1` | #311, #313 | unit | – |
 | Skill matchmaking (BAP 34/35) | no | – | – | #308 (shape only) | none | Field meanings unknown. |
 
@@ -203,8 +237,8 @@ or content read of the activity → world rule (the host publishes it at `global
 | Tower North | partial | memory read and capture (hand world table) | lab-base (`world-table-tower.txt`) | earlier, #328 (pending: the full 252-record list) | baseline native: populated, vendors open ([evening](../notes/ps4-56578-tower-evening-2026-10-29.md)) | The plaza and hangar regions. The generated table starts in slice set 24 (the plaza); the hand table uses 0 and wins. |
 | Other Guardians in the Tower (shared social space) | partial | capture | `D1_AH_SHARED_INSTANCES=1`, `D1_AH_PUBLIC_HOST=1` | #312, #316 | unit | A join registers under the wrong host id (review 11, still open after #327). The cap is a placeholder (16); the live Tower showed at most 5 peers. |
 | Tower set pieces (the Fan, the Jukebox) | no | capture (client incidents only, #328) | – | – | none | No services message is involved. |
-| The Reef (Vestian Outpost) | partial | capture (world cross-checked, a reference list) | `D1_AH_WORLDS` (not listed) | #314, #316 | none | Never served. |
-| Felwinter Peak (Iron Temple, 383) | no | – | – | – | none | No world binding and no capture. |
+| The Reef (Vestian Outpost) | partial | capture (world cross-checked, a reference list) | `D1_AH_WORLDS_ACTIVITIES=all` | #314, #316 | none | Never served. |
+| Felwinter Peak (Iron Temple, 398) | partial | world verified (the client's table: `social_observatory`; the Iron Banner and Festival copies `social_observatory_iron_banner`, `fotl_observatory`) | `D1_AH_WORLDS_ACTIVITIES=all` | stream Q | none | Never served; the start is a stand-in. 383 is the `cinematic_efrideet` cinematic row. |
 | Idle return to orbit | yes | verified (the client's own 15-minute limit) | lab-base (`D1_INACTIVITY_MS`) | earlier | baseline native | – |
 
 ## 11. Vendors
@@ -355,8 +389,8 @@ sources, so the source counts overlap.
 | Tested: none | 24 |
 | Tested natively since the build-out | **0** |
 
-Missions: 43 story, cinematic and quest activities have a world, 30 of the scripts are written,
-and 78 activities have no world. Rewards rules alone ([rewards note](../notes/ps4-56578-rewards-and-growth-2026-11-05.md)):
+Missions: 78 story, cinematic and quest missions (201 activities) have a world, and 15 story-kind
+activities name none. Of 653 activities, 534 have a world (stream Q). Rewards rules alone ([rewards note](../notes/ps4-56578-rewards-and-growth-2026-11-05.md)):
 20 verified, 14 community, 19 placeholder.
 
 ## What the integrated native test must check first

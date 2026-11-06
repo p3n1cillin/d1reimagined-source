@@ -387,13 +387,20 @@ pub struct ScriptedActivity {
     /// Slice set -> the bundle groups it loads (from the generated world tables).
     pub slice_groups: HashMap<u32, Vec<u32>>,
     /// Slice set -> its sensor list's rows (from the generated world tables): the list the client
-    /// registers there, sent again in full when it moves to that set.
-    pub slice_rows: HashMap<u32, Vec<(RowKey, Row)>>,
+    /// registers there, sent again in full when it moves to that set. Shared by every row of the
+    /// table on the same world, group and team ([`SliceRowsCache`]).
+    pub slice_rows: Arc<HashMap<u32, Vec<(RowKey, Row)>>>,
     /// Mission phase name hash -> its slice set, and slice (region) hash -> the bubble's first
     /// private slice set (from the generated world tables and their slice states).
     pub phase_slices: HashMap<u32, u32>,
     pub bubble_slices: HashMap<u32, u32>,
 }
+
+/// Every slice set's rows of one world, shared by the table's rows on that world (stream Q: the
+/// table lists every bound PvE activity, and a world's heroic, nightfall and playlist copies would
+/// otherwise each hold their own copy). Keyed by world, group, team and the lifetime name the base
+/// gives (`params_for_list` reads those).
+pub type SliceRowsCache = HashMap<(String, u32, i32, u8, i16), Arc<HashMap<u32, Vec<(RowKey, Row)>>>>;
 
 impl ScriptedActivity {
     /// Parse `INDEX ACTIVITY GROUP LIST [hash=H] [kind=cinematic] [type=H type2=H place=H]
@@ -414,6 +421,17 @@ impl ScriptedActivity {
         base: &d1_oracle::sensor::SensorPhaseUpdate,
         read: &dyn Fn(&str) -> Result<String, String>,
         worlds: Option<&crate::generated::GeneratedWorlds>,
+    ) -> Result<Self, String> {
+        Self::parse_cached(line, base, read, worlds, &mut SliceRowsCache::new())
+    }
+
+    /// [`Self::parse_with`], sharing each world's slice lists through `cache` (the whole table).
+    pub fn parse_cached(
+        line: &str,
+        base: &d1_oracle::sensor::SensorPhaseUpdate,
+        read: &dyn Fn(&str) -> Result<String, String>,
+        worlds: Option<&crate::generated::GeneratedWorlds>,
+        cache: &mut SliceRowsCache,
     ) -> Result<Self, String> {
         let f: Vec<&str> = line.split_whitespace().collect();
         if f.len() < 4 {
@@ -487,13 +505,22 @@ impl ScriptedActivity {
             read(f[3])?
         };
         let (mut slice_groups, mut phase_slices, mut bubble_slices) = (HashMap::new(), HashMap::new(), HashMap::new());
-        let mut slice_rows = HashMap::new();
+        let mut slice_rows = Arc::new(HashMap::new());
         if let Some(w) = worlds {
+            slice_rows = cache
+                .entry((world.clone(), group, team, base.name_i8, base.name_sub))
+                .or_insert_with(|| {
+                    let mut rows = HashMap::new();
+                    for s in w.slice_sets(&world) {
+                        if let Ok(p) = crate::sensor_list::params_for_list(base, group, team, &w.sensor_list(&world, s)) {
+                            rows.insert(s, p.clients.iter().map(Row::from_client).collect::<Vec<_>>());
+                        }
+                    }
+                    Arc::new(rows)
+                })
+                .clone();
             for s in w.slice_sets(&world) {
                 slice_groups.insert(s, w.slice_groups(&world, s));
-                if let Ok(p) = crate::sensor_list::params_for_list(base, group, team, &w.sensor_list(&world, s)) {
-                    slice_rows.insert(s, p.clients.iter().map(Row::from_client).collect::<Vec<_>>());
-                }
                 let Some(set) = w.slices.get(&(world.clone(), s)) else { continue };
                 if !set.valid {
                     continue;
@@ -646,8 +673,9 @@ impl ScriptConfig {
         };
         let bundles_dir = std::env::var("D1_BUNDLES_DIR").ok();
         let mut activities = HashMap::new();
+        let mut cache = SliceRowsCache::new();
         for line in text.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()) {
-            let mut a = ScriptedActivity::parse_with(line, base, &read, worlds.as_ref())
+            let mut a = ScriptedActivity::parse_cached(line, base, &read, worlds.as_ref(), &mut cache)
                 .map_err(|e| format!("D1_AH_SCRIPTS_ACTIVITIES: {e}"))?;
             if a.bundles_path.is_none() {
                 // The private content export (tools/script-host/tools/export-bundles.mjs).
