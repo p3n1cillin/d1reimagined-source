@@ -407,7 +407,10 @@ if ($knobs.Contains('D1_AH_SCRIPTS_SIDECAR') -and $knobs['D1_AH_SCRIPTS_SIDECAR'
 if ((On 'D1_AH_PUBLIC_HOST') -and -not (On 'D1_AH_DISTINCT_HOST_IDS')) { Problem 'D1_AH_PUBLIC_HOST=1 needs D1_AH_DISTINCT_HOST_IDS=1 (#316)' }
 if (On 'D1_AH_SCRIPTS') {
     foreach ($k in 'D1_AH_SCRIPTS_SIDECAR', 'D1_AH_SCRIPTS_ACTIVITIES') { if (-not (On $k)) { Problem "D1_AH_SCRIPTS=1 needs $k (#319)" } }
-    # Stream K's private content bundle export: the sidecar's rows come from it.
+    # Stream K's private content bundle export: the sidecar's rows come from it. The sidecar reads
+    # it from the environment it inherits from the activity host (tools/script-host/src/sidecar.mjs,
+    # bundlesPathFor: <D1_BUNDLES_DIR>/<activity>.json); without it every row is a stand-in, which
+    # the bridge never sends (integration review, finding 16: the knob is not inert).
     if (-not ($knobs.Contains('D1_BUNDLES_DIR') -and $knobs['D1_BUNDLES_DIR'].value)) {
         Problem 'D1_AH_SCRIPTS=1 needs D1_BUNDLES_DIR, the private content bundle export (stream K): set it in the environment, or -Set D1_BUNDLES_DIR=<folder>; or turn the bridge off with -Set D1_AH_SCRIPTS='
     } elseif (-not (Test-Path -LiteralPath $knobs['D1_BUNDLES_DIR'].value -PathType Container)) {
