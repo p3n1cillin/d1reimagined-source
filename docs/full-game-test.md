@@ -85,9 +85,14 @@ pwsh -File tools/ps4_setup/d1-full-game.ps1 -Name fg3 -Set D1_RSAT_NATIVE=0,serv
 when it is missing, when a source file or `Cargo.toml` is newer than it, or when it was built from
 another checkout. That last case happens when worktrees share a target folder (`-TargetDir`): cargo
 finds this checkout's crates fresh and leaves the other checkout's binary in place. The launcher
-touches that binary's `main.rs` and builds again. Builds run at BelowNormal priority. The built binaries are
-copied into the run folder, and the servers run from that copy, so the shared served target is
-never swapped.
+touches that binary's `main.rs` and builds again. A file whose time changed but not its content
+(after a git checkout) is fresh to cargo, so after a clean build the launcher brings that binary's
+time forward instead of refusing. Builds run at BelowNormal priority.
+
+The built binaries are copied to one fixed folder, `D1_STAGING\full-game\bin\`, and the servers run
+from that copy, so the shared served target is never swapped. The folder is the same for every run
+because Windows Firewall remembers its answer per program path: a new folder per run asked again
+each time. Each run's `manifest.json` records the SHA-256 of the servers it ran.
 
 **Knob checks.** Every knob's name must be in the code that reads it:
 - `[server]` knobs in the servers' binaries;
@@ -106,7 +111,6 @@ reported as `dropped`.
 | `plan.txt` | The dry-run printout of this run. |
 | `server.env`, `emulator.env` | The knobs passed (an empty value unsets). |
 | `launcher.log`, `build-1.log` (`build-2.log`) | The launcher's steps and cargo's output (a second build when a shared target held another checkout's binaries). |
-| `bin\` | The servers this run uses. |
 | `boot\` | The contained boot's evidence: `receipt.json`, `server-environment.txt`, `responder.log`, `activity-host.log`, `shadnet.log`, `emulator.log`, frames. |
 | `launched-activity.txt`, `store-control.txt`, `profile-push.bin`, `account-push.bin`, `ah-control.txt` | The live files the servers read. Write `profile-push.bin` here to push a profile. |
 
