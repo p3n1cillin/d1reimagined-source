@@ -7,6 +7,7 @@ is the current summary. Titles below are the notes' own.
 ## Start here (PS4 build 56578, current)
 
 - [PS4 56578: every story mission from its own scripts and content (5 November 2026)](ps4-56578-story-missions-2026-11-05.md)
+- [PS4 56578: a static integration review of #306-#323 (5-6 November 2026)](ps4-56578-integration-review-2026-11-05.md)
 - [PS4 56578: wiring the subsystems to one another (5 November 2026)](ps4-56578-integration-wiring-2026-11-05.md)
 - [PS4 56578: the social services between activities (5 November 2026)](ps4-56578-social-and-vendors-2026-11-05.md)
 - [PS4 56578: a world for every activity, from the client's own content (5 November 2026)](ps4-56578-worlds-2026-11-05.md)
