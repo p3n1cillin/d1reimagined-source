@@ -421,6 +421,12 @@ pub struct ScriptedActivity {
     /// private slice set (from the generated world tables and their slice states).
     pub phase_slices: HashMap<u32, u32>,
     pub bubble_slices: HashMap<u32, u32>,
+    /// Served values for records the start's list does not name, from the lists the step
+    /// schedule serves on entering a slice set (`D1_AH_SCRIPTS_SLICE_LISTS`): the base image a
+    /// script change builds on, and the value a slice set's full list carries until the scripts
+    /// set one. Run fg2d: /6/1 from the encoder's default (no cast) never started; the step
+    /// schedule's move-26 value (a one-element cast) did.
+    pub values: HashMap<RowKey, Row>,
 }
 
 /// Every slice set's rows of one world, shared by the table's rows on that world (stream Q: the
@@ -590,6 +596,7 @@ impl ScriptedActivity {
             slice_rows,
             phase_slices,
             bubble_slices,
+            values: HashMap::new(),
         })
     }
 
@@ -667,10 +674,40 @@ impl ScriptedActivity {
         let mut rows = self.rows.clone();
         for (k, r) in own {
             if *k != self.lifetime && !rows.iter().any(|(m, _)| m == k) {
-                rows.push((*k, r.clone()));
+                rows.push((*k, self.served_value(k).unwrap_or_else(|| r.clone())));
             }
         }
         Some(rows)
+    }
+
+    /// A record's served value from the step schedule's slice lists, if one names it with a value.
+    pub fn served_value(&self, key: &RowKey) -> Option<Row> {
+        self.values.get(key).filter(|r| r.a.is_some() || r.b.is_some()).cloned()
+    }
+
+    /// Take the served values of the records `text` (a step list served on entering a slice set)
+    /// names beyond the start's list. The first list naming a record wins. Returns how many.
+    pub fn add_slice_values(
+        &mut self,
+        base: &d1_oracle::sensor::SensorPhaseUpdate,
+        group: u32,
+        text: &str,
+    ) -> Result<usize, String> {
+        if group != self.group {
+            return Err(format!("group {group:#010x} is not the bridge's {:#010x}", self.group));
+        }
+        let p = crate::sensor_list::params_for_list(base, group, self.team, text).map_err(|e| format!("{e:#}"))?;
+        let mut n = 0;
+        for (k, r) in p.clients.iter().map(Row::from_client) {
+            if (r.a.is_none() && r.b.is_none()) || k == self.lifetime || self.rows.iter().any(|(m, _)| *m == k) {
+                continue;
+            }
+            if let std::collections::hash_map::Entry::Vacant(e) = self.values.entry(k) {
+                e.insert(r);
+                n += 1;
+            }
+        }
+        Ok(n)
     }
 
     /// The machine the authority table gives the blocks to (block 0's peer), else 14.
@@ -737,6 +774,48 @@ pub fn start_delay_from(value: Option<&str>) -> Result<Duration, String> {
             .map(Duration::from_secs_f64)
             .ok_or_else(|| format!("D1_AH_SCRIPTS_START_DELAY={v:?}: want seconds, 0 or more")),
     }
+}
+
+/// The step schedule's lists as the bridge's served values (`D1_AH_SCRIPTS_SLICE_LISTS`, a
+/// `D1_AH_MISSION_STEPS` file: `index when group list [region] [incident=...]`). Of each scripted
+/// activity's steps, the first (the start's list) and every step that names a region (the list
+/// served on entering that slice set) give the values of the records the start's list lacks
+/// ([`ScriptedActivity::add_slice_values`]); the other steps are states, not slice lists.
+pub fn apply_slice_lists(
+    activities: &mut HashMap<u16, ScriptedActivity>,
+    steps: &str,
+    base: &d1_oracle::sensor::SensorPhaseUpdate,
+    read: &dyn Fn(&str) -> Result<String, String>,
+) -> Vec<String> {
+    let num = |s: &str| s.strip_prefix("0x").map_or_else(|| s.parse::<u32>().ok(), |h| u32::from_str_radix(h, 16).ok());
+    let mut seen = std::collections::HashSet::new();
+    let mut out = Vec::new();
+    for line in steps.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()) {
+        let f: Vec<&str> = line.split_whitespace().collect();
+        let Some(a) = f.first().and_then(|i| i.parse::<u16>().ok()).and_then(|i| activities.get_mut(&i)) else { continue };
+        if f.len() < 4 {
+            continue;
+        }
+        let region = f.get(4).filter(|t| !t.starts_with("incident=")).and_then(|t| num(t));
+        let first = seen.insert(a.index);
+        if !first && region.is_none() {
+            continue;
+        }
+        let Some(group) = num(f[2]) else {
+            out.push(format!("⚠ activity {}: step list line {line:?}: bad group", a.index));
+            continue;
+        };
+        let where_ = region.map_or_else(|| "the start".to_string(), |r| format!("slice set {r}"));
+        out.push(match read(f[3]).and_then(|text| a.add_slice_values(base, group, &text)) {
+            Ok(0) => continue,
+            Ok(n) => format!(
+                "⭐ script bridge: activity {} ({}): {n} served values from {} ({where_})",
+                a.index, a.activity, f[3]
+            ),
+            Err(e) => format!("⚠ activity {}: step list {} not used: {e}", a.index, f[3]),
+        });
+    }
+    out
 }
 
 /// Serve each scripted activity that `D1_AH_WORLD_TABLE` (`TABLE`, its text) names with the world
@@ -872,6 +951,25 @@ impl ScriptConfig {
                 std::fs::read_to_string(&p).map_err(|e| format!("{}: {e}", p.display()))
             };
             for line in apply_world_table(&mut activities, &table, base, &read) {
+                if line.starts_with('⚠') {
+                    tracing::warn!("script bridge: {line}");
+                } else {
+                    tracing::info!("{line}");
+                }
+            }
+        }
+        // The step schedule's slice lists (`D1_AH_SCRIPTS_SLICE_LISTS`, else `D1_AH_MISSION_STEPS`):
+        // the served values of the records a slice set adds (run fg2d: the Tower cinematic /6/1).
+        if let Some(path) = ["D1_AH_SCRIPTS_SLICE_LISTS", "D1_AH_MISSION_STEPS"]
+            .iter()
+            .find_map(|k| std::env::var(k).ok().filter(|p| !p.trim().is_empty()))
+        {
+            let steps = std::fs::read_to_string(&path).map_err(|e| format!("D1_AH_SCRIPTS_SLICE_LISTS {path}: {e}"))?;
+            let read = |entry: &str| {
+                let p = crate::sensor_list::listed_path(&path, entry);
+                std::fs::read_to_string(&p).map_err(|e| format!("{}: {e}", p.display()))
+            };
+            for line in apply_slice_lists(&mut activities, &steps, base, &read) {
                 if line.starts_with('⚠') {
                     tracing::warn!("script bridge: {line}");
                 } else {
@@ -1794,7 +1892,15 @@ impl ScriptBridge {
             Some(MappedRef { group, kind: r.type_id, index: r.type_index })
         };
         let ctx = EncodeContext { stamp_tick: self.rows.tick(now), machine: run.activity.machine() };
-        let base = self.rows.get(&key).cloned();
+        // The base image a change builds on: the row's served value (the world's list, the table's
+        // current value), else the step schedule's value for the record, else the bare row. The
+        // scripts change only the fields they own (a cinematic's start, counter and playing).
+        let held = self.rows.get(&key).cloned();
+        let base = held
+            .clone()
+            .filter(|r| r.a.is_some() || r.b.is_some())
+            .or_else(|| run.activity.served_value(&key))
+            .or(held);
         match self.encoders.encode(key, &c.kind, &c.state, base.as_ref(), ctx, &map) {
             Encoded::Row(row) => {
                 self.rows.set(key, row);
@@ -2292,6 +2398,11 @@ mod tests {
         Some((u32_at(i, 0), u32_at(i, 4), i[8]))
     }
 
+    fn cinematic_of_row(r: &Row) -> Option<(u32, u32, u8)> {
+        let i = &r.a.as_ref()?.1;
+        Some((u32_at(i, 0), u32_at(i, 4), i[8]))
+    }
+
     fn u32_at(b: &[u8], at: usize) -> u32 {
         u32::from_le_bytes(b[at..at + 4].try_into().unwrap())
     }
@@ -2454,6 +2565,11 @@ mod tests {
             let lines = apply_world_table(&mut activities, &world_table, &lab_base(), &read);
             assert_eq!(lines.len(), 1, "one row of the table names a scripted activity: {lines:?}");
             assert!(lines[0].starts_with("⭐"), "{}", lines[0]);
+            // The profile's D1_AH_SCRIPTS_SLICE_LISTS: the step schedule that plays.
+            let steps = std::fs::read_to_string(mission.join("cine-reveal-steps.txt")).unwrap();
+            let lines = apply_slice_lists(&mut activities, &steps, &lab_base(), &read);
+            assert_eq!(lines.len(), 1, "only the move-26 list adds a record: {lines:?}");
+            assert!(lines[0].contains("1 served values from cine_reveal-move-26.txt (slice set 26)"), "{}", lines[0]);
         }
         activities.remove(&165).unwrap()
     }
@@ -2624,6 +2740,9 @@ mod tests {
                 move_26_list().iter().map(|(k, _)| *k).chain([RowKey { group: GROUP, kind: 0x10, index: 3 }]).collect();
             assert_eq!(keys, want, "the step schedule's move-26 list, record for record, and the lifetime");
             assert_eq!(cinematic_of(moved, 1).map(|c| (c.1, c.2)), Some((1, 0)), "/6/1 idle, its current value");
+            // Run fg2d: /6/1 is the step schedule's idle image byte for byte (its one-element cast).
+            let image = |rows: &[(RowKey, Row)]| rows.iter().find(|(k, _)| *k == tower).and_then(|(_, r)| r.a.clone());
+            assert_eq!(image(&moved.entries), image(&move_26_list()), "/6/1 idle = cine_reveal-move-26.txt's");
             assert_eq!(lifetime_of(moved), Some(4), "the current lifetime");
         }
         assert!(b.rows().is_listed(&tower), "/6/1 is in the list the client holds");
@@ -2633,6 +2752,17 @@ mod tests {
             let play = s.frames.iter().rev().find(|p| cinematic_of(p, 1).is_some_and(|c| c.2 == 1)).expect("the Tower cinematic plays");
             assert!(!play.full, "a delta, once the client holds the record");
             assert_eq!(cinematic_of(play, 1).map(|c| c.1), Some(2), "counter 1 -> 2");
+            // The play is built on that idle image: cine_reveal-play-1.txt's /6/1 byte for byte but
+            // the start (+0), which is the stamp - 1 as the live hosts sent it (the fixture's 0;
+            // /6/0's play was built the same way and the client started it in fg2c and fg2d).
+            let (tag, ours) = play.entries.iter().find(|(k, _)| *k == tower).and_then(|(_, r)| r.a.clone()).unwrap();
+            let (want_tag, want) = play_1_list().into_iter().find(|(k, _)| *k == tower).and_then(|(_, r)| r.a).unwrap();
+            assert_eq!(tag, want_tag);
+            assert_eq!(ours.len(), want.len());
+            assert_eq!(&ours[4..], &want[4..], "counter 2, playing, and the same cast");
+            assert_eq!(&want[..4], &[0; 4]);
+            assert!(u32_at(&ours, 0) > 0, "start = the stamp - 1");
+            assert_eq!(ours[0x9C], 1, "a one-element cast");
         }
         assert!(b.take_incident().is_some(), "the completion envelope");
 
@@ -2677,6 +2807,13 @@ mod tests {
         p.clients.iter().map(Row::from_client).collect()
     }
 
+    /// The step schedule's list when /6/1 plays (`cine_reveal-play-1.txt`).
+    fn play_1_list() -> Vec<(RowKey, Row)> {
+        let text = std::fs::read_to_string(fixtures().join("mission/cine_reveal-play-1.txt")).unwrap();
+        let p = crate::sensor_list::params_for_list(&lab_base(), GROUP, -1, &text).unwrap();
+        p.clients.iter().map(Row::from_client).collect()
+    }
+
     /// Slice set 26's generated list has /6/1, and the world's list plus it is the step schedule's
     /// move-26 list record for record (22): the same records and flags, and the same values but
     /// the two cinematics' (move-26 serves /6/0 done and /6/1 idle; ours carry the script's).
@@ -2697,13 +2834,17 @@ mod tests {
         assert_eq!(sorted(&ours), sorted(&theirs), "the same records with the same flags");
         for (k, r) in &theirs {
             let mine = &ours.iter().find(|(m, _)| m == k).unwrap().1;
-            if k.kind == 6 {
-                assert!(r.a.is_some(), "move-26 serves {k}'s value");
+            if *k == (RowKey { group: CINE, kind: 6, index: 0 }) {
+                assert_eq!(cinematic_of_row(r), Some((0, 4, 0)), "move-26 serves /6/0 done");
+                assert_eq!(cinematic_of_row(mine), Some((0, 1, 0)), "the world's /6/0 idle; the scripts set it");
             } else {
-                assert_eq!(mine, r, "{k}");
+                assert_eq!(mine, r, "{k}: the same value, /6/1's from the step schedule's move-26 list");
             }
         }
         assert_eq!(reveal.slice_list(25).map(|l| l.len()), Some(21), "25 adds nothing to the world's list");
+        // Without the step schedule's lists /6/1 has no served value: the fg2d case.
+        let bare = profile_reveal(false);
+        assert!(bare.served_value(&tower).is_none());
         assert_eq!(reveal.slice_list(99), None);
     }
 
