@@ -700,6 +700,7 @@ impl ScriptedActivity {
                 rows.push((*k, self.served_value(k).unwrap_or_else(|| r.clone())));
             }
         }
+        live_trigger_defaults(&mut rows);
         Some(rows)
     }
 
@@ -793,6 +794,87 @@ pub struct ScriptConfig {
     /// [`LIST_RETRIES`] times), and the start cushion counts from the answer. `None`: the cushion
     /// counts from the first full list, and nothing is re-sent. ⚠ A stand-in.
     pub list_retry: Option<Duration>,
+    /// `D1_AH_SCRIPTS_WORLD_LOOT` (F42): world-loot drops the host announces when the scripts
+    /// create their row (the starter rifle's `o_weapon`).
+    pub world_loot: Vec<WorldLoot>,
+}
+
+/// A world-loot drop the host announces with incident 1851 (`gather_material`, body `0x80800CB6`)
+/// when the scripts create its row: in 56578 the loot exists only once the host announces it, and
+/// the client claims it with service 601 (notes/ps4-56578-blockers-2026-10-26.md).
+#[derive(Clone, Debug, PartialEq)]
+pub struct WorldLoot {
+    pub activity: u16,
+    pub row: RowKey,
+    /// The nonce `{key, id}` the claim names (the character's pending loot record).
+    pub key: u32,
+    pub id: u64,
+    pub position: [f32; 3],
+    /// The world field: the bubble the loot spawns in (the client spawns it only there).
+    pub world: u32,
+}
+
+/// The world-loot drop incident (`gather_material`) and its body's tag.
+pub const WORLD_LOOT_CHAIN: &[u32] = &[1851];
+pub const WORLD_LOOT_TAG: u32 = 0x8080_0CB6;
+
+impl WorldLoot {
+    /// `activity group/kind/index key id x y z world` lines (`#` comments), as
+    /// `D1_AH_SCRIPTS_WORLD_LOOT` names.
+    pub fn parse_table(text: &str) -> Result<Vec<Self>, String> {
+        fn num(v: &str) -> Option<u64> {
+            match v.strip_prefix("0x") {
+                Some(h) => u64::from_str_radix(h, 16).ok(),
+                None => v.parse().ok(),
+            }
+        }
+        text.lines()
+            .map(|l| l.split('#').next().unwrap_or("").trim())
+            .filter(|l| !l.is_empty())
+            .map(|l| {
+                let f: Vec<&str> = l.split_whitespace().collect();
+                let bad = || format!("world loot line {l:?}: want activity group/kind/index key id x y z world");
+                if f.len() != 8 {
+                    return Err(bad());
+                }
+                let r: Vec<&str> = f[1].split('/').collect();
+                if r.len() != 3 {
+                    return Err(bad());
+                }
+                let row = RowKey {
+                    group: num(r[0]).ok_or_else(bad)? as u32,
+                    kind: num(r[1]).ok_or_else(bad)? as u8,
+                    index: r[2].parse().map_err(|_| bad())?,
+                };
+                let f32_at = |i: usize| f[i].parse::<f32>().map_err(|_| bad());
+                Ok(Self {
+                    activity: f[0].parse().map_err(|_| bad())?,
+                    row,
+                    key: num(f[2]).ok_or_else(bad)? as u32,
+                    id: num(f[3]).ok_or_else(bad)?,
+                    position: [f32_at(4)?, f32_at(5)?, f32_at(6)?],
+                    world: num(f[7]).ok_or_else(bad)? as u32,
+                })
+            })
+            .collect()
+    }
+
+    /// The `0x80800CB6` image: nonce `{key @0, flag @8, id @0x10}`, the recipient (an empty handle
+    /// at `+0x18`, the id at `+0x40`), the position at `+0x60` (w 1.0) and the world at `+0x70`
+    /// (`lab/history/lab-scripts-2026-10-29/lootbody.py`, which the step schedule's drop used).
+    pub fn image(&self, recipient: u64) -> Vec<u8> {
+        let mut b = vec![0u8; 128];
+        b[0..4].copy_from_slice(&self.key.to_le_bytes());
+        b[8] = 1;
+        b[0x10..0x18].copy_from_slice(&self.id.to_le_bytes());
+        b[0x18..0x20].fill(0xFF);
+        b[0x40..0x48].copy_from_slice(&recipient.to_le_bytes());
+        for (i, v) in self.position.iter().chain([1.0f32].iter()).enumerate() {
+            b[0x60 + 4 * i..0x64 + 4 * i].copy_from_slice(&v.to_le_bytes());
+        }
+        b[0x70..0x74].copy_from_slice(&self.world.to_le_bytes());
+        b
+    }
 }
 
 /// `D1_AH_SCRIPTS_LIST_RETRY`, in seconds; `0` turns the retry and the udt 6 gate off.
@@ -814,6 +896,67 @@ fn seconds_knob(name: &str, value: Option<&str>, default: f64) -> Result<Duratio
             .filter(|s| s.is_finite() && *s >= 0.0)
             .map(Duration::from_secs_f64)
             .ok_or_else(|| format!("{name}={v:?}: want seconds, 0 or more")),
+    }
+}
+
+/// The image the live mission host served for a player trigger no script had set: enabled, arming
+/// 0. In A Guardian Rises' capture every trigger in the gameplay list went out so
+/// (`0x992BB471/0x1D/30`, `/31`, `/32`, `/37`, `/42` at its first gameplay frame), and the client
+/// fired `/30` on entering its volume; the host then sent it with a new arming (`0x0707`).
+pub const LIVE_TRIGGER_IMAGE: [u8; 8] = [1, 0, 0, 0, 0, 0, 0, 0];
+
+/// Give each player trigger (kind 0x1D) that a list names with an A value but serves none the
+/// live host's image ([`LIVE_TRIGGER_IMAGE`]). Without it the record goes out at the default,
+/// which the client holds disabled, so it never fires: run agr2 walked into the Wall and phase 1's
+/// `pt_first_obj` (`0x992BB471/0x1D/30`) never reported (F36). The scripts only arm a trigger they
+/// `enable()`/`reset()`; one they only poll was armed by the host's list. Returns how many.
+pub fn live_trigger_defaults(rows: &mut [(RowKey, Row)]) -> usize {
+    use crate::row_encoders as re;
+    let mut n = 0;
+    for (k, r) in rows.iter_mut() {
+        if k.kind == re::KIND_PLAYER_TRIGGER && r.has_a && r.a.is_none() {
+            r.a = Some((re::TAG_PLAYER_TRIGGER, LIVE_TRIGGER_IMAGE.to_vec()));
+            n += 1;
+        }
+    }
+    n
+}
+
+/// `D1_AH_DUMP_FRAMES=<file>` (a diagnostic): each udt 5 frame the bridge sends is appended as a
+/// JSON line, `{stamp, full, frame, entries: [[row, tag, image hex]...]}`, so a run's frames can be
+/// read back with the client's own codec (`tools/ps4_setup/d1-frames.py`). Unset: nothing. The
+/// frames carry the player's machine id (the join grant): write them outside the repository.
+fn dump_path() -> Option<&'static std::path::PathBuf> {
+    static PATH: std::sync::OnceLock<Option<std::path::PathBuf>> = std::sync::OnceLock::new();
+    PATH.get_or_init(|| std::env::var_os("D1_AH_DUMP_FRAMES").filter(|v| !v.is_empty()).map(Into::into)).as_ref()
+}
+
+/// The host's own udt 5 frames (mission steps, the lab list) for `D1_AH_DUMP_FRAMES`: `{source:
+/// "host", frame}` lines, beside the bridge's.
+pub fn dump_host_frame(bytes: &[u8]) {
+    let Some(path) = dump_path() else { return };
+    let hex: String = bytes.iter().map(|x| format!("{x:02x}")).collect();
+    use std::io::Write;
+    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+        let _ = writeln!(f, "{}", serde_json::json!({"source": "host", "frame": hex}));
+    }
+}
+
+fn dump_frame(stamp: u32, plan: &FramePlan, bytes: &[u8]) {
+    let Some(path) = dump_path() else { return };
+    let hex = |b: &[u8]| b.iter().map(|x| format!("{x:02x}")).collect::<String>();
+    let entries: Vec<serde_json::Value> = plan
+        .entries
+        .iter()
+        .map(|(k, r)| match &r.a {
+            Some((tag, image)) => serde_json::json!([k.to_string(), format!("{tag:#010x}"), hex(image)]),
+            None => serde_json::json!([k.to_string(), null, null]),
+        })
+        .collect();
+    let line = serde_json::json!({"stamp": stamp, "full": plan.full, "authority": plan.authority.is_some(), "frame": hex(bytes), "entries": entries});
+    use std::io::Write;
+    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+        let _ = writeln!(f, "{line}");
     }
 }
 
@@ -1023,6 +1166,15 @@ impl ScriptConfig {
                 }
             }
         }
+        let world_loot = match std::env::var("D1_AH_SCRIPTS_WORLD_LOOT").ok().filter(|p| !p.trim().is_empty()) {
+            Some(path) => {
+                let text = std::fs::read_to_string(&path).map_err(|e| format!("D1_AH_SCRIPTS_WORLD_LOOT {path}: {e}"))?;
+                let drops = WorldLoot::parse_table(&text)?;
+                tracing::info!("script bridge: {} world-loot drops from {path} (D1_AH_SCRIPTS_WORLD_LOOT)", drops.len());
+                drops
+            }
+            None => Vec::new(),
+        };
         let start_delay = start_delay_from(std::env::var("D1_AH_SCRIPTS_START_DELAY").ok().as_deref())?;
         let arrival_cushion = arrival_cushion_from(std::env::var("D1_AH_SCRIPTS_ARRIVAL_CUSHION").ok().as_deref())?;
         let list_retry = list_retry_from(std::env::var("D1_AH_SCRIPTS_LIST_RETRY").ok().as_deref())?;
@@ -1063,6 +1215,7 @@ impl ScriptConfig {
             start_delay,
             arrival_cushion,
             list_retry,
+            world_loot,
         }))
     }
 }
@@ -1100,6 +1253,8 @@ struct Run {
     ended: bool,
     rewarded: bool,
     current_slice: Option<u32>,
+    /// F42: world-loot rows already announced in this run.
+    loot_announced: std::collections::BTreeSet<RowKey>,
     unsupported: std::collections::HashSet<String>,
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
@@ -1556,6 +1711,10 @@ impl ScriptBridge {
         let start = activity.start;
         let first = activity.initial_lifetime();
         let mut rows = activity.rows.clone();
+        let armed = live_trigger_defaults(&mut rows);
+        if armed > 0 {
+            tracing::info!("⭐ script bridge: {armed} player triggers in the world's list go out enabled at arming 0, as live (F36)");
+        }
         let authority = Self::personalise(
             &mut rows,
             activity.authority.clone(),
@@ -1591,6 +1750,7 @@ impl ScriptBridge {
             ended: false,
             rewarded: false,
             current_slice: None,
+            loot_announced: Default::default(),
             unsupported: Default::default(),
             lifetime_unsent: false,
             lifetime_sent: None,
@@ -1975,7 +2135,19 @@ impl ScriptBridge {
                 if let Some(n) = name.clone().filter(|n| !n.is_empty()) {
                     self.framework_events.push(crate::encounter_framework::Event::ScriptPhase(n));
                 }
+                // F37: the live AGR host asked for a slice set only within the bubble the client
+                // was in (113 -> 112 in bubble 14, 104 -> 105 in 13; the reveal's 25 -> 26 in 3).
+                // The client walked into 24, 96 and 104 itself, and the host sent no request; the
+                // list followed the client's own report (`activate_slice`). Run agr3's teleport
+                // into 24 reloaded the world under the player.
+                let here = run.current_slice.or(run.believed_slice);
+                let walked = region.zip(here).filter(|&(r, c)| r != c && r >> 3 != c >> 3);
                 match region {
+                    Some(r) if walked.is_some() => tracing::info!(
+                        "script bridge: phase {index} runs in region {r}, another bubble than the client's slice set {}: \
+                         the client walks there, so no teleport, and the list follows its report (F37)",
+                        walked.map_or(0, |(_, c)| c)
+                    ),
                     Some(r) if run.believed_slice == Some(r) => tracing::info!(
                         "script bridge: phase {index} runs in region {r}, where the client already is (or is loading); no teleport"
                     ),
@@ -1989,7 +2161,7 @@ impl ScriptBridge {
                 // list (the world's records and the set's own, current values) with the teleport,
                 // as the step schedule's move list does, so a row the scripts set there (fg2c: the
                 // Tower cinematic /6/1) is one the client holds, not one held back.
-                if let Some(r) = region.filter(|r| run.list_slice.is_some() && run.list_slice != Some(*r)) {
+                if let Some(r) = region.filter(|r| walked.is_none() && run.list_slice.is_some() && run.list_slice != Some(*r)) {
                     if let Some(list) = run.activity.slice_list(r) {
                         tracing::info!(
                             "script bridge: phase {index} moves the list to slice set {r} ({} rows, in full)",
@@ -2010,6 +2182,25 @@ impl ScriptBridge {
                         self.config.arrival_cushion.as_secs_f64()
                     );
                     run.arrival = Some(Arrival::Moving { region: r, since: now });
+                }
+                // The cinematic hold ends with the phase that held it (F35). BullShcript puts the
+                // lifetime in the hold when a phase's cinematic plays and never takes it out (only
+                // a script's set_state does; A Guardian Rises' never sets active), so run agr1 sat
+                // at 4 in the highway with no player. The live host went 4 → 3 as the intro phase
+                // ended: cinematics finished 473.3 s and 522.8 s, active 527.9 s. A playable
+                // activity whose new phase begins with no cinematic playing goes active; a
+                // cinematic-only one (the reveal) keeps the hold to its end (4, 6, 8).
+                // ⚠ The runtime itself still believes it is in the hold, so a later phase cinematic
+                // is not re-held on the wire.
+                if run.lifetime_state == 4
+                    && run.activity.end == EndKind::Gameplay
+                    && self.encoders.playing_cinematics().is_empty()
+                {
+                    tracing::info!(
+                        "⭐ script bridge: phase {index} begins with no cinematic playing: the cinematic hold ends, lifetime 4 -> 3 (F35)"
+                    );
+                    run.lifetime_state = 3;
+                    run.lifetime_unsent = true;
                 }
                 self.set_lifetime();
             }
@@ -2189,7 +2380,12 @@ impl ScriptBridge {
             .or(held);
         match self.encoders.encode(key, &c.kind, &c.state, base.as_ref(), ctx, &map) {
             Encoded::Row(row) => {
+                let created = key.kind == crate::row_encoders::KIND_OBJECT
+                    && row.a.as_ref().is_some_and(|(_, image)| image.get(8) == Some(&1));
                 self.rows.set(key, row);
+                if created {
+                    self.world_loot_due(key);
+                }
             }
             Encoded::Unsupported(why) => {
                 let run = self.run.as_mut().expect("checked");
@@ -2275,6 +2471,27 @@ impl ScriptBridge {
     }
 
     /// A completion body came back from the codec: its envelope is ready to send.
+    /// F42: the scripts created `key`; if it is a world-loot drop of this activity not yet
+    /// announced in this run, announce it (incident 1851 with its `0x80800CB6` body, recipient =
+    /// this host's id).
+    fn world_loot_due(&mut self, key: RowKey) {
+        let Some(run) = self.run.as_mut() else { return };
+        let Some(drop) = self.config.world_loot.iter().find(|d| d.activity == run.activity.index && d.row == key).cloned() else {
+            return;
+        };
+        if !run.loot_announced.insert(key) {
+            return;
+        }
+        tracing::info!(
+            "⭐ script bridge: {key} created: world-loot drop {{{}, {:#x}}} at {:?} in world {} (incident 1851, F42)",
+            drop.key, drop.id, drop.position, drop.world
+        );
+        self.bodies_pending.push_back(WORLD_LOOT_CHAIN);
+        let image = drop.image(self.host_id);
+        let codec = self.codec.get_or_insert_with(|| (self.config.codec)());
+        codec.submit(CodecJob::Object { tag: WORLD_LOOT_TAG, image });
+    }
+
     fn body_done(&mut self, r: Result<(u32, Vec<u8>), String>) {
         let Some(chain) = self.bodies_pending.pop_front() else { return };
         match r.and_then(|(bits, payload)| crate::completion::envelope(chain, &payload, bits)) {
@@ -2317,6 +2534,7 @@ impl ScriptBridge {
                     }
                     self.codec_retry = None;
                     self.frames_sent += 1;
+                    dump_frame(stamp, &plan, &f.bytes);
                     tracing::info!(
                         "udt 5 {} ({} rows, stamp {stamp})",
                         if plan.full { "full list, init" } else { "delta" },
@@ -2660,6 +2878,7 @@ mod tests {
             start_delay,
             arrival_cushion: Duration::ZERO,
             list_retry: None,
+            world_loot: Vec::new(),
         };
         let s = shared.clone();
         ScriptBridge::with_launcher(
@@ -3229,6 +3448,24 @@ mod tests {
         assert!(!b.holding_for_arrival(), "taken as arrived after the timeout");
     }
 
+    /// F37 (run agr3): the live host moved the client only within its bubble; a phase in another
+    /// bubble waits for the client to walk there, with no teleport and no held clock.
+    #[test]
+    fn a_phase_in_another_bubble_is_walked_to_not_teleported() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_delayed(&shared, false, false, profile_reveal(true), Duration::ZERO);
+        b.set_served_start(Some(25));
+        let mut t = Instant::now();
+        b.on_client_message(&join(3), 165, HOST, t);
+        run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+        b.on_client_message(&slice(8), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        assert_eq!(b.take_region_request(), None, "26 is in bubble 3, the client in bubble 1: no teleport");
+        assert!(!b.holding_for_arrival(), "the scripts' clock runs on");
+    }
+
     fn stamp_of(f: &[u8]) -> u32 {
         ((u64::from_be_bytes([0, 0, 0, f[1], f[2], f[3], f[4], f[5]]) >> 7) & 0xFFFF_FFFF) as u32
     }
@@ -3563,7 +3800,9 @@ mod tests {
         let s = shared.lock().unwrap();
         let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
         seq.dedup();
-        assert_eq!(seq, [0, 1, 4, 6, 7], "gameplay: results 6, then the post-game 7");
+        // The phase move to 26 begins with no cinematic playing, so a gameplay activity leaves the
+        // cinematic hold there (F35, live A Guardian Rises: 4 → 3 as its intro phase ended).
+        assert_eq!(seq, [0, 1, 4, 3, 6, 7], "gameplay: the hold ends with its phase; results 6, then the post-game 7");
         assert_eq!(&s.bodies[0].1[0x68..0x70], [1, 0, 0, 0, 1, 0, 0, 0], "completion counters 1, 1");
     }
 
@@ -3816,5 +4055,40 @@ mod tests {
         assert_eq!(a.world, "cine_reveal", "the activity name when world= is absent");
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=0", &base(), &read).is_err());
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=70000:0x1", &base(), &read).is_err());
+    }
+
+    #[test]
+    fn world_loot_parses_and_builds_the_step_schedules_drop_body_image() {
+        let table = "# the starter rifle\n164 0x992bb471/0x4/6 1 0x827dbaf0 410.644 -794.385 17.723 3  # o_weapon\n";
+        let drops = WorldLoot::parse_table(table).unwrap();
+        assert_eq!(drops.len(), 1);
+        let d = &drops[0];
+        assert_eq!((d.activity, d.row, d.key, d.id, d.world), (164, RowKey { group: 0x992b_b471, kind: 4, index: 6 }, 1, 0x827d_baf0, 3));
+        let img = d.image(0xD1A0_0000_0000_0001);
+        assert_eq!(img.len(), 128);
+        assert_eq!((&img[0..4], img[8], &img[0x10..0x18]), (&[1u8, 0, 0, 0][..], 1, &0x827d_baf0u64.to_le_bytes()[..]));
+        assert_eq!((&img[0x18..0x20], &img[0x40..0x48]), (&[0xFFu8; 8][..], &0xD1A0_0000_0000_0001u64.to_le_bytes()[..]));
+        assert_eq!(f32::from_le_bytes(img[0x60..0x64].try_into().unwrap()), 410.644);
+        assert_eq!((f32::from_le_bytes(img[0x6C..0x70].try_into().unwrap()), &img[0x70..0x74]), (1.0, &[3u8, 0, 0, 0][..]));
+        assert!(WorldLoot::parse_table("164 0x992bb471/0x4 1 2 0 0 0 3").is_err(), "a bad row");
+    }
+
+    #[test]
+    fn an_unset_player_trigger_goes_out_enabled_at_arming_0_as_live() {
+        use crate::row_encoders as re;
+        let key = |kind, index| RowKey { group: 0x992b_b471, kind, index };
+        let row = |a: Option<(u32, Vec<u8>)>| Row { has_a: true, has_b: false, a, b: None };
+        let set = (re::TAG_PLAYER_TRIGGER, vec![1, 0, 0, 0, 7, 7, 0, 0]);
+        let mut rows = vec![
+            (key(0x1d, 30), row(None)),
+            (key(0x1d, 31), row(Some(set.clone()))),
+            (key(0x1d, 32), Row { has_a: false, has_b: false, a: None, b: None }),
+            (key(0x6, 1), row(None)),
+        ];
+        assert_eq!(live_trigger_defaults(&mut rows), 1);
+        assert_eq!(rows[0].1.a, Some((re::TAG_PLAYER_TRIGGER, LIVE_TRIGGER_IMAGE.to_vec())), "the live image");
+        assert_eq!(rows[1].1.a, Some(set), "a served value stays");
+        assert_eq!(rows[2].1.a, None, "a record with no A value has none");
+        assert_eq!(rows[3].1.a, None, "only triggers");
     }
 }

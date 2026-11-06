@@ -9,6 +9,11 @@
     d1-srcp.py mission CAPTURE.pcap [...] [--activity-table TSV]  (what a host needs: activity, world, start, groups)
     d1-srcp.py hosts CAPTURE.pcap [...] [--activity-table TSV]    (the same for every host naming an activity, as TSV)
     d1-srcp.py regions CAPTURE.pcap                     (the PAH region records, udt 11, as they change)
+    d1-srcp.py moves CAPTURE.pcap                       (the host's slice-set requests, udt 11, and the
+                                                        slice sets the client reports, udt 21: which moves
+                                                        the host asked for and which the client walked)
+    d1-srcp.py values CAPTURE.pcap --kind 0x1d [--group G] [--tag T]  (each sensor row's decoded value
+                                                        as it changes; the tag defaults by kind)
     d1-srcp.py export CAPTURE.pcap --out PRIVATE.jsonl  (every activity-host message, hex body)
     d1-srcp.py matchmaking CAPTURE.pcap [...]           (message 42/43 protobuf shapes, values redacted)
     d1-srcp.py investment CAPTURE.pcap [...] [--skip 702]  (BAP 10/11 investment requests and replies,
@@ -198,6 +203,39 @@ def lifetime_changes(rows):
         if value is not None and last.get(key) != value:
             last[key] = value
             out.append((t, host, group, sub, value))
+    return out
+
+
+# The host's group slice-set request in replicate_membership (udt 11): {u3 state, {u8, i10 index,
+# u32 name hash}} at group block +0x2E48, field +0x21C8 (messages.rs GROUP_SLICE_REQUEST). The
+# client's own slice set in client_authoritative_data_update (udt 21): +0xB8 index, +0xBC hash.
+SLICE_REQUEST, CLIENT_SLICE = 0x2E48 + 0x21C8, 0xB8
+# Value tags by sensor kind, for `values` (row_encoders.rs).
+KIND_TAGS = {0x1D: 0x80800463, 0x10: LIFETIME_TAG}
+
+
+def slice_request(im):
+    """(state, slice-set index, name hash) of the host's request in a udt 11 image, or None."""
+    if len(im) < SLICE_REQUEST + 16:
+        return None
+    return (im[SLICE_REQUEST], struct.unpack_from('<I', im, SLICE_REQUEST + 8)[0] & 0x3FF,
+            struct.unpack_from('<I', im, SLICE_REQUEST + 12)[0])
+
+
+def client_slice(im):
+    """(slice-set index, name hash) the client reports in a udt 21 image, or None."""
+    if len(im) < CLIENT_SLICE + 8:
+        return None
+    return struct.unpack_from('<I', im, CLIENT_SLICE)[0] & 0x3FF, struct.unpack_from('<I', im, CLIENT_SLICE + 4)[0]
+
+
+def value_changes(rows):
+    """[(t, key, value)] where each key's value changes (None values are skipped)."""
+    out, last = [], {}
+    for t, key, value in rows:
+        if value is not None and last.get(key) != value:
+            last[key] = value
+            out.append((t, key, value))
     return out
 
 
@@ -579,13 +617,16 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'lifetime', 'sessions', 'mission',
                                         'hosts', 'regions', 'export', 'matchmaking', 'investment', 'queuez',
-                                        'stacks', 'current'))
+                                        'stacks', 'current', 'moves', 'values'))
     ap.add_argument('--skip', default='702',
                     help='investment: service ids to leave out (comma-separated; default 702, the periodic one)')
     ap.add_argument('capture', type=Path, nargs='+')
     ap.add_argument('--dir', choices=('s2c', 'c2s'), default='s2c')
     ap.add_argument('--out', type=Path)
     ap.add_argument('--host', help='only the activity host whose id ends in these hex digits')
+    ap.add_argument('--kind', type=lambda v: int(v, 0), help='values: the sensor kind (0x1d = player triggers)')
+    ap.add_argument('--group', type=lambda v: int(v, 0), help='values: only this group hash')
+    ap.add_argument('--tag', type=lambda v: int(v, 0), help='values: the value tag (default by kind)')
     ap.add_argument('--activity-table', type=Path,
                     help='mission: the client\'s index -> activity hash TSV (activity-table.tsv)')
     a = ap.parse_args()
@@ -679,6 +720,29 @@ def main():
         for k, n in sorted(c.items()):
             host, d, udt = k
             print(f'host {host:#018x} {d} udt {udt:3}  x{n:<5} {first[k]:7.1f}-{last[k]:7.1f} s')
+    elif a.command == 'moves':
+        rows = []
+        for udt, d, label, read in ((11, 's2c', 'host request', slice_request), (21, 'c2s', 'client in', client_slice)):
+            mine = [m for m in msgs if m[1] == d and m[4] == udt]
+            for m, w in zip(mine, decode_ordered((f'{m[3]:x}', udt, m[5]) for m in mine)):
+                if w:
+                    rows.append((m[0], (m[3], label), read(image(w))))
+        for t, (host, label), v in sorted(value_changes(sorted(rows, key=lambda r: r[0])), key=lambda r: r[0]):
+            what = f'state {v[0]} slice set {v[1]} hash {v[2]:#010x}' if len(v) == 3 else f'slice set {v[0]} hash {v[1]:#010x}'
+            print(f'{t:8.1f} host ..{host & 0xFFFF:04x} {label:12} {what}')
+    elif a.command == 'values':
+        if a.kind is None or (a.tag or KIND_TAGS.get(a.kind)) is None:
+            ap.error('values needs --kind (and --tag for kinds without a default)')
+        tag = a.tag or KIND_TAGS[a.kind]
+        mine = [m for m in msgs if m[1] == 's2c' and m[4] == SENSOR]
+        frames = sensor_frames(body for *_, body in mine)
+        rows = [(t, host, int(str(e['hash']), 0), e['sub'], e['body'])
+                for t, d, peer, host, udt, body in mine for e in (frames[body] or {}).get('entries', [])
+                if e['i8'] == a.kind and (a.group is None or int(str(e['hash']), 0) == a.group)]
+        values = sensor_values(tag, [r[4] for r in rows])
+        for t, (host, group, sub), image_hex in value_changes(
+                (t, (host, group, sub), (values.get(b) or {}).get('image')) for t, host, group, sub, b in rows):
+            print(f'{t:8.1f} host ..{host & 0xFFFF:04x} {group:#010x}/{a.kind:#x}/{sub} {image_hex}')
     elif a.command == 'regions':
         mine = [m for m in msgs if m[1] == 's2c' and m[4] == 11]
         last = {}

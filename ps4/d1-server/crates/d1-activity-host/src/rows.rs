@@ -86,6 +86,22 @@ impl Row {
     }
 }
 
+/// Give `row` the client's shape for its record: whether the entry has an A and a B part. A value
+/// the shape has no part for is dropped. F40: run agr13's Breach list sent its 27 squads (kind 1,
+/// `has_b`) without the B-presence bit, 2 bits where the step schedule's frame had 3, because the
+/// scripts set them before the list named them; no Breach trigger ever reported until the list's
+/// shape won.
+pub fn reshape(row: &mut Row, has_a: bool, has_b: bool) {
+    row.has_a = has_a;
+    row.has_b = has_b;
+    if !has_a {
+        row.a = None;
+    }
+    if !has_b {
+        row.b = None;
+    }
+}
+
 /// What the next frame must carry.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FramePlan {
@@ -185,7 +201,13 @@ impl RowTable {
     pub fn relist(&mut self, rows: Vec<(RowKey, Row)>, keep: &[RowKey]) {
         self.listed = rows.iter().map(|(k, _)| *k).chain(keep.iter().copied()).collect();
         for (k, r) in rows {
-            self.rows.entry(k).or_insert(r);
+            match self.rows.get_mut(&k) {
+                // The list is the client's own shape for the record (F40).
+                Some(held) => reshape(held, r.has_a, r.has_b),
+                None => {
+                    self.rows.insert(k, r);
+                }
+            }
         }
         self.dirty.clear();
         self.held_logged.clear();
@@ -212,7 +234,12 @@ impl RowTable {
     }
 
     /// Set a row. Returns whether it changed (and so will be in the next delta).
-    pub fn set(&mut self, key: RowKey, row: Row) -> bool {
+    pub fn set(&mut self, key: RowKey, mut row: Row) -> bool {
+        // A row the table holds keeps its shape: the encoders take `has_b` from the row they build
+        // on, so a value set before the client's list named the record had none (F40).
+        if let Some(held) = self.rows.get(&key) {
+            reshape(&mut row, held.has_a, held.has_b);
+        }
         if self.rows.get(&key) == Some(&row) {
             return false;
         }
@@ -354,6 +381,23 @@ mod tests {
 
     fn names(p: &FramePlan) -> Vec<i16> {
         p.entries.iter().map(|(k, _)| k.index).collect()
+    }
+
+    #[test]
+    fn the_lists_shape_wins_over_a_value_set_before_it() {
+        let k = RowKey { group: 0xfc0e_45a3, kind: 1, index: 36 };
+        let mut t = RowTable::new(0);
+        t.load_world(Vec::new(), None);
+        // The scripts set the squad while no list named it: the encoder gave it no B part.
+        t.set(k, Row { has_a: true, has_b: false, a: None, b: None });
+        t.relist(vec![(k, Row { has_a: true, has_b: true, a: None, b: None })], &[]);
+        assert!(t.get(&k).unwrap().has_b, "the client's list has a B part for squads");
+        t.set(k, Row { has_a: true, has_b: false, a: Some((1, vec![1])), b: None });
+        let r = t.get(&k).unwrap();
+        assert!(r.has_b && r.a == Some((1, vec![1])), "a later value keeps the shape");
+        let mut odd = Row { has_a: true, has_b: true, a: Some((1, vec![1])), b: Some((2, vec![2])) };
+        reshape(&mut odd, false, false);
+        assert_eq!(odd, Row { has_a: false, has_b: false, a: None, b: None }, "a part the shape lacks is dropped");
     }
 
     #[test]

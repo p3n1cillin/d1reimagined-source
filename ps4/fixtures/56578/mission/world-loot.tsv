@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# World-loot drops the activity host announces when a mission's scripts create their row
+# (D1_AH_SCRIPTS_WORLD_LOOT, the script bridge; F42 in notes/ps4-56578-full-game-test-2026-11-06.md).
+# In 56578 the loot exists only once the host announces it with incident 1851 (gather_material,
+# body 0x80800CB6); the client claims it with service 601 and the responder grants the item
+# (D1_LOOT_GRANT). The nonce must match the character's pending loot record.
+#
+# activity  row                 key  id          x        y         z       world
+# A Guardian Rises: the starter rifle, o_weapon (cosmo_m0_phase01_breach). The placement is the
+# reference's (notes/checkpoint-2026-10-08-mission.md, JOIN208: o_weapon at (410.644, -794.385,
+# 17.723)); the nonce {1, crc32("starter_rifle") = 0x827dbaf0} is the tutorial profile's pending
+# Khvostov (characters/profile-tutorial-t.bin) and the step schedule's drop
+# (agr-steps-divide.txt step 11). World 3: The Breach's bubble.
+164         0x992bb471/0x4/6    1    0x827dbaf0  410.644  -794.385  17.723  3
