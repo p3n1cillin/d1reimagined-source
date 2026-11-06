@@ -2003,7 +2003,19 @@ impl ScriptBridge {
                 if let Some(n) = name.clone().filter(|n| !n.is_empty()) {
                     self.framework_events.push(crate::encounter_framework::Event::ScriptPhase(n));
                 }
+                // F37: the live AGR host asked for a slice set only within the bubble the client
+                // was in (113 -> 112 in bubble 14, 104 -> 105 in 13; the reveal's 25 -> 26 in 3).
+                // The client walked into 24, 96 and 104 itself, and the host sent no request; the
+                // list followed the client's own report (`activate_slice`). Run agr3's teleport
+                // into 24 reloaded the world under the player.
+                let here = run.current_slice.or(run.believed_slice);
+                let walked = region.zip(here).filter(|&(r, c)| r != c && r >> 3 != c >> 3);
                 match region {
+                    Some(r) if walked.is_some() => tracing::info!(
+                        "script bridge: phase {index} runs in region {r}, another bubble than the client's slice set {}: \
+                         the client walks there, so no teleport, and the list follows its report (F37)",
+                        walked.map_or(0, |(_, c)| c)
+                    ),
                     Some(r) if run.believed_slice == Some(r) => tracing::info!(
                         "script bridge: phase {index} runs in region {r}, where the client already is (or is loading); no teleport"
                     ),
@@ -2017,7 +2029,7 @@ impl ScriptBridge {
                 // list (the world's records and the set's own, current values) with the teleport,
                 // as the step schedule's move list does, so a row the scripts set there (fg2c: the
                 // Tower cinematic /6/1) is one the client holds, not one held back.
-                if let Some(r) = region.filter(|r| run.list_slice.is_some() && run.list_slice != Some(*r)) {
+                if let Some(r) = region.filter(|r| walked.is_none() && run.list_slice.is_some() && run.list_slice != Some(*r)) {
                     if let Some(list) = run.activity.slice_list(r) {
                         tracing::info!(
                             "script bridge: phase {index} moves the list to slice set {r} ({} rows, in full)",
@@ -3274,6 +3286,24 @@ mod tests {
         assert!(b.holding_for_arrival());
         run_for(&mut b, &mut t, 2.0, &mut Vec::new());
         assert!(!b.holding_for_arrival(), "taken as arrived after the timeout");
+    }
+
+    /// F37 (run agr3): the live host moved the client only within its bubble; a phase in another
+    /// bubble waits for the client to walk there, with no teleport and no held clock.
+    #[test]
+    fn a_phase_in_another_bubble_is_walked_to_not_teleported() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_delayed(&shared, false, false, profile_reveal(true), Duration::ZERO);
+        b.set_served_start(Some(25));
+        let mut t = Instant::now();
+        b.on_client_message(&join(3), 165, HOST, t);
+        run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+        b.on_client_message(&slice(8), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        assert_eq!(b.take_region_request(), None, "26 is in bubble 3, the client in bubble 1: no teleport");
+        assert!(!b.holding_for_arrival(), "the scripts' clock runs on");
     }
 
     fn stamp_of(f: &[u8]) -> u32 {
