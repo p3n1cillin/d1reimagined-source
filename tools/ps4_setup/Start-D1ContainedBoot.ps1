@@ -345,7 +345,9 @@ $shadLog = Join-Path $userDir 'log\shad_log.txt'
 $logPos = 0L; $inWizard = $false; $wizardTapCount = 0; $nextWizardTap = Get-Date; $nextLogRead = Get-Date
 $atTitle = $false; $titleStateTaps = 0; $nextTitleStateTap = Get-Date
 $end = $started.AddMinutes($Minutes)
-while (-not $emu.HasExited -and (Get-Date) -lt $end) {
+# A stuck run can end early and cleanly: create OUT\stop (as with -ServersOnly); the evidence still runs.
+$stopFile = Join-Path $out 'stop'
+while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -LiteralPath $stopFile)) {
     Start-Sleep -Milliseconds 500
     $emu.Refresh()
     $h = $emu.MainWindowHandle
@@ -395,7 +397,7 @@ $receipt.emulatorExitCode = if ($emu.HasExited) { $emu.ExitCode } else { $null }
 $receipt.endedUtc = [DateTime]::UtcNow.ToString('o')
 
 # -- evidence -------------------------------------------------------------------------------------
-New-Item -ItemType File -Path (Join-Path $out 'stop') | Out-Null
+New-Item -ItemType File -Path (Join-Path $out 'stop') -Force | Out-Null
 if ($LabIp) { Stop-WinServers } else { $server.WaitForExit(30000) | Out-Null }
 $receipt.serverHost = if ($LabIp) { 'windows' } else { 'wsl' }
 $receipt.serversStopped = Test-Path -LiteralPath (Join-Path $out 'servers-stopped.txt')
