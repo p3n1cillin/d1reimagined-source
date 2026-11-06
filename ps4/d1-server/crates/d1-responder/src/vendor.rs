@@ -420,6 +420,29 @@ fn apply(st: &mut State, vendor: u8, sale_index: u16) -> anyhow::Result<(String,
     Ok((format!("vendor {vendor} sale {sale_index}: item {} -> bucket {:#x}; costs {:?}", sale.item, sale.bucket, sale.costs), sidecar))
 }
 
+/// ⭐ Integration review findings 3, 14 and 25: with the player store on, the store is the one
+/// source of truth for the current profile, wallet, refund records and next item SOID. Every vendor
+/// op starts from it (a grant, an XP push or a completion may have changed it since this state's
+/// last publish), so an op never publishes a profile that lacks them, and an instance SOID the
+/// rewards minted is never minted again. The store's profile object is used when it is decoded.
+fn sync_from_store(st: &mut State) {
+    let Some((object, slots, instances, next, refunds)) = crate::player_store::view(|s| {
+        let a = &s.record.account;
+        (s.chr().profile_object.clone(), a.slots.clone(), a.slot_instances.clone(), a.next_item_soid, a.refunds.clone())
+    }) else {
+        return;
+    };
+    if let Some(o) = object.filter(|o| o.len() == st.profile.len()) {
+        st.profile = o;
+    }
+    st.account = slots;
+    st.account_instances = instances;
+    if let Some(n) = next {
+        st.next_soid = st.next_soid.max(n);
+    }
+    st.refunds = refunds;
+}
+
 /// Encode the account (only the intended fields, plus the inventory) and write both push files,
 /// then write the change through to the player store (when on): `what` is the change, `removed` a
 /// destroyed instance.
@@ -430,6 +453,9 @@ fn publish(st: &State, sidecar: Option<(u64, Vec<u8>)>, what: &str, removed: Opt
         std::fs::write(&p, &account)?;
     }
     if let Some(p) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(PathBuf::from) {
+        // One profile push at a time: a store push not yet delivered is not overwritten
+        // (integration review, finding 3).
+        crate::player_store::wait_for_push_taken();
         if let Some((soid, element)) = &sidecar {
             std::fs::write(p.with_extension("item"), element)?;
             std::fs::write(p.with_extension("soid"), format!("{soid:#x}"))?;
@@ -583,6 +609,7 @@ pub fn on_buy(req: Vec<u8>) {
             Err(_) => return,
         };
         let Some(st) = guard.as_mut() else { return };
+        sync_from_store(st);
         let result = (|| -> anyhow::Result<String> {
             let (vendor, sale, stamp) = decode_request(&st.oracle, &req)?;
             // ⭐ Stream I (D1_SOCIAL=1): the manifest's rules, decodes, bounties and Armsday.
@@ -705,6 +732,7 @@ pub fn on_equip(req: Vec<u8>) {
     std::thread::spawn(move || {
         let Ok(mut guard) = state().lock() else { return };
         let Some(st) = guard.as_mut() else { return };
+        sync_from_store(st);
         let result = (|| -> anyhow::Result<String> {
             let instance = decode_instance(&st.oracle, &req)?;
             // ⭐ Stream I (D1_SOCIAL=1): the game's equip rules (one exotic, class gear).
@@ -812,6 +840,7 @@ pub fn on_item_action(req: Vec<u8>) {
     std::thread::spawn(move || {
         let Ok(mut guard) = state().lock() else { return };
         let Some(st) = guard.as_mut() else { return };
+        sync_from_store(st);
         let result = (|| -> anyhow::Result<String> {
             let (instanced, instance, content, quantity) = decode_item_action(&st.oracle, &req)?;
             anyhow::ensure!(instanced && quantity == 0, "only an instanced item's dismantle is handled (instanced {instanced}, quantity {quantity})");
@@ -891,6 +920,7 @@ pub(crate) fn on_social(id: u16, req: Vec<u8>) {
     std::thread::spawn(move || {
         let Ok(mut guard) = state().lock() else { return };
         let Some(st) = guard.as_mut() else { return };
+        sync_from_store(st);
         let oracle = st.oracle.clone();
         let result = (|| -> anyhow::Result<String> {
             let op = crate::social_hooks::decode(id, &oracle, &req)?;

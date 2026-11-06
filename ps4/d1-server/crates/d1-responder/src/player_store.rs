@@ -1797,16 +1797,17 @@ fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyh
     anyhow::ensure!(crate::rewards::enabled(), "D1_REWARDS is off: the grant is not applied");
     let class = std::env::var("D1_CHARACTER_CLASS").ok().and_then(|v| v.trim().parse().ok()).unwrap_or(0);
     let template = std::env::var_os("D1_VENDOR_ITEM_TEMPLATE").and_then(|p| std::fs::read(p).ok());
-    // The profile object the character buckets are edited in: the one the vendor state serves (it
-    // is what the client has), else the store's own, decoded from its payload when needed.
+    // The profile object the character buckets are edited in: the store's (the one source of
+    // truth for the current profile, integration review finding 3; the vendor state starts each op
+    // from it), else the vendor state's while the store has only its seed, else decoded.
     let vendor_on = crate::vendor::active();
-    let mut object = if vendor_on { crate::vendor::current_profile() } else { None };
-    if object.is_none() {
-        let (have, payload) = {
-            let s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
-            (s.chr().profile_object.is_some(), s.chr().profile.clone())
-        };
-        if let (false, Some(p)) = (have, payload) {
+    let (have, payload) = {
+        let s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+        (s.chr().profile_object.is_some(), s.chr().profile.clone())
+    };
+    let mut object = if !have && vendor_on { crate::vendor::current_profile() } else { None };
+    if !have && object.is_none() {
+        if let Some(p) = payload {
             match crate::vendor::decode_object(&crate::vendor::oracle_path(), "0x80801743", &p, &crate::vendor::unique_name("store-grant-in")) {
                 Ok(o) => object = Some(o),
                 Err(e) => tracing::warn!("      ⚠ rewards: the served profile did not decode ({e:#}); character-bucket items stay in the overlay"),
@@ -1846,8 +1847,20 @@ fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyh
     } else if changed {
         push_store_state(m, wallet.is_some(), profile.is_some(), &items, &what)?;
     }
+    // ⭐ The ONE completion path (integration review, finding 6): a scripted activity's completed
+    // grant also runs the store's completion (`complete N`: field [6], the rewards table's
+    // completion subs such as 164's CONTINUE gate, its XP topped up since the activity started,
+    // unlock flags, reputation). The manifest's XP lines stay out of the grant
+    // (`Adapter::xp_from_manifest` is off), so XP is paid once, by the table.
+    let completion = match completion_index(g) {
+        Some(index) => match run_command(Command::Complete(index)) {
+            Ok(w) => format!("; store completion of {index}: {w}"),
+            Err(e) => format!("; store completion of {index} NOT applied: {e:#}"),
+        },
+        None => String::new(),
+    };
     Ok(format!(
-        "{} for {:#018x}{}: {} currency line(s), {} item(s) ({} delivered), rules {:?}",
+        "{} for {:#018x}{}: {} currency line(s), {} item(s) ({} delivered), rules {:?}{completion}",
         summary.line,
         summary.character,
         if summary.retargeted { " (the grant named another key; one player per responder: applied to it)" } else { "" },
@@ -1856,6 +1869,17 @@ fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyh
         summary.delivered.len(),
         summary.rules
     ))
+}
+
+/// The activity index whose store completion a grant runs: a completed grant from a scripted
+/// activity or the activity framework (`source=script`) whose hash is in the activity table. Open-
+/// world grants (events, patrols, chests) are not activity completions.
+pub fn completion_index(g: &crate::rewards::remote::GrantCommand) -> Option<u16> {
+    use crate::rewards::remote::GrantOutcome;
+    if g.outcome != GrantOutcome::Completed || g.source.as_deref() != Some("script") {
+        return None;
+    }
+    crate::tables::tables().activities.values().find(|a| a.hash == g.activity_hash).map(|a| a.index)
 }
 
 /// The store's own pushes for a change the vendor state did not serve: the profile (re-encoded
@@ -2743,6 +2767,20 @@ mod tests {
         assert_eq!(s.chr().summary.as_ref().unwrap().level, 40);
         assert!(s.set_profile(b"re-encoded", "store"));
         assert!(!s.chr().profile_stale, "a new payload is the profile again");
+    }
+
+    /// Integration review, finding 6: a scripted completion also runs the store's completion;
+    /// an open-world grant, an incomplete run and an unknown hash do not.
+    #[test]
+    fn a_scripted_completed_grant_names_its_store_completion() {
+        use crate::rewards::remote::{GrantCommand, GrantOutcome, GrantTarget};
+        let g = |hash: u32, outcome, source: &str| GrantCommand {
+            target: GrantTarget::Key(1), activity_hash: hash, outcome, page: None, engrams: false, seed: None, source: Some(source.into()),
+        };
+        assert_eq!(completion_index(&g(0x6E0D_AE89, GrantOutcome::Completed, "script")), Some(164), "A Guardian Rises");
+        assert_eq!(completion_index(&g(0x6E0D_AE89, GrantOutcome::Incomplete, "script")), None);
+        assert_eq!(completion_index(&g(0x6E0D_AE89, GrantOutcome::Completed, "event:12:gold")), None);
+        assert_eq!(completion_index(&g(0xDEAD_BEEF, GrantOutcome::Completed, "script")), None);
     }
 
     /// Stream O2, wire 8: the hand-off line records the next activity, names the completion to

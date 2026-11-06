@@ -487,6 +487,15 @@ pub fn execute_with(store: &mut dyn PlayerStore, cmd: &GrantCommand, index: &dyn
     if retargeted && strict {
         bail!("grant for character {named:#018x}, but this responder serves {own:#018x} (D1_MP=1: another player's)");
     }
+    // Integration review, finding 4 (a stopgap until each connection has its own SOIDs): with
+    // multiplayer on, an identity must also name this responder's account (`+0x10`).
+    if let (true, GrantTarget::Identity(b)) = (strict, &cmd.target) {
+        let account = d1_mp::identity::MemberIdentity::parse(b).map(|m| m.account.0);
+        let mine = store.identity().account;
+        if account != Some(mine) {
+            bail!("grant for account {account:?}, but this responder serves {mine:#018x} (D1_MP=1: another player's)");
+        }
+    }
     let outcome = ActivityOutcome {
         completed: cmd.outcome == GrantOutcome::Completed,
         community_page: cmd.page.clone(),
