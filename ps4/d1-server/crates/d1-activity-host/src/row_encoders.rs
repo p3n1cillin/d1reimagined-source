@@ -192,7 +192,10 @@ const NONE_HASH: u32 = 0x811C_9DC5;
 /// `(offset, codec kind)` (2 bool, 3 i8, 5 i32, 7 u8, 9 raw u32, 11 f32, 1 struct, 257 optional
 /// struct). A test checks every entry against the committed fixture, so a layout here is the
 /// executable's, not ours. What each field means is in the encoders (and the module table).
-pub const ROW_LAYOUTS: &[(&str, u8, u32, usize, &[(usize, u32)])] = &[
+/// `(script kind, row type id, A tag, struct size, [(offset, codec kind)])`.
+pub type RowLayout = (&'static str, u8, u32, usize, &'static [(usize, u32)]);
+
+pub const ROW_LAYOUTS: &[RowLayout] = &[
     // +0 i32 start, +4 u8 step, +8 a counted list (0x80805cf5), +0x18 a name ref (0x808004b1).
     ("sequence", KIND_SEQUENCE, TAG_SEQUENCE, 32, &[(0, 5), (4, 7), (8, 1), (24, 1)]),
     // +0 i32 (31 bits) generation, ..., +0xB0 the optional command script (0x80800512).
@@ -724,7 +727,10 @@ fn squad_default() -> Vec<u8> {
 /// BullShcript's command script (`{cookie, pc?, atoms: [{kind, name, end: {kind}}]}`) as the 56578
 /// atoms: `(cookie, pc, [(end condition, action hash)])`. Only `scripted_sequence` atoms with an
 /// end condition of 0 or 1 have a known 56578 shape; anything else refuses the whole script.
-fn command_script(cs: &Value) -> Result<(u32, u32, Vec<(u32, u32)>), String> {
+/// `(cookie, pc, [(end condition, action hash)])`.
+type CommandScript = (u32, u32, Vec<(u32, u32)>);
+
+fn command_script(cs: &Value) -> Result<CommandScript, String> {
     let cookie = cs.get("cookie").and_then(Value::as_u64).ok_or("no cookie")? as u32;
     let pc = cs.get("pc").and_then(Value::as_u64).unwrap_or(0) as u32;
     let atoms = cs.get("atoms").and_then(Value::as_array).ok_or("no atoms")?;

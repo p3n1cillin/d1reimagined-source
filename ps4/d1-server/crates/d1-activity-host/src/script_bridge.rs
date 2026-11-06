@@ -2062,7 +2062,7 @@ mod tests {
         // ... at the results: the 6 had been planned, the 8 not yet.
         let granted_at = s.rewarded_after_frames[0];
         assert!(s.frames[..granted_at].iter().all(|p| lifetime_of(p) != Some(8)), "granted before the end");
-        assert_eq!(s.frames[..granted_at].iter().filter_map(lifetime_of).last(), Some(4), "granted as 6 was set, before its frame");
+        assert_eq!(s.frames[..granted_at].iter().filter_map(lifetime_of).next_back(), Some(4), "granted as 6 was set, before its frame");
         let ticks = s.sent.iter().filter(|m| matches!(m, HostMsg::Tick { .. })).count();
         drop(s);
         run_for(&mut b, &mut t, 3.0, &mut wire);

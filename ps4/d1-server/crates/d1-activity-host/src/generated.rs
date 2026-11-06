@@ -206,7 +206,7 @@ impl GeneratedWorlds {
                     public: r["public"] == "1",
                     bundles: tags,
                     region_hash: r.get("region_hash").map(|v| num(v)).transpose()?,
-                    valid: r.get("valid").map_or(true, |v| *v == "1"),
+                    valid: r.get("valid").is_none_or(|v| *v == "1"),
                     state_hash: None,
                 },
             );
