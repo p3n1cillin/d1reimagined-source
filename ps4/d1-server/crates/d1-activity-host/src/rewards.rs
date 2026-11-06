@@ -121,6 +121,9 @@ pub enum ActivityOutcome {
     Chest { bundle: u32, index: i16 },
     /// A resource node harvested.
     ResourceNode { bundle: u32, index: i16 },
+    /// ── stream R ── A Crucible match the character was present at the results of
+    /// ([`crate::pvp_driver`]): won or lost, its place, the faction's reputation and the Trials card.
+    Crucible(crate::pvp_driver::CrucibleOutcome),
 }
 
 impl ActivityOutcome {
@@ -134,6 +137,8 @@ impl ActivityOutcome {
             Self::EndedIncomplete | Self::Abandoned => false,
             Self::PublicEvent { completed, .. } => *completed,
             Self::PatrolMission { .. } | Self::Chest { .. } | Self::ResourceNode { .. } => true,
+            // A match played to its results is completed, won or lost (D1 paid both).
+            Self::Crucible(_) => true,
         }
     }
 }

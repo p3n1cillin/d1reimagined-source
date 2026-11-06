@@ -7,6 +7,7 @@ is the current summary. Titles below are the notes' own.
 ## Start here (PS4 build 56578, current)
 
 - [PS4 56578: investment requests served: locks, upgrades, infusion, packages, turn-ins, Record Books (6 November 2026)](ps4-56578-investment-ops-2026-11-06.md)
+- [PS4 56578: Crucible matches driven on the wire (6 November 2026)](ps4-56578-crucible-wire-2026-11-06.md)
 - [Live captures: patrol, public events, the Tower and The Dark Within (6 November 2026)](d1-live-captures-patrol-tower-2026-11-06.md)
 - [PS4 56578: every story mission from its own scripts and content (5 November 2026)](ps4-56578-story-missions-2026-11-05.md)
 - [PS4 56578: a static integration review of #306-#323 (5-6 November 2026)](ps4-56578-integration-review-2026-11-05.md)

@@ -465,6 +465,10 @@ pub struct ActivityInstance {
     run_driver: Option<crate::activity_driver::RunDriver>,
     /// The identities that joined (the run's players).
     framework_players: Vec<crate::rewards::CharacterRef>,
+    /// ── stream R hook ── `D1_AH_CRUCIBLE=1`: this connection's part in a Crucible match
+    /// ([`crate::pvp_wire`]). `None` (default) changes nothing; a connection whose activity is no
+    /// Crucible map stays inactive and is served as before.
+    crucible: Option<crate::pvp_wire::CrucibleConn>,
 }
 
 /// ⭐ The live hosts' udt 5 framing (The Speaker and The Awoken; notes/d1-live-speaker-timeline-
@@ -687,7 +691,18 @@ impl ActivityInstance {
             public: None,
             run_driver: None,
             framework_players: Vec::new(),
+            crucible: None, // stream R
         }
+    }
+
+    /// ── stream R hook ── `D1_AH_CRUCIBLE=1`: drive a Crucible match on this connection.
+    pub fn set_crucible(&mut self, config: std::sync::Arc<crate::pvp_wire::CrucibleConfig>) {
+        self.crucible = Some(crate::pvp_wire::CrucibleConn::new(config));
+    }
+
+    /// ── stream R ── this connection's Crucible part, for the run log and tests.
+    pub fn crucible(&self) -> Option<&crate::pvp_wire::CrucibleConn> {
+        self.crucible.as_ref()
     }
 
     /// MP(H): share instances with the other connections in `link` (see [`crate::group`]).
@@ -867,6 +882,19 @@ impl ActivityInstance {
         }
         // ── stream O2 hook ── the activity framework's run (activity_driver.rs).
         self.drive_framework(msg);
+        // ── stream R hook ── a Crucible match (pvp_wire.rs): the join and the client's incidents.
+        if self.crucible.is_some() {
+            // The index matters only at the join (reading the follow file on every message would not).
+            let index = match msg {
+                ClientMessage::JoinRequest { .. } => self.followed_activity_index().map_or(self.activity_index, |(_, i)| i),
+                _ => self.activity_index,
+            };
+            let (slot, physics) = self.group.as_ref().map_or((None, true), |g| (g.slot(), g.is_physics_host()));
+            let host = self.ah_id;
+            if let Some(c) = self.crucible.as_mut() {
+                c.on_client_message(msg, host, index, slot, physics, now);
+            }
+        }
         // ⭐⭐ THE HOST HEARTBEAT. If this turn produced nothing to say, and we have been silent
         // longer than [`Self::HOST_HEARTBEAT_MS`], say something anyway - because the client's
         // liveness test is `now - (when we last transmitted)` and NOT the keepalive it is sending
@@ -1014,6 +1042,13 @@ impl ActivityInstance {
         }
         if !matches!(self.state, InstanceState::Live) || self.heartbeats == 0 {
             return None;
+        }
+        // ── stream R hook ── a Crucible map's udt 5 is its match's (pvp_wire.rs).
+        if let Some(c) = self.crucible.as_mut().filter(|c| c.active()) {
+            let payload = c.sensor_due(now)?;
+            self.sensors_sent += 1;
+            self.last_pushed = now;
+            return Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }));
         }
         // D1_AH_SCRIPTS hook (script_bridge.rs): a scripted activity's udt 5 is the bridge's.
         if let Some(b) = self.script_bridge.as_mut().filter(|b| b.scripted()) {

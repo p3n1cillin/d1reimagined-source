@@ -91,6 +91,10 @@ pub struct GrantDetails {
     pub seed: Option<u64>,
     /// One word for the responder's log: `script`, `event:12:gold`, `chest`, ...
     pub source: Option<String>,
+    /// ── stream R ── Reputation to add to the character's progressions, `rep=NAME:N` each: a
+    /// Crucible match's faction (`faction_pvp`, `faction_event_iron_banner`) and its Trials card's
+    /// ticket progressions. Applied by the responder only to the character the grant names.
+    pub reputation: Vec<(String, u32)>,
 }
 
 fn target_word(target: &GrantTarget) -> Result<String, String> {
@@ -136,7 +140,58 @@ pub fn grant_line(target: &GrantTarget, activity_hash: u32, outcome: GrantOutcom
         word(s, "source")?;
         line += &format!(" source={s}");
     }
+    for (name, n) in &d.reputation {
+        word(name, "progression")?;
+        if name.contains(':') {
+            return Err(format!("progression {name:?} must not hold ':'"));
+        }
+        line += &format!(" rep={name}:{n}");
+    }
     Ok(line)
+}
+
+/// ── stream R ── A Crucible outcome as one log word: `crucible:won` / `crucible:lost`, then
+/// `:mercy`, `:ib` (Iron Banner), `:place=N` and `:trials=W-L` (with `:flawless`, `:ended`).
+pub fn crucible_source(c: &crate::pvp_driver::CrucibleOutcome) -> String {
+    use crate::pvp_driver::{CardState, Faction};
+    let mut s = format!("crucible:{}", if c.won { "won" } else { "lost" });
+    if c.mercy {
+        s += ":mercy";
+    }
+    if c.faction == Faction::IronBanner {
+        s += ":ib";
+    }
+    s += &format!(":place={}", c.place);
+    if let Some(t) = c.trials {
+        s += &format!(":trials={}-{}", t.wins, t.losses);
+        match t.state {
+            CardState::Complete { flawless: true } => s += ":flawless",
+            CardState::Complete { flawless: false } => s += ":complete",
+            CardState::Ended => s += ":ended",
+            CardState::Continues => {}
+        }
+    }
+    s
+}
+
+/// ── stream R ── The progressions a Crucible outcome adds to: the faction's reputation, and the
+/// Trials card's wins and losses on the ticket progressions (`D1_AH_CRUCIBLE_TRIALS_TICKET`'s
+/// prefix, `.wins` / `.losses`; the manifest names them `r1_s4_tickets.pvp.trials_of_osiris.*`).
+pub fn crucible_reputation(c: &crate::pvp_driver::CrucibleOutcome) -> Vec<(String, u32)> {
+    let mut v = Vec::new();
+    if c.reputation > 0 {
+        v.push((c.faction.progression().to_string(), c.reputation));
+    }
+    if let Some(t) = c.trials {
+        let ticket = crate::pvp_driver::DriverConfig::from_vars(|k| std::env::var(k).ok()).trials_ticket;
+        if t.wins_added > 0 {
+            v.push((format!("{ticket}.wins"), u32::from(t.wins_added)));
+        }
+        if t.losses_added > 0 {
+            v.push((format!("{ticket}.losses"), u32::from(t.losses_added)));
+        }
+    }
+    v
 }
 
 /// Append `line` (plus a newline) to the control file in one write.
@@ -225,13 +280,18 @@ impl crate::rewards::ActivityRewards for GrantForwarder {
             O::PatrolMission { beacon } => format!("patrol:{beacon:#x}"),
             O::Chest { bundle, index } => format!("chest:{bundle:#x}:{index}"),
             O::ResourceNode { bundle, index } => format!("node:{bundle:#x}:{index}"),
+            O::Crucible(c) => crucible_source(c),
+        };
+        let reputation = match outcome {
+            O::Crucible(c) => crucible_reputation(c),
+            _ => Vec::new(),
         };
         let target = if character.identity.len() == d1_mp::identity::MemberIdentity::SIZE {
             GrantTarget::Identity(character.identity.clone())
         } else {
             GrantTarget::Key(character.key())
         };
-        self.forward(target, activity_hash, (*outcome).into(), GrantDetails { source: Some(source), ..GrantDetails::default() })
+        self.forward(target, activity_hash, (*outcome).into(), GrantDetails { source: Some(source), reputation, ..GrantDetails::default() })
     }
 
     /// ⭐ Stream O2: the hand-off goes out as a `handoff` line, after the activity's grant (the
@@ -271,7 +331,7 @@ mod tests {
     /// The lines `d1-responder`'s `rewards::remote` tests read (keep the two in step).
     #[test]
     fn lines_follow_the_responders_grammar() {
-        let d = GrantDetails { page: Some("siva-crisis-heroic-strike-playlist".into()), engrams: true, seed: Some(0xD1F0), source: Some("script".into()) };
+        let d = GrantDetails { page: Some("siva-crisis-heroic-strike-playlist".into()), engrams: true, seed: Some(0xD1F0), source: Some("script".into()), reputation: Vec::new() };
         assert_eq!(
             grant_line(&GrantTarget::Key(0xD100_0000_0000_0101), 0x0BBD_0E26, GrantOutcome::Completed, &d).unwrap(),
             "grant 0xd100000000000101 0x0bbd0e26 completed page=siva-crisis-heroic-strike-playlist engrams=1 seed=0xd1f0 source=script"
@@ -284,6 +344,30 @@ mod tests {
                    "handoff 0xd100000000000101 0 from=0x6eaf0959 hash=0x8ae8da69", "rewards::remote::tests::handoff_lines_round_trip reads it");
         let spaced = GrantDetails { source: Some("two words".into()), ..GrantDetails::default() };
         assert!(grant_line(&GrantTarget::Key(1), 1, GrantOutcome::Completed, &spaced).is_err());
+        // Stream R: reputation tokens (rewards::remote::tests::crucible_lines_carry_reputation reads them).
+        let rep = GrantDetails { source: Some("crucible:won:ib:place=1".into()), reputation: vec![("faction_event_iron_banner".into(), 150)], ..GrantDetails::default() };
+        assert_eq!(
+            grant_line(&GrantTarget::Key(0xD100_0000_0000_0101), 0x0BBD_0E26, GrantOutcome::Completed, &rep).unwrap(),
+            "grant 0xd100000000000101 0x0bbd0e26 completed source=crucible:won:ib:place=1 rep=faction_event_iron_banner:150"
+        );
+        let bad = GrantDetails { reputation: vec![("a:b".into(), 1)], ..GrantDetails::default() };
+        assert!(grant_line(&GrantTarget::Key(1), 1, GrantOutcome::Completed, &bad).is_err());
+    }
+
+    #[test]
+    fn a_crucible_outcome_goes_out_with_its_reputation_and_card() {
+        use crate::pvp_driver::{CardState, CrucibleOutcome, Faction, TrialsCard};
+        let card = TrialsCard { wins: 9, losses: 0, state: CardState::Complete { flawless: true }, wins_added: 1, losses_added: 0, rewards_reached: 3 };
+        let o = CrucibleOutcome { playlist: 0x1234, won: true, mercy: false, place: 2, faction: Faction::Crucible, reputation: 100, level_advantages: true, trials: Some(card) };
+        assert_eq!(crucible_source(&o), "crucible:won:place=2:trials=9-0:flawless");
+        assert_eq!(
+            crucible_reputation(&o),
+            vec![("faction_pvp".to_string(), 100), ("r1_s4_tickets.pvp.trials_of_osiris.wins".to_string(), 1)]
+        );
+        let lost = CrucibleOutcome { won: false, mercy: true, faction: Faction::IronBanner, reputation: 0, trials: None, ..o };
+        assert_eq!(crucible_source(&lost), "crucible:lost:mercy:ib:place=2");
+        assert!(crucible_reputation(&lost).is_empty());
+        assert_eq!(GrantOutcome::from(ActivityOutcome::Crucible(lost)), GrantOutcome::Completed, "played to the results");
     }
 
     fn wait_for(path: &Path, lines: usize) -> String {

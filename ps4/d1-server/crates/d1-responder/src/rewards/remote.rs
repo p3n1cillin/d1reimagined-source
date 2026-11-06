@@ -108,6 +108,9 @@ pub struct GrantCommand {
     pub engrams: bool,
     pub seed: Option<u64>,
     pub source: Option<String>,
+    /// ── stream R ── `rep=NAME:N` (repeatable): progression progress to add for the character the
+    /// grant names, after its rewards (a Crucible match's faction, its Trials card's tickets).
+    pub reputation: Vec<(String, u32)>,
 }
 
 fn num64(s: &str) -> Result<u64> {
@@ -138,14 +141,22 @@ pub fn parse(fields: &[&str]) -> Result<GrantCommand> {
         "abandoned" => GrantOutcome::Abandoned,
         o => bail!("outcome {o:?} is not completed, incomplete or abandoned"),
     };
-    let mut c = GrantCommand { target, activity_hash, outcome, page: None, engrams: false, seed: None, source: None };
+    let mut c = GrantCommand { target, activity_hash, outcome, page: None, engrams: false, seed: None, source: None, reputation: Vec::new() };
     for t in rest {
         match t.split_once('=') {
             Some(("page", v)) if !v.is_empty() => c.page = Some(v.to_string()),
             Some(("engrams", v)) => c.engrams = v == "1",
             Some(("seed", v)) => c.seed = Some(num64(v)?),
             Some(("source", v)) => c.source = Some(v.to_string()),
-            _ => bail!("{t:?}: not page=, engrams=, seed= or source="),
+            Some(("rep", v)) => {
+                let (name, n) = v.rsplit_once(':').ok_or_else(|| anyhow!("{t:?}: rep= is NAME:N"))?;
+                if name.is_empty() {
+                    bail!("{t:?}: rep= names no progression");
+                }
+                let n = u32::try_from(num64(n)?).map_err(|_| anyhow!("{t:?}: the amount is not 32-bit"))?;
+                c.reputation.push((name.to_string(), n));
+            }
+            _ => bail!("{t:?}: not page=, engrams=, seed=, source= or rep="),
         }
     }
     Ok(c)
@@ -165,6 +176,9 @@ pub fn format(c: &GrantCommand) -> String {
     }
     if let Some(s) = &c.source {
         line += &format!(" source={s}");
+    }
+    for (name, n) in &c.reputation {
+        line += &format!(" rep={name}:{n}");
     }
     line
 }
@@ -534,6 +548,13 @@ pub fn execute_with(store: &mut dyn PlayerStore, cmd: &GrantCommand, index: &dyn
         notes,
         delivered,
     };
+    // ── stream R ── the grant's reputation (a Crucible match), for the character it named: the
+    // checks above refused another player's under D1_MP=1.
+    let mut summary = summary;
+    for (name, n) in &cmd.reputation {
+        let w = store.add_reputation(name, *n);
+        summary.notes.push(format!("reputation {name} +{n}: {w}"));
+    }
     let mut kept = store.character_attribute(ATTR_GRANTS).and_then(Value::as_array).cloned().unwrap_or_default();
     kept.push(summary.json());
     let drop = kept.len().saturating_sub(GRANTS_KEPT);
@@ -554,6 +575,20 @@ mod tests {
                             0100000000000000\
                             0101000000000000\
                             0000000000000000";
+
+    #[test]
+    fn crucible_lines_carry_reputation() {
+        // d1_activity_host::reward_forward::tests::lines_follow_the_responders_grammar writes it.
+        let line = "grant 0xd100000000000101 0x0bbd0e26 completed source=crucible:won:ib:place=1 rep=faction_event_iron_banner:150";
+        let f: Vec<&str> = line.split_whitespace().collect();
+        let c = parse(&f[1..]).unwrap();
+        assert_eq!(c.reputation, vec![("faction_event_iron_banner".to_string(), 150)]);
+        assert_eq!(format(&c), line);
+        let dotted = parse(&["0x1", "0x2", "completed", "rep=r1_s4_tickets.pvp.trials_of_osiris.wins:2"]).unwrap();
+        assert_eq!(dotted.reputation, vec![("r1_s4_tickets.pvp.trials_of_osiris.wins".to_string(), 2)]);
+        assert!(parse(&["0x1", "0x2", "completed", "rep=faction_pvp"]).is_err());
+        assert!(parse(&["0x1", "0x2", "completed", "rep=:5"]).is_err());
+    }
 
     #[test]
     fn handoff_lines_round_trip() {
@@ -615,7 +650,7 @@ mod tests {
         let (activity, item) = currency_activity().expect("the manifest table has activities that grant currencies");
         let index = ResponderIndex::from_slots(&s.record.account.slots);
         assert_eq!(index.glimmer, Some(869), "slot 308's content");
-        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(1), source: Some("test".into()) };
+        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(1), source: Some("test".into()), reputation: Vec::new() };
         let held = |s: &Store| -> u32 {
             if item == currencies::GLIMMER {
                 return s.currency(869);
@@ -793,7 +828,7 @@ mod tests {
         let parts = currencies::WEAPON_PARTS;
         let row = json!([[format!("c{me:x}"), parts, 7]]);
         s.set_character_attribute(ATTR_STACKS, row.clone());
-        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None };
+        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None, reputation: Vec::new() };
         execute(&mut s, &cmd, &index, 0, true).unwrap();
         assert_eq!(s.character_attribute(ATTR_STACKS), Some(&row), "no profile yet: still kept");
         s.chr_mut().profile_object = Some(fixture("vendor-profile.obj"));
@@ -887,7 +922,7 @@ mod tests {
         let mut s = lab_store();
         let index = ResponderIndex::from_slots(&s.record.account.slots);
         let activity = tables().activities.keys().next().copied().unwrap();
-        let mut cmd = GrantCommand { target: GrantTarget::Key(0x1234), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None };
+        let mut cmd = GrantCommand { target: GrantTarget::Key(0x1234), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None, reputation: Vec::new() };
         assert!(execute(&mut s, &cmd, &index, 0, true).is_err(), "D1_MP=1: not this player's");
         let g = execute(&mut s, &cmd, &index, 0, false).unwrap();
         assert!(g.retargeted && g.currencies.is_empty() && g.rules.is_empty(), "single player: applied, and nothing for an incomplete run");
@@ -907,7 +942,7 @@ mod tests {
         let mut s = lab_store();
         let me = s.identity().character;
         let index = ResponderIndex::from_slots(&s.record.account.slots);
-        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity.hash, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(7), source: None };
+        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity.hash, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(7), source: None, reputation: Vec::new() };
         let limit = activity.rewards.iter().find_map(|(h, _)| t.weekly_bonus.get(h).copied()).unwrap();
         // Each grant here is a fresh adapter, as each control line is; the bonus still runs down.
         let mut lefts = Vec::new();

@@ -623,6 +623,7 @@ fn main() -> anyhow::Result<()> {
             let mut mission_steps: std::collections::HashMap<u16, Vec<d1_activity_host::state::MissionStep>> = std::collections::HashMap::new();
             let mut control_builder: Option<d1_activity_host::state::ControlBuilder> = None;
             let mut script_config: Option<std::sync::Arc<d1_activity_host::script_bridge::ScriptConfig>> = None;
+            let mut crucible_config: Option<std::sync::Arc<d1_activity_host::pvp_wire::CrucibleConfig>> = None; // stream R
             let sensor_payload = match std::env::var("D1_AH_SENSOR_PHASE")
                 .ok()
                 .and_then(|s| s.trim().parse::<i8>().ok())
@@ -929,6 +930,27 @@ fn main() -> anyhow::Result<()> {
                     if let Some(c) = &script_config {
                         tracing::info!("⭐ D1_AH_SCRIPTS=1 - scripted activities {c:?}");
                     }
+                    // ── stream R hook ── D1_AH_CRUCIBLE=1 (pvp_wire.rs): Crucible matches driven by
+                    // the clients' own reports, on each client's udt 5. Off by default.
+                    if d1_activity_host::pvp_driver::enabled() {
+                        let dir = match std::env::var_os(d1_activity_host::encounter_framework::KNOB) {
+                            Some(v) if !v.is_empty() && v != "0" && v != "1" => std::path::PathBuf::from(v),
+                            _ => d1_activity_host::encounter_framework::ActivityLibrary::default_dir(),
+                        };
+                        let path = dir.join("crucible.json");
+                        let data: d1_activity_host::pvp::CrucibleData = serde_json::from_str(
+                            &std::fs::read_to_string(&path).map_err(|e| anyhow::anyhow!("D1_AH_CRUCIBLE {}: {e}", path.display()))?,
+                        )
+                        .map_err(|e| anyhow::anyhow!("D1_AH_CRUCIBLE {}: {e}", path.display()))?;
+                        let rewards: Option<std::sync::Arc<std::sync::Mutex<dyn d1_activity_host::rewards::ActivityRewards + Send>>> =
+                            grant_forwarder.clone().map(|f| std::sync::Arc::new(std::sync::Mutex::new(f)) as _);
+                        crucible_config = d1_activity_host::pvp_wire::CrucibleConfig::from_env(&params, std::sync::Arc::new(data), rewards)
+                            .map_err(|e| anyhow::anyhow!("D1_AH_CRUCIBLE: {e}"))?
+                            .map(std::sync::Arc::new);
+                        if let Some(c) = &crucible_config {
+                            tracing::info!("⭐ D1_AH_CRUCIBLE=1 - Crucible matches on the wire {c:?}");
+                        }
+                    }
                     // `clients GROUP PATH` control lines (D1_AH_CONTROL_FILE) build a frame the way a
                     // mission step does.
                     {
@@ -1167,6 +1189,10 @@ fn main() -> anyhow::Result<()> {
                         // D1_AH_SCRIPTS hook (script_bridge.rs).
                         if let Some(c) = script_config.clone() {
                             i.set_script_bridge(c);
+                        }
+                        // ── stream R hook ── D1_AH_CRUCIBLE (pvp_wire.rs).
+                        if let Some(c) = crucible_config.clone() {
+                            i.set_crucible(c);
                         }
                     }
                     i.set_host_heartbeat(std::time::Duration::from_millis(heartbeat_ms));

@@ -853,7 +853,9 @@ pub async fn serve(
     // MP(H) D1_AH_SHARED_INSTANCES=1: connections whose join requests name the same host share one
     // instance (one membership for all, peer slots, physics-host election; crate::group). Off,
     // every connection is its own solo instance, as all served runs so far have been.
-    let shared = std::env::var("D1_AH_SHARED_INSTANCES").is_ok_and(|v| v == "1")
+    // ── stream R hook ── D1_AH_CRUCIBLE=1 turns them on too: a Crucible match is one instance of
+    // every player, and its physics host is elected here (group.rs); the server simulates no combat.
+    let shared = (std::env::var("D1_AH_SHARED_INSTANCES").is_ok_and(|v| v == "1") || crate::pvp_driver::enabled())
         .then(crate::group::InstanceGroups::shared);
     if shared.is_some() {
         tracing::info!("⭐ shared instances on (D1_AH_SHARED_INSTANCES): one membership and one script bridge per named host");
