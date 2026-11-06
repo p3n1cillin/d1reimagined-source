@@ -28,6 +28,7 @@ pub mod build;
 pub mod decode;
 pub mod encode;
 pub mod error;
+mod quant;
 pub mod schema;
 pub mod sensor;
 

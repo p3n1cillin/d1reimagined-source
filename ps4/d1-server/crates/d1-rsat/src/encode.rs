@@ -74,8 +74,63 @@ impl<'a> Encoder<'a> {
         Ok(Encoded { tag, bits, payload })
     }
 
+    /// Encode a replicated delta with the caller's change mask, as 56578 0x2C9D20.
+    /// Words use the client's low-bit-first mask indexing; bit 0 is whole-object presence,
+    /// and the walk starts at bit 1. Nonoptional fields are always written when present.
+    /// This does not infer dirty fields from an image or from a previous replica.
+    pub fn encode_replicated_masked(
+        &self,
+        tag: u32,
+        image: &[u8],
+        mask: &[u32],
+    ) -> Result<Encoded> {
+        let d = self.schemas.get(tag)?;
+        let mask_n = d
+            .mask_bits
+            .checked_add(1)
+            .ok_or_else(|| RsatError::Runtime {
+                tag,
+                what: "change-mask size overflows".into(),
+            })?;
+        let words = mask_n.div_ceil(32) as usize;
+        if mask.len() != words || (mask_n % 32 != 0 && mask[words - 1] >> (mask_n % 32) != 0) {
+            return Err(RsatError::Runtime {
+                tag,
+                what: format!(
+                    "expected {mask_n} change-mask bits ({words} words), with zero padding"
+                ),
+            });
+        }
+        if image.len() > d.struct_size as usize {
+            return Err(RsatError::BadImage {
+                tag,
+                len: image.len(),
+                struct_size: d.struct_size as usize,
+            });
+        }
+        self.schemas.check(tag)?;
+        let mut w = BitWriter::new();
+        let present = mask[0] & 1 != 0;
+        w.write_bit(present);
+        if present {
+            self.encode_masked_into(&mut w, tag, image, Some(mask))?;
+        }
+        let (bits, payload) = w.finish();
+        Ok(Encoded { tag, bits, payload })
+    }
+
     /// Append one object body to an existing stream (a nested `0x2C9A80` call).
     pub fn encode_into(&self, w: &mut BitWriter, tag: u32, image: &[u8]) -> Result<()> {
+        self.encode_masked_into(w, tag, image, None)
+    }
+
+    fn encode_masked_into(
+        &self,
+        w: &mut BitWriter,
+        tag: u32,
+        image: &[u8],
+        mask: Option<&[u32]>,
+    ) -> Result<()> {
         let d = self.schemas.get(tag)?;
         let size = d.struct_size as usize;
         if image.len() > size {
@@ -86,7 +141,14 @@ impl<'a> Encoder<'a> {
         obj.resize(size, 0);
         let mask_n = d.mask_bits.wrapping_add(1);
         let count = top_count(d);
-        let mut walk = Walk { s: self, obj: &obj, mask_n, w, top: tag };
+        let mut walk = Walk {
+            s: self,
+            obj: &obj,
+            mask_n,
+            mask,
+            w,
+            top: tag,
+        };
         walk.descriptor(d, 0, count, 1, 0)
     }
 }
@@ -99,15 +161,16 @@ fn top_count(d: &Descriptor) -> i64 {
     }
 }
 
-struct Walk<'e, 'a, 'w> {
+struct Walk<'e, 'a, 'w, 'm> {
     s: &'e Encoder<'a>,
     obj: &'e [u8],
     mask_n: u32,
+    mask: Option<&'m [u32]>,
     w: &'w mut BitWriter,
     top: u32,
 }
 
-impl Walk<'_, '_, '_> {
+impl Walk<'_, '_, '_, '_> {
     fn runtime(&self, what: String) -> RsatError {
         RsatError::Runtime { tag: self.top, what }
     }
@@ -133,7 +196,11 @@ impl Walk<'_, '_, '_> {
     fn mask_bit(&self, bit: u32) -> bool {
         let word = (bit >> 5) & 0xFFFF;
         let words = self.mask_n.wrapping_add(31) >> 5;
-        word < words && u64::from(word) * 32 + u64::from(bit & 31) < u64::from(self.mask_n)
+        word < words
+            && u64::from(word) * 32 + u64::from(bit & 31) < u64::from(self.mask_n)
+            && self
+                .mask
+                .is_none_or(|mask| mask[word as usize] & (1 << (bit & 31)) != 0)
     }
 
     /// One presence bit, if the field has one. Returns whether the field is present.
@@ -245,9 +312,27 @@ impl Walk<'_, '_, '_> {
                 self.w.write(u64::from(v), width);
             }
             KIND_FLOAT => {
-                // Unquantized (checked statically): the raw IEEE bits, 32 of them.
                 let v = u32::from_le_bytes(self.bytes(at, 4)?.try_into().unwrap());
-                self.w.write(u64::from(v), 32);
+                let q = f.params[2];
+                if (1..=31).contains(&q) {
+                    let v = crate::quant::encode(
+                        f32::from_bits(v),
+                        f32::from_bits(f.params[0]),
+                        f32::from_bits(f.params[1]),
+                        q,
+                    );
+                    self.w.write(u64::from(v), q);
+                } else {
+                    self.w.write(u64::from(v), 32);
+                }
+            }
+            // 0x2CA6B0 with world bounds disabled, as in the existing server/oracle.
+            // Configured-world compression has a different selector/quantizer grammar.
+            0x0D => {
+                for lane in 0..3 {
+                    let v = u32::from_le_bytes(self.bytes(at + lane * 4, 4)?.try_into().unwrap());
+                    self.w.write(v as u64, 32);
+                }
             }
             0x15..=0x17 => {
                 // `0x1028EE0`: one bit `v != -1`, then the 32 bits of `v` when set.
@@ -257,7 +342,10 @@ impl Walk<'_, '_, '_> {
                     self.w.write(u64::from(v), 32);
                 }
             }
-            KIND_TYPED_REF => self.typed_ref(at)?,
+            KIND_TYPED_REF => self.typed_ref(at, 4)?,
+            0x22 => self.typed_ref(at, 16)?,
+            0x23 => self.object_at(self.s.schemas.identity_tag(), at)?,
+            0x26 => self.atom(at)?,
             k => {
                 return Err(RsatError::Unsupported {
                     tag: self.top,
@@ -272,7 +360,7 @@ impl Walk<'_, '_, '_> {
     /// Kind `0x29`, `0x102A650`: encode `{u32 handle}` as an object of the cell's schema, then,
     /// unless the handle is `-1`, the bytes after it as an object of type `handle`. Both are
     /// complete `0x2C9A80` calls, each with its own full mask.
-    fn typed_ref(&mut self, at: i64) -> Result<()> {
+    fn typed_ref(&mut self, at: i64, payload_offset: i64) -> Result<()> {
         let handle_bytes = self.bytes(at, 4)?.to_vec();
         let handle = u32::from_le_bytes(handle_bytes.clone().try_into().unwrap());
         let (_, handle_tag) = self.s.schemas.cells.typed_ref_handle;
@@ -290,9 +378,32 @@ impl Walk<'_, '_, '_> {
             return Ok(());
         }
         let td = self.s.schemas.get(handle).map_err(|_| {
-            self.runtime(format!("typed reference names {handle:#010x}, which has no descriptor"))
+            self.runtime(format!(
+                "typed reference names {handle:#010x}, which has no descriptor"
+            ))
         })?;
-        let payload = self.bytes(at + 4, td.struct_size as usize)?.to_vec();
+        let payload = self
+            .bytes(at + payload_offset, td.struct_size as usize)?
+            .to_vec();
         self.s.encode_into(&mut *self.w, handle, &payload)
+    }
+
+    fn object_at(&mut self, tag: u32, at: i64) -> Result<()> {
+        let size = self.s.schemas.get(tag)?.struct_size as usize;
+        let image = self.bytes(at, size)?.to_vec();
+        self.s.encode_into(self.w, tag, &image)
+    }
+
+    /// 0x102A500: selectors at +0/+4, primary at +0x10, secondary at +8.
+    fn atom(&mut self, at: i64) -> Result<()> {
+        let primary = self.bytes(at, 1)?[0];
+        let secondary = self.bytes(at + 4, 1)?[0];
+        let pt = self.s.schemas.atom_tag(primary, false, self.top)?;
+        let st = self.s.schemas.atom_tag(secondary, true, self.top)?;
+        for (offset, cell) in [0, 4].into_iter().zip(self.s.schemas.cells.atom_selectors) {
+            self.object_at(cell.1, at + offset)?;
+        }
+        self.object_at(pt, at + 16)?;
+        self.object_at(st, at + 8)
     }
 }

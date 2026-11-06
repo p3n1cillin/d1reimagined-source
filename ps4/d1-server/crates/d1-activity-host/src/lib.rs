@@ -96,6 +96,7 @@ pub mod public_registry;
 pub mod push;
 pub mod pvp;
 pub mod registry;
+pub mod reward_forward; // stream O: grants to the responder's store
 pub mod rewards;
 pub mod row_encoders;
 pub mod rows;
@@ -207,3 +208,17 @@ impl AhError {
 }
 
 impl std::error::Error for AhError {}
+
+/// For the tests that run the client's own codec: whether the owned eboot with a codec set is
+/// there (`D1_EBOOT`, else the default dump). Without it the test is skipped with a message, as
+/// the crate's other eboot tests are, instead of failing on a missing file.
+#[cfg(test)]
+pub(crate) fn eboot_or_skip(test: &str) -> bool {
+    match d1_oracle::codec::selected() {
+        Ok(_) => true,
+        Err(e) => {
+            eprintln!("SKIP {test}: needs the owned eboot (set D1_EBOOT to the 56578 executable): {e}");
+            false
+        }
+    }
+}

@@ -31,7 +31,8 @@ fn fixtures() -> PathBuf {
 fn sensor_lists() -> Vec<(String, Vec<SensorClientRef>, Option<SensorAuthority>)> {
     let mut out = Vec::new();
     for dir in ["mission", "postgame"] {
-        let Ok(rd) = std::fs::read_dir(fixtures().join(dir)) else { continue };
+        let rd =
+            std::fs::read_dir(fixtures().join(dir)).expect("fixture directory must be present");
         let mut files: Vec<PathBuf> = rd.flatten().map(|e| e.path()).collect();
         files.sort();
         for p in files.into_iter().filter(|p| p.extension().is_some_and(|e| e == "txt")) {
@@ -53,7 +54,10 @@ fn sensor_lists() -> Vec<(String, Vec<SensorClientRef>, Option<SensorAuthority>)
                     n.get(2).copied().unwrap_or(1) != 0,
                 ))
             });
-            if !clients.is_empty() {
+            // Include explicitly empty sensor lists as well; world tables and schedules
+            // have no clients and do not use this filename prefix.
+            let explicit_list=p.file_name().unwrap().to_string_lossy().starts_with("sensor-clients-");
+            if !clients.is_empty() || authority.is_some() || explicit_list {
                 out.push((format!("{dir}/{}", p.file_name().unwrap().to_string_lossy()), clients, authority));
             }
         }
@@ -187,8 +191,16 @@ fn every_fixture_value_matches_the_client() {
     for (tag, (n, why)) in &gated {
         eprintln!("  {tag:#010x} x{n}: {why}");
     }
-    assert!(lists >= 40, "only {lists} sensor lists found under {}", fixtures().display());
-    assert!(compared >= 300, "only {compared} values compared");
+    assert!(
+        lists >= 40,
+        "only {lists} sensor lists found under {}",
+        fixtures().display()
+    );
+    assert!(compared >= 782, "only {compared} values compared");
+    assert!(
+        gated.is_empty(),
+        "fixture values still on the oracle: {gated:?}"
+    );
 }
 
 /// Whole frames: the audited lifetime frame at every phase and with the tail, authority tables,
@@ -240,24 +252,133 @@ fn whole_frames_match_the_hosts_frames() {
     compare_frame(s, &mut fd, &p, "valued A and B clients");
     cases += 2;
 
-    // Fixture lists whose every value is native, smallest first (each oracle frame builds an
-    // emulator per valued client, so the count is bounded).
+    // Every fixture list must be fully native; do not filter away unsupported schemas.
     let mut native_lists: Vec<_> = sensor_lists()
         .into_iter()
         .filter_map(|(name, clients, authority)| {
             let mut p = base(6);
             p.clients = clients;
             p.authority = authority;
-            frame_is_native(s, &p).then_some((name, p))
+            assert!(
+                frame_is_native(s, &p),
+                "{name}: fixture is not fully native"
+            );
+            Some((name, p))
         })
         .collect();
-    native_lists.sort_by_key(|(_, p)| p.clients.iter().filter(|c| c.a_value.is_some() || c.b_value.is_some()).count());
+    native_lists.sort_by_key(|(_, p)| {
+        p.clients
+            .iter()
+            .filter(|c| c.a_value.is_some() || c.b_value.is_some())
+            .count()
+    });
     let mut fixture_frames = 0;
-    for (name, p) in native_lists.into_iter().take(6) {
+    let expected = native_lists.len();
+    for (name, p) in native_lists {
         compare_frame(s, &mut fd, &p, &name);
         fixture_frames += 1;
+        eprintln!("fixture frame {fixture_frames}/{expected}: {name}, identical");
     }
-    eprintln!("{} whole frames identical, {fixture_frames} of them fixture lists", cases + fixture_frames);
-    // Most mission lists carry a value schema still on the oracle (kinds 0x0D, 0x22, 0x23, 0x26).
-    assert!(fixture_frames >= 1, "only {fixture_frames} fully native fixture lists");
+    eprintln!(
+        "{} whole frames identical, {fixture_frames} of them fixture lists",
+        cases + fixture_frames
+    );
+    assert_eq!(fixture_frames, expected);
+    assert!(
+        fixture_frames >= 65,
+        "only {fixture_frames} fully native fixture lists"
+    );
+}
+
+#[test]
+fn explicitly_empty_fixture_lists_are_also_native() {
+    let Some(s)=inputs() else {return};
+    let mut fd=FrameDecoder::new().unwrap();
+    let mut cases=0;
+    for (name,clients,authority) in sensor_lists().into_iter().filter(|(_,c,_)| c.is_empty()) {
+        let mut p=base(6);p.clients=clients;p.authority=authority;
+        compare_frame(s,&mut fd,&p,&name);cases+=1;
+    }
+    assert!(cases>=1,"the empty cinematic sensor-list fixture was omitted");
+    eprintln!("{cases} explicitly empty fixture lists byte-identical");
+}
+
+/// Offline wall time per complete udt 5 frame, including image cloning, schema routing and
+/// packing. Oracle `SensorPhaseUpdate::encode` constructs its object harnesses on each call,
+/// exactly as the host's oracle frame builder does. Both use warm filesystem/control state.
+/// Run alone with `cargo test -p d1-rsat --release --test sensor_frames latency -- --ignored --nocapture`.
+#[test]
+#[ignore = "latency measurement; run explicitly in release mode, without competing tests"]
+fn latency_per_fixture_udt5_frame() {
+    use std::{hint::black_box, time::Instant};
+    let Some(s) = inputs() else { return };
+    assert!(!cfg!(debug_assertions), "measure with --release");
+    let mut lists: Vec<_> = sensor_lists()
+        .into_iter()
+        .map(|(name, clients, authority)| {
+            let mut p = base(6);
+            p.clients = clients;
+            p.authority = authority;
+            let size = native_frame(&p).encode(s).unwrap().bytes.len();
+            (size, name, p)
+        })
+        .collect();
+    assert!(lists.len() >= 64);
+    lists.sort_by_key(|p| p.0);
+    let eligible = lists.len();
+    let selected = [0, eligible / 2, eligible - 1];
+    let mut native_times = Vec::new();
+    let mut oracle_times = Vec::new();
+    let mut mission = 0;
+    for index in selected {
+        let (_, name, p) = &lists[index];
+        assert!(frame_is_native(s, &p), "{name}");
+        let native = || {
+            assert!(frame_is_native(s, black_box(&p)));
+            let b = native_frame(black_box(&p)).encode(s).unwrap();
+            // Same stamp-cache insertion the host does on either path.
+            d1_oracle::sensor::remember_stamp_bit(&b.bytes, b.stamp_bit as usize);
+            b.bytes
+        };
+        let control = p.encode().unwrap(); // control and cold filesystem work outside timed samples
+        assert_eq!(native(), control, "{name}");
+        let mut nt = Vec::new();
+        let mut ot = Vec::new();
+        for _ in 0..5 {
+            let start = Instant::now();
+            for _ in 0..100 {
+                black_box(native());
+            }
+            nt.push(start.elapsed().as_secs_f64() * 1e6 / 100.0);
+            let start = Instant::now();
+            black_box(p.encode().unwrap());
+            ot.push(start.elapsed().as_secs_f64() * 1e6);
+        }
+        nt.sort_by(f64::total_cmp);
+        ot.sort_by(f64::total_cmp);
+        eprintln!("BENCH {name}: {} bytes, native {:.3} us/frame, oracle {:.3} us/frame, {:.1}x (median of 5)",
+            control.len(),nt[2],ot[2],ot[2]/nt[2]);
+        native_times.push(nt[2]);
+        oracle_times.push(ot[2]);
+        mission += usize::from(name.starts_with("mission/"));
+    }
+    native_times.sort_by(f64::total_cmp);
+    oracle_times.sort_by(f64::total_cmp);
+    let n = native_times.len();
+    let p95 = (n * 95).div_ceil(100) - 1;
+    eprintln!("BENCH SUMMARY: {n} size-selected lists ({mission} mission) from {eligible} eligible, 500 native + 5 oracle calls/list; per-list medians distribution:");
+    eprintln!(
+        "native us/frame min {:.3} p50 {:.3} p95 {:.3} max {:.3}",
+        native_times[0],
+        native_times[n / 2],
+        native_times[p95],
+        native_times[n - 1]
+    );
+    eprintln!(
+        "oracle us/frame min {:.3} p50 {:.3} p95 {:.3} max {:.3}",
+        oracle_times[0],
+        oracle_times[n / 2],
+        oracle_times[p95],
+        oracle_times[n - 1]
+    );
 }

@@ -46,10 +46,26 @@ pub const SUPPORTED_KINDS: &[(u8, &str)] = &[
     (9, "u32 + bias, width bits (0x1028610, as kind 5)"),
     (10, "i64 + bias, width bits (0x1028650, as kind 6)"),
     (11, "f32, raw IEEE bits when unquantized (0x10286F0)"),
-    (0x15, "nullable u32 handle: bit (v != -1), then 32 bits (0x1028EE0)"),
+    (
+        0x0D,
+        "position xyz, raw world codec (0x1028780 / 0x102C8D0)",
+    ),
+    (
+        0x15,
+        "nullable u32 handle: bit (v != -1), then 32 bits (0x1028EE0)",
+    ),
     (0x16, "nullable u32 handle, as 0x15 (0x1028EE0)"),
     (0x17, "nullable u32 handle, as 0x15 (0x1028EE0)"),
-    (KIND_TYPED_REF, "typed reference: u32 handle through a type cell, then the handle's type (0x102A650)"),
+    (
+        KIND_TYPED_REF,
+        "typed reference: u32 handle through a type cell, then the handle's type (0x102A650)",
+    ),
+    (
+        0x22,
+        "typed value: handle, then object at +0x10 (0x102A3D0)",
+    ),
+    (0x23, "identity through the selected type cell (0x102A450)"),
+    (0x26, "atom: two selectors and their payloads (0x102A500)"),
 ];
 
 pub const KIND_COMPOSITE: u8 = 1;
@@ -136,6 +152,13 @@ pub struct Schemas {
     pub image_sha256: String,
     /// Build-specific start-up type cells this image's encoders read (see [`crate::build`]).
     pub cells: &'static crate::build::BuildCells,
+    /// Raw position decoding supplies this fourth SIMD lane from the owned image.
+    pub position_w: u32,
+    /// The client quantizer's midpoint multiplier, read at 56578 0x1610430.
+    pub quant_half: f32,
+    /// The identity arm selected by the embedding protocol. The offline oracle/server
+    /// default is Bytes; the client can select Platform. There is no wire selector.
+    pub identity_format: IdentityFormat,
 }
 
 impl Schemas {
@@ -151,7 +174,23 @@ impl Schemas {
         for (&tag, d) in index.iter() {
             by_tag.insert(tag, read_descriptor(image, d)?);
         }
-        Ok(Self { by_tag, checked: RwLock::default(), image_sha256: sha, cells })
+        let position_w = image
+            .u32(cells.position_w)
+            .map_err(|e| RsatError::Image(e.to_string()))?;
+        let quant_half = f32::from_bits(
+            image
+                .u32(cells.quant_half)
+                .map_err(|e| RsatError::Image(e.to_string()))?,
+        );
+        Ok(Self {
+            by_tag,
+            checked: RwLock::default(),
+            image_sha256: sha,
+            cells,
+            position_w,
+            quant_half,
+            identity_format: IdentityFormat::Bytes,
+        })
     }
 
     /// Load from the selected build's eboot (`$D1_EBOOT`, else the build registry's choice).
@@ -184,6 +223,19 @@ impl Schemas {
             for f in d.fields.iter().chain(d.element.iter()) {
                 if f.kind == KIND_COMPOSITE {
                     todo.push(f.child);
+                }
+                match f.kind {
+                    KIND_TYPED_REF | 0x22 => todo.push(self.cells.typed_ref_handle.1),
+                    0x23 => todo.extend(self.cells.identity.iter().map(|c| c.1)),
+                    0x26 => todo.extend(
+                        self.cells
+                            .atom_selectors
+                            .iter()
+                            .chain(self.cells.atom_primary)
+                            .chain(self.cells.atom_secondary)
+                            .map(|c| c.1),
+                    ),
+                    _ => {}
                 }
             }
         }
@@ -279,16 +331,48 @@ fn check_field(tag: u32, f: &Field, element: bool) -> Result<()> {
         KIND_FLOAT => {
             let q = f.params[2] as i32;
             if (1..=31).contains(&q) {
-                return unsupported(format!(
-                    "a quantized f32 ({q} bits over [{}, {}]) - the quantizer 0x726A0 is not ported",
-                    f32::from_bits(f.params[0]),
-                    f32::from_bits(f.params[1])
-                ));
+                let lo = f32::from_bits(f.params[0]);
+                let hi = f32::from_bits(f.params[1]);
+                if !lo.is_finite() || !hi.is_finite() || lo >= hi {
+                    return unsupported(format!("quantized f32 bounds [{lo}, {hi}]"));
+                }
             }
             Ok(())
         }
-        KIND_TYPED_REF | 0x15..=0x17 => Ok(()),
+        KIND_TYPED_REF | 0x0D | 0x15..=0x17 | 0x22 | 0x23 | 0x26 => Ok(()),
         k => unsupported(format!("field kind {k:#04x}")),
+    }
+}
+
+/// Kind 0x23 has two grammars; it carries no selector on the wire (0x102A450/0x102D280).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IdentityFormat {
+    Bytes,
+    Platform,
+}
+
+impl Schemas {
+    pub fn identity_tag(&self) -> u32 {
+        self.cells.identity[usize::from(self.identity_format == IdentityFormat::Platform)].1
+    }
+
+    pub(crate) fn atom_tag(&self, selector: u8, secondary: bool, top: u32) -> Result<u32> {
+        let table = if secondary {
+            self.cells.atom_secondary
+        } else {
+            self.cells.atom_primary
+        };
+        table
+            .get(selector as usize)
+            .map(|c| c.1)
+            .ok_or_else(|| RsatError::Runtime {
+                tag: top,
+                what: format!(
+                    "atom {} selector {selector} outside 0..{}",
+                    if secondary { "secondary" } else { "primary" },
+                    table.len()
+                ),
+            })
     }
 }
 

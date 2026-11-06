@@ -244,14 +244,37 @@ impl Walk<'_, '_, '_, '_, '_> {
                 self.put(at, &v.to_le_bytes())?;
             }
             KIND_FLOAT => {
-                let v = self.read(32)? as u32;
+                let q = f.params[2];
+                let v = if (1..=31).contains(&q) {
+                    let code = self.read(q)? as u32;
+                    crate::quant::decode(
+                        code,
+                        f32::from_bits(f.params[0]),
+                        f32::from_bits(f.params[1]),
+                        q,
+                        self.s.schemas.quant_half,
+                    )
+                    .to_bits()
+                } else {
+                    self.read(32)? as u32
+                };
                 self.put(at, &v.to_le_bytes())?;
+            }
+            0x0D => {
+                for lane in 0..3 {
+                    let v = self.read(32)? as u32;
+                    self.put(at + lane as i64 * 4, &v.to_le_bytes())?;
+                }
+                self.put(at + 12, &self.s.schemas.position_w.to_le_bytes())?;
             }
             0x15..=0x17 => {
                 let v = if self.read(1)? == 1 { self.read(32)? as u32 } else { u32::MAX };
                 self.put(at, &v.to_le_bytes())?;
             }
-            KIND_TYPED_REF => self.typed_ref(at)?,
+            KIND_TYPED_REF => self.typed_ref(at, 4)?,
+            0x22 => self.typed_ref(at, 16)?,
+            0x23 => self.object_at(self.s.schemas.identity_tag(), at)?,
+            0x26 => self.atom(at)?,
             k => {
                 return Err(RsatError::Unsupported {
                     tag: self.top,
@@ -266,7 +289,7 @@ impl Walk<'_, '_, '_, '_, '_> {
     /// Kind `0x29`, `0x102D490`: the handle object (the type cell's schema) into `+0`, then, unless
     /// the handle read back is `-1`, an object of type `handle` into `+4`. Both are complete
     /// `0x2C9A90` calls.
-    fn typed_ref(&mut self, at: i64) -> Result<()> {
+    fn typed_ref(&mut self, at: i64, payload_offset: i64) -> Result<()> {
         let (_, handle_tag) = self.s.schemas.cells.typed_ref_handle;
         let hd = self.s.schemas.get(handle_tag)?;
         let hsize = hd.struct_size as usize;
@@ -283,9 +306,36 @@ impl Walk<'_, '_, '_, '_, '_> {
             return Ok(());
         }
         let td = self.s.schemas.get(handle).map_err(|_| {
-            self.runtime(format!("typed reference names {handle:#010x}, which has no descriptor"))
+            self.runtime(format!(
+                "typed reference names {handle:#010x}, which has no descriptor"
+            ))
         })?;
-        let vr = self.range(at + 4, td.struct_size as usize)?;
+        let vr = self.range(at + payload_offset, td.struct_size as usize)?;
         self.s.decode_from(self.r, handle, &mut self.obj[vr])
+    }
+
+    fn object_at(&mut self, tag: u32, at: i64) -> Result<()> {
+        let size = self.s.schemas.get(tag)?.struct_size as usize;
+        let range = self.range(at, size)?;
+        self.s.decode_from(self.r, tag, &mut self.obj[range])
+    }
+
+    /// 0x102D330 / 0x1C0950: decode selectors into zero locals, initialize the union,
+    /// then decode each payload. The initializer preserves the selector padding bytes.
+    fn atom(&mut self, at: i64) -> Result<()> {
+        let mut selectors = [0u8; 2];
+        for (i, cell) in self.s.schemas.cells.atom_selectors.iter().enumerate() {
+            let mut image = vec![0; self.s.schemas.get(cell.1)?.struct_size as usize];
+            self.s.decode_from(self.r, cell.1, &mut image)?;
+            selectors[i] = image[0];
+        }
+        let pt = self.s.schemas.atom_tag(selectors[0], false, self.top)?;
+        let st = self.s.schemas.atom_tag(selectors[1], true, self.top)?;
+        self.put(at, &selectors[..1])?;
+        self.put(at + 4, &selectors[1..])?;
+        self.put(at + 8, &[0; 4])?;
+        self.put(at + 16, &[0; 48])?;
+        self.object_at(pt, at + 16)?;
+        self.object_at(st, at + 8)
     }
 }

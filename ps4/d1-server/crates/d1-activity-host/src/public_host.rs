@@ -282,6 +282,8 @@ pub struct PublicHost {
     /// Every running instance's open world, by host id, shared by every connection.
     worlds: Arc<Mutex<HashMap<u64, InstanceWorld>>>,
     host_id: u64,
+    /// Each world's PUBLIC checksum (`worlds.tsv`, stream E), published by a public instance.
+    public_checksums: Arc<HashMap<String, u32>>,
 }
 
 impl std::fmt::Debug for PublicHost {
@@ -311,7 +313,22 @@ impl PublicHost {
             services: None,
             worlds: Arc::new(Mutex::new(HashMap::new())),
             host_id: 0,
+            public_checksums: Arc::new(HashMap::new()),
         }
+    }
+
+    /// The worlds' PUBLIC checksums (`scenario_record+0x10`, `worlds.tsv`'s `public_checksum`).
+    /// A public instance of a listed world publishes it at `global_activity_state+0x5C` instead of
+    /// the mission's PRIVATE one: the activity client of a public bubble is `[AC PUBLIC ...]`
+    /// (notes/ps4-56578-public-instances-2026-11-05.md). Not measured on the wire yet.
+    pub fn with_public_checksums(mut self, checksums: HashMap<String, u32>) -> Self {
+        self.public_checksums = Arc::new(checksums);
+        self
+    }
+
+    /// The PUBLIC checksum of `world`, when the table has it.
+    pub fn public_checksum(&self, world: &str) -> Option<u32> {
+        self.public_checksums.get(world).copied()
     }
 
     /// Run each instance's open world: start its bundles through the bridge, rotate its public
@@ -513,6 +530,18 @@ impl PublicHost {
     }
 }
 
+/// ⭐ **The entry-only encoder** (#319, stream O): a region's list as a
+/// `d1_oracle::sensor::SensorEntryFrame` (gen, no authority, `init = 1`, the entries), through the
+/// host's wire codec's `encode_sensor_entries`: d1-rsat under `D1_RSAT_NATIVE=1` where it covers
+/// the schemas, the client's own codec otherwise. `gen` must equal the client's `world+0x1D`, as
+/// for every udt 5 frame (`D1_AH_SENSOR_GEN`, default 0).
+pub fn entry_frame_encoder(codec: Arc<dyn crate::codec::AhWireCodec>, gen: u8) -> FrameEncoder {
+    Arc::new(move |clients: &[SensorClientRef]| {
+        let frame = d1_oracle::sensor::SensorEntryFrame { gen, authority: None, init: true, entries: clients.to_vec() };
+        codec.encode_sensor_entries(&frame).map(|(bytes, _)| bytes).map_err(|e| format!("entry-only frame: {e}"))
+    })
+}
+
 /// The frames a host with no entry-only encoder serves: none, each named.
 pub fn encoder_pending() -> FrameEncoder {
     Arc::new(|_| {
@@ -536,6 +565,31 @@ mod tests {
 
     fn fixtures() -> PathBuf {
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578/public")
+    }
+
+    /// Stream O: a public list goes through the client's own codec as an entry-only frame: gen
+    /// first, no authority table, the init bit set.
+    #[test]
+    fn a_public_list_encodes_as_an_entry_only_frame() {
+        if !crate::eboot_or_skip("a_public_list_encodes_as_an_entry_only_frame") {
+            return;
+        }
+        let lists = load_public_table(&fixtures().join("public-table.txt")).unwrap();
+        let encode = entry_frame_encoder(Arc::new(crate::codec::SchemaCodec), 0);
+        let frames = PublicHost::build_frames(&lists[..1], &encode);
+        let frame = frames[&lists[0].key].as_ref().expect("the client's codec encodes the list");
+        assert_eq!(frame[0], 0, "gen");
+        assert_eq!(d1_oracle::sensor::known_stamp_bit(frame), Some(9), "no authority table: the stamp follows gen and its bit");
+        assert!(frame.len() > lists[0].clients.len(), "{} bytes for {} entries", frame.len(), lists[0].clients.len());
+    }
+
+    #[test]
+    fn a_public_instance_knows_its_worlds_public_checksum() {
+        let lists = load_public_table(&fixtures().join("public-table.txt")).unwrap();
+        let host = PublicHost::new(Arc::new(PublicHost::build_frames(&lists, &encoder_pending())), Arc::new(Mutex::new(PublicRegistry::new(1))))
+            .with_public_checksums(HashMap::from([("act_cosmo_m1_dome_a".to_string(), 0xe354_f1ea)]));
+        assert_eq!(host.public_checksum("act_cosmo_m1_dome_a"), Some(0xe354_f1ea));
+        assert_eq!(host.public_checksum("pvp_moonbase"), None, "an unlisted world keeps the mission's");
     }
 
     fn join(kind: u8, mission_host: u64, fireteam: u64, character: u64) -> Vec<u8> {

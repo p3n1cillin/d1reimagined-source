@@ -133,8 +133,25 @@ fn main() -> anyhow::Result<()> {
                     }
                     Err(e) => tracing::warn!("activity framework: {} not loaded: {e}", dir.display()),
                 }
+                // stream O: where the framework's checkpoints and lockouts go (the responder's store).
+                match d1_activity_host::checkpoints::ControlFileCheckpointStore::from_env() {
+                    Some(c) => tracing::info!(
+                        "activity framework: checkpoints and lockouts go to the player store (character {:#018x}, read back from {})",
+                        c.character(),
+                        d1_activity_host::checkpoints::state_file_for(std::path::Path::new(&std::env::var("D1_STORE_CONTROL").unwrap_or_default())).display()
+                    ),
+                    None => tracing::info!("activity framework: checkpoints stay in memory (no D1_STORE=1 with D1_STORE_CONTROL)"),
+                }
             }
             // ── end HOOK ──
+            // ── stream O ── rewards across the process boundary: with D1_REWARDS=1, D1_STORE=1 and
+            // D1_STORE_CONTROL, every reward call (the script bridge's, the open world's) becomes a
+            // `grant` line in the responder's store command file (reward_forward.rs).
+            let grant_forwarder = d1_activity_host::reward_forward::GrantForwarder::from_env();
+            match &grant_forwarder {
+                Some(f) => tracing::info!("⭐ rewards: grants go to the player store through {}", f.path().display()),
+                None => tracing::info!("rewards: no grant forwarding (needs D1_REWARDS=1, D1_STORE=1 and D1_STORE_CONTROL); grants are logged only"),
+            }
             if ah_id == 0 {
                 anyhow::bail!(
                     "activity-host id 0 is the `no activity host` sentinel - FUN_00594320 issues \
@@ -872,7 +889,13 @@ fn main() -> anyhow::Result<()> {
                     // are driven by their own mission scripts through the sidecar. Off by default.
                     script_config = d1_activity_host::script_bridge::ScriptConfig::from_env(&params)
                         .map_err(|e| anyhow::anyhow!("{e}"))?
-                        .map(std::sync::Arc::new);
+                        .map(|mut c| {
+                            // stream O: the bridge's end-of-activity grants go to the store.
+                            if let Some(f) = grant_forwarder.clone() {
+                                c.rewards = std::sync::Arc::new(std::sync::Mutex::new(f));
+                            }
+                            std::sync::Arc::new(c)
+                        });
                     if let Some(c) = &script_config {
                         tracing::info!("⭐ D1_AH_SCRIPTS=1 - scripted activities {c:?}");
                     }
@@ -988,10 +1011,15 @@ fn main() -> anyhow::Result<()> {
                     .unwrap_or_else(|_| "ps4/fixtures/56578/public/public-table.txt".to_string());
                 let lists = d1_activity_host::public_host::load_public_table(std::path::Path::new(&table))
                     .map_err(|e| anyhow::anyhow!("D1_AH_PUBLIC_TABLE: {e}"))?;
+                // stream O: #319's entry-only frame (gen, no authority, init, the entries) through this
+                // host's wire codec (d1-rsat under D1_RSAT_NATIVE=1, the client's own otherwise).
+                let gen = std::env::var("D1_AH_SENSOR_GEN").ok().and_then(&parse_u32).unwrap_or(0) as u8;
+                let started = Instant::now();
                 let frames = d1_activity_host::public_host::PublicHost::build_frames(
                     &lists,
-                    &d1_activity_host::public_host::encoder_pending(),
+                    &d1_activity_host::public_host::entry_frame_encoder(codec.clone(), gen),
                 );
+                tracing::info!("public lists encoded as entry-only frames (gen {gen}) in {:?}", started.elapsed());
                 let built = frames.values().filter(|f| f.is_ok()).count();
                 tracing::info!("⭐ D1_AH_PUBLIC_HOST=1 - {} public lists from {table}, {built} frame(s) built", lists.len());
                 if let Some(Err(e)) = frames.values().find(|f| f.is_err()) {
@@ -1000,11 +1028,36 @@ fn main() -> anyhow::Result<()> {
                 if !std::env::var("D1_AH_DISTINCT_HOST_IDS").is_ok_and(|v| v == "1") {
                     tracing::warn!("⚠ D1_AH_PUBLIC_HOST=1 without D1_AH_DISTINCT_HOST_IDS=1: every connection presents the mission host's id");
                 }
-                // The open world (events, loot, patrol, social spaces) with stand-ins for stream A2's
-                // script bridge (refuses, so no event starts) and stream M's rewards (logged only).
-                let services = d1_activity_host::public_host::OpenWorldServices {
-                    bridge: std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::public_events::PendingBridge)),
-                    rewards: std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::open_world::LoggedRewards)),
+                // The open world (events, loot, patrol, social spaces). stream O: with D1_AH_SCRIPTS=1
+                // its bundles go to the script bridge (#319's BubbleScriptBridge), else the pending
+                // stand-in (refuses, so no event starts); its rewards go to the store when the
+                // forwarder is on, else they are logged.
+                let bridge: std::sync::Arc<std::sync::Mutex<dyn d1_activity_host::public_events::BubbleScriptBridge + Send>> =
+                    match script_config.clone() {
+                        Some(c) => {
+                            tracing::info!("⭐ public instances: bundles go to the script bridge (D1_AH_SCRIPTS=1)");
+                            std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::script_bridge::ScriptBridge::new(c)))
+                        }
+                        None => std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::public_events::PendingBridge)),
+                    };
+                let rewards: std::sync::Arc<std::sync::Mutex<dyn d1_activity_host::open_world::ActivityRewards + Send>> =
+                    match grant_forwarder.clone() {
+                        Some(f) => std::sync::Arc::new(std::sync::Mutex::new(f)),
+                        None => std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::open_world::LoggedRewards)),
+                    };
+                let services = d1_activity_host::public_host::OpenWorldServices { bridge, rewards };
+                // stream O: a public instance publishes its world's PUBLIC checksum (D1_AH_WORLDS).
+                let public_checksums = match std::env::var("D1_AH_WORLDS") {
+                    Ok(dir) => {
+                        let c = d1_activity_host::generated::read_public_checksums(std::path::Path::new(&dir))
+                            .map_err(|e| anyhow::anyhow!("D1_AH_WORLDS {dir}: {e:#}"))?;
+                        tracing::info!("⭐ public instances: {} worlds' PUBLIC checksums from {dir}", c.len());
+                        c
+                    }
+                    Err(_) => {
+                        tracing::info!("public instances: no D1_AH_WORLDS, so a public instance publishes the mission's checksum");
+                        std::collections::HashMap::new()
+                    }
                 };
                 Some(
                     d1_activity_host::public_host::PublicHost::new(
@@ -1013,7 +1066,8 @@ fn main() -> anyhow::Result<()> {
                             d1_activity_host::public_registry::PublicRegistry::new(ah_id.wrapping_add(0x1000)),
                         )),
                     )
-                    .with_open_world(&lists, services),
+                    .with_open_world(&lists, services)
+                    .with_public_checksums(public_checksums),
                 )
             } else {
                 None

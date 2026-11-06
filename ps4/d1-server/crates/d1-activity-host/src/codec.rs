@@ -621,6 +621,9 @@ mod tests {
     /// against the captured wire, and the nonce landing at `+0x00` of the decode.
     #[test]
     fn the_default_codec_round_trips_the_captured_live_join_request() {
+        if !crate::eboot_or_skip("the_default_codec_round_trips_the_captured_live_join_request") {
+            return;
+        }
         let wire = hex(d1_oracle::activity_host::CAPTURED_JOIN_REQUEST);
         assert_eq!(wire.len(), 238);
 
@@ -645,6 +648,9 @@ mod tests {
     /// The message that actually has to go out. It must encode, and it must **not** be the struct.
     #[test]
     fn a_join_result_encodes_to_schema_bytes_that_are_not_the_struct_image() {
+        if !crate::eboot_or_skip("a_join_result_encodes_to_schema_bytes_that_are_not_the_struct_image") {
+            return;
+        }
         let msg = AhMessage::JoinResult(JoinResult::accepted([1, 2, 3, 4], 0xD1, "sess", 0));
         let wire = SchemaCodec.encode(&msg).expect("join_result must encode");
         let raw = RawStructCodec.encode(&msg).expect("the experiment always encodes");
@@ -661,6 +667,9 @@ mod tests {
     /// read, and for those the codec must still name the gate rather than improvise a tag.
     #[test]
     fn an_unpinned_user_defined_type_still_refuses_and_says_so() {
+        if !crate::eboot_or_skip("an_unpinned_user_defined_type_still_refuses_and_says_so") {
+            return;
+        }
         // udt 42 `advance_replication_epoch` is sendable and has NO CALL_SITES row.
         let msg = AhMessage::AdvanceReplicationEpoch { epoch: 1, suppress: 0 };
         let err = SchemaCodec.encode(&msg).unwrap_err();
@@ -678,6 +687,9 @@ mod tests {
     /// whose call sites pin them (56578).
     #[test]
     fn the_slot_handover_answers_encode() {
+        if !crate::eboot_or_skip("the_slot_handover_answers_encode") {
+            return;
+        }
         if !d1_oracle::activity_host::call_sites().iter().any(|(u, _, _)| *u == 23) {
             return;
         }
@@ -713,6 +725,9 @@ mod tests {
     /// Two instruments, one answer - and the literals are what a reader of this file sees.
     #[test]
     fn the_pinned_tags_equal_the_derived_ones() {
+        if !crate::eboot_or_skip("the_pinned_tags_equal_the_derived_ones") {
+            return;
+        }
         assert_eq!(d1_oracle::activity_host::tag_for_udt(3).unwrap(), TAG_JOIN_REQUEST);
         assert_eq!(d1_oracle::activity_host::tag_for_udt(4).unwrap(), TAG_JOIN_RESULT);
         // The DESCRIPTOR_GLOBAL_* pins are 01.29's; `descriptor_global` follows the selected build.
