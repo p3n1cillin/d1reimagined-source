@@ -241,16 +241,30 @@ mod tests {
         // uncommon Glimmer), not nothing.
         let weapon = |d: &&ItemDef| Slot::from_bucket_hash(d.bucket).is_some_and(|s| s.is_weapon());
         let armour = |d: &&ItemDef| Slot::from_bucket_hash(d.bucket).is_some_and(|s| s.is_armor());
+        // In hash order (the table is a HashMap), and only items the tier rule governs: Eververse
+        // pieces give Silver Dust, and the client's content gives a few items another tier's reward
+        // set. Both are right; taking whichever came first made this test flaky.
+        let mut items: Vec<&ItemDef> = t.items.values().collect();
+        items.sort_by_key(|d| d.hash);
+        let by_tier = |d: &&ItemDef| {
+            let w = weapon(d);
+            let own = crate::content::item_index(d.hash)
+                .and_then(|ci| crate::tables::tables().items.get(&ci).map(|r| r.reward_set))
+                .filter(|s| !crate::inventory_ops::placeholder_yields(*s).is_empty());
+            own.is_none() || own == dismantle_set(d.tier, w)
+        };
+        let silver = |d: &&ItemDef| dismantle_yield(d).iter().any(|l| l.0 == SILVER_DUST);
         let pick = |tier: Tier, w: bool| {
-            t.items.values().find(|d| d.tier == tier && d.instanced && d.equippable && if w { weapon(d) } else { armour(d) }).unwrap()
+            *items.iter().find(|d| d.tier == tier && d.instanced && d.equippable && (if w { weapon(d) } else { armour(d) }) && by_tier(d) && !silver(d)).unwrap()
         };
         let y = dismantle_yield(pick(Tier::Rare, true));
         assert!(y.contains(&(WEAPON_PARTS, 1, "currency.dismantle.other")), "{y:?}");
         let y = dismantle_yield(pick(Tier::Uncommon, false));
         assert!(y.iter().any(|l| l.0 == GLIMMER) && y.iter().any(|l| l.0 == ARMOR_MATERIALS), "{y:?}");
-        let y2 = t.items.values().find(|d| d.tier == Tier::Legendary && d.equippable && armour(d) && d.primary_max >= crate::rewards::light::LIGHT_CAP).unwrap();
+        let y2 = *items.iter().find(|d| d.tier == Tier::Legendary && d.equippable && armour(d) && d.primary_max >= crate::rewards::light::LIGHT_CAP && by_tier(d) && !silver(d)).unwrap();
         let y = dismantle_yield(y2);
         assert!(y.contains(&(LEGENDARY_MARKS, 3, "currency.dismantle.marks")), "3 Marks for armour too: {y:?}");
         assert!(y.iter().any(|l| l.0 == ARMOR_MATERIALS), "{y:?}");
     }
 }
+
