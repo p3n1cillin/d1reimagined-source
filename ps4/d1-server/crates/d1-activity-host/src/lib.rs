@@ -96,11 +96,14 @@ pub mod public_host;
 pub mod public_registry;
 pub mod push;
 pub mod pvp;
+pub mod pvp_driver; // stream R: Crucible matches driven by the clients' reports
+pub mod pvp_wire; // stream R: a Crucible match on each client's udt 5
 pub mod registry;
 pub mod reward_forward; // stream O: grants to the responder's store
 pub mod rewards;
 pub mod row_encoders;
 pub mod rows;
+pub mod scoreboard_rows; // stream R: the whole kind-15 scoreboard and the lifetime's named values
 pub mod script_bridge;
 pub mod sense;
 pub mod sensor_list;
