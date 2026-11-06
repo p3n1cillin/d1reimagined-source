@@ -130,6 +130,11 @@ impl ScriptHandle {
         self.with(|s| s.bridge.scripted())
     }
 
+    /// See [`ScriptBridge::set_served_start`].
+    pub fn set_served_start(&self, region: Option<u32>) {
+        self.with(|s| s.bridge.set_served_start(region));
+    }
+
     /// See [`ScriptBridge::sensor_due`]: a frame the bridge built goes to every member; this
     /// returns this member's next one.
     pub fn sensor_due(&self, now: Instant) -> Option<Vec<u8>> {

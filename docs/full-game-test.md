@@ -133,7 +133,7 @@ then stops its servers. A `-Only servers` run stops when `RUN\boot\stop` is crea
 | Public instances | #316 | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_DISTINCT_HOST_IDS=1`; stream O2: `D1_AH_PUBLIC_INSTANCES_FILE` (the host's instances for the responder's matchmaker) | unset |
 | Native RSAT codec | #317 | `D1_RSAT_NATIVE=1` | unset |
 | udt 5 stamp mode | #298 | `D1_AH_SENSOR_STAMP=1` | unset |
-| Script bridge | #319 (stream A2) | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES` (a stand-in, [165 cine_reveal](../ps4/profiles/script-activities.txt), until stream K's table lands), `D1_AH_SCRIPTS_INCIDENTS`. Listed as off: `D1_AH_SCRIPTS_MISSION_PHASE` (unverified), `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`, `D1_AH_ROWS_UNLISTED`, `D1_AH_ROWS_DELTA_INIT` | unset |
+| Script bridge | #319 (stream A2) | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES` (a stand-in, [165 cine_reveal](../ps4/profiles/script-activities.txt), until stream K's table lands), `D1_AH_SCRIPTS_INCIDENTS`, `D1_AH_SCRIPTS_START_DELAY=60` (a stand-in start cushion, [runs fg2 and fg3b](../notes/ps4-56578-script-bridge-2026-11-05.md#the-first-integrated-run-6-november)). Listed as off: `D1_AH_SCRIPTS_MISSION_PHASE` (unverified), `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`, `D1_AH_ROWS_UNLISTED`, `D1_AH_ROWS_DELTA_INIT` | unset |
 | Content bundles | stream K (not merged) | `D1_BUNDLES_DIR` (`[sidecar]`, from the environment; required with the bridge on) | unset |
 | Script sidecar | #310 | `D1_SCRIPTS_DIR`, `D1_TIGER_DIR` (`[sidecar]`) | unset |
 | Draw cost | fork #7 (draft) | `?D1_DRAW_STATS=1`, `?D1_DRAW_FAST=1`, `?D1_GPU_WAIT_YIELD=1` | `D1_DRAW_FAST=0`, the rest unset |

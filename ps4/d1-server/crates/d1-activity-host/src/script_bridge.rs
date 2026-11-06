@@ -13,7 +13,8 @@
 //!
 //! One sidecar per activity instance, spawned at the join of a scripted activity, speaking JSON
 //! lines on stdin/stdout (stderr is logged). The contract is A1's `tools/script-host/PROTOCOL.md`
-//! (protocol 1): `hello` → `loaded`; `start` (once the world's full list is out) → `ready`; then
+//! (protocol 1): `hello` → `loaded`; `start` (once the world's full list is out and the start
+//! cushion after it, `D1_AH_SCRIPTS_START_DELAY`, has passed) → `ready`; then
 //! one `tick` per 10 Hz udt 5 stamp step, carrying the stamp, each answered with its changes and
 //! `tick_done`. Client events go in host order between ticks, so a run replays from the host log.
 //! A sidecar that cannot start is retried twice; one that exits after `start` (or refuses the
@@ -25,6 +26,17 @@
 //! hash (`map=` in the activity table, identity otherwise). **Stand-in rows** (`loaded.stand_in`,
 //! no content export: their indices are not the game's) never go on the wire; only the lifetime,
 //! which the bridge keys itself, does.
+
+//! # The start (runs fg2 and fg3b, 6 November)
+//!
+//! The first full list is the world's own: a scripted activity that `D1_AH_WORLD_TABLE` names
+//! starts from that row's list, every record with its value, the bridge's own rows merged in
+//! ([`ScriptedActivity::merge_world_list`]), and its lifetime starts at the list's `@phase`, else
+//! 0, the live first value; never the launch phase `D1_AH_SENSOR_PHASE` (lab-base's 3 only arms
+//! the sensor path). The scripts start [`DEFAULT_START_DELAY_S`] seconds later (a stand-in: the
+//! client reports nothing when its initial slice set has loaded), and client events before then
+//! wait for the start. A phase in the slice set the client loads at the join asks for no teleport.
+//! The note: notes/ps4-56578-script-bridge-2026-11-05.md, "The first integrated run".
 
 //! # What each message does here
 //!
@@ -85,6 +97,15 @@ use crate::rows::{FramePlan, Row, RowKey, RowTable};
 pub const PROTO: u32 = 1;
 /// Script ticks per second: one per udt 5 stamp step (PROTOCOL.md "Clock and ordering").
 pub const TICK_HZ: u32 = 10;
+/// The lifetime value every live mission starts at, at the join and at each world load (52 live
+/// captures; notes/ps4-56578-wire-catalog-2026-11-05.md).
+pub const LIVE_FIRST_LIFETIME: i8 = 0;
+/// `D1_AH_SCRIPTS_START_DELAY`'s default, in seconds: the scripts start this long after the first
+/// full list went out. ⚠ A STAND-IN cushion, not a retail rule: the client sends nothing on the
+/// wire when its initial slice set has loaded (runs fg2 and fg3b, 6 November: between the first
+/// full list and the first cinematic there are only keepalives and the 60 s `high_water` beacon),
+/// and the working step schedule (`cine-reveal-steps.txt`) waited 60 s before pregame.
+pub const DEFAULT_START_DELAY_S: f64 = 60.0;
 
 // ── the protocol ─────────────────────────────────────────────────────────────────────────────────
 
@@ -363,8 +384,14 @@ pub struct ScriptedActivity {
     /// Every row of the world's list, with its served value.
     pub rows: Vec<(RowKey, Row)>,
     pub lifetime: RowKey,
-    /// The list's `@phase` (decoded value), the lifetime's value until the scripts set one.
+    /// The list's `@phase` (decoded value), else the launch phase (`D1_AH_SENSOR_PHASE`), as the
+    /// world table builds it. Stream R's Crucible worlds start at it; the script bridge starts at
+    /// [`Self::initial_lifetime`].
     pub lifetime_state: i8,
+    /// The `@phase` the list names itself, if it does.
+    pub listed_phase: Option<i8>,
+    /// The spawn team written into the player bundle's A value (`team=`, -1 by default).
+    pub team: i32,
     pub authority: Option<d1_oracle::sensor::SensorAuthority>,
     pub bundles_path: Option<String>,
     /// Script bundle hash → live group hash.
@@ -542,6 +569,8 @@ impl ScriptedActivity {
             rows: params.clients.iter().map(Row::from_client).collect(),
             lifetime: RowKey { group, kind: params.name_i8, index: params.name_sub },
             lifetime_state: params.phase,
+            listed_phase: crate::sensor_list::listed_phase(&text),
+            team,
             authority: params.authority.clone(),
             bundles_path,
             bundle_groups,
@@ -562,6 +591,70 @@ impl ScriptedActivity {
             phase_slices,
             bubble_slices,
         })
+    }
+
+    /// The lifetime value the bridge's first full list carries: the list's own `@phase`, else 0,
+    /// the live hosts' first value in every mission at join and world load (live order 0 → 1 → 4
+    /// → 6 → 8 for the reveal; notes/ps4-56578-wire-catalog-2026-11-05.md). Never the launch
+    /// phase `D1_AH_SENSOR_PHASE`, which only arms the sensor path (lab-base serves 3): run fg2
+    /// served 3 and then the scripts' 1, a step backwards, and the client stayed loading.
+    pub fn initial_lifetime(&self) -> i8 {
+        self.listed_phase.unwrap_or(LIVE_FIRST_LIFETIME)
+    }
+
+    /// Serve the world's own list (`D1_AH_WORLD_TABLE`'s row for this activity, the list the
+    /// world table and mission step 0 serve) in the first full list: every record of it, with its
+    /// values, and the bridge's own rows merged in (a row the world list does not name is kept;
+    /// a row both name takes the world list's value, or the bridge's where the world list has
+    /// none). The world list's `@phase` and `@authority` win when it names them; its start slice
+    /// set stands in for a missing `start=`. Returns `(world rows, rows only the bridge names,
+    /// rows with a value)`.
+    pub fn merge_world_list(
+        &mut self,
+        base: &d1_oracle::sensor::SensorPhaseUpdate,
+        group: u32,
+        text: &str,
+        start: Option<u32>,
+    ) -> Result<(usize, usize, usize), String> {
+        if group != self.group {
+            return Err(format!("the world table's group {group:#010x} is not the bridge's {:#010x}", self.group));
+        }
+        let p = crate::sensor_list::params_for_list(base, group, self.team, text).map_err(|e| format!("{e:#}"))?;
+        let lifetime = RowKey { group, kind: p.name_i8, index: p.name_sub };
+        if lifetime != self.lifetime {
+            return Err(format!("the world table's lifetime record {lifetime} is not the bridge's {}", self.lifetime));
+        }
+        let mut merged: Vec<(RowKey, Row)> = p.clients.iter().map(Row::from_client).collect();
+        let world = merged.len();
+        let mut only_ours = 0;
+        for (k, ours) in &self.rows {
+            match merged.iter_mut().find(|(m, _)| m == k) {
+                Some((_, theirs)) => {
+                    if theirs.a.is_none() {
+                        theirs.a = ours.a.clone();
+                    }
+                    if theirs.b.is_none() {
+                        theirs.b = ours.b.clone();
+                    }
+                }
+                None => {
+                    merged.push((*k, ours.clone()));
+                    only_ours += 1;
+                }
+            }
+        }
+        let valued = merged.iter().filter(|(_, r)| r.a.is_some() || r.b.is_some()).count();
+        self.rows = merged;
+        if let Some(phase) = crate::sensor_list::listed_phase(text) {
+            self.listed_phase = Some(phase);
+        }
+        if crate::sensor_list::lists_authority(text) {
+            self.authority = p.authority;
+        }
+        if self.start.is_none() {
+            self.start = start;
+        }
+        Ok((world, only_ours, valued))
     }
 
     /// The machine the authority table gives the blocks to (block 0's peer), else 14.
@@ -611,6 +704,72 @@ pub struct ScriptConfig {
     /// Send `active_bundles` as the client enters each slice set (default on when the activity
     /// has slice tables; `D1_AH_SCRIPTS_ACTIVE_BUNDLES=0` turns it off).
     pub active_bundles: bool,
+    /// `D1_AH_SCRIPTS_START_DELAY` (seconds, default [`DEFAULT_START_DELAY_S`]): how long after
+    /// the first full list the scripts start (`players`, `start`, and so their first phase, region
+    /// move and lifetime change). ⚠ A stand-in cushion: no client "loaded" signal is known.
+    pub start_delay: Duration,
+}
+
+/// `D1_AH_SCRIPTS_START_DELAY`, in seconds (`0` = start as soon as the full list is out).
+pub fn start_delay_from(value: Option<&str>) -> Result<Duration, String> {
+    match value.map(str::trim).filter(|v| !v.is_empty()) {
+        None => Ok(Duration::from_secs_f64(DEFAULT_START_DELAY_S)),
+        Some(v) => v
+            .parse::<f64>()
+            .ok()
+            .filter(|s| s.is_finite() && *s >= 0.0)
+            .map(Duration::from_secs_f64)
+            .ok_or_else(|| format!("D1_AH_SCRIPTS_START_DELAY={v:?}: want seconds, 0 or more")),
+    }
+}
+
+/// Serve each scripted activity that `D1_AH_WORLD_TABLE` (`TABLE`, its text) names with the world
+/// table's own list ([`ScriptedActivity::merge_world_list`]), as the instance serves that world
+/// without the bridge. `read` opens a list named in the table. Returns one line per activity.
+pub fn apply_world_table(
+    activities: &mut HashMap<u16, ScriptedActivity>,
+    table: &str,
+    base: &d1_oracle::sensor::SensorPhaseUpdate,
+    read: &dyn Fn(&str) -> Result<String, String>,
+) -> Vec<String> {
+    let num = |s: &str| s.strip_prefix("0x").map_or_else(|| s.parse::<u32>().ok(), |h| u32::from_str_radix(h, 16).ok());
+    let mut out = Vec::new();
+    for line in table.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()) {
+        let f: Vec<&str> = line.split_whitespace().collect();
+        let Some(a) = f.first().and_then(|i| i.parse::<u16>().ok()).and_then(|i| activities.get_mut(&i)) else { continue };
+        if f.len() != 4 && f.len() != 5 {
+            out.push(format!("⚠ activity {}: world table line {line:?} not used (want `index world group list [start]`)", a.index));
+            continue;
+        }
+        if f[1] != a.world {
+            out.push(format!("⚠ activity {}: the world table serves {:?}, the bridge {:?}; its own list stands", a.index, f[1], a.world));
+            continue;
+        }
+        let Some(group) = num(f[2]) else {
+            out.push(format!("⚠ activity {}: world table group {:?} unreadable", a.index, f[2]));
+            continue;
+        };
+        let start = match f.get(4) {
+            None => None,
+            Some(s) => match num(s) {
+                Some(r) => Some(r),
+                None => {
+                    out.push(format!("⚠ activity {}: world table start {s:?} unreadable", a.index));
+                    continue;
+                }
+            },
+        };
+        let result = read(f[3]).and_then(|text| a.merge_world_list(base, group, &text, start));
+        out.push(match result {
+            Ok((world, ours, valued)) => format!(
+                "⭐ script bridge: activity {} ({}) serves the world table's list {}: {world} rows ({valued} with values) \
+                 and {ours} only the bridge's list names, lifetime starting at {}",
+                a.index, a.activity, f[3], a.initial_lifetime()
+            ),
+            Err(e) => format!("⚠ activity {}: the world table's list {} not used: {e}; the bridge's own list stands", a.index, f[3]),
+        });
+    }
+    out
 }
 
 impl std::fmt::Debug for ScriptConfig {
@@ -687,6 +846,29 @@ impl ScriptConfig {
             }
             activities.insert(a.index, a);
         }
+        // The hand world table (`D1_AH_WORLD_TABLE`, rows that win over the generated worlds): a
+        // scripted activity it names starts from the world's own list, as the world table serves
+        // it without the bridge (run fg3b, 6 November: the live list, @phase 0, plays).
+        if let Some(path) = std::env::var("D1_AH_WORLD_TABLE").ok().filter(|p| !p.trim().is_empty()) {
+            let table = std::fs::read_to_string(&path).map_err(|e| format!("D1_AH_WORLD_TABLE {path}: {e}"))?;
+            let read = |entry: &str| {
+                let p = crate::sensor_list::listed_path(&path, entry);
+                std::fs::read_to_string(&p).map_err(|e| format!("{}: {e}", p.display()))
+            };
+            for line in apply_world_table(&mut activities, &table, base, &read) {
+                if line.starts_with('⚠') {
+                    tracing::warn!("script bridge: {line}");
+                } else {
+                    tracing::info!("{line}");
+                }
+            }
+        }
+        let start_delay = start_delay_from(std::env::var("D1_AH_SCRIPTS_START_DELAY").ok().as_deref())?;
+        tracing::info!(
+            "script bridge: the scripts start {:.0} s after the first full list (D1_AH_SCRIPTS_START_DELAY; \
+             ⚠ a stand-in cushion: the client sends no 'loaded' signal on the wire)",
+            start_delay.as_secs_f64()
+        );
         let catalogue = std::env::var("D1_AH_SCRIPTS_INCIDENTS")
             .unwrap_or_else(|_| "ps4/fixtures/56578/incidents-56578.tsv".into());
         let incidents = IncidentCatalog::load(std::path::Path::new(&catalogue)).map_err(|e| {
@@ -716,6 +898,7 @@ impl ScriptConfig {
             rewards: Arc::new(Mutex::new(LoggedRewards)),
             codec: Self::host_codec(),
             active_bundles: !std::env::var("D1_AH_SCRIPTS_ACTIVE_BUNDLES").is_ok_and(|v| v.trim() == "0"),
+            start_delay,
         }))
     }
 }
@@ -766,6 +949,17 @@ struct Run {
     active_slice: Option<u32>,
     /// The slice set whose sensor list the row table serves (the start's at the join).
     list_slice: Option<u32>,
+    /// When the first full list went out: the start cushion counts from here.
+    full_at: Option<Instant>,
+    /// The start is waiting for the cushion (logged once).
+    start_held_logged: bool,
+    /// Where the client is, or is going: its own last udt 21 report, else the last region the
+    /// host moved it to, else the start slice set it loads at the join. A phase whose region is
+    /// this one asks for no teleport (run fg2: a teleport to 25 while the client was still
+    /// loading its initial 25 de-instantiated it, and the load never finished).
+    believed_slice: Option<u32>,
+    /// Client events before the scripts start, sent after `start` in order.
+    before_start: VecDeque<HostMsg>,
 }
 
 impl Run {
@@ -805,6 +999,9 @@ pub struct ScriptBridge {
     /// Completion chains whose body is being encoded, in submission order.
     bodies_pending: VecDeque<&'static [u32]>,
     region_out: Option<u32>,
+    /// The start slice set the instance serves at the join (its membership's region record), set
+    /// by the instance before it passes the join on ([`Self::set_served_start`]).
+    served_start: Option<u32>,
     host_id: u64,
     pub frames_sent: u64,
     /// Stream O2: the scripts' phases, wipes and completion as activity-framework events, for the
@@ -889,6 +1086,7 @@ impl ScriptBridge {
             incidents_out: VecDeque::new(),
             bodies_pending: VecDeque::new(),
             region_out: None,
+            served_start: None,
             host_id: 0,
             frames_sent: 0,
             framework_events: Vec::new(),
@@ -921,6 +1119,13 @@ impl ScriptBridge {
         self.region_out.take()
     }
 
+    /// The start slice set the instance serves this join (the region its membership publishes):
+    /// the client loads it at the join, so a phase there needs no teleport. Call before passing
+    /// the join on; `None` leaves the activity table's `start=`.
+    pub fn set_served_start(&mut self, region: Option<u32>) {
+        self.served_start = region;
+    }
+
     // ── inputs ────────────────────────────────────────────────────────────────────────────────
 
     /// Every client message, after the instance has handled it (`activity_index` is the activity it
@@ -946,6 +1151,7 @@ impl ScriptBridge {
                     if !matches!(hash, 0 | 0x811C_9DC5) && region != 0x3FF {
                         if let Some(run) = self.run.as_mut() {
                             run.current_slice = Some(region);
+                            run.believed_slice = Some(region);
                         }
                         self.activate_slice(region);
                     }
@@ -1020,18 +1226,21 @@ impl ScriptBridge {
             self.stop_run(old, now);
         }
         let start = activity.start;
+        let first = activity.initial_lifetime();
         let mut rows = activity.rows.clone();
-        rows.push((activity.lifetime, self.lifetime_row(activity.lifetime_state, None)));
+        rows.push((activity.lifetime, self.lifetime_row(first, None)));
         self.rows.load_world(rows, activity.authority.clone());
         self.encoders.reset();
         self.in_flight = None;
         tracing::info!(
-            "⭐ script bridge: activity {activity_index} is {} ({} rows); starting its sidecar",
+            "⭐ script bridge: activity {activity_index} is {} ({} rows, {} with values, lifetime {first}{}); starting its sidecar",
             activity.activity,
-            activity.rows.len() + 1
+            activity.rows.len() + 1,
+            activity.rows.iter().filter(|(_, r)| r.a.is_some() || r.b.is_some()).count() + 1,
+            start.map(|s| format!(", start slice set {s}")).unwrap_or_default()
         );
         self.run = Some(Run {
-            lifetime_state: activity.lifetime_state,
+            lifetime_state: first,
             activity,
             link: None,
             attempts: 0,
@@ -1054,6 +1263,10 @@ impl ScriptBridge {
             held: VecDeque::new(),
             active_slice: None,
             list_slice: start,
+            full_at: None,
+            start_held_logged: false,
+            believed_slice: self.served_start.or(start),
+            before_start: VecDeque::new(),
         });
     }
 
@@ -1134,6 +1347,12 @@ impl ScriptBridge {
     fn send(&mut self, msg: HostMsg) {
         let Some(run) = self.run.as_mut() else { return };
         if run.halted.is_some() {
+            return;
+        }
+        // Client events before the scripts run wait for `start` (players and the start itself
+        // open it): the scripts see nothing of the client before the start cushion has passed.
+        if !run.started && !matches!(msg, HostMsg::Players { .. } | HostMsg::Start) {
+            run.before_start.push_back(msg);
             return;
         }
         let Some(link) = run.link.as_mut() else { return };
@@ -1232,11 +1451,29 @@ impl ScriptBridge {
         if run.halted.is_some() || run.link.is_none() {
             return;
         }
-        // Start once the sidecar has loaded the scripts and the world's full list has gone out.
-        if !run.started && run.loaded && self.rows.full_delivered() {
+        // Start once the sidecar has loaded the scripts, the world's full list has gone out, and
+        // the start cushion after it has passed (D1_AH_SCRIPTS_START_DELAY, a stand-in: the client
+        // sends no "loaded" signal; run fg2 started at once, during the initial slice load, and
+        // never left it). Until then the world's own list stands, lifetime 0, and heartbeats run.
+        let delay = self.config.start_delay;
+        let cushion_over = run.full_at.is_some_and(|t| now >= t + delay);
+        if !run.started && run.loaded && self.rows.full_delivered() && !cushion_over && !run.start_held_logged {
+            run.start_held_logged = true;
+            tracing::info!(
+                "script bridge: {} scripts loaded; their start waits {:.0} s after the full list \
+                 (D1_AH_SCRIPTS_START_DELAY, ⚠ a stand-in cushion while the client loads its initial slice set)",
+                run.activity.activity,
+                delay.as_secs_f64()
+            );
+        }
+        if !run.started && run.loaded && self.rows.full_delivered() && cushion_over {
             run.started = true;
             run.last_tick = Some(self.rows.tick(now));
-            tracing::info!("⭐ script bridge: {} scripts start", run.activity.activity);
+            tracing::info!(
+                "⭐ script bridge: {} scripts start (+{:.0} s after the full list)",
+                run.activity.activity,
+                run.full_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64())
+            );
             let players = self
                 .players
                 .iter()
@@ -1245,6 +1482,10 @@ impl ScriptBridge {
                 .collect();
             self.send(HostMsg::Players { players });
             self.send(HostMsg::Start);
+            let waiting: Vec<HostMsg> = self.run.as_mut().map(|r| r.before_start.drain(..).collect()).unwrap_or_default();
+            for m in waiting {
+                self.send(m);
+            }
             if let Some(region) = self.run.as_ref().and_then(|r| r.current_slice) {
                 self.activate_slice(region);
             }
@@ -1372,8 +1613,15 @@ impl ScriptBridge {
                 if let Some(n) = name.clone().filter(|n| !n.is_empty()) {
                     self.framework_events.push(crate::encounter_framework::Event::ScriptPhase(n));
                 }
-                if let Some(r) = region.filter(|r| run.current_slice != Some(*r)) {
-                    self.region_out = Some(r);
+                match region {
+                    Some(r) if run.believed_slice == Some(r) => tracing::info!(
+                        "script bridge: phase {index} runs in region {r}, where the client already is (or is loading); no teleport"
+                    ),
+                    Some(r) => {
+                        run.believed_slice = Some(r);
+                        self.region_out = Some(r);
+                    }
+                    None => {}
                 }
                 self.set_lifetime();
             }
@@ -1623,6 +1871,9 @@ impl ScriptBridge {
                 match self.rows.stamp_at(&mut f.bytes, f.stamp_bit, plan.init, stamp) {
                 Ok(()) => {
                     self.rows.sent(&plan, now);
+                    if let (Some(run), true) = (self.run.as_mut(), plan.full) {
+                        run.full_at.get_or_insert(now);
+                    }
                     if let (Some(run), Some(value)) = (self.run.as_mut(), lifetime) {
                         run.lifetime_unsent = false;
                         run.lifetime_sent = Some((value, stamp));
@@ -1916,6 +2167,16 @@ mod tests {
     }
 
     fn bridge_of(shared: &Arc<Mutex<Shared>>, die_after_start: bool, stand_in: bool, activity: ScriptedActivity) -> ScriptBridge {
+        bridge_delayed(shared, die_after_start, stand_in, activity, Duration::ZERO)
+    }
+
+    fn bridge_delayed(
+        shared: &Arc<Mutex<Shared>>,
+        die_after_start: bool,
+        stand_in: bool,
+        activity: ScriptedActivity,
+        start_delay: Duration,
+    ) -> ScriptBridge {
         let s = shared.clone();
         let config = ScriptConfig {
             sidecar: vec!["fake".into()],
@@ -1931,6 +2192,7 @@ mod tests {
             rewards: Arc::new(Mutex::new(RecordingRewards(shared.clone()))),
             codec: Arc::new(move || CodecWorker::inline(recording(s.clone()))),
             active_bundles: true,
+            start_delay,
         };
         let s = shared.clone();
         ScriptBridge::with_launcher(
@@ -2118,6 +2380,198 @@ mod tests {
         // Every frame the bridge returned is stamped (the 10 Hz clock, nondecreasing).
         let stamps: Vec<u32> = wire.iter().map(|f| ((u64::from_be_bytes([0, 0, 0, f[1], f[2], f[3], f[4], f[5]]) >> 7) & 0xFFFF_FFFF) as u32).collect();
         assert!(stamps.windows(2).all(|w| w[0] <= w[1]), "{stamps:?}");
+    }
+
+    // ── the reveal as the full-game profile serves it (runs fg2 and fg3b, 6 November) ──
+
+    fn fixtures() -> std::path::PathBuf {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578")
+    }
+
+    /// The launch parameters as lab-base.env builds them: `D1_AH_SENSOR_PHASE=3` (the knob that
+    /// arms the sensor path; its value is not the reveal's first lifetime).
+    fn lab_base() -> d1_oracle::sensor::SensorPhaseUpdate {
+        d1_oracle::sensor::SensorPhaseUpdate { phase: 3, name_hash: 0xC2DA_CAF7, ..base() }
+    }
+
+    /// Activity 165 from the profile's own tables: stream K's `@generated start=25` row, the
+    /// generated worlds and slice states, and lab-base's hand world table (`world-table-cine-live.txt`,
+    /// the live list run fg3b served).
+    fn profile_reveal(with_world_table: bool) -> ScriptedActivity {
+        let f = fixtures();
+        let mut worlds = crate::generated::GeneratedWorlds::load(&f.join("worlds")).expect("the generated worlds");
+        worlds.load_slice_states(&std::fs::read_to_string(f.join("scripts/slice-states.tsv")).unwrap()).unwrap();
+        let table = std::fs::read_to_string(f.join("scripts/activities.txt")).unwrap();
+        let line = table.lines().find(|l| l.starts_with("165 ")).expect("the table's 165 row");
+        let a = ScriptedActivity::parse_with(line, &lab_base(), &|_| Err("no file".into()), Some(&worlds)).unwrap();
+        let mut activities = HashMap::from([(165, a)]);
+        if with_world_table {
+            let mission = f.join("mission");
+            let world_table = std::fs::read_to_string(mission.join("world-table-cine-live.txt")).unwrap();
+            let read = |p: &str| std::fs::read_to_string(mission.join(p)).map_err(|e| e.to_string());
+            let lines = apply_world_table(&mut activities, &world_table, &lab_base(), &read);
+            assert_eq!(lines.len(), 1, "one row of the table names a scripted activity: {lines:?}");
+            assert!(lines[0].starts_with("⭐"), "{}", lines[0]);
+        }
+        activities.remove(&165).unwrap()
+    }
+
+    #[test]
+    fn the_reveal_starts_from_the_world_list_at_lifetime_0_not_the_launch_phase() {
+        // Without the world table: the generated list names no @phase. Its lifetime record used to
+        // start at the launch phase, 3 (run fg2: "lifetime 3 -> 1").
+        let generated = profile_reveal(false);
+        assert_eq!(generated.lifetime_state, 3, "params_for_list falls back to D1_AH_SENSOR_PHASE");
+        assert_eq!(generated.listed_phase, None);
+        assert_eq!(generated.initial_lifetime(), 0, "the bridge starts at the live first value");
+        assert_eq!(generated.rows.len(), 21, "21 sensor clients and the lifetime: fg2's 22 rows");
+        assert!(generated.rows.iter().all(|(_, r)| r.a.is_none()), "the generated list carries no values");
+        assert_eq!(generated.start, Some(25));
+
+        // With it: the same 21 records, now with the world list's values, and its @phase 0.
+        let reveal = profile_reveal(true);
+        assert_eq!(reveal.listed_phase, Some(0));
+        assert_eq!(reveal.initial_lifetime(), 0);
+        let live = crate::sensor_list::params_for_list(
+            &lab_base(),
+            GROUP,
+            -1,
+            &std::fs::read_to_string(fixtures().join("mission/sensor-clients-cine_reveal-live.txt")).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(live.clients.len(), 21, "the live list: 21 sensor clients (fg3b's step 0)");
+        let want: Vec<(RowKey, Row)> = live.clients.iter().map(Row::from_client).collect();
+        assert_eq!(reveal.rows, want, "every record of the world's list, in its order, with its values");
+        let get = |k: RowKey| reveal.rows.iter().find(|(r, _)| *r == k).map(|(_, r)| r.clone()).unwrap();
+        let cine = get(RowKey { group: CINE, kind: 6, index: 0 });
+        assert_eq!(cine.a.as_ref().map(|(t, i)| (*t, u32_at(i, 4), i[8])), Some((TAG_CINEMATIC_FOR_TEST, 1, 0)), "/6/0 idle, counter 1");
+        let player = get(RowKey { group: GROUP, kind: 0xC, index: 5 });
+        let (tag, image) = player.a.unwrap();
+        assert_eq!(tag, 0x8080_22A5, "the player bundle's spawn value");
+        assert_eq!(&image[0x38..0x3C], &(-1i32).to_le_bytes(), "spawn team -1 for a story activity");
+        assert_eq!(reveal.lifetime, RowKey { group: GROUP, kind: 0x10, index: 3 });
+        assert!(!reveal.rows.iter().any(|(k, _)| *k == reveal.lifetime), "the lifetime is the bridge's own row");
+        // The slice lists stay the generated ones (slice set 26 names /6/1).
+        assert!(reveal.slice_rows.get(&26).is_some_and(|r| r.iter().any(|(k, _)| *k == RowKey { group: CINE, kind: 6, index: 1 })));
+    }
+
+    const TAG_CINEMATIC_FOR_TEST: u32 = 0x8080_254D;
+
+    #[test]
+    fn a_world_list_merges_into_the_bridges_own_rows() {
+        let mut a = ScriptedActivity::parse(CINE_LINE, &base(), &|_| Ok(LIST.to_string())).unwrap();
+        let image = vec![7u8; 0xD4];
+        let world = format!("@phase 0\n0x2fe7dbe6 0x6 0 1 0 0x8080254D {}\n0x4786c0e0 0x22 1 1 0\n0x4786c0e0 0x10 3 1 0\n", "07".repeat(0xD4));
+        let (from_world, only_ours, valued) = a.merge_world_list(&base(), GROUP, &world, Some(25)).unwrap();
+        assert_eq!((from_world, only_ours, valued), (2, 2, 1), "/6/0 and /0x22/1 from the world; /6/1 and /0xf/0 kept");
+        let keys: Vec<RowKey> = a.rows.iter().map(|(k, _)| *k).collect();
+        assert_eq!(
+            keys,
+            [
+                RowKey { group: CINE, kind: 6, index: 0 },
+                RowKey { group: GROUP, kind: 0x22, index: 1 },
+                RowKey { group: CINE, kind: 6, index: 1 },
+                RowKey { group: GROUP, kind: 0xF, index: 0 },
+            ],
+            "the world's records first, in its order, then the rows only the bridge names"
+        );
+        assert_eq!(a.rows[0].1.a, Some((TAG_CINEMATIC_FOR_TEST, image)), "the world list's value");
+        assert_eq!(a.authority, ScriptedActivity::parse(CINE_LINE, &base(), &|_| Ok(LIST.to_string())).unwrap().authority, "no @authority: the bridge's stands");
+        assert_eq!(a.start, Some(25), "the world table's start stands in for a missing start=");
+        // A world table for another group or lifetime record is refused, and nothing changes.
+        let before = a.rows.clone();
+        assert!(a.merge_world_list(&base(), 0x1234, &world, None).is_err());
+        assert!(a.merge_world_list(&base(), GROUP, "0x4786c0e0 0x10 2 1 0\n", None).is_err(), "the Tower's sub 2");
+        assert_eq!(a.rows, before);
+        // A world table row for another world is not used.
+        let mut acts = HashMap::from([(165, a)]);
+        let lines = apply_world_table(&mut acts, "165 city_tower_default1 0x4786c0e0 x.txt 0\n7 cine_reveal 0x1 y.txt", &base(), &|_| Ok(world.clone()));
+        assert_eq!(lines.len(), 1);
+        assert!(lines[0].starts_with('⚠'), "{}", lines[0]);
+    }
+
+    #[test]
+    fn the_start_delay_knob_reads_seconds() {
+        assert_eq!(start_delay_from(None), Ok(Duration::from_secs(60)), "a 60 s stand-in by default");
+        assert_eq!(start_delay_from(Some(" ")), Ok(Duration::from_secs(60)));
+        assert_eq!(start_delay_from(Some("0")), Ok(Duration::ZERO));
+        assert_eq!(start_delay_from(Some("2.5")), Ok(Duration::from_millis(2500)));
+        assert!(start_delay_from(Some("-1")).is_err());
+        assert!(start_delay_from(Some("soon")).is_err());
+    }
+
+    /// Runs fg2 and fg3b: the bridge must start the reveal the way the working step schedule did.
+    /// The first full list is the world's own (21 records with their values) at lifetime 0; for
+    /// the start cushion only heartbeats follow (no phase, no lifetime past 0, no teleport, nothing
+    /// to the scripts but `hello`); then pregame 1 and the hold 4; phase 0 runs in the start slice
+    /// set 25 the client loaded, so no teleport; phase 1 moves it to 26; and the live order
+    /// 0 → 1 → 4 → 6 → 8.
+    #[test]
+    fn the_reveal_waits_for_the_cushion_then_plays_in_the_live_order() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let reveal = profile_reveal(true);
+        assert_eq!(reveal.region_of_phase(0, crate::incident_catalog::fnv1("cine_106_trv_phase"), None), Some(25), "content puts phase 0 in 25");
+        let mut b = bridge_delayed(&shared, false, false, reveal, Duration::from_secs(60));
+        b.set_served_start(Some(25));
+        let mut t = Instant::now();
+        let mut wire = Vec::new();
+        b.on_client_message(&join(7), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.25, &mut wire);
+        {
+            let s = shared.lock().unwrap();
+            assert_eq!(s.frames.len(), 1);
+            let full = &s.frames[0];
+            assert!(full.full && full.init);
+            assert_eq!(full.entries.len(), 22, "the world's 21 records and the lifetime");
+            assert_eq!(lifetime_of(full), Some(0), "lifetime 0 first, never the launch phase 3");
+            assert_eq!(cinematic_of(full, 0), Some((0, 1, 0)), "/6/0 with the world list's idle value");
+            let player = full.entries.iter().find(|(k, _)| k.kind == 0xC && k.index == 5).unwrap();
+            assert_eq!(player.1.a.as_ref().map(|(t, _)| *t), Some(0x8080_22A5), "the spawn value goes out");
+        }
+
+        // The cushion: the client loads its initial slice set. A client incident waits.
+        run_for(&mut b, &mut t, 30.0, &mut wire);
+        b.on_client_message(&incident(566, None), 165, HOST, t);
+        run_for(&mut b, &mut t, 29.0, &mut wire);
+        {
+            let s = shared.lock().unwrap();
+            assert_eq!(s.sent.len(), 1, "only hello before the start: {:?}", s.sent);
+            assert!(matches!(s.sent[0], HostMsg::Hello { .. }));
+            assert_eq!(s.frames.len(), 1, "no delta in the cushion");
+            assert!(wire[1..].iter().all(|f| f.len() == 6), "heartbeats only");
+            assert!(wire.len() >= 15, "a heartbeat every 3 s ({})", wire.len());
+        }
+        assert_eq!(b.take_region_request(), None, "no teleport during the initial load");
+
+        // +60 s: players, start, then the waiting incident; pregame 1, then the hold 4.
+        run_for(&mut b, &mut t, 2.0, &mut wire);
+        {
+            let s = shared.lock().unwrap();
+            let start = s.sent.iter().position(|m| matches!(m, HostMsg::Start)).expect("the scripts start after the cushion");
+            assert!(matches!(s.sent[start - 1], HostMsg::Players { ref players } if players.len() == 1));
+            assert!(matches!(s.sent[start + 1], HostMsg::PlayerSpawned { .. }), "the incident from the cushion follows the start");
+            let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+            seq.dedup();
+            assert_eq!(seq, [0, 1, 4], "pregame and the hold in frames of their own");
+            let play = s.frames.iter().find(|p| lifetime_of(p) == Some(4)).unwrap();
+            let (_, counter, on) = cinematic_of(play, 0).expect("/6/0 plays at the hold");
+            assert_eq!((counter, on), (2, 1), "the world value's counter 1 advanced");
+        }
+        assert_eq!(b.take_region_request(), None, "phase 0 is region 25, the start slice set the client loaded");
+
+        // The first cinematic finishes: phase 1 is region 26 (content's slice states).
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert_eq!(b.take_region_request(), Some(26), "phase 1 moves the client to 26");
+        b.on_client_message(&slice(26), 165, HOST, t);
+        run_for(&mut b, &mut t, 5.0, &mut wire);
+        b.on_client_message(&incident(891, None), 165, HOST, t);
+        run_for(&mut b, &mut t, 1.0, &mut wire);
+        let s = shared.lock().unwrap();
+        let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+        seq.dedup();
+        assert_eq!(seq, [0, 1, 4, 6, 8], "the live order");
+        assert!(s.frames.iter().filter(|p| p.full).count() >= 2, "slice set 26's list went out in full");
     }
 
     /// Stream O3 (integration review, finding 9): two connections of one shared instance share one
@@ -2427,7 +2881,9 @@ mod tests {
         let mut t = Instant::now();
         b.on_client_message(&join(7), 165, HOST, t);
         run_for(&mut b, &mut t, 0.75, &mut Vec::new());
-        assert_eq!(b.take_region_request(), Some(25), "phase 0 is state 25, by its name");
+        // Phase 0 is state 25, by its name: the start slice set the client loads at the join, so
+        // no teleport (run fg2: one sent during the initial load stalled it).
+        assert_eq!(b.take_region_request(), None, "phase 0 is state 25, where the client starts");
         b.on_client_message(&slice(25), 165, HOST, t);
         assert_eq!(
             shared.lock().unwrap().sent.last(),

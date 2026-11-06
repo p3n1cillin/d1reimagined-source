@@ -761,6 +761,15 @@ impl ActivityInstance {
 
     /// D1_AH_SCRIPTS hook: the host teleport a script phase asks for (as a mission step's region).
     fn script_teleport(&mut self, r: u32, now: Instant) {
+        // Run fg2 (6 November): a phase's teleport to the start slice set, sent while the client
+        // was still loading it, de-instantiated the CURRENT slice set and the initial load never
+        // finished. The client loads its start region at the join (and the region of each host
+        // teleport after it); until it reports a slice set of its own (udt 21), a request for the
+        // region the host serves now is no move.
+        if self.current_slice.is_none() && self.start_region.is_some_and(|(s, _)| s == r) {
+            tracing::info!("⭐ script phase: region {r} is the slice set the client was served and is loading; no teleport");
+            return;
+        }
         tracing::info!("⭐ script phase: moving the client to region {r}");
         self.set_start_region(r);
         if let Some((region, peer, token)) = self.pah_region {
@@ -878,6 +887,10 @@ impl ActivityInstance {
         let mut out = self.reply_to(msg, now);
         // D1_AH_SCRIPTS hook (script_bridge.rs): the bridge sees every message after the instance.
         if let Some(b) = self.script_bridge.as_mut() {
+            if matches!(msg, ClientMessage::JoinRequest { .. }) {
+                // The start slice set this join serves: a script phase there needs no teleport.
+                b.set_served_start(self.start_region.map(|(r, _)| r));
+            }
             b.on_client_message(msg, self.activity_index, self.ah_id, now);
         }
         // ── stream O2 hook ── the activity framework's run (activity_driver.rs).
@@ -2735,6 +2748,31 @@ mod tests {
         assert_eq!(req(i.membership_due(now + Duration::from_secs(21))), Some((3, 112)), "state 3 finishes");
         assert_eq!(req(i.membership_due(now + Duration::from_secs(31))), Some((0, 0)), "then the request is dropped");
         assert_eq!(i.pah_region(), Some((112, 0, 2)), "the teleport is the second transition");
+    }
+
+    /// Run fg2 (6 November): a script phase in the start slice set, while the client still loads
+    /// it, is no teleport (one de-instantiated the initial slice set and the load never ended);
+    /// another region is, and so is the start region once the client has reported a slice set.
+    #[test]
+    fn a_script_phase_in_the_loading_start_slice_set_sends_no_teleport() {
+        let (mut i, now) = instance();
+        i.set_pah_region(25, 0, 1);
+        i.set_start_region(25);
+        i.on_client_message(&join_request([0; 4]), now);
+        let _ = i.membership_due(now);
+        i.script_teleport(25, now);
+        assert_eq!(i.slice_request, None, "no request while the client loads 25");
+        assert_eq!(i.pah_region(), Some((25, 0, 1)), "the token does not move");
+        i.script_teleport(26, now);
+        assert_eq!(i.slice_request.map(|(s, r, _)| (s, r)), Some((1, 26)), "another region moves the client");
+        assert_eq!(i.pah_region(), Some((26, 0, 2)));
+        let mut image = vec![0; 0xC0];
+        image[0xB8..0xBC].copy_from_slice(&26u32.to_le_bytes());
+        image[0xBC..0xC0].copy_from_slice(&0x1AD5_E415u32.to_le_bytes());
+        i.track_current_slice(&image);
+        i.slice_request = None;
+        i.script_teleport(25, now);
+        assert_eq!(i.slice_request.map(|(s, r, _)| (s, r)), Some((1, 25)), "back to 25 once the client is in 26");
     }
 
     /// ⭐⭐ A state refresh must not re-grant indices the client already holds: its apply ORs the
