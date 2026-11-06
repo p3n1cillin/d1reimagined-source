@@ -43,3 +43,7 @@ path = "src/lib.rs"
 [[bin]]
 name = "d1-oracle"
 path = "src/main.rs"
+
+[dev-dependencies]
+# Stream P: tests/investment_ops.rs checks d1-bap's investment requests and replies against the codec.
+d1-bap = { path = "../d1-bap" } # GPL-2.0-or-later, this workspace
