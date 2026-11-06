@@ -443,6 +443,10 @@ pub struct ActivityInstance {
     /// the responder from the kind-4 matchmaking key) and the build's activity table
     /// (hash -> index). Re-read on every join, so one Activity Host serves whatever was launched.
     activity_follow: Option<(std::path::PathBuf, std::collections::HashMap<u32, u16>)>,
+    /// The launched hashes `D1_AH_ACTIVITY_REMAP` publishes as another activity (a lab stand-in).
+    activity_remaps: std::collections::HashSet<u32>,
+    /// This join's launched hash, when a remap served another activity in its place.
+    remapped_launch: Option<u32>,
     /// ⭐ `D1_AH_SENSOR_STAMP=1`: frame udt 5 as the live hosts did (see [`SensorStamp`]).
     /// `None` (default) keeps every frame as built: stamp 0, `init = 1`, no heartbeats.
     sensor_stamp: Option<SensorStamp>,
@@ -683,6 +687,8 @@ impl ActivityInstance {
             sensor_repeat: None,
             sensor_phase_file: None,
             activity_follow: None,
+            activity_remaps: std::collections::HashSet::new(),
+            remapped_launch: None,
             sensor_last_sent: None,
             sensor_stamp: None,
             script_bridge: None,
@@ -890,6 +896,8 @@ impl ActivityInstance {
             if matches!(msg, ClientMessage::JoinRequest { .. }) {
                 // The start slice set this join serves: a script phase there needs no teleport.
                 b.set_served_start(self.start_region.map(|(r, _)| r));
+                // Run fg2i: the activity the client launched, when a remap served another.
+                b.set_remapped_launch(self.remapped_launch);
             }
             b.on_client_message(msg, self.activity_index, self.ah_id, now);
         }
@@ -1004,6 +1012,11 @@ impl ActivityInstance {
         table: std::collections::HashMap<u32, u16>,
     ) {
         self.activity_follow = Some((path, table));
+    }
+
+    /// The launched hashes `D1_AH_ACTIVITY_REMAP` serves as another activity (`main.rs`).
+    pub fn set_activity_remaps(&mut self, hashes: std::collections::HashSet<u32>) {
+        self.activity_remaps = hashes;
     }
 
     /// The `(hash, index)` the followed file names, if the table knows it.
@@ -1323,7 +1336,9 @@ impl ActivityInstance {
             // ── rung: wait 4 join_result ───────────────────────────────────────────────────────
             ClientMessage::JoinRequest { struct_image } => {
                 self.squad_live.reset();
-                if let Some((hash, index)) = self.followed_activity_index() {
+                let followed = self.followed_activity_index();
+                self.remapped_launch = followed.map(|(h, _)| h).filter(|h| self.activity_remaps.contains(h));
+                if let Some((hash, index)) = followed {
                     if index != self.activity_index {
                         tracing::info!(
                             "⭐ activity follow: the client launched activity hash {hash:#010x} = index \
@@ -2442,6 +2457,29 @@ mod tests {
         k.set_activity_follow(file.clone(), table);
         k.on_client_message(&join_request([0; 4]), now);
         assert_eq!(k.activity_index(), 416, "an unknown hash keeps the configured index");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// Run fg2i: a join whose launched hash a remap published as another activity names that hash
+    /// (for the bridge's lab completion); an unremapped launch names none.
+    #[test]
+    fn a_remapped_launch_is_known_at_the_join() {
+        let dir = std::env::temp_dir().join(format!("d1ah-remap-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let file = dir.join("launched.txt");
+        // D1_AH_ACTIVITY_REMAP=164:165 as main.rs applies it: 164's hash now names 165.
+        let table: std::collections::HashMap<u32, u16> = [(0x6E0D_AE89u32, 165u16), (0x6EAF_0959, 165)].into_iter().collect();
+        let remaps: std::collections::HashSet<u32> = [0x6E0D_AE89u32].into_iter().collect();
+        for (launched, want) in [(0x6E0D_AE89u32, Some(0x6E0D_AE89u32)), (0x6EAF_0959, None)] {
+            std::fs::write(&file, format!("{launched}
+")).unwrap();
+            let (mut i, now) = instance();
+            i.set_activity_follow(file.clone(), table.clone());
+            i.set_activity_remaps(remaps.clone());
+            i.on_client_message(&join_request([0; 4]), now);
+            assert_eq!(i.activity_index(), 165);
+            assert_eq!(i.remapped_launch, want, "{launched:#x}");
+        }
         let _ = std::fs::remove_dir_all(&dir);
     }
 

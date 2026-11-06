@@ -1008,6 +1008,8 @@ fn main() -> anyhow::Result<()> {
             // ⭐ D1_AH_ACTIVITY_FOLLOW_FILE + D1_AH_ACTIVITY_TABLE: publish the activity the client
             // launched (the responder writes its hash from the kind-4 matchmaking key) instead of a
             // fixed index. The table is `index<TAB>hash` per row (`d1-activitytable.py`).
+            // The launched hashes D1_AH_ACTIVITY_REMAP publishes as another activity (run fg2i).
+            let mut remapped_hashes: std::collections::HashSet<u32> = std::collections::HashSet::new();
             let activity_follow: Option<(std::path::PathBuf, std::collections::HashMap<u32, u16>)> =
                 match (
                     std::env::var("D1_AH_ACTIVITY_FOLLOW_FILE").ok().filter(|s| !s.is_empty()),
@@ -1038,8 +1040,9 @@ fn main() -> anyhow::Result<()> {
                                     anyhow::anyhow!("D1_AH_ACTIVITY_REMAP: '{pair}' is not from:to")
                                 })?;
                                 let (from, to) = (from.trim().parse::<u16>()?, to.trim().parse::<u16>()?);
-                                for index in map.values_mut().filter(|v| **v == from) {
+                                for (hash, index) in map.iter_mut().filter(|(_, v)| **v == from) {
                                     *index = to;
+                                    remapped_hashes.insert(*hash);
                                 }
                                 tracing::warn!("⭐ activity follow: launched index {from} is published as {to} (D1_AH_ACTIVITY_REMAP)");
                             }
@@ -1134,6 +1137,7 @@ fn main() -> anyhow::Result<()> {
                     i.set_activity_index(activity_index);
                     if let Some((file, map)) = activity_follow.clone() {
                         i.set_activity_follow(file, map);
+                        i.set_activity_remaps(remapped_hashes.clone());
                     }
                     i.set_activity_checksum(activity_checksum);
                     i.set_bubble_count(bubble_count);

@@ -140,6 +140,11 @@ impl ScriptHandle {
         self.with(|s| s.bridge.client_sensed(now));
     }
 
+    /// See [`ScriptBridge::set_remapped_launch`].
+    pub fn set_remapped_launch(&self, hash: Option<u32>) {
+        self.with(|s| s.bridge.set_remapped_launch(hash));
+    }
+
     /// See [`ScriptBridge::set_served_start`].
     pub fn set_served_start(&self, region: Option<u32>) {
         self.with(|s| s.bridge.set_served_start(region));

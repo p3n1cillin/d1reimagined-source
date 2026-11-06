@@ -1180,6 +1180,9 @@ pub struct ScriptBridge {
     /// The start slice set the instance serves at the join (its membership's region record), set
     /// by the instance before it passes the join on ([`Self::set_served_start`]).
     served_start: Option<u32>,
+    /// The activity the client launched, when `D1_AH_ACTIVITY_REMAP` served another in its place
+    /// ([`Self::set_remapped_launch`]).
+    remapped_launch: Option<u32>,
     host_id: u64,
     pub frames_sent: u64,
     /// Stream O2: the scripts' phases, wipes and completion as activity-framework events, for the
@@ -1265,6 +1268,7 @@ impl ScriptBridge {
             bodies_pending: VecDeque::new(),
             region_out: None,
             served_start: None,
+            remapped_launch: None,
             host_id: 0,
             frames_sent: 0,
             framework_events: Vec::new(),
@@ -1302,6 +1306,15 @@ impl ScriptBridge {
     /// the join on; `None` leaves the activity table's `start=`.
     pub fn set_served_start(&mut self, region: Option<u32>) {
         self.served_start = region;
+    }
+
+    /// ⚠ A LAB AFFORDANCE (run fg2i): the hash the client launched when the instance served another
+    /// activity in its place (`D1_AH_ACTIVITY_REMAP=164:165`). The client's current activity is the
+    /// launched one, and it chains to the next story activity only once that one shows completed,
+    /// so `activity_complete` completes it too (the grant stays the served activity's). Call before
+    /// passing the join on; `None` when no remap served this join.
+    pub fn set_remapped_launch(&mut self, hash: Option<u32>) {
+        self.remapped_launch = hash;
     }
 
     /// The instance's teleport request to `region` finished (`state.rs`: state 1, then 3, then
@@ -1946,11 +1959,22 @@ impl ScriptBridge {
                 self.framework_events.push(crate::encounter_framework::Event::ActivityCompleted);
                 // Run fg2h: the profile's completion goes now, in the 965 chain's tick, as the
                 // live host's did; the grant waits for the results.
-                if run.activity.hash != 0 {
-                    if let Ok(mut rewards) = self.config.rewards.lock() {
-                        for c in &self.players {
-                            if let Err(e) = rewards.activity_completed(c, run.activity.hash) {
-                                tracing::warn!("completion of {} for {c:?}: {e}", run.activity.activity);
+                // ⚠ Lab only: a remap served this activity for another the client launched; the
+                // client's current activity is that one, so it is completed too (run fg2i).
+                let stood_in = self.remapped_launch.filter(|h| *h != 0 && *h != run.activity.hash);
+                if let Some(h) = stood_in {
+                    tracing::warn!(
+                        "⚠ script bridge: the remap stood in for {h:#010x} (D1_AH_ACTIVITY_REMAP): completing it too \
+                         (lab only; the grant stays {}'s)",
+                        run.activity.activity
+                    );
+                }
+                let hashes: Vec<u32> = [run.activity.hash].into_iter().chain(stood_in).filter(|h| *h != 0).collect();
+                if let Ok(mut rewards) = self.config.rewards.lock() {
+                    for c in &self.players {
+                        for h in &hashes {
+                            if let Err(e) = rewards.activity_completed(c, *h) {
+                                tracing::warn!("completion of {h:#010x} for {c:?}: {e}");
                             }
                         }
                     }
@@ -3174,6 +3198,37 @@ mod tests {
         assert_eq!(list_retry_from(Some("0")), Ok(None));
         assert_eq!(list_retry_from(Some("15")), Ok(Some(Duration::from_secs(15))));
         assert!(list_retry_from(Some("-2")).unwrap_err().contains("D1_AH_SCRIPTS_LIST_RETRY"));
+    }
+
+    /// Run fg2i: the client launched 164 and a remap served 165 (`D1_AH_ACTIVITY_REMAP=164:165`).
+    /// `activity_complete` completes 165 and the launched 164 for the player; the grant and the
+    /// hand-off stay 165's. Without a remap only 165 is completed.
+    #[test]
+    fn a_remapped_launch_is_completed_too_and_the_grant_stays_the_served_activitys() {
+        const AGR: u32 = 0x6E0D_AE89;
+        for remapped in [Some(AGR), None, Some(0x6EAF_0959)] {
+            let shared = Arc::new(Mutex::new(Shared::default()));
+            let mut b = bridge_delayed(&shared, false, false, profile_reveal(true), Duration::ZERO);
+            b.set_served_start(Some(25));
+            b.set_remapped_launch(remapped);
+            let mut t = Instant::now();
+            b.on_client_message(&join(5), 165, HOST, t);
+            run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+            b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+            run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+            b.teleport_finished(26, t);
+            run_for(&mut b, &mut t, 6.0, &mut Vec::new());
+            b.on_client_message(&incident(891, None), 165, HOST, t);
+            run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+            let s = shared.lock().unwrap();
+            let done: Vec<u32> = s.completions.iter().map(|c| c.1).collect();
+            match remapped {
+                Some(AGR) => assert_eq!(done, [0x6EAF_0959, AGR], "the served 165, then the launched 164"),
+                _ => assert_eq!(done, [0x6EAF_0959], "no remap (or the launch is the served one): 165 only"),
+            }
+            assert_eq!(s.rewards.iter().map(|r| r.1).collect::<Vec<_>>(), [0x6EAF_0959], "the grant: 165 only");
+            assert_eq!(s.hand_offs.iter().map(|h| (h.1, h.2)).collect::<Vec<_>>(), [(0x6EAF_0959, 0)], "the hand-off: 165 to the Tower");
+        }
     }
 
     #[test]
