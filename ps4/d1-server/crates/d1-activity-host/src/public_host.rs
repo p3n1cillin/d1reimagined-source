@@ -219,6 +219,38 @@ pub fn load_public_table(path: &Path) -> Result<Vec<PublicRegionList>, String> {
 /// the send path.
 pub type FrameEncoder = Arc<dyn Fn(&[SensorClientRef]) -> Result<Vec<u8>, String> + Send + Sync>;
 
+/// Builds one joining client's frame: an authority table and the entries (run fg6d, F32). The
+/// live public instance granted the client its authority blocks and named it in its player
+/// record; both depend on the join, so this frame is built when the region is picked.
+pub type PersonalEncoder =
+    Arc<dyn Fn(Option<d1_oracle::sensor::SensorAuthority>, &[SensorClientRef]) -> Result<Vec<u8>, String> + Send + Sync>;
+
+/// [`entry_frame_encoder`] with an authority table.
+pub fn personal_frame_encoder(codec: Arc<dyn crate::codec::AhWireCodec>, gen: u8) -> PersonalEncoder {
+    Arc::new(move |authority, clients: &[SensorClientRef]| {
+        let frame = d1_oracle::sensor::SensorEntryFrame { gen, authority, init: true, entries: clients.to_vec() };
+        codec.encode_sensor_entries(&frame).map(|(bytes, _)| bytes).map_err(|e| format!("personal frame: {e}"))
+    })
+}
+
+/// A region's list for one joining client: its player record (the players group's record
+/// `slot`) names the client's key, as the live instance's did (records 1-15 stayed default).
+pub fn personal_clients(list: &[SensorClientRef], identity: &[u8], slot: i16) -> Vec<SensorClientRef> {
+    use crate::row_encoders as re;
+    let key = re::player_key_of_identity(identity);
+    list.iter()
+        .cloned()
+        .map(|mut c| {
+            if let Some(key) = key {
+                if c.name_hash == re::PUBLIC_PLAYERS_GROUP && c.name_i8 == re::KIND_PLAYER_BUNDLE && c.name_sub == slot && c.has_a {
+                    c.a_value = Some((re::TAG_PLAYER_BUNDLE, re::player_bundle_image(key, false)));
+                }
+            }
+            c
+        })
+        .collect()
+}
+
 /// ⚠ **PLACEHOLDER**: how long after an instance starts its chests and resource nodes show. The
 /// restored scripts' notes put the Cosmodrome's at about a minute; nothing here was measured by us.
 pub const PLACEHOLDER_LOOT_DELAY: std::time::Duration = std::time::Duration::from_secs(60);
@@ -314,6 +346,10 @@ pub struct PublicHost {
     /// The last (CURRENT, TARGET) regions a udt 21 named while no list was picked, so each new
     /// pair is logged once (run fg6: the instance picked nothing and said nothing).
     last_report: Option<(Option<u32>, Option<u32>)>,
+    /// Each region's list and the per-client encoder ([`Self::with_personal_frames`]); without
+    /// them the prebuilt entry-only frame is served.
+    lists: Arc<HashMap<InstanceKey, Vec<SensorClientRef>>>,
+    personal: Option<PersonalEncoder>,
 }
 
 impl std::fmt::Debug for PublicHost {
@@ -347,7 +383,17 @@ impl PublicHost {
             public_checksums: Arc::new(HashMap::new()),
             last_report: None,
             completions_seen: 0,
+            lists: Arc::new(HashMap::new()),
+            personal: None,
         }
+    }
+
+    /// Serve each joining client its own frame (F32): the join grant and its player record, from
+    /// `lists` through `encode`.
+    pub fn with_personal_frames(mut self, lists: &[PublicRegionList], encode: PersonalEncoder) -> Self {
+        self.lists = Arc::new(lists.iter().map(|l| (l.key, l.clients.clone())).collect());
+        self.personal = Some(encode);
+        self
     }
 
     /// The worlds' PUBLIC checksums (`scenario_record+0x10`, `worlds.tsv`'s `public_checksum`).
@@ -558,6 +604,7 @@ impl PublicHost {
         world: &str,
         udt21: &[u8],
         host_id: u64,
+        bubbles: Option<usize>,
         now: Instant,
     ) -> Option<Result<(InstanceKey, Vec<u8>), String>> {
         if !self.is_public_instance() || self.selected.is_some() {
@@ -593,6 +640,26 @@ impl PublicHost {
         });
         tracing::info!("⭐ public instance {host_id:#018x} is {key:?} ({joined:?})");
         self.start_world(key, host_id, now);
+        // F32: the joining client's own frame, as the live instance served it: the join grant
+        // (blocks 0..bubbles and 64 to its machine, seq 1) and its key in the players group's
+        // record 0 (its peer slot; ⚠ a second member's slot is not tracked here yet).
+        if let (Some(encode), Some(list)) = (self.personal.as_ref(), self.lists.get(&key)) {
+            let identity = self.identity.identity.clone();
+            let authority = crate::row_encoders::machine_of_identity(&identity)
+                .zip(bubbles)
+                .map(|(m, n)| d1_oracle::sensor::SensorAuthority::join_grant(m, n));
+            let clients = personal_clients(list, &identity, 0);
+            match encode(authority.clone(), &clients) {
+                Ok(frame) => {
+                    tracing::info!(
+                        "⭐ public instance {host_id:#018x}: the client's own frame: {}, and its player record (F32)",
+                        if authority.is_some() { "the join grant" } else { "no grant (no bubble count)" }
+                    );
+                    return Some(Ok((key, frame)));
+                }
+                Err(e) => tracing::warn!("⚠ public instance {host_id:#018x}: the client's own frame not built ({e}); the shared one is served"),
+            }
+        }
         Some(match &self.frames[&key] {
             Ok(frame) => Ok((key, frame.clone())),
             Err(e) => Err(format!("{key:?}: {e}")),
@@ -648,6 +715,39 @@ mod tests {
     use crate::open_world::{bundle_role, BundleRole};
     use std::collections::BTreeMap;
     use std::path::PathBuf;
+
+    /// F32: only the joining client's peer-slot player record gets its key; the rest of the list
+    /// is untouched, as on the live instance (records 1-15 stayed default).
+    #[test]
+    fn the_personal_list_names_the_client_in_its_player_record_only() {
+        let list: Vec<SensorClientRef> = [
+            "0xeaaf16e2 0xc 0 1 1",
+            "0xeaaf16e2 0xc 1 1 1",
+            "0x12345678 0xc 0 1 1",
+        ]
+        .iter()
+        .map(|l| SensorClientRef::parse_line(l).unwrap())
+        .collect();
+        let mut identity = vec![0u8; 40];
+        identity[0x18..0x20].copy_from_slice(&0xD100_0000_0000_0201u64.to_le_bytes());
+        let out = personal_clients(&list, &identity, 0);
+        let (tag, image) = out[0].a_value.clone().unwrap();
+        assert_eq!(tag, crate::row_encoders::TAG_PLAYER_BUNDLE);
+        assert_eq!(&image[0x40..0x48], &[0xD1, 0, 0, 0, 0, 0, 2, 1]);
+        assert!(out[1].a_value.is_none() && out[2].a_value.is_none());
+        assert_eq!(personal_clients(&list, &[], 0), list, "no identity: nothing changes");
+    }
+
+    /// The live join grant: blocks 0..bubbles and 64, each the machine id, seq 1, not applied.
+    #[test]
+    fn the_join_grant_covers_the_bubbles_and_the_domain_block() {
+        let g = d1_oracle::sensor::SensorAuthority::join_grant([1, 0x22, 3, 4, 5, 6, 7, 8], 22);
+        assert_eq!(g.changed, (1u128 << 64) | ((1u128 << 22) - 1));
+        let e = |i: usize| &g.image[4 + 12 * i..4 + 12 * i + 12];
+        assert_eq!(&e(21)[..8], &[1, 0x22, 3, 4, 5, 6, 7, 8]);
+        assert_eq!((e(64)[8], e(64)[9], e(64)[0xA]), (1, 0, 0));
+        assert!(e(22).iter().all(|&b| b == 0));
+    }
 
     fn fixtures() -> PathBuf {
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578/public")
@@ -800,22 +900,22 @@ mod tests {
         let host = 0xD1A0_0000_0000_0002;
         // A mission host never picks a public list.
         p.on_join(&join(3, 0, 0xF1, 7), "act_cosmo_m1_dome_a", host, now);
-        assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, Some(56)), host, now).is_none());
+        assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, Some(56)), host, None, now).is_none());
         // A public instance: an empty report, or one for a region with no list, picks nothing.
         p.on_join(&join(3, 0xD1A0_0000_0000_0001, 0, 7), "act_cosmo_m1_dome_a", host, now);
-        assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, None), host, now).is_none());
-        assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(Some(104), None), host, now).is_none());
+        assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, None), host, None, now).is_none());
+        assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(Some(104), None), host, None, now).is_none());
         // The target names region 56: its frame, once, and the registry knows the instance.
-        let (key, frame) = p.on_slice_report("act_cosmo_m1_dome_a", &udt21(Some(104), Some(56)), host, now).unwrap().unwrap();
+        let (key, frame) = p.on_slice_report("act_cosmo_m1_dome_a", &udt21(Some(104), Some(56)), host, None, now).unwrap().unwrap();
         assert_eq!((key, frame), (steppes, vec![0x56]));
-        assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(Some(56), Some(56)), host, now).is_none());
+        assert!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21(Some(56), Some(56)), host, None, now).is_none());
         assert_eq!(p.registry().lock().unwrap().get(host).unwrap().key, steppes);
         p.on_leave(now);
         assert_eq!(p.registry().lock().unwrap().get(host).unwrap().player_count(), 0);
         // Another world's destination does not match Earth's lists, and a list without a frame is named.
         let mut q = host_with(&[(array, Err("no encoder".into()))]);
         q.on_join(&join(3, 0xD1A0_0000_0000_0001, 0, 8), "act_cosmo_m1_dome_a", host + 1, now);
-        assert!(q.on_slice_report("act_mars_m01_valley", &udt21(None, Some(0)), host + 1, now).is_none());
-        assert!(q.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, Some(0)), host + 1, now).unwrap().is_err());
+        assert!(q.on_slice_report("act_mars_m01_valley", &udt21(None, Some(0)), host + 1, None, now).is_none());
+        assert!(q.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, Some(0)), host + 1, None, now).unwrap().is_err());
     }
 }

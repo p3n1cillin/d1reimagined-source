@@ -1124,7 +1124,9 @@ fn main() -> anyhow::Result<()> {
                         )),
                     )
                     .with_open_world(&lists, services)
-                    .with_public_checksums(public_checksums),
+                    .with_public_checksums(public_checksums)
+                    // F32: each joining client's own frame (the join grant, its player record).
+                    .with_personal_frames(&lists, d1_activity_host::public_host::personal_frame_encoder(codec.clone(), gen)),
                 )
             } else {
                 None
