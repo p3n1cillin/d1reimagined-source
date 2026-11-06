@@ -285,8 +285,54 @@ them. `crucible.json` therefore retains its stand-in labels and values; no mode 
 verified and the unmatched definitions are not silently activated. Score/time limits, mercy,
 round counts and per-mode program selection remain open. No native or lab run was made.
 
+**Per-mode limits: where they are, and where they are not (6 November, offline).** Option names
+are FNV-1 hashes: `score_to_win` is 0xBE4DB480 and `time_limit` is 0xF5EC68CA. The results are in
+`crucible.json`'s `content_limits`, written by `d1-activities-defs.py` from the committed exports,
+and checked by `tests/test_crucible_limits.py`.
+
+What the evidence settles:
+
+- **No playlist or map sets a limit.** Each of the 86 Crucible playlists and 36 maps has a rule
+  program. None of their base or conditional option tags sets `score_to_win` or `time_limit`. Most
+  playlists have no base option tag at all. The rest share two generic PvP tags (19 and 12
+  options, names unknown), and neither tag holds a limit.
+- **The 46 preset tags are referenced by no activity.** These are the tags that do set a limit:
+  0x80A60003–0x80A60023, 0x80A60064–0x80A60070 and 0x80A63A7C. They come in ladders:
+  - scores 25–300 with a companion of 8 or 20;
+  - scores 750–5,000, 1,000–3,000 and 2,500–30,000;
+  - scores 50,000–500,000;
+  - 3, 5, 7 and 10;
+  - times 60–1,800 s.
+
+  Each score preset carries companion options (0x537EDFBE, 0x8D445B3A, and 0x0F5D1CE6 in the
+  25–300 ladder). They look like the private-match settings, but that is unverified.
+- **The client reads only `score_to_win`.** Searching the owned 56578 eboot with `d1-ghidra.ps1
+  -Find` and `-Decompile`, its hash occurs once, in the static table of activity-option names. That
+  table's only reader is `0x4001a0`, which looks the option up through `0x118870` (the current
+  activity's options). It turns the integer into the float that the mode state keeps (+0x46B8), and
+  leaves 0 when the option is absent. `0x3DB100` calls it at mode set-up.
+- **`time_limit` and the companions are server-side.** Their hashes occur nowhere in the eboot, so
+  the client never reads them. They were the activity host's values, which fits the framework
+  owning the match clock and the points.
+- **No exported table references the 23 scoreboard definitions.** So the mode-to-scoreboard
+  selection is not in what has been exported. It lives in content not yet exported, or on the
+  server.
+- **The 11 Crucible map scripts in Fukugen Daihon say nothing about limits.** Each only names its
+  activity and start bubble: no limits, scoring, rounds or mercy. (Read locally; nothing is
+  quoted.)
+
+So matchmade Crucible's score limit, time limit, mercy rule and round count are not in the client's
+content. The modes' values stay labelled stand-ins, and each mode's evidence now says why.
+
+Two leads are still open:
+- Whether the server (the activity host's session or options) supplies `score_to_win` for the
+  client's display. With content alone the client's target is 0.
+- What references the presets and the scoreboard definitions. A whole-package scan for those tags
+  is the next step.
+
 Each definition's `needs_evidence` lists what is missing for it. Across them:
-- Selecting the exported scoreboard programs and limit overrides for each Crucible mode.
+- Selecting the exported scoreboard programs for each Crucible mode, and the limits the server
+  sets (the content holds none for matchmade playlists; above).
 - The encounter boundaries inside a bubble for the capture-run strikes.
 - The checkpoints and darkness zones of every activity without a script.
 - The raid difficulties and Age of Triumph challenge rules.

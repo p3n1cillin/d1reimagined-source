@@ -347,7 +347,7 @@ impl PatrolBoard {
             return Ok(false);
         }
         let outcome = ActivityOutcome::PatrolMission { beacon: beacon.id };
-        rewards.grant_activity_rewards(&CharacterRef::from_key(character), beacon.activity_hash, &outcome)?;
+        rewards.grant_activity_rewards(&CharacterRef::for_key(character), beacon.activity_hash, &outcome)?;
         self.active.remove(&character);
         Ok(true)
     }
@@ -443,7 +443,7 @@ impl LootField {
             LootKind::Chest => ActivityOutcome::Chest { bundle, index },
             LootKind::ResourceNode => ActivityOutcome::ResourceNode { bundle, index },
         };
-        rewards.grant_activity_rewards(&CharacterRef::from_key(character), activity_hash, &outcome)
+        rewards.grant_activity_rewards(&CharacterRef::for_key(character), activity_hash, &outcome)
     }
 }
 

@@ -515,6 +515,51 @@ pub struct Playlist {
     pub activities: Vec<u32>,
 }
 
+/// ⭐ Stream O2: the playlist table the responder loads at start-up
+/// (`ps4/fixtures/56578/activities/matchmaking-playlists.tsv`), written by the activity host from
+/// the activity framework (`encounter_framework::matchmaking_playlists`), which the responder
+/// does not load. One row per playlist:
+///
+/// ```text
+/// hash  kind  max_or_teams  team_size  min_players  activities  name
+/// 0x…   coop  3             -          -            0x…,0x…     Vanguard Strikes
+/// 0x…   versus 2            6          6            0x…,…       Control
+/// ```
+pub fn format_playlists(rows: &[(Playlist, String)]) -> String {
+    let mut out = String::from("hash\tkind\tmax_or_teams\tteam_size\tmin_players\tactivities\tname\n");
+    for (p, name) in rows {
+        let (kind, a, b, c) = match p.kind {
+            PlaylistKind::Cooperative { max_players } => ("coop", max_players.to_string(), "-".to_string(), "-".to_string()),
+            PlaylistKind::Versus { teams, team_size, min_players } => ("versus", teams.to_string(), team_size.to_string(), min_players.to_string()),
+        };
+        let acts: Vec<String> = p.activities.iter().map(|h| format!("{h:#010x}")).collect();
+        let name: String = name.chars().map(|c| if c == '\t' || c == '\n' { ' ' } else { c }).collect();
+        out += &format!("{:#010x}\t{kind}\t{a}\t{b}\t{c}\t{}\t{name}\n", p.hash, if acts.is_empty() { "-".into() } else { acts.join(",") });
+    }
+    out
+}
+
+/// Read [`format_playlists`]' table (`#` lines are comments).
+pub fn parse_playlists(text: &str) -> Result<Vec<Playlist>, String> {
+    let hex = |s: &str| u32::from_str_radix(s.trim().trim_start_matches("0x"), 16).map_err(|e| format!("{s:?}: {e}"));
+    let num = |s: &str| s.trim().parse::<usize>().map_err(|e| format!("{s:?}: {e}"));
+    let mut out = Vec::new();
+    for line in text.lines().filter(|l| !l.starts_with('#') && !l.starts_with("hash\t") && !l.trim().is_empty()) {
+        let f: Vec<&str> = line.split('\t').collect();
+        if f.len() < 6 {
+            return Err(format!("{line:?}: hash kind max_or_teams team_size min_players activities [name]"));
+        }
+        let kind = match f[1] {
+            "coop" => PlaylistKind::Cooperative { max_players: num(f[2])? },
+            "versus" => PlaylistKind::Versus { teams: num(f[2])?, team_size: num(f[3])?, min_players: num(f[4])? },
+            k => return Err(format!("{line:?}: kind {k:?} is not coop or versus")),
+        };
+        let activities = if f[5] == "-" { Vec::new() } else { f[5].split(',').map(hex).collect::<Result<_, _>>()? };
+        out.push(Playlist { hash: hex(f[0])?, kind, activities });
+    }
+    Ok(out)
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct TicketId(pub u64);
 
@@ -716,6 +761,18 @@ impl Matchmaker {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn playlist_tables_round_trip() {
+        let rows = vec![
+            (Playlist { hash: 0x1234_5678, kind: PlaylistKind::Cooperative { max_players: 3 }, activities: vec![1, 2] }, "Vanguard\tStrikes".to_string()),
+            (Playlist { hash: 0x9ABC_DEF0, kind: PlaylistKind::Versus { teams: 2, team_size: 6, min_players: 6 }, activities: vec![] }, "Control".to_string()),
+        ];
+        let text = format_playlists(&rows);
+        assert_eq!(parse_playlists(&text).unwrap(), rows.iter().map(|(p, _)| p.clone()).collect::<Vec<_>>());
+        assert!(text.contains("Vanguard Strikes"), "a tab in a name does not split the row");
+        assert!(parse_playlists("0x1\tsolo\t1\t-\t-\t-\n").is_err());
+    }
+
     use super::*;
     use d1_bap::matchmaking::{MatchmakingCoreRequest, MatchmakingKey};
     use d1_bap::matchmaking_sessions::decode_search_results;

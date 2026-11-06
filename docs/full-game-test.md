@@ -121,12 +121,12 @@ then stops its servers. A `-Only servers` run stops when `RUN\boot\stop` is crea
 | Subsystem | From | Knobs on in `full-game.env` | Off in `baseline.env` |
 |---|---|---|---|
 | Player store | #307 | `D1_STORE=1`, `D1_STORE_DIR`, `D1_STORE_PLAYER=local`, `D1_STORE_CONTROL`, and the four progression tables from this checkout | all unset |
-| Social services and vendors | #309 | `D1_SOCIAL=1`, `D1_SOCIAL_STOCK=1`, `D1_DISMANTLE_PLACEHOLDER=1` | unset |
+| Social services and vendors | #309 | `D1_SOCIAL=1`, `D1_DISMANTLE_PLACEHOLDER=1`; `D1_SOCIAL_STOCK=0` (the stock rotation is a stand-in and the client lists everything, so it stays off) | unset |
 | Rewards and growth | #311 | `D1_REWARDS=1`, `D1_REWARDS_SEED=0xD1F0` | unset |
 | Multiplayer | #312 | `D1_MP=1`, `D1_MM_CONFIG_FILE`, `D1_AH_SHARED_INSTANCES=1` | unset |
 | Activity framework | #313 | `D1_AH_ACTIVITY_FRAMEWORK=<fixtures>/activities` | unset |
 | Generated worlds | #314 | `D1_AH_WORLDS`, `D1_AH_WORLDS_ACTIVITIES=166,167,168,170,172,186`, `D1_AH_WORLDS_PRIVATE_START=1` | unset |
-| Public instances | #316 | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_DISTINCT_HOST_IDS=1` | unset |
+| Public instances | #316 | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_DISTINCT_HOST_IDS=1`; stream O2: `D1_AH_PUBLIC_INSTANCES_FILE` (the host's instances for the responder's matchmaker) | unset |
 | Native RSAT codec | #317 | `D1_RSAT_NATIVE=1` | unset |
 | udt 5 stamp mode | #298 | `D1_AH_SENSOR_STAMP=1` | unset |
 | Script bridge | #319 (stream A2) | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES` (a stand-in, [165 cine_reveal](../ps4/profiles/script-activities.txt), until stream K's table lands), `D1_AH_SCRIPTS_INCIDENTS`. Listed as off: `D1_AH_SCRIPTS_MISSION_PHASE` (unverified), `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`, `D1_AH_ROWS_UNLISTED`, `D1_AH_ROWS_DELTA_INIT` | unset |

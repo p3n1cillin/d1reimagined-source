@@ -206,8 +206,22 @@ if ($NoServers) {
             -RedirectStandardOutput (Join-Path $out 'activity-host.log') -RedirectStandardError (Join-Path $out 'activity-host.err.log')
     }
     # The emulator's own WebAPI (friend list) is configured on 127.0.0.1:31315.
-    $winServers += Start-Process -FilePath (Join-Path $bin 'd1-responder.exe') -ArgumentList (@('--bind', '127.0.0.1') + $cert) -PassThru -WindowStyle Hidden `
-        -RedirectStandardOutput (Join-Path $out 'responder-loopback.log') -RedirectStandardError (Join-Path $out 'responder-loopback.err.log')
+    # The player store, its command file and the multiplayer services belong to the serving responder
+    # only: a second responder with D1_STORE would open the same record, poll the same control file
+    # (taking the host's grants and checkpoints half the time) and overwrite the record at its next
+    # save (integration review, 5 Nov, finding 2). The loopback responder starts without them.
+    $primaryOnly = @('D1_STORE', 'D1_STORE_DIR', 'D1_STORE_PLAYER', 'D1_STORE_CONTROL', 'D1_MP', 'D1_REWARDS', 'D1_AH_PUBLIC_INSTANCES_FILE')
+    $kept = @{}
+    foreach ($k in $primaryOnly) {
+        $v = [Environment]::GetEnvironmentVariable($k)
+        if ($null -ne $v) { $kept[$k] = $v; Remove-Item -Path "env:$k" }
+    }
+    try {
+        $winServers += Start-Process -FilePath (Join-Path $bin 'd1-responder.exe') -ArgumentList (@('--bind', '127.0.0.1') + $cert) -PassThru -WindowStyle Hidden `
+            -RedirectStandardOutput (Join-Path $out 'responder-loopback.log') -RedirectStandardError (Join-Path $out 'responder-loopback.err.log')
+    } finally {
+        foreach ($k in $kept.Keys) { Set-Item -Path "env:$k" -Value $kept[$k] }
+    }
     # The client waits for each reply, and shows "Contacting Destiny Servers" when one is slow. At orbit
     # load the emulator takes every core, and at normal priority a trivial reply waited 0.9-1.4 s
     # (session toast-stock-b, notes/ps4-56578-new-guardian-2026-11-03.md). Above normal keeps the servers

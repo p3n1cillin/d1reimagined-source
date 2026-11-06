@@ -57,6 +57,31 @@ impl CharacterRef {
     }
 }
 
+/// ⭐ Stream O2: the full identities the host has seen, by their 8-byte key, so a reward reported
+/// by key (stream G's open world keys members by `u64`) still goes out with the whole identity
+/// ([`CharacterRef::for_key`]), not the console's first 8 bytes.
+fn identity_book() -> &'static std::sync::Mutex<std::collections::HashMap<u64, CharacterRef>> {
+    static BOOK: std::sync::OnceLock<std::sync::Mutex<std::collections::HashMap<u64, CharacterRef>>> = std::sync::OnceLock::new();
+    BOOK.get_or_init(Default::default)
+}
+
+/// Remember a joined client's identity (40 bytes) for [`CharacterRef::for_key`].
+pub fn remember_identity(c: &CharacterRef) {
+    if c.identity.len() == 40 {
+        if let Ok(mut b) = identity_book().lock() {
+            b.insert(c.key(), c.clone());
+        }
+    }
+}
+
+impl CharacterRef {
+    /// The character a u64 key names: the full identity last joined with that key, else the key
+    /// alone ([`Self::from_key`]).
+    pub fn for_key(key: u64) -> Self {
+        identity_book().lock().ok().and_then(|b| b.get(&key).cloned()).unwrap_or_else(|| Self::from_key(key))
+    }
+}
+
 impl From<u64> for CharacterRef {
     fn from(key: u64) -> Self {
         Self::from_key(key)

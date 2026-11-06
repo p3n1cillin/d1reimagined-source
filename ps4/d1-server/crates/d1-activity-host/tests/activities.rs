@@ -259,3 +259,23 @@ fn playlists_map_onto_the_matchmaker_and_runs_onto_the_reward_call() {
     assert_eq!(o.community_page.as_deref(), Some("crotas-end-reprised"));
     assert_eq!(o.characters, [1, 2]);
 }
+
+/// Stream O2: the responder's matchmaker loads its playlists from a committed table, since it does
+/// not load the activity framework; the table must be what the framework gives.
+#[test]
+fn the_committed_playlists_match_the_framework() {
+    use d1_activity_host::encounter_framework::{playlists_table, ActivityLibrary, PLAYLISTS_FILE};
+    let dir = ActivityLibrary::default_dir();
+    let lib = ActivityLibrary::load(&dir).unwrap();
+    let want = playlists_table(&lib);
+    let path = dir.join(PLAYLISTS_FILE);
+    if std::env::var("D1_REGEN_PLAYLISTS").is_ok_and(|v| v == "1") {
+        std::fs::write(&path, &want).unwrap();
+    }
+    let have = std::fs::read_to_string(&path).unwrap_or_default().replace("\r\n", "\n");
+    assert_eq!(have, want, "{} is stale: rerun this test with D1_REGEN_PLAYLISTS=1", path.display());
+    let parsed = d1_mp::matchmaking::parse_playlists(&have).unwrap();
+    assert!(!parsed.is_empty());
+    assert!(parsed.iter().any(|p| matches!(p.kind, d1_mp::matchmaking::PlaylistKind::Versus { .. })), "the Crucible");
+    assert!(parsed.iter().any(|p| matches!(p.kind, d1_mp::matchmaking::PlaylistKind::Cooperative { .. })), "the strikes");
+}

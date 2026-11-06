@@ -1122,6 +1122,34 @@ pub fn matchmaking_playlists(lib: &ActivityLibrary) -> Vec<MatchmakingPlaylist> 
     out
 }
 
+impl MatchmakingPlaylist {
+    /// Stream H's playlist (`d1_mp::Matchmaker::add_playlist`).
+    pub fn to_mp(&self) -> d1_mp::matchmaking::Playlist {
+        let kind = match self.kind {
+            MatchKind::Cooperative { max_players } => d1_mp::matchmaking::PlaylistKind::Cooperative { max_players },
+            MatchKind::Versus { teams, team_size, min_players } => d1_mp::matchmaking::PlaylistKind::Versus { teams, team_size, min_players },
+        };
+        d1_mp::matchmaking::Playlist { hash: self.hash, kind, activities: self.activities.clone() }
+    }
+}
+
+/// ⭐ Stream O2: the file the responder loads its matchmaker's playlists from
+/// (`matchmaking-playlists.tsv` in the activities folder; `d1_mp::matchmaking::parse_playlists`).
+pub const PLAYLISTS_FILE: &str = "matchmaking-playlists.tsv";
+
+/// [`matchmaking_playlists`] as that file's text.
+pub fn playlists_table(lib: &ActivityLibrary) -> String {
+    let rows: Vec<_> = matchmaking_playlists(lib).iter().map(|p| (p.to_mp(), p.name.clone())).collect();
+    concat!(
+        "# GENERATED from the activity framework (encounter_framework::matchmaking_playlists) by the\n",
+        "# activity host's test the_committed_playlists_match_the_framework (D1_REGEN_PLAYLISTS=1 rewrites\n",
+        "# it). Strike playlists' members as the catalog infers them; the Crucible rotation is every map (a\n",
+        "# stand-in: the manifest names no playlist's maps). The responder feeds it to Matchmaker::add_playlist.\n",
+    )
+        .to_string()
+        + &d1_mp::matchmaking::format_playlists(&rows)
+}
+
 /// The host's own reports, as framework events (the activities with no restored script).
 pub mod host_events {
     use super::Event;

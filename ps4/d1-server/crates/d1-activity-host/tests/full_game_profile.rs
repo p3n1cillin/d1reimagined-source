@@ -270,6 +270,21 @@ fn the_script_bridge_configures_from_the_profile() {
         assert!(!reveal.slice_rows.is_empty(), "the slice lists from D1_AH_WORLDS");
         assert_eq!(reveal.next, Some((0, 0x8AE8_DA69)), "cine_reveal hands off to the Tower");
     }
+    // Integration review, finding 1: the reveal is a cinematic (6 then 8, never 7), in the
+    // profile's table and in the older one-row stand-in.
+    let reveal = c.activities.get(&165).expect("the profile's table scripts cine_reveal (165)");
+    assert_eq!(reveal.end, d1_activity_host::row_encoders::EndKind::Cinematic, "165 ends 6 then 8");
+    let stand_in = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../profiles/script-activities.txt");
+    let text = std::fs::read_to_string(&stand_in).unwrap();
+    let dir = stand_in.parent().unwrap().to_path_buf();
+    let read = move |p: &str| std::fs::read_to_string(dir.join(p)).map_err(|e| e.to_string());
+    for line in text.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()) {
+        let a = d1_activity_host::script_bridge::ScriptedActivity::parse(line, &base, &read).unwrap();
+        if a.index == 165 {
+            assert_eq!(a.end, d1_activity_host::row_encoders::EndKind::Cinematic, "the stand-in's 165 too");
+            assert_eq!(a.regions.get(&1), Some(&26), "phase 1 is slice set 26 (cine_107_twr_phase)");
+        }
+    }
     let f = d1_activity_host::reward_forward::GrantForwarder::new(run.join("store-control.txt"));
     c.rewards = std::sync::Arc::new(std::sync::Mutex::new(f));
     let _ = std::fs::remove_dir_all(&run);

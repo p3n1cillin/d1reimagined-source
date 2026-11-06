@@ -75,6 +75,7 @@
 //! completed an Activity-Host handshake against anything we built. The moment one does, everything
 //! downstream is `synthetic_ancestor`.
 
+pub mod activity_driver; // stream O2: drives encounter_framework::ActivityRun on the wire
 pub mod checkpoints;
 pub mod codec;
 pub mod completion;
