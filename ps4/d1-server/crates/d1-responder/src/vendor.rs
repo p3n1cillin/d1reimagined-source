@@ -96,8 +96,8 @@ struct State {
     oracle: String,
     /// Refund records sent as account field [20] (newest last, at most [`REFUND_RECORDS`]).
     refunds: Vec<RefundRecord>,
-    /// Stream I: the item instance of an account entry (the vault), written at entry `+8`. Not
-    /// persisted by the player store yet (`VendorCommit.slots` keeps content and quantity only).
+    /// Stream I: the item instance of an account entry (the vault), written at entry `+8`. The
+    /// player store keeps it (`VendorCommit.slot_instances`, the record's `slot_instances`).
     account_instances: BTreeMap<u16, u64>,
 }
 
@@ -164,10 +164,11 @@ fn load() -> anyhow::Result<State> {
         None => crate::player_store::parse_account_slots(&std::env::var("D1_VENDOR_ACCOUNT_SLOTS").unwrap_or_default()),
     };
     let next_soid = seed.as_ref().and_then(|s| s.next_item_soid).unwrap_or(FIRST_PURCHASE_SOID);
+    let account_instances = seed.as_ref().map(|s| s.slot_instances.clone()).unwrap_or_default();
     let refunds = seed.map(|s| s.refunds).unwrap_or_default();
     let oracle = oracle_path();
     tracing::warn!("      vendor purchases on: {} sales from {sales_path}, account {account:?}", sales.len());
-    Ok(State { sales, account, profile, template, next_soid, oracle, refunds, account_instances: BTreeMap::new() })
+    Ok(State { sales, account, profile, template, next_soid, oracle, refunds, account_instances })
 }
 
 /// `D1_ORACLE`, the client's codec.
@@ -465,6 +466,7 @@ fn publish(st: &State, sidecar: Option<(u64, Vec<u8>)>, what: &str, removed: Opt
         profile_object: st.profile.clone(),
         account_payload: account,
         slots: st.account.clone(),
+        slot_instances: st.account_instances.clone(),
         next_item_soid: st.next_soid,
         refunds: st.refunds.clone(),
         added: sidecar,
@@ -497,6 +499,25 @@ pub fn note_profile_pushed(payload: Vec<u8>) {
             Err(e) => tracing::warn!("      ⛔ vendor purchases: could not adopt the pushed profile: {e}"),
         }
     });
+}
+
+/// The player store's wallet changed outside a vendor request (a reward grant from the activity
+/// host, `player_store::run_grant`): take its slots and vault instances and publish the account
+/// (and the profile) the way a purchase does, so the client receives the new quantities and the
+/// next purchase starts from them. Without the vendor state (`D1_VENDOR_SALES` unset) the change
+/// stays in the store only.
+pub fn adopt_account_slots(slots: BTreeMap<u16, (u16, u32)>, instances: BTreeMap<u16, u64>, what: &str) {
+    let Ok(mut guard) = state().lock() else { return };
+    let Some(st) = guard.as_mut() else {
+        tracing::warn!("      ⚠ {what}: the wallet changed in the player store, but vendor purchases are off: no account push");
+        return;
+    };
+    st.account = slots;
+    st.account_instances = instances;
+    match publish(st, None, what, None) {
+        Ok(()) => tracing::warn!("      ⭐ {what}: account pushed with the new wallet"),
+        Err(e) => tracing::warn!("      ⛔ {what}: the account push failed: {e:#}"),
+    }
 }
 
 /// Handle a 901 request body off the conversation's task: the oracle calls take seconds.

@@ -241,20 +241,9 @@ pub fn bubble_region(bubble: u32) -> u32 {
 }
 
 /// ⭐ **The adapter to `d1_mp::matchmaking::PublicInstances`** (stream H, PR #312), for one
-/// destination. `d1-mp` is not on main yet, so this crate cannot name its trait; once it is, the
-/// whole implementation is:
-///
-/// ```text
-/// impl d1_mp::matchmaking::PublicInstances for DestinationInstances<'_> {
-///     fn instances(&self, bubble: u32) -> Vec<d1_mp::matchmaking::PublicInstance> {
-///         self.views(bubble).into_iter().map(|v| d1_mp::matchmaking::PublicInstance {
-///             host: v.host, players: v.players, reserved: v.reserved,
-///             capacity: v.capacity, started_ms: v.started_ms,
-///         }).collect()
-///     }
-///     fn reserve(&mut self, host: u64, slots: usize) -> bool { self.reserve(host, slots) }
-/// }
-/// ```
+/// destination: `d1_mp::matchmaking::place_in_public(bubble, reservation, &mut adapter)` places a
+/// fireteam into this registry's instances by the registry's own rule
+/// ([`PublicRegistry::placement_order`], the emptiest first).
 pub struct DestinationInstances<'a> {
     pub registry: &'a mut PublicRegistry,
     pub destination: Destination,
@@ -267,6 +256,30 @@ impl DestinationInstances<'_> {
 
     pub fn reserve(&mut self, host: u64, slots: usize) -> bool {
         self.registry.reserve_slots(host, slots)
+    }
+}
+
+impl d1_mp::matchmaking::PublicInstances for DestinationInstances<'_> {
+    fn instances(&self, bubble: u32) -> Vec<d1_mp::matchmaking::PublicInstance> {
+        self.views(bubble)
+            .into_iter()
+            .map(|v| d1_mp::matchmaking::PublicInstance {
+                host: v.host,
+                players: v.players,
+                reserved: v.reserved,
+                capacity: v.capacity,
+                started_ms: v.started_ms,
+            })
+            .collect()
+    }
+
+    fn reserve(&mut self, host: u64, slots: usize) -> bool {
+        DestinationInstances::reserve(self, host, slots)
+    }
+
+    /// The registry's rule, so the matchmaker and [`PublicRegistry::place`] agree.
+    fn placement_order(&self, bubble: u32, reservation: usize) -> Vec<u64> {
+        self.registry.placement_order(InstanceKey::Bubble { destination: self.destination, region: bubble_region(bubble) }, reservation)
     }
 }
 
@@ -329,13 +342,7 @@ impl PublicRegistry {
             .values()
             .find(|i| i.key == key && i.holds_fireteam(who.fireteam))
             .map(|i| i.host_id);
-        let chosen = mate.or_else(|| {
-            self.instances
-                .values()
-                .filter(|i| i.key == key && i.occupancy() + size as usize <= cap)
-                .min_by_key(|i| (i.occupancy(), i.host_id))
-                .map(|i| i.host_id)
-        });
+        let chosen = mate.or_else(|| self.placement_order(key, size as usize).first().copied());
         match chosen {
             Some(host) => {
                 let i = self.instances.get_mut(&host).expect("chosen from the map");
@@ -352,6 +359,18 @@ impl PublicRegistry {
                 Ok(Placement { host_id: host, kind: JoinKind::Starts })
             }
         }
+    }
+
+    /// ⭐ **The placement rule**, best first: the instances of `key` with room for `slots` more,
+    /// the emptiest first (members plus reservations), ties to the oldest (the lowest host id: ids
+    /// are handed out in order). [`Self::place`] takes the first; stream H's matchmaker asks for
+    /// it through `d1_mp::matchmaking::PublicInstances::placement_order` ([`DestinationInstances`]).
+    pub fn placement_order(&self, key: InstanceKey, slots: usize) -> Vec<u64> {
+        let cap = key.player_cap();
+        let mut v: Vec<&PublicInstance> =
+            self.instances.values().filter(|i| i.key == key && i.occupancy() + slots.max(1) <= cap).collect();
+        v.sort_by_key(|i| (i.occupancy(), i.host_id));
+        v.into_iter().map(|i| i.host_id).collect()
     }
 
     /// An activity-host connection presenting `host_id` joined at `key`. A placement made by
@@ -601,6 +620,34 @@ mod tests {
         r.attach(FIRST, STEPPES, 50, now);
         let i = r.get(FIRST).unwrap();
         assert_eq!((i.player_count(), i.reserved()), (2, 3));
+    }
+
+    /// Stream O: H's `place_in_public` places through this registry by its own rule.
+    #[test]
+    fn the_matchmaker_places_by_the_registrys_rule() {
+        use d1_mp::matchmaking::{place_in_public, PublicPlacement};
+        let now = Instant::now();
+        let mut r = PublicRegistry::new(FIRST);
+        let a = r.place(STEPPES, team(1, 0xF1, 3), now).unwrap().host_id; // 1 here + 2 held = 3
+        let b = r.place(STEPPES, Arrival::solo(9), now).unwrap().host_id;
+        assert_eq!(a, b, "the solo player joins the only instance with room");
+        r.leave(9, now);
+        let c = {
+            let mut d = DestinationInstances { registry: &mut r, destination: Destination::Earth };
+            // Region 56 (Restoration's): one instance, 3 occupied of 6: a pair fits.
+            assert_eq!(d1_mp::matchmaking::PublicInstances::placement_order(&d, 0x8001_0038, 2), vec![a]);
+            assert_eq!(place_in_public(0x8001_0038, 2, &mut d), PublicPlacement::Join { host: a });
+            // Now 5 of 6: a fireteam of three must start a new instance.
+            place_in_public(0x8001_0038, 3, &mut d)
+        };
+        assert_eq!(c, PublicPlacement::StartNew);
+        // A second instance, emptier: both rules now pick it first.
+        let fresh = r.attach(FIRST + 7, STEPPES, 40, now);
+        assert_eq!(fresh, JoinKind::Starts);
+        assert_eq!(r.placement_order(STEPPES, 1), vec![FIRST + 7, a]);
+        let d = DestinationInstances { registry: &mut r, destination: Destination::Earth };
+        assert_eq!(d1_mp::matchmaking::PublicInstances::placement_order(&d, 0x8001_0038, 1), vec![FIRST + 7, a]);
+        assert_eq!(r.place(STEPPES, Arrival::solo(41), now).unwrap().host_id, FIRST + 7);
     }
 
     #[test]

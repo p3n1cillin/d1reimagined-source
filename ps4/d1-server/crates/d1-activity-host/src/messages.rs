@@ -1204,6 +1204,9 @@ mod tests {
 
     #[test]
     fn global_activity_state_is_exactly_1712_bytes_and_not_8_more() {
+        if !crate::eboot_or_skip("global_activity_state_is_exactly_1712_bytes_and_not_8_more") {
+            return;
+        }
         let s = GlobalActivityState::empty();
         let b = s.struct_bytes().unwrap();
         assert_eq!(b.len(), 1712, "the descriptor's struct_size, NOT 8 + 1712");
