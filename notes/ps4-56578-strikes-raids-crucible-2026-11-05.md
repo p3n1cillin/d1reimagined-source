@@ -333,6 +333,23 @@ Two leads are still open:
 Each definition's `needs_evidence` lists what is missing for it. Across them:
 - Selecting the exported scoreboard programs for each Crucible mode, and the limits the server
   sets (the content holds none for matchmade playlists; above).
+- **A captured Crucible match** (6 November, stream R): one private capture of a whole matchmade
+  match, Control then Elimination or Trials, ideally from two consoles, read per activity host.
+  It should record:
+  - who reports each kill (the `kill` chain's and the `player_died`'s consoles, and both
+    participants of the selector-1 body);
+  - the lifetime's values and times: 2 for the countdown? 5 or 9? the 6 → 7 and 7 → 8 delays,
+    and a round boundary;
+  - the kind-15 scoreboard's player and team rows and their columns, the global block, the
+    notifications and `+0x4D3C`/`+0x4D40`;
+  - whether `score_to_win` is in the lifetime value's `+0x10` list or the global state's `+0x64`
+    list, with its type tag;
+  - the final scores, time and rounds;
+  - which zone-capture incidents Control sends;
+  - the membership's physics host;
+  - what the host sends at and after the results.
+
+  The full list, with how each item is read: [the Crucible wire note](ps4-56578-crucible-wire-2026-11-06.md#placeholders-and-what-one-captured-match-would-settle).
 - The encounter boundaries inside a bubble for the capture-run strikes.
 - The checkpoints and darkness zones of every activity without a script.
 - The raid difficulties and Age of Triumph challenge rules.
