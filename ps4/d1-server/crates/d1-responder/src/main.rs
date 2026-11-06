@@ -2349,6 +2349,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_ACCOUNT_PUSH_FILE", "<unset>", "on-demand family-4 account delta: write this file (a client-encoded account) to push it"),
     ("D1_SOCIAL", "0", "1: stream I's social services on 901-905 and 402-405 (vendor rules, vault, Postmaster, refunds, bounties, Armsday, Cryptarch); social_hooks.rs"),
     ("D1_SOCIAL_STOCK", "0", "1 (with D1_SOCIAL): refuse sales outside the vendor's current stock (the placeholder rotation)"),
+    ("D1_DISMANTLE_YIELDS", "<unset>", "a sourced dismantle yields table (content<TAB>content:quantity:bucket, ...); its rows win over the placeholder ones (integration review, finding 32)"),
     ("D1_DISMANTLE_PLACEHOLDER", "0", "1 (with D1_SOCIAL): dismantles give the labelled PLACEHOLDER yields of inventory_ops::PLACEHOLDER_YIELDS"),
     ("D1_VAULT_VENDOR", "<content: 26>", "override the Vault's row in the client's vendor table (903/902 to it store and take)"),
     ("D1_POSTMASTER_VENDOR", "<content: 20,36>", "additional Postmaster row; both exported variants are recognized (903 to it collects)"),

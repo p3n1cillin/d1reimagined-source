@@ -328,7 +328,9 @@ fn owner_word(o: Owner) -> String {
 }
 
 fn owner_of(w: &str) -> Option<Owner> {
-    let (k, v) = w.split_at(1);
+    // Integration review, finding 30: an empty word is no owner (split_at(1) panicked on it,
+    // under the store's lock).
+    let (k, v) = (w.get(..1)?, w.get(1..)?);
     let v = u64::from_str_radix(v, 16).ok()?;
     match k {
         "a" => Some(Owner::Account(v)),
@@ -718,6 +720,14 @@ mod tests {
         assert!(std::ptr::eq(m, &mb));
         drop((ma, mb));
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn an_empty_owner_word_is_no_owner() {
+        assert_eq!(owner_of(""), None);
+        assert_eq!(owner_of("a"), None);
+        assert_eq!(owner_of("c1f"), Some(Owner::Character(0x1f)));
+        assert_eq!(owner_of("x1"), None);
     }
 
     fn hex(b: &[u8]) -> String {
