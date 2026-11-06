@@ -61,7 +61,8 @@ class Tables(unittest.TestCase):
             self.assertEqual([c[1] for c in curves[2:]],
                              ['d15.winter.racing', 'faction_fotc_vanguard', 'pvp_tournament0.wins'],
                              'ranks, Trials and vendor progressions in; weapons, weeklies and step-less ones out')
-            self.assertEqual(curves[3], ['3233510749', 'faction_fotc_vanguard', '1', '1', '-', '1500,2000,2500'])
+            self.assertEqual(curves[3], ['3233510749', 'faction_fotc_vanguard', '1', '1',
+                             str(tables.runtime_indices()[3233510749]), '1500,2000,2500'])
             resets = table(os.path.join(out, 'vendor-resets.tsv'))
             self.assertEqual(resets[1:], [['459708109', '-', '4320', '3840', '2576753410'],
                                           ['1527174714', 'Bounty Tracker', '1440', '-540', '0'],

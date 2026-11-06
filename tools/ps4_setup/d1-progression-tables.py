@@ -13,9 +13,8 @@ each row citing its definition hash, and are committed under ps4/fixtures/56578/
   and Trials of Osiris rank and ticket progressions, Iron Banner's loss tokens, the record books,
   and every progression a vendor's summary names (e.g. the Shipwright's racing rank).
   `runtime_index` is the 56578 client's own u16 ordinal for the progression, which the manifest
-  does not carry: 117 character_level and 118 character_prestige are the ids the client's
-  completion path reads from the investment globals (+0x166, +0x16a;
-  notes/ps4-56578-postgame-2026-10-29.md). The others are `-` until someone reads them.
+  does not carry. The owned-content exporter supplies all 252 ordinals in
+  progression-index.tsv; --indices selects that input. Unknown hashes stay labelled `-`.
 - vendor-resets.tsv: DestinyVendorDefinition.summary resetIntervalMinutes / resetOffsetMinutes for
   every vendor with a schedule. A vendor resets at epoch minute m when (m + offset) mod interval == 0.
 - refund-policies.tsv: every vendor with a refundable sale (DestinyVendorDefinition.sales[]
@@ -30,7 +29,15 @@ import json
 import os
 import sys
 
-RUNTIME_INDEX = {'character_level': 117, 'character_prestige': 118}
+CHARACTER_CURVES = {'character_level', 'character_prestige'}
+INDEX_TABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'ps4', 'fixtures',
+                          '56578', 'progression', 'progression-index.tsv')
+
+
+def runtime_indices(path=INDEX_TABLE):
+    with open(path, encoding='utf-8') as f:
+        rows = [l.rstrip('\n').split('\t') for l in f if l.strip() and not l.startswith('#')]
+    return {int(h): int(i) for i, h in rows[1:]}
 CURVES_HEADER = ('hash', 'name', 'scope', 'repeat_last', 'runtime_index', 'steps')
 RESETS_HEADER = ('vendor_hash', 'name', 'reset_interval_minutes', 'reset_offset_minutes', 'progression_hash')
 REFUNDS_HEADER = ('vendor_hash', 'name', 'refund_policy', 'refund_limit_minutes', 'refundable_sales', 'sales',
@@ -46,10 +53,11 @@ def load(path):
 
 
 def wanted(name, key, vendor_progressions):
-    return name in RUNTIME_INDEX or any(r in name for r in RANKS) or int(key) in vendor_progressions
+    return name in CHARACTER_CURVES or any(r in name for r in RANKS) or int(key) in vendor_progressions
 
 
-def curves(base):
+def curves(base, indices=None):
+    indices = runtime_indices() if indices is None else indices
     vendor_progressions = {int(d.get('summary', {}).get('progressionHash', 0))
                            for d in base.get('DestinyVendorDefinition', {}).values()} - {0}
     rows = []
@@ -58,7 +66,7 @@ def curves(base):
         steps = [int(s.get('progressTotal', 0)) for s in d.get('steps', [])]
         if not wanted(name, d.get('hash', key), vendor_progressions) or not steps:
             continue
-        index = RUNTIME_INDEX.get(name)
+        index = indices.get(int(d.get('hash', key)))
         rows.append((int(d.get('hash', key)), name, int(d.get('scope', 0)), int(bool(d.get('repeatLastStep'))),
                      '-' if index is None else str(index), ','.join(map(str, steps))))
     return sorted(rows, key=lambda r: (r[4] == '-', r[1]))
@@ -112,13 +120,14 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('manifest')
     ap.add_argument('--strings')
+    ap.add_argument('--indices', default=INDEX_TABLE, help='56578 progression-index.tsv from d1-oracle content-tables')
     here = os.path.dirname(os.path.abspath(__file__))
     ap.add_argument('--out', default=os.path.join(here, '..', '..', 'ps4', 'fixtures', '56578', 'progression'))
     a = ap.parse_args(argv)
     base = load(a.manifest)
     strings = load(a.strings) if a.strings else None
     os.makedirs(a.out, exist_ok=True)
-    c, r, f = curves(base), resets(base, strings), refunds(base, strings)
+    c, r, f = curves(base, runtime_indices(a.indices)), resets(base, strings), refunds(base, strings)
     write(os.path.join(a.out, 'progression-curves.tsv'), CURVES_HEADER, c, 'DestinyProgressionDefinition')
     write(os.path.join(a.out, 'vendor-resets.tsv'), RESETS_HEADER, r, 'DestinyVendorDefinition.summary')
     write(os.path.join(a.out, 'refund-policies.tsv'), REFUNDS_HEADER, f,

@@ -168,11 +168,13 @@ pub fn roll_drop_light(rng: &mut Rng, basis: u32, source: DropSource, item: &Ite
     LightRoll { value, rules }
 }
 
-/// `light.infusion`: the target's Light after consuming `fuel`. Never lowers the target, never
-/// exceeds the target's own maximum (`target_max` 0: [`LIGHT_CAP`]).
-pub fn infuse(target: u32, target_max: u32, fuel: u32) -> u32 {
-    let max = if target_max == 0 { LIGHT_CAP } else { target_max.min(LIGHT_CAP) };
-    target.max(fuel.min(max))
+/// `light.infusion`: 56578 0x26F400, in primary instance input + quality curve units.
+/// These are floats before the display curve. Callers need the actual instance's curve offset
+/// and progression rank; displayed integer Attack/Defense alone loses that information.
+pub fn infuse(target: f32, fuel: f32, tier_hash: u32) -> Option<f32> {
+    if !target.is_finite() || !fuel.is_finite() { return None; }
+    let gain = crate::content::infusion_gain(tier_hash,(fuel-target).max(0.0))?;
+    Some(target+gain)
 }
 
 #[cfg(test)]
@@ -268,10 +270,10 @@ mod tests {
     }
 
     #[test]
-    fn infusion_never_lowers_and_respects_the_item_maximum() {
-        assert_eq!(infuse(300, 400, 385), 385);
-        assert_eq!(infuse(390, 400, 385), 390);
-        assert_eq!(infuse(300, 335, 400), 335);
-        assert_eq!(infuse(3, 0, 420), LIGHT_CAP);
+    fn infusion_uses_the_owned_tier_formula() {
+        assert_eq!(infuse(40.0,50.0,3772930460),Some(45.0));
+        assert_eq!(infuse(50.0,40.0,3772930460),Some(50.0));
+        assert_eq!(infuse(40.0,50.0,4008398120),Some(50.0));
+        assert_eq!(infuse(40.0,50.0,0),None);
     }
 }

@@ -15,11 +15,10 @@
 //! table to row/kind/sub: `data/social/activities.tsv`). [`available`] predicts the client's verdict
 //! where the rule is known, so the server can check a launch and report what a completion opened.
 //!
-//! Rules known (decoded live, 30 October): activity 0 (the Tower) and 164/165 (A Guardian Rises and
-//! its cinematic). ⚠ The others' rules are content, not wire: dump `0x80a5ffb0` (28 entries) and each
-//! activity row's requirement ids (content root `+0x48`, 16-byte rows) with a `d1-oracle` reader and
-//! load them through `D1_ACTIVITY_RULES` ([`parse_rules`]). Until then [`available`] answers
-//! [`Availability::Unknown`] for them and launching them is not refused.
+//! All 653 launch programs are now exported from owned 56578 content by `d1-oracle content-tables`.
+//! `D1_ACTIVITY_RULES` overrides rows of the compiled table. The older live-decoded Tower/intro
+//! programs remain independent controls in [`known_rules`]. Unlock-value state coverage is still
+//! incomplete: exporting the programs does not supply the values the client evaluates them over.
 
 use std::collections::BTreeMap;
 
@@ -116,19 +115,19 @@ pub fn known_rules() -> BTreeMap<u16, Rule> {
 /// Parse `D1_ACTIVITY_RULES`: one activity per line, `index<TAB>expr;expr;...`, each expression a
 /// comma list of `op:operand` (e.g. `0\t1:308,2:0;1:419,1:440,3:0`). `#` starts a comment.
 pub fn parse_rules(text: &str) -> BTreeMap<u16, Rule> {
-    text.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()).filter_map(|l| {
+    text.lines().map(|l| l.split('#').next().unwrap_or("").trim_start()).filter(|l| !l.is_empty()).filter_map(|l| {
         let (idx, rest) = l.split_once(char::is_whitespace)?;
-        let rule = rest.trim().split(';').map(|e| e.split(',').filter_map(|o| {
+        let rule = if rest.trim().is_empty() { Vec::new() } else { rest.trim().split(';').map(|e| e.split(',').filter_map(|o| {
             let (a, b) = o.trim().split_once(':')?;
             Some(Op { op: a.parse().ok()?, operand: b.parse().ok()? })
-        }).collect()).collect();
+        }).collect()).collect() };
         Some((idx.parse().ok()?, rule))
     }).collect()
 }
 
-/// The rules in force: the known ones, overridden by `D1_ACTIVITY_RULES` when set.
+/// The 56578 content's launch rules, overridden by `D1_ACTIVITY_RULES` when set.
 pub fn rules() -> BTreeMap<u16, Rule> {
-    let mut r = known_rules();
+    let mut r = parse_rules(include_str!("../../../../fixtures/56578/characters/activity-rules.tsv"));
     if let Some(p) = std::env::var_os("D1_ACTIVITY_RULES") {
         if let Ok(text) = std::fs::read_to_string(p) {
             r.extend(parse_rules(&text));
@@ -266,5 +265,24 @@ mod tests {
     fn rules_parse_from_text() {
         let r = parse_rules("# x\n0\t1:308,2:0;1:419,1:440,3:0\n");
         assert_eq!(r[&0], vec![vec![f(308), NOT], vec![f(419), f(440), OR]]);
+        assert!(parse_rules("9\t\n")[&9].is_empty(), "an explicitly empty program is open, not unknown");
+    }
+
+    #[test]
+    fn all_content_programs_are_present_and_well_formed() {
+        let r = parse_rules(include_str!("../../../../fixtures/56578/characters/activity-rules.tsv"));
+        assert_eq!(r.len(), 653);
+        for (index, rule) in &r {
+            for expr in rule { assert!(eval(expr, &|_| 0, &|_| 0).is_some(), "activity {index}"); }
+        }
+        // Independent, older decoded observations; instruction operands on unary/binary ops
+        // are ignored by the client, so compare verdicts rather than padding operands.
+        for flags in [vec![], vec![440], vec![308,440], vec![309,440], vec![419,2668]] {
+            let f = |i| if flags.contains(&i) {2} else {0};
+            for (index, old) in known_rules() {
+                assert_eq!(r[&index].iter().all(|e| eval(e,&f,&|_|0)==Some(true)),
+                    old.iter().all(|e| eval(e,&f,&|_|0)==Some(true)), "activity {index}");
+            }
+        }
     }
 }

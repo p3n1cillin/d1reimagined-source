@@ -81,19 +81,19 @@ pub fn parse_storage(def: &[u8]) -> Result<Storage> {
     Ok(Storage { bucket: def[0x88], instanced: *b != 0 })
 }
 
-fn u64_at(b: &[u8], o: usize) -> Result<u64> {
+pub(crate) fn u64_at(b: &[u8], o: usize) -> Result<u64> {
     b.get(o..o + 8)
         .map(|s| u64::from_le_bytes(s.try_into().unwrap()))
         .ok_or_else(|| OracleError::Shape(format!("read past the end at {o:#x} ({} bytes)", b.len())))
 }
 
-fn u32_at(b: &[u8], o: usize) -> Result<u32> {
+pub(crate) fn u32_at(b: &[u8], o: usize) -> Result<u32> {
     b.get(o..o + 4)
         .map(|s| u32::from_le_bytes(s.try_into().unwrap()))
         .ok_or_else(|| OracleError::Shape(format!("read past the end at {o:#x} ({} bytes)", b.len())))
 }
 
-fn u16_at(b: &[u8], o: usize) -> Result<u16> {
+pub(crate) fn u16_at(b: &[u8], o: usize) -> Result<u16> {
     b.get(o..o + 2)
         .map(|s| u16::from_le_bytes(s.try_into().unwrap()))
         .ok_or_else(|| OracleError::Shape(format!("read past the end at {o:#x} ({} bytes)", b.len())))
@@ -101,13 +101,15 @@ fn u16_at(b: &[u8], o: usize) -> Result<u16> {
 
 /// `{u64 count @field; u64 rel @field+8}` → (count, first element offset). The list header sits at
 /// `field + 8 + rel` and carries the same count; elements start 0x10 after it.
-fn list(b: &[u8], field: usize) -> Result<(usize, usize)> {
+pub(crate) fn list(b: &[u8], field: usize) -> Result<(usize, usize)> {
     let count = u64_at(b, field)? as usize;
     if count == 0 {
         return Ok((0, 0));
     }
-    let rel = u64_at(b, field + 8)? as usize;
-    let header = field + 8 + rel;
+    let rel = u64_at(b, field + 8)? as i64;
+    let header = (field + 8).checked_add_signed(isize::try_from(rel).map_err(|_| {
+        OracleError::Shape("list displacement overflows".into())
+    })?).ok_or_else(|| OracleError::Shape("list header escapes the entry".into()))?;
     let again = u64_at(b, header)? as usize;
     if again != count {
         return Err(OracleError::Shape(format!(

@@ -58,6 +58,11 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
+    /// Export identifier/number tables from owned 56578 content, without writing game payloads.
+    ContentTables {
+        #[arg(long)]
+        out: PathBuf,
+    },
     /// The positive controls. Exit 2 on failure.
     Control,
     /// Rebuild and re-verify every pinned payload.
@@ -2749,6 +2754,11 @@ fn run(cli: &Cli) -> anyhow::Result<ExitCode> {
         Cmd::ArtArrangement(a) => run_art(cli, a),
         Cmd::ActivityModes(a) => run_activity_modes(cli, a),
         Cmd::VendorSales(v) => run_vendor_sales(v),
+        Cmd::ContentTables { out } => {
+            let mut content = d1_oracle::oodle::Content::open_default()?;
+            d1_oracle::content_tables::write(&mut content, out)?;
+            Ok(ExitCode::SUCCESS)
+        }
 
         Cmd::Message { tag, msgid, request_tag, obj, span } => {
             let tag = *tag as u32;

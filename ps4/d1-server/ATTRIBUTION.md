@@ -104,6 +104,18 @@ upstream commit - not a vague nod.
 
 ## Our own work
 
+The identifier/number exporter `crates/d1-oracle/src/content_tables.rs` uses the tag-layout
+descriptions from Blam Network's **gibbon**, MIT, at tiger commit
+`82c57cb482767e0ba07030e988b7bfaa6b1a4bd9`:
+`packages/gibbon/src/versions/destiny1/v41375_14_07_03_1501_live/definitions/` files
+`activity_definition.ts`, `character.ts`, `investment.ts`, `investment_globals.ts`,
+`scoreboard_definition.ts` and `unlock_flags.ts`, and the PS4
+`v52553_16_09_28_1551_evil/tag/tag_block.ts` (also exported by gibbon's 56578 entry point).
+The PS4 field widths, strides, array-member pointers and input identities were checked on the
+owned 56578 packages and executable. No upstream game data or binary fixtures are redistributed.
+The package resolution, Oodle decoder, vendor table and item-index implementations are the
+existing project readers.
+
 Everything else - the server, the gate ledger, the containment harness, the run tooling and the
 research documents - is original to this project, and is offered under GPL-2.0-or-later so that the
 next person preserving something can take it the way we took shadPS4's.

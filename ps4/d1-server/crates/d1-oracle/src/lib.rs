@@ -95,6 +95,7 @@ pub mod art_arrangement;
 pub mod character;
 pub mod codec;
 pub mod control;
+pub mod content_tables;
 pub mod error;
 pub mod harness;
 pub mod inventory;

@@ -797,7 +797,7 @@ impl Store {
         let after = curve.level(*p);
         let mut s = format!("{name} +{amount} = {} (rank {before} -> {after})", *p);
         if curve.runtime_index.is_some() {
-            // TODO(progression): write it into the profile's entry once a reputation's ordinal is read.
+            // TODO(progression): write the exported ordinal's entry and re-encode the profile.
             s.push_str("; kept in the store only");
         }
         s
