@@ -7,6 +7,7 @@ is the current summary. Titles below are the notes' own.
 ## Start here (PS4 build 56578, current)
 
 - [PS4 56578: the first integrated full-game test (6 November 2026)](ps4-56578-full-game-test-2026-11-06.md)
+- [PS4 56578: what a client needs at a join: the authority grant and the player record (F32, 6 November 2026)](ps4-56578-public-bubble-join-2026-11-06.md)
 - [PS4 56578: investment requests served: locks, upgrades, infusion, packages, turn-ins, Record Books (6 November 2026)](ps4-56578-investment-ops-2026-11-06.md)
 - [PS4 56578: Crucible matches driven on the wire (6 November 2026)](ps4-56578-crucible-wire-2026-11-06.md)
 - [Live captures: patrol, public events, the Tower and The Dark Within (6 November 2026)](d1-live-captures-patrol-tower-2026-11-06.md)
