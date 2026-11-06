@@ -370,6 +370,6 @@ cargo test -p d1-activity-host                                                  
 
 - The native run: cine_reveal and A Guardian Rises script-driven on content, then the Tower after 165.
 - The timer, hard-wipe globals and object filter meanings; the actor's other command atoms; sequence pairs; machine cues.
-- `mission_pact`'s new thread failure; the restored names with no content row (82 calls).
+- The restored names with no content row (82 calls). `mission_pact`'s thread failure is a hash collision in BullShcript's member lookup, not ours ([the wiring note](ps4-56578-integration-wiring-2026-11-05.md), row 21).
 - The 78 story, cinematic and quest activities with no world, and the six worlds with no script.
 - The completion body's counters and session id.
