@@ -81,6 +81,7 @@ fn script_config() -> Arc<ScriptConfig> {
         active_bundles: true,
         start_delay: std::time::Duration::ZERO,
         arrival_cushion: std::time::Duration::ZERO,
+        list_retry: None,
     })
 }
 

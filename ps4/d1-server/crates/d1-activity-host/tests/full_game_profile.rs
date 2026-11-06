@@ -293,6 +293,7 @@ fn the_script_bridge_configures_from_the_profile() {
     assert!(reveal.served_value(&tower).and_then(|r| r.a).is_some_and(|(tag, image)| tag == 0x8080_254D && image[0x9C] == 1));
     assert_eq!(c.start_delay, std::time::Duration::from_secs(60), "D1_AH_SCRIPTS_START_DELAY");
     assert_eq!(c.arrival_cushion, std::time::Duration::from_secs(20), "D1_AH_SCRIPTS_ARRIVAL_CUSHION");
+    assert_eq!(c.list_retry, Some(std::time::Duration::from_secs(10)), "D1_AH_SCRIPTS_LIST_RETRY");
     let stand_in = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../profiles/script-activities.txt");
     let text = std::fs::read_to_string(&stand_in).unwrap();
     let dir = stand_in.parent().unwrap().to_path_buf();

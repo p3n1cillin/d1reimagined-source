@@ -1972,6 +1972,14 @@ impl ActivityInstance {
     /// Epoch changes invalidate both counts and queued native decoder results.
     pub fn squad_epoch(&self) -> u64 { self.squad_live.epoch() }
 
+    /// D1_AH_SCRIPTS hook (run fg2f): the client sent a udt 6 (`sensor_sense_update`), decoded or
+    /// not; the script bridge takes the first as its answer to the full list.
+    pub fn on_sense_payload(&mut self, now: Instant) {
+        if let Some(b) = self.script_bridge.as_mut() {
+            b.client_sensed(now);
+        }
+    }
+
     pub fn on_sense_update(&mut self, update: crate::sense::SenseUpdate) {
         // D1_AH_SCRIPTS hook (script_bridge.rs): squad senses of the current epoch.
         if let Some(b) = self.script_bridge.as_mut().filter(|_| update.epoch == self.squad_live.epoch()) {

@@ -457,6 +457,8 @@ impl AhConnection {
         if udt == 6 {
             if let Some(sense) = self.sense.as_mut() { sense.submit(payload); }
             self.instance.set_sense_ready(false);
+            // D1_AH_SCRIPTS hook (script_bridge.rs, run fg2f): the client's answer to the full list.
+            self.instance.on_sense_payload(now);
         }
         if let Some(why) = crate::codec::undecodable_reason(udt) {
             events.push(AhEvent::NotDecoded {

@@ -114,6 +114,14 @@ pub const DEFAULT_ARRIVAL_CUSHION_S: f64 = 20.0;
 /// A move with no arrival seen (no udt 21 report, no teleport finished) is taken as arrived after
 /// this long, so the scripts never stop for good.
 pub const ARRIVAL_TIMEOUT: Duration = Duration::from_secs(120);
+/// `D1_AH_SCRIPTS_LIST_RETRY`'s default, in seconds: a full list the client has not answered with
+/// a udt 6 (`sensor_sense_update`) this long after it went out goes out again. ⚠ A stand-in
+/// (run fg2f, 6 November: a list 0.3 s after the join, before the client's state refresh, was
+/// never answered and the reveal never started; fg2e's was answered 11 s after, fg3b's 0.2 s).
+pub const DEFAULT_LIST_RETRY_S: f64 = 10.0;
+/// How many times an unanswered first full list goes out again before the start cushion counts
+/// anyway.
+pub const LIST_RETRIES: u32 = 5;
 
 // ── the protocol ─────────────────────────────────────────────────────────────────────────────────
 
@@ -773,6 +781,16 @@ pub struct ScriptConfig {
     /// phase moves the client, the script clock is held until the client arrives (its udt 21
     /// report, else the host's teleport request finished) and this long after. ⚠ A stand-in.
     pub arrival_cushion: Duration,
+    /// `D1_AH_SCRIPTS_LIST_RETRY` (seconds, default [`DEFAULT_LIST_RETRY_S`]; `0` = off): until the
+    /// client answers the first full list with a udt 6, that list goes out again this often (up to
+    /// [`LIST_RETRIES`] times), and the start cushion counts from the answer. `None`: the cushion
+    /// counts from the first full list, and nothing is re-sent. ⚠ A stand-in.
+    pub list_retry: Option<Duration>,
+}
+
+/// `D1_AH_SCRIPTS_LIST_RETRY`, in seconds; `0` turns the retry and the udt 6 gate off.
+pub fn list_retry_from(value: Option<&str>) -> Result<Option<Duration>, String> {
+    seconds_knob("D1_AH_SCRIPTS_LIST_RETRY", value, DEFAULT_LIST_RETRY_S).map(|d| Some(d).filter(|d| !d.is_zero()))
 }
 
 /// `D1_AH_SCRIPTS_ARRIVAL_CUSHION`, in seconds.
@@ -1000,6 +1018,7 @@ impl ScriptConfig {
         }
         let start_delay = start_delay_from(std::env::var("D1_AH_SCRIPTS_START_DELAY").ok().as_deref())?;
         let arrival_cushion = arrival_cushion_from(std::env::var("D1_AH_SCRIPTS_ARRIVAL_CUSHION").ok().as_deref())?;
+        let list_retry = list_retry_from(std::env::var("D1_AH_SCRIPTS_LIST_RETRY").ok().as_deref())?;
         tracing::info!(
             "script bridge: the scripts start {:.0} s after the first full list (D1_AH_SCRIPTS_START_DELAY; \
              ⚠ a stand-in cushion: the client sends no 'loaded' signal on the wire)",
@@ -1036,6 +1055,7 @@ impl ScriptConfig {
             active_bundles: !std::env::var("D1_AH_SCRIPTS_ACTIVE_BUNDLES").is_ok_and(|v| v.trim() == "0"),
             start_delay,
             arrival_cushion,
+            list_retry,
         }))
     }
 }
@@ -1086,8 +1106,16 @@ struct Run {
     active_slice: Option<u32>,
     /// The slice set whose sensor list the row table serves (the start's at the join).
     list_slice: Option<u32>,
-    /// When the first full list went out: the start cushion counts from here.
+    /// When the first full list went out: the start cushion counts from here without the udt 6
+    /// gate ([`ScriptConfig::list_retry`] `None`).
     full_at: Option<Instant>,
+    /// When the latest full list went out.
+    last_full_at: Option<Instant>,
+    /// When the client first answered a full list with a udt 6: with the gate, the start cushion
+    /// counts from here (run fg2f).
+    sensed_at: Option<Instant>,
+    /// How many times the unanswered first full list went out again.
+    list_retries: u32,
     /// The start is waiting for the cushion (logged once).
     start_held_logged: bool,
     /// Where the client is, or is going: its own last udt 21 report, else the last region the
@@ -1285,6 +1313,52 @@ impl ScriptBridge {
         }
     }
 
+    /// The client's udt 6 (`sensor_sense_update`), any payload: the first one after a full list
+    /// is its answer to it, the closest "the client took the list" signal there is (fg3b 0.2 s
+    /// after its first list, fg2e 11 s; fg2 and fg2f never, and neither started).
+    pub fn client_sensed(&mut self, now: Instant) {
+        let Some(run) = self.run.as_mut() else { return };
+        if run.sensed_at.is_none() {
+            run.sensed_at = Some(now);
+            tracing::info!(
+                "script bridge: the client answered the full list (udt 6, +{:.1} s after it){}",
+                run.last_full_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64()),
+                if self.config.list_retry.is_some() { "; the start cushion counts from here" } else { "" }
+            );
+        }
+    }
+
+    /// Whether the client has answered a full list with a udt 6.
+    pub fn client_answered(&self) -> bool {
+        self.run.as_ref().is_some_and(|r| r.sensed_at.is_some())
+    }
+
+    /// The first full list unanswered for `list_retry`: it goes out again, with a fresh stamp.
+    fn list_retry_due(&mut self, now: Instant) {
+        let Some(every) = self.config.list_retry else { return };
+        let delivered = self.rows.full_delivered();
+        let Some(run) = self.run.as_mut() else { return };
+        let Some(last) = run.last_full_at.filter(|_| run.sensed_at.is_none() && delivered) else { return };
+        if now < last + every {
+            return;
+        }
+        if run.list_retries < LIST_RETRIES {
+            run.list_retries += 1;
+            tracing::warn!(
+                "script bridge: no udt 6 from the client {:.0} s after the full list; it goes out again \
+                 (retry {}/{LIST_RETRIES}, D1_AH_SCRIPTS_LIST_RETRY, ⚠ a stand-in)",
+                every.as_secs_f64(),
+                run.list_retries
+            );
+            self.rows.request_full();
+        } else {
+            tracing::warn!(
+                "script bridge: no udt 6 from the client after {LIST_RETRIES} re-sends; the start cushion counts from now"
+            );
+            run.sensed_at = Some(now);
+        }
+    }
+
     /// Whether the script clock is held for a phase's move.
     pub fn holding_for_arrival(&self) -> bool {
         self.run.as_ref().is_some_and(|r| r.arrival.is_some())
@@ -1445,6 +1519,9 @@ impl ScriptBridge {
             active_slice: None,
             list_slice: start,
             full_at: None,
+            last_full_at: None,
+            sensed_at: None,
+            list_retries: 0,
             start_held_logged: false,
             believed_slice: self.served_start.or(start),
             before_start: VecDeque::new(),
@@ -1638,23 +1715,26 @@ impl ScriptBridge {
         // sends no "loaded" signal; run fg2 started at once, during the initial slice load, and
         // never left it). Until then the world's own list stands, lifetime 0, and heartbeats run.
         let delay = self.config.start_delay;
-        let cushion_over = run.full_at.is_some_and(|t| now >= t + delay);
+        let anchor = if self.config.list_retry.is_some() { run.sensed_at } else { run.full_at };
+        let cushion_over = anchor.is_some_and(|t| now >= t + delay);
         if !run.started && run.loaded && self.rows.full_delivered() && !cushion_over && !run.start_held_logged {
             run.start_held_logged = true;
             tracing::info!(
-                "script bridge: {} scripts loaded; their start waits {:.0} s after the full list \
+                "script bridge: {} scripts loaded; their start waits {:.0} s after the {} \
                  (D1_AH_SCRIPTS_START_DELAY, ⚠ a stand-in cushion while the client loads its initial slice set)",
                 run.activity.activity,
-                delay.as_secs_f64()
+                delay.as_secs_f64(),
+                if self.config.list_retry.is_some() { "client's first udt 6" } else { "full list" }
             );
         }
         if !run.started && run.loaded && self.rows.full_delivered() && cushion_over {
             run.started = true;
             run.last_tick = Some(self.rows.tick(now));
             tracing::info!(
-                "⭐ script bridge: {} scripts start (+{:.0} s after the full list)",
+                "⭐ script bridge: {} scripts start (+{:.0} s after the full list, +{:.0} s after the client's first udt 6)",
                 run.activity.activity,
-                run.full_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64())
+                run.full_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64()),
+                run.sensed_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64())
             );
             let players = self
                 .players
@@ -2030,6 +2110,7 @@ impl ScriptBridge {
     /// heartbeat. Also runs the sidecar (events in, the clock). Call it on every poll.
     pub fn sensor_due(&mut self, now: Instant) -> Option<Vec<u8>> {
         self.run.as_ref()?;
+        self.list_retry_due(now);
         self.drive(now);
         let mut frame = None;
         // Results come back in submission order: frames and completion bodies.
@@ -2102,12 +2183,14 @@ impl ScriptBridge {
                     (EndKind::Cinematic, Some((6, at)), Some(8)) => Some(at),
                     _ => None,
                 });
-                let stamp = pinned.unwrap_or_else(|| self.rows.tick(now));
+                // Never stamp 0 (run fg2f's unanswered list was stamp 0; every answered one was not).
+                let stamp = pinned.unwrap_or_else(|| self.rows.tick(now)).max(1);
                 match self.rows.stamp_at(&mut f.bytes, f.stamp_bit, plan.init, stamp) {
                 Ok(()) => {
                     self.rows.sent(&plan, now);
                     if let (Some(run), true) = (self.run.as_mut(), plan.full) {
                         run.full_at.get_or_insert(now);
+                        run.last_full_at = Some(now);
                     }
                     if let (Some(run), Some(value)) = (self.run.as_mut(), lifetime) {
                         run.lifetime_unsent = false;
@@ -2429,6 +2512,7 @@ mod tests {
             active_bundles: true,
             start_delay,
             arrival_cushion: Duration::ZERO,
+            list_retry: None,
         };
         let s = shared.clone();
         ScriptBridge::with_launcher(
@@ -2979,6 +3063,89 @@ mod tests {
         assert!(b.holding_for_arrival());
         run_for(&mut b, &mut t, 2.0, &mut Vec::new());
         assert!(!b.holding_for_arrival(), "taken as arrived after the timeout");
+    }
+
+    fn stamp_of(f: &[u8]) -> u32 {
+        ((u64::from_be_bytes([0, 0, 0, f[1], f[2], f[3], f[4], f[5]]) >> 7) & 0xFFFF_FFFF) as u32
+    }
+
+    /// Run fg2f: its first full list went out at stamp 0 and was never answered. No frame is
+    /// stamped 0: the first poll, right at the join, still stamps 1.
+    #[test]
+    fn no_frame_is_stamped_0() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge(&shared, false);
+        let t = Instant::now();
+        b.on_client_message(&join(1), 165, HOST, t);
+        let first = b.sensor_due(t).expect("the full list at once");
+        assert!(shared.lock().unwrap().frames[0].full);
+        assert_eq!(stamp_of(&first), 1, "the stamp clock's 0 goes out as 1");
+        let mut t = t;
+        let mut wire = vec![first];
+        run_for(&mut b, &mut t, 8.0, &mut wire);
+        let stamps: Vec<u32> = wire.iter().map(|f| stamp_of(f)).collect();
+        assert!(stamps.iter().all(|s| *s >= 1) && stamps.windows(2).all(|w| w[0] <= w[1]), "{stamps:?}");
+    }
+
+    /// Run fg2f: an unanswered first full list goes out again every `list_retry` (a fresh stamp
+    /// each time) until the client's first udt 6, and the start cushion counts from that answer.
+    #[test]
+    fn an_unanswered_full_list_goes_out_again_and_the_start_waits_for_the_answer() {
+        let fulls = |s: &Arc<Mutex<Shared>>| s.lock().unwrap().frames.iter().filter(|p| p.full).count();
+        let started = |s: &Arc<Mutex<Shared>>| s.lock().unwrap().sent.iter().any(|m| matches!(m, HostMsg::Start));
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_delayed(&shared, false, false, profile_reveal(true), Duration::from_secs(60));
+        Arc::get_mut(&mut b.config).unwrap().list_retry = Some(Duration::from_secs(10));
+        b.set_served_start(Some(25));
+        let mut t = Instant::now();
+        let mut wire = Vec::new();
+        b.on_client_message(&join(2), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.25, &mut wire);
+        assert_eq!(fulls(&shared), 1);
+        run_for(&mut b, &mut t, 9.5, &mut wire);
+        assert_eq!(fulls(&shared), 1, "not before 10 s");
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert_eq!(fulls(&shared), 2, "no udt 6 in 10 s: the full list again");
+        run_for(&mut b, &mut t, 10.0, &mut wire);
+        assert_eq!(fulls(&shared), 3, "and again");
+        let coded: Vec<u32> = wire.iter().filter(|f| f.len() == 7).map(|f| stamp_of(f)).collect();
+        assert!(coded.len() == 3 && coded.windows(2).all(|w| w[0] < w[1]), "each with a fresh stamp: {coded:?}");
+        // The client answers (fg2e: 11 s after its list): no more re-sends; the cushion counts.
+        b.client_sensed(t);
+        assert!(b.client_answered());
+        let answered = t;
+        run_for(&mut b, &mut t, 30.0, &mut wire);
+        assert_eq!(fulls(&shared), 3, "answered: nothing more");
+        assert!(!started(&shared), "60 s from the answer, not from the first list (+20 s)");
+        while t < answered + Duration::from_secs(59) {
+            run_for(&mut b, &mut t, 1.0, &mut wire);
+        }
+        assert!(!started(&shared));
+        run_for(&mut b, &mut t, 2.0, &mut wire);
+        assert!(started(&shared), "60 s after the client's first udt 6");
+
+        // Never answered: five re-sends, then the cushion counts anyway.
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_delayed(&shared, false, false, profile_reveal(true), Duration::from_secs(60));
+        Arc::get_mut(&mut b.config).unwrap().list_retry = Some(Duration::from_secs(10));
+        let mut t = Instant::now();
+        b.on_client_message(&join(2), 165, HOST, t);
+        run_for(&mut b, &mut t, 70.0, &mut Vec::new());
+        assert_eq!(fulls(&shared), 1 + LIST_RETRIES as usize, "the first list and {LIST_RETRIES} re-sends");
+        assert!(b.client_answered(), "taken as answered after the last");
+        run_for(&mut b, &mut t, 30.0, &mut Vec::new());
+        assert_eq!(fulls(&shared), 1 + LIST_RETRIES as usize, "no more");
+        assert!(!started(&shared));
+        run_for(&mut b, &mut t, 35.0, &mut Vec::new());
+        assert!(started(&shared), "the cushion after the last re-send");
+    }
+
+    #[test]
+    fn the_list_retry_knob_reads_seconds_and_0_turns_it_off() {
+        assert_eq!(list_retry_from(None), Ok(Some(Duration::from_secs(10))));
+        assert_eq!(list_retry_from(Some("0")), Ok(None));
+        assert_eq!(list_retry_from(Some("15")), Ok(Some(Duration::from_secs(15))));
+        assert!(list_retry_from(Some("-2")).unwrap_err().contains("D1_AH_SCRIPTS_LIST_RETRY"));
     }
 
     #[test]

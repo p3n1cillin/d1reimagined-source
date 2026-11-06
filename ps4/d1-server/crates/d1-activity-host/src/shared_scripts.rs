@@ -135,6 +135,11 @@ impl ScriptHandle {
         self.with(|s| s.bridge.teleport_finished(region, now));
     }
 
+    /// See [`ScriptBridge::client_sensed`]: any member's udt 6.
+    pub fn client_sensed(&self, now: Instant) {
+        self.with(|s| s.bridge.client_sensed(now));
+    }
+
     /// See [`ScriptBridge::set_served_start`].
     pub fn set_served_start(&self, region: Option<u32>) {
         self.with(|s| s.bridge.set_served_start(region));
