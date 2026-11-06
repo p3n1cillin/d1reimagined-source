@@ -308,6 +308,9 @@ pub struct PublicHost {
     public_checksums: Arc<HashMap<String, u32>>,
     /// Stream O3: how many of the instance's event completions this connection has sent.
     completions_seen: usize,
+    /// The last (CURRENT, TARGET) regions a udt 21 named while no list was picked, so each new
+    /// pair is logged once (run fg6: the instance picked nothing and said nothing).
+    last_report: Option<(Option<u32>, Option<u32>)>,
 }
 
 impl std::fmt::Debug for PublicHost {
@@ -339,6 +342,7 @@ impl PublicHost {
             worlds: Arc::new(Mutex::new(HashMap::new())),
             host_id: 0,
             public_checksums: Arc::new(HashMap::new()),
+            last_report: None,
             completions_seen: 0,
         }
     }
@@ -556,10 +560,24 @@ impl PublicHost {
         if !self.is_public_instance() || self.selected.is_some() {
             return None;
         }
-        let destination = Destination::from_world_name(world)?;
         let (current, target) = slice_regions(udt21);
-        let key = [target, current].into_iter().flatten().map(|region| InstanceKey::Bubble { destination, region })
-            .find(|k| self.frames.contains_key(k))?;
+        let Some(destination) = Destination::from_world_name(world) else {
+            if self.last_report.replace((current, target)) != Some((current, target)) {
+                tracing::warn!("⚠ public instance {host_id:#018x}: world {world:?} names no destination; no list for CURRENT {current:?} / TARGET {target:?}");
+            }
+            return None;
+        };
+        let found = [target, current].into_iter().flatten().map(|region| InstanceKey::Bubble { destination, region })
+            .find(|k| self.frames.contains_key(k));
+        let Some(key) = found else {
+            if self.last_report.replace((current, target)) != Some((current, target)) {
+                tracing::info!(
+                    "public instance {host_id:#018x}: the client's slice sets are CURRENT {current:?} / TARGET {target:?} \
+                     ({destination:?}); no public list for either yet"
+                );
+            }
+            return None;
+        };
         self.selected = Some(key);
         let joined = self.registry.lock().ok().map(|mut r| {
             crate::public_registry::sync_with_responder(&mut r);
