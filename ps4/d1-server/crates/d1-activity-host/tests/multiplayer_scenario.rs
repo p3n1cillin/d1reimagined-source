@@ -80,6 +80,7 @@ fn script_config() -> Arc<ScriptConfig> {
         codec: ScriptConfig::host_codec(),
         active_bundles: true,
         start_delay: std::time::Duration::ZERO,
+        arrival_cushion: std::time::Duration::ZERO,
     })
 }
 

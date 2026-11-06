@@ -130,6 +130,11 @@ impl ScriptHandle {
         self.with(|s| s.bridge.scripted())
     }
 
+    /// See [`ScriptBridge::teleport_finished`]: any member's finished teleport ends the hold.
+    pub fn teleport_finished(&self, region: u32, now: Instant) {
+        self.with(|s| s.bridge.teleport_finished(region, now));
+    }
+
     /// See [`ScriptBridge::set_served_start`].
     pub fn set_served_start(&self, region: Option<u32>) {
         self.with(|s| s.bridge.set_served_start(region));

@@ -106,6 +106,14 @@ pub const LIVE_FIRST_LIFETIME: i8 = 0;
 /// full list and the first cinematic there are only keepalives and the 60 s `high_water` beacon),
 /// and the working step schedule (`cine-reveal-steps.txt`) waited 60 s before pregame.
 pub const DEFAULT_START_DELAY_S: f64 = 60.0;
+/// `D1_AH_SCRIPTS_ARRIVAL_CUSHION`'s default, in seconds: how long the script clock stays held after
+/// the client is taken to have arrived in the slice set a phase moved it to. ⚠ A STAND-IN, like the
+/// start cushion (run fg2e, 6 November: a play 4 s after the move to 26 never started; the step
+/// schedule's played 900 s after it).
+pub const DEFAULT_ARRIVAL_CUSHION_S: f64 = 20.0;
+/// A move with no arrival seen (no udt 21 report, no teleport finished) is taken as arrived after
+/// this long, so the scripts never stop for good.
+pub const ARRIVAL_TIMEOUT: Duration = Duration::from_secs(120);
 
 // ── the protocol ─────────────────────────────────────────────────────────────────────────────────
 
@@ -761,19 +769,32 @@ pub struct ScriptConfig {
     /// the first full list the scripts start (`players`, `start`, and so their first phase, region
     /// move and lifetime change). ⚠ A stand-in cushion: no client "loaded" signal is known.
     pub start_delay: Duration,
+    /// `D1_AH_SCRIPTS_ARRIVAL_CUSHION` (seconds, default [`DEFAULT_ARRIVAL_CUSHION_S`]): after a
+    /// phase moves the client, the script clock is held until the client arrives (its udt 21
+    /// report, else the host's teleport request finished) and this long after. ⚠ A stand-in.
+    pub arrival_cushion: Duration,
 }
 
-/// `D1_AH_SCRIPTS_START_DELAY`, in seconds (`0` = start as soon as the full list is out).
-pub fn start_delay_from(value: Option<&str>) -> Result<Duration, String> {
+/// `D1_AH_SCRIPTS_ARRIVAL_CUSHION`, in seconds.
+pub fn arrival_cushion_from(value: Option<&str>) -> Result<Duration, String> {
+    seconds_knob("D1_AH_SCRIPTS_ARRIVAL_CUSHION", value, DEFAULT_ARRIVAL_CUSHION_S)
+}
+
+fn seconds_knob(name: &str, value: Option<&str>, default: f64) -> Result<Duration, String> {
     match value.map(str::trim).filter(|v| !v.is_empty()) {
-        None => Ok(Duration::from_secs_f64(DEFAULT_START_DELAY_S)),
+        None => Ok(Duration::from_secs_f64(default)),
         Some(v) => v
             .parse::<f64>()
             .ok()
             .filter(|s| s.is_finite() && *s >= 0.0)
             .map(Duration::from_secs_f64)
-            .ok_or_else(|| format!("D1_AH_SCRIPTS_START_DELAY={v:?}: want seconds, 0 or more")),
+            .ok_or_else(|| format!("{name}={v:?}: want seconds, 0 or more")),
     }
+}
+
+/// `D1_AH_SCRIPTS_START_DELAY`, in seconds (`0` = start as soon as the full list is out).
+pub fn start_delay_from(value: Option<&str>) -> Result<Duration, String> {
+    seconds_knob("D1_AH_SCRIPTS_START_DELAY", value, DEFAULT_START_DELAY_S)
 }
 
 /// The step schedule's lists as the bridge's served values (`D1_AH_SCRIPTS_SLICE_LISTS`, a
@@ -978,6 +999,7 @@ impl ScriptConfig {
             }
         }
         let start_delay = start_delay_from(std::env::var("D1_AH_SCRIPTS_START_DELAY").ok().as_deref())?;
+        let arrival_cushion = arrival_cushion_from(std::env::var("D1_AH_SCRIPTS_ARRIVAL_CUSHION").ok().as_deref())?;
         tracing::info!(
             "script bridge: the scripts start {:.0} s after the first full list (D1_AH_SCRIPTS_START_DELAY; \
              ⚠ a stand-in cushion: the client sends no 'loaded' signal on the wire)",
@@ -1013,6 +1035,7 @@ impl ScriptConfig {
             codec: Self::host_codec(),
             active_bundles: !std::env::var("D1_AH_SCRIPTS_ACTIVE_BUNDLES").is_ok_and(|v| v.trim() == "0"),
             start_delay,
+            arrival_cushion,
         }))
     }
 }
@@ -1074,9 +1097,19 @@ struct Run {
     believed_slice: Option<u32>,
     /// Client events before the scripts start, sent after `start` in order.
     before_start: VecDeque<HostMsg>,
-    /// The slice set a phase moved the client to, whose list went out at the move: its full list
-    /// goes out once more when the client reports it is there (udt 21).
-    awaiting_arrival: Option<u32>,
+    /// A phase moved the client to another slice set: the script clock is held until it arrives
+    /// and the arrival cushion has passed (run fg2e).
+    arrival: Option<Arrival>,
+}
+
+/// The script clock's hold after a phase's move (see [`ScriptConfig::arrival_cushion`]).
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum Arrival {
+    /// Waiting for the client to reach `region`: its udt 21 report, else the host's teleport
+    /// request finished ([`ScriptBridge::teleport_finished`]), else [`ARRIVAL_TIMEOUT`].
+    Moving { region: u32, since: Instant },
+    /// Arrived; the clock runs again at `until`.
+    Cushion { region: u32, until: Instant },
 }
 
 impl Run {
@@ -1243,6 +1276,34 @@ impl ScriptBridge {
         self.served_start = region;
     }
 
+    /// The instance's teleport request to `region` finished (`state.rs`: state 1, then 3, then
+    /// dropped, on the host's own 20 s / 30 s timers; the client sends nothing when it arrives).
+    /// Taken as the client's arrival when no udt 21 report came first.
+    pub fn teleport_finished(&mut self, region: u32, now: Instant) {
+        if matches!(self.run.as_ref().and_then(|r| r.arrival), Some(Arrival::Moving { region: r, .. }) if r == region) {
+            self.arrived(region, now, "the host's teleport request finished");
+        }
+    }
+
+    /// Whether the script clock is held for a phase's move.
+    pub fn holding_for_arrival(&self) -> bool {
+        self.run.as_ref().is_some_and(|r| r.arrival.is_some())
+    }
+
+    /// The client is taken to be in `region`: its full list goes out again with current values
+    /// (a cinematic already marked playing is seen playing once the set has loaded), and the
+    /// script clock runs again after the arrival cushion.
+    fn arrived(&mut self, region: u32, now: Instant, how: &str) {
+        let cushion = self.config.arrival_cushion;
+        let Some(run) = self.run.as_mut() else { return };
+        run.arrival = Some(Arrival::Cushion { region, until: now + cushion });
+        tracing::info!(
+            "script bridge: arrival in slice set {region} ({how}); its list goes out in full again, the script clock runs in {:.0} s",
+            cushion.as_secs_f64()
+        );
+        self.rows.request_full();
+    }
+
     // ── inputs ────────────────────────────────────────────────────────────────────────────────
 
     /// Every client message, after the instance has handled it (`activity_index` is the activity it
@@ -1270,7 +1331,7 @@ impl ScriptBridge {
                             run.current_slice = Some(region);
                             run.believed_slice = Some(region);
                         }
-                        self.activate_slice(region);
+                        self.activate_slice(region, now);
                     }
                 }
             }
@@ -1280,7 +1341,7 @@ impl ScriptBridge {
 
     /// The client entered slice set `region`: its bundles' threads run (the slice -> bundle table
     /// from the generated world tables). Sent once per change, and only once the scripts run.
-    fn activate_slice(&mut self, region: u32) {
+    fn activate_slice(&mut self, region: u32, now: Instant) {
         // The new slice set's own list (generated tables): the live host sent its full list after
         // the move, with the rows' current values.
         if let Some(run) = self.run.as_mut() {
@@ -1291,13 +1352,10 @@ impl ScriptBridge {
                     let lifetime = run.activity.lifetime;
                     self.rows.relist(list, &[lifetime]);
                 }
-            } else if run.awaiting_arrival == Some(region) {
-                tracing::info!("script bridge: the client reports slice set {region}; its list goes out in full again");
-                self.rows.request_full();
             }
-            if run.awaiting_arrival == Some(region) {
-                run.awaiting_arrival = None;
-            }
+        }
+        if matches!(self.run.as_ref().and_then(|r| r.arrival), Some(Arrival::Moving { region: r, .. }) if r == region) {
+            self.arrived(region, now, "the client reports it (udt 21)");
         }
         let on = self.config.active_bundles;
         let Some(run) = self.run.as_mut() else { return };
@@ -1390,7 +1448,7 @@ impl ScriptBridge {
             start_held_logged: false,
             believed_slice: self.served_start.or(start),
             before_start: VecDeque::new(),
-            awaiting_arrival: None,
+            arrival: None,
         });
     }
 
@@ -1611,7 +1669,7 @@ impl ScriptBridge {
                 self.send(m);
             }
             if let Some(region) = self.run.as_ref().and_then(|r| r.current_slice) {
-                self.activate_slice(region);
+                self.activate_slice(region, now);
             }
             return;
         }
@@ -1621,6 +1679,25 @@ impl ScriptBridge {
         let stamp = self.rows.tick(now);
         let Some(run) = self.run.as_ref() else { return };
         if !run.started || run.ended {
+            return;
+        }
+        // The hold after a phase's move (run fg2e): no ticks, so the scripts' sleeps do not run
+        // while the client loads the new slice set; the stamps it misses are skipped, not caught up.
+        if let Some(Arrival::Moving { region, since }) = run.arrival {
+            if now >= since + ARRIVAL_TIMEOUT {
+                tracing::warn!("script bridge: no arrival in slice set {region} seen in {} s; taken as arrived", ARRIVAL_TIMEOUT.as_secs());
+                self.arrived(region, now, "the arrival timeout");
+            }
+        }
+        let Some(run) = self.run.as_mut() else { return };
+        if let Some(Arrival::Cushion { region, until }) = run.arrival {
+            if now >= until {
+                tracing::info!("script bridge: the client is in slice set {region}; the script clock runs again");
+                run.arrival = None;
+            }
+        }
+        if run.arrival.is_some() {
+            run.last_tick = Some(stamp);
             return;
         }
         let from = run.last_tick.map_or(stamp, |t| t + 1);
@@ -1758,10 +1835,20 @@ impl ScriptBridge {
                             list.len() + 1
                         );
                         run.list_slice = Some(r);
-                        run.awaiting_arrival = Some(r);
                         let lifetime = run.activity.lifetime;
                         self.rows.relist(list, &[lifetime]);
                     }
+                }
+                // Run fg2e: the scripts' next steps (the reveal's sleep(4), then the Tower play)
+                // wait until the client is in the new slice set and the arrival cushion has passed.
+                if self.region_out.is_some_and(|o| Some(o) == region) {
+                    let r = self.region_out.expect("checked");
+                    tracing::info!(
+                        "script bridge: phase {index} moves the client to {r}; the script clock holds until it arrives, then {:.0} s \
+                         (D1_AH_SCRIPTS_ARRIVAL_CUSHION, ⚠ a stand-in)",
+                        self.config.arrival_cushion.as_secs_f64()
+                    );
+                    run.arrival = Some(Arrival::Moving { region: r, since: now });
                 }
                 self.set_lifetime();
             }
@@ -2341,6 +2428,7 @@ mod tests {
             codec: Arc::new(move || CodecWorker::inline(recording(s.clone()))),
             active_bundles: true,
             start_delay,
+            arrival_cushion: Duration::ZERO,
         };
         let s = shared.clone();
         ScriptBridge::with_launcher(
@@ -2675,8 +2763,11 @@ mod tests {
         std::fs::create_dir_all(&dir).unwrap();
         let control = dir.join("store-control.txt");
         let _ = std::fs::remove_file(&control);
-        Arc::get_mut(&mut b.config).expect("one owner").rewards =
-            Arc::new(Mutex::new(Forwarding(crate::reward_forward::GrantForwarder::new(&control), shared.clone())));
+        {
+            let c = Arc::get_mut(&mut b.config).expect("one owner");
+            c.rewards = Arc::new(Mutex::new(Forwarding(crate::reward_forward::GrantForwarder::new(&control), shared.clone())));
+            c.arrival_cushion = Duration::from_secs(20);
+        }
         b.set_served_start(Some(25));
         let mut t = Instant::now();
         let mut wire = Vec::new();
@@ -2746,7 +2837,41 @@ mod tests {
             assert_eq!(lifetime_of(moved), Some(4), "the current lifetime");
         }
         assert!(b.rows().is_listed(&tower), "/6/1 is in the list the client holds");
+
+        // Run fg2e: the scripts' sleep(4) and the Tower play wait while the client loads 26. The
+        // client reports nothing; the host's teleport request finishes on its 30 s timers.
+        let ticks = |s: &Shared| s.sent.iter().filter(|m| matches!(m, HostMsg::Tick { .. })).count();
+        let playing = |s: &Shared| s.frames.iter().any(|p| cinematic_of(p, 1).is_some_and(|c| c.2 == 1));
+        let fulls = |s: &Shared| s.frames.iter().filter(|p| p.full).count();
+        let (ticks_at_move, fulls_at_move) = {
+            let s = shared.lock().unwrap();
+            (ticks(&s), fulls(&s))
+        };
+        run_for(&mut b, &mut t, 29.0, &mut wire);
+        assert!(b.holding_for_arrival());
+        {
+            let s = shared.lock().unwrap();
+            assert_eq!(ticks(&s), ticks_at_move, "no script time while the client moves");
+            assert!(!playing(&s), "no Tower play before the arrival");
+        }
+        b.teleport_finished(26, t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        {
+            let s = shared.lock().unwrap();
+            assert_eq!(fulls(&s), fulls_at_move + 1, "on arrival slice set 26's list goes out in full again");
+            let again = s.frames.iter().rev().find(|p| p.full).unwrap();
+            assert_eq!(again.entries.len(), 23, "the 22 records and the lifetime, current values");
+            assert!(again.entries.iter().any(|(k, _)| *k == tower));
+        }
+        run_for(&mut b, &mut t, 19.0, &mut wire);
+        {
+            let s = shared.lock().unwrap();
+            assert_eq!(ticks(&s), ticks_at_move, "the arrival cushion holds the clock too");
+            assert!(!playing(&s));
+        }
+        assert!(b.holding_for_arrival());
         run_for(&mut b, &mut t, 5.0, &mut wire);
+        assert!(!b.holding_for_arrival(), "20 s after the arrival the scripts run again");
         {
             let s = shared.lock().unwrap();
             let play = s.frames.iter().rev().find(|p| cinematic_of(p, 1).is_some_and(|c| c.2 == 1)).expect("the Tower cinematic plays");
@@ -2805,6 +2930,62 @@ mod tests {
         let text = std::fs::read_to_string(fixtures().join("mission/cine_reveal-move-26.txt")).unwrap();
         let p = crate::sensor_list::params_for_list(&lab_base(), GROUP, -1, &text).unwrap();
         p.clients.iter().map(Row::from_client).collect()
+    }
+
+    /// Run fg2e: a phase's move holds the script clock until the client arrives. Here the client
+    /// reports slice set 26 itself (udt 21): the list goes out in full again at once, and the clock
+    /// runs after the arrival cushion. A move with no arrival at all is taken as arrived after
+    /// [`ARRIVAL_TIMEOUT`].
+    #[test]
+    fn a_phase_move_holds_the_script_clock_until_the_client_arrives() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_delayed(&shared, false, false, profile_reveal(true), Duration::ZERO);
+        Arc::get_mut(&mut b.config).unwrap().arrival_cushion = Duration::from_secs(2);
+        b.set_served_start(Some(25));
+        let mut t = Instant::now();
+        b.on_client_message(&join(3), 165, HOST, t);
+        run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+        assert!(!b.holding_for_arrival(), "phase 0 in the start slice set holds nothing");
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        assert_eq!(b.take_region_request(), Some(26));
+        assert!(b.holding_for_arrival());
+        let tower = |s: &Shared| s.frames.iter().any(|p| cinematic_of(p, 1).is_some_and(|c| c.2 == 1));
+        run_for(&mut b, &mut t, 10.0, &mut Vec::new());
+        assert!(!tower(&shared.lock().unwrap()), "held: the scripts' 4 s sleep has not run");
+        b.teleport_finished(25, t);
+        assert!(b.holding_for_arrival(), "another region's teleport is not this arrival");
+        let fulls = shared.lock().unwrap().frames.iter().filter(|p| p.full).count();
+        b.on_client_message(&slice(26), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        assert_eq!(shared.lock().unwrap().frames.iter().filter(|p| p.full).count(), fulls + 1, "the full list again on arrival");
+        run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+        assert!(b.holding_for_arrival(), "the cushion");
+        assert!(!tower(&shared.lock().unwrap()));
+        run_for(&mut b, &mut t, 1.5, &mut Vec::new());
+        assert!(!b.holding_for_arrival());
+        run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+        assert!(tower(&shared.lock().unwrap()), "then the Tower cinematic plays");
+
+        // No arrival ever seen: the timeout releases the clock.
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_delayed(&shared, false, false, profile_reveal(true), Duration::ZERO);
+        b.set_served_start(Some(25));
+        let mut t = Instant::now();
+        b.on_client_message(&join(3), 165, HOST, t);
+        run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        run_for(&mut b, &mut t, 119.0, &mut Vec::new());
+        assert!(b.holding_for_arrival());
+        run_for(&mut b, &mut t, 2.0, &mut Vec::new());
+        assert!(!b.holding_for_arrival(), "taken as arrived after the timeout");
+    }
+
+    #[test]
+    fn the_arrival_cushion_knob_reads_seconds() {
+        assert_eq!(arrival_cushion_from(None), Ok(Duration::from_secs(20)), "a 20 s stand-in by default");
+        assert_eq!(arrival_cushion_from(Some("0")), Ok(Duration::ZERO));
+        assert!(arrival_cushion_from(Some("x")).unwrap_err().contains("D1_AH_SCRIPTS_ARRIVAL_CUSHION"));
     }
 
     /// The step schedule's list when /6/1 plays (`cine_reveal-play-1.txt`).
@@ -2926,6 +3107,7 @@ mod tests {
         let mut b = bridge_with(&shared, false, true, CINE_LINE);
         let mut t = Instant::now();
         b.on_client_message(&join(6), 165, HOST, t);
+        b.on_client_message(&slice(25), 165, HOST, t);
         run_for(&mut b, &mut t, 3.5, &mut Vec::new());
         let s = shared.lock().unwrap();
         let deltas: Vec<&FramePlan> = s.frames.iter().filter(|p| !p.full).collect();
@@ -2972,8 +3154,11 @@ mod tests {
         let mut b = bridge_with(&shared, false, false, BARE_LINE);
         let mut t = Instant::now();
         b.on_client_message(&join(1), 165, HOST, t);
+        b.on_client_message(&slice(25), 165, HOST, t);
         run_for(&mut b, &mut t, 3.5, &mut Vec::new());
         b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        b.on_client_message(&slice(26), 165, HOST, t);
         run_for(&mut b, &mut t, 5.0, &mut Vec::new());
         assert!(shared.lock().unwrap().frames.iter().any(|p| cinematic_of(p, 1).is_some_and(|c| c.2 == 1)), "the scripts reached completion");
         assert_eq!(b.take_incident(), None);
@@ -2989,6 +3174,8 @@ mod tests {
         b.on_client_message(&slice(25), 165, HOST, t);
         run_for(&mut b, &mut t, 3.5, &mut Vec::new());
         b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        b.on_client_message(&slice(26), 165, HOST, t);
         run_for(&mut b, &mut t, 5.0, &mut Vec::new());
         let envelope = b.take_incident().expect("the completion envelope");
         let u32_at_e = |at: usize| u32::from_le_bytes(envelope[at..at + 4].try_into().unwrap());
@@ -3075,6 +3262,7 @@ mod tests {
         let mut b = bridge(&shared, false);
         let mut t = Instant::now();
         b.on_client_message(&join(4), 165, HOST, t);
+        b.on_client_message(&slice(25), 165, HOST, t);
         run_for(&mut b, &mut t, 3.5, &mut Vec::new());
         b.on_client_message(&join(4), 165, HOST, t);
         run_for(&mut b, &mut t, 0.25, &mut Vec::new());

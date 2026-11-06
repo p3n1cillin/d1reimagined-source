@@ -1843,6 +1843,11 @@ impl ActivityInstance {
             } else if state == 3 && age >= Self::TELEPORT_DROP_AFTER {
                 self.slice_request = None;
                 self.membership_dirty = true;
+                // D1_AH_SCRIPTS hook (run fg2e): the teleport finished on these timers (the client
+                // sends nothing when it arrives); a scripted phase's held clock takes it as arrival.
+                if let Some(b) = self.script_bridge.as_mut() {
+                    b.teleport_finished(index, now);
+                }
             }
         }
         // MP(H): another member joined or left, or the physics host moved.
