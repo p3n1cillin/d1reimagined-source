@@ -133,6 +133,12 @@ AGPL projects are not used and not read ([licensing](ps4/design/licensing.md)). 
   - the d1-oracle test guards.
 - **[DeRveXx](https://github.com/DeRveXx)**: pad testing on the PS4 route, and the trigger deadzone
   for Hall-effect pads (`shadps4-input-kbm.ini`).
+- **TSOLfan** and **SiscentShade**: recorded 55 private Destiny 1 sessions on the live servers (Xbox
+  360, November 2026). These are missions, strikes, a raid, Cosmodrome patrol with its beacons and
+  public events, and a full Tower visit. They are the evidence behind the reveal cinematic's
+  lifetime phases, the activity-complete message, public instances and much of the server's
+  timing. The recordings themselves stay private
+  ([notes/d1-live-captures-2026-11-05.md](notes/d1-live-captures-2026-11-05.md)).
 - **Dependabot**: dependency updates.
 - **AI assistance:** much of the code and documentation was written with AI assistants, under the
   maintainer's direction:

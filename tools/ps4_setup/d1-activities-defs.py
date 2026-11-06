@@ -6,6 +6,8 @@
 Reads, beside `--dir`:
 - `catalog.json` (tools/ps4_setup/d1-activities-export.py: Bungie's manifest);
 - `sequences/*.json` (tools/ps4_setup/d1-activity-sequence.py: the live captures);
+- `activity-options.json` and `../characters/activity-rule-programs.json` (`d1-oracle
+  content-tables`: the owned 56578 content), for what each Crucible playlist's option tags set;
 
 and two local inputs that never enter the repository:
 - `--scripts`: Blam Network's restored 56578 scripts (Fukugen Daihon, unlicensed). Only
@@ -351,13 +353,67 @@ def kill_rules(points):
     ]
 
 
+# What the 56578 client and content say about a mode's limits (6 November). Option names are
+# FNV-1 hashes, as in the content.
+SCORE_TO_WIN = fnv1('score_to_win')  # 0xBE4DB480
+TIME_LIMIT = fnv1('time_limit')      # 0xF5EC68CA
+# The options that sit beside score_to_win in the preset tags, names unknown.
+PRESET_COMPANIONS = [1400823742, 2370067258, 257760486]
+# Read from the owned eboot with tools/ps4_setup/d1-ghidra.ps1 (tests/test_crucible_limits.py
+# re-checks it when D1_EBOOT is set): the only reader of score_to_win is 0x4001a0, through the
+# activity-option lookup at 0x118870; it converts the integer to the float the mode state keeps and
+# leaves 0 when the option is absent. time_limit and the companions occur nowhere in the eboot.
+CLIENT_READS = {
+    'score_to_win': {'name_hash': SCORE_TO_WIN, 'read_by_client': True, 'reader': '0x4001a0', 'lookup': '0x118870',
+                     'default': 0},
+    'time_limit': {'name_hash': TIME_LIMIT, 'read_by_client': False},
+    'preset_companions': {'name_hashes': PRESET_COMPANIONS, 'read_by_client': False},
+}
+LIMITS_SRC = ('limits and points: stand-ins, and the content does not settle them for matchmade play. No '
+              'Crucible playlist or map sets score_to_win or time_limit in its base or conditional option tags; '
+              'the 23 scoreboard definitions are referenced by no exported table; the client reads only '
+              'score_to_win (absent = 0) and never time_limit or the point options, so those are the '
+              "server's values. Mercy and round counts appear in no exported option. See content_limits")
+
+
 def mode(mid, name, teams, size, *, limit=None, time=None, rounds=None, tie='draw', kill=100, extra=(),
          objective=None, mercy=None, kind='stand-in'):
     players = size if teams == 0 else teams * size
     return {'id': mid, 'name': name, 'teams': teams, 'team_size': size, 'max_players': players,
             'score_limit': limit, 'time_limit_s': time, 'rounds': rounds, 'mercy_lead': mercy, 'tie': tie,
             'scoring': kill_rules(kill) + [dict(e) for e in extra], 'objective': objective, 'type_hashes': [],
-            'evidence': ev(kind, 'team sizes: the playlists\' manifest maxPlayers; limits and points: ' + STAND_IN_SRC)}
+            'evidence': ev(kind, 'team sizes: the playlists\' manifest maxPlayers; ' + LIMITS_SRC)}
+
+
+def option_values(options, tag, names):
+    """name hash -> value for `names` in option tag `tag` (absent tags and names are left out)."""
+    return {o['name_hash']: o['value'] for o in options.get(tag, []) if o['name_hash'] in names}
+
+
+def content_limits(programs, options, h):
+    """What activity `h`'s own option tags (base, then each conditional set) set of the limits."""
+    p = programs.get(h)
+    if p is None:
+        return None
+    tags = [p['options']] + [s['tag'] for s in p['option_sets']]
+    found = {}
+    for t in tags:
+        found.update(option_values(options, t, {SCORE_TO_WIN, TIME_LIMIT}))
+    return {'option_tags': [t for t in tags if t != 0xFFFFFFFF], 'score_to_win': found.get(SCORE_TO_WIN),
+            'time_limit': found.get(TIME_LIMIT)}
+
+
+def presets(options, referenced):
+    """The option tags that set score_to_win or time_limit, and whether any activity uses them."""
+    out = []
+    for tag in sorted(options):
+        v = option_values(options, tag, {SCORE_TO_WIN, TIME_LIMIT})
+        if not v:
+            continue
+        other = {str(o['name_hash']): o['value'] for o in options[tag] if o['name_hash'] not in (SCORE_TO_WIN, TIME_LIMIT)}
+        out.append({'tag': tag, 'score_to_win': v.get(SCORE_TO_WIN), 'time_limit': v.get(TIME_LIMIT), 'other': other,
+                    'referenced_by_an_activity': tag in referenced})
+    return out
 
 
 MODES = [
@@ -421,7 +477,7 @@ PVP_SCRIPTS = {
 }
 
 
-def crucible(catalog, scripts_ok):
+def crucible(catalog, scripts_ok, programs, options):
     rows = catalog['activities']
     by_map = {v: k for k, v in PVP_SCRIPTS.items()}
     maps = []
@@ -433,7 +489,9 @@ def crucible(catalog, scripts_ok):
             script = None
         maps.append({'hash': r['hash'], 'name': r['name'] or f"(unnamed {r['hash']})", 'script': script,
                      'evidence': ev('manifest', 'DestinyActivityDefinition (Rumble-typed map rows)'
-                                    + ('; restored script is a start-only stub' if script else ''))})
+                                    + ('; restored script is a start-only stub (it names the activity and its '
+                                       'start bubble, no limits, scoring, rounds or mercy)' if script else '')),
+                     'content_limits': content_limits(programs, options, r['hash'])})
     playlists, modes = [], {m['id']: m for m in json.loads(json.dumps(MODES))}
     for r in rows:
         if r['category'] != 'crucible_playlist':
@@ -444,14 +502,27 @@ def crucible(catalog, scripts_ok):
                           'level_advantages': 'iron_banner' in fl or 'trials' in fl, 'matchmade': r['matchmade'],
                           'evidence': ev('manifest', f"type {r['type_name']}; level {r['level']}; "
                                          f"party {r['min_party']}-{r['max_party']}, {r['max_players']} players; "
-                                         'mode and flavour mapping is ours')})
+                                         'mode and flavour mapping is ours'),
+                          'content_limits': content_limits(programs, options, r['hash'])})
     ib = [p['hash'] for p in playlists if 'iron_banner' in p['flavours']]
     trials = [p['hash'] for p in playlists if 'trials' in p['flavours']]
     marks = 3510203897  # Legendary Marks, in most playlists' manifest rewards
+    referenced = {p['options'] for p in programs.values()} | {s['tag'] for p in programs.values() for s in p['option_sets']}
+    setting = lambda k: sorted(x['hash'] for x in playlists + maps if (x['content_limits'] or {}).get(k) is not None)
+    limits = {
+        'client': CLIENT_READS,
+        'playlists_or_maps_setting_score_to_win': setting('score_to_win'),
+        'playlists_or_maps_setting_time_limit': setting('time_limit'),
+        'presets': presets(options, referenced),
+        'evidence': ev('content', 'option tags: activity-options.json and activity-rule-programs.json (d1-oracle '
+                       'content-tables, owned 56578 content); client reads: the owned eboot (d1-ghidra.ps1 -Find and '
+                       '-Decompile, 6 November). The presets are referenced by no exported activity; that they are the '
+                       'private-match settings is unverified'),
+    }
     return {
         'comment': ('Crucible rules for the server-owned match state. Team sizes, levels, party sizes and playlist '
-                    'rewards are the manifest\'s; scoring and limits are stand-ins (see each mode). Generated by '
-                    'tools/ps4_setup/d1-activities-defs.py.'),
+                    'rewards are the manifest\'s; scoring and limits are stand-ins (see each mode, and content_limits '
+                    'for what the content and the client hold). Generated by tools/ps4_setup/d1-activities-defs.py.'),
         'modes': list(modes.values()),
         'maps': maps,
         'playlists': playlists,
@@ -468,6 +539,7 @@ def crucible(catalog, scripts_ok):
                     'drop_items': [marks, 2807593482], 'ffa_winning_places': 3,
                     'evidence': ev('stand-in', 'reputation amounts: ' + STAND_IN_SRC + '; drop items: the playlists\' '
                                    'manifest rewards (Legendary Marks, Treasure of Ages); free-for-all top three win: D1 knowledge')},
+        'content_limits': limits,
     }
 
 
@@ -494,7 +566,11 @@ def main():
     write(a.dir / 'definitions' / 'strikes.json', {'comment': gen, 'activities': strikes})
     write(a.dir / 'definitions' / 'raids.json', {'comment': gen, 'activities': raids})
     write(a.dir / 'definitions' / 'arenas.json', {'comment': gen, 'activities': arenas})
-    cr = crucible(catalog, scripts_ok)
+    options = {e['tag']: e['options'] for e in
+               json.loads((a.dir / 'activity-options.json').read_text(encoding='utf-8'))['data']}
+    programs = {e['hash']: e for e in json.loads((a.dir.parent / 'characters' / 'activity-rule-programs.json')
+                                                 .read_text(encoding='utf-8'))['data']}
+    cr = crucible(catalog, scripts_ok, programs, options)
     write(a.dir / 'crucible.json', cr)
     print(f'{len(strikes)} strikes, {len(raids)} raids, {len(arenas)} arenas and events, '
           f"{len(cr['modes'])} Crucible modes, {len(cr['maps'])} maps, {len(cr['playlists'])} playlists -> {a.dir}")
