@@ -2212,8 +2212,18 @@ fn take_commands(path: &Path) -> Option<String> {
 /// Poll the control file once a second: each line is a [`Command`]; the file is renamed `.taken`.
 /// After each batch (and at the start) the store's state file is written for the activity host.
 fn start_control(path: PathBuf) {
-    write_state(&path);
-    std::thread::spawn(move || loop {
+    // `global()` calls this from inside its own `OnceLock` initialiser, so nothing here may touch the
+    // store on this thread: `write_state` reads it through `global()`, and that re-entrant
+    // initialisation deadlocked the responder before it listened (run fg1b, 6 Nov 2026). The thread
+    // writes the first state file instead; its `global()` waits until the initialiser has returned.
+    std::thread::spawn(move || {
+        write_state(&path);
+        control_loop(path)
+    });
+}
+
+fn control_loop(path: PathBuf) {
+    loop {
         if let Some(text) = take_commands(&path) {
             for line in text.lines().map(str::trim).filter(|l| !l.is_empty() && !l.starts_with('#')) {
                 match parse_command(line).and_then(run_command) {
@@ -2224,7 +2234,7 @@ fn start_control(path: PathBuf) {
             write_state(&path);
         }
         std::thread::sleep(std::time::Duration::from_secs(1));
-    });
+    }
 }
 
 // ── serde helpers ───────────────────────────────────────────────────────────────────────────
