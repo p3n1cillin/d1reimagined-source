@@ -335,6 +335,20 @@ impl GeneratedWorlds {
         v
     }
 
+    /// The slice sets of `world` that `slice-sets.tsv` marks public, in order: the regions whose
+    /// PAH record the host marks public (`+0x04`) and whose ambassador it releases to start a
+    /// public session (`+0x19`, [`crate::messages::ReplicateMembership::PAH_REGION_THRESHOLD`]).
+    pub fn public_slice_sets(&self, world: &str) -> Vec<u32> {
+        let mut v: Vec<u32> = self
+            .slices
+            .iter()
+            .filter(|((w, _), s)| w == world && s.public)
+            .map(|((_, id), _)| *id)
+            .collect();
+        v.sort_unstable();
+        v
+    }
+
     /// The slice set a mission phase runs in: the valid state whose name hash is the phase's
     /// (`cine_107_twr_phase` → cine_reveal's 26); else, by the slice the phase names, the bubble's
     /// first valid private state (`plaza` → 24). `None` when neither is known.
@@ -472,6 +486,13 @@ mod tests {
 
     fn synthetic() -> GeneratedWorlds {
         GeneratedWorlds::parse(WORLDS, SLICES, BUNDLES, ACTIVITIES).unwrap()
+    }
+
+    #[test]
+    fn public_slice_sets_are_the_rows_marked_public() {
+        let g = synthetic();
+        assert_eq!(g.public_slice_sets("test_world"), vec![0], "slice set 0 is public, 16 is not");
+        assert!(g.public_slice_sets("no_such_world").is_empty());
     }
 
     #[test]

@@ -787,6 +787,7 @@ fn main() -> anyhow::Result<()> {
                                 bubble_count: known.bubble_count,
                                 chosen: known.chosen.to_vec(),
                                 start_region,
+                                public_regions: Vec::new(),
                                 team0,
                                 team_minus1,
                             });
@@ -839,6 +840,7 @@ fn main() -> anyhow::Result<()> {
                                 bubble_count: p.world.bubble_count,
                                 chosen: p.world.chosen.clone(),
                                 start_region: Some(p.start_region),
+                                public_regions: generated.public_slice_sets(&p.world.name),
                                 team0,
                                 team_minus1,
                             });

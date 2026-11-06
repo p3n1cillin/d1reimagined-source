@@ -44,6 +44,20 @@ and plans serving it. [V] = read in the binary or our code, [I] = inferred.
    assigned ambassadorship to us" and state 1.
 3. **Matchmaking.** Answer the ambassador's search with nothing found, leading to
    `create_public_activity_session`. `/v1/sessions` is already served.
+   - **6 November (runs fg5b, Ghidra):** "nothing found" alone does not end the search. With
+     ambassadorship, the client ran `initiate_search [PUBLIC activity]` (matchmaking type 1, set
+     `0x80010038`) 43 times in 3.5 min. Its seeker's index stopped at 15, and the last search kept
+     repeating. The ambassador's task `FUN_0077C3D0` [V] ends it in one of two ways:
+     - the TARGET region record's **`+0x19` is non-zero** (`sstm+0x4A9`). The client logs "A player
+       has reached the matchmaking threshold for region '%s', aborting and spinning up a new
+       public activity session";
+     - the ambassadorship `+0x09 == 2` (revoked), after a time.
+
+     The live PAH set `+0x19 = 1` 10.2 s after publishing region 56, and the client asked for its
+     new host 0.2 s later. `d1-activity-host` now sets it 10 s after the record first names a
+     public region with no session reported (`D1_AH_PUBLIC_THRESHOLD_MS`). That is a stand-in
+     trigger: in region 48 it went to 1 as the player arrived. It also takes the public regions
+     from the world's `slice-sets.tsv`.
 4. **The public instance.** Serve a second activity-host instance per public session: its own
    membership, a disjoint entity-index range, the world's PUBLIC checksum and bubble count, the public
    activity index, the public bubble as its start region, and that bubble's sensor clients, all built

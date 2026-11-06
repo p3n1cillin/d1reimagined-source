@@ -267,6 +267,9 @@ pub struct ServedWorld {
     pub chosen: Vec<usize>,
     /// The slice-set id (`8 * bubble + n`) the mission starts in, or `None` for 0.
     pub start_region: Option<u32>,
+    /// The world's public slice sets (`GeneratedWorlds::public_slice_sets`); empty when unknown
+    /// (a `D1_AH_WORLD_TABLE` row).
+    pub public_regions: Vec<u32>,
     pub team0: Vec<u8>,
     pub team_minus1: Vec<u8>,
 }
@@ -340,6 +343,11 @@ pub struct ActivityInstance {
     /// `(region, session (0x84 bytes), that session's activity-host id)`, advertised in the
     /// region record when it names that region (see [`Self::track_public_session`]).
     public_sessions: Vec<(u32, Vec<u8>, u64)>,
+    /// The served world's public slice sets (see [`ServedWorld::public_regions`]).
+    public_regions: Vec<u32>,
+    /// ⭐ The ambassador's matchmaking threshold for the PAH region record: (region, when the
+    /// record first named it, reached). See [`Self::update_public_threshold`].
+    public_threshold: Option<(u32, Instant, bool)>,
     /// ⭐ The client's own `join_request` struct image, kept because a state refresh has to
     /// re-publish the membership and a membership is an **echo** of exactly these bytes. Without it
     /// a refresh would have to fabricate an identity, which `state.rs` refuses to do anywhere else.
@@ -649,6 +657,8 @@ impl ActivityInstance {
             bubble_chosen: Vec::new(),
             pah_region: None,
             public_sessions: Vec::new(),
+            public_regions: Vec::new(),
+            public_threshold: None,
             join_request_image: None,
             last_pushed: now,
             host_heartbeat: Duration::from_millis(Self::HOST_HEARTBEAT_MS),
@@ -1310,6 +1320,20 @@ impl ActivityInstance {
             ),
             None => {}
         }
+        // The region's public flag from the served world's content, and the ambassador's
+        // matchmaking threshold (`update_public_threshold`), re-applied on every publish.
+        if let Some((region, _, _)) = self.pah_region {
+            if self.region_is_public(region) {
+                if let Err(e) = m.set_region_public() {
+                    tracing::warn!("⚠ region {region} not marked public: {e}");
+                }
+            }
+            if matches!(self.public_threshold, Some((r, _, true)) if r == region) {
+                if let Err(e) = m.set_region_threshold(true) {
+                    tracing::warn!("⚠ region {region}'s matchmaking threshold not written: {e}");
+                }
+            }
+        }
         // The public session the client reported for this region (step 5), re-applied on every
         // publish like the record itself.
         if let Some((session, host)) = self.pah_region.and_then(|(region, _, _)| self.public_session(region)) {
@@ -1362,6 +1386,7 @@ impl ActivityInstance {
                     self.activity_checksum = w.checksum;
                     self.bubble_count = w.bubble_count;
                     self.bubble_chosen = w.chosen;
+                    self.public_regions = w.public_regions;
                     // The PAH region record must name the same region the client will wait on.
                     self.start_region = w.start_region.map(|r| (r, 0x811C_9DC5));
                     let region = w.start_region.unwrap_or(0);
@@ -1869,6 +1894,9 @@ impl ActivityInstance {
         if self.group.as_mut().is_some_and(|g| g.take_changed()) {
             self.membership_dirty = true;
         }
+        if matches!(self.state, InstanceState::Live) {
+            self.update_public_threshold(now);
+        }
         if !self.membership_dirty || !matches!(self.state, InstanceState::Live) {
             return None;
         }
@@ -2248,6 +2276,77 @@ impl ActivityInstance {
         self.public_sessions.iter().find(|(r, _, _)| *r == region).map(|(_, s, h)| (s.as_slice(), *h))
     }
 
+    /// A region is public when the served world's content says so (`slice-sets.tsv`), or when
+    /// `D1_AH_PUBLIC_REGIONS` (comma-separated ids) names it.
+    pub fn region_is_public(&self, region: u32) -> bool {
+        self.public_regions.contains(&region)
+            || std::env::var("D1_AH_PUBLIC_REGIONS").is_ok_and(|v| {
+                v.split(',').any(|r| r.trim().parse::<u32>().is_ok_and(|r| r == region))
+            })
+    }
+
+    /// The default wait before a public region's ambassador is released (see
+    /// [`Self::update_public_threshold`]): the client's own minimum matchmaking time for an
+    /// initial public transition ("using initial transition minimum matchmaking time of: 10000
+    /// ms"), and the live PAH's 10.2 s in Restoration.
+    pub const PUBLIC_THRESHOLD: Duration = Duration::from_secs(10);
+
+    /// ⭐ Release a public region's ambassador to start the public session: region record
+    /// `+0x19` ([`ReplicateMembership::PAH_REGION_THRESHOLD`]). The ambassador (the client, with
+    /// `D1_AH_PUBLIC_AMBASSADOR=1`) searches for an existing session; finding none it keeps
+    /// searching until the PAH says a player has reached the region's matchmaking threshold, and
+    /// only then spins up its own public activity session (`FUN_0077C3D0`). The live PAH set it
+    /// 10.2 s after it first published Restoration's public region 56.
+    ///
+    /// ⚠ A stand-in for the live trigger, which the captures do not show (in a later region it
+    /// went to 1 as the player arrived): the threshold is reached `D1_AH_PUBLIC_THRESHOLD_MS`
+    /// (default 10 000; 0 = never) after the record first names a public region, if no session
+    /// has been reported for it by then.
+    fn update_public_threshold(&mut self, now: Instant) {
+        let Some((region, _, _)) = self.pah_region else { return };
+        let ambassador = std::env::var("D1_AH_PUBLIC_AMBASSADOR").is_ok_and(|v| v == "1");
+        if self.is_public_instance() || !ambassador || !self.region_is_public(region) {
+            self.public_threshold = None;
+            return;
+        }
+        let wait = match std::env::var("D1_AH_PUBLIC_THRESHOLD_MS").ok().and_then(|v| v.trim().parse::<u64>().ok()) {
+            Some(0) => return,
+            Some(ms) => Duration::from_millis(ms),
+            None => Self::PUBLIC_THRESHOLD,
+        };
+        let has_session = self.public_session(region).is_some();
+        let (next, released) = Self::next_threshold(self.public_threshold, region, has_session, now, wait);
+        self.public_threshold = Some(next);
+        if released {
+            self.membership_dirty = true;
+            tracing::info!(
+                "⭐ public region {region}: no public session after {} ms of ambassador matchmaking; \
+                 the region record's +0x19 releases the ambassador to start one (the live PAH: \
+                 10.2 s; ⚠ a stand-in trigger, D1_AH_PUBLIC_THRESHOLD_MS)",
+                wait.as_millis()
+            );
+        }
+    }
+
+    /// One step of the threshold: a new region starts its wait; the wait ends (`true`: release
+    /// now) once `wait` has passed with no session reported; a released region stays released.
+    fn next_threshold(
+        prev: Option<(u32, Instant, bool)>,
+        region: u32,
+        has_session: bool,
+        now: Instant,
+        wait: Duration,
+    ) -> ((u32, Instant, bool), bool) {
+        match prev {
+            Some((r, since, false)) if r == region => {
+                let due = !has_session && now.saturating_duration_since(since) >= wait;
+                ((r, since, due), due)
+            }
+            Some(p @ (r, _, true)) if r == region => (p, false),
+            _ => ((region, now, false), false),
+        }
+    }
+
     /// Serve a start region (see [`ServedWorld::start_region`]); also moves the PAH region record.
     pub fn set_start_region(&mut self, region: u32) {
         self.start_region = Some((region, 0x811C_9DC5));
@@ -2270,6 +2369,29 @@ impl ActivityInstance {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The ambassador's matchmaking threshold (region record `+0x19`): released after the wait
+    /// with no session, never while a session is reported, once per region, and a new target
+    /// region starts its own wait (run fg5b; the live PAH's 10.2 s).
+    #[test]
+    fn the_public_threshold_releases_a_lone_ambassador_after_the_wait() {
+        let t0 = Instant::now();
+        let wait = ActivityInstance::PUBLIC_THRESHOLD;
+        let step = ActivityInstance::next_threshold;
+        let (s, rel) = step(None, 56, false, t0, wait);
+        assert_eq!((s, rel), ((56, t0, false), false), "the record first names region 56: the wait starts");
+        let (s, rel) = step(Some(s), 56, false, t0 + Duration::from_secs(9), wait);
+        assert!(!rel && !s.2, "9 s: still matchmaking");
+        let (s2, rel) = step(Some(s), 56, true, t0 + Duration::from_secs(11), wait);
+        assert!(!rel && !s2.2, "a reported session: nothing to release");
+        let (s, rel) = step(Some(s), 56, false, t0 + Duration::from_secs(10), wait);
+        assert!(rel && s.2, "10 s with no session: released");
+        let (s, rel) = step(Some(s), 56, false, t0 + Duration::from_secs(20), wait);
+        assert!(!rel && s.2, "released once, and stays released");
+        let t1 = t0 + Duration::from_secs(30);
+        let (s, rel) = step(Some(s), 48, false, t1, wait);
+        assert_eq!((s, rel), ((48, t1, false), false), "a new target region waits again");
+    }
 
     fn instance() -> (ActivityInstance, Instant) {
         let now = Instant::now();

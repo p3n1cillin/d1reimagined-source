@@ -174,7 +174,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 |---|---|---|---|---|---|---|
 | Patrol zones (a mission host beside public instances) | partial | capture (Patrol Venus, the Dreadnaught and the Cosmodrome cross-checked); verified (the client's activity table binds the Moon, Mars and the Plaguelands) | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_WORLDS_ACTIVITIES=all` | #316, #323, #327, #328, stream Q | unit | Patrol Cosmodrome (8), a 2014 row whose `cosmo_patrols_1` has no scenario, stays unbound (93 is the Taken King's). The Plaguelands patrol (424) starts in a stand-in. |
 | Public instances (region lists, joins, the bubble swap, the slot handover) | partial | capture (every region's groups and timings) | `D1_AH_PUBLIC_HOST=1`, `D1_AH_DISTINCT_HOST_IDS=1`, `D1_AH_PUBLIC_INSTANCES_FILE` | #316, #323, #327 | unit | The entry-only lists carry default values and have never been served. The PUBLIC checksum is the client's own index reading, not measured. The authority reset (udt 27–31, 42) and peer reservations (12, 13) are not served. The registry never enforces its cap and forgets no player on a TCP drop (review 23). [Public instances](../notes/ps4-56578-public-instances-2026-11-05.md). |
-| Restoration's public start | partial | capture | `D1_AH_WORLDS_PRIVATE_START=1` serves a private stand-in | #314, #316 | baseline native: a black screen (sense125) | Try the public start with `-Set D1_AH_WORLDS_PRIVATE_START=`. |
+| Restoration's public start | partial | capture | the live public region 56; every region's ambassadorship (`D1_AH_PUBLIC_AMBASSADOR=1`); `+0x19` releases a lone ambassador after 10 s (a stand-in trigger) | #314, #316 | full-game fg4b: Director launch works, private stand-in stalls; fg5b: the client runs its public search (43 empty searches, no `+0x19`) | Run with the `+0x19` release: the client should start its public instance. |
 | Patrol beacons | partial | capture: six live beacons by region, accept and `bounty_complete` incidents (#328, pending); placeholder: goals | `D1_AH_PUBLIC_HOST=1` | #316, #328 | unit | Beacon rewards past the Glimmer cap and their XP are unread. Accept incidents have no names. |
 | Public events | partial | capture: first event 485–494 s after the instance starts, tier incident sets (#328, pending); placeholder: later spells, time limits, event activity hashes | `D1_AH_PUBLIC_HOST=1`, `D1_AH_SCRIPTS=1` | #316, #324, #328 | unit | An event starts only once a scripted run exists in the bubble, and the open world's bridge has no join, so it may never start (review 20). Event rewards would pay as activity completions (review 21). |
 | Taken spawn cycles and champions | no | capture (177-s cycles on the bubble's host, #328) | – | #328 (note only) | none | Not built. |
@@ -424,8 +424,9 @@ emulator build.
     sidecar answers every tick.
 11. **A Guardian Rises, script-driven, end to end:** 164 to its post-game, the CONTINUE gate (subs
     40/673) set by the scripted completion.
-12. **A public instance.** Restoration's public start (`-Set D1_AH_WORLDS_PRIVATE_START=`): the
-    region-56 instance's entry-only list is served and its slot freed on leave.
+12. **A public instance.** Restoration's public start (the full-game profile since fg5): the
+    ambassador's search, the `+0x19` release, the client's new public instance, the
+    region-56 instance's entry-only list served and its slot freed on leave.
 13. **The emulator PRs.** Deploy an integration build of fork #7 and #8 and run their A/B: the boot
     log lines, the PC layout, audio sync and the draw-stats medians.
 14. **A strike** through the framework (add one to `D1_AH_WORLDS_ACTIVITIES`, for example The

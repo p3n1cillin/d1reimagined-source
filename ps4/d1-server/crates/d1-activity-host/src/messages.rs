@@ -749,14 +749,26 @@ impl ReplicateMembership {
     /// Region record `+0x08`: 1 alongside the ambassadorship in every live record, private regions
     /// included. `[U]` meaning.
     pub const PAH_REGION_08: usize = 0x08;
+    /// Region record `+0x19`: **a player has reached the matchmaking threshold for the region**.
+    /// `FUN_0077C3D0` (the ambassador's matchmaking task) reads the TARGET copy (`sstm+0x490 +
+    /// 0x19`): non-zero logs "A player has reached the matchmaking threshold for region '%s',
+    /// aborting and spinning up a new public activity session", stops the search and creates the
+    /// public session. Without it a lone ambassador searches for ever (run fg5b: 43 empty
+    /// searches in 3.5 min). The live PAH set it 10.2 s after publishing Restoration's public
+    /// region 56, and the client asked for its new host 0.2 s later
+    /// (notes/d1-live-captures-2026-11-05.md, "The PAH's region records").
+    pub const PAH_REGION_THRESHOLD: usize = 0x19;
+    /// Region record `+0x20`: 1 in every live record. `[U]` meaning.
+    pub const PAH_REGION_20: usize = 0x20;
 
-    /// The live host's flags for one region record: with `ambassador`, `+0x08 = 1`, `+0x09 = 1`
-    /// and `+0x0A = peer_index` (every live session); with `public`, also `+0x04 = 1`.
+    /// The live host's flags for one region record: with `ambassador`, `+0x08 = 1`, `+0x09 = 1`,
+    /// `+0x0A = peer_index` and `+0x20 = 1` (every live session); with `public`, also `+0x04 = 1`.
     pub fn apply_region_flags(record: &mut [u8], peer_index: usize, ambassador: bool, public: bool) {
         if ambassador {
             record[Self::PAH_REGION_08] = 1;
             record[Self::PAH_AMBASSADORSHIP] = 1;
             record[Self::PAH_AMBASSADOR_PEER] = peer_index as u8;
+            record[Self::PAH_REGION_20] = 1;
         }
         if public {
             record[Self::PAH_REGION_PUBLIC] = 1;
@@ -840,6 +852,30 @@ impl ReplicateMembership {
         let slot1 = Self::PAH_REGIONS + Self::PAH_REGION_STRIDE;
         self.image[slot1 + Self::PAH_REGION_ID..slot1 + Self::PAH_REGION_ID + 4]
             .copy_from_slice(&u32::MAX.to_le_bytes());
+        Ok(())
+    }
+
+    /// Mark slot 0's region record public (`+0x04 = 1`), for a region the served world's content
+    /// lists as public (`slice-sets.tsv`). `D1_AH_PUBLIC_REGIONS` does the same by hand.
+    pub fn set_region_public(&mut self) -> Result<(), AhError> {
+        self.region_byte(Self::PAH_REGION_PUBLIC, 1)
+    }
+
+    /// Set or clear slot 0's matchmaking threshold (see [`Self::PAH_REGION_THRESHOLD`]).
+    pub fn set_region_threshold(&mut self, reached: bool) -> Result<(), AhError> {
+        self.region_byte(Self::PAH_REGION_THRESHOLD, u8::from(reached))
+    }
+
+    fn region_byte(&mut self, offset: usize, value: u8) -> Result<(), AhError> {
+        let o = Self::PAH_REGIONS + offset;
+        let Some(b) = self.image.get_mut(o) else {
+            return Err(AhError::BadStructSize {
+                user_defined_type: protocol::UDT_REPLICATE_MEMBERSHIP,
+                got: self.image.len(),
+                want: Self::STRUCT_SIZE,
+            });
+        };
+        *b = value;
         Ok(())
     }
 
@@ -1152,9 +1188,29 @@ mod tests {
         let mut public = vec![0u8; ReplicateMembership::PAH_REGION_STRIDE];
         ReplicateMembership::apply_region_flags(&mut public, 0, true, true);
         assert_eq!(&public[0x04..0x0C], &[1, 0, 0, 0, 1, 1, 0, 0]);
+        assert_eq!((private[0x20], public[0x20]), (1, 1), "+0x20 = 1 in every live record");
+        assert_eq!(public[ReplicateMembership::PAH_REGION_THRESHOLD], 0, "the threshold is the host's to set later");
         let mut off = vec![0u8; ReplicateMembership::PAH_REGION_STRIDE];
         ReplicateMembership::apply_region_flags(&mut off, 3, false, false);
         assert!(off.iter().all(|b| *b == 0));
+    }
+
+    /// `set_region_public` and `set_region_threshold` write slot 0's `+0x04` and `+0x19` (the
+    /// TARGET copy `FUN_0077C3D0` reads at `sstm+0x4A9`), and nothing else.
+    #[test]
+    fn the_public_flag_and_the_threshold_land_in_slot_zero() {
+        let mut m = ReplicateMembership { image: vec![0u8; ReplicateMembership::STRUCT_SIZE] };
+        m.set_pah_region(56, 0, 1).unwrap();
+        let before = m.image.clone();
+        m.set_region_public().unwrap();
+        m.set_region_threshold(true).unwrap();
+        let slot0 = ReplicateMembership::PAH_REGIONS;
+        assert_eq!(m.image[slot0 + 0x04], 1);
+        assert_eq!(m.image[slot0 + 0x19], 1);
+        let changed: Vec<usize> = (0..m.image.len()).filter(|&i| m.image[i] != before[i]).collect();
+        assert_eq!(changed, vec![slot0 + 0x04, slot0 + 0x19]);
+        m.set_region_threshold(false).unwrap();
+        assert_eq!(m.image[slot0 + 0x19], 0);
     }
 
     /// Every offset in the `join_result` doc-comment, asserted at the byte. If one of these ever

@@ -253,7 +253,7 @@ Only the PAH serves region records. The public instances served none. `d1-srcp.p
 | 341 s | region 104 (private, `+0x04 = 0`) |
 
 Notes:
-- `+0x19` goes to 1 and back as the player enters and leaves a region (region 48: 0 → 1 at 83 s → 0 at 127 s). It is most likely "the peer is in this region" [I].
+- `+0x19` goes to 1 and back as the player enters and leaves a region (region 48: 0 → 1 at 83 s → 0 at 127 s). It is most likely "the peer is in this region" [I]. **6 November [V]:** the client's ambassador task `FUN_0077C3D0` reads it as "a player has reached the matchmaking threshold for region '%s'". When it is set, the client stops searching and spins up its own public session. That is why the client asked for its new host 0.2 s after the 30.7 s change ([public-sessions note](ps4-56578-public-sessions-2026-11-02.md), step 3).
 - `+0x20` is 1 in every record. `+0x38` is peer 0's transition token, as our host already serves it.
 - The session is the platform's: on the 360, a session key and the console's network address. **It is personal data and stays in the private captures.**
 
