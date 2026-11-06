@@ -9,12 +9,15 @@
 //!
 //! ⚠ STAND-IN: which of a package's sales a rank-up gives (the live servers rolled it). Here one
 //! sale of the package vendor matching the progression, seeded by the character and the rank.
-//! ⚠ STAND-IN: where the package goes. D1 handed it over at the vendor; until that flow is on the
-//! wire it is delivered to the Postmaster's Lost Items.
+//! Where the package goes: **nowhere yet**. D1 hands it over at the vendor, when the player claims
+//! it there with a 904 `vendor_interact` (the live Tower capture, #328: the contents land straight
+//! in the inventory). Stream P serves that claim (`investment::packages`); a rank-up here only
+//! names the package it makes claimable. (It was delivered to the Postmaster's Lost Items before,
+//! which the capture contradicts.)
 //! ⚠ The faction **allegiance** itself (accepting a faction's badge) is refused by the client before
 //! any request is sent (run sense92); this module only counts reputation.
 
-use crate::store::{self, CharacterId, Item, PlayerStore};
+use crate::store::{CharacterId, PlayerStore};
 use crate::tables::Tables;
 
 /// Rank for an amount of progress: how many steps it completes.
@@ -60,7 +63,7 @@ pub struct RankUp {
     pub package: Option<(u8, u16, u16)>,
 }
 
-/// Add reputation; deliver a package for every rank gained.
+/// Add reputation; name the package each rank gained makes claimable at the vendor (904).
 pub fn add<S: PlayerStore + ?Sized>(s: &mut S, t: &Tables, sales: &std::collections::HashMap<(u8, u16), crate::vendor::Sale>,
                                    chr: CharacterId, progression: u32, amount: u32) -> Vec<RankUp> {
     let before = s.progression(chr, progression);
@@ -76,8 +79,6 @@ pub fn add<S: PlayerStore + ?Sized>(s: &mut S, t: &Tables, sales: &std::collecti
             }
             let k = super::pick(chr ^ (u64::from(progression) << 20) ^ u64::from(r), n, 1)[0] as u16;
             let sale = sales.get(&(v, k))?;
-            let item = if sale.instanced { Item::instanced(sale.item, s.mint_soid(), 0) } else { Item::stack(sale.item, 1) };
-            store::give(s, store::Owner::Character(chr), store::LOST_ITEMS, item, 0).ok()?;
             Some((v, k, sale.item))
         });
         RankUp { rank: r, package }
@@ -111,6 +112,7 @@ mod tests {
         assert_eq!(ups.len(), 1);
         assert_eq!(ups[0].rank, 1);
         assert!(ups[0].package.is_some());
+        assert!(s.slots(crate::store::Owner::Character(CHR), crate::store::LOST_ITEMS).iter().all(Option::is_none), "claimed at the vendor (904), not the Postmaster");
         assert_eq!(s.progression(CHR, 3871980777), 1600);
         assert!(add(&mut s, t, crate::tables::fixture_sales(), CHR, 3871980777, 100).is_empty(), "no rank in between");
     }

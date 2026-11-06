@@ -156,6 +156,14 @@ pub fn decode(service: u16, body: &[u8]) -> Option<Request> {
     })
 }
 
+/// 402 `inventory_perform_item_action` (`0x80801767`: `I @0; action:i32 @0x18`, 113 bits, the
+/// same layout as 406): the item and the action index its definition lists. The live Tower
+/// capture's dismantles and bounty turn-ins both sent action 1.
+pub fn decode_item_action(body: &[u8]) -> Option<(ItemSelector, i32)> {
+    let mut b = Bits { data: body, at: 0 };
+    Some((selector(&mut b)?, b.biased(32)? as i32))
+}
+
 /// Encode a request the way the client does (tests, and the harness's synthetic requests).
 pub fn encode(r: &Request) -> (u16, Vec<u8>) {
     let mut w = BitWriter::default();
@@ -329,6 +337,8 @@ mod tests {
             assert_eq!(decode(service, &body), Some(r));
             assert!(reply_tag(service).is_some() && request_tag(service).is_some());
         }
+        let (_, flags) = encode(&Request::ItemFlags { item: ItemSelector { instanced: true, instance: 0x501, index: 1234 }, flags: 1 });
+        assert_eq!(decode_item_action(&flags), Some((ItemSelector { instanced: true, instance: 0x501, index: 1234 }, 1)), "402 shares 406's layout");
         assert_eq!(decode(801, &[0; 4]), None, "a short body is refused");
         assert_eq!(decode(901, &[0; 16]), None);
     }

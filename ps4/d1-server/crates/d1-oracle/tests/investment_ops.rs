@@ -101,6 +101,27 @@ fn the_clients_encoder_writes_what_the_server_decodes() {
     }
 }
 
+/// 402 (`0x80801767`, the bounty turn-in's and the dismantle's request): action 1, as live.
+#[test]
+fn the_402_item_action_shares_406s_layout() {
+    let Some(image) = image() else { return };
+    let index = descriptors::index(&image).unwrap();
+    let size = index.get(0x8080_1767).expect("402 request").struct_size as usize;
+    for (item, action) in [
+        (ItemSelector { instanced: true, instance: 0xD100_0000_0000_0501, index: 1234 }, 1),
+        (ItemSelector { instanced: false, instance: 0, index: 714 }, 3),
+    ] {
+        let object = object_for(&Request::ItemFlags { item, flags: action }, size);
+        let encoded = ObjectOracle::new(0x8080_1767).unwrap().encode(&object, 0x10000).unwrap();
+        assert_eq!(encoded.bits, 113);
+        assert_eq!(ops::decode_item_action(&encoded.payload), Some((item, action)));
+    }
+    // 402's reply carries 0 live: the five familiar bytes.
+    let reply = vec![0u8; index.get(0x8080_1953).unwrap().struct_size as usize];
+    let encoded = ObjectOracle::new(0x8080_1953).unwrap().encode(&reply, 0x10000).unwrap();
+    assert_eq!(encoded.payload[..5], ops::result_body(0, 0)[..]);
+}
+
 #[test]
 fn every_reply_is_the_clients_own_bytes_for_the_same_result() {
     let Some(image) = image() else { return };

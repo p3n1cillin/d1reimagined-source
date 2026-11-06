@@ -43,8 +43,15 @@ pub const DISMANTLE_MARKS_ARMOR: u32 = 3;
 /// `grid.xp_share`: per mille of the character's XP each equipped grid item gains.
 pub const XP_SHARE_PER_MILLE: u32 = 1000;
 
-/// `grid.node_cost`: Glimmer to activate a node.
-pub const NODE_GLIMMER_COST: u32 = 0;
+/// `grid.node_cost`: what activating a weapon or armour talent node (801) costs, as `(item hash,
+/// amount)`. ⚠ STAND-IN from ONE live 801 (the 5 November Tower capture, #328): **500 Glimmer and 10
+/// Weapon Parts**, plus 10 of a material the capture does not name (not charged here). It replaced
+/// "free", which that capture contradicts. Armour takes Armor Materials in place of Weapon Parts by
+/// analogy. Subclass nodes cost nothing (D1: a subclass grid unlocks with XP alone). The real costs
+/// are each node step's requirement list in the client's content (step `+0x98`, read by `0x285050`
+/// and `0x28E9D0`, 16-byte entries checked by `0x28E590`); exporting it replaces this.
+pub const NODE_GLIMMER_COST: u32 = 500;
+pub const NODE_MATERIAL_COST: u32 = 10;
 
 /// `records.book_points`: Record Book progression per completed record.
 pub const BOOK_POINTS_PER_RECORD: u32 = 1000;
@@ -61,7 +68,7 @@ pub const ALL: &[(&str, &str)] = &[
     ("loot.drop_chance", "Rare 400, Legendary 100, Exotic 10 per mille"),
     ("currency.marks_weekly_cap", "MARKS_WEEKLY_CAP = 100"),
     ("grid.random_roll", "uniform over the node's steps"),
-    ("grid.node_cost", "NODE_GLIMMER_COST = 0"),
+    ("grid.node_cost", "weapon/armour node: NODE_GLIMMER_COST = 500 Glimmer + NODE_MATERIAL_COST = 10 Weapon Parts / Armor Materials (one live 801); subclass free"),
     ("grid.xp_share", "XP_SHARE_PER_MILLE = 1000"),
     ("item.stat_roll", "uniform between the manifest minimum and maximum"),
     ("records.book_points", "BOOK_POINTS_PER_RECORD = 1000"),

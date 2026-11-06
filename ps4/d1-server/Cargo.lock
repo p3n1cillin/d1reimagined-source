@@ -1224,6 +1224,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "d1-bap",
  "d1-build",
  "d1-eboot",
  "d1-pkg",

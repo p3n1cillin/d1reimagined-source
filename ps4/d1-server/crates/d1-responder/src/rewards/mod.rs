@@ -134,7 +134,7 @@ pub const RULES: &[Rule] = &[
     rule("grid.prerequisites", "A node needs its prerequisites active, and no node it is exclusive with", "Manifest fields; semantics community", Community),
     rule("grid.auto_unlock", "autoUnlocks nodes activate as soon as they are available", "Manifest field; semantics community", Community),
     rule("grid.random_roll", "Random nodes pick one of their steps uniformly when the instance is made", "Placeholder distribution, needs evidence", Placeholder),
-    rule("grid.node_cost", "Activating a node costs nothing", "Placeholder, needs evidence (material requirement sets are not in DIM's manifest)", Placeholder),
+    rule("grid.node_cost", "A weapon or armour node costs 500 Glimmer and 10 Weapon Parts (armour: Armor Materials); subclass nodes are free", "Capture: one live 801 (#328) contradicted \"free\"; its third material is not named. Stand-in, needs evidence: the content's node-step requirement lists", Placeholder),
     rule("grid.xp_share", "Every equipped item with a grid, and the subclass, gains the full XP the character earns", "Community (that they all gain); the split is a placeholder, needs evidence", Placeholder),
     rule("item.element_fields", "Element 0x80801732: SOID +0x00, level +0x18, content index +0x24, XP +0x38, progression ordinal +0x44, grid index +0x58, stat values +0x98", "Client reading (ps4/design/items-and-gear.md section 2)", Verified),
     rule("item.node_state", "Talent-grid node state (+0x5A, 36 bytes) and step selection (+0x7E)", "Layout not decoded; not written, needs evidence", Placeholder),
