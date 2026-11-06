@@ -4,6 +4,8 @@ New here? Start with [GETTING-STARTED.md](GETTING-STARTED.md); [ARCHITECTURE.md]
 [GLOSSARY.md](GLOSSARY.md) explain the pieces and the terms, and [the notes index](../notes/README.md) finds
 the research.
 
+**Full-game coverage:** [COVERAGE.md](COVERAGE.md) lists every Year 3 system, what is built, its source of truth and the evidence still needed.
+
 The active work is PS4 CUSA00219 executable build 56578 (package 01.33; 01.29 remains the address
 reference) on [the project's shadPS4 build](https://github.com/p3n1cillin/d1reimagined-shadps4). The
 retained PS3 implementation targets BLES01857 01.24. **The complete game is not playable on either route.**
