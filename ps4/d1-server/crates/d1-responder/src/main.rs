@@ -4722,6 +4722,9 @@ async fn main() -> Result<()> {
                                                                             warn!("      ⛔ no D1_LOOT_GRANT entry for claimed nonce {nonce:#x}: nothing delivered");
                                                                             continue;
                                                                         };
+                                                                        // F43: with the store on, the pickup applied to the character's
+                                                                        // current profile, not the fixture's.
+                                                                        let profile = profile.as_deref().and_then(player_store::loot_grant_profile).or(profile);
                                                                         let version = family4_version.unwrap_or(0).wrapping_add(1);
                                                                         let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
                                                                         let prof_soid = env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201);

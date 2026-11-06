@@ -1813,6 +1813,70 @@ pub fn note_loot_grant(soid: u64, element: &[u8], profile: Option<&[u8]>) {
     }
 }
 
+/// The pickup's change to a profile object, applied to the character's current one: every byte the
+/// grant's profile (`after`) changes from the profile it was built against (`base`) is set in
+/// `current`, unless the store has changed that byte itself, which it keeps. Returns the object and
+/// how many bytes were applied and kept.
+pub fn apply_pickup(current: &[u8], base: &[u8], after: &[u8]) -> (Vec<u8>, usize, usize) {
+    let mut out = current.to_vec();
+    let (mut applied, mut kept) = (0, 0);
+    for i in 0..base.len().min(after.len()).min(current.len()) {
+        if base[i] != after[i] {
+            if current[i] == base[i] {
+                out[i] = after[i];
+                applied += 1;
+            } else {
+                kept += 1;
+            }
+        }
+    }
+    (out, applied, kept)
+}
+
+/// F43 (run agr20): with the store on, a loot grant's fixture profile replaced the character's
+/// profile, from which the store had moved on (the started activity's field [6], pushed as the
+/// family-4 delta before it), and the client crashed applying it. The pickup is instead the change
+/// between the profile the grant's was built against (`D1_PROFILE_FILE`, the seed) and the grant's
+/// profile (the pending record cleared, the item in its slot and bucket, the slot's completion),
+/// applied to the store's current profile object and re-encoded. None when the store is off or an
+/// object is unavailable: the grant then sends its fixture profile as before.
+pub fn loot_grant_profile(grant: &[u8]) -> Option<Vec<u8>> {
+    let m = current_store()?;
+    let seed_path = std::env::var("D1_PROFILE_FILE").ok().filter(|p| !p.trim().is_empty())?;
+    let seed = std::fs::read(&seed_path).ok()?;
+    let oracle = crate::vendor::oracle_path();
+    let decode = |payload: &[u8], name: &str| {
+        crate::vendor::decode_object(&oracle, "0x80801743", payload, &crate::vendor::unique_name(name))
+    };
+    let (base, after) = match (decode(&seed, "grant-base"), decode(grant, "grant-after")) {
+        (Ok(a), Ok(b)) if a.len() == b.len() => (a, b),
+        (a, b) => {
+            tracing::warn!("      ⛔ player store: the loot grant's profile pair did not decode alike ({:?}, {:?}); its fixture profile goes out",
+                           a.err().map(|e| e.to_string()), b.err().map(|e| e.to_string()));
+            return None;
+        }
+    };
+    let mut s = m.lock().ok()?;
+    let current = match s.chr().profile_object.clone() {
+        Some(o) => o,
+        None => decode(s.chr().profile.as_deref()?, "grant-current").ok()?,
+    };
+    if current.len() != base.len() {
+        tracing::warn!("      ⛔ player store: the character's profile object is {} bytes, the grant's {}; its fixture profile goes out",
+                       current.len(), base.len());
+        return None;
+    }
+    let (obj, applied, kept) = apply_pickup(&current, &base, &after);
+    s.chr_mut().profile_object = Some(obj);
+    if let Err(e) = reencode(&mut s) {
+        tracing::warn!("      ⛔ player store: the picked-up profile did not encode ({e:#}); its fixture profile goes out");
+        return None;
+    }
+    s.chr_mut().profile_source = "loot".into();
+    tracing::warn!("      💾 player store: the pickup applied to the character's profile ({applied} bytes; {kept} the store had changed kept) (F43)");
+    s.chr().profile.clone()
+}
+
 /// Write a vendor change through (vendor.rs, after it wrote the pushes).
 pub fn note_vendor(c: VendorCommit) {
     with("vendor", |s| s.commit_vendor(c));
@@ -2503,6 +2567,17 @@ mod hex64 {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_pickup_applies_the_grants_change_and_keeps_the_stores_own() {
+        let base = [0xFFu8, 0xFF, 1, 0, 5, 0];
+        let after = [0x0E, 0x0E, 0, 0, 5, 2];
+        // The store changed byte 4 (field [6]) and byte 5 itself since the seed.
+        let current = [0xFF, 0xFF, 1, 0, 9, 7];
+        let (obj, applied, kept) = apply_pickup(&current, &base, &after);
+        assert_eq!(obj, vec![0x0E, 0x0E, 0, 0, 9, 7]);
+        assert_eq!((applied, kept), (3, 1), "byte 5 is the store's own and the grant's change there is not applied");
+    }
+
     use super::*;
 
     const ACCT: u64 = 0xD100_0000_0000_0001;
