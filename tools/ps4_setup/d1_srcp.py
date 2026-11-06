@@ -82,6 +82,66 @@ def activity_messages(data):
     return [(t, d, peer, udt, body) for t, d, peer, _, udt, body in host_messages(data)]
 
 
+WS_REQUEST, WS_RESPONSE, QUEUEZ_UPDATE = 0x0a, 0x0b, 0x7b
+
+
+def investment_messages(data):
+    """The services host's investment traffic (BAP 10 client_to_world_server_request and its
+    reply 11), in time order: [(t, 'req'/'rsp', sequence, status or None, service id, bits)].
+    A request is `u16 type, u32 sequence`, then the bitstream `u16 service id || arguments ||
+    1 bit has_payload || [u16 length || bytes]`; a reply has a u16 status before its bitstream,
+    which starts with the same id (notes/ps4-56578-wire-catalog-2026-11-05.md)."""
+    out, t0 = [], None
+    for rec in records(data):
+        t0 = rec['t'] if t0 is None else t0
+        p = rec['payload']
+        if len(p) < 8:
+            continue
+        mtype, seq = struct.unpack_from('>HI', p)
+        if mtype == WS_REQUEST and rec['dir'] == 'c2s':
+            status, bits = None, p[6:]
+        elif mtype == WS_RESPONSE and rec['dir'] == 's2c' and len(p) >= 10:
+            status, bits = struct.unpack_from('>H', p, 6)[0], p[8:]
+        else:
+            continue
+        out.append((rec['t'] - t0, 'req' if status is None else 'rsp', seq, status,
+                    struct.unpack_from('>H', bits)[0], bits))
+    return out
+
+
+def queuez_updates(data):
+    """QueueZ object pushes (BAP 123, server to client) in time order: [(t, [(family, version,
+    flags, [(instance type checksum, key, payload)]), ...])]. A push is `u16 type, u32 id`,
+    `u32 family count`, then per family `u32 family, u64 root, u32 version, u8 flags, u32 object
+    count` and per object `u32 instance type, u64 key, u32 length, payload` (all big-endian;
+    d1_bap::queuez_span_objects). A push that does not walk to its end is left out."""
+    out, t0 = [], None
+    for rec in records(data):
+        t0 = rec['t'] if t0 is None else t0
+        p = rec['payload']
+        if rec['dir'] != 's2c' or len(p) < 10 or struct.unpack_from('>H', p)[0] != QUEUEZ_UPDATE:
+            continue
+        s, fams = p[6:], []
+        try:
+            at = 4
+            for _ in range(struct.unpack_from('>I', s)[0]):
+                fam, _root, ver, flags, count = struct.unpack_from('>IQIBI', s, at)
+                at += 21
+                objs = []
+                for _ in range(count):
+                    itype, key, n = struct.unpack_from('>IQI', s, at)
+                    if at + 16 + n > len(s):
+                        raise struct.error('object runs past the push')
+                    objs.append((itype, key, s[at + 16:at + 16 + n]))
+                    at += 16 + n
+                fams.append((fam, ver, flags, objs))
+        except struct.error:
+            continue
+        if at == len(s):
+            out.append((rec['t'] - t0, fams))
+    return out
+
+
 def sessions(data):
     """Activity-host sessions in order of their first message: [(start, host id, [(t, dir, peer,
     udt, body), ...])]. A session is one activity-host id. The client keeps several at once: in the

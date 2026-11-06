@@ -273,6 +273,17 @@ pub struct InstanceWorld {
     pub events: Vec<PublicEventRunner>,
     pub loot: LootField,
     pub patrol: PatrolBoard,
+    /// Stream O3: every completed event's incident set, in order
+    /// (`public_events::completion_incidents`), for each connection to send its client once.
+    pub completions: Vec<&'static [u32]>,
+}
+
+/// The completion incidents of the `Ended` notices in `notices`.
+fn completions_of(notices: &[EventNotice]) -> impl Iterator<Item = &'static [u32]> + '_ {
+    notices.iter().filter_map(|n| match n {
+        EventNotice::Ended { result, .. } => Some(crate::public_events::completion_incidents(*result)).filter(|s| !s.is_empty()),
+        _ => None,
+    })
 }
 
 /// The public-host state one activity-host connection carries.
@@ -295,6 +306,8 @@ pub struct PublicHost {
     host_id: u64,
     /// Each world's PUBLIC checksum (`worlds.tsv`, stream E), published by a public instance.
     public_checksums: Arc<HashMap<String, u32>>,
+    /// Stream O3: how many of the instance's event completions this connection has sent.
+    completions_seen: usize,
 }
 
 impl std::fmt::Debug for PublicHost {
@@ -326,6 +339,7 @@ impl PublicHost {
             worlds: Arc::new(Mutex::new(HashMap::new())),
             host_id: 0,
             public_checksums: Arc::new(HashMap::new()),
+            completions_seen: 0,
         }
     }
 
@@ -370,6 +384,8 @@ impl PublicHost {
         self.host_id = host_id;
         let (Some(services), Some(plan)) = (self.services.clone(), self.plans.get(&key).cloned()) else { return };
         let Ok(mut worlds) = self.worlds.lock() else { return };
+        // Stream O3: a connection that arrives later is sent only the events that end from now on.
+        self.completions_seen = worlds.get(&host_id).map_or(0, |w| w.completions.len());
         if worlds.contains_key(&host_id) {
             return;
         }
@@ -395,7 +411,7 @@ impl PublicHost {
             ),
             InstanceKey::Social(_) => PatrolBoard::default(),
         };
-        worlds.insert(host_id, InstanceWorld { key, events, loot, patrol });
+        worlds.insert(host_id, InstanceWorld { key, events, loot, patrol, completions: Vec::new() });
     }
 
     /// Advance the instance's event rotations. Called from the host's tick; any connection to the
@@ -405,11 +421,14 @@ impl PublicHost {
         let _ = self.world_mut(|world, services| {
             let mut bridge = services.bridge.lock().map_err(|e| e.to_string())?;
             let mut rewards = services.rewards.lock().map_err(|e| e.to_string())?;
+            let mut ended = Vec::new();
             for run in &mut world.events {
                 for n in run.tick(now, &mut *bridge, &mut *rewards) {
                     tracing::info!("⭐ public instance {host:#018x}: {n:?}");
+                    ended.push(n);
                 }
             }
+            world.completions.extend(completions_of(&ended));
             Ok(())
         });
     }
@@ -429,9 +448,20 @@ impl PublicHost {
         self.world_mut(|world, services| {
             let run = world.events.iter_mut().find(|r| r.bundle() == bundle).ok_or("no such bundle")?;
             let mut rewards = services.rewards.lock().map_err(|e| e.to_string())?;
-            Ok(run.on_script_finished(result, now, &mut *rewards))
+            let notices = run.on_script_finished(result, now, &mut *rewards);
+            world.completions.extend(completions_of(&notices));
+            Ok(notices)
         })
         .unwrap_or_default()
+    }
+
+    /// Stream O3: the completion incidents of events that ended since this connection last asked
+    /// (gold 1918, 3077, 732; silver 1918, 3076), for its client.
+    pub fn take_completion_incidents(&mut self) -> Vec<u32> {
+        let seen = self.completions_seen;
+        let Ok(new) = self.world_mut(|world, _| Ok(world.completions.get(seen..).unwrap_or_default().to_vec())) else { return Vec::new() };
+        self.completions_seen += new.len();
+        new.into_iter().flatten().copied().collect()
     }
 
     /// A character opens a chest or harvests a node in this instance.
@@ -489,6 +519,13 @@ impl PublicHost {
                 "⭐ public instance: the join names mission host {mission_host:#018x} ({kind:?}); serving no region                  records and no mission steps, and waiting for the client's slice set to pick the region's list"
             ),
             HostRole::Mission { kind, .. } => {
+                // Stream O3: the player's destination, for the responder's bubble placement.
+                if let Some(d) = Destination::from_world_name(world) {
+                    if let Ok(mut r) = self.registry.lock() {
+                        r.note_mission(&self.identity, d);
+                        crate::public_registry::sync_with_responder(&mut r);
+                    }
+                }
                 if let Some(space) = SocialSpace::from_world_name(world) {
                     let key = InstanceKey::Social(space);
                     self.selected = Some(key);

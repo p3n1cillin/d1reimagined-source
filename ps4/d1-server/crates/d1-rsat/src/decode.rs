@@ -70,6 +70,42 @@ impl<'a> Decoder<'a> {
         Ok(Decoded { tag, bits: r.bit_pos(), object: obj })
     }
 
+    /// Decode one object body that starts at bit `at` of `wire`, into a zero image. `bits` in the
+    /// result is the reader's END position (absolute), so the caller can read what follows: an
+    /// investment message is `u16 id || args || has_payload || ...` and its args start at bit 16.
+    pub fn decode_at(&self, tag: u32, wire: &[u8], at: u64) -> Result<Decoded> {
+        self.decode_at_over(tag, wire, at, 0)
+    }
+
+    /// [`Self::decode_at`] into an image whose every byte starts as `fill`. Bytes a walk leaves
+    /// at `fill` were not written: decoding with two fills (0x00, 0xFF) and comparing tells which
+    /// fields a sparse body (a QueueZ delta object) carries, whatever their values.
+    pub fn decode_at_over(&self, tag: u32, wire: &[u8], at: u64, fill: u8) -> Result<Decoded> {
+        let d = self.schemas.get(tag)?;
+        let mut obj = vec![fill; d.struct_size as usize];
+        let mut r = BitReader::at(wire, at);
+        self.decode_from(&mut r, tag, &mut obj)?;
+        Ok(Decoded { tag, bits: r.bit_pos(), object: obj })
+    }
+
+    /// [`Self::decode_at_over`] that keeps what the walk wrote when it fails: the image as far as
+    /// the walk got, the reader's position, and the failure. For bodies of another build whose
+    /// layout differs late in the struct (a 51539 capture's profile): the fields walked before the
+    /// difference are read; nothing after it is. A caller must say which fields it relies on.
+    pub fn decode_at_partial(
+        &self,
+        tag: u32,
+        wire: &[u8],
+        at: u64,
+        fill: u8,
+    ) -> Result<(Decoded, Option<RsatError>)> {
+        let d = self.schemas.get(tag)?;
+        let mut obj = vec![fill; d.struct_size as usize];
+        let mut r = BitReader::at(wire, at);
+        let err = self.decode_from(&mut r, tag, &mut obj).err();
+        Ok((Decoded { tag, bits: r.bit_pos(), object: obj }, err))
+    }
+
     /// ⭐ A **replicated** body (udts 11 and 21, the sensor authority table), as `0x2C9AE0`: one
     /// presence bit, then, when it is set, the ordinary walk over `seed`. An empty seed is the zero
     /// image ("the client has nothing yet"); any other seed must be exactly one struct.

@@ -41,7 +41,7 @@ d1_srcp = srcp.d1_srcp
 # The capture stems (after the date) whose destination we know, by the mission they record.
 DESTINATIONS = {
     'earth': ['Restoration', 'The-Dark-Within', 'The-Warmind', 'The-Last-Array', 'Siege-of-the-Warmind',
-              'The-Devils-Lair'],
+              'The-Devils-Lair', 'Patrol-Cosmodrome'],
     'moon': ['The-Dark-Beyond', 'The-Worlds-Grave', 'Sword-of-Crota', 'Shrine-of-Oryx', 'Chamber-of-Night',
              'The-Wakening', 'The-Summoning-Pits'],
     'venus': ['A-Strangers-Call', 'Ishtar-Collective', 'Eye-of-a-Gate-Lord', 'The-Archive', 'Patrol.Scattered-Pack'],
@@ -49,7 +49,7 @@ DESTINATIONS = {
     'dreadnaught': ['Patrol.Silent-Scream'],
 }
 # Social spaces: (space, capture stem, the activity the host's join incident names).
-SOCIAL = [('tower', 'A-Guardian-Rises', 'Tower'), ('reef', 'Eye-of-a-Gate-Lord', 'Vestian Outpost')]
+SOCIAL = [('tower', 'Social.Tower', 'Tower'), ('reef', 'Eye-of-a-Gate-Lord', 'Vestian Outpost')]
 PLAYERS_GROUP = '0xeaaf16e2'
 FRESH_STAMP = 100  # a first full list stamped under 10 s of host clock is a freshly started instance
 
@@ -125,7 +125,9 @@ def main():
     a = ap.parse_args()
     root = HERE.parent.parent
     presence = kind_presence(root / 'ps4' / 'fixtures' / '56578' / 'mission')
-    caps = {stem(p): p for p in sorted(a.raw.glob('*.pcap'))}
+    caps = {}
+    for p in sorted(a.raw.glob('*.pcap')):
+        caps.setdefault(stem(p), p)  # the first of two same-named captures (The Dark Within has two)
     a.out.mkdir(parents=True, exist_ok=True)
 
     # (destination, region) -> [(capture, host, start, [(t, stamp, records)])]

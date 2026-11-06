@@ -50,6 +50,59 @@ enum Cmd {
         #[arg(long)]
         replicated: bool,
     },
+    /// Decode many bodies in one start: stdin lines `TAG HEX [AT [FILL]]`, the body decoded as TAG
+    /// from bit AT (default 0) into an image of FILL bytes (hex, default 00; two fills tell which
+    /// fields a sparse body carries). One JSON object per line on stdout: `{"tag", "at", "end", "len_bits",
+    /// "object"}` (end = the reader's absolute bit position after the walk, object = the decoded
+    /// struct image in hex) or `{"tag", "error"}`; a walk that fails part-way also gives "end" (where it
+    /// stopped) and "partial" (the image as far as it got). For investment messages (args from bit 16) and
+    /// for trying a body against candidate tags (`d1-srcp.py investment`).
+    DecodeBatch,
+}
+
+fn hex_bytes(s: &str) -> Option<Vec<u8>> {
+    if s.len() % 2 != 0 {
+        return None;
+    }
+    (0..s.len()).step_by(2).map(|i| u8::from_str_radix(s.get(i..i + 2)?, 16).ok()).collect()
+}
+
+/// One `decode-batch` line's JSON answer.
+fn decode_batch_line(dec: &d1_rsat::Decoder<'_>, line: &str) -> String {
+    let mut it = line.split_whitespace();
+    let tag = it.next().map(parse_u32);
+    let body = it.next().map(hex_bytes);
+    let at = it.next().map(|s| s.parse::<u64>());
+    let fill = it.next().map(|s| u8::from_str_radix(s.trim_start_matches("0x"), 16));
+    let (tag, wire, at, fill) = match (tag, body, at, fill) {
+        (Some(Ok(t)), Some(Some(b)), None, None) => (t, b, 0, 0),
+        (Some(Ok(t)), Some(Some(b)), Some(Ok(a)), None) => (t, b, a, 0),
+        (Some(Ok(t)), Some(Some(b)), Some(Ok(a)), Some(Ok(f))) => (t, b, a, f),
+        _ => return r#"{"error":"bad line: want TAG HEX [AT [FILL]]"}"#.to_string(),
+    };
+    let hexs = |o: &[u8]| o.iter().map(|b| format!("{b:02x}")).collect::<String>();
+    let quote = |e: String| e.replace('\\', "\\\\").replace('"', "'");
+    match dec.decode_at_partial(tag, &wire, at, fill) {
+        Ok((d, None)) => format!(
+            r#"{{"tag":"{:#010x}","at":{},"end":{},"len_bits":{},"object":"{}"}}"#,
+            tag,
+            at,
+            d.bits,
+            wire.len() * 8,
+            hexs(&d.object)
+        ),
+        // The walk failed part-way: say why, and keep the image as far as it got ("partial").
+        Ok((d, Some(e))) => format!(
+            r#"{{"tag":"{:#010x}","error":"{}","at":{},"end":{},"len_bits":{},"partial":"{}"}}"#,
+            tag,
+            quote(e.to_string()),
+            at,
+            d.bits,
+            wire.len() * 8,
+            hexs(&d.object)
+        ),
+        Err(e) => format!(r#"{{"tag":"{:#010x}","error":"{}"}}"#, tag, quote(e.to_string())),
+    }
 }
 
 fn parse_u32(s: &str) -> std::result::Result<u32, String> {
@@ -81,6 +134,19 @@ fn main() -> Result<()> {
             }
             if bad > 0 {
                 std::process::exit(2);
+            }
+        }
+        Cmd::DecodeBatch => {
+            use std::io::{BufRead, Write};
+            let dec = d1_rsat::Decoder::new(schemas);
+            let out = std::io::stdout();
+            let mut out = out.lock();
+            for line in std::io::stdin().lock().lines() {
+                let line = line?;
+                if line.trim().is_empty() {
+                    continue;
+                }
+                writeln!(out, "{}", decode_batch_line(&dec, &line))?;
             }
         }
         Cmd::Encode { tag, hex, replicated } => {

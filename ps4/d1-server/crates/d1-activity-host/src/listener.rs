@@ -858,8 +858,10 @@ pub async fn serve(
     let shared = (std::env::var("D1_AH_SHARED_INSTANCES").is_ok_and(|v| v == "1") || crate::pvp_driver::enabled())
         .then(crate::group::InstanceGroups::shared);
     if shared.is_some() {
-        tracing::info!("⭐ shared instances on (D1_AH_SHARED_INSTANCES): one membership per named host");
+        tracing::info!("⭐ shared instances on (D1_AH_SHARED_INSTANCES): one membership and one script bridge per named host");
     }
+    // Stream O3 (integration review, finding 9): one script bridge per shared instance.
+    let scripts = shared.is_some().then(crate::shared_scripts::SharedScripts::new);
     let factory = Arc::new(move || {
         let mut instance = factory();
         let n = connections.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
@@ -870,6 +872,9 @@ pub async fn serve(
         }
         if let Some(groups) = &shared {
             instance.set_group(crate::group::GroupLink::new(groups.clone(), n));
+        }
+        if let Some(s) = &scripts {
+            instance.set_shared_scripts(s.clone());
         }
         instance
     });

@@ -82,6 +82,24 @@ describe("sidecar process", { skip }, () => {
     assert.match(errors[4], /not JSON/);
   });
 
+  it("makes a hello that throws fatal, and a later failure not", async () => {
+    const out = [];
+    const sidecar = new Sidecar({ logLua: false, write: (m) => out.push(m) });
+    await sidecar.line(
+      JSON.stringify({ activity: "test_stub", bundles_path: join(dir.dir, "no-such-export.json"), scripts_dir: dir.dir, type: "hello" }),
+    );
+    const hello = out.find((m) => m.type === "error");
+    assert.ok(hello, "the unreadable export is reported");
+    assert.equal(hello.fatal, true, "a hello failure is fatal");
+    assert.equal(out.some((m) => m.type === "loaded"), false);
+    out.length = 0;
+    await sidecar.line(JSON.stringify({ activity: "test_stub", scripts_dir: dir.dir, type: "hello" }));
+    await sidecar.line(JSON.stringify({ type: "trigger", name: 12 }));
+    for (const m of out.filter((x) => x.type === "error")) {
+      assert.equal(m.fatal, false, "after hello, errors are not fatal");
+    }
+  });
+
   it("drives a session in-process through the same line handler", async () => {
     const out = [];
     const sidecar = new Sidecar({ logLua: false, write: (m) => out.push(m) });

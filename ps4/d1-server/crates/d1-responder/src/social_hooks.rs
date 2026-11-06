@@ -36,7 +36,14 @@ fn env_num<T: std::str::FromStr>(k: &str, d: T) -> T {
     std::env::var(k).ok().and_then(|v| v.parse().ok()).unwrap_or(d)
 }
 
-static SIDE: Mutex<Option<MemoryStore>> = Mutex::new(None);
+/// The side stores (bounty progress, Armsday counters, XP waiting for the player store), one per
+/// character: stream O3, so two players served by one responder (`D1_MP=1`) keep their own.
+static SIDE: Mutex<std::collections::BTreeMap<u64, MemoryStore>> = Mutex::new(std::collections::BTreeMap::new());
+
+/// The character whose side store the current work uses (the connection's own under `D1_MP=1`).
+fn side_key() -> u64 {
+    crate::env_soid("D1_CHARACTER_SOID", 0xD100_0000_0000_0101)
+}
 
 /// The served character: `D1_CHARACTER_SOID`, class `D1_CHARACTER_CLASS` (default 0, the served
 /// Titan) and level `D1_CHARACTER_LEVEL` (default 40, the geared Guardian's).
@@ -51,13 +58,13 @@ pub fn served_character() -> Character {
 }
 
 pub fn wire_store(account: BTreeMap<u16, (u16, u32)>, account_instances: BTreeMap<u16, u64>, profile: Vec<u8>, next_soid: u64) -> WireStore {
-    let side = SIDE.lock().ok().and_then(|mut g| g.take()).unwrap_or_else(MemoryStore::new);
+    let side = SIDE.lock().ok().and_then(|mut g| g.remove(&side_key())).unwrap_or_else(MemoryStore::new);
     WireStore { character: served_character(), account, account_instances, profile, next_soid, side }
 }
 
 pub fn keep_side(side: MemoryStore) {
     if let Ok(mut g) = SIDE.lock() {
-        *g = Some(side);
+        g.insert(side_key(), side);
     }
 }
 
@@ -194,7 +201,7 @@ pub fn apply(w: &mut WireStore, sales: &HashMap<(u8, u16), Sale>, op: Op) -> Res
 pub fn bridge_progressions() {
     let pending: Vec<((u64, u32), u32)> = {
         let Ok(mut g) = SIDE.lock() else { return };
-        let Some(side) = g.as_mut() else { return };
+        let Some(side) = g.get_mut(&side_key()) else { return };
         if side.progressions.is_empty() || !crate::player_store::enabled() {
             return;
         }
@@ -219,7 +226,7 @@ pub fn bridge_progressions() {
     }
     if !kept.is_empty() {
         if let Ok(mut g) = SIDE.lock() {
-            let side = g.get_or_insert_with(MemoryStore::new);
+            let side = g.entry(side_key()).or_default();
             for (key, amount) in kept {
                 *side.progressions.entry(key).or_default() += amount;
             }
@@ -227,11 +234,12 @@ pub fn bridge_progressions() {
     }
     // Off this thread: the callers hold the vendor state's lock, and the push waits (up to 120 s)
     // for the vendor's own push to be delivered, which needs that lock.
-    std::thread::spawn(|| {
+    let who = crate::players::current();
+    std::thread::spawn(move || crate::players::run_as(who, || {
         if let Err(e) = crate::player_store::push_profile("social rewards: XP and reputation") {
             tracing::warn!("      ⛔ SOCIAL rewards: the profile push failed ({e:#})");
         }
-    });
+    }));
 }
 
 #[cfg(test)]

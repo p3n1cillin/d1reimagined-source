@@ -22,7 +22,13 @@
 //!   players. So an instance's occupancy is its members plus, for every fireteam with someone in
 //!   it, the members of that fireteam who are not.
 //! * **Fill the emptiest instance first** that has room for the whole fireteam; with none, start a
-//!   new one (the standalone instance strangers can join later).
+//!   new one (the standalone instance strangers can join later). This is the one placement rule:
+//!   the responder's 42 directory, the playlist matchmaker and `place_in_public` all use it
+//!   (integration review, finding 8). The patrol and Tower captures (PR #328,
+//!   `notes/d1-live-captures-patrol-tower-2026-11-06.md`) do not contradict it: the instances the
+//!   client was placed into had been running 30 s to 2.4 minutes, young and lightly filled, not the
+//!   fullest long-running ones a fill-first rule would choose. The rule itself is still not on the
+//!   wire.
 //!
 //! The live captures (`notes/ps4-56578-public-instances-2026-11-05.md`):
 //!
@@ -331,10 +337,19 @@ pub fn sync_file(registry: &mut PublicRegistry, path: &std::path::Path) {
     }
 }
 
+/// The account a 40-byte identity names (`+0x10`), if it is one.
+fn account_of(c: &CharacterRef) -> Option<u64> {
+    d1_mp::identity::MemberIdentity::parse(&c.identity).map(|m| m.account.0)
+}
+
 /// Every running public instance.
 #[derive(Debug)]
 pub struct PublicRegistry {
     instances: BTreeMap<u64, PublicInstance>,
+    /// Stream O3: the destination of each account's mission host (`+0x10` of the identity), so
+    /// the responder places a bubble search on the searcher's own destination: the bubble id is
+    /// only a region.
+    missions: BTreeMap<u64, Destination>,
     next_id: u64,
     /// The clock origin for [`InstanceView::started_ms`].
     epoch: Instant,
@@ -343,7 +358,7 @@ pub struct PublicRegistry {
 impl PublicRegistry {
     /// Instance host ids are handed out from `first_id` (non-zero; 0 means "no activity host").
     pub fn new(first_id: u64) -> Self {
-        Self { instances: BTreeMap::new(), next_id: first_id.max(1), epoch: Instant::now() }
+        Self { instances: BTreeMap::new(), missions: BTreeMap::new(), next_id: first_id.max(1), epoch: Instant::now() }
     }
 
     pub fn get(&self, host_id: u64) -> Option<&PublicInstance> {
@@ -502,6 +517,18 @@ impl PublicRegistry {
     /// The instances as the responder's matchmaker reads them: `{"instances": [{"host", "region",
     /// "destination", "social", "players", "reserved", "capacity", "started_ms"}]}` (`region` is the
     /// slice-set id the client's slot-1 search names in its low bits; a social space has none).
+    /// Stream O3: `character` joined a mission host on `destination` (a mission-type join).
+    pub fn note_mission(&mut self, character: &CharacterRef, destination: Destination) {
+        if let Some(a) = account_of(character) {
+            self.missions.insert(a, destination);
+        }
+    }
+
+    /// The destination `account`'s mission host is on, if one joined.
+    pub fn mission_destination(&self, account: u64) -> Option<Destination> {
+        self.missions.get(&account).copied()
+    }
+
     pub fn snapshot_json(&self) -> serde_json::Value {
         let rows: Vec<serde_json::Value> = self
             .instances
@@ -520,10 +547,18 @@ impl PublicRegistry {
                     "reserved": i.reserved(),
                     "capacity": i.key.player_cap(),
                     "started_ms": i.started.saturating_duration_since(self.epoch).as_millis() as u64,
+                    // Stream O3: who is in it, by account, so the responder answers a placed search
+                    // with an advertisement from one of them.
+                    "accounts": i.members.iter().filter_map(|m| account_of(&m.character)).map(|a| format!("{a:#018x}")).collect::<Vec<_>>(),
                 })
             })
             .collect();
-        serde_json::json!({ "instances": rows })
+        let missions: Vec<serde_json::Value> = self
+            .missions
+            .iter()
+            .map(|(a, d)| serde_json::json!({ "account": format!("{a:#018x}"), "destination": format!("{d:?}") }))
+            .collect();
+        serde_json::json!({ "instances": rows, "missions": missions })
     }
 
     /// Apply `reserve HOST SLOTS` lines (the responder's placements). Returns how many held.

@@ -141,6 +141,98 @@ class SrcpTest(unittest.TestCase):
         self.assertEqual(CLI.lifetime_changes(rows),
                          [(1, 0xA, 'g', 3, 0), (3, 0xA, 'g', 3, 1), (3, 0xB, 'g', 3, 1), (5, 0xA, 'g', 3, 6)])
 
+    def test_investment_messages_pair_requests_and_replies_by_sequence(self):
+        req = struct.pack('>HI', M.WS_REQUEST, 990) + struct.pack('>H', 901) + b'\x80\x00'
+        rsp = struct.pack('>HI', M.WS_RESPONSE, 990) + struct.pack('>HH', 200, 901) + b'\x18'
+        other = struct.pack('>HI', 0x2a, 991) + b'\x08\x01'
+        data = capture(record(10.0, 0, (10, 0, 0, 1), 1, req), record(10.1, 1, (10, 0, 0, 1), 1, rsp),
+                       record(10.2, 0, (10, 0, 0, 1), 1, other))
+        got = M.investment_messages(data)
+        self.assertEqual([(d, seq, st, mid) for _, d, seq, st, mid, _ in got], [('req', 990, None, 901), ('rsp', 990, 200, 901)])
+        self.assertEqual(got[0][5][:2], b'\x03\x85', 'the bitstream starts with the service id')
+
+    def test_queuez_updates_walk_objects_and_drop_a_truncated_push(self):
+        def push(objs, cut=0):
+            s = struct.pack('>I', 1) + struct.pack('>IQIBI', 4, 0xD1, 590, 0, len(objs))
+            for it, key, body in objs:
+                s += struct.pack('>IQI', it, key, len(body)) + body
+            return struct.pack('>HI', M.QUEUEZ_UPDATE, 5) + (s[:-cut] if cut else s)
+        data = capture(record(1.0, 1, (10, 0, 0, 1), 1, push([(0x0EB6AC38, 7, b''), (0xB5DF2907, 8, b'\x01\x02')])),
+                       record(2.0, 1, (10, 0, 0, 1), 1, push([(0xB5DF2907, 8, b'\x01\x02')], cut=1)))
+        [(t, [(fam, ver, flags, objs)])] = M.queuez_updates(data)
+        self.assertEqual((t, fam, ver, flags), (0.0, 4, 590, 0))
+        self.assertEqual(objs, [(0x0EB6AC38, 7, b''), (0xB5DF2907, 8, b'\x01\x02')])
+        self.assertEqual(CLI.queuez_summary([(4, 590, 0, objs)]), 'f4 0eb6ac38:0 b5df2907:2', 'no keys or roots')
+
+    def test_payload_tail_reads_the_flag_length_and_unaligned_bytes(self):
+        # the arguments end at bit 3: flag 1, length 2, then 0xAB 0xCD, all from bit 4
+        bits = 0b101 << 37 | 1 << 36 | 2 << 20 | 0xABCD << 4
+        body = bits.to_bytes(5, 'big')
+        self.assertEqual(CLI.payload_tail(body, 3), (True, b'\xab\xcd', 36))
+        self.assertEqual(CLI.payload_tail(b'\x00', 3), (False, b'', 4))
+        self.assertEqual(CLI.payload_tail(b'\x00', 8), (False, b'', 8))
+
+    def test_render_fields_follows_nested_tags_and_redacts_big_values(self):
+        fields = {0x10: [(0, 1, 0x20), (0x18, 5, None)], 0x20: [(0, 2, None), (8, 6, None), (0x10, 4, None)]}
+        im = bytearray(0x1C)
+        im[0] = 1
+        struct.pack_into('<q', im, 8, 0x1234_5678_9ABC)
+        struct.pack_into('<h', im, 0x10, 4168)
+        struct.pack_into('<i', im, 0x18, -1)
+        self.assertEqual(CLI.render_fields(0x10, bytes(im), fields),
+                         [('f0.f0', 1), ('f0.f1', '#..9abc'), ('f0.f2', 4168), ('f1', -1)])
+
+    def test_investment_rows_decode_from_bit_16_and_say_when_no_schema(self):
+        req = struct.pack('>HI', M.WS_REQUEST, 1) + struct.pack('>H', 403) + b'\x00' * 9
+        unknown = struct.pack('>HI', M.WS_REQUEST, 2) + struct.pack('>H', 4242) + b'\x00'
+        data = capture(record(1.0, 0, (10, 0, 0, 1), 1, req), record(2.0, 0, (10, 0, 0, 1), 1, unknown))
+        seen = []
+
+        def decode(rows):
+            rows = list(rows)
+            seen.extend(rows)
+            return [{'end': 16 + 64, 'object': (7).to_bytes(8, 'little').hex()}]
+        rows = CLI.investment_rows(data, {403: (0x80801942, 0x80801834)}, {0x80801942: [(0, 0xA, None)]}, decode)
+        self.assertEqual([(tag, at) for tag, _, at in seen], [(0x80801942, 16)])
+        self.assertEqual(rows[0][4:], (403, [('f0', 7)], None, 88 - 81))
+        self.assertEqual(rows[1][4:6], (4242, 'no schema'))
+
+    def test_slot_changes_use_only_the_bytes_a_body_wrote(self):
+        base = 0x10
+        zeros, ones = bytearray(base + 32 * 3), bytearray(b'\xff' * (base + 32 * 3))
+        for im in (zeros, ones):  # slot 1 writes only its quantity; slot 2 its content and instance
+            struct.pack_into('<i', im, base + 32 + 0x10, 950)
+            struct.pack_into('<H', im, base + 64, 714)
+            im[base + 64 + 8:base + 64 + 16] = b'\x00' * 8
+        present = CLI.present_bytes(zeros, ones)
+        state = {1: (869, 1900)}
+        self.assertEqual(CLI.slot_changes(bytes(zeros), present, base, 3, state),
+                         [(1, 869, 950, 1900, False), (2, 714, None, None, True)])
+        self.assertEqual(state, {1: (869, 950), 2: (714, None)})
+
+    def test_stack_rows_decode_each_object_twice_and_keep_a_partial_profile(self):
+        def push(objs):
+            s = struct.pack('>I', 1) + struct.pack('>IQIBI', 4, 0xD1, 7, 0, len(objs))
+            for it, body in objs:
+                s += struct.pack('>IQI', it, 1, len(body)) + body
+            return struct.pack('>HI', M.QUEUEZ_UPDATE, 5) + s
+        data = capture(record(1.0, 1, (10, 0, 0, 1), 1, push([(0xB5DF2907, b'a'), (0xEB4B8439, b'p'), (0x1, b'x')])))
+        acct = bytearray(0x4C8 + 32 * 326)
+        struct.pack_into('<i', acct, 0x4C8 + 32 * 308 + 0x10, 24050)
+        acct_ff = bytearray(b'\xff' * len(acct))
+        struct.pack_into('<i', acct_ff, 0x4C8 + 32 * 308 + 0x10, 24050)
+        calls = []
+
+        def decode(rows):
+            rows = list(rows)
+            calls.extend((tag, fill) for tag, _, _, fill in rows)
+            return [{'object': acct.hex()}, {'object': acct_ff.hex()},
+                    {'error': 'runs past', 'partial': '00' * 0x38}, {'error': 'runs past', 'partial': 'ff' * 0x38}]
+        rows = CLI.stack_rows(data, decode)
+        self.assertEqual(calls, [(0x808018C7, '00'), (0x808018C7, 'ff'), (0x80801743, '00'), (0x80801743, 'ff')])
+        self.assertEqual(rows[0][:4], (0.0, 'account', 7, [(308, None, 24050, None, False)]))
+        self.assertEqual(rows[1][1:], ('profile', 7, [], 'partial'), 'a profile walk may stop early')
+
     def test_refuses_other_link_types(self):
         data = struct.pack('<IHHiIII', 0xa1b2c3d4, 2, 4, 0, 0, 0x40000, 1)
         with self.assertRaises(ValueError):
