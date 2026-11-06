@@ -2011,6 +2011,25 @@ impl ScriptBridge {
                     );
                     run.arrival = Some(Arrival::Moving { region: r, since: now });
                 }
+                // The cinematic hold ends with the phase that held it (F35). BullShcript puts the
+                // lifetime in the hold when a phase's cinematic plays and never takes it out (only
+                // a script's set_state does; A Guardian Rises' never sets active), so run agr1 sat
+                // at 4 in the highway with no player. The live host went 4 → 3 as the intro phase
+                // ended: cinematics finished 473.3 s and 522.8 s, active 527.9 s. A playable
+                // activity whose new phase begins with no cinematic playing goes active; a
+                // cinematic-only one (the reveal) keeps the hold to its end (4, 6, 8).
+                // ⚠ The runtime itself still believes it is in the hold, so a later phase cinematic
+                // is not re-held on the wire.
+                if run.lifetime_state == 4
+                    && run.activity.end == EndKind::Gameplay
+                    && self.encoders.playing_cinematics().is_empty()
+                {
+                    tracing::info!(
+                        "⭐ script bridge: phase {index} begins with no cinematic playing: the cinematic hold ends, lifetime 4 -> 3 (F35)"
+                    );
+                    run.lifetime_state = 3;
+                    run.lifetime_unsent = true;
+                }
                 self.set_lifetime();
             }
             SidecarMsg::Event { bundle, event_id, state, reason } => {
@@ -3563,7 +3582,9 @@ mod tests {
         let s = shared.lock().unwrap();
         let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
         seq.dedup();
-        assert_eq!(seq, [0, 1, 4, 6, 7], "gameplay: results 6, then the post-game 7");
+        // The phase move to 26 begins with no cinematic playing, so a gameplay activity leaves the
+        // cinematic hold there (F35, live A Guardian Rises: 4 → 3 as its intro phase ended).
+        assert_eq!(seq, [0, 1, 4, 3, 6, 7], "gameplay: the hold ends with its phase; results 6, then the post-game 7");
         assert_eq!(&s.bodies[0].1[0x68..0x70], [1, 0, 0, 0, 1, 0, 0, 0], "completion counters 1, 1");
     }
 
