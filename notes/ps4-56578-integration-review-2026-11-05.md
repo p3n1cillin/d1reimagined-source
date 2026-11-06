@@ -27,7 +27,76 @@ landed and may have moved lines in the activity host. Paths are relative to
   completing object now gets it, and the store's totals are folded into every adopted object. This
   was part of the reputation push; see notes/ps4-56578-player-store-2026-11-05.md.
 
-Everything below is left for the fixing phase.
+Everything below was left for the fixing phase. Its status is the next section.
+
+## Status after the fixing passes (O2 #327, O3 6 November)
+
+Each finding by number. "#327" is stream O2's pass (merged); a commit hash is stream O3's
+(branch `integrate/multiplayer-fixes`). Built and unit-tested only: nothing here has run in the
+game.
+
+| # | Status | Where, or why still open |
+|---:|---|---|
+| 1 | fixed (#327) | 165 is scripted as a cinematic with its regions; the profile test checks both. |
+| 2 | fixed (#327) | The loopback responder starts without the store, MP and rewards knobs. |
+| 3 | fixed (#327) | Vendor ops start from the store's state; `publish` waits for the last push. |
+| 4 | **fixed (74efb865)** | The real fix, replacing #327's stopgap. Every BAP connection signs on as its own player with its full identity (`identities.json`'s scheme, `0xD101_0000_nnnn_n001/101/201`); the connection's task carries it (`players.rs`), so every id it is served is its own. The store holds several players' records keyed by identity; each player has its own push files and primary connection. Grants and hand-offs go to the store of the player whose account **and** character the identity names, and an identity nobody here has is refused with `D1_MP=1`. Tests: `two_players_are_each_paid_once_into_their_own_record`, `each_player_has_its_own_push_files_and_record`, `a_connections_task_and_a_thread_carry_its_player`. `[I]`: a connection is known from its first BAP 23; anything served before that is the knobs'. |
+| 5 | fixed (#327) | `D1_SOCIAL_STOCK=0`. |
+| 6 | fixed (#327) | One completion path. |
+| 7 | fixed (#327) | Open-world grants carry the 40-byte identity. |
+| 8 | **fixed (2c10bddf)** | One rule everywhere, emptiest first, oldest on a tie: the 42 directory (`rank_fill`), the strike playlist fill and `place_in_public`. PR #328's patrol and Tower captures (joined instances 30 s to 2.4 minutes old) are consistent with it; the rule itself is still not on the wire. |
+| 9 | **fixed (c0d9af86)** | One script bridge per shared instance (`shared_scripts.rs`): one sidecar, every member's reports drive it, every output reaches every member, each member paid once. Test: `a_shared_instance_runs_one_script_for_both_members_and_pays_each_once`. |
+| 10 | **fixed (c0d9af86)** | A public-instance connection drops its mission bridge at the join and runs no activity framework. Test: `tests/multiplayer_scenario.rs`. |
+| 11 | **fixed (c0d9af86)** | The shared-instance join runs before the public role, so the space registers under the shared host. Test: `a_tower_join_registers_under_the_shared_instance_host`. |
+| 12 | **fixed (74efb865)** | A refused social op puts the side store back as it was. The side stores are now per character, too. |
+| 13 | fixed (#327) | Every item through the exported index. |
+| 14 | fixed (#327) | With finding 3. |
+| 15 | **fixed (74efb865)** | `D1_REFUND_WINDOW` is the window's length only; which purchases are refundable is the game's rule (with the store on, the manifest's policy per item), the same with `D1_SOCIAL` on and off. Defaults unchanged. |
+| 16 | **not a bug (175f1c7a)** | The finding was wrong: the sidecar reads `D1_BUNDLES_DIR` from the environment it inherits (`sidecar.mjs`, `bundlesPathFor`). The launcher keeps requiring it (without it every row is a stand-in the bridge never sends) and now says so. |
+| 17 | **fixed (175f1c7a)** | A hello that throws answers a fatal error. Test: `makes a hello that throws fatal, and a later failure not`. |
+| 18 | **fixed (c0d9af86)** | The cache key names the encoder (native or oracle) and its revision; the format is v2, so pre-#321 frames are misses. |
+| 19 | fixed (#327) | `activity_driver::RunDriver`. |
+| 20 | open | The open world's bridge still has no scripted run for a bubble; it needs stream K's single-public-event message. |
+| 21 | open | Chest, node and patrol grants still go out as `completed` (they are not store completions: `completion_index` takes only `source=script`). Needs their own outcome words in the grammar. |
+| 22 | open | `min_players = team_size` still; the Crucible limits need a decision on the evidence (#326). |
+| 23 | open | The registry's cap and TCP-drop leave are not enforced. Small, but it changes the open world's lifecycle: left for the public-instance stream. |
+| 24 | open | The host still sends default `GrantDetails`. |
+| 25 | fixed (#327) | |
+| 26 | open | Account-owned overlay rows are still per character. |
+| 27 | **fixed (5dd96de3)** | One dismantle table: `rewards::currencies::dismantle_yield` reads `inventory_ops::PLACEHOLDER_YIELDS` (PR #328's live rows), and the Marks amount is 3 for both. |
+| 28 | open | Changing the host's parse to decimal-unless-`0x` would change how existing hex values without `0x` read; needs the profiles checked first. |
+| 29 | open | A fixed seed still rolls the same engrams. |
+| 30 | half fixed (5dd96de3) | `owner_of` no longer panics on an empty word. The control file's 50 ms window is still a race. |
+| 31 | half fixed (175f1c7a) | The 7-or-8 end is documented. Still open: readiness on `players`, the 8-of-25 incident read, the ignored wipe fields. |
+| 32 | half fixed (5dd96de3) | `D1_DISMANTLE_YIELDS` is in the knob table. Still open: the completeness test scans only `main.rs`; the sidecar command is split on whitespace; `bundles=` is cwd-relative. |
+| 33 | open | |
+| 34 | **fixed (175f1c7a)** | |
+| 35-39 | open | Test weaknesses, not changed here (39's `every_hook_declines_when_mp_is_off` still never calls `init`, which is how it keeps the services absent). |
+
+#327's open items:
+
+- **The 43 answer** (2c10bddf, 74efb865, c0d9af86): a placed bubble search is answered with an
+  advertisement from a member of the instance the registry chose (the host's snapshot names each
+  instance's members by account), or with none when a new instance starts.
+- **The bubble id's destination** (74efb865, c0d9af86): the snapshot also names each mission
+  host's player and destination, and a search is placed among the searcher's own destination's
+  instances.
+
+PR #328's findings, taken into this pass:
+
+- **Dismantle** (5dd96de3): `DISMANTLE_MARKS_ARMOR` is 3; `currency.dismantle.marks` and
+  `currency.dismantle.other` are verified (the latter was wrong); the rewards path credits
+  Glimmer and materials from the one table.
+- **The Glimmer cap** (74efb865): 25,000, in the store and on the 402 dismantle.
+- **Event tiers** (2c532378): a public event's completion goes to the instance's clients as its
+  incident set (gold 1918, 3077, 732; silver 1918, 3076; bronze, never captured, the completion
+  alone); `tier_of_completion` reads it back.
+- **Placement** (c0d9af86): emptiest first kept; the evidence is in `public_registry.rs`'s doc.
+- **Still open:** packages on 904 (straight into the inventory: +500 Glimmer and a gear item,
+  Dead Orbit also 4 Motes), bounty turn-in on 402 action 1 (today a 402 on a bounty is not a hand-in: with `D1_SOCIAL`
+  it is refused, a bounty having no dismantle action; it needs the hand-in and the equipped
+  items' XP updates), and The Dark Within's four objective rows (its script reaches 1 of 3 phases, so a
+  phase-to-row map alone would not finish it). Each needs its own wire work.
 
 ## High
 
