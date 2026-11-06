@@ -225,10 +225,13 @@ pub fn bridge_progressions() {
             }
         }
     }
-    // Outside the social state's lock: the push may wait for the previous one to be delivered.
-    if let Err(e) = crate::player_store::push_profile("social rewards: XP and reputation") {
-        tracing::warn!("      ⛔ SOCIAL rewards: the profile push failed ({e:#})");
-    }
+    // Off this thread: the callers hold the vendor state's lock, and the push waits (up to 120 s)
+    // for the vendor's own push to be delivered, which needs that lock.
+    std::thread::spawn(|| {
+        if let Err(e) = crate::player_store::push_profile("social rewards: XP and reputation") {
+            tracing::warn!("      ⛔ SOCIAL rewards: the profile push failed ({e:#})");
+        }
+    });
 }
 
 #[cfg(test)]

@@ -1070,11 +1070,14 @@ impl PlayerStore for Store {
 
     fn add_xp(&mut self, amount: u32) -> anyhow::Result<XpGrant> {
         let curves = self.curves.clone();
+        // On a copy: a refused prestige entry (a full table) must not leave the level part
+        // applied, or a caller's retry (bridge_progressions re-queues) would pay it twice.
+        let mut obj = self.chr().profile_object.clone().ok_or_else(|| anyhow::anyhow!("the profile is not decoded yet"))?;
+        let g = progression::add_xp(&mut obj, &curves, amount)?;
+        let summary = summarize(&obj, &curves);
         let c = self.chr_mut();
-        let obj = c.profile_object.as_mut().ok_or_else(|| anyhow::anyhow!("the profile is not decoded yet"))?;
-        let g = progression::add_xp(obj, &curves, amount)?;
+        c.profile_object = Some(obj);
         c.profile_stale = true;
-        let summary = summarize(c.profile_object.as_ref().unwrap(), &curves);
         c.summary = Some(summary);
         Ok(g)
     }
