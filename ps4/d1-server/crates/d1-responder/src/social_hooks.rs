@@ -188,26 +188,46 @@ pub fn apply(w: &mut WireStore, sales: &HashMap<(u8, u16), Sale>, op: Op) -> Res
 }
 
 /// Hand the rewards' XP and reputation to the player store (`D1_STORE=1`); kept in the side store
-/// otherwise.
+/// otherwise. Then the profile push carries them to the client (`player_store::push_profile`).
+/// XP the store can't take yet (its profile isn't decoded) goes back to the side store for the
+/// next bridge rather than being dropped; reputation waits in the store itself.
 pub fn bridge_progressions() {
-    let Ok(mut g) = SIDE.lock() else { return };
-    let Some(side) = g.as_mut() else { return };
-    if side.progressions.is_empty() || !crate::player_store::enabled() {
-        return;
-    }
+    let pending: Vec<((u64, u32), u32)> = {
+        let Ok(mut g) = SIDE.lock() else { return };
+        let Some(side) = g.as_mut() else { return };
+        if side.progressions.is_empty() || !crate::player_store::enabled() {
+            return;
+        }
+        side.progressions.drain().collect()
+    };
     let t = crate::tables::tables();
-    let pending: Vec<((u64, u32), u32)> = side.progressions.drain().collect();
-    for ((_, hash), amount) in pending {
+    let mut kept = Vec::new();
+    for ((chr, hash), amount) in pending {
         let r = crate::player_store::with_store(|s| {
             if hash == crate::bounties::EXPERIENCE {
-                s.add_xp(amount).map(|g| format!("{g:?}")).unwrap_or_else(|e| format!("⛔ {e}"))
+                s.add_xp(amount).map(|g| format!("{g:?}"))
             } else if let Some(p) = t.progressions.get(&hash) {
-                s.add_reputation(&p.name, amount)
+                Ok(s.add_reputation(&p.name, amount))
             } else {
-                format!("⛔ progression {hash} has no curve")
+                Ok(format!("⛔ progression {hash} has no curve"))
             }
         });
+        if !matches!(r, Some(Ok(_))) {
+            kept.push(((chr, hash), amount));
+        }
         tracing::warn!("      ⭐ SOCIAL rewards -> player store: {amount} of {hash}: {r:?}");
+    }
+    if !kept.is_empty() {
+        if let Ok(mut g) = SIDE.lock() {
+            let side = g.get_or_insert_with(MemoryStore::new);
+            for (key, amount) in kept {
+                *side.progressions.entry(key).or_default() += amount;
+            }
+        }
+    }
+    // Outside the social state's lock: the push may wait for the previous one to be delivered.
+    if let Err(e) = crate::player_store::push_profile("social rewards: XP and reputation") {
+        tracing::warn!("      ⛔ SOCIAL rewards: the profile push failed ({e:#})");
     }
 }
 

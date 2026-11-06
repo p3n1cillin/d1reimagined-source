@@ -745,7 +745,9 @@ impl Store {
 
     /// The decoded image of `payload`: becomes the edit object if `payload` is still the served
     /// profile, refreshes the summary, and reports what the change means: an activity started, or
-    /// completed (its reward's unlock flags and reputation then apply).
+    /// completed (its reward's unlock flags and reputation then apply). The store's reputation is
+    /// then folded into the object ([`Store::sync_reputation`]); if that changed it, the object is
+    /// stale and the caller pushes it.
     pub fn adopt_object(&mut self, payload: &[u8], object: Vec<u8>) -> anyhow::Result<Vec<String>> {
         anyhow::ensure!(object.len() == layout::OBJECT_BYTES, "a {}-byte profile object", object.len());
         if self.chr().profile.as_deref() != Some(payload) {
@@ -754,6 +756,11 @@ impl Store {
         let new = summarize(&object, &self.curves);
         let revision = self.record.revision + 1;
         let old = self.chr().summary.clone();
+        // The new object first, so a completion's reputation lands in it rather than in the
+        // object it replaces.
+        let c = self.chr_mut();
+        c.profile_object = Some(object);
+        c.summary = Some(new.clone());
         let mut events = Vec::new();
         let was = old.as_ref().and_then(|o| o.activity);
         if let Some((activity, completed)) = new.activity {
@@ -783,30 +790,38 @@ impl Store {
                 }
             }
         }
-        let c = self.chr_mut();
-        c.profile_object = Some(object);
-        c.summary = Some(new);
+        match self.sync_reputation() {
+            Ok(true) => events.push("the store's reputation was folded into the profile (push due)".into()),
+            Ok(false) => {}
+            Err(e) => events.push(format!("⛔ reputation not folded into the profile: {e}")),
+        }
         Ok(events)
     }
 
-    /// Merge saved reputation into a decoded profile, using the exported curve ordinals. Work on
-    /// a copy: a full table or an unrepresentable total must not partially apply a grant.
-    fn sync_reputation(&mut self) -> anyhow::Result<()> {
+    /// Fold the store's reputation into the decoded profile through each curve's exported runtime
+    /// index (#322's `progression-index.tsv`). The store's total is authoritative: an object that
+    /// lacks it (an older payload delivered late, a vendor's profile) gets it back. Pending grants,
+    /// made while no object was decoded, are deltas on top of what the object already holds, so a
+    /// seeded profile's own reputation is kept. Works on a copy, so a full progression table or an
+    /// unrepresentable total changes nothing. Returns whether the object changed (it is then
+    /// stale). Without a decoded object nothing happens and pending grants keep waiting.
+    pub fn sync_reputation(&mut self) -> anyhow::Result<bool> {
+        let Some(mut object) = self.chr().profile_object.clone() else { return Ok(false) };
         if self.chr().progress.is_empty() {
-            return Ok(());
+            return Ok(false);
         }
-        let mut object = self.chr().profile_object.clone()
-            .ok_or_else(|| anyhow::anyhow!("reputation awaits a decoded profile"))?;
         let entries = progression::progressions(&object);
         let mut applied = Vec::new();
         for (name, saved) in &self.chr().progress {
             let Some(index) = self.curves.by_name(name).and_then(|c| c.runtime_index) else { continue };
             let pending = self.chr().reputation_pending.get(name).copied().unwrap_or(0);
-            let baseline = saved.saturating_sub(pending)
-                .max(u64::from(entries.get(&index).map(|p| p.0).unwrap_or(0)));
-            let total = u32::try_from(baseline.checked_add(pending)
-                .ok_or_else(|| anyhow::anyhow!("{name}: reputation overflow"))?)?;
-            progression::set_progress(&mut object, index, total)?;
+            let native = entries.get(&index).map(|p| u64::from(p.0));
+            let total = saved.saturating_sub(pending).max(native.unwrap_or(0)).checked_add(pending)
+                .and_then(|t| u32::try_from(t).ok())
+                .ok_or_else(|| anyhow::anyhow!("{name}: reputation overflow"))?;
+            if native != Some(u64::from(total)) {
+                progression::set_progress(&mut object, index, total)?;
+            }
             applied.push((name.clone(), total));
         }
         let changed = self.chr().profile_object.as_ref() != Some(&object);
@@ -819,29 +834,29 @@ impl Store {
             c.reputation_pending.remove(&name);
             c.progress.insert(name, u64::from(total));
         }
-        Ok(())
+        Ok(changed)
     }
 
-    /// Reputation through the curve's exported ordinal into the profile. Without a decoded
-    /// object, retain a pending delta for the next push/sign-on. Unknown ordinals stay labelled.
+    /// Reputation into the profile through the curve's exported runtime index; the object is then
+    /// stale and [`push_profile`] delivers it. Without a decoded object the grant waits as a
+    /// pending delta until one is adopted. A curve without a runtime index stays in the store
+    /// only, and says so.
     pub fn add_reputation(&mut self, name: &str, amount: u32) -> String {
         let Some(curve) = self.curves.by_name(name).cloned() else {
             return format!("⛔ no progression curve named {name}");
         };
-        if self.chr().profile_object.is_some() {
-            if let Err(e) = self.sync_reputation() {
-                return format!("⛔ {e}; reputation unchanged");
-            }
+        if let Err(e) = self.sync_reputation() {
+            return format!("⛔ {e}; reputation unchanged");
         }
-        let existing = curve.runtime_index.and_then(|index| self.chr().profile_object.as_ref()
+        let native = curve.runtime_index.and_then(|index| self.chr().profile_object.as_ref()
             .and_then(|o| progression::progressions(o).get(&index).map(|p| u64::from(p.0))))
-            .unwrap_or(0).max(self.chr().progress.get(name).copied().unwrap_or(0));
+            .unwrap_or(0);
+        let existing = native.max(self.chr().progress.get(name).copied().unwrap_or(0));
         let Some(total) = existing.checked_add(u64::from(amount)).filter(|n| *n <= u64::from(u32::MAX)) else {
             return format!("⛔ {name}: reputation overflow; unchanged");
         };
-        let mut suffix = "; kept in the store only (no runtime index)";
-        if let Some(index) = curve.runtime_index {
-            if let Some(mut object) = self.chr().profile_object.clone() {
+        let suffix = match (curve.runtime_index, self.chr().profile_object.clone()) {
+            (Some(index), Some(mut object)) => {
                 if let Err(e) = progression::set_progress(&mut object, index, total as u32) {
                     return format!("⛔ {e}; reputation unchanged");
                 }
@@ -850,13 +865,14 @@ impl Store {
                 c.profile_object = Some(object);
                 c.summary = Some(summary);
                 c.profile_stale = true;
-                suffix = "; profile push required";
-            } else {
-                *self.chr_mut().reputation_pending.entry(name.to_string()).or_default() += u64::from(amount);
-                self.chr_mut().profile_stale = true;
-                suffix = "; awaiting decoded profile";
+                format!("; profile progression {index} (push due)")
             }
-        }
+            (Some(index), None) => {
+                *self.chr_mut().reputation_pending.entry(name.to_string()).or_default() += u64::from(amount);
+                format!("; progression {index} waits for the decoded profile")
+            }
+            (None, _) => "; kept in the store only (no runtime index)".to_string(),
+        };
         self.chr_mut().progress.insert(name.to_string(), total);
         let message = format!("{name} +{amount} = {total} (rank {} -> {}){suffix}", curve.level(existing), curve.level(total));
         self.touch(&message);
@@ -1212,7 +1228,12 @@ fn global() -> Option<&'static Mutex<Store>> {
                 tracing::warn!("      💾 player store ON: {} (player {}, r{}, schema {}, saved every {:?})",
                                s.path().map(|p| p.display().to_string()).unwrap_or_default(), cfg.player,
                                s.record.revision, s.record.schema, cfg.save_every);
-                if s.chr().profile_stale || !s.chr().progress.is_empty() {
+                // Reputation granted while the profile was undecoded, or a record from before the
+                // profile carried it, is folded in first; then a changed object is re-encoded.
+                if let Err(e) = s.sync_reputation() {
+                    tracing::warn!("      ⛔ player store: reputation not folded into the profile ({e:#})");
+                }
+                if s.chr().profile_stale {
                     match reencode(&mut s) {
                         Ok(()) => tracing::warn!("      💾 the stored profile was edited since it was encoded: re-encoded"),
                         Err(e) => tracing::warn!("      ⛔ player store: re-encoding the edited profile failed ({e:#}); serving the last encoding"),
@@ -1276,7 +1297,6 @@ pub fn with_store<T>(f: impl FnOnce(&mut dyn PlayerStore) -> T) -> Option<T> {
 
 /// After a [`PlayerStore`] edit to the profile (XP or reputation): re-encode, save, and push
 /// (`D1_PROFILE_PUSH_FILE`) as the control commands do. Nothing to do when it isn't stale.
-#[allow(dead_code)] // an entry point for streams I, M, J and H; not called by the responder yet
 pub fn push_profile(what: &str) -> anyhow::Result<()> {
     let m = global().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
     let encoded = {
@@ -1287,9 +1307,15 @@ pub fn push_profile(what: &str) -> anyhow::Result<()> {
     write_push(&encoded)
 }
 
-fn prepare_profile_push(s: &mut Store, what: &str) -> anyhow::Result<Option<Vec<u8>>> {
+/// Whether the store's profile must be pushed: its reputation folded in, and the object edited
+/// since it was encoded. Needs no codec, so tests can drive it.
+fn profile_push_due(s: &mut Store) -> anyhow::Result<bool> {
     s.sync_reputation()?;
-    if !s.chr().profile_stale {
+    Ok(s.chr().profile_stale)
+}
+
+fn prepare_profile_push(s: &mut Store, what: &str) -> anyhow::Result<Option<Vec<u8>>> {
+    if !profile_push_due(s)? {
         return Ok(None);
     }
     reencode(s)?;
@@ -1356,7 +1382,15 @@ fn decode_later(payload: Vec<u8>) {
                 }
                 Ok(events)
             }),
-            Err(e) => tracing::warn!("      ⛔ player store: the delivered profile did not decode ({e:#}); its summary waits"),
+            Err(e) => {
+                tracing::warn!("      ⛔ player store: the delivered profile did not decode ({e:#}); its summary waits");
+                return;
+            }
+        }
+        // The adopted object may lack the store's reputation (a completion's reward row, a grant
+        // made while it was undecoded, an older payload): push the folded profile.
+        if let Err(e) = push_profile("profile decoded: reputation folded in") {
+            tracing::warn!("      ⛔ player store: the reputation push failed ({e:#})");
         }
     });
 }
@@ -1550,9 +1584,20 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
         }
         Command::Grant(g) => return run_grant(m, g),
         Command::Reputation(name, n) => {
-            let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
-            let w = s.add_reputation(name, *n);
-            s.save(&w)?;
+            let (w, push) = {
+                let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+                let w = s.add_reputation(name, *n);
+                let push = prepare_profile_push(&mut s, &w)?;
+                if push.is_none() {
+                    s.save(&w)?;
+                }
+                (w, push)
+            };
+            // Into the profile and pushed now; without a decoded profile it waits (the next
+            // decoded delivery folds it in and pushes it).
+            if let Some(encoded) = push {
+                write_push(&encoded)?;
+            }
             return Ok(w);
         }
         Command::Unlock { add, clear } => {
@@ -1998,6 +2043,87 @@ mod tests {
         assert_eq!(s.record.account.vendor_resets[&2668878854], (1_474_362_000 / 60) + 7 * 1440);
         let mut none = open(&tempdir("none").0, &Sources::default());
         assert!(none.change_unlock_flags(&[1], &[]).is_err(), "no served list, nothing to change");
+    }
+
+    fn progress_at(s: &Store, index: u16) -> Option<u32> {
+        progression::progressions(s.chr().profile_object.as_ref()?).get(&index).map(|p| p.0)
+    }
+
+    /// Reputation reaches the profile object at the curve's exported runtime index (#322), and the
+    /// push is due; a grant made while the profile is undecoded waits as a delta on top of the
+    /// profile's own reputation; the store's total survives an older payload without being
+    /// counted twice; a completion's reputation lands in the object that completed it.
+    #[test]
+    fn reputation_reaches_the_profile_push_through_the_exported_index() {
+        let d = tempdir("reputation");
+        let mut s = open(&d.0, &Sources::default());
+        let vanguard = s.curves.by_name("faction_fotc_vanguard").and_then(|c| c.runtime_index).unwrap();
+        let crucible = s.curves.by_name("faction_pvp").and_then(|c| c.runtime_index).unwrap();
+        assert_eq!((vanguard, crucible), (133, 134), "progression-index.tsv's ordinals");
+
+        // Undecoded: the grant waits, nothing to push.
+        let w = s.add_reputation("faction_fotc_vanguard", 1600);
+        assert!(w.contains("waits for the decoded profile"), "{w}");
+        assert!(!profile_push_due(&mut s).unwrap());
+        assert_eq!(s.chr().reputation_pending["faction_fotc_vanguard"], 1600);
+
+        // The decoded profile already holds 5,000 of its own: the pending 1,600 goes on top.
+        let mut o = profile_object();
+        progression::set_progress(&mut o, vanguard, 5000).unwrap();
+        s.set_profile(b"p1", "push");
+        let e = s.adopt_object(b"p1", o).unwrap();
+        assert!(e.iter().any(|x| x.contains("folded")), "{e:?}");
+        assert_eq!(progress_at(&s, vanguard), Some(6600));
+        assert!(s.chr().reputation_pending.is_empty());
+        let rank = s.curves.by_name("faction_fotc_vanguard").unwrap().level(6600);
+        assert_eq!(PlayerStore::reputation(&s, "faction_fotc_vanguard"), Some((6600, rank)));
+        assert!(profile_push_due(&mut s).unwrap(), "the folded object is pushed");
+        s.chr_mut().profile_stale = false; // as reencode leaves it
+
+        // Decoded: straight into the object, the push due.
+        let w = s.add_reputation("faction_fotc_vanguard", 400);
+        assert!(w.contains("= 7000") && w.contains("progression 133 (push due)"), "{w}");
+        assert_eq!(progress_at(&s, vanguard), Some(7000));
+        assert!(profile_push_due(&mut s).unwrap());
+
+        // The client echoes the pushed total: nothing more to push.
+        let mut o = profile_object();
+        progression::set_progress(&mut o, vanguard, 7000).unwrap();
+        s.set_profile(b"p2", "push");
+        assert!(s.adopt_object(b"p2", o).unwrap().is_empty());
+        assert!(!profile_push_due(&mut s).unwrap());
+
+        // An older payload delivered late (6,600): the store's 7,000 comes back, not 7,400.
+        let mut o = profile_object();
+        progression::set_progress(&mut o, vanguard, 6600).unwrap();
+        s.set_profile(b"p3", "push");
+        s.adopt_object(b"p3", o).unwrap();
+        assert_eq!(progress_at(&s, vanguard), Some(7000));
+        assert!(profile_push_due(&mut s).unwrap());
+
+        // A completion's reward-row reputation lands in the completing object, once.
+        s.rewards = Rewards::parse("activity\tname\tsubs\txp\treputation\tunlock_add\tunlock_clear\tstatus\tsource\n\
+                                    164\tt\t-\t-\tfaction_pvp:100\t-\t-\tstand-in\ttest\n");
+        assert_eq!(s.rewards.0[&164].reputation, vec![("faction_pvp".to_string(), 100)]);
+        let mut done = profile_object();
+        progression::set_progress(&mut done, vanguard, 7000).unwrap();
+        progression::complete_activity(&mut done, &s.curves, 164, None, Some(0)).unwrap();
+        s.set_profile(b"p4", "push");
+        let e = s.adopt_object(b"p4", done.clone()).unwrap();
+        assert!(e.iter().any(|x| x.starts_with("faction_pvp +100 = 100")), "{e:?}");
+        assert_eq!((progress_at(&s, crucible), progress_at(&s, vanguard)), (Some(100), Some(7000)));
+        assert!(profile_push_due(&mut s).unwrap());
+        let again = s.adopt_object(b"p4", done).unwrap();
+        assert!(again.iter().all(|x| !x.starts_with("faction_pvp")), "no second grant: {again:?}");
+        assert_eq!(progress_at(&s, crucible), Some(100), "the store's total folded back, once");
+
+        // Totals and pending deltas persist.
+        s.chr_mut().profile_object = None;
+        s.add_reputation("faction_pvp", 50);
+        s.save("reputation").unwrap();
+        drop(s);
+        let s = open(&d.0, &Sources::default());
+        assert_eq!((s.chr().progress["faction_pvp"], s.chr().reputation_pending["faction_pvp"]), (150, 50));
     }
 
     /// Stream O: `ps4/profiles/full-game.env`'s `[server]` knobs (#320) through the responder's
