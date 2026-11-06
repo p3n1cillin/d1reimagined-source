@@ -23,11 +23,7 @@ use d1_rsat::{Encoder, RsatError};
 
 /// The udts whose closure the native encoder does not cover, with the reason. Asserted exactly:
 /// a new fallback, or a fallback that went away, must be looked at.
-const EXPECTED_FALLBACK: &[(u32, &str)] = &[
-    // `process_debug_command` and `send_client_heartbeat`: one dynamic-flags field each.
-    (33, "field kind 0x22"),
-    (37, "field kind 0x22"),
-];
+const EXPECTED_FALLBACK: &[(u32, &str)] = &[];
 
 #[test]
 fn the_build_cells_agree_with_the_oracles_measured_table() {
@@ -88,7 +84,16 @@ fn every_native_udt_matches_the_oracle_on_zero_and_generated_images() {
             continue;
         }
         udts += 1;
-        compare_udt(&mut codec, &enc, udt, tag, &vec![0u8; size], "zero image");
+        let mut zero = vec![0; size];
+        Gen::new(s, 0).null_refs(tag, &mut zero);
+        compare_udt(
+            &mut codec,
+            &enc,
+            udt,
+            tag,
+            &zero,
+            "zero image, null typed values",
+        );
         cases += 1;
         for seed in 0..16u64 {
             let mut g = Gen::new(s, seed * 1000 + u64::from(udt));
@@ -284,9 +289,12 @@ fn typed_references_in_launch_slots_match() {
 fn refusals_are_named_and_never_silent() {
     let Some(s) = inputs() else { return };
     let enc = Encoder::new(s);
-    // Dynamic flags: static refusal.
+    // 56578 kind 0x22 is a typed value; type zero has no descriptor.
     let t33 = activity_host::tag_for_udt(33).unwrap();
-    assert!(matches!(enc.encode(t33, &[]), Err(RsatError::Unsupported { .. })));
+    assert!(matches!(
+        enc.encode(t33, &[]),
+        Err(RsatError::Runtime { .. })
+    ));
     // A count past an array's capacity: the client would read past the array; refuse. The sensor
     // value's launch slots (`+0x10`: a 6-bit count, then 50 slots) can say 63.
     let mut img = vec![0u8; 0x504];

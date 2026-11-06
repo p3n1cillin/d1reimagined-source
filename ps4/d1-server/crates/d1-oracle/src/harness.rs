@@ -209,6 +209,7 @@ impl State {
 pub struct Harness {
     uc: Unicorn<'static, ()>,
     st: Rc<RefCell<State>>,
+    scalar_float: Option<crate::scalar_float::ScalarFloat>,
 }
 
 fn uce(e: unicorn_engine::uc_error) -> OracleError {
@@ -360,7 +361,22 @@ impl Harness {
         })
         .map_err(uce)?;
 
-        Ok(Self { uc, st })
+        Ok(Self {
+            uc,
+            st,
+            scalar_float: None,
+        })
+    }
+
+    /// Correct measured VEX scalar aliasing in explicitly identified RSAT ranges only.
+    pub(crate) fn correct_rsat_scalar_float(&mut self, ranges: &[(u64, u64)]) -> Result<()> {
+        if !ranges.is_empty() {
+            self.scalar_float = Some(crate::scalar_float::ScalarFloat::install_ieee(
+                &mut self.uc,
+                ranges,
+            )?);
+        }
+        Ok(())
     }
 
     /// Open the pinned eboot (or `$D1_EBOOT`) and build a harness on it.
@@ -520,6 +536,9 @@ impl Harness {
             s.fault = None;
         }
         let run = self.uc.emu_start(addr, STOP, 0, 0);
+        if let Some(scalar) = &self.scalar_float {
+            scalar.check()?;
+        }
         if let Some(f) = self.st.borrow().fault.clone() {
             return Err(OracleError::Fault(format!("{f} (calling {addr:#x})")));
         }

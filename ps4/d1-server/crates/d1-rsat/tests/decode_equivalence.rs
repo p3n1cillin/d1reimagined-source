@@ -19,7 +19,7 @@ use d1_oracle::ObjectOracle;
 use d1_rsat::{Decoder, Encoder, RsatError};
 
 /// The udts whose closure the native decoder does not cover. Asserted exactly.
-const EXPECTED_DECODE_FALLBACK: &[(u32, &str)] = &[(33, "field kind 0x22"), (37, "field kind 0x22")];
+const EXPECTED_DECODE_FALLBACK: &[(u32, &str)] = &[];
 
 #[test]
 fn every_pinned_udt_is_classified_for_decode() {
@@ -97,7 +97,9 @@ fn every_native_udt_decodes_like_the_client() {
             continue;
         }
         udts += 1;
-        let mut images = vec![vec![0u8; size]];
+        let mut zero = vec![0; size];
+        Gen::new(s, 0).null_refs(tag, &mut zero);
+        let mut images = vec![zero];
         for seed in 0..12u64 {
             let mut g = Gen::new(s, 0xDEC0_0000 + seed * 1000 + u64::from(udt));
             images.push(g.image(tag, seed % 2 == 1));
@@ -235,11 +237,20 @@ fn decode_refusals_are_named() {
     let t2 = activity_host::tag_for_udt(2).unwrap();
     assert!(matches!(dec.decode(t2, &[]), Err(RsatError::Wire { .. })), "an empty body");
     let t11 = activity_host::tag_for_udt(11).unwrap();
-    assert!(matches!(dec.decode_replicated(t11, &[], &[]), Err(RsatError::Wire { .. })));
-    assert!(matches!(dec.decode_replicated(t11, &[0x80], &[0u8; 8]), Err(RsatError::BadImage { .. })));
+    assert!(matches!(
+        dec.decode_replicated(t11, &[], &[]),
+        Err(RsatError::Wire { .. })
+    ));
+    assert!(matches!(
+        dec.decode_replicated(t11, &[0x80], &[0u8; 8]),
+        Err(RsatError::BadImage { .. })
+    ));
     let t33 = activity_host::tag_for_udt(33).unwrap();
-    assert!(matches!(dec.decode(t33, &[0u8; 64]), Err(RsatError::Unsupported { .. })));
-    assert!(matches!(dec.decode(0x8080_33F4, &[0]), Err(RsatError::UnknownTag(_))));
+    assert!(matches!(dec.decode(t33, &[]), Err(RsatError::Wire { .. })));
+    assert!(matches!(
+        dec.decode(0x8080_33F4, &[0]),
+        Err(RsatError::UnknownTag(_))
+    ));
     // The value's launch-slot count is a 6-bit field: 63 decodes, and exceeds the 50 slots.
     let mut w = d1_rsat::bits::BitWriter::new();
     for (v, n) in [(1u64, 4u32), (0, 3), (0, 1), (0, 32), (0, 32), (0, 32), (63, 6)] {

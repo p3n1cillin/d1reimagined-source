@@ -385,6 +385,68 @@ impl ObjectOracle {
         Ok(Encoded { tag: self.s.tag, bits, payload: self.s.h.read(buf, nbytes)? })
     }
 
+    /// Run the client's replicated encoder with an explicit change mask (56578 0x2C9D20).
+    /// Unlike `encode_replicated`, this calls the mask-taking entry directly. The supplied
+    /// low-bit-first words are represented as an external dynamic-flags object, avoiding
+    /// the live allocator. Bit 0 is the root presence bit, the field walk starts at bit 1.
+    pub fn encode_replicated_masked(
+        &mut self,
+        object: &[u8],
+        mask: &[u32],
+        capacity: u64,
+    ) -> Result<Encoded> {
+        let d = self
+            .s
+            .index
+            .get(self.s.tag)
+            .ok_or_else(|| OracleError::Shape("missing descriptor".into()))?;
+        let n = self
+            .s
+            .image
+            .u32(d.anchor + 0x1C)
+            .map_err(|e| OracleError::Eboot(e.to_string()))?
+            + 1;
+        if n > 0x1FFF
+            || mask.len() != n.div_ceil(32) as usize
+            || (n % 32 != 0 && mask[mask.len() - 1] >> (n % 32) != 0)
+        {
+            return Err(OracleError::Shape(format!(
+                "expected {n} mask bits with zero padding (external mask capacity 8191)"
+            )));
+        }
+        self.s.begin_call()?;
+        let obj = self.s.make_object(object)?;
+        let words = self.s.h.alloc(mask.len() as u64 * 4)?;
+        for (i, word) in mask.iter().enumerate() {
+            self.s.h.write_u32(words + i as u64 * 4, *word)?;
+        }
+        let flags = self.s.h.alloc(16)?;
+        self.s.h.write_u64(flags, words)?;
+        // 0x2C9D20 and 0x101C220: signed low 14 bits -2 = external words,
+        // signed bits 14..27 = bit count. The upper four bits are allocator bookkeeping.
+        self.s.h.write_u32(flags + 8, (n << 14) | 0x3FFE)?;
+        let buf = self.s.h.alloc(capacity)?;
+        let bs = self.bitstream(buf, capacity)?;
+        self.s.h.call(self.s.c.bs_begin_write, &[bs, 1])?;
+        let entry = self.s.c.encode_obj_replicated;
+        let rc = (self
+            .s
+            .h
+            .call(entry, &[0, obj, u64::from(self.s.tag), bs, flags, 1])?
+            & 255) as u8;
+        if rc != 1 {
+            return Err(OracleError::CodecReturned { func: entry, rc });
+        }
+        let bits = self.s.h.read_u32(bs + BS_BITPOS)?;
+        let scratch = self.s.h.alloc(8)?;
+        self.s.h.call(self.s.c.bs_flush, &[bs, scratch])?;
+        Ok(Encoded {
+            tag: self.s.tag,
+            bits,
+            payload: self.s.h.read(buf, (bits as usize).div_ceil(8))?,
+        })
+    }
+
     /// ⭐ Decode a **replicated** body by running the client's own [`DECODE_OBJ_REPLICATED`],
     /// argument for argument as `FUN_0029C730` calls it.
     ///
