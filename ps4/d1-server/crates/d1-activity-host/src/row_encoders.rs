@@ -28,7 +28,11 @@
 //! | player objective (32) | `0x80802A1B` | mode (+0), nav point (+0x60..), machine (+0x4C) | sensor_objective.rs (native divide16) |
 //! | object (4) | `0x808007D9` | incarnation (+0), created (+8) | blockers-2026-10-15 layout |
 //! | scoreboard (15) | `0x808008D0` | player row 0 stats, f32 at +0x20 + 4·column | the post-game scoreboard (kills 0, precision 18, deaths 22) |
-//! | timer, sequence, trigger group, object filter, machine, hard-wipe globals, actor, … | | nothing | no 56578 field map yet |
+//! | sequence (5) | `0x808029A1` | start (+0, i32), step (+4, u8), target ref (+0x18) | 56578 apply `0x40CE50`/evaluator `0x40D000` (native, breach-sequences 31 Oct); the reference's move to +0x18 (final-build note); TU0 SequenceAuth [3] is the target |
+//! | actor (2) | `0x80800868` | generation (+0), +4 = -1, +6 set, binding absent (+0x50/+0x58), command script (+0xB0: cookie, pc, count, 64-byte atoms at +0xC0) | d1-member-states.py's image, native-tested (the Breach entrances play, 1 Nov); `scripted_sequence` atoms only |
+//! | machine (40) | `0x80800556` | the performance: cue (+0), override (+4, empty), generation (+8) | 56578 apply `0x287230` and updater `0x21e730`; JOIN111's dispatch (ghost-light note) |
+//! | trigger group (30) | `0x8080040E` | state (+8, i8 2-bit, bias 1: -1..2) | the descriptor: the only field with BullShcript's range (-1 until written); the volume ref at +0 is kept |
+//! | timer (17), hard-wipe globals (34), object filter (33) | | nothing | layout from the descriptor ([`ROW_LAYOUTS`]), meaning open: refused |
 
 use std::collections::{HashMap, HashSet};
 use std::sync::mpsc::{channel, Receiver, Sender, TryRecvError};
@@ -158,8 +162,22 @@ pub const TAG_SQUAD: u32 = 0x8080_071E;
 pub const TAG_PLAYER_OBJECTIVE: u32 = d1_oracle::sensor_objective::TAG;
 pub const TAG_OBJECT: u32 = 0x8080_07D9;
 pub const TAG_SCOREBOARD: u32 = 0x8080_08D0;
+pub const TAG_SEQUENCE: u32 = 0x8080_29A1;
+pub const TAG_ACTOR: u32 = 0x8080_0868;
+pub const TAG_MACHINE: u32 = 0x8080_0556;
+pub const TAG_TRIGGER_GROUP: u32 = 0x8080_040E;
+pub const TAG_TIMER: u32 = 0x8080_0725;
+pub const TAG_HARD_WIPE: u32 = 0x8080_04A4;
+pub const TAG_OBJECT_FILTER: u32 = 0x8080_0750;
 
 pub const KIND_SQUAD: u8 = 1;
+pub const KIND_ACTOR: u8 = 2;
+pub const KIND_SEQUENCE: u8 = 5;
+pub const KIND_TIMER: u8 = 17;
+pub const KIND_TRIGGER_GROUP: u8 = 30;
+pub const KIND_OBJECT_FILTER: u8 = 33;
+pub const KIND_HARD_WIPE: u8 = 34;
+pub const KIND_MACHINE: u8 = 40;
 pub const KIND_OBJECT: u8 = 4;
 pub const KIND_CINEMATIC: u8 = 6;
 pub const KIND_SCOREBOARD: u8 = 15;
@@ -168,6 +186,39 @@ pub const KIND_PLAYER_TRIGGER: u8 = 29;
 pub const KIND_PLAYER_OBJECTIVE: u8 = 32;
 
 const NONE_HASH: u32 = 0x811C_9DC5;
+
+/// One row kind's A value as build 56578's own descriptor lays it out (`ps4/fixtures/56578/rtti/`
+/// `schemas.tsv` and `fields.tsv`, #308): the tag, the struct size, and the top-level fields as
+/// `(offset, codec kind)` (2 bool, 3 i8, 5 i32, 7 u8, 9 raw u32, 11 f32, 1 struct, 257 optional
+/// struct). A test checks every entry against the committed fixture, so a layout here is the
+/// executable's, not ours. What each field means is in the encoders (and the module table).
+/// `(script kind, row type id, A tag, struct size, [(offset, codec kind)])`.
+pub type RowLayout = (&'static str, u8, u32, usize, &'static [(usize, u32)]);
+
+pub const ROW_LAYOUTS: &[RowLayout] = &[
+    // +0 i32 start, +4 u8 step, +8 a counted list (0x80805cf5), +0x18 a name ref (0x808004b1).
+    ("sequence", KIND_SEQUENCE, TAG_SEQUENCE, 32, &[(0, 5), (4, 7), (8, 1), (24, 1)]),
+    // +0 i32 (31 bits) generation, ..., +0xB0 the optional command script (0x80800512).
+    ("actor", KIND_ACTOR, TAG_ACTOR, 2312, &[(0, 261), (4, 3), (5, 3), (6, 2), (8, 257), (44, 257), (176, 257), (2240, 257)]),
+    // +0 the optional performance (0x80800538: cue u32, override u32, generation i32), +0xC cues.
+    ("machine", KIND_MACHINE, TAG_MACHINE, 48, &[(0, 257), (12, 257)]),
+    // +0 the volume (a name ref), +8 the state.
+    ("triggerGroup", KIND_TRIGGER_GROUP, TAG_TRIGGER_GROUP, 12, &[(0, 1), (8, 3)]),
+    // +0 a timer struct (0x80800ab3: bool, five i32, f32), +0x1C bool, +0x20 i32.
+    ("timer", KIND_TIMER, TAG_TIMER, 36, &[(0, 1), (28, 2), (32, 5)]),
+    // +0 bool, +1 bool, +2 i8 (2 bits), +4 the same timer struct.
+    ("hardWipeGlobals", KIND_HARD_WIPE, TAG_HARD_WIPE, 32, &[(0, 2), (1, 2), (2, 3), (4, 1)]),
+    // +0 a predicate list (0x808042e0: a 4-bit count, up to 8 typed predicates).
+    ("objectFilter", KIND_OBJECT_FILTER, TAG_OBJECT_FILTER, 400, &[(0, 1)]),
+];
+
+/// The command script's place in the actor image, and its atoms (d1-member-states.py; breach note).
+const ACTOR_SCRIPT: usize = 0xB0;
+const ACTOR_ATOMS: usize = 0xC0;
+const ACTOR_ATOM_SIZE: usize = 0x40;
+const ACTOR_MAX_ATOMS: usize = 32;
+/// BullShcript's command kind 1, `scripted_sequence(name)`, is the 56578 atom kind 1.
+const ATOM_SCRIPTED_SEQUENCE: u64 = 1;
 
 /// How an activity ends: the live captures end the two kinds differently
 /// (notes/ps4-56578-wire-catalog-2026-11-05.md, "Who reads the value").
@@ -538,6 +589,103 @@ impl RowEncoders {
                 }
                 with_a(TAG_SCOREBOARD, image)
             }
+            "sequence" => {
+                if let Some(e) = expect(KIND_SEQUENCE) {
+                    return e;
+                }
+                self.note_fields(kind, state, &["playing", "target"]);
+                if state.get("pairs").and_then(Value::as_array).is_some_and(|a| !a.is_empty()) {
+                    self.not_encoded(kind, "pairs (the +8 list's elements are not mapped)");
+                }
+                let mut image = base_a(TAG_SEQUENCE).unwrap_or_else(sequence_default);
+                if let Some(p) = state.get("playing").filter(|p| !p.is_null()) {
+                    // +4 is a step: a new value other than 0xFF re-evaluates (plays) the sequence;
+                    // +0 is its start in host ticks (the udt 5 stamp the sidecar copies).
+                    let id = p.get("id").and_then(Value::as_u64).unwrap_or(1);
+                    let step = (id % 0xFF) as u8;
+                    image[4] = if step == image[4] { step.wrapping_add(1) % 0xFF } else { step };
+                    let at = p.get("startedAt").and_then(Value::as_u64).unwrap_or(u64::from(ctx.stamp_tick));
+                    put_u32(&mut image, 0, (at as u32) & 0x7FFF_FFFF);
+                }
+                if let Some(t) = state.get("target") {
+                    put_ref(&mut image, 0x18, map(t));
+                }
+                with_a(TAG_SEQUENCE, image)
+            }
+            "actor" => {
+                if let Some(e) = expect(KIND_ACTOR) {
+                    return e;
+                }
+                self.note_fields(kind, state, &["placed", "incarnation", "commandScript"]);
+                if !state.get("placed").and_then(Value::as_bool).unwrap_or(false) {
+                    // Not placed: the client's own default, as an unplaced member is served.
+                    return Encoded::Row(base.map_or(Row { has_a: true, has_b: false, a: None, b: None }, Row::defaulted));
+                }
+                let mut image = base_a(TAG_ACTOR).unwrap_or_else(actor_default);
+                put_u32(&mut image, 0, state.get("incarnation").and_then(Value::as_u64).unwrap_or(1).clamp(1, 0x7FFF_FFFF) as u32);
+                if let Some(cs) = state.get("commandScript").filter(|c| !c.is_null()) {
+                    match command_script(cs) {
+                        Ok((cookie, pc, atoms)) => {
+                            put_u32(&mut image, ACTOR_SCRIPT, cookie & 0x7FFF_FFFF);
+                            put_u32(&mut image, ACTOR_SCRIPT + 4, pc);
+                            put_u32(&mut image, ACTOR_SCRIPT + 8, atoms.len() as u32);
+                            image[ACTOR_ATOMS..ACTOR_ATOMS + ACTOR_MAX_ATOMS * ACTOR_ATOM_SIZE].fill(0);
+                            for (i, (end, name)) in atoms.iter().enumerate() {
+                                let at = ACTOR_ATOMS + i * ACTOR_ATOM_SIZE;
+                                put_u32(&mut image, at, ATOM_SCRIPTED_SEQUENCE as u32);
+                                put_u32(&mut image, at + 4, *end);
+                                put_u32(&mut image, at + 0x10, *name);
+                            }
+                        }
+                        Err(why) => self.not_encoded(kind, &format!("commandScript ({why})")),
+                    }
+                }
+                with_a(TAG_ACTOR, image)
+            }
+            "machine" => {
+                if let Some(e) = expect(KIND_MACHINE) {
+                    return e;
+                }
+                self.note_fields(kind, state, &["performance", "cues"]);
+                if state.get("cues").and_then(Value::as_array).is_some_and(|a| !a.is_empty()) {
+                    self.not_encoded(kind, "cues (the +0xC list's elements are not mapped)");
+                }
+                let mut image = base_a(TAG_MACHINE).unwrap_or_else(|| vec![0; 48]);
+                // `0x2873c0` reads no performance while the cue is the empty hash.
+                match state.get("performance").filter(|p| !p.is_null()) {
+                    Some(p) => {
+                        put_u32(&mut image, 0, p.get("name").and_then(Value::as_u64).unwrap_or(u64::from(NONE_HASH)) as u32);
+                        put_u32(&mut image, 4, NONE_HASH);
+                        put_u32(&mut image, 8, p.get("generation").and_then(Value::as_u64).unwrap_or(0) as u32);
+                    }
+                    None => {
+                        put_u32(&mut image, 0, NONE_HASH);
+                        put_u32(&mut image, 4, NONE_HASH);
+                        put_u32(&mut image, 8, 0);
+                    }
+                }
+                with_a(TAG_MACHINE, image)
+            }
+            "triggerGroup" => {
+                if let Some(e) = expect(KIND_TRIGGER_GROUP) {
+                    return e;
+                }
+                self.note_fields(kind, state, &["state"]);
+                let v = state.get("state").and_then(Value::as_i64).unwrap_or(-1);
+                if !(-1..=2).contains(&v) {
+                    return Encoded::Unsupported(format!("trigger group state {v} does not fit the 2-bit field (-1..2)"));
+                }
+                let mut image = base_a(TAG_TRIGGER_GROUP).unwrap_or_else(|| {
+                    let mut b = vec![0u8; 12];
+                    put_ref(&mut b, 0, None);
+                    b
+                });
+                image[8] = v as i8 as u8;
+                with_a(TAG_TRIGGER_GROUP, image)
+            }
+            "timer" | "hardWipeGlobals" | "objectFilter" => Encoded::Unsupported(format!(
+                "{kind}: the 56578 layout is known (row_encoders::ROW_LAYOUTS) but not which field the script's state is"
+            )),
             other => Encoded::Unsupported(format!("no 56578 field map for {other} rows yet")),
         }
     }
@@ -573,6 +721,57 @@ fn squad_default() -> Vec<u8> {
         put_u32(&mut b, at, NONE_HASH);
     }
     b[0x74] = 0xFF;
+    b
+}
+
+/// BullShcript's command script (`{cookie, pc?, atoms: [{kind, name, end: {kind}}]}`) as the 56578
+/// atoms: `(cookie, pc, [(end condition, action hash)])`. Only `scripted_sequence` atoms with an
+/// end condition of 0 or 1 have a known 56578 shape; anything else refuses the whole script.
+/// `(cookie, pc, [(end condition, action hash)])`.
+type CommandScript = (u32, u32, Vec<(u32, u32)>);
+
+fn command_script(cs: &Value) -> Result<CommandScript, String> {
+    let cookie = cs.get("cookie").and_then(Value::as_u64).ok_or("no cookie")? as u32;
+    let pc = cs.get("pc").and_then(Value::as_u64).unwrap_or(0) as u32;
+    let atoms = cs.get("atoms").and_then(Value::as_array).ok_or("no atoms")?;
+    if atoms.len() > ACTOR_MAX_ATOMS {
+        return Err(format!("{} atoms, at most {ACTOR_MAX_ATOMS}", atoms.len()));
+    }
+    atoms
+        .iter()
+        .map(|a| {
+            let k = a.get("kind").and_then(Value::as_u64).ok_or("an atom with no kind")?;
+            if k != ATOM_SCRIPTED_SEQUENCE {
+                return Err(format!("atom kind {k} has no 56578 layout yet"));
+            }
+            let end = a.get("end").and_then(|e| e.get("kind")).and_then(Value::as_u64).unwrap_or(0);
+            if end > 1 {
+                return Err(format!("end condition {end} carries seconds, whose place is not known"));
+            }
+            let name = a.get("name").and_then(Value::as_u64).ok_or("a scripted_sequence with no name")? as u32;
+            Ok((end as u32, name))
+        })
+        .collect::<Result<Vec<_>, String>>()
+        .map(|atoms| (cookie, pc, atoms))
+}
+
+/// A sequence never played: step 0xFF (no evaluation), no target.
+fn sequence_default() -> Vec<u8> {
+    let mut b = vec![0u8; 32];
+    b[4] = 0xFF;
+    put_ref(&mut b, 0x18, None);
+    b
+}
+
+/// d1-member-states.py's member image: generation 1, +4 = -1, +6 set, the optional binding
+/// absent (+0x50 empty ref, +0x58 = -1).
+fn actor_default() -> Vec<u8> {
+    let mut b = vec![0u8; 2312];
+    put_u32(&mut b, 0, 1);
+    b[4] = 0xFF;
+    b[6] = 1;
+    put_ref(&mut b, 0x50, None);
+    put_u32(&mut b, 0x58, 0xFFFF_FFFF);
     b
 }
 
@@ -707,11 +906,118 @@ mod tests {
     }
 
     #[test]
-    fn kinds_without_a_field_map_are_refused_not_guessed() {
+    fn kinds_without_a_known_meaning_are_refused_not_guessed() {
         let mut e = RowEncoders::new();
-        for kind in ["timer", "sequence", "triggerGroup", "objectFilter", "machine", "hardWipeGlobals", "actor"] {
-            let got = e.encode(RowKey { group: 1, kind: 2, index: 0 }, kind, &json!({}), None, CTX, &no_map);
+        for (kind, id) in [("timer", 17), ("objectFilter", 33), ("hardWipeGlobals", 34), ("health", 19)] {
+            let got = e.encode(RowKey { group: 1, kind: id, index: 0 }, kind, &json!({}), None, CTX, &no_map);
             assert!(matches!(got, Encoded::Unsupported(_)), "{kind}");
+        }
+        // A mapped kind on the wrong row type is refused too.
+        for (kind, id) in [("sequence", 2), ("actor", 5), ("machine", 1), ("triggerGroup", 29)] {
+            let got = e.encode(RowKey { group: 1, kind: id, index: 0 }, kind, &json!({}), None, CTX, &no_map);
+            assert!(matches!(got, Encoded::Unsupported(_)), "{kind} on {id}");
+        }
+    }
+
+    #[test]
+    fn sequences_actors_machines_and_trigger_groups_write_their_mapped_fields() {
+        let mut e = RowEncoders::new();
+        let seq = RowKey { group: 0x992B_B471, kind: 5, index: 4 };
+        let idle = e.encode(seq, "sequence", &json!({}), None, CTX, &map);
+        assert_eq!(image(&idle), sequence_default());
+        let play = e.encode(seq, "sequence", &json!({"playing": {"id": 1, "startedAt": 305},
+            "target": {"bundle": 0x062D, "typeId": 4, "typeIndex": 9}, "pairs": [{"name": 1, "value": 2}]}), None, CTX, &map);
+        let i = image(&play);
+        assert_eq!((u32_at(i, 0), i[4]), (Some(305), 1), "start, step 1");
+        assert_eq!(&i[0x18..0x20], [0x2D, 0x06, 0xFF, 0xFF, 4, 0, 9, 0], "the target");
+        let served = Row { has_a: true, has_b: false, a: Some((TAG_SEQUENCE, i.to_vec())), b: None };
+        let again = e.encode(seq, "sequence", &json!({"playing": {"id": 1, "startedAt": 400}}), Some(&served), CTX, &map);
+        assert_ne!(image(&again)[4], 1, "a replay with the same id still moves the step");
+        assert_ne!(image(&again)[4], 0xFF);
+
+        let actor = RowKey { group: 0xFC0E_45A3, kind: 2, index: 39 };
+        let unplaced = e.encode(actor, "actor", &json!({"placed": false}), None, CTX, &map);
+        assert_eq!(unplaced, Encoded::Row(Row { has_a: true, has_b: false, a: None, b: None }));
+        let act = 0x2AC3_BDBAu64;
+        let entered = e.encode(actor, "actor", &json!({"placed": true, "incarnation": 2,
+            "commandScript": {"cookie": 0x8000_0005u64, "atoms": [{"kind": 1, "name": act, "end": {"kind": 0}}]}}), None, CTX, &map);
+        let i = image(&entered);
+        assert_eq!(i.len(), 2312);
+        assert_eq!((u32_at(i, 0), i[4], i[6]), (Some(2), 0xFF, 1));
+        assert_eq!(&i[0x50..0x5C], [0xC5, 0x9D, 0x1C, 0x81, 0xFF, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], "binding absent");
+        assert_eq!((u32_at(i, 0xB0), u32_at(i, 0xB4), u32_at(i, 0xB8)), (Some(5), Some(0), Some(1)));
+        assert_eq!((u32_at(i, 0xC0), u32_at(i, 0xC4), u32_at(i, 0xD0)), (Some(1), Some(0), Some(act as u32)));
+        let moving = e.encode(actor, "actor", &json!({"placed": true,
+            "commandScript": {"cookie": 6, "atoms": [{"kind": 0, "point": {}, "index": 0, "end": {"kind": 0}}]}}), None, CTX, &map);
+        assert_eq!(u32_at(image(&moving), 0xB8), Some(0), "a move_to atom has no 56578 layout: no script");
+
+        let m = RowKey { group: 0xFC0E_45A3, kind: 40, index: 125 };
+        let perf = e.encode(m, "machine", &json!({"cues": [], "performance": {"generation": 1, "name": 0x9B1D_6A71u64}}), None, CTX, &map);
+        assert_eq!(&image(&perf)[0..12], [0x71, 0x6A, 0x1D, 0x9B, 0xC5, 0x9D, 0x1C, 0x81, 1, 0, 0, 0], "JOIN111's image");
+        let none = e.encode(m, "machine", &json!({"cues": []}), None, CTX, &map);
+        assert_eq!(u32_at(image(&none), 0), Some(NONE_HASH));
+
+        let tg = RowKey { group: 1, kind: 30, index: 3 };
+        assert_eq!(image(&e.encode(tg, "triggerGroup", &json!({"state": -1}), None, CTX, &map))[8], 0xFF);
+        assert_eq!(image(&e.encode(tg, "triggerGroup", &json!({"state": 2}), None, CTX, &map))[8], 2);
+        assert!(matches!(e.encode(tg, "triggerGroup", &json!({"state": 5}), None, CTX, &map), Encoded::Unsupported(_)));
+    }
+
+    /// Every layout the encoders rely on is the executable's own: checked against the committed
+    /// RTTI tables (#308), which `d1_rtti.py` reads from the 56578 eboot.
+    #[test]
+    fn the_row_layouts_are_the_56578_descriptors() {
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578/rtti");
+        let schemas = std::fs::read_to_string(dir.join("schemas.tsv")).expect("schemas.tsv");
+        let fields = std::fs::read_to_string(dir.join("fields.tsv")).expect("fields.tsv");
+        let tag = |s: &str| u32::from_str_radix(s.trim_start_matches("0x"), 16).unwrap();
+        for (name, _, t, size, layout) in ROW_LAYOUTS {
+            let row = schemas
+                .lines()
+                .skip(1)
+                .map(|l| l.trim_end_matches('\r').split('\t').collect::<Vec<_>>())
+                .find(|f| tag(f[0]) == *t)
+                .unwrap_or_else(|| panic!("{name}: {t:#x} not in schemas.tsv"));
+            assert_eq!(row[2].parse::<usize>().unwrap(), *size, "{name}: struct size");
+            let got: Vec<(usize, u32)> = fields
+                .lines()
+                .skip(1)
+                .map(|l| l.trim_end_matches('\r').split('\t').collect::<Vec<_>>())
+                .filter(|f| tag(f[0]) == *t)
+                .map(|f| (f[4].parse().unwrap(), f[5].parse().unwrap()))
+                .collect();
+            assert_eq!(&got, layout, "{name}: fields (offset, kind)");
+        }
+    }
+
+    /// The new images go through the client's own codec and come back with the mapped fields
+    /// (needs the eboot).
+    #[test]
+    fn the_new_images_survive_the_clients_codec() {
+        if std::env::var("D1_EBOOT").map_or(true, |p| !std::path::Path::new(&p).is_file()) {
+            eprintln!("SKIP: set D1_EBOOT to the owned 56578 executable");
+            return;
+        }
+        let mut e = RowEncoders::new();
+        let cases: Vec<(u32, RowKey, &str, Value, Vec<usize>)> = vec![
+            (TAG_SEQUENCE, RowKey { group: 1, kind: 5, index: 0 }, "sequence",
+                json!({"playing": {"id": 1, "startedAt": 305}, "target": {"bundle": 0x062D, "typeId": 4, "typeIndex": 9}}), vec![0, 4, 0x18, 0x1C, 0x1E]),
+            (TAG_ACTOR, RowKey { group: 1, kind: 2, index: 0 }, "actor",
+                json!({"placed": true, "commandScript": {"cookie": 5, "atoms": [{"kind": 1, "name": 0x2AC3_BDBAu64, "end": {"kind": 0}}]}}),
+                vec![0, 4, 6, 0xB0, 0xB4, 0xB8, 0xC0, 0xC4, 0xD0]),
+            (TAG_MACHINE, RowKey { group: 1, kind: 40, index: 0 }, "machine",
+                json!({"performance": {"generation": 1, "name": 0x9B1D_6A71u64}}), vec![0, 4, 8]),
+            (TAG_TRIGGER_GROUP, RowKey { group: 1, kind: 30, index: 0 }, "triggerGroup", json!({"state": 2}), vec![0, 4, 8]),
+        ];
+        for (tag, key, kind, state, offsets) in cases {
+            let img = image(&e.encode(key, kind, &state, None, CTX, &map)).to_vec();
+            let mut o = d1_oracle::object::ObjectOracle::new(tag).expect("oracle");
+            let enc = o.encode(&img, 4096).expect("encode");
+            let dec = o.decode(&enc.payload).expect("decode");
+            for at in offsets {
+                assert_eq!(dec.object[at], img[at], "{kind} {tag:#x}: +{at:#x} after the client's codec");
+            }
+            eprintln!("{kind}: {} bits through the client's codec", enc.bits);
         }
     }
 

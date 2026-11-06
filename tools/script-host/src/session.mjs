@@ -8,9 +8,9 @@
 
 import { pathToFileURL } from "node:url";
 import { join } from "node:path";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { installNatives56578, missingNativeOf } from "./natives56578.mjs";
-import { parseBundles, standInBundles } from "./scripts.mjs";
+import { aliasContent, annotateContent, parseBundles, standInBundles } from "./scripts.mjs";
 import {
   lifetimeWirePhase,
   RUNTIME_LIFETIME_ENDED,
@@ -18,6 +18,13 @@ import {
 } from "./types56578.mjs";
 
 export const PROTOCOL_VERSION = 1;
+
+// BullShcript's own rule for incident listener fields (instance_building.ts
+// INCIDENT_LISTENER_FIELD): host bookkeeping, never a row.
+const INCIDENT_LISTENER = /(?:^|\.)(?:k?e?il_[^.]*|_incident_listener)$/;
+export function isHostSideBinding(path) {
+  return INCIDENT_LISTENER.test(path);
+}
 export const DEFAULT_TICK_HZ = 10;
 
 const SharedRuntimeCache = new Map();
@@ -74,11 +81,20 @@ export class ActivitySession {
     this.endedSent = false;
     this.hardWipeArmed = false;
     this.allDead = false;
+    this.activeBundles = undefined;
 
     if (options.bundles) {
       this.bundles = parseBundles(options.bundles);
       this.standIn = false;
       this.bundleNotes = [];
+      // The scripts' own declarations name each Encounter row's archetype.
+      const twins = standInBundles(scripts, this.activity, this.types, {
+        extra: this.bundles.map((t) => t.bundle),
+      });
+      const n = annotateContent(this.bundles, twins.bundles, this.types);
+      if (n > 0) this.bundleNotes.push(`content: ${n} Encounter rows take their archetype from the scripts`);
+      const aliases = aliasContent(this.bundles, twins.bundles, this.api.fnv1);
+      if (aliases > 0) this.bundleNotes.push(`content: ${aliases} script members bound to the one content row their name prefixes`);
     } else {
       const made = standInBundles(scripts, this.activity, this.types, {
         extra: options.extraBundles ?? [],
@@ -211,8 +227,29 @@ export class ActivitySession {
       script_tags: this.runtime.scriptTags,
       stubs: [...this.stubs],
       type: "ready",
-      unresolved: [...this.runtime.unresolvedBindings],
+      // BullShcript keeps incident listeners host-side by design (they count
+      // incidents for an import identifier and have no row in any bundle; the
+      // content export confirms it), so they are listed apart, not as gaps.
+      host_side: this.runtime.unresolvedBindings.filter((p) => this.hostSide(p)),
+      unresolved: this.runtime.unresolvedBindings.filter((p) => !this.hostSide(p)),
     });
+  }
+
+  // Bindings no bundle row backs by design: incident listeners (BullShcript's
+  // rule) and members declared `activity_flag`, which are flags on the players
+  // bound by identifier (BullShcript names only `_activity_flag` fields so; the
+  // content export has no row for either).
+  hostSide(path) {
+    if (isHostSideBinding(path)) return true;
+    if (!this.activityFlagMembers) {
+      this.activityFlagMembers = new Set();
+      for (const p of this.closure) {
+        for (const m of this.scripts.schemaOf(p)?.members ?? []) {
+          if (m.type === "activity_flag") this.activityFlagMembers.add(m.name);
+        }
+      }
+    }
+    return this.activityFlagMembers.has(path.slice(path.lastIndexOf(".") + 1));
   }
 
   phaseStarted(decl) {
@@ -301,7 +338,12 @@ export class ActivitySession {
         return this.flush(false);
       }
       case "active_bundles":
-        r.setActiveBundles(new Set((msg.bundles ?? []).map((b) => Number(b) >>> 0)));
+        this.activeBundles = new Set((msg.bundles ?? []).map((b) => Number(b) >>> 0));
+        r.setActiveBundles(this.activeBundles);
+        break;
+      case "event_start":
+      case "event_stop":
+        this.publicEvent(msg);
         break;
       case "players":
         this.players = (msg.players ?? []).map((p) => ({
@@ -429,6 +471,26 @@ export class ActivitySession {
     return this.flush();
   }
 
+  // One public event (PROTOCOL.md "Public events"): its bundle's threads
+  // start or stop running, the rest of the active set unchanged. An event
+  // runs from its own bundle's scripts, so this is the bundle's switch; the
+  // rows the event left are kept (no 56578 evidence says they reset).
+  publicEvent(msg) {
+    const bundle = Number(msg.bundle) >>> 0;
+    const start = msg.type === "event_start";
+    const reply = { bundle, event_id: msg.event_id, type: "event" };
+    if (!this.bundles.some((t) => t.bundle === bundle)) {
+      this.out.push({ ...reply, reason: "the activity loads no such bundle", state: "refused" });
+      return;
+    }
+    const active = new Set(this.activeBundles ?? this.bundles.map((t) => t.bundle));
+    if (start) active.add(bundle);
+    else active.delete(bundle);
+    this.activeBundles = active;
+    this.runtime.setActiveBundles(active);
+    this.out.push({ ...reply, state: start ? "started" : "stopped" });
+  }
+
   spawned(key) {
     if (this.players) {
       for (const p of this.players) {
@@ -514,7 +576,17 @@ export class ActivitySession {
   }
 }
 
-// Reads a content export file (the private ActivityBundleTag[] JSON).
+// Reads a content export file (the private ActivityBundleTag[] JSON, or
+// tools/export-bundles.mjs's per-world document).
 export function readBundlesFile(path) {
   return JSON.parse(readFileSync(path, "utf8"));
+}
+
+// The export for an activity under D1_BUNDLES_DIR (`<dir>/<world>.json`, the
+// world being the activity's own name), when one is there.
+export function bundlesPathFor(activity, env = process.env) {
+  const dir = env.D1_BUNDLES_DIR;
+  if (!dir || !activity) return undefined;
+  const path = join(dir, `${activity}.json`);
+  return existsSync(path) ? path : undefined;
 }

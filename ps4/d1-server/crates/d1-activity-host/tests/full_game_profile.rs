@@ -247,7 +247,7 @@ fn the_script_bridge_configures_from_the_profile() {
     let Some(s) = full_game(&run) else { return };
     // This test binary's own environment: only this test sets it.
     for (k, v) in &s.vars {
-        if k.starts_with("D1_AH_SCRIPTS") || k.starts_with("D1_AH_ROWS") {
+        if k.starts_with("D1_AH_SCRIPTS") || k.starts_with("D1_AH_ROWS") || k == "D1_AH_WORLDS" || k == "D1_BUNDLES_DIR" {
             std::env::set_var(k, v);
         }
     }
@@ -265,7 +265,12 @@ fn the_script_bridge_configures_from_the_profile() {
         .expect("D1_AH_SCRIPTS's inputs")
         .expect("D1_AH_SCRIPTS=1 in full-game.env");
     assert!(!c.activities.is_empty(), "the scripted-activity table names something");
+    // Stream K's generated table: cine_reveal, its lists from the world tables, its hand-off.
+    if let Some(reveal) = c.activities.get(&165) {
+        assert!(!reveal.slice_rows.is_empty(), "the slice lists from D1_AH_WORLDS");
+        assert_eq!(reveal.next, Some((0, 0x8AE8_DA69)), "cine_reveal hands off to the Tower");
+    }
     let f = d1_activity_host::reward_forward::GrantForwarder::new(run.join("store-control.txt"));
-    c.rewards = std::sync::Arc::new(f);
+    c.rewards = std::sync::Arc::new(std::sync::Mutex::new(f));
     let _ = std::fs::remove_dir_all(&run);
 }

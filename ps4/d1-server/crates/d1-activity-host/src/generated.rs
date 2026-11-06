@@ -44,6 +44,13 @@ pub struct WorldFacts {
 pub struct SliceSet {
     pub public: bool,
     pub bundles: Vec<u32>,
+    /// The bubble's region name hash (FNV-1 of the slice the scripts name, `plaza`), when the
+    /// table has the column.
+    pub region_hash: Option<u32>,
+    pub valid: bool,
+    /// The scenario state's name hash: the FNV-1 of the mission phase the state belongs to
+    /// (`ps4/fixtures/56578/scripts/slice-states.tsv`, [`GeneratedWorlds::load_slice_states`]).
+    pub state_hash: Option<u32>,
 }
 
 /// One sensor client of a bundle: row type, row index, A and B value types present.
@@ -217,6 +224,9 @@ impl GeneratedWorlds {
                 SliceSet {
                     public: r["public"] == "1",
                     bundles: tags,
+                    region_hash: r.get("region_hash").map(|v| num(v)).transpose()?,
+                    valid: r.get("valid").is_none_or(|v| *v == "1"),
+                    state_hash: None,
                 },
             );
         }
@@ -277,6 +287,56 @@ impl GeneratedWorlds {
             );
         }
         Ok(g)
+    }
+
+    /// Read `slice-states.tsv` (`world slice_set bubble valid state_hash region_hash`, written by
+    /// `tools/script-host/tools/export-bundles.mjs --tables`): each slice set's state name hash.
+    /// A slice set the world tables do not have is skipped.
+    pub fn load_slice_states(&mut self, text: &str) -> Result<usize> {
+        let mut n = 0;
+        for r in rows(text, &["world", "slice_set", "state_hash"]).context("slice-states.tsv")? {
+            if let Some(s) = self.slices.get_mut(&(r["world"].to_string(), num(r["slice_set"])?)) {
+                s.state_hash = Some(num(r["state_hash"])?);
+                n += 1;
+            }
+        }
+        Ok(n)
+    }
+
+    /// The bundle groups `slice_set` loads, in the client's registration order (global,
+    /// authoritative, private), each once: what a slice change makes active.
+    pub fn slice_groups(&self, world: &str, slice_set: u32) -> Vec<u32> {
+        let mut out: Vec<u32> = Vec::new();
+        for tag in self.slices.get(&(world.to_string(), slice_set)).map(|s| s.bundles.as_slice()).unwrap_or_default() {
+            for (group, _, _) in self.bundles.get(tag).map(Vec::as_slice).unwrap_or_default() {
+                if !out.contains(group) {
+                    out.push(*group);
+                }
+            }
+        }
+        out
+    }
+
+    /// Every slice set of `world`, in order.
+    pub fn slice_sets(&self, world: &str) -> Vec<u32> {
+        let mut v: Vec<u32> = self.slices.keys().filter(|(w, _)| w == world).map(|(_, s)| *s).collect();
+        v.sort_unstable();
+        v
+    }
+
+    /// The slice set a mission phase runs in: the valid state whose name hash is the phase's
+    /// (`cine_107_twr_phase` → cine_reveal's 26); else, by the slice the phase names, the bubble's
+    /// first valid private state (`plaza` → 24). `None` when neither is known.
+    pub fn phase_slice_set(&self, world: &str, phase_hash: u32, slice_hash: Option<u32>) -> Option<u32> {
+        let sets = self.slice_sets(world);
+        let get = |s: &u32| self.slices.get(&(world.to_string(), *s));
+        sets.iter()
+            .find(|s| get(s).is_some_and(|x| x.valid && x.state_hash == Some(phase_hash)))
+            .or_else(|| {
+                let h = slice_hash?;
+                sets.iter().find(|s| get(s).is_some_and(|x| x.valid && !x.public && x.region_hash == Some(h)))
+            })
+            .copied()
     }
 
     /// The sensor clients `slice_set` registers: (group, type, index, has_a, has_b), deduplicated.

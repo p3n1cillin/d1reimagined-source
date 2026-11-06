@@ -230,87 +230,11 @@ pub fn bundle_role(hash: u32, kinds: &BTreeMap<u8, usize>) -> BundleRole {
 
 // ── rewards: the one call this layer makes into progression ───────────────────────────────────
 
-/// How an open-world activity ended for one character.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ActivityOutcome {
-    /// A public event the character took part in. `tier` is what the event's script reported.
-    PublicEvent { event_id: u32, completed: bool, tier: Option<EventTier> },
-    /// A patrol mission from a beacon.
-    PatrolMission { beacon: u32 },
-    /// A chest opened.
-    Chest { bundle: u32, index: i16 },
-    /// A resource node harvested.
-    ResourceNode { bundle: u32, index: i16 },
-}
-
-impl ActivityOutcome {
-    /// Whether it counts as a completion: the `completed` of stream M's
-    /// `rewards::ActivityOutcome` (`d1-responder`), which the responder-side grant takes as
-    /// `ActivityOutcome { completed, community_page: None, roll_engrams: false, seed: None }`.
-    /// Chests, nodes and patrol missions are always completions; an event only when it was.
-    pub fn completed(&self) -> bool {
-        match self {
-            Self::PublicEvent { completed, .. } => *completed,
-            Self::PatrolMission { .. } | Self::Chest { .. } | Self::ResourceNode { .. } => true,
-        }
-    }
-}
-
-/// A public event's completion tier, as Destiny 1 showed it (bronze, silver, gold). The tier is
-/// reported by the event's script; this layer never computes one.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum EventTier {
-    Bronze,
-    Silver,
-    Gold,
-}
-
-/// ⭐ **The interface stream M (progression) implements.** Every open-world reward goes through
-/// this one call: what the character gets, and how it is saved, is M's to decide from the game's
-/// own reward data; this layer only reports who finished what.
-pub trait ActivityRewards {
-    fn grant_activity_rewards(
-        &mut self,
-        character: u64,
-        activity_hash: u32,
-        outcome: &ActivityOutcome,
-    ) -> Result<(), String>;
-}
-
-/// Records every grant, for tests and for a host run with no progression service.
-#[derive(Debug, Default)]
-pub struct RecordingRewards {
-    pub grants: Vec<(u64, u32, ActivityOutcome)>,
-}
-
-impl ActivityRewards for RecordingRewards {
-    fn grant_activity_rewards(
-        &mut self,
-        character: u64,
-        activity_hash: u32,
-        outcome: &ActivityOutcome,
-    ) -> Result<(), String> {
-        self.grants.push((character, activity_hash, outcome.clone()));
-        Ok(())
-    }
-}
-
-/// The rewards a host reports with until stream M's service exists: each grant is logged, and
-/// nothing is given.
-#[derive(Debug, Default)]
-pub struct LoggedRewards;
-
-impl ActivityRewards for LoggedRewards {
-    fn grant_activity_rewards(
-        &mut self,
-        character: u64,
-        activity_hash: u32,
-        outcome: &ActivityOutcome,
-    ) -> Result<(), String> {
-        tracing::info!("open-world reward for {character:#x} (activity {activity_hash:#010x}): {outcome:?} - no progression service yet (stream M)");
-        Ok(())
-    }
-}
+/// ⭐ **The interface stream M (progression) implements**, now the host's one rewards trait
+/// ([`crate::rewards`]): every open-world reward goes through it, keyed by the member's u64
+/// ([`CharacterRef::from_key`]). What the character gets, and how it is saved, is M's to decide
+/// from the game's own reward data; this layer only reports who finished what.
+pub use crate::rewards::{ActivityOutcome, ActivityRewards, CharacterRef, EventTier, LoggedRewards, RecordingRewards};
 
 // ── patrol ────────────────────────────────────────────────────────────────────────────────────
 
@@ -413,7 +337,7 @@ impl PatrolBoard {
             return Ok(false);
         }
         let outcome = ActivityOutcome::PatrolMission { beacon: beacon.id };
-        rewards.grant_activity_rewards(character, beacon.activity_hash, &outcome)?;
+        rewards.grant_activity_rewards(&CharacterRef::from_key(character), beacon.activity_hash, &outcome)?;
         self.active.remove(&character);
         Ok(true)
     }
@@ -509,7 +433,7 @@ impl LootField {
             LootKind::Chest => ActivityOutcome::Chest { bundle, index },
             LootKind::ResourceNode => ActivityOutcome::ResourceNode { bundle, index },
         };
-        rewards.grant_activity_rewards(character, activity_hash, &outcome)
+        rewards.grant_activity_rewards(&CharacterRef::from_key(character), activity_hash, &outcome)
     }
 }
 

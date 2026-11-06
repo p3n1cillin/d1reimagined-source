@@ -58,6 +58,8 @@ one method the same way and keeps `main.rs` handing it the forwarder (`ScriptCon
 `OpenWorldServices::rewards`). `GrantDetails` also carries `page` (the Cryptarch guide page),
 `engrams` and `seed`.
 
+**Update (stream K, [story missions](ps4-56578-story-missions-2026-11-05.md)):** the two traits are now one, `rewards::ActivityRewards`, and `GrantForwarder` implements it once over `forward`: a 40-byte `CharacterRef` goes out as the identity, the open world's `CharacterRef::from_key` as the key, with the same `source` words. The bridge calls it at lifetime 6. Its new `activity_hand_off` (cine_reveal → the Tower) is logged by the forwarder, because the control grammar has no line for it yet. The script bridge now sends `event_start` / `event_stop`, so row 9 no longer refuses a single event once a scripted run is going.
+
 ## The control lines
 
 The responder's store command file (`D1_STORE_CONTROL`) now takes:
