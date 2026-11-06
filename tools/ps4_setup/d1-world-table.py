@@ -368,7 +368,7 @@ def bind(content, activities, manifest, legacy, hosts, captured=None):
             if client is not None:
                 ev += '; ' + client_note(client, cap_world if client in content.worlds or client == '' else None)
             row['evidence'] = ev
-        elif client_world:
+        elif client_world and not (meta and meta['playlist']):
             row['world'] = client_world
             row['status'] = 'generated'
             ev = f'{CLIENT} names it'
@@ -386,7 +386,9 @@ def bind(content, activities, manifest, legacy, hosts, captured=None):
         elif names:
             row['evidence'] = f'{how}: ambiguous {"/".join(names)}' + ('' if client is None else '; ' + client_note(client))
         elif meta and meta['playlist']:
-            row['evidence'] = 'playlist: launches another activity'
+            # A playlist picks one of its entries: the bundle its own definition names is not its world.
+            row['evidence'] = 'playlist: launches another activity' + (
+                '' if not client else f'; {CLIENT} names {client}' if client_world else f'; {client_note(client)}')
         elif client is not None:
             row['evidence'] = client_note(client)
         elif meta and not meta['name']:

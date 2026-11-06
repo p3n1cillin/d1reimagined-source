@@ -280,7 +280,7 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 277	0xfcc4b6bb	The Promethean Code	ACTIVITY_TYPE_STORY	mission_turing	88	capture	1	8	0x4786c0e0	cross-checked	live capture The-Promethean-Code; client's activity definition agrees
 278	0x66fceb8b	The Promethean Code	ACTIVITY_TYPE_STORY	mission_turing	88	capture of 277	1	8	0x4786c0e0	generated	client's activity definition names it
 279	0x10179688	The Promethean Code	ACTIVITY_TYPE_STORY	mission_turing	88	capture of 277	1	8	0x4786c0e0	generated	client's activity definition names it
-280	0xa80c8b92	Vanguard Legacy	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
+280	0xa80c8b92	Vanguard Legacy	ACTIVITY_TYPE_STRIKE_PLAYLIST	-	-	-	-	-	-	missing evidence	playlist: launches another activity; client's activity definition names strike_kingpin
 281	0x8f271d8f	Taken War	ACTIVITY_TYPE_STRIKE_PLAYLIST	-	-	-	-	-	-	missing evidence	playlist: launches another activity
 282	0xb8a7dd09	The Will of Crota	ACTIVITY_TYPE_STRIKE_PLAYLIST	cosmo_portal_2	88	capture of 303	1	8	0x4786c0e0	generated	client's activity definition names it
 283	0xcc45a218	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it

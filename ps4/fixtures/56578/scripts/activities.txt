@@ -2,8 +2,8 @@
 # The script bridge's activity table (D1_AH_SCRIPTS_ACTIVITIES): every story mission, cinematic,
 # quest mission, strike, raid and arena with a world in ps4/fixtures/56578/worlds/. Identifiers only.
 # Needs D1_AH_WORLDS (the world tables, for @generated) and ps4/fixtures/56578/scripts/slice-states.tsv.
-# 474 activities; 26 more have no world yet (listed at the end).
-# 250 of them name a world no restored script starts: the sidecar serves those as
+# 473 activities; 27 more have no world yet (listed at the end).
+# 249 of them name a world no restored script starts: the sidecar serves those as
 # start-only stubs on their content bundles ("no script" below).
 # Vault of Glass (ACTIVITY_TYPE_RAID, world generated)
 12 venus_raid_1 0x4786c0e0 @generated start=120 hash=0x9e80e7c7 type=0x79cbded5 type2=0x79cbded5 place=0xe6bbd7c8
@@ -391,8 +391,6 @@
 278 mission_turing 0x4786c0e0 @generated start=88 hash=0x66fceb8b type=0x648999f4 type2=0x648999f4 place=0xdf617463
 # The Promethean Code (ACTIVITY_TYPE_STORY, world generated; no script: a start-only stub)
 279 mission_turing 0x4786c0e0 @generated start=88 hash=0x10179688 type=0x648999f4 type2=0x648999f4 place=0xdf617463
-# Vanguard Legacy (ACTIVITY_TYPE_STRIKE_PLAYLIST, world generated; no script: a start-only stub)
-280 strike_kingpin 0x4786c0e0 @generated start=24 hash=0xa80c8b92 type=0xac34f818 type2=0xac34f818 place=0xd6ebba73
 # The Will of Crota (ACTIVITY_TYPE_STRIKE_PLAYLIST, world generated)
 282 cosmo_portal_2 0x4786c0e0 @generated start=88 hash=0xb8a7dd09 type=0xac34f818 type2=0xac34f818 place=0xdf617463
 # Fallen S.A.B.E.R. (ACTIVITY_TYPE_STRIKE_PLAYLIST, world generated; no script: a start-only stub)
@@ -960,6 +958,7 @@
 #   231 Oryx Triumphant (STORY_CINEMATIC): no world in the world tables (client's activity definition names no world)
 #   232 The Taken King: Prelude (CREDITS): no world in the world tables (client's activity definition names no world)
 #   233 - (STORY_CINEMATIC): no world in the world tables (client's activity definition names no world)
+#   280 Vanguard Legacy (ACTIVITY_TYPE_STRIKE_PLAYLIST): no world in the world tables (playlist: launches another activity; client's activity definition names strike_kingpin)
 #   281 Taken War (ACTIVITY_TYPE_STRIKE_PLAYLIST): no world in the world tables (playlist: launches another activity)
 #   320 Taken War Heroic (ACTIVITY_TYPE_STRIKE_PLAYLIST): no world in the world tables (playlist: launches another activity)
 #   332 Prison of Elders (ARENA): no world in the world tables (playlist: launches another activity)
