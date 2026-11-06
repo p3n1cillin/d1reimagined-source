@@ -124,6 +124,14 @@ row's archetype (`childScript`, by the row's name), and an alias for a restored 
 is a prefix of exactly one content row of its type in its own bundle (`thorium_dome` →
 `thorium_dome_a`), said in `loaded.notes`. Neither changes an index.
 
+**A world no script starts.** When no `@activity` names the activity but its content export is
+there (`bundles`, `bundles_path` or `D1_BUNDLES_DIR/<activity>.json`), the sidecar answers with a
+start-only stub, as the upstream stubs are: `stub: true`, no `phases`, an empty `start`, and a
+`notes` line saying so. The content bundles load and their own scripts, if any, run; with none,
+nothing moves the lifetime and the host decides. Without content it still refuses (`no script
+starts activity …`): a stub on stand-in rows would have nothing to serve. This is how the bridge's
+table can list every bound PvE activity, scripted or not (`tools/ps4_setup/d1-scripts-table.py`).
+
 `§4.3`'s `fukugen_dir`, `compiled_dir` and `tick_hz:30` / `script_tick_s` are replaced by
 `scripts_dir` and `tick_hz`. The folder compiles in memory in under half a second, so nothing
 derived from the scripts is written to disk.

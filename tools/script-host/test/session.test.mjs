@@ -203,6 +203,26 @@ describe("ActivitySession on synthetic scripts", { skip }, () => {
     assert.deepEqual(started[0].unresolved, []);
   });
 
+  it("serves a world no script starts as a start-only stub on its content", async () => {
+    const first = await session();
+    const exported = JSON.parse(JSON.stringify(first.bundles)).map((b) => ({
+      ...b,
+      bundle: `0x${b.bundle.toString(16)}`,
+    }));
+    await assert.rejects(session("raid_unscripted"), /no script starts activity raid_unscripted/);
+    await assert.rejects(session("raid_unscripted", { stub: true }), /no script starts/, "not on stand-ins");
+    const s = await session("raid_unscripted", { bundles: exported, stub: true });
+    const loaded = s.loaded();
+    assert.equal(loaded.stub, true);
+    assert.equal(loaded.stand_in, false);
+    // drives_lifetime is whatever the content bundles' own scripts do (here test_cine's do).
+    assert.deepEqual(loaded.phases, []);
+    assert.ok(loaded.notes.some((n) => /start-only stub/.test(n)), loaded.notes);
+    const started = s.handle({ type: "start" });
+    assert.ok(!started.some((m) => m.type === "error"), JSON.stringify(started));
+    assert.ok(!s.handle({ now: 1, type: "tick" }).some((m) => m.type === "error"));
+  });
+
   it("phase_index resumes at a later phase", async () => {
     const s = await session("test_cine", { phaseIndex: 1 });
     const started = s.handle({ type: "start" });

@@ -198,10 +198,13 @@ fn the_full_game_tables_load() {
     assert!(lib.validate().is_empty(), "{:?}", lib.validate());
     // #314: the generated worlds, every listed activity planned, and the PUBLIC checksums.
     let worlds = d1_activity_host::generated::GeneratedWorlds::load(&v("D1_AH_WORLDS")).expect("the worlds");
-    let only: Vec<u16> = s.vars["D1_AH_WORLDS_ACTIVITIES"].split(',').map(|i| i.trim().parse().unwrap()).collect();
-    let (plans, skipped) = worlds.plans(Some(&only), s.vars.get("D1_AH_WORLDS_PRIVATE_START").is_some_and(|x| x == "1"));
-    assert!(skipped.is_empty(), "listed activities without a world: {skipped:?}");
-    assert_eq!(plans.len(), only.len());
+    // stream Q: `all`, every activity with a world (tests/all_worlds.rs measures the cost).
+    let only = d1_activity_host::generated::parse_activities(&s.vars["D1_AH_WORLDS_ACTIVITIES"]);
+    assert_eq!(only, None, "the full game serves every activity with a world");
+    let (plans, skipped) = worlds.plans(only.as_deref(), s.vars.get("D1_AH_WORLDS_PRIVATE_START").is_some_and(|x| x == "1"));
+    let bound = worlds.activities.values().filter(|a| a.world.is_some()).count();
+    assert_eq!(plans.len(), bound, "activities with a world the host would skip: {skipped:?}");
+    assert!(plans.len() > 500, "{} activities served", plans.len());
     let public = d1_activity_host::generated::read_public_checksums(&v("D1_AH_WORLDS")).unwrap();
     assert!(!public.is_empty());
     // #316: every public list loads, a bubble's leads with the players group, and each goes through the entry-only
