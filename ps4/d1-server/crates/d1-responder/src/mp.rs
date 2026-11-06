@@ -182,6 +182,11 @@ pub fn matchmaking_reply(conn: u64, body: &[u8]) -> Option<Vec<u8>> {
     with(|s| match s.matchmaking_placed(ConnectionId(conn), body, now_ms(), &mut place) {
         Ok(r) => {
             warn!("      ⭐ MP matchmaking (connection #{conn}): {:?}", r.action);
+            // Stream O2: a public-bubble search (slot 1) places the fireteam in the activity
+            // host's public instances and holds its slots there (public_feed.rs).
+            if let d1_mp::matchmaking::DirectoryAction::Searched { slot: 1, set_id, needed, .. } = r.action {
+                crate::public_feed::on_bubble_search(set_id, needed as usize);
+            }
             Some(r.body)
         }
         Err(e) => {
