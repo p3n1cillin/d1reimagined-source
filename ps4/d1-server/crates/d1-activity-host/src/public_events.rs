@@ -73,19 +73,35 @@ const fn ev(id: u32, kind: EventKind, limit_s: u64) -> ScheduledEvent {
 /// bubble's host, not when the next would have come. These windows (10-15 minutes quiet, 5 minutes
 /// to finish) are stand-ins chosen to be plausible, and the rotations list the kinds of event D1
 /// ran in those bubbles, not entries read from content.
+///
+/// What the 5 November patrol capture adds (`notes/d1-live-captures-patrol-tower-2026-11-06.md`,
+/// "Public events"):
+/// - **The first quiet spell is live**: both events captured started 485 s (region 0) and 494 s
+///   (region 56) after their instance started (from the instances' own 10 Hz stamps), so the
+///   windows below are 480-500 s. ⚠ Whether later spells are as long is not in any capture (the
+///   client never stayed for a second event), so the same window stands in for them.
+/// - Each event's objective record was armed 13 and 31 s before it started.
+/// - The two events ran 121 s (Drill Site, on region 56's `0xED3C5B0A`, gold) and 265 s (the triple
+///   on region 0's `0xD2C22DCF`, silver), inside the 300 s limits here; no event was seen to fail,
+///   so the limits are still stand-ins.
+/// - Region 0's Taken spawns ran beside its event on the same host in a cycle of their own
+///   (177-178 s), so "one event at a time" holds for the events bundle.
+///
+/// Region 56 has no row yet: its event's kind is not known.
 pub const PLACEHOLDER_SCHEDULE: &[EventSchedule] = &[
     // Cosmodrome region 48 (around dome A).
     EventSchedule {
         bundle: 0x358E_BAE1,
-        quiet_min: Duration::from_secs(600),
-        quiet_max: Duration::from_secs(900),
+        quiet_min: Duration::from_secs(480),
+        quiet_max: Duration::from_secs(500),
         events: &[ev(0, EventKind::Defend, 300), ev(1, EventKind::Defend, 300)],
     },
-    // Cosmodrome region 0 (the Array): where Defend the Warsat ran live.
+    // Cosmodrome region 0 (the Array): where Defend the Warsat ran live (twice: The Dark Within in
+    // October, and the 5 November triple, with Taken Corruption and Urzok the Hated beside it).
     EventSchedule {
         bundle: 0xD2C2_2DCF,
-        quiet_min: Duration::from_secs(600),
-        quiet_max: Duration::from_secs(900),
+        quiet_min: Duration::from_secs(480),
+        quiet_max: Duration::from_secs(500),
         events: &[ev(0, EventKind::Defend, 300), ev(1, EventKind::Skirmish, 300)],
     },
 ];
@@ -161,6 +177,43 @@ pub enum EventPhase {
     Quiet { until: Instant },
     /// An event is running.
     Running { event: ScheduledEvent, since: Instant },
+}
+
+/// 56578 incident ids of a public event's completion (PR #328's patrol capture, "Public events";
+/// 51539 → 56578 by `incidents-51539-to-56578.tsv`): `public_event_complete` (1554 → 1918),
+/// `event_completion_reward2` (2413 → 3076), `event_completion_reward3` (2414 → 3077) and
+/// `public_event_complete_gold_tier` (604 → 732).
+pub const INCIDENT_PUBLIC_EVENT_COMPLETE: u32 = 1918;
+pub const INCIDENT_EVENT_REWARD2: u32 = 3076;
+pub const INCIDENT_EVENT_REWARD3: u32 = 3077;
+pub const INCIDENT_EVENT_GOLD_TIER: u32 = 732;
+
+/// The completion incidents the bubble's host sends for `result`, in the live order. **Gold** is
+/// 1918, 3077, 732 (Drill Site, 5 November; October's Warsat added 2217 beside them); **silver**
+/// is 1918, 3076 (the region-0 triple). ⚠ **Bronze was never captured**: it is the completion
+/// alone (1918), a labelled stand-in. A failed event sends none.
+pub fn completion_incidents(result: EventResult) -> &'static [u32] {
+    match result {
+        EventResult::Completed(EventTier::Gold) => &[INCIDENT_PUBLIC_EVENT_COMPLETE, INCIDENT_EVENT_REWARD3, INCIDENT_EVENT_GOLD_TIER],
+        EventResult::Completed(EventTier::Silver) => &[INCIDENT_PUBLIC_EVENT_COMPLETE, INCIDENT_EVENT_REWARD2],
+        EventResult::Completed(EventTier::Bronze) => &[INCIDENT_PUBLIC_EVENT_COMPLETE],
+        EventResult::Failed => &[],
+    }
+}
+
+/// The tier a completion incident set names (the inverse of [`completion_incidents`], for reading
+/// captures and replays): None when it is not a completion.
+pub fn tier_of_completion(types: &[u32]) -> Option<EventTier> {
+    if !types.contains(&INCIDENT_PUBLIC_EVENT_COMPLETE) {
+        return None;
+    }
+    Some(if types.contains(&INCIDENT_EVENT_GOLD_TIER) || types.contains(&INCIDENT_EVENT_REWARD3) {
+        EventTier::Gold
+    } else if types.contains(&INCIDENT_EVENT_REWARD2) {
+        EventTier::Silver
+    } else {
+        EventTier::Bronze
+    })
 }
 
 /// How an event ended.
@@ -321,6 +374,21 @@ impl PublicEventRunner {
 mod tests {
     use super::*;
     use crate::open_world::RecordingRewards;
+
+    /// PR #328: the tier is the completion incident set, both ways.
+    #[test]
+    fn an_events_tier_is_its_completion_incident_set() {
+        assert_eq!(completion_incidents(EventResult::Completed(EventTier::Gold)), [1918, 3077, 732]);
+        assert_eq!(completion_incidents(EventResult::Completed(EventTier::Silver)), [1918, 3076]);
+        assert!(completion_incidents(EventResult::Failed).is_empty());
+        assert_eq!(tier_of_completion(&[1918, 3077, 732]), Some(EventTier::Gold), "Drill Site");
+        assert_eq!(tier_of_completion(&[1918, 3076]), Some(EventTier::Silver), "the region-0 triple");
+        assert_eq!(tier_of_completion(&[1918, 3077, 732, 2217]), Some(EventTier::Gold), "October's Warsat");
+        assert_eq!(tier_of_completion(&[3076]), None, "no completion without 1918");
+        for t in [EventTier::Bronze, EventTier::Silver, EventTier::Gold] {
+            assert_eq!(tier_of_completion(completion_incidents(EventResult::Completed(t))), Some(t));
+        }
+    }
 
     const HOST: u64 = 0xD1A0_0000_0000_0002;
 

@@ -11,6 +11,11 @@
     d1-srcp.py regions CAPTURE.pcap                     (the PAH region records, udt 11, as they change)
     d1-srcp.py export CAPTURE.pcap --out PRIVATE.jsonl  (every activity-host message, hex body)
     d1-srcp.py matchmaking CAPTURE.pcap [...]           (message 42/43 protobuf shapes, values redacted)
+    d1-srcp.py investment CAPTURE.pcap [...] [--skip 702]  (BAP 10/11 investment requests and replies,
+                                                        arguments decoded by d1-rsat, with the QueueZ pushes)
+    d1-srcp.py queuez CAPTURE.pcap [...]                (QueueZ 123 pushes: family, type checksum, length)
+    d1-srcp.py stacks CAPTURE.pcap [...]                (the account and profile slots each push writes:
+                                                        content, quantity and its change; d1-rsat)
 
 Decoding uses the 56578 client's own codec (`d1-oracle activity-host decode`, with D1_EBOOT and
 D1_ORACLE as for the server); the last-gen captures' struct layouts decode with it, but content
@@ -306,6 +311,183 @@ def hosts_tsv_rows(label, data, names, index):
     return out
 
 
+def rsat():
+    """The native codec's CLI (`d1-rsat`, ps4/d1-server/crates/d1-rsat): D1_RSAT, else beside
+    the oracle."""
+    return os.environ.get('D1_RSAT') or str(Path(oracle()).with_name('d1-rsat.exe' if os.name == 'nt'
+                                                                     else 'd1-rsat'))
+
+
+def rsat_decode(rows):
+    """[decoded dict] for (tag, body, at[, fill]) rows, one `d1-rsat decode-batch` start: each body
+    decoded as tag from bit `at` (into an image of `fill` bytes, hex); a dict has 'end' (the absolute bit after the walk) and 'object' (the
+    struct image, hex), or 'error'."""
+    rows = list(rows)
+    if not rows:
+        return []
+    batch = ''.join(f'{r[0]:#x} {r[1].hex()} {r[2]}' + (f' {r[3]}' if len(r) > 3 else '') + '\n' for r in rows)
+    r = subprocess.run([rsat(), 'decode-batch'], input=batch, capture_output=True, text=True,
+                       timeout=60 + len(rows))
+    lines = r.stdout.splitlines()
+    if r.returncode or len(lines) != len(rows):
+        raise RuntimeError(f'd1-rsat decode-batch: {(r.stderr or r.stdout).strip()[-300:]}')
+    return [json.loads(line) for line in lines]
+
+
+def rtti_dir():
+    return Path(d1paths.fixtures()) / 'rtti'
+
+
+def load_services(path=None):
+    """{service id: (request tag, response tag)} from the 56578 RTTI export (services.tsv)."""
+    out = {}
+    for line in Path(path or rtti_dir() / 'services.tsv').read_text().splitlines()[1:]:
+        p = line.split('\t')
+        out[int(p[0])] = (int(p[2], 16), int(p[3], 16))
+    return out
+
+
+def load_fields(path=None):
+    """{tag: [(offset, kind, child tag or None)]} from the RTTI export's fields.tsv."""
+    out = collections.defaultdict(list)
+    for line in Path(path or rtti_dir() / 'fields.tsv').read_text().splitlines()[1:]:
+        p = line.split('\t')
+        if not p[4]:
+            continue  # the one incomplete schema's unmarked field (0x80802049 field 9)
+        child = int(p[6])
+        out[int(p[0], 16)].append((int(p[4]), int(p[5]), None if child == 0xFFFFFFFF else child))
+    return dict(out)
+
+
+# kind low byte -> (C width, signed): bool, biased i8/i16/i32, i64, raw u8/u16/u32/u64, f32
+LEAF = {2: (1, False), 3: (1, True), 4: (2, True), 5: (4, True), 6: (8, True), 7: (1, False),
+        8: (2, False), 9: (4, False), 0xA: (8, False), 0xB: (4, None)}
+
+
+def render_fields(tag, image, fields, base=0, depth=0):
+    """A decoded struct image's top-level (and nested) leaf fields as `[(path, value)]`, offsets
+    from `fields`. 64-bit values of 2**20 or more (item instances, nonces, account ids) are shown
+    as `#....` and their last four hex digits only, so the output can be shared."""
+    out = []
+    for i, (off, kind, child) in enumerate(fields.get(tag, [])):
+        at = base + off
+        if child is not None and depth < 4 and child in fields:
+            out += [(f'f{i}.{p}', v) for p, v in render_fields(child, image, fields, at, depth + 1)]
+            continue
+        leaf = LEAF.get(kind & 0xFF)
+        if leaf is None or at + leaf[0] > len(image):
+            continue
+        width, signed = leaf
+        if signed is None:
+            v = round(struct.unpack_from('<f', image, at)[0], 4)
+        else:
+            v = int.from_bytes(image[at:at + width], 'little', signed=signed)
+            if width == 8 and abs(v) >= 1 << 20:
+                v = f'#..{v & 0xFFFF:04x}'
+        out.append((f'f{i}', v))
+    return out
+
+
+def payload_tail(bits, end):
+    """After an investment message's arguments: its has_payload bit at `end` and, when set, the
+    16-bit length and the payload bytes (MSB-first, not byte aligned). (flag, payload, end)."""
+    def take(at, n):
+        v = 0
+        for k in range(n):
+            i = at + k
+            v = v << 1 | ((bits[i >> 3] >> (7 - (i & 7))) & 1 if i >> 3 < len(bits) else 0)
+        return v
+    if end >= len(bits) * 8:
+        return False, b'', end
+    if not take(end, 1):
+        return False, b'', end + 1
+    n = take(end + 1, 16)
+    return True, bytes(take(end + 17 + 8 * k, 8) for k in range(n)), end + 17 + 8 * n
+
+
+def investment_rows(data, services, fields, decode=rsat_decode):
+    """Each investment message decoded: [(t, dir, seq, status, id, [(field, value)] or an error
+    string, payload length or None, trailing bits)]. Arguments decode with the 56578 schemas: a
+    row whose walk does not end in its last byte (`trailing bits` outside 0..7) was laid out
+    differently on the capture's build."""
+    msgs = d1_srcp.investment_messages(data)
+    todo = [(i, services[m[4]][0 if m[1] == 'req' else 1], m[5]) for i, m in enumerate(msgs)
+            if m[4] in services]
+    decoded = dict(zip((i for i, _, _ in todo), decode((tag, body, 16) for _, tag, body in todo)))
+    rows = []
+    for i, (t, d, seq, status, mid, bits) in enumerate(msgs):
+        r = decoded.get(i)
+        if r is None:
+            rows.append((t, d, seq, status, mid, 'no schema', None, None))
+            continue
+        if 'error' in r:
+            rows.append((t, d, seq, status, mid, r['error'], None, None))
+            continue
+        tag = services[mid][0 if d == 'req' else 1]
+        flag, payload, end = payload_tail(bits, r['end'])
+        rows.append((t, d, seq, status, mid, render_fields(tag, bytes.fromhex(r['object']), fields),
+                     len(payload) if flag else None, len(bits) * 8 - end))
+    return rows
+
+
+# QueueZ object types of the 51539 captures that the 56578 schemas read, as (checksum -> what, 56578
+# tag, slot array offset, slots, whole): the account (`0x808018c7`, its field [6] inventory of 326
+# 32-byte slots at +0x4C8: Glimmer at slot 308) walks to the end of most of its bodies; the ones
+# that also carry a later field stop past field [6], so its slots are still read ("partial"). The
+# character profile (`0x80801743`, 340 slots at +0x38 on 56578) walks only part-way on 51539, so
+# only its first 320 slots are read (later ones decode as garbage: the 51539 layout differs after
+# them). `whole` refuses a partial walk outright.
+STACK_OBJECTS = {0xB5DF2907: ('account', 0x808018C7, 0x4C8, 326, False),
+                 0xEB4B8439: ('profile', 0x80801743, 0x38, 320, False)}
+
+
+def present_bytes(zeros, ones):
+    """The bytes a sparse body wrote: equal in the decodes over a 0x00 image and a 0xFF image."""
+    return {i for i, (a, b) in enumerate(zip(zeros, ones)) if a == b}
+
+
+def slot_changes(image, present, base, count, state):
+    """The 32-byte slots `{u16 content @0, u64 instance @8, i32 quantity @0x10}` a body carries:
+    [(slot, content or None, quantity or None, previous quantity or None, instance written)].
+    `state` ({slot: (content, quantity)}) carries what earlier bodies said and is updated."""
+    out = []
+    for s in sorted({(i - base) // 32 for i in present if base <= i < base + 32 * count}):
+        e = base + 32 * s
+        ci = struct.unpack_from('<H', image, e)[0] if e in present else None
+        q = struct.unpack_from('<i', image, e + 0x10)[0] if e + 0x10 in present else None
+        old_ci, old_q = state.get(s, (None, None))
+        ci = old_ci if ci is None else ci
+        out.append((s, ci, q, old_q, e + 8 in present))
+        state[s] = (ci, old_q if q is None else q)
+    return out
+
+
+def stack_rows(data, decode=rsat_decode):
+    """Every account and profile object the capture's QueueZ pushes carry, decoded twice (over
+    0x00 and 0xFF) to see which slots it writes: [(t, what, version, slot changes, note)]."""
+    objs = [(t, ver, it, body) for t, fams in d1_srcp.queuez_updates(data) for fam, ver, flags, os_ in fams
+            for it, _, body in os_ if it in STACK_OBJECTS]
+    res = decode((STACK_OBJECTS[it][1], body, 0, fill) for _, _, it, body in objs for fill in ('00', 'ff'))
+    state, rows = collections.defaultdict(dict), []
+    for k, (t, ver, it, body) in enumerate(objs):
+        what, _, base, count, whole = STACK_OBJECTS[it]
+        z, o = res[2 * k], res[2 * k + 1]
+        zi, oi = z.get('object') or z.get('partial'), o.get('object') or o.get('partial')
+        if zi is None or oi is None or (whole and 'error' in z):
+            rows.append((t, what, ver, [], 'not read: ' + z.get('error', '')[:60]))
+            continue
+        zi, oi = bytes.fromhex(zi), bytes.fromhex(oi)
+        note = 'partial' if 'error' in z else ''
+        rows.append((t, what, ver, slot_changes(zi, present_bytes(zi, oi), base, count, state[what]), note))
+    return rows
+
+
+def queuez_summary(fams):
+    """One push as `family:type-checksum:length` per object (no keys, no roots)."""
+    return ' | '.join(f'f{fam}{"B" if flags & 1 else ""} ' + ' '.join(f'{it:08x}:{len(b)}' for it, _, b in objs)
+                      for fam, _, flags, objs in fams)
+
+
 MM_REQUEST, MM_RESPONSE, MM_HEADER = 42, 43, {42: 6, 43: 8}
 
 
@@ -355,7 +537,10 @@ def pb_shape(b, depth=0):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'lifetime', 'sessions', 'mission',
-                                        'hosts', 'regions', 'export', 'matchmaking'))
+                                        'hosts', 'regions', 'export', 'matchmaking', 'investment', 'queuez',
+                                        'stacks'))
+    ap.add_argument('--skip', default='702',
+                    help='investment: service ids to leave out (comma-separated; default 702, the periodic one)')
     ap.add_argument('capture', type=Path, nargs='+')
     ap.add_argument('--dir', choices=('s2c', 'c2s'), default='s2c')
     ap.add_argument('--out', type=Path)
@@ -384,6 +569,35 @@ def main():
                 shape = pb_shape(p[MM_HEADER[mtype]:])
                 print(f"{cap.stem[20:]:28} {rec['t'] - t0:8.1f} {mtype} "
                       f"{' '.join(shape) if shape is not None else 'undecodable'}")
+        return
+    if a.command == 'stacks':
+        for cap in a.capture:
+            for t, what, ver, changes, note in stack_rows(cap.read_bytes()):
+                body = '; '.join(f'slot {s}' + (f' content {ci}' if ci is not None else '')
+                                 + (f' quantity {q}' if q is not None else '')
+                                 + (f' ({q - old:+d})' if q is not None and old is not None and q != old else '')
+                                 + (' instance' if inst else '') for s, ci, q, old, inst in changes)
+                if body or note.startswith('not'):
+                    print(f'{cap.stem[20:]:20} {t:8.1f} {what:7} v{ver} {note} {body}')
+        return
+    if a.command in ('investment', 'queuez'):
+        skip = {int(x) for x in a.skip.split(',') if x}
+        for cap in a.capture:
+            data = cap.read_bytes()
+            events = []
+            if a.command == 'investment':
+                for t, d, seq, status, mid, flds, plen, trail in investment_rows(data, load_services(), load_fields()):
+                    if mid in skip:
+                        continue
+                    body = flds if isinstance(flds, str) else ' '.join(f'{p}={v}' for p, v in flds)
+                    extra = (f' payload {plen} B' if plen is not None else '') + \
+                        (f' trailing {trail} bits' if trail is not None and not 0 <= trail < 8 else '')
+                    events.append((t, f'{d} {mid} seq {seq}' + (f' status {status}' if status is not None else '')
+                                   + f' {body}{extra}'))
+            for t, fams in d1_srcp.queuez_updates(data):
+                events.append((t, 'queuez ' + queuez_summary(fams)))
+            for t, e in sorted(events, key=lambda x: x[0]):
+                print(f'{cap.stem[20:]:20} {t:8.1f} {e}')
         return
     if a.command in ('mission', 'hosts'):
         names = activity_names()

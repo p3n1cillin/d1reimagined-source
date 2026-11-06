@@ -2092,6 +2092,65 @@ mod tests {
         assert!(stamps.windows(2).all(|w| w[0] <= w[1]), "{stamps:?}");
     }
 
+    /// Stream O3 (integration review, finding 9): two connections of one shared instance share one
+    /// bridge. One sidecar runs; either member's reports drive the one script; every frame, region
+    /// request and completion envelope reaches both; and the results pay each member once.
+    #[test]
+    fn a_shared_instance_runs_one_script_for_both_members_and_pays_each_once() {
+        use crate::shared_scripts::{ScriptHandle, SharedScripts};
+        fn step(a: &ScriptHandle, b: &ScriptHandle, t: &mut Instant, secs: f32, fa: &mut Vec<Vec<u8>>, fb: &mut Vec<Vec<u8>>) {
+            let end = *t + Duration::from_secs_f32(secs);
+            while *t < end {
+                *t += Duration::from_millis(250);
+                fa.extend(a.sensor_due(*t));
+                fb.extend(b.sensor_due(*t));
+            }
+        }
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let reg = SharedScripts::new();
+        let a = reg.join(HOST, || bridge(&shared, false));
+        let b = reg.join(HOST, || panic!("the instance already has its bridge"));
+        assert!(a.same_bridge(&b));
+        assert_eq!((a.members(), reg.len()), (2, 1));
+        let other = reg.join(HOST + 1, || bridge(&shared, false));
+        assert!(!other.same_bridge(&a), "another instance has its own");
+        drop(other);
+        let mut t = Instant::now();
+        let (mut fa, mut fb) = (Vec::new(), Vec::new());
+        a.on_client_message(&join(7), 165, HOST, t);
+        b.on_client_message(&join(8), 165, HOST, t);
+        step(&a, &b, &mut t, 0.75, &mut fa, &mut fb);
+        assert_eq!((a.take_region_request(), b.take_region_request()), (Some(25), Some(25)), "both members are moved");
+        a.on_client_message(&slice(25), 165, HOST, t);
+        step(&a, &b, &mut t, 3.0, &mut fa, &mut fb);
+        // Member B finishes the first cinematic: the one script moves on for both.
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        step(&a, &b, &mut t, 0.5, &mut fa, &mut fb);
+        assert_eq!((a.take_region_request(), b.take_region_request()), (Some(26), Some(26)));
+        b.on_client_message(&slice(26), 165, HOST, t);
+        step(&a, &b, &mut t, 4.5, &mut fa, &mut fb);
+        assert!(a.take_incident().is_some() && b.take_incident().is_some(), "each member gets the completion envelope");
+        assert_eq!((a.take_incident(), b.take_incident()), (None, None), "once");
+        a.on_client_message(&incident(891, None), 165, HOST, t);
+        step(&a, &b, &mut t, 1.0, &mut fa, &mut fb);
+        let s = shared.lock().unwrap();
+        assert_eq!(s.launches, 1, "one sidecar for the instance");
+        assert!(!fa.is_empty());
+        assert_eq!(fa, fb, "both clients are sent the same rows");
+        let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+        seq.dedup();
+        assert_eq!(seq, [0, 1, 4, 6, 8]);
+        let mut paid: Vec<u8> = s.rewards.iter().map(|r| r.0.identity[0]).collect();
+        paid.sort_unstable();
+        assert_eq!(paid, [7, 8], "each member paid once");
+        assert!(s.rewards.iter().all(|r| r.2 == ActivityOutcome::Completed));
+        drop(s);
+        drop(a);
+        assert_eq!(b.members(), 1);
+        drop(b);
+        assert!(reg.is_empty(), "the bridge goes with its last member");
+    }
+
     #[test]
     fn stand_in_rows_never_reach_the_wire() {
         let shared = Arc::new(Mutex::new(Shared::default()));

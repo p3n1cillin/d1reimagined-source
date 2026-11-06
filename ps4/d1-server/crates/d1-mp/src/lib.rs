@@ -198,12 +198,32 @@ impl Services {
     /// ⭐ BAP 42 from `conn`: the 43 body. Sessions advertised by the searcher's own fireteam are
     /// not offered back to it.
     pub fn matchmaking(&mut self, conn: ConnectionId, body: &[u8], now_ms: u64) -> Result<DirectoryReply, MpError> {
-        let team = self.identity.session(conn).and_then(|s| self.fireteams.fireteam_of(s.account));
+        self.matchmaking_placed(conn, body, now_ms, &mut |_, _| None)
+    }
+
+    /// [`Self::matchmaking`] with a server-side placement: `place(want, searcher)` returns `None`
+    /// (the directory ranks every advertisement) or `Some(accounts)`, the members of the instance
+    /// the placement chose, so only their advertisements are offered (an empty list offers none:
+    /// the searcher starts its own instance). `searcher` is the connection's account, if it signed
+    /// on. The responder places public-bubble searches in the activity host's registry this way.
+    pub fn matchmaking_placed(
+        &mut self,
+        conn: ConnectionId,
+        body: &[u8],
+        now_ms: u64,
+        place: &mut dyn FnMut(&matchmaking::Want, Option<AccountSoid>) -> Option<Vec<AccountSoid>>,
+    ) -> Result<DirectoryReply, MpError> {
+        let searcher = self.identity.session(conn).map(|s| s.account);
+        let team = searcher.and_then(|a| self.fireteams.fireteam_of(a));
         let exclude: Vec<ConnectionId> = team
             .map(|t| t.accounts().into_iter().filter_map(|a| self.identity.connection_of(a)).collect())
             .unwrap_or_default();
         let size = team.map_or(1, |t| t.size()) as u32;
-        Ok(self.directory.handle(conn, body, &exclude, size, now_ms)?)
+        let identity = &self.identity;
+        let mut owners = |w: &matchmaking::Want| {
+            place(w, searcher).map(|accounts| accounts.into_iter().filter_map(|a| identity.connection_of(a)).collect())
+        };
+        Ok(self.directory.handle_placed(conn, body, &exclude, size, now_ms, &mut owners)?)
     }
 
     /// The leader launches `activity` with the fireteam: the size check, then the record that the

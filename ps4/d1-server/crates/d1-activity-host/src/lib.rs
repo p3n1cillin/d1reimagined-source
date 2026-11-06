@@ -104,6 +104,7 @@ pub mod rows;
 pub mod script_bridge;
 pub mod sense;
 pub mod sensor_list;
+pub mod shared_scripts; // stream O3: one script bridge per shared instance
 pub mod state;
 pub mod worlds;
 

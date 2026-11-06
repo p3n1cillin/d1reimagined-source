@@ -106,10 +106,30 @@ pub fn spend(store: &mut dyn RewardStore, character: CharacterId, item: u32, amo
     Ok(())
 }
 
+/// The dismantle reward set of a tier and kind, when the item's own is not known: the sets
+/// `inventory_ops::PLACEHOLDER_YIELDS` names (its row comments give each set's tier).
+fn dismantle_set(tier: Tier, weapon: bool) -> Option<i32> {
+    Some(match (tier, weapon) {
+        (Tier::Uncommon, false) => 727,
+        (Tier::Uncommon, true) => 736,
+        (Tier::Rare, false) => 729,
+        (Tier::Rare, true) => 738,
+        (Tier::Legendary, false) => 730,
+        (Tier::Legendary, true) => 739,
+        (Tier::Exotic, false) => 728,
+        (Tier::Exotic, true) => 737,
+        _ => return None,
+    })
+}
+
 /// What dismantling an item gives back: `(item, quantity, rule)`.
 ///
 /// Silver Dust engram items are recognised by the community engram pages (the patch notes name the
-/// engrams, not their items); the Legendary Mark amounts are placeholders.
+/// engrams, not their items). Everything else comes from **one table**, the 402 path's
+/// (`inventory_ops::PLACEHOLDER_YIELDS`, by the item's 56578 reward set, else its tier's): the live
+/// servers' Glimmer, Weapon Parts or Armor Materials and Legendary Marks (PR #328's Tower capture).
+/// Year 1 Legendaries give the row without its Marks (Marks for dismantling came with Year 2,
+/// patch 2.0.0). Basic and exotic rows are still the table's labelled placeholders.
 pub fn dismantle_yield(item: &ItemDef) -> Vec<(u32, u32, &'static str)> {
     let pools = &tables().engram_pools;
     let in_box = |slug: &str| pools.iter().any(|p| p.slug == slug && p.items.contains(&item.hash));
@@ -122,19 +142,26 @@ pub fn dismantle_yield(item: &ItemDef) -> Vec<(u32, u32, &'static str)> {
     {
         return vec![(SILVER_DUST, 1, "currency.dismantle.silver")];
     }
-    let slot = Slot::from_bucket_hash(item.bucket);
+    let Some(slot) = Slot::from_bucket_hash(item.bucket).filter(|s| s.is_weapon() || s.is_armor()) else { return Vec::new() };
+    let content = crate::content::item_index(item.hash);
+    let set = content
+        .and_then(|ci| crate::tables::tables().items.get(&ci).map(|r| r.reward_set))
+        .filter(|s| !crate::inventory_ops::placeholder_yields(*s).is_empty())
+        .or_else(|| dismantle_set(item.tier, slot.is_weapon()));
+    let Some(set) = set else { return Vec::new() };
     // Year 2 and 3 Legendaries reach the Year 3 cap; Year 1 Legendaries stop lower.
-    if item.tier == Tier::Legendary && item.primary_max >= super::light::LIGHT_CAP {
-        if let Some(s) = slot {
-            if s.is_weapon() {
-                return vec![(LEGENDARY_MARKS, ph::DISMANTLE_MARKS_WEAPON, "currency.dismantle.marks")];
+    let marks_era = item.tier != Tier::Legendary || item.primary_max >= super::light::LIGHT_CAP;
+    let marks = if slot.is_weapon() { ph::DISMANTLE_MARKS_WEAPON } else { ph::DISMANTLE_MARKS_ARMOR };
+    crate::inventory_ops::placeholder_yields(set)
+        .iter()
+        .filter_map(|&(ci, n, _)| {
+            let hash = crate::content::item_hash(ci)?;
+            if hash == LEGENDARY_MARKS {
+                return marks_era.then_some((LEGENDARY_MARKS, marks, "currency.dismantle.marks"));
             }
-            if s.is_armor() {
-                return vec![(LEGENDARY_MARKS, ph::DISMANTLE_MARKS_ARMOR, "currency.dismantle.marks")];
-            }
-        }
-    }
-    Vec::new()
+            Some((hash, n, "currency.dismantle.other"))
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -210,7 +237,20 @@ mod tests {
         assert_eq!(dismantle_yield(d), vec![(SILVER_DUST, 5, "currency.dismantle.silver")]);
         let dusty = t.engram_pools.iter().find(|p| p.slug == "dusty-iron-engram").unwrap();
         assert_eq!(dismantle_yield(&t.items[&dusty.items[0]])[0].1, 1);
-        let rare = t.items.values().find(|d| d.tier == Tier::Rare && d.instanced && d.equippable).unwrap();
-        assert!(dismantle_yield(rare).is_empty());
+        // PR #328's live rows, through the one table: rare and lower gear gives materials (and
+        // uncommon Glimmer), not nothing.
+        let weapon = |d: &&ItemDef| Slot::from_bucket_hash(d.bucket).is_some_and(|s| s.is_weapon());
+        let armour = |d: &&ItemDef| Slot::from_bucket_hash(d.bucket).is_some_and(|s| s.is_armor());
+        let pick = |tier: Tier, w: bool| {
+            t.items.values().find(|d| d.tier == tier && d.instanced && d.equippable && if w { weapon(d) } else { armour(d) }).unwrap()
+        };
+        let y = dismantle_yield(pick(Tier::Rare, true));
+        assert!(y.contains(&(WEAPON_PARTS, 1, "currency.dismantle.other")), "{y:?}");
+        let y = dismantle_yield(pick(Tier::Uncommon, false));
+        assert!(y.iter().any(|l| l.0 == GLIMMER) && y.iter().any(|l| l.0 == ARMOR_MATERIALS), "{y:?}");
+        let y2 = t.items.values().find(|d| d.tier == Tier::Legendary && d.equippable && armour(d) && d.primary_max >= crate::rewards::light::LIGHT_CAP).unwrap();
+        let y = dismantle_yield(y2);
+        assert!(y.contains(&(LEGENDARY_MARKS, 3, "currency.dismantle.marks")), "3 Marks for armour too: {y:?}");
+        assert!(y.iter().any(|l| l.0 == ARMOR_MATERIALS), "{y:?}");
     }
 }

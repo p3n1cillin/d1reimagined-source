@@ -759,15 +759,35 @@ mod tests {
 /// connection. DeRveXx ran this idea locally for PR #193's route checks.
 ///
 /// The key is a 128-bit FNV-1a hash of everything the build reads: the parameters (their `Debug`
-/// text covers every field and client state), the selected build (`D1_BUILD`) and a format
-/// version. Unset, nothing is cached. A cache entry that can't be read is rebuilt.
+/// text covers every field and client state), the selected build (`D1_BUILD`), the encoder that
+/// builds the frame (the native one under `D1_RSAT_NATIVE=1`, else the client's own codec) and a
+/// format version. Unset, nothing is cached. A cache entry that can't be read is rebuilt.
+///
+/// Integration review, finding 18: the key used to name neither the encoder nor its revision, so
+/// frames cached before #321's ScalarFloat correction were still served, and a native run could
+/// be served the oracle's frame (and the other way round) from the shared `${STAGING}/sensor-cache`.
+/// The format is now `v2` (every older entry is a miss) and the encoder is in the key. Bump
+/// [`ENCODER_REVISION`] whenever either encoder's output changes.
 pub mod sensor_cache {
     use std::path::PathBuf;
 
-    const FORMAT: &str = "sensor-cache-v1";
+    const FORMAT: &str = "sensor-cache-v2";
+    /// The encoders' revision: bump it when the native encoder (d1-rsat) or the oracle's sensor
+    /// build changes what it writes. 1: #321's ScalarFloat correction.
+    pub const ENCODER_REVISION: u32 = 1;
+
+    /// The encoder a build here uses: `native` under `D1_RSAT_NATIVE=1`, else `oracle`.
+    pub fn encoder() -> &'static str {
+        if crate::native::enabled() { "native" } else { "oracle" }
+    }
 
     pub fn key(params: &d1_oracle::sensor::SensorPhaseUpdate, build: &str) -> u128 {
-        let text = format!("{FORMAT}|{build}|{params:?}");
+        key_with(params, build, encoder())
+    }
+
+    /// [`key`] for `encoder` (`native` or `oracle`).
+    pub fn key_with(params: &d1_oracle::sensor::SensorPhaseUpdate, build: &str, encoder: &str) -> u128 {
+        let text = format!("{FORMAT}|{build}|{encoder}|r{ENCODER_REVISION}|{params:?}");
         let fnv = |basis: u64| {
             text.bytes().fold(basis, |h, b| (h ^ u64::from(b)).wrapping_mul(0x0000_0100_0000_01B3))
         };
@@ -818,6 +838,15 @@ pub mod sensor_cache {
             assert_eq!(key(&params(1), "later-56578"), key(&params(1), "later-56578"));
             assert_ne!(key(&params(1), "later-56578"), key(&params(2), "later-56578"));
             assert_ne!(key(&params(1), "later-56578"), key(&params(1), "other"));
+            // Finding 18: the encoder is in the key, so native and oracle frames never mix.
+            assert_ne!(key_with(&params(1), "later-56578", "native"), key_with(&params(1), "later-56578", "oracle"));
+            // And the format moved on: a v1 entry (no encoder, no revision) is never this key.
+            let v1 = {
+                let text = format!("sensor-cache-v1|later-56578|{:?}", params(1));
+                let fnv = |basis: u64| text.bytes().fold(basis, |h, b| (h ^ u64::from(b)).wrapping_mul(0x0000_0100_0000_01B3));
+                (u128::from(fnv(0xCBF2_9CE4_8422_2325)) << 64) | u128::from(fnv(0x84222325_CBF29CE4))
+            };
+            assert_ne!(key_with(&params(1), "later-56578", "oracle"), v1);
         }
 
         #[test]

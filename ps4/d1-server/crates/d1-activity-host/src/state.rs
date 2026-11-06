@@ -448,7 +448,14 @@ pub struct ActivityInstance {
     sensor_stamp: Option<SensorStamp>,
     /// ⭐ D1_AH_SCRIPTS=1 hook: the script bridge ([`crate::script_bridge`]). `None` (default)
     /// leaves the host as it was; a scripted activity's udt 5 stream is the bridge's.
-    script_bridge: Option<crate::script_bridge::ScriptBridge>,
+    ///
+    /// Stream O3: a handle to the bridge, shared by every connection of a shared instance
+    /// ([`crate::shared_scripts`]); a connection of its own has a bridge of its own.
+    script_bridge: Option<crate::shared_scripts::ScriptHandle>,
+    /// Stream O3: the bridge's configuration, to join a shared instance's bridge at the join.
+    script_config: Option<std::sync::Arc<crate::script_bridge::ScriptConfig>>,
+    /// Stream O3: the listener's bridges by shared-instance host (`D1_AH_SHARED_INSTANCES=1`).
+    shared_scripts: Option<std::sync::Arc<crate::shared_scripts::SharedScripts>>,
     /// ── stream G hook ── `D1_AH_PUBLIC_HOST=1`: the public-bubble host role
     /// ([`crate::public_host`]). `None` (default) changes nothing.
     public: Option<crate::public_host::PublicHost>,
@@ -675,6 +682,8 @@ impl ActivityInstance {
             sensor_last_sent: None,
             sensor_stamp: None,
             script_bridge: None,
+            script_config: None,
+            shared_scripts: None,
             public: None,
             run_driver: None,
             framework_players: Vec::new(),
@@ -698,7 +707,41 @@ impl ActivityInstance {
 
     /// D1_AH_SCRIPTS=1 hook: let the activity's own mission scripts drive this instance.
     pub fn set_script_bridge(&mut self, config: std::sync::Arc<crate::script_bridge::ScriptConfig>) {
-        self.script_bridge = Some(crate::script_bridge::ScriptBridge::new(config));
+        self.script_bridge = Some(crate::shared_scripts::ScriptHandle::solo(crate::script_bridge::ScriptBridge::new(config.clone())));
+        self.script_config = Some(config);
+    }
+
+    /// Stream O3: [`Self::set_script_bridge`] with a bridge made by `make` (tests: a fake sidecar).
+    pub fn set_script_bridge_with(
+        &mut self,
+        config: std::sync::Arc<crate::script_bridge::ScriptConfig>,
+        bridge: crate::script_bridge::ScriptBridge,
+    ) {
+        self.script_bridge = Some(crate::shared_scripts::ScriptHandle::solo(bridge));
+        self.script_config = Some(config);
+    }
+
+    /// Stream O3 (integration review, finding 9): share one script bridge per shared instance.
+    /// The listener sets it beside the group link (`D1_AH_SHARED_INSTANCES=1`).
+    pub fn set_shared_scripts(&mut self, scripts: std::sync::Arc<crate::shared_scripts::SharedScripts>) {
+        self.shared_scripts = Some(scripts);
+    }
+
+    /// Stream O3: the bridge handle, for tests and logs.
+    pub fn script_handle(&self) -> Option<&crate::shared_scripts::ScriptHandle> {
+        self.script_bridge.as_ref()
+    }
+
+    /// Stream O3: which bridge a shared instance's member uses. `make` builds one for its first
+    /// member (tests pass a fake sidecar's).
+    pub fn join_shared_scripts(&mut self, host: u64, make: impl FnOnce(std::sync::Arc<crate::script_bridge::ScriptConfig>) -> crate::script_bridge::ScriptBridge) {
+        let (Some(reg), Some(cfg)) = (self.shared_scripts.clone(), self.script_config.clone()) else { return };
+        if self.script_bridge.is_none() {
+            return;
+        }
+        let h = reg.join(host, || make(cfg));
+        tracing::info!("⭐ shared instance {host:#018x}: one script bridge for {} member(s)", h.members());
+        self.script_bridge = Some(h);
     }
 
     /// D1_AH_SCRIPTS hook: the host teleport a script phase asks for (as a mission step's region).
@@ -1278,11 +1321,42 @@ impl ActivityInstance {
                         self.activity_index
                     );
                 }
+                // MP(H): join the shared instance the request names, and present its host id.
+                // Stream O3 (integration review, finding 11): this runs before the public role
+                // below, so a social space or public instance registers under the shared
+                // instance's host id, not this connection's own.
+                let mut group_slot = None;
+                let mut group_host = None;
+                if let Some(link) = self.group.as_mut() {
+                    match link.join(self.ah_id, struct_image) {
+                        Ok((host, j)) => {
+                            tracing::info!("⭐ shared instance {host:#018x}: slot {}, physics host {:?}, peers {:?}",
+                                j.slot, j.physics_host, link.peers());
+                            if host != self.ah_id {
+                                self.ah_id = host;
+                            }
+                            group_host = Some(host);
+                            group_slot = Some(j.slot);
+                        }
+                        Err(e) => tracing::warn!("⚠ shared instance refused the join ({e}); serving it solo"),
+                    }
+                }
+                // Stream O3 (finding 9): the shared instance's members share one script bridge.
+                if let Some(host) = group_host {
+                    self.join_shared_scripts(host, crate::script_bridge::ScriptBridge::new);
+                }
                 // ── stream G hook ── a join naming a mission host is a public instance: no region
                 // records, no mission steps, no frame until the client names its region (udt 21),
                 // and the slot handover answered (crate::public_host).
                 if let Some(p) = self.public.as_mut() {
                     if p.on_join(struct_image, &self.activity_name, self.ah_id, now).is_public_instance() {
+                        // Stream O3 (integration review, finding 10): a public instance runs no
+                        // mission script and grants nothing for the mission: the mission host
+                        // (the client's other connection) does both. Its bubble's own events
+                        // run in the open world (public_host.rs).
+                        if self.script_bridge.take().is_some() {
+                            tracing::info!("⭐ public instance: no mission script here (the mission host runs it)");
+                        }
                         // stream O: the world's PUBLIC checksum (worlds.tsv), when it is known.
                         if let Some(c) = p.public_checksum(&self.activity_name) {
                             tracing::info!(
@@ -1312,21 +1386,8 @@ impl ActivityInstance {
                     u128::from(u16::MAX),
                 ) as u16;
                 self.state = InstanceState::Joined;
-                // MP(H): join the shared instance the request names, and present its host id.
-                let mut group_slot = None;
-                if let Some(link) = self.group.as_mut() {
-                    match link.join(self.ah_id, struct_image) {
-                        Ok((host, j)) => {
-                            tracing::info!("⭐ shared instance {host:#018x}: slot {}, physics host {:?}, peers {:?}",
-                                j.slot, j.physics_host, link.peers());
-                            if host != self.ah_id {
-                                self.ah_id = host;
-                                result.ah_id = host;
-                            }
-                            group_slot = Some(j.slot);
-                        }
-                        Err(e) => tracing::warn!("⚠ shared instance refused the join ({e}); serving it solo"),
-                    }
+                if let Some(host) = group_host {
+                    result.ah_id = host;
                 }
                 let recipient = self.ah_id; // MP(H): the shared instance's host, if it changed
                 // Kept for `udt 17`: a membership is an echo of these bytes, so a refresh that did
@@ -1596,6 +1657,11 @@ impl ActivityInstance {
     fn drive_framework(&mut self, msg: &ClientMessage) {
         use crate::activity_driver::{Framework, RunDriver};
         let Some(fw) = Framework::get() else { return };
+        // Stream O3 (finding 10): a public instance's connection runs no mission framework and
+        // grants nothing; its mission host does.
+        if self.is_public_instance() {
+            return;
+        }
         let scripted = self.script_bridge.as_ref().is_some_and(|b| b.scripted());
         if let ClientMessage::JoinRequest { struct_image } = msg {
             use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
@@ -1762,6 +1828,14 @@ impl ActivityInstance {
         if matches!(self.state, InstanceState::Live) {
             if let Some(image) = self.script_bridge.as_mut().and_then(|b| b.take_incident()) {
                 return Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 18, bytes: image }));
+            }
+        }
+        // Stream O3 (PR #328): a public event that ended in this instance: its completion incident
+        // set (the tier) for this client. ⚠ The live host sent the set in one udt 18; these go one
+        // incident a message, in the live order.
+        if let Some(p) = self.public.as_mut().filter(|p| p.is_public_instance()) {
+            for t in p.take_completion_incidents() {
+                self.pending_incidents.push((t, Vec::new()));
             }
         }
         if !matches!(self.state, InstanceState::Live) || self.pending_incidents.is_empty() {
