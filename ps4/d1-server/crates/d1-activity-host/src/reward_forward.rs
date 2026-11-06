@@ -12,6 +12,12 @@
 //! grant CHARACTER ACTIVITY_HASH OUTCOME [page=PAGE] [engrams=1] [seed=SEED] [source=WORD]
 //! ```
 //!
+//! and, for the story arc's hand-off (stream O2; cine_reveal -> the Tower):
+//!
+//! ```text
+//! handoff CHARACTER ACTIVITY_INDEX from=HASH hash=HASH
+//! ```
+//!
 //! The grammar is `d1-responder`'s `rewards::remote` (the reader); both sides test the same lines.
 //! `CHARACTER` is the client's 40-byte identity (`id:` + 80 hex digits, `join_request+0x10`,
 //! [`d1_mp::identity::MemberIdentity`]: its character SOID is at `+0x18`), or an 8-byte key.
@@ -87,15 +93,27 @@ pub struct GrantDetails {
     pub source: Option<String>,
 }
 
-/// The control line for one grant.
-pub fn grant_line(target: &GrantTarget, activity_hash: u32, outcome: GrantOutcome, d: &GrantDetails) -> Result<String, String> {
-    let who = match target {
+fn target_word(target: &GrantTarget) -> Result<String, String> {
+    Ok(match target {
         GrantTarget::Identity(b) if b.len() == d1_mp::identity::MemberIdentity::SIZE => {
             format!("id:{}", b.iter().map(|x| format!("{x:02x}")).collect::<String>())
         }
         GrantTarget::Identity(b) => return Err(format!("an identity is 40 bytes, got {}", b.len())),
         GrantTarget::Key(k) => format!("{k:#018x}"),
-    };
+    })
+}
+
+/// ⭐ Stream O2: the control line for a story hand-off (`rewards::remote::parse_handoff` in the
+/// responder): `handoff CHARACTER ACTIVITY_INDEX from=HASH hash=HASH`. The responder records the
+/// completion of `from_hash` in the profile the client selects its next activity from, and the
+/// next activity in the record.
+pub fn handoff_line(target: &GrantTarget, next_index: u16, from_hash: u32, next_hash: u32) -> Result<String, String> {
+    Ok(format!("handoff {} {next_index} from={from_hash:#010x} hash={next_hash:#010x}", target_word(target)?))
+}
+
+/// The control line for one grant.
+pub fn grant_line(target: &GrantTarget, activity_hash: u32, outcome: GrantOutcome, d: &GrantDetails) -> Result<String, String> {
+    let who = target_word(target)?;
     let word = |w: &str, what: &str| {
         if w.is_empty() || w.chars().any(char::is_whitespace) {
             Err(format!("{what} {w:?} must be one word"))
@@ -179,6 +197,11 @@ impl GrantForwarder {
     /// ⭐ **The call.** Queue one character's grant for the responder and return at once.
     pub fn forward(&self, target: GrantTarget, activity_hash: u32, outcome: GrantOutcome, details: GrantDetails) -> Result<(), String> {
         let line = grant_line(&target, activity_hash, outcome, &details)?;
+        self.send(line)
+    }
+
+    /// Queue any control line (a grant, a hand-off) for the store; returns at once.
+    pub fn send(&self, line: String) -> Result<(), String> {
         self.tx.lock().map_err(|_| "the grant writer is poisoned".to_string())?.send(line).map_err(|_| "the grant writer stopped".to_string())
     }
 }
@@ -211,8 +234,9 @@ impl crate::rewards::ActivityRewards for GrantForwarder {
         self.forward(target, activity_hash, (*outcome).into(), GrantDetails { source: Some(source), ..GrantDetails::default() })
     }
 
-    /// The store's control grammar has no line for the next activity yet (`rewards::remote`), so
-    /// the hand-off is logged here, not forwarded: the completion itself goes out as a grant.
+    /// ⭐ Stream O2: the hand-off goes out as a `handoff` line, after the activity's grant (the
+    /// writer keeps their order), so the responder records the completion and the next activity
+    /// before the client reaches the end.
     fn activity_hand_off(
         &mut self,
         character: &crate::rewards::CharacterRef,
@@ -220,11 +244,14 @@ impl crate::rewards::ActivityRewards for GrantForwarder {
         next_index: u16,
         next_hash: u32,
     ) -> Result<(), String> {
-        tracing::info!(
-            "rewards: {from_hash:#010x} hands off to activity {next_index} ({next_hash:#010x}) for {character:?}; \
-             the store's control file has no hand-off line yet"
-        );
-        Ok(())
+        let target = if character.identity.len() == d1_mp::identity::MemberIdentity::SIZE {
+            GrantTarget::Identity(character.identity.clone())
+        } else {
+            GrantTarget::Key(character.key())
+        };
+        let line = handoff_line(&target, next_index, from_hash, next_hash)?;
+        tracing::info!("rewards: {from_hash:#010x} hands off to activity {next_index} ({next_hash:#010x}) for {character:?}");
+        self.send(line)
     }
 }
 
@@ -253,6 +280,8 @@ mod tests {
         assert!(id.starts_with("grant id:0102030405060708") && id.ends_with(" 0x00003039 abandoned"), "{id}");
         assert_eq!(d1_mp::identity::MemberIdentity::parse(&identity()).unwrap().character.0, 0xD100_0000_0000_0101);
         assert!(grant_line(&GrantTarget::Identity(vec![0; 8]), 1, GrantOutcome::Completed, &GrantDetails::default()).is_err());
+        assert_eq!(handoff_line(&GrantTarget::Key(0xD100_0000_0000_0101), 0, 0x6EAF_0959, 0x8AE8_DA69).unwrap(),
+                   "handoff 0xd100000000000101 0 from=0x6eaf0959 hash=0x8ae8da69", "rewards::remote::tests::handoff_lines_round_trip reads it");
         let spaced = GrantDetails { source: Some("two words".into()), ..GrantDetails::default() };
         assert!(grant_line(&GrantTarget::Key(1), 1, GrantOutcome::Completed, &spaced).is_err());
     }
@@ -282,10 +311,11 @@ mod tests {
         f.grant_activity_rewards(&CharacterRef::from_key(0x0102_0304_0506_0708), 0x1111_2222, &event).unwrap();
         let failed = ActivityOutcome::PublicEvent { event_id: 13, completed: false, tier: None };
         f.grant_activity_rewards(&CharacterRef::from_key(7), 0x1111_2222, &failed).unwrap();
-        assert!(f.activity_hand_off(&c, 0x6EAF_0959, 0, 0x8AE8_DA69).is_ok(), "logged, not a grant");
-        let text = wait_for(&path, 3);
+        assert!(f.activity_hand_off(&c, 0x6EAF_0959, 0, 0x8AE8_DA69).is_ok());
+        let text = wait_for(&path, 4);
         let lines: Vec<&str> = text.lines().collect();
-        assert_eq!(lines.len(), 3, "{text}");
+        assert_eq!(lines.len(), 4, "{text}");
+        assert!(lines[3].starts_with("handoff id:0102030405060708") && lines[3].ends_with(" 0 from=0x6eaf0959 hash=0x8ae8da69"), "{}", lines[3]);
         assert!(lines[0].starts_with("grant id:") && lines[0].ends_with(" 0x0bbd0e26 completed source=script"));
         assert_eq!(lines[1], "grant 0x0102030405060708 0x11112222 completed source=event:12:gold");
         assert_eq!(lines[2], "grant 0x0000000000000007 0x11112222 incomplete source=event:13");

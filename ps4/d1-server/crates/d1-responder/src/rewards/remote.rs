@@ -125,16 +125,7 @@ pub fn parse(fields: &[&str]) -> Result<GrantCommand> {
     let [who, hash, outcome, rest @ ..] = fields else {
         bail!("grant takes CHARACTER ACTIVITY_HASH OUTCOME [page=..] [engrams=1] [seed=..] [source=..]");
     };
-    let target = match who.strip_prefix("id:") {
-        Some(h) => {
-            let b = hex_bytes(h)?;
-            if b.len() != d1_mp::identity::MemberIdentity::SIZE {
-                bail!("an identity is {} bytes, got {}", d1_mp::identity::MemberIdentity::SIZE, b.len());
-            }
-            GrantTarget::Identity(b)
-        }
-        None => GrantTarget::Key(num64(who)?),
-    };
+    let target = parse_target(who)?;
     let activity_hash = u32::try_from(num64(hash)?).map_err(|_| anyhow!("activity hash {hash:?} is not 32-bit"))?;
     let outcome = match *outcome {
         "completed" => GrantOutcome::Completed,
@@ -157,11 +148,7 @@ pub fn parse(fields: &[&str]) -> Result<GrantCommand> {
 
 /// The canonical line for `c` (what the activity host writes).
 pub fn format(c: &GrantCommand) -> String {
-    let who = match &c.target {
-        GrantTarget::Key(k) => format!("{k:#018x}"),
-        GrantTarget::Identity(b) => format!("id:{}", b.iter().map(|x| format!("{x:02x}")).collect::<String>()),
-    };
-    let mut line = format!("grant {who} {:#010x} {}", c.activity_hash, c.outcome.word());
+    let mut line = format!("grant {} {:#010x} {}", target_word(&c.target), c.activity_hash, c.outcome.word());
     if let Some(p) = &c.page {
         line += &format!(" page={p}");
     }
@@ -175,6 +162,88 @@ pub fn format(c: &GrantCommand) -> String {
         line += &format!(" source={s}");
     }
     line
+}
+
+/// ⭐ Stream O2: one `handoff` line, the story arc's next activity (stream K's
+/// `ActivityRewards::activity_hand_off`; cine_reveal 165 -> the Tower 0):
+///
+/// ```text
+/// handoff CHARACTER ACTIVITY_INDEX [from=HASH] [hash=HASH]
+/// ```
+///
+/// * `CHARACTER` as in a `grant`;
+/// * `ACTIVITY_INDEX`: the next activity's index in the client's activity table;
+/// * `from=`: the manifest hash of the activity that completed (the store records its completion
+///   in the profile's current-activity field, which the client selects its next activity from);
+/// * `hash=`: the next activity's manifest hash, checked against the activity table.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HandOffCommand {
+    pub target: GrantTarget,
+    pub next: u16,
+    pub from: Option<u32>,
+    pub next_hash: Option<u32>,
+}
+
+/// Parse the fields after the word `handoff`.
+pub fn parse_handoff(fields: &[&str]) -> Result<HandOffCommand> {
+    let [who, next, rest @ ..] = fields else {
+        bail!("handoff takes CHARACTER ACTIVITY_INDEX [from=HASH] [hash=HASH]");
+    };
+    let target = parse_target(who)?;
+    let next = u16::try_from(num64(next)?).map_err(|_| anyhow!("activity index {next:?} is not 16-bit"))?;
+    let mut c = HandOffCommand { target, next, from: None, next_hash: None };
+    for t in rest {
+        let hash = |v: &str| u32::try_from(num64(v)?).map_err(|_| anyhow!("{v:?} is not a 32-bit hash"));
+        match t.split_once('=') {
+            Some(("from", v)) => c.from = Some(hash(v)?),
+            Some(("hash", v)) => c.next_hash = Some(hash(v)?),
+            _ => bail!("{t:?}: not from= or hash="),
+        }
+    }
+    Ok(c)
+}
+
+/// The canonical line for `c` (what the activity host writes).
+pub fn format_handoff(c: &HandOffCommand) -> String {
+    let mut line = format!("handoff {} {}", target_word(&c.target), c.next);
+    if let Some(h) = c.from {
+        line += &format!(" from={h:#010x}");
+    }
+    if let Some(h) = c.next_hash {
+        line += &format!(" hash={h:#010x}");
+    }
+    line
+}
+
+fn parse_target(who: &str) -> Result<GrantTarget> {
+    Ok(match who.strip_prefix("id:") {
+        Some(h) => {
+            let b = hex_bytes(h)?;
+            if b.len() != d1_mp::identity::MemberIdentity::SIZE {
+                bail!("an identity is {} bytes, got {}", d1_mp::identity::MemberIdentity::SIZE, b.len());
+            }
+            GrantTarget::Identity(b)
+        }
+        None => GrantTarget::Key(num64(who)?),
+    })
+}
+
+fn target_word(t: &GrantTarget) -> String {
+    match t {
+        GrantTarget::Key(k) => format!("{k:#018x}"),
+        GrantTarget::Identity(b) => format!("id:{}", b.iter().map(|x| format!("{x:02x}")).collect::<String>()),
+    }
+}
+
+/// Which character a command applies to on this responder (one player per process): the
+/// signed-on one; `strict` (multiplayer on) refuses another player's. Returns it and whether the
+/// command named another key.
+pub fn resolve_target(t: &GrantTarget, own: u64, strict: bool) -> Result<(u64, bool)> {
+    let named = t.character().ok_or_else(|| anyhow!("the identity does not parse"))?;
+    if named != own && strict {
+        bail!("command for character {named:#018x}, but this responder serves {own:#018x} (D1_MP=1: another player's)");
+    }
+    Ok((own, named != own))
 }
 
 /// The client indices the responder knows: every item's 56578 content index from the exported
@@ -468,6 +537,22 @@ mod tests {
                             0100000000000000\
                             0101000000000000\
                             0000000000000000";
+
+    #[test]
+    fn handoff_lines_round_trip() {
+        let line = "handoff 0xd100000000000101 0 from=0x6eaf0959 hash=0x8ae8da69";
+        let f: Vec<&str> = line.split_whitespace().collect();
+        let c = parse_handoff(&f[1..]).unwrap();
+        assert_eq!(c, HandOffCommand { target: GrantTarget::Key(0xD100_0000_0000_0101), next: 0, from: Some(0x6EAF_0959), next_hash: Some(0x8AE8_DA69) });
+        assert_eq!(format_handoff(&c), line);
+        let id = format!("id:{}", IDENTITY.replace(' ', ""));
+        assert_eq!(parse_handoff(&[&id, "166"]).unwrap().target.character(), Some(0x0101));
+        assert!(parse_handoff(&["0x1"]).is_err());
+        assert!(parse_handoff(&["0x1", "70000"]).is_err(), "an index is 16-bit");
+        assert!(parse_handoff(&["0x1", "0", "to=3"]).is_err());
+        assert_eq!(resolve_target(&GrantTarget::Key(5), 7, false).unwrap(), (7, true));
+        assert!(resolve_target(&GrantTarget::Key(5), 7, true).is_err());
+    }
 
     #[test]
     fn grant_lines_round_trip_and_name_the_character() {

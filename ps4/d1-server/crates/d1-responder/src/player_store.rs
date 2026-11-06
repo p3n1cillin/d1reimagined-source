@@ -172,8 +172,24 @@ pub struct Character {
     /// before it is served (the responder does it at sign-on and on [`push_profile`]).
     #[serde(default)]
     pub profile_stale: bool,
+    /// ⭐ Stream O2: the activity the story arc hands the character to next (`handoff`): the
+    /// cinematic 165's is the Tower, 0. The completion that leads there is in the profile.
+    #[serde(default)]
+    pub next_activity: Option<HandOff>,
     #[serde(default)]
     pub attributes: BTreeMap<String, Value>,
+}
+
+/// A hand-off the activity host reported: the next activity, and the one that led to it.
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Default)]
+pub struct HandOff {
+    pub activity: u16,
+    #[serde(default)]
+    pub hash: Option<u32>,
+    /// The completed activity's index, when its hash is in the activity table.
+    #[serde(default)]
+    pub from: Option<u16>,
+    pub revision: u64,
 }
 
 /// A bounty a character holds: its objectives' progress, in the definition's order.
@@ -1526,6 +1542,8 @@ pub enum Command {
     Unlock { add: Vec<u16>, clear: Vec<u16> },
     /// `grant CHARACTER ACTIVITY_HASH OUTCOME ...` from the activity host (`rewards::remote`).
     Grant(crate::rewards::remote::GrantCommand),
+    /// `handoff CHARACTER ACTIVITY_INDEX [from=HASH] [hash=HASH]` (stream O2, `rewards::remote`).
+    HandOff(crate::rewards::remote::HandOffCommand),
 }
 
 pub fn parse_command(line: &str) -> anyhow::Result<Command> {
@@ -1547,6 +1565,7 @@ pub fn parse_command(line: &str) -> anyhow::Result<Command> {
             Command::Lockout(num(1)? as u16, f[2].to_string(), week)
         }
         Some("grant") => Command::Grant(crate::rewards::remote::parse(&f[1..]).map_err(|e| anyhow::anyhow!("{line:?}: {e:#}"))?),
+        Some("handoff") => Command::HandOff(crate::rewards::remote::parse_handoff(&f[1..]).map_err(|e| anyhow::anyhow!("{line:?}: {e:#}"))?),
         Some("reputation") => Command::Reputation(f.get(1).ok_or_else(|| anyhow::anyhow!("{line:?}: no progression"))?.to_string(), num(2)?),
         Some("unlock") => {
             let (mut add, mut clear) = (Vec::new(), Vec::new());
@@ -1559,7 +1578,7 @@ pub fn parse_command(line: &str) -> anyhow::Result<Command> {
             }
             Command::Unlock { add, clear }
         }
-        _ => anyhow::bail!("{line:?}: not a store command (activity, xp, complete, checkpoint, clear-checkpoint, lockout, grant, reputation, unlock)"),
+        _ => anyhow::bail!("{line:?}: not a store command (activity, xp, complete, checkpoint, clear-checkpoint, lockout, grant, handoff, reputation, unlock)"),
     })
 }
 
@@ -1605,6 +1624,7 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
             return Ok(format!("lockout {a}: {encounter} paid in week {week}"));
         }
         Command::Grant(g) => return run_grant(m, g),
+        Command::HandOff(h) => return run_handoff(m, h),
         Command::Reputation(name, n) => {
             let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
             let w = s.add_reputation(name, *n);
@@ -1756,6 +1776,52 @@ fn push_store_state(m: &Mutex<Store>, wallet: bool, profile: bool, items: &[(u64
     Ok(())
 }
 
+/// What a hand-off changes in the record (no I/O): the next activity, and whether the completed
+/// activity's completion still has to be written into the profile's current-activity field
+/// (field [6], `progression::layout::ACTIVITY`). `from` is the completed activity's index.
+pub fn note_handoff(s: &mut Store, h: &crate::rewards::remote::HandOffCommand, strict: bool) -> anyhow::Result<(HandOff, Option<u16>)> {
+    let (_, retargeted) = crate::rewards::remote::resolve_target(&h.target, s.character, strict)?;
+    let t = crate::tables::tables();
+    if let (Some(hash), Some(row)) = (h.next_hash, t.activities.get(&h.next)) {
+        anyhow::ensure!(row.hash == hash, "activity {} is {:#010x} in the activity table, the hand-off says {hash:#010x}", h.next, row.hash);
+    }
+    let from = h.from.and_then(|hash| t.activities.values().find(|a| a.hash == hash).map(|a| a.index));
+    if let (Some(hash), None) = (h.from, from) {
+        tracing::warn!("      ⚠ handoff: the completed activity {hash:#010x} is not in the activity table; only the next activity is recorded");
+    }
+    let rev = s.record.revision + 1;
+    let record = HandOff { activity: h.next, hash: h.next_hash, from, revision: rev };
+    s.chr_mut().next_activity = Some(record.clone());
+    // The completion goes into field [6] unless the profile already shows it.
+    let shown = s.chr().summary.as_ref().and_then(|x| x.activity);
+    let complete = from.filter(|f| shown != Some((*f, true)));
+    s.save(&format!("handoff: next activity {}{}{}", h.next, from.map(|f| format!(" after {f}")).unwrap_or_default(),
+                    if retargeted { " (named another key; one player per responder)" } else { "" }))?;
+    Ok((record, complete))
+}
+
+/// A `handoff` from the activity host (stream K's `activity_hand_off`; cine_reveal -> the Tower):
+/// record the next activity, write the completed activity's completion into the profile the
+/// client selects its next activity from (field [6], as the client moved from 164 to 165 once 164
+/// was recorded complete there: notes/ps4-56578-continue-tower-2026-10-29.md), and push it.
+fn run_handoff(m: &Mutex<Store>, h: &crate::rewards::remote::HandOffCommand) -> anyhow::Result<String> {
+    let (record, complete) = {
+        let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+        note_handoff(&mut s, h, crate::mp::enabled())?
+    };
+    let what = format!("next activity {} ({}){}", record.activity,
+                       record.hash.map(|x| format!("{x:#010x}")).unwrap_or_else(|| "hash not given".into()),
+                       record.from.map(|f| format!(", after {f}")).unwrap_or_default());
+    match complete {
+        // The same edit as `complete N`: field [6] completed, the reward row's subs, then the push.
+        Some(from) => Ok(format!("{what}; {}", run_command(Command::Complete(from))?)),
+        None => {
+            push_profile("handoff")?;
+            Ok(format!("{what}; the profile already shows the completion"))
+        }
+    }
+}
+
 /// The file the store writes beside its control file, for the activity host to read back at an
 /// activity's launch: `<control>` with the extension `state.json` (`store-control.state.json`).
 pub fn state_file_for(control: &Path) -> PathBuf {
@@ -1775,6 +1841,7 @@ pub fn state_json(s: &Store) -> Value {
         "checkpoints": c.checkpoints.iter().map(|(a, cp)| (a.to_string(), Value::String(cp.step.clone()))).collect::<serde_json::Map<_, _>>(),
         "lockouts": c.lockouts.iter().map(|(a, l)| (a.to_string(), serde_json::json!(l))).collect::<serde_json::Map<_, _>>(),
         "grants": c.attributes.get(crate::rewards::remote::ATTR_GRANTS).cloned().unwrap_or(Value::Array(Vec::new())),
+        "next_activity": c.next_activity.as_ref().map(|h| serde_json::json!({"activity": h.activity, "hash": h.hash, "from": h.from})),
     })
 }
 
@@ -2480,5 +2547,33 @@ mod tests {
         assert_eq!(s.chr().summary.as_ref().unwrap().level, 40);
         assert!(s.set_profile(b"re-encoded", "store"));
         assert!(!s.chr().profile_stale, "a new payload is the profile again");
+    }
+
+    /// Stream O2, wire 8: the hand-off line records the next activity, names the completion to
+    /// write into field [6], and is in the state file the activity host reads.
+    #[test]
+    fn a_handoff_records_the_next_activity_and_the_completion_to_write() {
+        let t = crate::tables::tables();
+        let (Some(reveal), Some(tower)) = (t.activities.get(&165), t.activities.get(&0)) else {
+            panic!("the activity table has 165 and 0");
+        };
+        assert_eq!((reveal.hash, tower.hash), (0x6EAF_0959, 0x8AE8_DA69), "cine_reveal and the Tower (the story-missions note)");
+        let mut s = Store::in_memory(Identity::from_env(), &Sources::default());
+        let me = s.identity().character;
+        let line = format!("handoff {me:#018x} 0 from=0x6eaf0959 hash=0x8ae8da69");
+        let Command::HandOff(h) = parse_command(&line).unwrap() else { panic!("not a hand-off") };
+        let (record, complete) = note_handoff(&mut s, &h, true).unwrap();
+        assert_eq!((record.activity, record.from, complete), (0, Some(165), Some(165)));
+        assert_eq!(s.chr().next_activity.as_ref().map(|n| n.activity), Some(0));
+        assert_eq!(state_json(&s)["next_activity"]["activity"], 0);
+        // A profile that already shows 165 completed is not edited again.
+        s.chr_mut().summary = Some(Summary { activity: Some((165, true)), ..Summary::default() });
+        assert_eq!(note_handoff(&mut s, &h, true).unwrap().1, None);
+        // A wrong hash for the next activity, and another player's hand-off with MP on, are refused.
+        let Command::HandOff(bad) = parse_command(&format!("handoff {me:#018x} 0 hash=0x1")).unwrap() else { panic!() };
+        assert!(note_handoff(&mut s, &bad, true).is_err());
+        let Command::HandOff(other) = parse_command("handoff 0x1234 0").unwrap() else { panic!() };
+        assert!(note_handoff(&mut s, &other, true).is_err());
+        assert!(note_handoff(&mut s, &other, false).is_ok(), "single player: applied to the signed-on character");
     }
 }
