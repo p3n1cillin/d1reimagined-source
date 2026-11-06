@@ -318,7 +318,7 @@ pub const OP_PUSH_VAR: u8 = 0x3C;
 pub const OP_END: u8 = 0x3E;
 
 /// A content scoring rule (class `ScoreboardRule`).
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct ScoreRule {
     pub incident_name: u32,
     pub audience: u32,

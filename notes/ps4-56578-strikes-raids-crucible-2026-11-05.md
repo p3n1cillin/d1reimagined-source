@@ -267,8 +267,26 @@ of stream H's `Matchmaker::add_playlist(Playlist { hash, kind, activities })` (#
 
 ## Needs evidence
 
+**56578 content export (offline, 5 November).** `d1-oracle content-tables` now writes
+`ps4/fixtures/56578/activities/scoreboard-definitions.json`: 23 definitions, 1,064 incident
+programs and 264 derived-stat programs. Incident/audience/stat hashes, scope flags,
+instruction numbers, constants and variable identifiers retain the existing scoreboard rule
+shape. Each entry's source tag and SHA-256 are recorded; private-input tests regenerate and
+compare the output, skipping explicitly when the inputs are absent. The package reader is the
+project's existing reader; the gibbon layout credit is in `d1-server/ATTRIBUTION.md`.
+
+This closes the availability of the numeric scoring programs, **not the mode association**.
+The 272 activity-options tags (also exported as `activity-options.json`, with each activity's
+base/conditional option tags in `activity-rule-programs.json`) contain `score_to_win` and
+`time_limit` overrides, but the defaults and selection path for each mode have not been
+established. Scoreboard tags alone do
+not identify Control versus Clash, and limits/mercy/round counts cannot safely be guessed from
+them. `crucible.json` therefore retains its stand-in labels and values; no mode is marked fully
+verified and the unmatched definitions are not silently activated. Score/time limits, mercy,
+round counts and per-mode program selection remain open. No native or lab run was made.
+
 Each definition's `needs_evidence` lists what is missing for it. Across them:
-- The content's scoreboard definitions (the Crucible's real scoring and limits).
+- Selecting the exported scoreboard programs and limit overrides for each Crucible mode.
 - The encounter boundaries inside a bubble for the capture-run strikes.
 - The checkpoints and darkness zones of every activity without a script.
 - The raid difficulties and Age of Triumph challenge rules.

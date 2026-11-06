@@ -212,7 +212,9 @@ pub fn dismantle<S: PlayerStore + Clone>(s: &mut S, t: &Tables, chr: CharacterId
 /// The Light an infusion gives the target. Rise of Iron's rule (since the April 2016 update): an item
 /// infused with one of the same type gets all of the source's Light; otherwise 80% of the
 /// difference (The Taken King), rounded down. Never lowers the target.
-/// ⚠ LIKELY: the patch-note rules as players knew them; no client data holds them.
+/// ⚠ LEGACY STAND-IN: the owned 56578 tier rates/floors are now exported in items/infusion.tsv.
+/// This mutation has not been converted to native instance coordinates; rewards::light::infuse
+/// implements the verified formula separately. Do not treat this 80% branch as verified content.
 pub fn infused_light(target: u32, source: u32, same_type: bool) -> u32 {
     if source <= target {
         return target;

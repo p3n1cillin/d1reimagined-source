@@ -66,6 +66,7 @@ mod bounties;
 mod character_create;
 #[allow(dead_code)]
 mod director;
+mod content;
 #[allow(dead_code)]
 mod inventory_ops;
 #[allow(dead_code)]
@@ -2342,12 +2343,12 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_SOCIAL", "0", "1: stream I's social services on 901-905 and 402-405 (vendor rules, vault, Postmaster, refunds, bounties, Armsday, Cryptarch); social_hooks.rs"),
     ("D1_SOCIAL_STOCK", "0", "1 (with D1_SOCIAL): refuse sales outside the vendor's current stock (the placeholder rotation)"),
     ("D1_DISMANTLE_PLACEHOLDER", "0", "1 (with D1_SOCIAL): dismantles give the labelled PLACEHOLDER yields of inventory_ops::PLACEHOLDER_YIELDS"),
-    ("D1_VAULT_VENDOR", "<unset>", "the Vault's row in the client's vendor table (903/902 to it store and take); not yet known"),
-    ("D1_POSTMASTER_VENDOR", "<unset>", "the Postmaster's row in the client's vendor table (903 to it collects); not yet known"),
+    ("D1_VAULT_VENDOR", "<content: 26>", "override the Vault's row in the client's vendor table (903/902 to it store and take)"),
+    ("D1_POSTMASTER_VENDOR", "<content: 20,36>", "additional Postmaster row; both exported variants are recognized (903 to it collects)"),
     ("D1_CHARACTER_CLASS", "0", "the served character's class for stream I's rules (0 Titan, 1 Hunter, 2 Warlock)"),
     ("D1_CHARACTER_LEVEL", "40", "the served character's level for stream I's rules (sale requiredLevel)"),
-    ("D1_ACTIVITY_RULES", "<unset>", "activity unlock rules (director::parse_rules) beyond the decoded Tower and A Guardian Rises ones"),
-    ("D1_STARTING_KIT", "<unset>", "a new character's starting kit per class (character_create::parse_kit)"),
+    ("D1_ACTIVITY_RULES", "<content: 653>", "override rows of the exported 56578 activity launch programs (director::parse_rules)"),
+    ("D1_STARTING_KIT", "<unset>", "a starting-kit file, or content for the exported first default-gear list; grant policy remains unverified"),
     ("D1_MP", "0", "MP(H): 1 = multiplayer services (identities, fireteams, the 42/43 matchmaking directory, PSN sessions); mp.rs, d1-mp"),
     ("D1_MM_CONFIG_FILE", "<unset>", "MP(H): the kind-4 matchmaking configurations (ps4/fixtures/56578/matchmaking/configurations.json)"),
     ("D1_MP_ACCOUNTS", "<unset>", "MP(H): explicit online id -> account SOID bindings, <online id>=<soid>,..."),

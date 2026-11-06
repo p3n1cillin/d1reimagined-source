@@ -81,12 +81,9 @@ pub enum Kind {
     Other,
 }
 
-/// The sale table and the compiled tables, plus the two vendor rows the sale table cannot name.
-///
-/// ⚠ The Vault and the Postmaster sell nothing, so `vendor-sales.tsv` has no row for them and their
-/// row index in the client's vendor table (tag `0x80A5FFCF`) is not known yet: one of the rows the
-/// sale table skips (1, 4, 8, 18–20, 26, 36, 58, 96, 97). `D1_VAULT_VENDOR` / `D1_POSTMASTER_VENDOR`
-/// name them until `d1-oracle vendor-sales` lists every row with its hash.
+/// The sale and social tables, plus explicit vendor-role overrides. Vendors without sales are
+/// identified by the full 56578 vendor table export: Vault 26 and Postmasters 20/36. The existing
+/// `D1_VAULT_VENDOR` / `D1_POSTMASTER_VENDOR` knobs can supply additional explicit identities.
 pub struct Market<'a> {
     pub t: &'a Tables,
     pub sales: &'a HashMap<(u8, u16), Sale>,
@@ -110,6 +107,14 @@ impl<'a> Market<'a> {
         }
         if Some(index) == self.postmaster_vendor {
             return Kind::Postmaster;
+        }
+        // The complete client table includes vendors with no sales, including both Postmasters.
+        for line in include_str!("../../../../../fixtures/56578/vendor/vendor-roles.tsv").lines() {
+            let mut fields = line.split('\t');
+            let role = fields.next();
+            if fields.next().and_then(|s| s.parse::<u8>().ok()) == Some(index) {
+                return match role { Some("vault") => Kind::Vault, Some("postmaster") => Kind::Postmaster, _ => Kind::Other };
+            }
         }
         let Some(v) = self.vendor(index) else { return Kind::Other };
         match v.hash {
@@ -217,5 +222,8 @@ mod tests {
         assert_eq!(m.kind(6), Kind::Other);
         assert_eq!(m.kind(1), Kind::Vault);
         assert_eq!(m.kind(4), Kind::Postmaster);
+        assert_eq!(m.kind(26), Kind::Vault);
+        assert_eq!(m.kind(20), Kind::Postmaster);
+        assert_eq!(m.kind(36), Kind::Postmaster);
     }
 }

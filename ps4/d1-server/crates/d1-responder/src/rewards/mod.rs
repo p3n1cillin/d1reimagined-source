@@ -101,7 +101,7 @@ pub const RULES: &[Rule] = &[
     rule("light.common_roll", "Common and Uncommon drops roll uniformly between the source floor and cap", "Placeholder, needs evidence (not public)", Placeholder),
     rule("light.basis", "The basis is the highest Light the character could equip (best per slot, at most one Exotic weapon and one Exotic armour)", "Community (Rise of Iron era player reports), needs evidence", Community),
     rule("light.weights", "Character Light = floor of the weighted mean: weapons 6, armour 5, Ghost/Artifact/class item 4 (of 50)", "Community (DIM's D1 Light calculation), needs evidence against the client's 0x265EF0 sum", Community),
-    rule("light.infusion", "Infusing raises the target to the fuel's Light, up to the target's own maximum", "Community (Rise of Iron), needs evidence", Community),
+    rule("light.infusion", "In primary input + quality curve units: gain = min(diff, max(diff * tier rate, Attack quality curve(tier floor index)))", "Owned 56578 content items/infusion.tsv and items/stat-curves.json; client 0x26F400 selects by definition +0x8A; callers need native instance coordinates", Verified),
     rule("light.infusion_cost", "Infusion costs nothing extra", "Placeholder, needs evidence (Glimmer and material costs not public)", Placeholder),
     // Engrams
     rule("engram.bucket", "An engram decrypts into the bucket it is listed under (its bucketTypeHash)", "Manifest: engram items (itemType 8) carry their slot's bucket", Verified),

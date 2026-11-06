@@ -540,7 +540,7 @@ pub fn on_buy(req: Vec<u8>) {
             let (what, sidecar) = apply(st, vendor, sale)?;
             // The refund record the client's refund screen needs (account field [20]).
             let s = &st.sales[&(vendor, sale)];
-            let window = refund_window(s.vendor_hash);
+            let window = refund_window_for_item(s.vendor_hash, Some(s.item));
             let note = match window {
                 Some(window) => {
                     st.refunds.push(RefundRecord {
@@ -568,9 +568,16 @@ pub fn on_buy(req: Vec<u8>) {
 /// (progression::RefundPolicies). With it off, every purchase gets 1,800, as the lab has run since
 /// #167, so the lab's behaviour is unchanged.
 fn refund_window(vendor_hash: u32) -> Option<u64> {
+    refund_window_for_item(vendor_hash, None)
+}
+
+fn refund_window_for_item(vendor_hash: u32, content: Option<u16>) -> Option<u64> {
     let forced = std::env::var("D1_REFUND_WINDOW").ok().and_then(|v| v.parse().ok());
     let store = crate::player_store::enabled().then(crate::progression::RefundPolicies::load);
-    refund_window_with(vendor_hash, forced, store.as_ref())
+    match (forced, store.as_ref(), content) {
+        (None, Some(p), Some(ci)) => p.window_secs(vendor_hash, Some(crate::content::item_hash(ci)?)),
+        _ => refund_window_with(vendor_hash, forced, store.as_ref()),
+    }
 }
 
 /// [`refund_window`] without the environment: `policies` is Some when the store is on.
