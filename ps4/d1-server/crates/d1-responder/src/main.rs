@@ -2354,6 +2354,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_MP_ACCOUNTS", "<unset>", "MP(H): explicit online id -> account SOID bindings, <online id>=<soid>,..."),
     ("D1_MP_FIRETEAM_CAP", "3", "MP(H): the fireteam cap with no activity selected"),
     ("D1_MP_RECONNECT_GRACE_MS", "120000", "MP(H): how long a disconnected member keeps their fireteam slot"),
+    ("D1_AH_ACTIVITY_FRAMEWORK", "<unset>", "stream O2 (with D1_MP=1): the activity framework folder (or 1); its matchmaking-playlists.tsv feeds the matchmaker's playlists"),
     ("D1_VENDOR_SALES", "<unset>", "vendor-sales.tsv (d1-oracle vendor-sales write): apply 901 purchases and push the account and profile"),
     ("D1_VENDOR_PROFILE_OBJ", "<unset>", "the served profile as a decoded C object (purchases add items to it)"),
     ("D1_VENDOR_ITEM_TEMPLATE", "<unset>", "a decoded 0x80801732 item element, the template for bought instances"),
