@@ -126,8 +126,8 @@ pub const RULES: &[Rule] = &[
     rule("currency.scope.glimmer", "Glimmer is account-wide", "Client bucket table (vendor.rs BUCKETS: slot 308 scope 1)", Verified),
     rule("currency.scope", "Legendary Marks and Silver Dust are account-wide; materials and consumables are per character", "Community", Community),
     rule("currency.dismantle.silver", "Silver Dust engram items give 1 Silver Dust, Icy (Chroma) armour 5, Dusty Iron armour 1", "Patch notes 2.6.0 and 2.4.1.1", Verified),
-    rule("currency.dismantle.marks", "Year 2 and 3 Legendary gear gives Legendary Marks", "Patch notes 2.0.0 (the source); the amount (3 a weapon, 2 armour) is a placeholder, needs evidence", Placeholder),
-    rule("currency.dismantle.other", "Rare and lower gear gives nothing", "Placeholder, needs evidence", Placeholder),
+    rule("currency.dismantle.marks", "Year 2 and 3 Legendary gear gives 3 Legendary Marks, weapon or armour", "Patch notes 2.0.0 (the source); the amount from the live Tower capture, 5 November 2026 (notes/d1-live-captures-patrol-tower-2026-11-06.md)", Verified),
+    rule("currency.dismantle.other", "Gear gives Glimmer and its materials by tier (Weapon Parts for weapons, Armor Materials for armour): the live rows of inventory_ops::PLACEHOLDER_YIELDS; basic and exotic rows are still placeholders", "Live Tower capture, 5 November 2026: 12 dismantles (uncommon, rare, legendary)", Verified),
     // Talent grids and growth
     rule("grid.level", "Grid level from item XP: step costs subtracted in order, the last repeating when repeatLastStep", "Manifest: DestinyProgressionDefinition steps; client 0x284630 (01.29 reading)", Verified),
     rule("grid.node_level", "A node needs grid level at least its steps' gridLevel", "Manifest: DestinyTalentGridDefinition activationRequirement", Verified),

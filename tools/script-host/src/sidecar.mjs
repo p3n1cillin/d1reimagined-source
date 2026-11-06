@@ -127,7 +127,11 @@ export class Sidecar {
         this.send(out);
       }
     } catch (error) {
-      this.error(`${msg.type}: ${error.stack ?? error.message}`);
+      // A hello that throws (BullShcript missing, an unreadable bundles file, a script that does
+      // not load) means the session did not start: fatal, as PROTOCOL.md says, so the host
+      // halts with the reason instead of waiting for a `loaded` that never comes (integration
+      // review, finding 17). Later failures leave the session running.
+      this.error(`${msg.type}: ${error.stack ?? error.message}`, msg.type === "hello");
     }
     return true;
   }

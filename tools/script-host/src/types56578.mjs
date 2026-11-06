@@ -29,7 +29,7 @@ export const LIFETIME_WIRE_PHASE = Object.freeze({
   2: 3, // active
   3: 4, // cinematic hold
   5: 6, // results (end_game's first write)
-  6: 8, // ended (end_game's second write); 56578 ends at 8, not TU0's 7
+  6: 8, // ended (end_game's second write): a cinematic's 8; the host sends 7 for gameplay (#318)
 });
 
 // Only the values above are evidence. Anything else goes out as null with

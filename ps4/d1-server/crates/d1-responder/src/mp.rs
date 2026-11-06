@@ -129,6 +129,7 @@ pub struct ConnGuard(pub u64);
 impl Drop for ConnGuard {
     fn drop(&mut self) {
         let conn = ConnectionId(self.0);
+        crate::players::forget(self.0); // stream O3
         with(|s| {
             if let Some(who) = s.identity.session(conn).map(|w| w.online_id.clone()) {
                 s.sign_off(conn, now_ms());
@@ -145,7 +146,14 @@ pub fn translate(conn: u64, ids: &[[u8; 36]]) -> Option<Vec<([u8; 36], u64)>> {
         if s.identity.session(c).is_none() {
             if let Some(me) = ids.first().and_then(|p| OnlineId::from_padded(p)) {
                 match s.sign_on(c, &me, now_ms()) {
-                    Ok((account, fireteam)) => warn!("⭐ MP: connection #{conn} is '{me}', {account}, in {fireteam}"),
+                    Ok((account, fireteam)) => {
+                        // Stream O3: the connection's whole identity (account, character, profile),
+                        // so everything it is served is its own (players.rs).
+                        let id = crate::players::identity_for(me.as_str(), account.0);
+                        crate::players::register(conn, id);
+                        warn!("⭐ MP: connection #{conn} is '{me}', {account}, in {fireteam}: character {:#018x}, profile {:#018x}",
+                              id.character, id.profile);
+                    }
                     Err(e) => warn!("⚠ MP: connection #{conn} could not sign on as '{me}': {e}"),
                 }
             }
@@ -161,14 +169,19 @@ pub fn translate(conn: u64, ids: &[[u8; 36]]) -> Option<Vec<([u8; 36], u64)>> {
 /// BAP 42: the 43 body, or `None` when MP is off or the request did not decode (the caller then
 /// answers as before).
 pub fn matchmaking_reply(conn: u64, body: &[u8]) -> Option<Vec<u8>> {
-    with(|s| match s.matchmaking(ConnectionId(conn), body, now_ms()) {
+    // Stream O2/O3: a public-bubble search (slot 1) places the fireteam in the activity host's
+    // public instances (its destination's, emptiest first), holds its slots there, and is answered
+    // with that instance's advertisement, or none when a new one starts (public_feed.rs).
+    let mut place = |w: &d1_mp::matchmaking::Want, searcher: Option<d1_mp::identity::AccountSoid>| {
+        if w.slot != d1_bap::matchmaking_sessions::SLOT_BUBBLE {
+            return None;
+        }
+        crate::public_feed::on_bubble_search_by(w.set_id, w.needed as usize, searcher.map(|a| a.0))
+            .map(|accounts| accounts.into_iter().map(d1_mp::identity::AccountSoid).collect())
+    };
+    with(|s| match s.matchmaking_placed(ConnectionId(conn), body, now_ms(), &mut place) {
         Ok(r) => {
             warn!("      ⭐ MP matchmaking (connection #{conn}): {:?}", r.action);
-            // Stream O2: a public-bubble search (slot 1) places the fireteam in the activity
-            // host's public instances and holds its slots there (public_feed.rs).
-            if let d1_mp::matchmaking::DirectoryAction::Searched { slot: 1, set_id, needed, .. } = r.action {
-                crate::public_feed::on_bubble_search(set_id, needed as usize);
-            }
             Some(r.body)
         }
         Err(e) => {

@@ -18,7 +18,6 @@
 //! Encoding goes through `d1-oracle` (the client's own codec), as `stage_loadout` does.
 
 use std::collections::{BTreeMap, HashMap};
-use std::path::PathBuf;
 use std::sync::{Mutex, OnceLock};
 
 /// The client's bucket table (`investment_globals->vfunc[0x98]`, read live): ordinal ->
@@ -270,7 +269,7 @@ pub fn sell_request(obj: &[u8]) -> Option<SellRequest> {
 /// Decode a 903 request body with the client's codec and log its fields (no state change yet).
 pub fn on_sell(req: Vec<u8>) {
     let oracle = std::env::var("D1_ORACLE").unwrap_or_else(|_| "d1-server/target/release/d1-oracle".into());
-    std::thread::spawn(move || {
+    spawn_as_player(move || {
         let decoded = (|| -> anyhow::Result<SellRequest> {
             let dir = std::env::temp_dir().join("d1-vendor");
             std::fs::create_dir_all(&dir)?;
@@ -425,12 +424,27 @@ fn apply(st: &mut State, vendor: u8, sale_index: u16) -> anyhow::Result<(String,
 /// op starts from it (a grant, an XP push or a completion may have changed it since this state's
 /// last publish), so an op never publishes a profile that lacks them, and an instance SOID the
 /// rewards minted is never minted again. The store's profile object is used when it is decoded.
-fn sync_from_store(st: &mut State) {
+fn sync_from_store(st: &mut State) -> anyhow::Result<()> {
     let Some((object, slots, instances, next, refunds)) = crate::player_store::view(|s| {
         let a = &s.record.account;
         (s.chr().profile_object.clone(), a.slots.clone(), a.slot_instances.clone(), a.next_item_soid, a.refunds.clone())
     }) else {
-        return;
+        anyhow::ensure!(
+            !crate::players::current_is_other(),
+            "another player's op, and the player store is off (D1_MP=1 serves each player's vendor ops from their own record)"
+        );
+        return Ok(());
+    };
+    // Stream O3: another player's op must start from their own profile, never from the state's
+    // last one (the responder's own player's): decode their served profile when the store has
+    // no object yet.
+    let object = match object {
+        None if crate::players::current_is_other() => Some(
+            crate::player_store::vendor_seed()
+                .and_then(|v| v.profile)
+                .ok_or_else(|| anyhow::anyhow!("this player's profile is not decoded yet"))?,
+        ),
+        o => o,
     };
     if let Some(o) = object.filter(|o| o.len() == st.profile.len()) {
         st.profile = o;
@@ -441,6 +455,14 @@ fn sync_from_store(st: &mut State) {
         st.next_soid = st.next_soid.max(n);
     }
     st.refunds = refunds;
+    Ok(())
+}
+
+/// Stream O3: run `f` on a thread as the current player (the connection's own under `D1_MP=1`,
+/// `players.rs`), so the op reads, edits and pushes that player's record.
+fn spawn_as_player(f: impl FnOnce() + Send + 'static) {
+    let who = crate::players::current();
+    std::thread::spawn(move || crate::players::run_as(who, f));
 }
 
 /// Encode the account (only the intended fields, plus the inventory) and write both push files,
@@ -449,10 +471,11 @@ fn sync_from_store(st: &mut State) {
 fn publish(st: &State, sidecar: Option<(u64, Vec<u8>)>, what: &str, removed: Option<u64>) -> anyhow::Result<()> {
     let account = account_payload(&st.oracle, &st.account, &st.account_instances, &st.refunds)?;
     let (profile, _) = encode(&st.oracle, "0x80801743", &st.profile, "profile")?;
-    if let Some(p) = std::env::var_os("D1_ACCOUNT_PUSH_FILE").map(PathBuf::from) {
+    // Stream O3: the player's own push files (player_store::player_file).
+    if let Some(p) = crate::player_store::account_push_file() {
         std::fs::write(&p, &account)?;
     }
-    if let Some(p) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(PathBuf::from) {
+    if let Some(p) = crate::player_store::profile_push_file() {
         // One profile push at a time: a store push not yet delivered is not overwritten
         // (integration review, finding 3).
         crate::player_store::wait_for_push_taken();
@@ -536,7 +559,7 @@ pub fn note_profile_pushed(payload: Vec<u8>) {
     if state().lock().map(|s| s.is_none()).unwrap_or(true) {
         return;
     }
-    std::thread::spawn(move || {
+    spawn_as_player(move || {
         let Ok(mut guard) = state().lock() else { return };
         let Some(st) = guard.as_mut() else { return };
         let decoded = (|| -> anyhow::Result<Vec<u8>> {
@@ -567,6 +590,12 @@ pub fn adopt_store_state(slots: BTreeMap<u16, (u16, u32)>, instances: BTreeMap<u
     let Some(st) = guard.as_mut() else {
         return false;
     };
+    // Stream O3: start from this player's own record (a grant for another player runs as them),
+    // so an unchanged profile is theirs, not the state's last one.
+    if let Err(e) = sync_from_store(st) {
+        tracing::warn!("      ⛔ {what}: {e:#}; the store pushes instead");
+        return false;
+    }
     st.account = slots;
     st.account_instances = instances;
     if let Some(p) = profile.filter(|p| p.len() == st.profile.len()) {
@@ -603,13 +632,16 @@ pub fn on_buy(req: Vec<u8>) {
     if state().lock().map(|s| s.is_none()).unwrap_or(true) {
         return;
     }
-    std::thread::spawn(move || {
+    spawn_as_player(move || {
         let mut guard = match state().lock() {
             Ok(g) => g,
             Err(_) => return,
         };
         let Some(st) = guard.as_mut() else { return };
-        sync_from_store(st);
+        if let Err(e) = sync_from_store(st) {
+            tracing::warn!("      ⛔ vendor op NOT applied: {e:#}");
+            return;
+        }
         let result = (|| -> anyhow::Result<String> {
             let (vendor, sale, stamp) = decode_request(&st.oracle, &req)?;
             // ⭐ Stream I (D1_SOCIAL=1): the manifest's rules, decodes, bounties and Armsday.
@@ -642,7 +674,7 @@ pub fn on_buy(req: Vec<u8>) {
 }
 
 /// How long a purchase from `vendor_hash` can be returned (seconds of the 901's clock), or None.
-/// `D1_REFUND_WINDOW` (seconds) forces one for every vendor. Otherwise, with the player store on
+/// `D1_REFUND_WINDOW` (seconds) sets its length (finding 15: not which purchases). With the player store on
 /// (`D1_STORE=1`), D1's rule from the manifest: Eververse and its Silver Dust store only, 15 minutes
 /// (progression::RefundPolicies). With it off, every purchase gets 1,800, as the lab has run since
 /// #167, so the lab's behaviour is unchanged.
@@ -657,10 +689,25 @@ fn refund_window_for_item(vendor_hash: u32, content: Option<u16>) -> Option<u64>
 }
 
 /// [`refund_window_for_item`] without the environment.
+///
+/// Integration review, finding 15: `D1_REFUND_WINDOW` is the window's **length**, and which
+/// purchases are refundable is the game's rule, the same with `D1_SOCIAL` on and off. With the
+/// store on that rule is the manifest's refund policy (Eververse and its Silver Dust store, per
+/// item), and a purchase it does not refund gets no record whatever the knob says, as the social
+/// path (`vendors::purchase::buy`, which keeps a receipt only for a refundable rule) always did.
+/// With the store off there is no policy and every purchase is refundable, as the lab has run
+/// since #167 (1,800 s, or the knob's).
 fn refund_window_for_item_with(vendor_hash: u32, content: Option<u16>, forced: Option<u64>, policies: Option<&crate::progression::RefundPolicies>) -> Option<u64> {
-    match (forced, policies, content) {
-        (None, Some(p), Some(ci)) => p.window_secs(vendor_hash, Some(crate::content::item_hash(ci)?)),
-        _ => refund_window_with(vendor_hash, forced, policies),
+    let policy = match (policies, content) {
+        (Some(p), Some(ci)) => Some(p.window_secs(vendor_hash, Some(crate::content::item_hash(ci)?))),
+        (Some(p), None) => Some(p.window_secs(vendor_hash, None)),
+        (None, _) => None,
+    };
+    match (policy, forced) {
+        (Some(None), _) => None,
+        (_, Some(w)) => Some(w),
+        (Some(w), None) => w,
+        (None, None) => Some(1800),
     }
 }
 
@@ -675,11 +722,7 @@ fn sale_refund_window(sale: Option<&Sale>) -> Option<u64> {
 
 /// [`refund_window`] without the environment: `policies` is Some when the store is on.
 fn refund_window_with(vendor_hash: u32, forced: Option<u64>, policies: Option<&crate::progression::RefundPolicies>) -> Option<u64> {
-    match (forced, policies) {
-        (Some(w), _) => Some(w),
-        (None, Some(p)) => p.window_secs(vendor_hash, None),
-        (None, None) => Some(1800),
-    }
+    refund_window_for_item_with(vendor_hash, None, forced, policies)
 }
 
 /// The profile's equipped item SOIDs: 20 x u64 at +0x2B80 (`d1-oracle profile layout`).
@@ -729,10 +772,13 @@ pub fn on_equip(req: Vec<u8>) {
     if state().lock().map(|s| s.is_none()).unwrap_or(true) {
         return;
     }
-    std::thread::spawn(move || {
+    spawn_as_player(move || {
         let Ok(mut guard) = state().lock() else { return };
         let Some(st) = guard.as_mut() else { return };
-        sync_from_store(st);
+        if let Err(e) = sync_from_store(st) {
+            tracing::warn!("      ⛔ vendor op NOT applied: {e:#}");
+            return;
+        }
         let result = (|| -> anyhow::Result<String> {
             let instance = decode_instance(&st.oracle, &req)?;
             // ⭐ Stream I (D1_SOCIAL=1): the game's equip rules (one exotic, class gear).
@@ -816,7 +862,9 @@ fn apply_dismantle(st: &mut State, instance: u64, content: u16, yields: &[(u16, 
                 .or_else(|| (first..first + n).find(|s| !account.contains_key(s)))
                 .ok_or_else(|| anyhow::anyhow!("account bucket {b:#x} is full"))?;
             let have = account.get(&at).map(|x| x.1).unwrap_or(0);
-            account.insert(at, (*ci, have + q));
+            // The Glimmer cap (player_store::GLIMMER_CAP): what is over it is lost.
+            let after = crate::player_store::capped(*ci, have, i64::from(have) + i64::from(*q)) as u32;
+            account.insert(at, (*ci, after));
         } else {
             let at = (first..first + n).find(|s| profile_entry(&profile, *s).0 == *ci)
                 .or_else(|| (first..first + n).find(|s| profile_entry(&profile, *s).0 == 0xFFFF))
@@ -837,10 +885,13 @@ pub fn on_item_action(req: Vec<u8>) {
     if state().lock().map(|s| s.is_none()).unwrap_or(true) {
         return;
     }
-    std::thread::spawn(move || {
+    spawn_as_player(move || {
         let Ok(mut guard) = state().lock() else { return };
         let Some(st) = guard.as_mut() else { return };
-        sync_from_store(st);
+        if let Err(e) = sync_from_store(st) {
+            tracing::warn!("      ⛔ vendor op NOT applied: {e:#}");
+            return;
+        }
         let result = (|| -> anyhow::Result<String> {
             let (instanced, instance, content, quantity) = decode_item_action(&st.oracle, &req)?;
             anyhow::ensure!(instanced && quantity == 0, "only an instanced item's dismantle is handled (instanced {instanced}, quantity {quantity})");
@@ -878,7 +929,16 @@ fn with_wire_store<T>(st: &mut State, f: impl FnOnce(&mut crate::store::WireStor
     let chr = w.character.id;
     let receipts = st.refunds.iter().map(|r| crate::social_hooks::receipt_from(r, &st.sales)).collect();
     crate::store::PlayerStore::set_receipts(&mut w, chr, receipts);
-    let out = f(&mut w, &st.sales).map_err(|e| anyhow::anyhow!(e))?;
+    // Integration review, finding 12: a refused op changes nothing, so the side store it took
+    // (bounty progress, Armsday counters, XP waiting for the store) goes back as it was.
+    let before = w.side.clone();
+    let out = match f(&mut w, &st.sales) {
+        Ok(out) => out,
+        Err(e) => {
+            crate::social_hooks::keep_side(before);
+            anyhow::bail!(e);
+        }
+    };
     st.refunds = crate::store::PlayerStore::receipts(&w, chr).iter().map(crate::social_hooks::refund_from).collect();
     st.account = w.account.clone();
     st.account_instances = w.account_instances.clone();
@@ -917,10 +977,13 @@ pub(crate) fn on_social(id: u16, req: Vec<u8>) {
     if state().lock().map(|s| s.is_none()).unwrap_or(true) {
         return;
     }
-    std::thread::spawn(move || {
+    spawn_as_player(move || {
         let Ok(mut guard) = state().lock() else { return };
         let Some(st) = guard.as_mut() else { return };
-        sync_from_store(st);
+        if let Err(e) = sync_from_store(st) {
+            tracing::warn!("      ⛔ vendor op NOT applied: {e:#}");
+            return;
+        }
         let oracle = st.oracle.clone();
         let result = (|| -> anyhow::Result<String> {
             let op = crate::social_hooks::decode(id, &oracle, &req)?;
@@ -971,6 +1034,18 @@ mod tests {
         assert_eq!(s.account[&308], (869, 105));
     }
 
+    /// The 25,000 Glimmer cap: a dismantle's Glimmer over it is lost.
+    #[test]
+    fn a_dismantle_stops_glimmer_at_the_cap() {
+        let mut s = st(24_990);
+        with_rifle(&mut s, 94, 0xd100_0000_0000_030b, false);
+        apply_dismantle(&mut s, 0xd100_0000_0000_030b, 3598, &[(869, 31, 0x1f)]).unwrap();
+        assert_eq!(s.account[&308], (869, 25_000));
+        assert_eq!(crate::player_store::capped(869, 30_000, 30_031), 30_000, "an older wallet over the cap is not taken down");
+        assert_eq!(crate::player_store::capped(869, 25_000, 24_000), 24_000, "a spend is a spend");
+        assert_eq!(crate::player_store::capped(4548, 199, 230), 230, "other caps are the rewards' own");
+    }
+
     #[test]
     fn an_equipped_item_is_not_dismantled() {
         let mut s = st(100);
@@ -1002,7 +1077,10 @@ mod tests {
         assert_eq!(refund_window_with(eververse, None, Some(&p)), Some(900));
         assert_eq!(refund_window_with(eva, None, Some(&p)), None);
         assert_eq!(refund_window_with(eva, None, None), Some(1800), "store off: as before");
-        assert_eq!(refund_window_with(eva, Some(60), Some(&p)), Some(60), "D1_REFUND_WINDOW forces one");
+        // Finding 15: D1_REFUND_WINDOW sets the length; it does not make Eva's purchases refundable.
+        assert_eq!(refund_window_with(eververse, Some(60), Some(&p)), Some(60), "D1_REFUND_WINDOW is the length");
+        assert_eq!(refund_window_with(eva, Some(60), Some(&p)), None, "and the game's rule says which");
+        assert_eq!(refund_window_with(eva, Some(60), None), Some(60), "store off: every purchase, as before");
         let real = parse_sales(&std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"),
             "/../../../fixtures/56578/vendor/vendor-sales.tsv")).unwrap());
         assert_eq!(real[&(12, 0)].vendor_hash, eververse, "client vendor 12 is Eververse");
@@ -1021,7 +1099,12 @@ mod tests {
         assert!(windows.iter().any(|w| *w == Some(900)), "some Eververse sales refund for 15 minutes");
         assert!(windows.iter().any(Option::is_none), "and some do not, though the vendor does");
         assert_eq!(refund_window_with(0xe97a_aa75, None, Some(&p)), Some(900), "the per-vendor answer");
-        assert_eq!(refund_window_for_item_with(0xe97a_aa75, Some(0), Some(60), Some(&p)), Some(60), "D1_REFUND_WINDOW still forces one");
+        // Finding 15: the knob changes a refundable sale's length and leaves the others unrefundable,
+        // as the social path does.
+        let refundable = eververse.iter().find(|s| refund_window_for_item_with(s.vendor_hash, Some(s.item), None, Some(&p)).is_some()).unwrap();
+        let not = eververse.iter().find(|s| refund_window_for_item_with(s.vendor_hash, Some(s.item), None, Some(&p)).is_none()).unwrap();
+        assert_eq!(refund_window_for_item_with(refundable.vendor_hash, Some(refundable.item), Some(60), Some(&p)), Some(60));
+        assert_eq!(refund_window_for_item_with(not.vendor_hash, Some(not.item), Some(60), Some(&p)), None);
     }
 
     /// The account inventory the store's own account push encodes (stream O2, vendor state off).

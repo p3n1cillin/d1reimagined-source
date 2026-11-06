@@ -72,6 +72,10 @@ row 132, kind 3, sub 42.
 | Director | **verified content**: all 653 launch programs, 28 shared groups and each activity's direct launch/join/visibility expressions | unlock values are still read as zero by the server predictor; state coverage is separate from program coverage | compiled `activity-rules.tsv`; `D1_ACTIVITY_RULES` overrides rows |
 | Character creation | **verified content lists**: three classes, 12 unconditional and six conditional preload items each; 501 identity fields | converting an asset-preload list into exactly the initial server grant is not verified; `D1_STARTING_KIT` stays empty by default | `starting-kit.tsv` is the first list in the existing knob format; both lists retained in `starting-kit-lists.json` |
 
+**Update (6 November).** The live Tower capture settles the bounty turn-in (402, action 1), the
+package flow (904 at the vendor, contents straight into the inventory), 405's bytes and the
+dismantle amounts: [the live Tower note](d1-live-captures-patrol-tower-2026-11-06.md).
+
 ## What the wire evidence would take
 
 1. **Vendor identities are closed by static export.** `vendor-index.tsv` preserves all 124 rows,

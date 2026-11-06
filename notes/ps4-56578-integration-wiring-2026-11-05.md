@@ -30,9 +30,9 @@ exists and is tested; it does not mean it has been seen working in the game.
 | 9 | The open world's script bridge | `public_events::BubbleScriptBridge` → `script_bridge::ScriptBridge` | **wired**, refuses until K's message | With `D1_AH_SCRIPTS=1` the open world's bridge is a `ScriptBridge` instead of `PendingBridge`. It still has no scripted run for a public bubble, so `start_bundles` refuses ("no scripted activity is running") and no event starts. Starting one needs stream K's single-public-event sidecar message. Protocol 1 has no per-event message, so `start_event` and `stop_event` are refused, as #319 states. |
 | 10 | A public instance's checksum | `worlds.tsv` `public_checksum` (#314) → `global_activity_state+0x5C` | **wired** | `generated::read_public_checksums` reads it (with `D1_AH_WORLDS`), and `PublicHost::with_public_checksums` holds it. On a join that names a mission host, `state.rs` publishes the world's PUBLIC checksum instead of the mission's PRIVATE one, and logs both. This is the client's own index reading (#316). It is not measured on the wire. |
 | 11 | Matchmaker ↔ public registry | `d1_mp::matchmaking::PublicInstances` (#312) over `public_registry` (#316) | **wired** | `impl PublicInstances for DestinationInstances`: G's five-line impl, now that d1-mp is a dependency of the activity host. |
-| 12 | The public placement rule | H's `place_in_public` vs G's `PublicRegistry::place` | **one rule** | Emptiest first, ties to the oldest: G's rule, which G records as Bungie's stated design. `PublicRegistry::placement_order` is the rule, and `place` takes its first entry. The trait has a new provided method, `PublicInstances::placement_order`, which `place_in_public` follows. G's impl overrides it with the registry's own order, and its default is the same rule (`emptiest_first`). H's "fullest first" test now asserts the emptiest. The captures do not show which rule the live matchmaker used. |
-| 13 | Public placement across processes | the responder's 42 bubble search → the registry | **wired** (O2), placement only | `D1_AH_PUBLIC_INSTANCES_FILE` (both servers): the host writes the registry's instances there on every arrival and leave (`public_registry::sync_with_responder`). On a slot-1 search the responder runs `place_in_public` over that snapshot (`public_feed::FilePublicInstances`, the registry's rule) and writes `reserve HOST SLOTS` to `<file>.reserve`, which the host applies before the next arrival, so the fireteam's slots are held. Open: the 43 answer still lists the clients' own advertisements; which advertisement is which host instance is not known from their bytes. The bubble id carries no destination, so a region id two destinations share matches both. |
-| 14 | Identity | d1-mp's `MemberIdentity` in the activity host | **wired** (O2) | The registry keys members by the whole 40-byte identity (`Arrival::character: CharacterRef`, `public_host::identity_of_join`), so two characters of one console are two members. The open world still keys by the first 8 bytes internally, but its grants go out with the full identity (`CharacterRef::for_key` over the identities the host saw join). With `D1_MP=1` the responder also checks the identity's account (`+0x10`), a stopgap until each connection has its own SOIDs. |
+| 12 | The public placement rule | H's `place_in_public` vs G's `PublicRegistry::place` | **one rule, everywhere** (O3) | Emptiest first, ties to the oldest: G's rule, which G records as Bungie's stated design. `PublicRegistry::placement_order` is the rule, and `place` takes its first entry; `PublicInstances::placement_order` (default `emptiest_first`) is what `place_in_public` follows. Stream O3 (review finding 8): the 42 directory's `rank_fill` and the strike playlist fill now use the same rule; before, both took the fullest. The captures do not show which rule the live matchmaker used; PR #328's joined instances were 30 s to 2.4 minutes old, consistent with it. |
+| 13 | Public placement across processes | the responder's 42 bubble search → the registry | **wired** (O2, O3) | `D1_AH_PUBLIC_INSTANCES_FILE` (both servers): the host writes the registry's instances there on every arrival and leave (`public_registry::sync_with_responder`). On a slot-1 search the responder runs `place_in_public` over that snapshot (`public_feed::FilePublicInstances`) and writes `reserve HOST SLOTS` to `<file>.reserve`, which the host applies before the next arrival. Stream O3: the snapshot names each instance's members by account (`accounts`) and each mission host's player and destination (`missions`). The search is placed among the searcher's own destination's instances (the bubble id is only a region), and the 43 answer offers only advertisements whose owner is a member of the placed instance, or none when a new one starts (`Directory::handle_placed`). `[I]` that the advertiser of an instance is one of its members: in every capture the mission host advertised the instance its client had joined. |
+| 14 | Identity | d1-mp's `MemberIdentity` in the activity host; one identity per connection in the responder | **wired** (O2, O3) | The registry keys members by the whole 40-byte identity (`Arrival::character: CharacterRef`, `public_host::identity_of_join`), so two characters of one console are two members. Stream O3 (review finding 4): with `D1_MP=1` each responder connection is its own player, with its account, character and profile SOIDs from `identities.json`'s scheme (`players.rs`); the store serves several players' records, keyed by identity, and a grant goes to the player whose account and character it names. This replaces O2's account-match stopgap. |
 | 15 | Playlists | `encounter_framework::matchmaking_playlists` (#313) → `d1_mp::Matchmaker::add_playlist` | **wired** (O2) | The host side writes them to `ps4/fixtures/56578/activities/matchmaking-playlists.tsv` (a test fails when it is stale; `D1_REGEN_PLAYLISTS=1`). With `D1_MP=1` and `D1_AH_ACTIVITY_FRAMEWORK`, `mp::init` adds every row. |
 | 16 | Vault instances | the vendor state's `account_instances` → the store (#309's gap) | **wired** | `VendorCommit.slot_instances` and the record's `account.slot_instances`, filtered to occupied slots. `vendor_seed` hands them back, so a vault item keeps its instance across a save and a restart. A record written before the field reads with none. |
 | 17 | The command file itself | every writer → the responder's poller | **fixed** | The poller used to read the file and then rename it, so a line appended in between was lost. It now renames first and reads the `.taken` copy after 50 ms. A writer's next line starts a new file. |
@@ -140,7 +140,7 @@ tests skip the same way.
 
 ## Open
 
-- Row 9 above, and the open parts of rows 3b (element fields), 13 (the 43 answer) and 14 (per-connection SOIDs). Stream O2's pass is [below](#stream-o2-the-second-pass-6-november).
+- Row 9 above, and the open part of row 3b (element fields). Rows 13 (the 43 answer) and 14 (per-connection SOIDs) were closed by [stream O3](#stream-o3-multiplayer-correctness-6-november); stream O2's pass is [below](#stream-o2-the-second-pass-6-november).
 - Nothing here has run. The first full-game run should show these log lines:
   - `⭐ rewards: grants go to the player store through ...` and
     `⭐ rewards: forwarded to the store: grant ...` in the activity host;
@@ -181,3 +181,41 @@ ranking against the registry's emptiest-first rule (8), one script bridge per sh
 | `cargo test -p d1-activity-host`, with `D1_EBOOT` | 249 unit + 10 + 1 + 4 + 2 + 3 integration, all passed (`activity_driver` 6, `public_registry` 2, `reward_forward` 1 changed, the playlists table 1, the profile test extended) |
 | `cargo test -p d1-mp` | 31 unit + 7 scenario (1 new) |
 | `python -I -m pytest tests/test_full_game_profile.py` | 12 passed |
+
+## Stream O3: multiplayer correctness (6 November)
+
+The review findings O2 left open, almost all multiplayer ones, and PR #328's code findings. Built
+and unit-tested only; nothing has run in the game. No new knob; every change is behind the
+existing ones (`D1_MP`, `D1_STORE`, `D1_AH_SHARED_INSTANCES`, `D1_AH_PUBLIC_HOST`,
+`D1_AH_PUBLIC_INSTANCES_FILE`, `D1_RSAT_NATIVE`, `D1_REFUND_WINDOW`), and with them unset both
+servers answer as before. The per-finding status is in the
+[review note](ps4-56578-integration-review-2026-11-05.md#status-after-the-fixing-passes-o2-327-o3-6-november).
+
+| Seam | From → to | What changed |
+|---|---|---|
+| A connection's player | BAP 23's sign-on → every id the connection is served | `players.rs`: the connection's task carries its player (a tokio task-local; threads carry it with `run_as`), and `env_soid` answers `D1_ACCOUNT_SOID`, `D1_CHARACTER_SOID` and `D1_PROFILE_SOID` for it. The responder's own player keeps the knobs. |
+| Several players' records | the connection's player → `player_store` | `store_of(identity)`: the responder's own record, or another filed player's, opened once. `view`, `with_store`, the pushes and the control commands act on the current player's. Each player has its own push files (`<file>-<account>.<ext>`) and its own primary BAP connection (`players::is_primary`). |
+| Grants by full identity | the host's `grant`/`handoff` lines → the player's record | `player_store::target_store`: account and character must both be a filed player's; nobody's is refused under `D1_MP=1`. |
+| Vendor ops | 901/402/403/404/405/90x → the player's record | Each op runs as the connection's player and starts from that player's record (`sync_from_store`); the social side stores are per character, and a refused op restores its side store (finding 12). |
+| One script per shared instance | every member's connection → one `ScriptBridge` | `shared_scripts.rs` (finding 9); a public instance runs none (finding 10). |
+| The 43 answer, the destination | the registry's snapshot → the responder's directory | Row 13. |
+
+Tests (`D1_EBOOT` set):
+
+| Suite | Result | New in this pass |
+|---|---|---|
+| `cargo test -p d1-responder` | 184 passed, 1 ignored | `players` (2), `two_players_are_each_paid_once_into_their_own_record`, `each_player_has_its_own_push_files_and_record`, `a_search_is_placed_on_its_own_destination_and_answered_by_the_instances_members`, `a_dismantle_stops_glimmer_at_the_cap`, `an_empty_owner_word_is_no_owner`; the refund and dismantle tests changed |
+| `cargo test -p d1-activity-host` | 251 unit + 10 + 1 + 4 + 3 + 2 + 3 integration, all passed (the same without `D1_EBOOT`, the eboot tests skipping) | `a_shared_instance_runs_one_script_for_both_members_and_pays_each_once`, `an_events_tier_is_its_completion_incident_set`, the cache key's encoder, `tests/multiplayer_scenario.rs` (3) |
+| `cargo test -p d1-mp` | 32 unit + 7 scenario | `a_placed_search_offers_only_the_placed_instances_advertisement`; the fill test now asserts the emptiest |
+| `node --test test/sidecar.test.mjs` (`tools/script-host`) | 5 passed | the fatal hello |
+| `python -I -m pytest tests/test_full_game_profile.py` | 12 passed (317 subtests) | (unchanged) |
+
+**The multi-client scenario** is split at the process boundary, as the servers are: the host's
+half (`tests/multiplayer_scenario.rs` and the shared-bridge test) has two fake clients in one
+strike (one bridge, each member paid once) and in one public instance (no mission script, no
+framework, so no second grant); the responder's half has the grant lines those produce reach each
+player's own record once, each with its own account, character and profile.
+
+Still open: the review's findings 20-24, 26, 28-33 and 35-39 (the reasons are in the review note),
+and from PR #328: packages on 904, bounty turn-in on 402 action 1, and The Dark Within's objective
+rows.
