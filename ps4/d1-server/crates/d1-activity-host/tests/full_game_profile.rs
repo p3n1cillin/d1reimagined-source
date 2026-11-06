@@ -285,6 +285,10 @@ fn the_script_bridge_configures_from_the_profile() {
     assert_eq!(reveal.rows.len(), 21);
     assert_eq!(reveal.rows.iter().filter(|(_, r)| r.a.is_some()).count(), 2, "/6/0 and the player bundle's spawn value");
     assert_eq!(reveal.start, Some(25));
+    // Run fg2c: at the move to 26 the list the client holds adds the Tower cinematic /6/1, as the
+    // step schedule's cine_reveal-move-26.txt (22 records) does.
+    let tower = d1_activity_host::rows::RowKey { group: 0x2FE7_DBE6, kind: 6, index: 1 };
+    assert!(reveal.slice_list(26).is_some_and(|l| l.len() == 22 && l.iter().any(|(k, _)| *k == tower)));
     assert_eq!(c.start_delay, std::time::Duration::from_secs(60), "D1_AH_SCRIPTS_START_DELAY");
     let stand_in = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../profiles/script-activities.txt");
     let text = std::fs::read_to_string(&stand_in).unwrap();

@@ -657,6 +657,22 @@ impl ScriptedActivity {
         Ok((world, only_ours, valued))
     }
 
+    /// The list the client holds in slice set `region`: the world's list (every record of the
+    /// start's list, with the bridge's merged in), then the records the slice set's own generated
+    /// list adds. Run fg2c (6 November): slice set 26 adds the Tower cinematic /6/1, which the
+    /// start's list does not name; the step schedule that plays serves `cine_reveal-move-26.txt`,
+    /// these 22 records, at the move. `None` when the generated tables have no list for `region`.
+    pub fn slice_list(&self, region: u32) -> Option<Vec<(RowKey, Row)>> {
+        let own = self.slice_rows.get(&region)?;
+        let mut rows = self.rows.clone();
+        for (k, r) in own {
+            if *k != self.lifetime && !rows.iter().any(|(m, _)| m == k) {
+                rows.push((*k, r.clone()));
+            }
+        }
+        Some(rows)
+    }
+
     /// The machine the authority table gives the blocks to (block 0's peer), else 14.
     pub fn machine(&self) -> u8 {
         self.authority.as_ref().and_then(|a| a.image.get(5).copied()).unwrap_or(14)
@@ -960,6 +976,9 @@ struct Run {
     believed_slice: Option<u32>,
     /// Client events before the scripts start, sent after `start` in order.
     before_start: VecDeque<HostMsg>,
+    /// The slice set a phase moved the client to, whose list went out at the move: its full list
+    /// goes out once more when the client reports it is there (udt 21).
+    awaiting_arrival: Option<u32>,
 }
 
 impl Run {
@@ -1168,12 +1187,18 @@ impl ScriptBridge {
         // the move, with the rows' current values.
         if let Some(run) = self.run.as_mut() {
             if run.list_slice.is_some() && run.list_slice != Some(region) {
-                if let Some(list) = run.activity.slice_rows.get(&region) {
-                    tracing::info!("script bridge: slice set {region}: its list ({} rows) goes out in full", list.len());
+                if let Some(list) = run.activity.slice_list(region) {
+                    tracing::info!("script bridge: slice set {region}: its list ({} rows) goes out in full", list.len() + 1);
                     run.list_slice = Some(region);
                     let lifetime = run.activity.lifetime;
-                    self.rows.relist(list.clone(), &[lifetime]);
+                    self.rows.relist(list, &[lifetime]);
                 }
+            } else if run.awaiting_arrival == Some(region) {
+                tracing::info!("script bridge: the client reports slice set {region}; its list goes out in full again");
+                self.rows.request_full();
+            }
+            if run.awaiting_arrival == Some(region) {
+                run.awaiting_arrival = None;
             }
         }
         let on = self.config.active_bundles;
@@ -1267,6 +1292,7 @@ impl ScriptBridge {
             start_held_logged: false,
             believed_slice: self.served_start.or(start),
             before_start: VecDeque::new(),
+            awaiting_arrival: None,
         });
     }
 
@@ -1622,6 +1648,22 @@ impl ScriptBridge {
                         self.region_out = Some(r);
                     }
                     None => {}
+                }
+                // The list follows the slice set the phase runs in: a move sends that set's full
+                // list (the world's records and the set's own, current values) with the teleport,
+                // as the step schedule's move list does, so a row the scripts set there (fg2c: the
+                // Tower cinematic /6/1) is one the client holds, not one held back.
+                if let Some(r) = region.filter(|r| run.list_slice.is_some() && run.list_slice != Some(*r)) {
+                    if let Some(list) = run.activity.slice_list(r) {
+                        tracing::info!(
+                            "script bridge: phase {index} moves the list to slice set {r} ({} rows, in full)",
+                            list.len() + 1
+                        );
+                        run.list_slice = Some(r);
+                        run.awaiting_arrival = Some(r);
+                        let lifetime = run.activity.lifetime;
+                        self.rows.relist(list, &[lifetime]);
+                    }
                 }
                 self.set_lifetime();
             }
@@ -2512,6 +2554,13 @@ mod tests {
         let reveal = profile_reveal(true);
         assert_eq!(reveal.region_of_phase(0, crate::incident_catalog::fnv1("cine_106_trv_phase"), None), Some(25), "content puts phase 0 in 25");
         let mut b = bridge_delayed(&shared, false, false, reveal, Duration::from_secs(60));
+        // The grants go through stream O's forwarder to the store's command file, as in the profile.
+        let dir = std::env::temp_dir().join(format!("d1-reveal-grants-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let control = dir.join("store-control.txt");
+        let _ = std::fs::remove_file(&control);
+        Arc::get_mut(&mut b.config).expect("one owner").rewards =
+            Arc::new(Mutex::new(Forwarding(crate::reward_forward::GrantForwarder::new(&control), shared.clone())));
         b.set_served_start(Some(25));
         let mut t = Instant::now();
         let mut wire = Vec::new();
@@ -2559,19 +2608,116 @@ mod tests {
         }
         assert_eq!(b.take_region_request(), None, "phase 0 is region 25, the start slice set the client loaded");
 
-        // The first cinematic finishes: phase 1 is region 26 (content's slice states).
+        // The first cinematic finishes: phase 1 is region 26 (content's slice states). Run fg2c:
+        // the client never reports a slice set (no udt 21), so the list must follow the move.
+        let tower = RowKey { group: CINE, kind: 6, index: 1 };
+        let before = shared.lock().unwrap().frames.len();
         b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
         run_for(&mut b, &mut t, 0.5, &mut wire);
         assert_eq!(b.take_region_request(), Some(26), "phase 1 moves the client to 26");
-        b.on_client_message(&slice(26), 165, HOST, t);
+        {
+            let s = shared.lock().unwrap();
+            let moved = s.frames[before..].iter().find(|p| p.full).expect("the move sends slice set 26's list in full");
+            assert!(moved.init);
+            let keys: std::collections::BTreeSet<RowKey> = moved.entries.iter().map(|(k, _)| *k).collect();
+            let want: std::collections::BTreeSet<RowKey> =
+                move_26_list().iter().map(|(k, _)| *k).chain([RowKey { group: GROUP, kind: 0x10, index: 3 }]).collect();
+            assert_eq!(keys, want, "the step schedule's move-26 list, record for record, and the lifetime");
+            assert_eq!(cinematic_of(moved, 1).map(|c| (c.1, c.2)), Some((1, 0)), "/6/1 idle, its current value");
+            assert_eq!(lifetime_of(moved), Some(4), "the current lifetime");
+        }
+        assert!(b.rows().is_listed(&tower), "/6/1 is in the list the client holds");
         run_for(&mut b, &mut t, 5.0, &mut wire);
+        {
+            let s = shared.lock().unwrap();
+            let play = s.frames.iter().rev().find(|p| cinematic_of(p, 1).is_some_and(|c| c.2 == 1)).expect("the Tower cinematic plays");
+            assert!(!play.full, "a delta, once the client holds the record");
+            assert_eq!(cinematic_of(play, 1).map(|c| c.1), Some(2), "counter 1 -> 2");
+        }
+        assert!(b.take_incident().is_some(), "the completion envelope");
+
+        // It finishes: results 6 (the grant, through the forwarder), then 8 on 6's stamp, and the
+        // hand-off to the Tower.
         b.on_client_message(&incident(891, None), 165, HOST, t);
         run_for(&mut b, &mut t, 1.0, &mut wire);
         let s = shared.lock().unwrap();
         let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
         seq.dedup();
         assert_eq!(seq, [0, 1, 4, 6, 8], "the live order");
-        assert!(s.frames.iter().filter(|p| p.full).count() >= 2, "slice set 26's list went out in full");
+        let coded: Vec<&Vec<u8>> = wire.iter().filter(|f| f.len() == 7).collect();
+        assert_eq!(coded.len(), s.frames.len());
+        let stamp = |f: &[u8]| ((u64::from_be_bytes([0, 0, 0, f[1], f[2], f[3], f[4], f[5]]) >> 7) & 0xFFFF_FFFF) as u32;
+        let at = |v: i8| s.frames.iter().rposition(|p| lifetime_of(p) == Some(v)).unwrap();
+        assert_eq!(stamp(coded[at(6)]), stamp(coded[at(8)]), "6 and 8 in one tick");
+        assert_eq!(s.rewards.len(), 1);
+        assert_eq!((s.rewards[0].1, s.rewards[0].2), (0x6EAF_0959, ActivityOutcome::Completed));
+        let granted_at = s.rewarded_after_frames[0];
+        assert!(s.frames[..granted_at].iter().all(|p| lifetime_of(p) != Some(8)), "granted at 6, before 8");
+        assert_eq!(s.hand_offs, vec![(u64::from_le_bytes([7; 8]), 0x6EAF_0959, 0, 0x8AE8_DA69)], "the hand-off to the Tower");
+        drop(s);
+        let text = (0..200)
+            .map(|_| {
+                std::thread::sleep(Duration::from_millis(10));
+                std::fs::read_to_string(&control).unwrap_or_default()
+            })
+            .find(|t| t.lines().count() >= 2)
+            .unwrap_or_default();
+        let lines: Vec<&str> = text.lines().collect();
+        assert_eq!(lines.len(), 2, "{text}");
+        assert!(lines[0].starts_with("grant id:0707") && lines[0].ends_with(" 0x6eaf0959 completed source=script"), "{}", lines[0]);
+        assert!(lines[1].starts_with("handoff id:0707") && lines[1].ends_with(" 0 from=0x6eaf0959 hash=0x8ae8da69"), "{}", lines[1]);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// The step schedule's list at the move to 26 (`cine_reveal-move-26.txt`), as the world table
+    /// builds it.
+    fn move_26_list() -> Vec<(RowKey, Row)> {
+        let text = std::fs::read_to_string(fixtures().join("mission/cine_reveal-move-26.txt")).unwrap();
+        let p = crate::sensor_list::params_for_list(&lab_base(), GROUP, -1, &text).unwrap();
+        p.clients.iter().map(Row::from_client).collect()
+    }
+
+    /// Slice set 26's generated list has /6/1, and the world's list plus it is the step schedule's
+    /// move-26 list record for record (22): the same records and flags, and the same values but
+    /// the two cinematics' (move-26 serves /6/0 done and /6/1 idle; ours carry the script's).
+    #[test]
+    fn slice_set_26s_list_is_the_move_26_list_record_for_record() {
+        let reveal = profile_reveal(true);
+        let tower = RowKey { group: CINE, kind: 6, index: 1 };
+        assert!(reveal.slice_rows[&26].iter().any(|(k, _)| *k == tower), "the generated list of 26 names /6/1");
+        assert!(!reveal.rows.iter().any(|(k, _)| *k == tower), "the start's list does not");
+        let ours = reveal.slice_list(26).unwrap();
+        let theirs = move_26_list();
+        assert_eq!(theirs.len(), 22);
+        let sorted = |v: &[(RowKey, Row)]| {
+            let mut v: Vec<(RowKey, bool, bool)> = v.iter().map(|(k, r)| (*k, r.has_a, r.has_b)).collect();
+            v.sort();
+            v
+        };
+        assert_eq!(sorted(&ours), sorted(&theirs), "the same records with the same flags");
+        for (k, r) in &theirs {
+            let mine = &ours.iter().find(|(m, _)| m == k).unwrap().1;
+            if k.kind == 6 {
+                assert!(r.a.is_some(), "move-26 serves {k}'s value");
+            } else {
+                assert_eq!(mine, r, "{k}");
+            }
+        }
+        assert_eq!(reveal.slice_list(25).map(|l| l.len()), Some(21), "25 adds nothing to the world's list");
+        assert_eq!(reveal.slice_list(99), None);
+    }
+
+    /// The forwarder and the recording, both (the reveal test).
+    struct Forwarding(crate::reward_forward::GrantForwarder, Arc<Mutex<Shared>>);
+    impl ActivityRewards for Forwarding {
+        fn grant_activity_rewards(&mut self, c: &CharacterRef, hash: u32, outcome: &ActivityOutcome) -> Result<(), String> {
+            RecordingRewards(self.1.clone()).grant_activity_rewards(c, hash, outcome)?;
+            self.0.grant_activity_rewards(c, hash, outcome)
+        }
+        fn activity_hand_off(&mut self, c: &CharacterRef, from: u32, index: u16, hash: u32) -> Result<(), String> {
+            RecordingRewards(self.1.clone()).activity_hand_off(c, from, index, hash)?;
+            self.0.activity_hand_off(c, from, index, hash)
+        }
     }
 
     /// Stream O3 (integration review, finding 9): two connections of one shared instance share one
