@@ -132,6 +132,9 @@ pub mod activity_host;
 pub mod character_lifecycle;
 /// 601 `loot_pickup_item`: the world-drop claim and its reply.
 pub mod loot;
+/// ⭐ Stream P: 406, 801/802, 804, 904 and 1801-1803 - their requests, the `R` reply and the
+/// family-4 change pushed before it.
+pub mod investment_ops;
 /// Messages 42/43 - matchmaking configuration.
 pub mod matchmaking;
 /// Messages 42/43 - the session directory's searches, advertisements and results (stream H).

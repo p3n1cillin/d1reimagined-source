@@ -78,6 +78,7 @@ mod vendors;
 mod social_hooks;
 mod mp; // MP(H): multiplayer services, D1_MP=1
 mod players; // stream O3: which player each connection and op is for (D1_MP=1)
+mod investment; // ⭐ stream P: 402 turn-in, 406, 801/802, 804, 904, 1801-1803 (investment/mod.rs)
 mod public_feed; // stream O2: the activity host's public instances for the matchmaker
 // Stream M (rewards and growth): services behind `D1_REWARDS` (off by default), called by the
 // activity streams through `rewards::grant_activity_rewards`. The only hook here is its knobs.
@@ -3613,6 +3614,30 @@ async fn main() -> Result<()> {
                                                                         }
                                                                         Some(d1_bap::investment_message_response_with_body(
                                                                             i.sequence, id, st, &body))
+                                                                    } else if let Some(served) = investment::serve(id, plain.get(8..).unwrap_or(&[]), family4_version) {
+                                                                        // ⭐ STREAM P (investment/mod.rs): 402 bounty turn-in, 406, 801, 802, 804, 904,
+                                                                        // 1801-1803 with D1_SOCIAL / D1_REWARDS and the store on. The live order: the
+                                                                        // family-4 push first, then the reply naming its version.
+                                                                        warn!("      ⭐ INVESTMENT {id}: {}", served.what);
+                                                                        if let Some((version, push)) = &served.push {
+                                                                            match conv.push_with_sequence(d1_bap::TYPE_QUEUEZ_OBJECT, server_seq, push) {
+                                                                                Ok(frame) => {
+                                                                                    let sn = nonces.peek(d1_bap::Direction::ServerToClient);
+                                                                                    if let Ok(f) = d1_bap::seal_channel_frame(key, sn, &frame) {
+                                                                                        nonces.advance(d1_bap::Direction::ServerToClient);
+                                                                                        if sock.write_all(&f).await.is_ok() {
+                                                                                            warn!("      ⭐⭐ INVESTMENT {id} PUSH: family-4 delta version {version} ({} objects, {}B), seq {server_seq}",
+                                                                                                  d1_bap::queuez_span_object_count(push).unwrap_or(0), push.len());
+                                                                                            family4_version = Some(*version);
+                                                                                            server_seq += 1;
+                                                                                            served.delivered();
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                Err(e) => warn!("      [conv] ⛔ investment {id} push REFUSED by the push accept-set: {e}"),
+                                                                            }
+                                                                        }
+                                                                        Some(d1_bap::investment_message_response_with_body(i.sequence, id, st, &served.reply))
                                                                     } else {
                                                                     let schema_body = if id == d1_bap::INVESTMENT_MESSAGE_ID_503 {
                                                                     // ⛔⛔ THIS ARM USED TO BE NESTED INSIDE `D1_503_SOID`

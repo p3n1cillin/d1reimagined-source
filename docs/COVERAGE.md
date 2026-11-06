@@ -253,11 +253,11 @@ one unnamed cinematic (233). They play a video or launch another activity.
 | Selling (903) | yes (D1 refused it) | verified (`Unsellable`) | `D1_SOCIAL=1` | #309 | unit | Never seen on the wire. |
 | Buyback (902) | partial | placeholder (read as "take back") | `D1_SOCIAL=1` | #309 | unit | No static sender of 902 in 56578: probably unused. |
 | Cryptarch decryption | partial | verified (a "Decode Engram" sale); community and placeholder (the outcome pool) | `D1_SOCIAL=1`, `D1_REWARDS=1` | #309, #311 | unit | #328's seven live decrypts give the push's shape. |
-| Bounties (pick-up, turn-in) | partial | verified (objectives, rewards); capture: turn-in is 402 action 1 with 10 item XP updates (#328) | `D1_SOCIAL=1` | #309, #328 | unit | The 402 turn-in is not wired yet. |
-| Faction and rank-up packages | partial | capture: 904 at the vendor, contents into the inventory (#328) | `D1_SOCIAL=1` | #309 | unit | 904 is not served. The service routes packages to Lost Items, which the capture contradicts. |
+| Bounties (pick-up, turn-in) | partial | verified (objectives, rewards); capture: turn-in is 402 action 1 with 10 item XP updates (#328) | `D1_SOCIAL=1`, `D1_STORE=1` | #309, #328, stream P | unit | The turn-in is served in the live order (the bounty deleted, each equipped grid item's XP, the profile; reply 0). Completion is checked only when the store keeps the bounty's progress. |
+| Faction and rank-up packages | partial | capture: 904 at the vendor, contents into the inventory (#328); placeholder: the gear pick, 500 Glimmer, 4 Motes for a faction | `D1_SOCIAL=1`, `D1_STORE=1` | #309, stream P | unit | 904 claims one package a rank, straight into the inventory (no longer Lost Items). The capture's fourth item ("material slot 6") is unnamed. |
 | Reputation and ranks | partial | verified (curves and runtime indices) | `D1_STORE=1` | #307, #326 | unit | Whether the client shows the rank from the progress field alone. Daily and weekly fields are never reset. |
-| Gunsmith (Armsday orders, weapon tests) | partial | verified (5 of 25 orders, 2,500 Glimmer); placeholder (one order a week) | `D1_SOCIAL=1` | #309 | unit | The weapon test is a 904, not served. |
-| Speaker's exchange, faction donations, Shipwright, Outfitter, kiosks | partial | verified (sale costs match the capture); capture (kiosks are free 901 sales) | `D1_SOCIAL=1` | #309 | unit | The Shipwright's freebie is a 904. |
+| Gunsmith (Armsday orders, weapon tests) | partial | verified (5 of 25 orders, 2,500 Glimmer); placeholder (one order a week) | `D1_SOCIAL=1` | #309, stream P | unit | The weapon-test turn-in (904) gives its sale's item; which test weapon it consumes is open. |
+| Speaker's exchange, faction donations, Shipwright, Outfitter, kiosks | partial | verified (sale costs match the capture); capture (kiosks are free 901 sales) | `D1_SOCIAL=1` | #309 | unit | The Shipwright's freebie is a 904 with sale -1: refused until its item is known. |
 | Postmaster | partial | verified (vendor rows 20 and 36); placeholder (Lost Items is bucket 0x10) | `D1_SOCIAL=1` | #309 | unit | The claim path (601 or 405) is unknown. |
 
 ## 12. Inventory and the vault
@@ -268,7 +268,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 | Unequip (404) | partial | placeholder (the next item takes the slot) | `D1_SOCIAL=1` | #309 | unit | No run has sent one. |
 | Transfer and the vault (405) | partial | verified (vault row 26, buckets and sizes); capture (405's bytes, #328) | `D1_SOCIAL=1` | #309, #323 | unit | The direction is inferred from where the item is. Never sent natively. |
 | Dismantle (402) | partial | capture: per-tier yields (#328, pending); placeholder: basic and exotic | `D1_DISMANTLE_PLACEHOLDER=1` | earlier, #309, #328 | baseline native: the item is removed (sense125); yields unit | Three yield tables disagree (review 27). |
-| Item lock (406) | no | verified (bit 0 is the lock) | – | #318 | none | Not served. |
+| Item lock (406) | partial | verified (bit 0 is the lock; the word is the slot entry's `+0x18`) | `D1_SOCIAL=1`, `D1_STORE=1` | #318, stream P | unit | Served for character buckets; a vault item is refused (the store's account slots keep no flags). |
 | Buckets beyond weapons, armour, subclass, vehicle and Ghost | partial | verified (39 buckets, 29 named) | lab-base | earlier, #309 | baseline native (partial) | Emotes, emblems, shaders, horns, artifacts and consumables are not exercised. |
 | New item instances (element writer) | partial | verified (offsets); placeholder (node states, level for a Light) | `D1_REWARDS=1` | #311, #327 | unit | Level, grid, node states and stat positions are the template's. |
 
@@ -281,7 +281,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 | Engram decryption | partial | verified (bucket, Uncommon → materials at 40); community (pools, class, minimum tier); placeholder (upgrade chance, fallback pool) | `D1_REWARDS=1` | #311 | unit | – |
 | Drop Light | partial | verified (caps 400 and 385, at-or-above rule, Rare 365, Exotic 400); community (Legendary 390, the basis); placeholder (spread, slow zone) | `D1_REWARDS=1` | #311 | unit | – |
 | Character Light | partial | community (DIM's weights) | – | #311 | unit | Read the client's own sum (`0x265EF0`). The lab Guardian is Light 385 throughout. |
-| Infusion (804) | partial | verified (the client's formula and rates); placeholder (no cost) | – | #311, #318, #322 | unit | 804 is not served, and no reply or push was seen. |
+| Infusion (804) | partial | verified (the client's refusal mask, formula and rates); placeholder (no cost, level rounding, talent quality taken as 0) | `D1_REWARDS=1`, `D1_STORE=1` | #311, #318, #322, stream P | unit | Served; no reply or push was ever seen, so the push is by analogy. The category bits are not exported. |
 | Personal loot per member | yes | community | `D1_REWARDS=1` | #311 | unit | With two players, grants pay player 1 (review 4; O3 in progress). |
 | Post-game reward screens | yes | verified | lab-base | earlier | baseline native | – |
 
@@ -290,7 +290,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
 | Subclass abilities | partial | verified (subclass grid ability rows and perks) | lab-base | earlier (#134) | baseline native (the Striker's grenade, melee and super) | The other eight subclasses have not been seen. |
-| Choosing nodes (801, 802) | partial | verified (grid rules); capture (one node: 500 Glimmer, 10 Weapon Parts, 10 materials; #328) | `D1_REWARDS=1` | #311 | unit | 801 and 802 are not served. The node cost placeholder (free) contradicts the capture. |
+| Choosing nodes (801, 802) | partial | verified (grid rules); capture (one node: 500 Glimmer, 10 Weapon Parts, 10 materials; #328); placeholder (the cost for every node, the node-state bytes) | `D1_REWARDS=1`, `D1_STORE=1` | #311, stream P | unit | Served in the live order; the node cost stand-in replaces "free". The node steps' requirement lists are not exported. |
 | Item and subclass XP, grid levels | partial | verified (step costs); placeholder (XP share) | `D1_REWARDS=1` | #311 | unit | The node-state bytes are not decoded. |
 
 ## 15. Grimoire, Record Books, quests and bounties
@@ -298,7 +298,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
 | Grimoire (cards, score 5,610) | partial | verified (cards, points, ranks); placeholder (what unlocks a card) | `D1_REWARDS=1` | #311, #327 | unit | No wire structure is decoded and the client has no request for it. |
-| Record Books (1801, 1802) | partial | verified (books, records, rewards); placeholder (1,000 points a record) | `D1_REWARDS=1` | #311, #318 | unit | 1801 and 1802 are decoded, not served. |
+| Record Books (1801, 1802, 1803) | partial | verified (books, records, rewards); placeholder (1,000 points a record) | `D1_REWARDS=1`, `D1_STORE=1` | #311, #318, stream P | unit | Answered and remembered once each; the ordinals' tables are not exported, so nothing is granted or pushed. |
 | Quests | partial | verified (steps and questline order); community (advancing) | `D1_REWARDS=1`, `D1_SOCIAL=1` | #309, #311 | unit | Quest objectives' wire state is unknown. |
 | Bounties | partial | see §11 | `D1_SOCIAL=1` | #309 | unit | See §11. |
 
@@ -346,7 +346,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 | BAP envelopes and sign-on messages | yes | verified | lab-base | earlier | baseline native | – |
 | Investment services served (901, 402, 403, 601 and the sign-on set) | yes | verified | lab-base | earlier | baseline native | 702's purpose is open. |
 | Investment services decoded, not seen on the wire (903, 902, 404, 405, 905) | partial | verified (layouts) | `D1_SOCIAL=1` | #308, #309, #318 | unit | 405's bytes from #328's capture. |
-| Investment services not served (801, 802, 804, 904, 406, 1801–1803, 1501) | no | verified (layouts) | – | #308, #318 | none | 904 and 801 are in #328's capture. |
+| Investment services not served (1501) | no | verified (layouts) | – | #308, #318 | none | 402 turn-in, 406, 801, 802, 804, 904 and 1801–1803 are served since stream P. |
 | QueueZ pushes (BAP 123) | partial | verified (families 2–4) | lab-base | earlier | baseline native | Family 6 (fireteam) unknown. |
 | Activity-host udts (33 schema-coded) | yes | verified (byte-identical to the client's codec, 1,089 images) | `D1_RSAT_NATIVE=1` | #317, #321 | unit | Raw udts 6, 8 and 15 are passed verbatim. No comparison against captures and no native run. |
 | udt 5 sensor lists (10 value schemas) | partial | verified (66 of 66 fixture lists native) | `D1_RSAT_NATIVE=1` | #317, #321 | unit | No production delta encoder. World-bounds position compression is not native. The sensor cache key ignores the codec (review 18). |
@@ -378,15 +378,15 @@ sources, so the source counts overlap.
 | | Rows |
 |---|---:|
 | Built: yes | 30 |
-| Built: partial | 101 |
-| Built: no | 15 |
+| Built: partial | 102 |
+| Built: no | 14 |
 | Source names verified game data | 77 |
 | Source names a live capture | 32 |
 | Source names community data | 19 |
-| Source names a labelled placeholder | 32 |
+| Source names a labelled placeholder | 34 |
 | Tested: a baseline native run (before the build-out; some of them failures) | 35 |
-| Tested: unit only | 86 |
-| Tested: none | 25 |
+| Tested: unit only | 87 |
+| Tested: none | 24 |
 | Tested natively since the build-out | **0** |
 
 Missions: 78 story, cinematic and quest missions (201 activities) have a world, and 15 story-kind
@@ -455,7 +455,7 @@ emulator build.
 | Legendary Marks weekly cap (100) | `rewards/placeholders.rs` | Rise of Iron patch notes or a capture that reaches the cap |
 | Dismantle yields: basic and exotic, and Marks for armour (2) | `inventory_ops.rs`, `rewards/placeholders.rs` | #328 settles uncommon, rare and legendary (3 Marks for armour too); a capture dismantling basic and exotic gear settles the rest |
 | Uncommon engram → material amount | `rewards/placeholders.rs` | A capture of a level-40 pickup |
-| Talent node costs and random rolls | `rewards/placeholders.rs` | #328 shows one 801's cost; more 801s across item tiers in a capture |
+| Talent node costs and random rolls | `rewards/placeholders.rs` | #328's one 801 is the stand-in for every node; the node steps' requirement lists from the owned content (step `+0x98`), or more 801s across item tiers |
 | Item XP share | `rewards/placeholders.rs` | #328's 10 item updates on a turn-in fit "every equipped grid item"; a decoded 56578 item object would confirm it |
 | Node-state bytes, level for a Light, stat rolls | `item_instance.rs` | Serve an instance with one node toggled and read it back; read the level curve (`d1-oracle character derived-stat`) |
 | Character Light weights | `rewards` (community) | An eboot read of `0x265EF0` against a known loadout |
