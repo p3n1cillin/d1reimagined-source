@@ -6,6 +6,7 @@ is the current summary. Titles below are the notes' own.
 
 ## Start here (PS4 build 56578, current)
 
+- [Live captures: patrol, public events, the Tower and The Dark Within (6 November 2026)](d1-live-captures-patrol-tower-2026-11-06.md)
 - [PS4 56578: every story mission from its own scripts and content (5 November 2026)](ps4-56578-story-missions-2026-11-05.md)
 - [PS4 56578: a static integration review of #306-#323 (5-6 November 2026)](ps4-56578-integration-review-2026-11-05.md)
 - [PS4 56578: wiring the subsystems to one another (5 November 2026)](ps4-56578-integration-wiring-2026-11-05.md)
