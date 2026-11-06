@@ -362,6 +362,15 @@ impl Identity {
         }
     }
 
+    /// Whether `soid`, the `+0x18` of a client's 40-byte member identity (or a host's key), names
+    /// this player: its character SOID, or its **profile** SOID. Run fg2g (6 November): the
+    /// client's `join_request` identity carried `0xD100_0000_0000_0201`, the profile SOID of the
+    /// player whose character is `...101`, so the grant and the hand-off for the responder's own
+    /// player were refused as a stranger's. The account is matched separately, as before.
+    pub fn named_by(&self, soid: u64) -> bool {
+        soid == self.character || soid == self.profile
+    }
+
     /// Player `n`'s (n >= 1) identity: `0xD101_0000_nnnn_n001` / `...101` / `...201`, outside the
     /// `0xD100_...` range the knobs, items and purchases use.
     pub fn allocated(n: u32) -> Self {
@@ -1406,14 +1415,15 @@ pub fn filed_player(dir: &Path, id: &Identity) -> Option<String> {
 pub fn filed_identity(dir: &Path, account: u64, character: u64) -> Option<Identity> {
     let (v, _) = read_json_recovering(&dir.join("identities.json")).ok()?;
     let ids: Identities = serde_json::from_value(v).ok()?;
-    ids.players.into_values().find(|i| i.account == account && i.character == character)
+    ids.players.into_values().find(|i| i.account == account && i.named_by(character))
 }
 
-/// The filed player whose character is `character` (a grant that names only a key), if exactly one.
+/// The filed player whose character (or profile, [`Identity::named_by`]) is `character` (a grant
+/// that names only a key), if exactly one.
 pub fn filed_character(dir: &Path, character: u64) -> Option<Identity> {
     let (v, _) = read_json_recovering(&dir.join("identities.json")).ok()?;
     let ids: Identities = serde_json::from_value(v).ok()?;
-    let mut found = ids.players.into_values().filter(|i| i.character == character);
+    let mut found = ids.players.into_values().filter(|i| i.named_by(character));
     let first = found.next()?;
     found.next().is_none().then_some(first)
 }
@@ -1969,7 +1979,7 @@ pub(crate) fn target_store_in<'a>(
         }
         GrantTarget::Key(k) => (None, *k),
     };
-    if character == own.character && account.is_none_or(|a| a == own.account) {
+    if own.named_by(character) && account.is_none_or(|a| a == own.account) {
         return Ok((primary, None));
     }
     let other = dir.and_then(|d| match account {
@@ -2126,7 +2136,7 @@ fn push_store_state(m: &Mutex<Store>, wallet: bool, profile: bool, items: &[(u64
 /// activity's completion still has to be written into the profile's current-activity field
 /// (field [6], `progression::layout::ACTIVITY`). `from` is the completed activity's index.
 pub fn note_handoff(s: &mut Store, h: &crate::rewards::remote::HandOffCommand, strict: bool) -> anyhow::Result<(HandOff, Option<u16>)> {
-    let (_, retargeted) = crate::rewards::remote::resolve_target(&h.target, s.character, strict)?;
+    let (_, retargeted) = crate::rewards::remote::resolve_target(&h.target, &s.identity(), strict)?;
     let t = crate::tables::tables();
     if let (Some(hash), Some(row)) = (h.next_hash, t.activities.get(&h.next)) {
         anyhow::ensure!(row.hash == hash, "activity {} is {:#010x} in the activity table, the hand-off says {hash:#010x}", h.next, row.hash);

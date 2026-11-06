@@ -89,7 +89,8 @@ pub enum GrantTarget {
 }
 
 impl GrantTarget {
-    /// The character SOID it names: the key itself, or the identity's `+0x18`.
+    /// The character SOID it names: the key itself, or the identity's `+0x18`, where the client
+    /// writes its **profile** SOID (run fg2g); match it with `Identity::named_by`.
     pub fn character(&self) -> Option<u64> {
         match self {
             Self::Key(k) => Some(*k),
@@ -257,12 +258,21 @@ fn target_word(t: &GrantTarget) -> String {
 /// Which character a command applies to on this responder (one player per process): the
 /// signed-on one; `strict` (multiplayer on) refuses another player's. Returns it and whether the
 /// command named another key.
-pub fn resolve_target(t: &GrantTarget, own: u64, strict: bool) -> Result<(u64, bool)> {
+pub fn resolve_target(t: &GrantTarget, own: &crate::player_store::Identity, strict: bool) -> Result<(u64, bool)> {
     let named = t.character().ok_or_else(|| anyhow!("the identity does not parse"))?;
-    if named != own && strict {
-        bail!("command for character {named:#018x}, but this responder serves {own:#018x} (D1_MP=1: another player's)");
+    // An identity names the account too; both halves must be this player's.
+    let account_ok = match t {
+        GrantTarget::Identity(b) => d1_mp::identity::MemberIdentity::parse(b).is_some_and(|m| m.account.0 == own.account),
+        GrantTarget::Key(_) => true,
+    };
+    let mine = own.named_by(named) && account_ok;
+    if !mine && strict {
+        bail!(
+            "command for character {named:#018x}, but this responder serves account {:#018x} character {:#018x} profile {:#018x} (D1_MP=1: another player's)",
+            own.account, own.character, own.profile
+        );
     }
-    Ok((own, named != own))
+    Ok((own.character, !mine))
 }
 
 /// The client indices the responder knows: every item's 56578 content index from the exported
@@ -502,11 +512,13 @@ pub fn execute(store: &mut dyn PlayerStore, cmd: &GrantCommand, index: &dyn Clie
 /// new instances are written as elements and delivered into a slot of their bucket
 /// ([`GrantSummary::delivered`]); without one they are kept in the overlay only.
 pub fn execute_with(store: &mut dyn PlayerStore, cmd: &GrantCommand, index: &dyn ClientIndex, class_type: u32, strict: bool, template: Option<&[u8]>) -> Result<GrantSummary> {
-    let own = store.identity().character;
+    let me = store.identity();
+    let own = me.character;
     let named = cmd.target.character().ok_or_else(|| anyhow!("the identity does not parse"))?;
-    let retargeted = named != own;
+    // The client's identity names the profile SOID (run fg2g); a key names the character.
+    let retargeted = !me.named_by(named);
     if retargeted && strict {
-        bail!("grant for character {named:#018x}, but this record is {own:#018x}'s (D1_MP=1: another player's)");
+        bail!("grant for character {named:#018x}, but this record is {own:#018x}'s (profile {:#018x}; D1_MP=1: another player's)", me.profile);
     }
     // Integration review, finding 4: with multiplayer on, the grant was routed to the store of the
     // player its full identity names (`player_store::target_store`); the account (`+0x10`) must
@@ -602,8 +614,10 @@ mod tests {
         assert!(parse_handoff(&["0x1"]).is_err());
         assert!(parse_handoff(&["0x1", "70000"]).is_err(), "an index is 16-bit");
         assert!(parse_handoff(&["0x1", "0", "to=3"]).is_err());
-        assert_eq!(resolve_target(&GrantTarget::Key(5), 7, false).unwrap(), (7, true));
-        assert!(resolve_target(&GrantTarget::Key(5), 7, true).is_err());
+        let me = crate::player_store::Identity { account: 1, character: 7, profile: 9 };
+        assert_eq!(resolve_target(&GrantTarget::Key(5), &me, false).unwrap(), (7, true));
+        assert!(resolve_target(&GrantTarget::Key(5), &me, true).is_err());
+        assert_eq!(resolve_target(&GrantTarget::Key(9), &me, true).unwrap(), (7, false), "the profile SOID names the player");
     }
 
     #[test]
@@ -753,6 +767,66 @@ mod tests {
         // A bare key routes by character when exactly one player has it.
         let (m, _) = target_store_in(&GrantTarget::Key(b.character), &ma, a, Some(&dir), true, &open).unwrap();
         assert!(std::ptr::eq(m, &mb));
+        drop((ma, mb));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// Run fg2g (6 November): the bridge's grant and hand-off for the responder's own player,
+    /// with the exact identity the client sent (`+0x18` = its PROFILE SOID `0xd100000000000201`),
+    /// against that run's `identities.json` (`local` and the stray allocated `D1Guardian`).
+    #[test]
+    fn the_clients_identity_names_the_profile_and_reaches_its_own_player() {
+        use crate::player_store::{target_store_in, Command};
+        const FG2G: &str = "e0d55e272f90000098ac2c43570fceb201000000000000d101020000000000d1f7bd728e56f51b90";
+        let m = d1_mp::identity::MemberIdentity::parse(&(0..FG2G.len()).step_by(2).map(|i| u8::from_str_radix(&FG2G[i..i + 2], 16).unwrap()).collect::<Vec<u8>>()).unwrap();
+        assert_eq!((m.account.0, m.character.0), (0xD100_0000_0000_0001, 0xD100_0000_0000_0201), "account, then the profile SOID");
+        let dir = std::env::temp_dir().join(format!("d1-fg2g-identity-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(
+            dir.join("identities.json"),
+            r#"{"schema":1,"allocated":2,"players":{
+                "D1Guardian":{"account":"0xd101000000001001","character":"0xd101000000001101","profile":"0xd101000000001201"},
+                "local":{"account":"0xd100000000000001","character":"0xd100000000000101","profile":"0xd100000000000201"}}}"#,
+        )
+        .unwrap();
+        let local = Identity::from_env();
+        assert_eq!((local.account, local.character, local.profile), (0xD100_0000_0000_0001, 0xD100_0000_0000_0101, 0xD100_0000_0000_0201));
+        let guardian = Identity::allocated(1);
+        let src = Sources::default();
+        let ma = std::sync::Mutex::new(Store::open(&dir, local.account, local.character, local.profile, &src).unwrap());
+        let mb = std::sync::Mutex::new(Store::open(&dir, guardian.account, guardian.character, guardian.profile, &src).unwrap());
+        let open = |id: &Identity| (*id == guardian).then_some(&mb);
+
+        // The two lines fg2g's responder refused, byte for byte: now the responder's own player.
+        let grant = format!("grant id:{FG2G} 0x6eaf0959 completed source=script");
+        let Command::Grant(g) = crate::player_store::parse_command(&grant).unwrap() else { panic!() };
+        let (store, who) = target_store_in(&g.target, &ma, local, Some(&dir), true, &open).unwrap();
+        assert!(std::ptr::eq(store, &ma) && who.is_none(), "the responder's own player, run as itself");
+        let summary = {
+            let mut s = ma.lock().unwrap();
+            let index = ResponderIndex::from_slots(&s.record.account.slots);
+            execute(&mut *s, &g, &index, 0, true).unwrap()
+        };
+        assert!(!summary.retargeted, "its own grant, not another player's");
+        let handoff = format!("handoff id:{FG2G} 0 from=0x6eaf0959 hash=0x8ae8da69");
+        let Command::HandOff(h) = crate::player_store::parse_command(&handoff).unwrap() else { panic!() };
+        let (store, who) = target_store_in(&h.target, &ma, local, Some(&dir), true, &open).unwrap();
+        assert!(std::ptr::eq(store, &ma) && who.is_none());
+        let (record, _) = crate::player_store::note_handoff(&mut ma.lock().unwrap(), &h, true).unwrap();
+        assert_eq!(record.activity, 0, "the Tower is next");
+
+        // The stranger check is not loosened: the profile or character of one player with the
+        // account of another is nobody, and an unknown identity is refused.
+        let bytes = |account: u64, soid: u64| GrantTarget::Identity(member(0xE0D5, account, soid));
+        for t in [bytes(local.account, guardian.profile), bytes(guardian.account, local.profile), bytes(local.account, 0xD100_0000_0000_0301)] {
+            assert!(target_store_in(&t, &ma, local, Some(&dir), true, &open).is_err(), "{t:?}");
+        }
+        // The allocated player is reached by its own account and profile (or character).
+        for soid in [guardian.profile, guardian.character] {
+            let (store, who) = target_store_in(&bytes(guardian.account, soid), &ma, local, Some(&dir), true, &open).unwrap();
+            assert!(std::ptr::eq(store, &mb) && who == Some(guardian));
+        }
         drop((ma, mb));
         let _ = std::fs::remove_dir_all(&dir);
     }

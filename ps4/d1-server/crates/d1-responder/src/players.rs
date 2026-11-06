@@ -151,6 +151,12 @@ pub fn is_primary(conn: u64, global: u64) -> bool {
 /// [`Identity::allocated`]`(n)` for `0xD101_0000_nnnn_n001`. An account bound by hand
 /// (`D1_MP_ACCOUNTS`) outside both gets `+0x100` / `+0x200` (a labelled stand-in).
 pub fn identity_for(online_id: &str, account: u64) -> Identity {
+    // The responder's own account is its own player (filed under D1_STORE_PLAYER, "local"),
+    // whatever online id signed on as it: run fg2g filed a second, allocated "D1Guardian" record
+    // here for the online id bound to the knobs' account, which no connection or grant then used.
+    if account == primary().account {
+        return primary();
+    }
     if let Some(cfg) = crate::player_store::Config::from_env() {
         match crate::player_store::identity_for(&cfg.dir, online_id, primary()) {
             Ok(i) if i.account == account => return i,
@@ -187,6 +193,9 @@ mod tests {
         assert_eq!(derived(a.account), a);
         assert_eq!((a.account, a.character, a.profile), (0xD101_0000_0000_3001, 0xD101_0000_0000_3101, 0xD101_0000_0000_3201));
         assert_eq!(derived(primary().account), primary(), "the responder's own player keeps the knobs");
+        // Run fg2g: the online id bound to the knobs' account is the responder's own player, and
+        // no store record is consulted or filed for it.
+        assert_eq!(identity_for("D1Guardian", primary().account), primary());
         let odd = derived(0x1234_0000);
         assert_eq!((odd.character, odd.profile), (0x1234_0100, 0x1234_0200));
     }
