@@ -73,19 +73,35 @@ const fn ev(id: u32, kind: EventKind, limit_s: u64) -> ScheduledEvent {
 /// bubble's host, not when the next would have come. These windows (10-15 minutes quiet, 5 minutes
 /// to finish) are stand-ins chosen to be plausible, and the rotations list the kinds of event D1
 /// ran in those bubbles, not entries read from content.
+///
+/// What the 5 November patrol capture adds (`notes/d1-live-captures-patrol-tower-2026-11-06.md`,
+/// "Public events"):
+/// - **The first quiet spell is live**: both events captured started 485 s (region 0) and 494 s
+///   (region 56) after their instance started (from the instances' own 10 Hz stamps), so the
+///   windows below are 480-500 s. ⚠ Whether later spells are as long is not in any capture (the
+///   client never stayed for a second event), so the same window stands in for them.
+/// - Each event's objective record was armed 13 and 31 s before it started.
+/// - The two events ran 121 s (Drill Site, on region 56's `0xED3C5B0A`, gold) and 265 s (the triple
+///   on region 0's `0xD2C22DCF`, silver), inside the 300 s limits here; no event was seen to fail,
+///   so the limits are still stand-ins.
+/// - Region 0's Taken spawns ran beside its event on the same host in a cycle of their own
+///   (177-178 s), so "one event at a time" holds for the events bundle.
+///
+/// Region 56 has no row yet: its event's kind is not known.
 pub const PLACEHOLDER_SCHEDULE: &[EventSchedule] = &[
     // Cosmodrome region 48 (around dome A).
     EventSchedule {
         bundle: 0x358E_BAE1,
-        quiet_min: Duration::from_secs(600),
-        quiet_max: Duration::from_secs(900),
+        quiet_min: Duration::from_secs(480),
+        quiet_max: Duration::from_secs(500),
         events: &[ev(0, EventKind::Defend, 300), ev(1, EventKind::Defend, 300)],
     },
-    // Cosmodrome region 0 (the Array): where Defend the Warsat ran live.
+    // Cosmodrome region 0 (the Array): where Defend the Warsat ran live (twice: The Dark Within in
+    // October, and the 5 November triple, with Taken Corruption and Urzok the Hated beside it).
     EventSchedule {
         bundle: 0xD2C2_2DCF,
-        quiet_min: Duration::from_secs(600),
-        quiet_max: Duration::from_secs(900),
+        quiet_min: Duration::from_secs(480),
+        quiet_max: Duration::from_secs(500),
         events: &[ev(0, EventKind::Defend, 300), ev(1, EventKind::Skirmish, 300)],
     },
 ];

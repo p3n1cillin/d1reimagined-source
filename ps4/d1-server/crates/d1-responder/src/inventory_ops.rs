@@ -157,23 +157,34 @@ pub fn transfer<S: PlayerStore + Clone>(s: &mut S, t: &Tables, chr: CharacterId,
     Ok(format!("{} x{q} ({:#x}) {:?} bucket {:#x} slot {} -> {:?} bucket {:#x} slot {slot}", it.content, it.instance, from.0, from.1, from.2, to.0, to.1))
 }
 
-/// What a dismantle gives back. ⚠ PLACEHOLDER, NOT SOURCED: the amounts were the live servers' and
-/// are in no data (the client's action block names a reward set per item, `data/social/items.tsv`
-/// `reward_set`, and the set's rewards are empty in the client). The sets below are the ones the
-/// dismantle note found by tier and bucket; the amounts are stand-ins so the flow can be exercised,
-/// used only when `D1_DISMANTLE_PLACEHOLDER=1`. A sourced `D1_DISMANTLE_YIELDS` row always wins.
-/// `(reward set, [(content, quantity, bucket)])`: Glimmer 869 (0x1f), Weapon Parts 1604 and Exotic
-/// Shards 879 (Materials 0x05), Legendary Marks 4548 (0x23).
+/// What a dismantle gives back. The amounts are the live servers' and are in no client data (the
+/// client's action block names a reward set per item, `data/social/items.tsv` `reward_set`, and
+/// the set's rewards are empty in the client). The sets below are the ones the dismantle note found
+/// by tier and bucket (the row comment is the set's most common tier); used only when
+/// `D1_DISMANTLE_PLACEHOLDER=1`. A sourced `D1_DISMANTLE_YIELDS` row always wins.
+///
+/// **Live rows** (`LIVE`) are what the Xbox 360 live servers (build 51539) credited for one
+/// dismantle of that tier in the 5 November Tower capture (`notes/d1-live-captures-patrol-tower-2026-11-06.md`,
+/// "Dismantle yields"): the account's Glimmer and Legendary Marks and the profile's material stack
+/// changed by exactly these amounts in the push that answered the 402. They are keyed here by the
+/// set's tier, because the capture's items cannot be matched to 56578 reward sets one by one (the
+/// two builds number items differently), and the live amounts varied a little within a tier
+/// (Uncommon weapons gave 26 to 31 Glimmer: the most common value is used). ⚠ **The rest are still
+/// PLACEHOLDERS**: no basic-tier or exotic dismantle was captured.
+/// `(reward set, [(content, quantity, bucket)])`: Glimmer 869 (0x1f), Weapon Parts 1604, Armor
+/// Materials 4556 and Exotic Shards 879 (Materials 0x05), Legendary Marks 4548 (0x23).
 pub const PLACEHOLDER_YIELDS: &[(i32, &[(u16, u32, u8)])] = &[
-    (21, &[(869, 25, 0x1f)]),                    // tier-1 armour
-    (22, &[(869, 25, 0x1f)]),                    // tier-1 weapons
-    (729, &[(869, 50, 0x1f)]),                   // rare armour
-    (738, &[(1604, 1, 0x05)]),                   // rare weapons
-    (730, &[(4548, 2, 0x23)]),                   // legendary armour
-    (739, &[(4548, 2, 0x23), (1604, 1, 0x05)]),  // legendary weapons
-    (728, &[(879, 1, 0x05)]),                    // exotic armour
-    (737, &[(879, 1, 0x05)]),                    // exotic weapons
-    (1117, &[(869, 25, 0x1f)]),                  // the Khvostov
+    (21, &[(869, 25, 0x1f)]),                                     // tier-1 armour (PLACEHOLDER)
+    (22, &[(869, 25, 0x1f)]),                                     // tier-1 weapons (PLACEHOLDER)
+    (727, &[(869, 25, 0x1f), (4556, 1, 0x05)]),                   // uncommon armour (LIVE, 1 seen)
+    (736, &[(869, 31, 0x1f), (1604, 1, 0x05)]),                   // uncommon weapons (LIVE, 3 seen: 26-31 Glimmer)
+    (729, &[(4556, 2, 0x05)]),                                    // rare armour (LIVE, 1 seen)
+    (738, &[(1604, 1, 0x05)]),                                    // rare weapons (LIVE, 1 seen)
+    (730, &[(4548, 3, 0x23), (4556, 3, 0x05)]),                   // legendary armour (LIVE, 2 seen)
+    (739, &[(4548, 3, 0x23), (1604, 3, 0x05), (869, 88, 0x1f)]),  // legendary weapons (LIVE, 1 seen)
+    (728, &[(879, 1, 0x05)]),                                     // exotic armour (PLACEHOLDER)
+    (737, &[(879, 1, 0x05)]),                                     // exotic weapons (PLACEHOLDER)
+    (1117, &[(869, 25, 0x1f)]),                                   // the Khvostov (PLACEHOLDER)
 ];
 
 pub fn placeholder_yields(reward_set: i32) -> &'static [(u16, u32, u8)] {

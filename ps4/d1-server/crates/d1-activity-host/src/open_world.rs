@@ -196,6 +196,9 @@ const NAMED_BUNDLES: &[(u32, BundleRole)] = &[
     (0xA2F6_6E1A, BundleRole::Ambient),        // Cosmodrome, around dome A (region 48)
     (0x358E_BAE1, BundleRole::PublicEvents),   // Cosmodrome, region 48
     (0xD2C2_2DCF, BundleRole::PublicEvents),   // Cosmodrome, the Array (region 0)
+    // Not from a script header: the live Drill Site event ran its objective record on this bundle
+    // (notes/d1-live-captures-patrol-tower-2026-11-06.md, "Public events").
+    (0xED3C_5B0A, BundleRole::PublicEvents),   // Cosmodrome, region 56
     (0x00B0_2852, BundleRole::Chests),         // Cosmodrome, region 48
     (0xAF64_2429, BundleRole::Chests),         // Cosmodrome, region 0
     (0xBDF9_E3C6, BundleRole::ResourceNodes),  // Cosmodrome, region 48 (Thorium)
@@ -264,15 +267,22 @@ pub struct PatrolBeacon {
     pub goal: u32,
 }
 
-/// ⚠ **PLACEHOLDER beacons.** Not read from the game: one beacon per mission kind on region 48 of
-/// the Cosmodrome, where the restored ambient script for that bubble places three beacon objects.
-/// The live patrol hosts' own groups (`0x7CF2807B` on Patrol Venus, `0x78708B21` on Patrol the
-/// Dreadnaught) carry 60 and 47 objective records and 59 and 22 kind-`0x23` records, `[I]` the
-/// patrol missions; the goals and activity hashes come from content once read.
+/// Patrol beacons. **Where they are and what kind they are is live**; ⚠ **their goals are still
+/// PLACEHOLDERS**. These are the first six beacons taken in the 5 November Patrol the Cosmodrome
+/// capture (`notes/d1-live-captures-patrol-tower-2026-11-06.md`, "Patrol beacons"), in the order
+/// the capturer listed them: the region is the public instance the client sent its interaction
+/// (incident 2805 on build 51539) to, and the kind is the capturer's name for the beacon
+/// (Assassination, Taken Blight, Survey, Survey, Assassination, Fetch). Each one opened its own
+/// objective record (kind `0x20`) in Patrol the Cosmodrome's group `0x0EC11855` on the patrol
+/// host. The progress counts (kills, items) were not decoded, so the Combat and Collect goals
+/// stay stand-ins; a scan or a target is one. Activity hashes come from content once read.
 pub const PLACEHOLDER_BEACONS: &[(Destination, u32, PatrolMissionKind, u32)] = &[
-    (Destination::Earth, 48, PatrolMissionKind::Combat, 20),
-    (Destination::Earth, 48, PatrolMissionKind::Scan, 1),
-    (Destination::Earth, 48, PatrolMissionKind::Collect, 10),
+    (Destination::Earth, 56, PatrolMissionKind::Elimination, 1), // Assassination
+    (Destination::Earth, 96, PatrolMissionKind::Combat, 20),     // Taken Blight (goal PLACEHOLDER)
+    (Destination::Earth, 56, PatrolMissionKind::Scan, 1),        // Survey
+    (Destination::Earth, 96, PatrolMissionKind::Scan, 1),        // Survey
+    (Destination::Earth, 160, PatrolMissionKind::Elimination, 1), // Assassination
+    (Destination::Earth, 160, PatrolMissionKind::Collect, 10),   // Fetch (goal PLACEHOLDER)
 ];
 
 /// A patrol mission in progress for one character.
@@ -470,9 +480,10 @@ mod tests {
     fn a_patrol_completes_once_its_goal_is_met_and_reports_the_reward() {
         let mut board = PatrolBoard::new(PLACEHOLDER_BEACONS);
         let mut rewards = RecordingRewards::default();
-        assert_eq!(board.beacons_in(Destination::Earth, 48).len(), 3);
-        let combat = board.beacons_in(Destination::Earth, 48)[0].id;
-        let scan = board.beacons_in(Destination::Earth, 48)[1].id;
+        // Region 96 had the live Taken Blight and a Survey.
+        assert_eq!(board.beacons_in(Destination::Earth, 96).len(), 2);
+        let combat = board.beacons_in(Destination::Earth, 96)[0].id;
+        let scan = board.beacons_in(Destination::Earth, 96)[1].id;
         board.accept(7, combat).unwrap();
         assert!(!board.progress(7, 19, &mut rewards).unwrap());
         // Taking another beacon drops the first, as in D1.
