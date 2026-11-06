@@ -178,6 +178,6 @@ ranking against the registry's emptiest-first rule (8), one script bridge per sh
 | Suite | Result |
 |---|---|
 | `cargo test -p d1-responder` | 177 passed, 1 ignored (13 new) |
-| `cargo test -p d1-activity-host`, with `D1_EBOOT` | see the pull request |
+| `cargo test -p d1-activity-host`, with `D1_EBOOT` | 249 unit + 10 + 1 + 4 + 2 + 3 integration, all passed (`activity_driver` 6, `public_registry` 2, `reward_forward` 1 changed, the playlists table 1, the profile test extended) |
 | `cargo test -p d1-mp` | 31 unit + 7 scenario (1 new) |
 | `python -I -m pytest tests/test_full_game_profile.py` | 12 passed |
