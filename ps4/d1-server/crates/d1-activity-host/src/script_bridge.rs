@@ -700,6 +700,7 @@ impl ScriptedActivity {
                 rows.push((*k, self.served_value(k).unwrap_or_else(|| r.clone())));
             }
         }
+        live_trigger_defaults(&mut rows);
         Some(rows)
     }
 
@@ -815,6 +816,29 @@ fn seconds_knob(name: &str, value: Option<&str>, default: f64) -> Result<Duratio
             .map(Duration::from_secs_f64)
             .ok_or_else(|| format!("{name}={v:?}: want seconds, 0 or more")),
     }
+}
+
+/// The image the live mission host served for a player trigger no script had set: enabled, arming
+/// 0. In A Guardian Rises' capture every trigger in the gameplay list went out so
+/// (`0x992BB471/0x1D/30`, `/31`, `/32`, `/37`, `/42` at its first gameplay frame), and the client
+/// fired `/30` on entering its volume; the host then sent it with a new arming (`0x0707`).
+pub const LIVE_TRIGGER_IMAGE: [u8; 8] = [1, 0, 0, 0, 0, 0, 0, 0];
+
+/// Give each player trigger (kind 0x1D) that a list names with an A value but serves none the
+/// live host's image ([`LIVE_TRIGGER_IMAGE`]). Without it the record goes out at the default,
+/// which the client holds disabled, so it never fires: run agr2 walked into the Wall and phase 1's
+/// `pt_first_obj` (`0x992BB471/0x1D/30`) never reported (F36). The scripts only arm a trigger they
+/// `enable()`/`reset()`; one they only poll was armed by the host's list. Returns how many.
+pub fn live_trigger_defaults(rows: &mut [(RowKey, Row)]) -> usize {
+    use crate::row_encoders as re;
+    let mut n = 0;
+    for (k, r) in rows.iter_mut() {
+        if k.kind == re::KIND_PLAYER_TRIGGER && r.has_a && r.a.is_none() {
+            r.a = Some((re::TAG_PLAYER_TRIGGER, LIVE_TRIGGER_IMAGE.to_vec()));
+            n += 1;
+        }
+    }
+    n
 }
 
 /// `D1_AH_SCRIPTS_START_DELAY`, in seconds (`0` = start as soon as the full list is out).
@@ -1556,6 +1580,10 @@ impl ScriptBridge {
         let start = activity.start;
         let first = activity.initial_lifetime();
         let mut rows = activity.rows.clone();
+        let armed = live_trigger_defaults(&mut rows);
+        if armed > 0 {
+            tracing::info!("⭐ script bridge: {armed} player triggers in the world's list go out enabled at arming 0, as live (F36)");
+        }
         let authority = Self::personalise(
             &mut rows,
             activity.authority.clone(),
@@ -3837,5 +3865,24 @@ mod tests {
         assert_eq!(a.world, "cine_reveal", "the activity name when world= is absent");
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=0", &base(), &read).is_err());
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=70000:0x1", &base(), &read).is_err());
+    }
+
+    #[test]
+    fn an_unset_player_trigger_goes_out_enabled_at_arming_0_as_live() {
+        use crate::row_encoders as re;
+        let key = |kind, index| RowKey { group: 0x992b_b471, kind, index };
+        let row = |a: Option<(u32, Vec<u8>)>| Row { has_a: true, has_b: false, a, b: None };
+        let set = (re::TAG_PLAYER_TRIGGER, vec![1, 0, 0, 0, 7, 7, 0, 0]);
+        let mut rows = vec![
+            (key(0x1d, 30), row(None)),
+            (key(0x1d, 31), row(Some(set.clone()))),
+            (key(0x1d, 32), Row { has_a: false, has_b: false, a: None, b: None }),
+            (key(0x6, 1), row(None)),
+        ];
+        assert_eq!(live_trigger_defaults(&mut rows), 1);
+        assert_eq!(rows[0].1.a, Some((re::TAG_PLAYER_TRIGGER, LIVE_TRIGGER_IMAGE.to_vec())), "the live image");
+        assert_eq!(rows[1].1.a, Some(set), "a served value stays");
+        assert_eq!(rows[2].1.a, None, "a record with no A value has none");
+        assert_eq!(rows[3].1.a, None, "only triggers");
     }
 }
