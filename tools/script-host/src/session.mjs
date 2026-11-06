@@ -230,9 +230,26 @@ export class ActivitySession {
       // BullShcript keeps incident listeners host-side by design (they count
       // incidents for an import identifier and have no row in any bundle; the
       // content export confirms it), so they are listed apart, not as gaps.
-      host_side: this.runtime.unresolvedBindings.filter(isHostSideBinding),
-      unresolved: this.runtime.unresolvedBindings.filter((p) => !isHostSideBinding(p)),
+      host_side: this.runtime.unresolvedBindings.filter((p) => this.hostSide(p)),
+      unresolved: this.runtime.unresolvedBindings.filter((p) => !this.hostSide(p)),
     });
+  }
+
+  // Bindings no bundle row backs by design: incident listeners (BullShcript's
+  // rule) and members declared `activity_flag`, which are flags on the players
+  // bound by identifier (BullShcript names only `_activity_flag` fields so; the
+  // content export has no row for either).
+  hostSide(path) {
+    if (isHostSideBinding(path)) return true;
+    if (!this.activityFlagMembers) {
+      this.activityFlagMembers = new Set();
+      for (const p of this.closure) {
+        for (const m of this.scripts.schemaOf(p)?.members ?? []) {
+          if (m.type === "activity_flag") this.activityFlagMembers.add(m.name);
+        }
+      }
+    }
+    return this.activityFlagMembers.has(path.slice(path.lastIndexOf(".") + 1));
   }
 
   phaseStarted(decl) {

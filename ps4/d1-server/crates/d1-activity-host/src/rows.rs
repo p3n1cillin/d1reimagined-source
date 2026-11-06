@@ -177,6 +177,22 @@ impl RowTable {
         self.full_delivered = false;
     }
 
+    /// The client moved to another slice set of the same world, whose list names other rows (the
+    /// live host sent the new set's full list after the move). Every value the table holds is
+    /// kept, including rows held back until now; a row the new list adds that the table does not
+    /// hold yet takes the list's value. `keep` (the lifetime) stays listed. The next frame is a
+    /// full list with the current values.
+    pub fn relist(&mut self, rows: Vec<(RowKey, Row)>, keep: &[RowKey]) {
+        self.listed = rows.iter().map(|(k, _)| *k).chain(keep.iter().copied()).collect();
+        for (k, r) in rows {
+            self.rows.entry(k).or_insert(r);
+        }
+        self.dirty.clear();
+        self.held_logged.clear();
+        self.full_wanted = true;
+        self.full_delivered = false;
+    }
+
     /// The client joined again (or set its world up again): send everything once more.
     pub fn request_full(&mut self) {
         self.full_wanted = true;
@@ -419,6 +435,26 @@ mod tests {
         t.set_send_unlisted(true);
         t.set(key(41), row(1));
         assert_eq!(names(&t.plan().unwrap()), [41]);
+    }
+
+    #[test]
+    fn a_slice_change_relists_with_current_values_and_releases_held_rows() {
+        let now = Instant::now();
+        let mut t = world();
+        let p = t.plan().unwrap();
+        t.sent(&p, now);
+        t.set(key(0), row(7));
+        t.set(key(40), row(9));
+        let p = t.plan().unwrap();
+        t.sent(&p, now);
+        let lifetime = RowKey { group: 0x4786_C0E0, kind: 0x10, index: 3 };
+        t.set(lifetime, row(4));
+        t.relist(vec![(key(0), row(1)), (key(40), row(1)), (key(41), row(2))], &[lifetime]);
+        let full = t.plan().unwrap();
+        assert!(full.full && full.init);
+        let got: Vec<(i16, u8)> = full.entries.iter().map(|(k, r)| (k.index, r.a.as_ref().unwrap().1[0])).collect();
+        assert_eq!(got, [(0, 7), (40, 9), (41, 2), (3, 4)], "current values, the held row released, the lifetime kept");
+        assert!(!t.is_listed(&key(1)), "the old set's other rows are no longer listed");
     }
 
     #[test]
