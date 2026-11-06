@@ -156,7 +156,6 @@ Some choices in this profile are worth knowing about:
 - **Not in the profile:**
   - The earlier public-session knobs (`D1_AH_PUBLIC_REGIONS`, `D1_MM_LIVE_REPLIES`,
     `D1_AH_SLOT_HANDOVER`).
-  - `D1_AH_SCRIPTS_COMPLETE_BODY`. The 56578 body of incident 965 is unknown, so it is not sent.
   - `D1_KBM`. It doubles keys with the PC layout.
   - `D1_MP_ACCOUNTS`.
 
@@ -165,7 +164,8 @@ Some choices in this profile are worth knowing about:
 ## What each subsystem should log
 
 `boot\responder.log` starts with the responder's knob table (`=== d1-responder environment`). Every
-`[server]` knob the profile sets should read `SET` there. `manifest.json` lists anything that was
+`[server]` knob the responder reads should read `SET` there (the `D1_AH_*` knobs are the activity
+host's and are not in this table; its own start-up lines name them). `manifest.json` lists anything that was
 dropped. **A start-up line only shows that a subsystem loaded.** The last column says what counts
 as working.
 
@@ -296,7 +296,7 @@ Collected from each stream's note. Each note has the full list.
 - **Script bridge** ([note](../notes/ps4-56578-script-bridge-2026-11-05.md), #319):
   - The scripted-activity table is a one-row stand-in (`ps4/profiles/script-activities.txt`) until
     stream K generates it. Point `D1_AH_SCRIPTS_ACTIVITIES` at K's table with `-Set` when it lands.
-  - The 965 body is unknown, so completion is not sent.
+  - The completion envelope (965 and its `0x80800595` body, decoded in #318) is sent at lifetime 6.
   - The mission-phase tuple's meaning is unknown.
   - Whether the walker accepts a subset delta is unproven.
   - Many row kinds have no field map yet: timers, sequences, trigger groups, machines, actors, and

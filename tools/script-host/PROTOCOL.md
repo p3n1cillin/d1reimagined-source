@@ -62,7 +62,7 @@ it names unlicensed paths). Where this document differs, the difference is marke
 | `player_joined` / `player_left` | `key` | join / eviction | the host-synthesized `player_joined` / `player_left` incidents |
 | `player_spawned` | `key?` | client incident `player_spawned` | marks the player ready; the scripts start waiting on players |
 | `player_died` / `player_respawned` | `key` | kill classification / player sense | dead players, for a hard wipe |
-| `trigger` | `bundle, type_index` | incident 3403 (`trigger_report`) | the player trigger fired |
+| `trigger` | `bundle, type_index` | incident 3403 (`player_trigger`) | the player trigger fired |
 | `cinematic_finished` | `bundle, type_index` | incident 891, with the row from its body | the cinematic row is done |
 | `cinematic_skipped` | `bundle, type_index, key` | incident 1726 | counted per player; the cinematic finishes once every listed player asked (one player: at once). The host may instead decide and send `cinematic_finished` |
 | `incident` | `id` or `name_hash` or `name`; `bundle`/`type_index`/`key` where the name needs them | any other client incident | translated through the 56578 catalogue (below); `player_spawned`, `cinematic_finished` and `cinematic_skip` with a row go where the messages above go, and anything else goes to the scripts' incident listeners by name hash |
@@ -157,7 +157,7 @@ encounters (`enc_*`) are separate bundles, and only content lists which ones an 
 | `phase` | `index`, `name` (the phase row), `name_hash`, `decl` (the mission class), `slice`, `slice_hash` | the lifetime's mission fields (index, phase hash, bubble, resolved from content by `slice_hash`); the GAS state for that region; teleport if the slice changed |
 | `activity_flag` | `hash`, `active` | the player rows' flags |
 | `event` | `bundle`, `event_id`, `state` (`started`, `stopped` or `refused`), `reason?` | the answer to `event_start` / `event_stop`; `refused` when the activity loads no such bundle |
-| `activity_complete` | `id` (965), `name: "activity_complete"`, `name_hash` (`0x42660690`) | send host incident 965 (udt 18); its 56578 body is still unknown (#304) |
+| `activity_complete` | `id` (965), `name: "activity_complete"`, `name_hash` (`0x42660690`) | send host incident 965 (udt 18): the host sends the completion envelope (965 → 3235 → 2937 → 2009 → 614) with its `0x80800595` body, decoded in #318 (`d1-activity-host/src/completion.rs`) |
 | `ended` | none; sent once | stop ticking; BAP completion through d1-responder |
 | `hard_wipe_armed` | `armed` | whether a hard wipe may start |
 | `all_dead` | `dead` | with `armed`, start the membership hard-wipe handshake |
@@ -184,7 +184,12 @@ sensor list. The mapping is Codex's (#304):
 | 2 | active | 3 |
 | 3 | cinematic hold | 4 |
 | 5 | results (`end_game`'s first write) | 6 |
-| 6 | ended | 8 |
+| 6 | ended | 8 (a cinematic) or 7 (gameplay) |
+
+The ended value depends on the activity's kind, not on the runtime: #318 recorded 6 → 8 for a
+cinematic and 6 → 7 for gameplay (36 gameplay activities in the live captures, the 7 about 30 s
+after the 6). The host's lifetime encoder (`row_encoders.rs`) picks it from the activity table's
+`kind=`; the sidecar's `wire.phase` for 6 is the cinematic's 8.
 
 Any other state gets `wire.phase: null`, and the host should refuse it. `ended` follows the
 change to 6. **Differs from §4.3** (an addition): §4.3 left the 56578 numbering to the host.

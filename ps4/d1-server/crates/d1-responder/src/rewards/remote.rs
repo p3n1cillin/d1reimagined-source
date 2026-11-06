@@ -25,10 +25,15 @@
 //! the live store; `player_store` then saves, pushes the profile when XP changed it, and has the
 //! vendor state publish the account when a wallet changed.
 //!
-//! **Which character.** The store holds one player per process. A grant naming another character
-//! is refused when multiplayer is on (`D1_MP=1`: it is another player's), and applied to the
-//! signed-on character otherwise, with the mismatch in the log: with one client, every grant is
-//! its own (the open world keys characters by the identity's first 8 bytes, not the SOID).
+//! **Which character (stream O3).** With `D1_MP=1` the responder serves several players, each
+//! with its own account, character and profile SOIDs (`identities.json`'s scheme). A grant goes to
+//! the player its full identity names (`player_store::target_store`: the account at `+0x10` and
+//! the character at `+0x18`), and [`execute`] checks both against the store it runs on, so two
+//! players in one instance are each paid once, each into their own record. A grant naming nobody
+//! the responder serves is refused. With `D1_MP` off (one player per process) a grant naming
+//! another character is applied to the signed-on one, with the mismatch in the log: with one
+//! client, every grant is its own (the open world keys characters by the identity's first 8
+//! bytes, not the SOID).
 //!
 //! **What reaches the client (stream O2).** Every item has its 56578 content index from the
 //! exported item table (`content::item_index`) and a client bucket (`content::bucket_of`): stacks
@@ -323,7 +328,9 @@ fn owner_word(o: Owner) -> String {
 }
 
 fn owner_of(w: &str) -> Option<Owner> {
-    let (k, v) = w.split_at(1);
+    // Integration review, finding 30: an empty word is no owner (split_at(1) panicked on it,
+    // under the store's lock).
+    let (k, v) = (w.get(..1)?, w.get(1..)?);
     let v = u64::from_str_radix(v, 16).ok()?;
     match k {
         "a" => Some(Owner::Account(v)),
@@ -485,15 +492,16 @@ pub fn execute_with(store: &mut dyn PlayerStore, cmd: &GrantCommand, index: &dyn
     let named = cmd.target.character().ok_or_else(|| anyhow!("the identity does not parse"))?;
     let retargeted = named != own;
     if retargeted && strict {
-        bail!("grant for character {named:#018x}, but this responder serves {own:#018x} (D1_MP=1: another player's)");
+        bail!("grant for character {named:#018x}, but this record is {own:#018x}'s (D1_MP=1: another player's)");
     }
-    // Integration review, finding 4 (a stopgap until each connection has its own SOIDs): with
-    // multiplayer on, an identity must also name this responder's account (`+0x10`).
+    // Integration review, finding 4: with multiplayer on, the grant was routed to the store of the
+    // player its full identity names (`player_store::target_store`); the account (`+0x10`) must
+    // match that store as the character does, so a grant can never pay another player.
     if let (true, GrantTarget::Identity(b)) = (strict, &cmd.target) {
         let account = d1_mp::identity::MemberIdentity::parse(b).map(|m| m.account.0);
         let mine = store.identity().account;
         if account != Some(mine) {
-            bail!("grant for account {account:?}, but this responder serves {mine:#018x} (D1_MP=1: another player's)");
+            bail!("grant for account {account:?}, but this record is {mine:#018x}'s (D1_MP=1: another player's)");
         }
     }
     let outcome = ActivityOutcome {
@@ -630,6 +638,100 @@ mod tests {
         assert_eq!(held(&s), before + granted + granted2);
         assert_eq!(s.character_attribute(ATTR_GRANTS).and_then(Value::as_array).map(Vec::len), Some(2));
         assert!(s.is_dirty());
+    }
+
+    /// The 40-byte identity a client's join request carries (`MemberIdentity`: machine, player,
+    /// account, character, fireteam), as the activity host forwards it.
+    fn member(machine: u64, account: u64, character: u64) -> Vec<u8> {
+        d1_mp::identity::MemberIdentity {
+            machine: machine.to_le_bytes(),
+            player: (machine ^ 1).to_le_bytes(),
+            account: d1_mp::identity::AccountSoid(account),
+            character: d1_mp::identity::CharacterSoid(character),
+            fireteam: 0,
+        }
+        .to_bytes()
+        .to_vec()
+    }
+
+    /// ⭐ Stream O3, the multi-client scenario (responder side; the host side is
+    /// `d1-activity-host/tests/multiplayer_rewards.rs`): two players with `D1_MP=1`, each with
+    /// their own identity from `identities.json`, finish one strike together and one public
+    /// event. The host's grant lines (one per member, by full identity) reach each player's own
+    /// record once, each with its own profile, and nobody else's.
+    #[test]
+    fn two_players_are_each_paid_once_into_their_own_record() {
+        use crate::player_store::{identity_for, target_store_in};
+        let dir = std::env::temp_dir().join(format!("d1-o3-two-players-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let src = Sources { vendor_account_slots: Some("308:869:100,309:873:500".into()), ..Sources::default() };
+        let first = Identity::from_env();
+        let a = identity_for(&dir, "local", first).unwrap();
+        let b = identity_for(&dir, "friend", first).unwrap();
+        assert_eq!(a, first, "the responder's own player keeps the knobs");
+        assert_eq!(b, Identity::allocated(1));
+        assert_ne!((a.account, a.character, a.profile), (b.account, b.character, b.profile));
+        let ma = std::sync::Mutex::new(Store::open(&dir, a.account, a.character, a.profile, &src).unwrap());
+        let mb = std::sync::Mutex::new(Store::open(&dir, b.account, b.character, b.profile, &src).unwrap());
+        let open = |id: &Identity| (*id == b).then_some(&mb);
+        let (activity, item) = currency_activity().unwrap();
+        let wallet = |m: &std::sync::Mutex<Store>| -> u32 {
+            let s = m.lock().unwrap();
+            if item == currencies::GLIMMER { s.currency(869) } else { s.character_attribute(ATTR_GRANTS).and_then(Value::as_array).map_or(0, |v| v.len() as u32) }
+        };
+        let paid = |m: &std::sync::Mutex<Store>| m.lock().unwrap().character_attribute(ATTR_GRANTS).and_then(Value::as_array).map_or(0, Vec::len);
+        let (wa, wb) = (wallet(&ma), wallet(&mb));
+        // The host's lines: the strike's bridge grants each member once at lifetime 6, then a
+        // public event pays both engaged players. Same grammar as `reward_forward`.
+        let lines = [
+            format!("grant id:{} {activity:#010x} completed source=script", hex(&member(0x1111, a.account, a.character))),
+            format!("grant id:{} {activity:#010x} completed source=script", hex(&member(0x2222, b.account, b.character))),
+            format!("grant id:{} {activity:#010x} completed source=event:12:gold", hex(&member(0x1111, a.account, a.character))),
+            format!("grant id:{} {activity:#010x} completed source=event:12:gold", hex(&member(0x2222, b.account, b.character))),
+        ];
+        for line in &lines {
+            let crate::player_store::Command::Grant(g) = crate::player_store::parse_command(line).unwrap() else { panic!("{line}") };
+            let (m, who) = target_store_in(&g.target, &ma, a, Some(&dir), true, &open).unwrap();
+            assert_eq!(who.is_some(), std::ptr::eq(m, &mb), "another player's grant runs as them");
+            let mut s = m.lock().unwrap();
+            let index = ResponderIndex::from_slots(&s.record.account.slots);
+            let summary = execute(&mut *s, &g, &index, 0, true).unwrap();
+            assert!(!summary.retargeted);
+        }
+        // Each player paid once per completion (strike, event), into their own record.
+        assert_eq!((paid(&ma), paid(&mb)), (2, 2));
+        assert!(wallet(&ma) > wa && wallet(&mb) > wb);
+        assert_eq!(wallet(&ma) - wa, wallet(&mb) - wb, "the same grants, once each");
+        // Each record is its own player's: its account, character and profile.
+        for (m, id) in [(&ma, a), (&mb, b)] {
+            assert_eq!(m.lock().unwrap().identity(), id);
+        }
+        // An identity no player of this responder has: refused under D1_MP=1, nobody is paid.
+        let stranger = GrantTarget::Identity(member(0x3333, 0xD101_0000_0000_9001, 0xD101_0000_0000_9101));
+        assert!(target_store_in(&stranger, &ma, a, Some(&dir), true, &open).is_err());
+        // A's account with B's character is nobody: both halves must match.
+        let mixed = GrantTarget::Identity(member(0x1111, a.account, b.character));
+        assert!(target_store_in(&mixed, &ma, a, Some(&dir), true, &open).is_err());
+        // With D1_MP off, one player per process: the stranger's grant is the signed-on one's.
+        let (m, who) = target_store_in(&stranger, &ma, a, Some(&dir), false, &open).unwrap();
+        assert!(std::ptr::eq(m, &ma) && who.is_none());
+        // A bare key routes by character when exactly one player has it.
+        let (m, _) = target_store_in(&GrantTarget::Key(b.character), &ma, a, Some(&dir), true, &open).unwrap();
+        assert!(std::ptr::eq(m, &mb));
+        drop((ma, mb));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn an_empty_owner_word_is_no_owner() {
+        assert_eq!(owner_of(""), None);
+        assert_eq!(owner_of("a"), None);
+        assert_eq!(owner_of("c1f"), Some(Owner::Character(0x1f)));
+        assert_eq!(owner_of("x1"), None);
+    }
+
+    fn hex(b: &[u8]) -> String {
+        b.iter().map(|x| format!("{x:02x}")).collect()
     }
 
     fn fixture(name: &str) -> Vec<u8> {

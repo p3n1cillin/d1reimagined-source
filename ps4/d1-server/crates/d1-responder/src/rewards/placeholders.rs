@@ -34,8 +34,11 @@ pub const ACTIVITY_ENGRAM_PER_MILLE: &[(Tier, u32)] = &[(Tier::Rare, 400), (Tier
 pub const MARKS_WEEKLY_CAP: u32 = 100;
 
 /// `currency.dismantle.marks`: Legendary Marks for dismantling a Year 2/3 Legendary weapon, armour.
+/// **Live, not a placeholder** any more: 3 for both, in the 5 November Tower capture's legendary
+/// dismantles (`notes/d1-live-captures-patrol-tower-2026-11-06.md`, "Dismantle yields"); the same
+/// amounts are `inventory_ops::PLACEHOLDER_YIELDS`' LIVE legendary rows.
 pub const DISMANTLE_MARKS_WEAPON: u32 = 3;
-pub const DISMANTLE_MARKS_ARMOR: u32 = 2;
+pub const DISMANTLE_MARKS_ARMOR: u32 = 3;
 
 /// `grid.xp_share`: per mille of the character's XP each equipped grid item gains.
 pub const XP_SHARE_PER_MILLE: u32 = 1000;
@@ -57,8 +60,6 @@ pub const ALL: &[(&str, &str)] = &[
     ("engram.uncommon_convert.amount", "UNCOMMON_CONVERT_AMOUNT = 1"),
     ("loot.drop_chance", "Rare 400, Legendary 100, Exotic 10 per mille"),
     ("currency.marks_weekly_cap", "MARKS_WEEKLY_CAP = 100"),
-    ("currency.dismantle.marks", "weapon 3, armour 2"),
-    ("currency.dismantle.other", "nothing"),
     ("grid.random_roll", "uniform over the node's steps"),
     ("grid.node_cost", "NODE_GLIMMER_COST = 0"),
     ("grid.xp_share", "XP_SHARE_PER_MILLE = 1000"),

@@ -24,8 +24,11 @@
 //! ## What is ours, not theirs (stand-ins, labelled)
 //!
 //! * **Which candidate.** The live answer carried one candidate; the rule that chose it is not on
-//!   the wire. Ours is Bungie's stated aim, fill: the advertisement with the fewest open slots
-//!   that still has room for the searcher, oldest first ([`rank_fill`]).
+//!   the wire. Ours is the one placement rule every path uses (integration review, finding 8): the
+//!   **emptiest** advertisement (the most open slots) that still has room for the searcher, oldest
+//!   first ([`rank_fill`]), the rule the public-instance registry records as Bungie's stated design
+//!   ([`emptiest_first`]). A public-bubble search whose placement the activity host's registry
+//!   decides answers with that instance's advertisement ([`Directory::handle_placed`]).
 //! * **The score** (`f3`, 0.906-1.0 live) and `f5` (0.99 or 1.0): `[U]` meaning. We send
 //!   `1.0 - 0.005 * open slots` and 1.0.
 //! * **The search level** (`f3.2`): bubble searches always got 400; activity searches got 100,
@@ -113,8 +116,9 @@ pub struct Want {
     pub needed: u32,
 }
 
-/// ⭐ The fill rule: sessions in the same directory that have room for `want.needed`, fullest
-/// first (fewest open slots), then oldest.
+/// ⭐ The fill rule: sessions in the same directory that have room for `want.needed`, emptiest
+/// first (most open slots), then oldest: the same rule as [`emptiest_first`] (integration review,
+/// finding 8; before, this ranked the fullest first while the registry placed the emptiest).
 pub fn rank_fill<'a>(
     ads: impl Iterator<Item = &'a AdvertisedSession>,
     want: Want,
@@ -126,7 +130,7 @@ pub fn rank_fill<'a>(
         .filter(|a| !a.session.is_empty())
         .filter(|a| a.open_slots().is_some_and(|open| open >= want.needed))
         .collect();
-    v.sort_by_key(|a| (a.open_slots().unwrap_or(u32::MAX), a.created_ms, a.id));
+    v.sort_by_key(|a| (std::cmp::Reverse(a.open_slots().unwrap_or(0)), a.created_ms, a.id));
     v
 }
 
@@ -286,6 +290,23 @@ impl Directory {
     /// `default_needed` is the slots a search needs when it does not say (activity searches never
     /// did): the searcher's fireteam size, so a fireteam is never offered a session it cannot fit.
     pub fn handle(&mut self, conn: ConnectionId, body: &[u8], exclude: &[ConnectionId], default_needed: u32, now_ms: u64) -> Result<DirectoryReply, DirectoryError> {
+        self.handle_placed(conn, body, exclude, default_needed, now_ms, &mut |_| None)
+    }
+
+    /// [`Self::handle`], with a placement for searches: `place(want)` returns `None` to rank every
+    /// advertisement as [`rank_fill`] does, or `Some(owners)` to offer only advertisements owned by
+    /// those connections (the members of the instance a server-side placement chose; an empty list
+    /// offers none, so the searcher starts its own instance). Integration review, #327's open item:
+    /// a public-bubble search is answered with the instance the registry placed it in.
+    pub fn handle_placed(
+        &mut self,
+        conn: ConnectionId,
+        body: &[u8],
+        exclude: &[ConnectionId],
+        default_needed: u32,
+        now_ms: u64,
+        place: &mut dyn FnMut(&Want) -> Option<Vec<ConnectionId>>,
+    ) -> Result<DirectoryReply, DirectoryError> {
         let req = MatchmakingCoreRequest::decode(body)?;
         let nonce = req.nonce.unwrap_or(0);
         let slot = req.search_slot.unwrap_or(0);
@@ -298,7 +319,12 @@ impl Directory {
                 let mut exclude = exclude.to_vec();
                 exclude.push(conn);
                 let want = Want { slot, set_id, needed };
-                let found: Vec<&AdvertisedSession> = rank_fill(self.ads.values(), want, &exclude).into_iter().take(self.max_candidates).collect();
+                let owners = place(&want);
+                let found: Vec<&AdvertisedSession> = rank_fill(self.ads.values(), want, &exclude)
+                    .into_iter()
+                    .filter(|a| owners.as_ref().is_none_or(|o| o.contains(&a.owner)))
+                    .take(self.max_candidates)
+                    .collect();
                 let candidates: Vec<SearchCandidate> = found
                     .iter()
                     .map(|a| SearchCandidate {
@@ -688,12 +714,13 @@ impl Matchmaker {
         self.next_ticket += 1;
         match p.kind.clone() {
             PlaylistKind::Cooperative { max_players } => {
-                // Fill: the fullest open instance of this playlist that has room.
+                // Fill: the emptiest open instance of this playlist that has room, the oldest on a
+                // tie (the one placement rule, integration review finding 8).
                 let pick = self
                     .open
                     .iter_mut()
                     .filter(|m| m.formed.playlist == playlist && m.formed.players + size <= m.capacity)
-                    .max_by_key(|m| (m.formed.players, std::cmp::Reverse(m.formed.match_id)));
+                    .min_by_key(|m| (m.formed.players, m.formed.match_id));
                 if let Some(m) = pick {
                     m.formed.fireteams.push(fireteam);
                     m.formed.players += size;
@@ -875,15 +902,15 @@ mod tests {
     }
 
     #[test]
-    fn a_search_fills_the_fullest_session_with_room_and_honours_the_reservation() {
+    fn a_search_fills_the_emptiest_session_with_room_and_honours_the_reservation() {
         let mut d = Directory::new();
         d.handle(A, &advertise(1, None, SLOT_BUBBLE, BUBBLE, Some(5), b"A"), &[], 1, 0).unwrap();
         d.handle(B, &advertise(2, None, SLOT_BUBBLE, BUBBLE, Some(3), b"B"), &[], 1, 1).unwrap();
         d.handle(C, &advertise(3, None, SLOT_BUBBLE, 0x8001_0030, Some(1), b"C"), &[], 1, 2).unwrap();
-        // Needs 3 (a fireteam's reservation): B (3 open) is fuller than A (5 open).
+        // Needs 3 (a fireteam's reservation): A (5 open) is emptier than B (3 open).
         let s = d.handle(ConnectionId(9), &search(4, SLOT_BUBBLE, BUBBLE, Some(3), 0), &[], 1, 3).unwrap();
         let (c, level) = decode_search_results(&s.body).unwrap().unwrap();
-        assert_eq!(c[0].name, b"B");
+        assert_eq!(c[0].name, b"A");
         assert_eq!(level, Some(400), "bubble searches were always answered at 400");
         // Needs 4: only A has room.
         let s = d.handle(ConnectionId(9), &search(5, SLOT_BUBBLE, BUBBLE, Some(4), 0), &[], 1, 4).unwrap();
@@ -891,8 +918,27 @@ mod tests {
         // Needs 6: nobody; the client then starts its own instance.
         let s = d.handle(ConnectionId(9), &search(6, SLOT_BUBBLE, BUBBLE, Some(6), 0), &[], 1, 5).unwrap();
         assert!(decode_search_results(&s.body).unwrap().unwrap().0.is_empty());
-        // Excluding B (the searcher's own fireteam) offers A.
-        let s = d.handle(ConnectionId(9), &search(7, SLOT_BUBBLE, BUBBLE, Some(3), 0), &[B], 1, 6).unwrap();
+        // Excluding A (the searcher's own fireteam) offers B.
+        let s = d.handle(ConnectionId(9), &search(7, SLOT_BUBBLE, BUBBLE, Some(3), 0), &[A], 1, 6).unwrap();
+        assert_eq!(decode_search_results(&s.body).unwrap().unwrap().0[0].name, b"B");
+    }
+
+    #[test]
+    fn a_placed_search_offers_only_the_placed_instances_advertisement() {
+        let mut d = Directory::new();
+        d.handle(A, &advertise(1, None, SLOT_BUBBLE, BUBBLE, Some(5), b"A"), &[], 1, 0).unwrap();
+        d.handle(B, &advertise(2, None, SLOT_BUBBLE, BUBBLE, Some(3), b"B"), &[], 1, 1).unwrap();
+        // The registry placed the searcher in B's instance, although A's is emptier.
+        let s = d.handle_placed(ConnectionId(9), &search(3, SLOT_BUBBLE, BUBBLE, Some(1), 0), &[], 1, 2, &mut |w| {
+            assert_eq!((w.slot, w.set_id, w.needed), (SLOT_BUBBLE, BUBBLE, 1));
+            Some(vec![B])
+        }).unwrap();
+        assert_eq!(decode_search_results(&s.body).unwrap().unwrap().0[0].name, b"B");
+        // A new instance: no candidate, so the client starts its own.
+        let s = d.handle_placed(ConnectionId(9), &search(4, SLOT_BUBBLE, BUBBLE, Some(1), 0), &[], 1, 3, &mut |_| Some(Vec::new())).unwrap();
+        assert!(decode_search_results(&s.body).unwrap().unwrap().0.is_empty());
+        // No placement: the directory's own ranking.
+        let s = d.handle_placed(ConnectionId(9), &search(5, SLOT_BUBBLE, BUBBLE, Some(1), 0), &[], 1, 4, &mut |_| None).unwrap();
         assert_eq!(decode_search_results(&s.body).unwrap().unwrap().0[0].name, b"A");
     }
 

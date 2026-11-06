@@ -121,8 +121,8 @@ The placeholders' values are all in `rewards/placeholders.rs`. A test checks thi
 | `currency.scope.glimmer` | Glimmer is account-wide | Client bucket table (slot 308, scope 1) | verified |
 | `currency.scope` | Marks and Silver Dust are account-wide; materials are per character | | community |
 | `currency.dismantle.silver` | Silver Dust engram items give 1 Silver Dust, Icy armour 5, Dusty Iron armour 1 | Patch notes 2.6.0, 2.4.1.1 (item sets from cryptarch-guide) | verified |
-| `currency.dismantle.marks` | Year 2/3 Legendaries give Marks: 3 for a weapon, 2 for armour | The source is patch notes 2.0.0; the amounts need evidence | placeholder |
-| `currency.dismantle.other` | Rare and lower give nothing | Needs evidence | placeholder |
+| `currency.dismantle.marks` | Year 2/3 Legendaries give 3 Marks, weapon or armour | The source is patch notes 2.0.0; the amount from the live Tower capture (5 November 2026, [note](d1-live-captures-patrol-tower-2026-11-06.md)) | verified |
+| `currency.dismantle.other` | Gear gives Glimmer and its materials by tier (Weapon Parts for weapons, Armor Materials for armour), from the one table `inventory_ops::PLACEHOLDER_YIELDS` (its basic and exotic rows are still placeholders); the old "rare and lower give nothing" was wrong | The live Tower capture: 12 dismantles of uncommon, rare and legendary gear | verified |
 | `grid.level` | Item XP runs through the progression's step costs (the last repeating) | Manifest; client `0x284630` (01.29 reading) | verified |
 | `grid.node_level` | A node needs its `gridLevel` | Manifest | verified |
 | `grid.prerequisites` | Prerequisites first; exclusive nodes exclude | Manifest fields | community |
@@ -142,9 +142,9 @@ The placeholders' values are all in `rewards/placeholders.rs`. A test checks thi
 | `quests.advance` | A step completes with its objectives; the next in the questline follows | Manifest (questline order) | community |
 
 Count:
-- 20 verified;
+- 22 verified;
 - 14 community;
-- 19 placeholder.
+- 17 placeholder.
 
 ## Evidence needed, by rule
 
