@@ -571,9 +571,12 @@ impl PublicHost {
             .find(|k| self.frames.contains_key(k));
         let Some(key) = found else {
             if self.last_report.replace((current, target)) != Some((current, target)) {
+                let word = |o: usize| udt21.get(o..o + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()));
                 tracing::info!(
                     "public instance {host_id:#018x}: the client's slice sets are CURRENT {current:?} / TARGET {target:?} \
-                     ({destination:?}); no public list for either yet"
+                     ({destination:?}); no public list for either yet. Raw records (index word, name hash): \
+                     CURRENT +0xB8 {:x?}/{:x?}, TARGET +0x158 {:x?}/{:x?}, image {} bytes",
+                    word(0xB8), word(0xBC), word(0x158), word(0x15C), udt21.len()
                 );
             }
             return None;
