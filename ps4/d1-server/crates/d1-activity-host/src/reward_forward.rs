@@ -24,11 +24,10 @@
 //! ```
 //!
 //! It never waits: the line is queued to a writer thread (a disk stall must not hold the
-//! connection loop past the client's host-silence limit), so it returns at once. The two reward
-//! traits on `main` today are implemented here over it:
-//!
-//! * [`crate::rewards::ActivityRewards`] (the script bridge's; `CharacterRef` = the identity);
-//! * [`crate::open_world::ActivityRewards`] (stream G's open world; an 8-byte character key).
+//! connection loop past the client's host-silence limit), so it returns at once. The host's one
+//! rewards trait, [`crate::rewards::ActivityRewards`] (stream K), is implemented here over it, for
+//! both of its callers: the script bridge (a `CharacterRef` holding the client's 40-byte identity)
+//! and stream G's open world (a `CharacterRef::from_key` holding the 8-byte key).
 //!
 //! **When it is on**: [`GrantForwarder::from_env`] gives one when `D1_REWARDS=1`, `D1_STORE=1` and
 //! `D1_STORE_CONTROL` are all set, the same knobs that make the responder apply a grant. Otherwise
@@ -60,9 +59,9 @@ impl GrantOutcome {
 impl From<crate::rewards::ActivityOutcome> for GrantOutcome {
     fn from(o: crate::rewards::ActivityOutcome) -> Self {
         match o {
-            crate::rewards::ActivityOutcome::Completed => Self::Completed,
-            crate::rewards::ActivityOutcome::EndedIncomplete => Self::Incomplete,
             crate::rewards::ActivityOutcome::Abandoned => Self::Abandoned,
+            o if o.completed() => Self::Completed,
+            _ => Self::Incomplete,
         }
     }
 }
@@ -184,29 +183,18 @@ impl GrantForwarder {
     }
 }
 
-/// The script bridge's trait (`CharacterRef` is the client's identity).
+/// The host's one rewards trait. A 40-byte `CharacterRef` (the script bridge's joined client) is
+/// sent as the identity; anything else (stream G's 8-byte key) as the key.
 impl crate::rewards::ActivityRewards for GrantForwarder {
     fn grant_activity_rewards(
-        &self,
+        &mut self,
         character: &crate::rewards::CharacterRef,
         activity_hash: u32,
-        outcome: crate::rewards::ActivityOutcome,
+        outcome: &crate::rewards::ActivityOutcome,
     ) -> Result<(), String> {
-        let details = GrantDetails { source: Some("script".into()), ..GrantDetails::default() };
-        self.forward(GrantTarget::Identity(character.identity.clone()), activity_hash, outcome.into(), details)
-    }
-}
-
-/// Stream G's open-world trait (the character is the registry's 8-byte key).
-impl crate::open_world::ActivityRewards for GrantForwarder {
-    fn grant_activity_rewards(
-        &mut self,
-        character: u64,
-        activity_hash: u32,
-        outcome: &crate::open_world::ActivityOutcome,
-    ) -> Result<(), String> {
-        use crate::open_world::ActivityOutcome as O;
+        use crate::rewards::ActivityOutcome as O;
         let source = match outcome {
+            O::Completed | O::EndedIncomplete | O::Abandoned => "script".to_string(),
             O::PublicEvent { event_id, tier, .. } => match tier {
                 Some(t) => format!("event:{event_id}:{}", format!("{t:?}").to_lowercase()),
                 None => format!("event:{event_id}"),
@@ -215,16 +203,35 @@ impl crate::open_world::ActivityRewards for GrantForwarder {
             O::Chest { bundle, index } => format!("chest:{bundle:#x}:{index}"),
             O::ResourceNode { bundle, index } => format!("node:{bundle:#x}:{index}"),
         };
-        let o = if outcome.completed() { GrantOutcome::Completed } else { GrantOutcome::Incomplete };
-        self.forward(GrantTarget::Key(character), activity_hash, o, GrantDetails { source: Some(source), ..GrantDetails::default() })
+        let target = if character.identity.len() == d1_mp::identity::MemberIdentity::SIZE {
+            GrantTarget::Identity(character.identity.clone())
+        } else {
+            GrantTarget::Key(character.key())
+        };
+        self.forward(target, activity_hash, (*outcome).into(), GrantDetails { source: Some(source), ..GrantDetails::default() })
+    }
+
+    /// The store's control grammar has no line for the next activity yet (`rewards::remote`), so
+    /// the hand-off is logged here, not forwarded: the completion itself goes out as a grant.
+    fn activity_hand_off(
+        &mut self,
+        character: &crate::rewards::CharacterRef,
+        from_hash: u32,
+        next_index: u16,
+        next_hash: u32,
+    ) -> Result<(), String> {
+        tracing::info!(
+            "rewards: {from_hash:#010x} hands off to activity {next_index} ({next_hash:#010x}) for {character:?}; \
+             the store's control file has no hand-off line yet"
+        );
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::open_world::{ActivityOutcome as OpenOutcome, ActivityRewards as OpenRewards, EventTier};
-    use crate::rewards::{ActivityOutcome, ActivityRewards, CharacterRef};
+    use crate::rewards::{ActivityOutcome, ActivityRewards, CharacterRef, EventTier};
 
     fn identity() -> Vec<u8> {
         let mut b = vec![0u8; 40];
@@ -263,18 +270,19 @@ mod tests {
     }
 
     #[test]
-    fn both_reward_traits_write_the_control_file() {
+    fn both_callers_of_the_one_trait_write_the_control_file() {
         let dir = std::env::temp_dir().join(format!("d1-grant-fwd-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("store-control.txt");
         let _ = std::fs::remove_file(&path);
         let mut f = GrantForwarder::new(&path);
         let c = CharacterRef { identity: identity() };
-        ActivityRewards::grant_activity_rewards(&f, &c, 0x0BBD_0E26, ActivityOutcome::Completed).unwrap();
-        let event = OpenOutcome::PublicEvent { event_id: 12, completed: true, tier: Some(EventTier::Gold) };
-        OpenRewards::grant_activity_rewards(&mut f, 0x0102_0304_0506_0708, 0x1111_2222, &event).unwrap();
-        let failed = OpenOutcome::PublicEvent { event_id: 13, completed: false, tier: None };
-        OpenRewards::grant_activity_rewards(&mut f, 7, 0x1111_2222, &failed).unwrap();
+        f.grant_activity_rewards(&c, 0x0BBD_0E26, &ActivityOutcome::Completed).unwrap();
+        let event = ActivityOutcome::PublicEvent { event_id: 12, completed: true, tier: Some(EventTier::Gold) };
+        f.grant_activity_rewards(&CharacterRef::from_key(0x0102_0304_0506_0708), 0x1111_2222, &event).unwrap();
+        let failed = ActivityOutcome::PublicEvent { event_id: 13, completed: false, tier: None };
+        f.grant_activity_rewards(&CharacterRef::from_key(7), 0x1111_2222, &failed).unwrap();
+        assert!(f.activity_hand_off(&c, 0x6EAF_0959, 0, 0x8AE8_DA69).is_ok(), "logged, not a grant");
         let text = wait_for(&path, 3);
         let lines: Vec<&str> = text.lines().collect();
         assert_eq!(lines.len(), 3, "{text}");

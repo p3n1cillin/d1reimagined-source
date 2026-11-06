@@ -56,6 +56,8 @@ it names unlicensed paths). Where this document differs, the difference is marke
 | `start` | none | after the join apply is built | binds rows, runs load-time code, starts every `@startup` thread and the first phase; answers `ready` |
 | `tick` | `now`, `threads?` | every udt 5 stamp step | one script tick; answers rows etc., then `tick_done` |
 | `active_bundles` | `bundles[]` (hashes) | the current slice changes (udt 21) | only threads of these bundles run |
+| `event_start` | `bundle`, `event_id` | a public bubble's host starts one event of its rotation (stream G's `BubbleScriptBridge::start_event`) | the event's bundle joins the active set (all loaded bundles until `active_bundles` names a set), so its threads run; answers `event` |
+| `event_stop` | `bundle`, `event_id` | the event's time ran out or the instance goes away | the bundle leaves the active set, so its threads stop; its rows keep their values; answers `event` |
 | `players` | `players[]`: `{key, slot?, power?, team?, ready?}` | the membership roster changes | the roster the scripts see; until it is sent, the sidecar assumes one player who becomes ready on `player_spawned` |
 | `player_joined` / `player_left` | `key` | join / eviction | the host-synthesized `player_joined` / `player_left` incidents |
 | `player_spawned` | `key?` | client incident `player_spawned` | marks the player ready; the scripts start waiting on players |
@@ -105,13 +107,22 @@ it names unlicensed paths). Where this document differs, the difference is marke
 | `activity` | required | the `@activity` name (`cine_reveal`, `act_cosmo_m0_highway`, …) |
 | `scripts_dir` | `D1_SCRIPTS_DIR` | the 56578 script folder (Fukugen Daihon `v56578_17_04_12_1251_evil`) |
 | `tiger_dir` / `bullshcript_dir` | `D1_TIGER_DIR` / `D1_BULLSHCRIPT_DIR`, then `../third-party/Blam-Network_tiger` and `../../third-party/Blam-Network_tiger` beside the repository | the built BullShcript checkout |
-| `bundles` or `bundles_path` | stand-ins | the private content export: BullShcript's `ActivityBundleTag[]` (`{bundle, tag, rows:[{name?, nameHash, typeId, typeIndex, cells?, memberNames?, childScript?, …}]}`) |
+| `bundles` or `bundles_path` | `D1_BUNDLES_DIR/<activity>.json` if present, else stand-ins | the private content export: BullShcript's `ActivityBundleTag[]` (`{bundle, tag, rows:[{name?, nameHash, typeId, typeIndex, cells?, memberNames?, childScript?, …}]}`) |
 | `extra_bundles` | `[]` | more bundles to load as stand-ins, by name or hash, or `"guess"` (see below) |
 | `incidents_path` | `ps4/fixtures/56578/incidents-56578.tsv` if present | the incident catalogue |
 | `phase_index` | 0 | start at a later phase (resume, debugging) |
 | `tick_hz` | 10 | script ticks per second |
 | `seed` | 1 | the scripts' random seed |
 | `log` | none | `"lua"` sends every Lua note as `log` |
+
+**The content export.** `tools/export-bundles.mjs` writes one file per world into a private
+`D1_BUNDLES_DIR` outside the repository: `{world, bundles: ActivityBundleTag[], slices}`. Either
+that document or a bare `ActivityBundleTag[]` is accepted. Its rows carry the game's own type
+ids and indices, the squad definitions' cells and member names, objective task lists, sequence
+durations and each row's import identifier. Two things come from the scripts on top: an Encounter
+row's archetype (`childScript`, by the row's name), and an alias for a restored member whose name
+is a prefix of exactly one content row of its type in its own bundle (`thorium_dome` →
+`thorium_dome_a`), said in `loaded.notes`. Neither changes an index.
 
 `§4.3`'s `fukugen_dir`, `compiled_dir` and `tick_hz:30` / `script_tick_s` are replaced by
 `scripts_dir` and `tick_hz`. The folder compiles in memory in under half a second, so nothing
@@ -132,11 +143,12 @@ encounters (`enc_*`) are separate bundles, and only content lists which ones an 
 | `type` | Fields | Host action |
 |---|---|---|
 | `loaded` | `activity`, `proto`, `stand_in`, `stub` (no mission scripts), `drives_lifetime`, `compile_errors[]`, `phases[]` (`{index, name, name_hash, slice, slice_hash}`), `start` (`{start_slice, start_phase, spawn_transition, region_spawn_transitions, time_of_day}`), `bundles[]` (`{bundle, tag, path, rows}`), `script_tags[]`, `notes[]`, `extra_bundles[]`, `incidents`, `tick_hz` | check it; refuse a stand-in session on the wire; the start data can replace hand-written world-table values |
-| `ready` | `unresolved[]`, `drives_lifetime`, `script_tags[]`, `stubs[]` | log; refuse if `unresolved` is non-empty and the host is strict |
+| `ready` | `unresolved[]`, `host_side[]`, `drives_lifetime`, `script_tags[]`, `stubs[]` | log; refuse if `unresolved` is non-empty and the host is strict. `host_side` lists the incident listeners, which BullShcript keeps host-side by design (no bundle has a row for one) |
 | `rows` | `changes[]`: BullShcript's `ItemChange` exactly (`{item:{bundle,typeId,typeIndex}, kind, state, initial?}`), plus `wire` on lifetime changes | update the row table, encode the A/B images, and send the dirty entries in the next udt 5 frame |
 | `rows_cleared` | `items[]` | those rows back to fresh/default (hard wipe) |
 | `phase` | `index`, `name` (the phase row), `name_hash`, `decl` (the mission class), `slice`, `slice_hash` | the lifetime's mission fields (index, phase hash, bubble, resolved from content by `slice_hash`); the GAS state for that region; teleport if the slice changed |
 | `activity_flag` | `hash`, `active` | the player rows' flags |
+| `event` | `bundle`, `event_id`, `state` (`started`, `stopped` or `refused`), `reason?` | the answer to `event_start` / `event_stop`; `refused` when the activity loads no such bundle |
 | `activity_complete` | `id` (965), `name: "activity_complete"`, `name_hash` (`0x42660690`) | send host incident 965 (udt 18); its 56578 body is still unknown (#304) |
 | `ended` | none; sent once | stop ticking; BAP completion through d1-responder |
 | `hard_wipe_armed` | `armed` | whether a hard wipe may start |

@@ -18,6 +18,7 @@ import { IncidentTable } from "./incidents.mjs";
 import { guessAreaBundles, ScriptSet, scriptsDirFromEnv } from "./scripts.mjs";
 import {
   ActivitySession,
+  bundlesPathFor,
   DEFAULT_TICK_HZ,
   PROTOCOL_VERSION,
   readBundlesFile,
@@ -71,7 +72,8 @@ export class Sidecar {
     }
     const scripts = await this.scriptSet(bs, dir);
     const incidents = IncidentTable.load(msg.incidents_path);
-    const bundles = msg.bundles ?? (msg.bundles_path ? readBundlesFile(msg.bundles_path) : undefined);
+    const bundlesPath = msg.bundles_path ?? bundlesPathFor(msg.activity, env);
+    const bundles = msg.bundles ?? (bundlesPath ? readBundlesFile(bundlesPath) : undefined);
     const activity = scripts.activity(msg.activity);
     if (!activity) {
       return this.error(`no script starts activity ${msg.activity}`, true);

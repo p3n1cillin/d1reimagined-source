@@ -39,7 +39,21 @@
 //! * **`activity_complete`** sends one udt 18: 965, 3235, 2937, 2009 and 614 (3235 left out for a
 //!   cinematic-only activity) with one `0x80800595` body built from the activity's manifest hashes
 //!   ([`crate::completion`]); without the hashes it is not sent, and the log says so.
-//! * **`ended`** calls [`ActivityRewards::grant_activity_rewards`] for each joined character.
+//! * **Rewards at the results.** When the lifetime reaches **6** the bridge calls
+//!   [`ActivityRewards::grant_activity_rewards`] once for each joined character, `Completed` if the
+//!   scripts completed the activity. Not at the end: a gameplay activity's 7 opens the post-game
+//!   screens, which show what the profile holds by then, and a cinematic-only activity's 8 is the
+//!   client's own transition to what comes next. A run that ends without passing 6 is granted at
+//!   `ended` (`EndedIncomplete`), and one that stops early is `Abandoned`.
+//! * **The arc.** A completed activity whose table row says `next=INDEX:HASH` reports the hand-off
+//!   right after its grant ([`ActivityRewards::activity_hand_off`]): cine_reveal's next activity is
+//!   the Tower. The client picks what it launches from the profile it is served, so the responder
+//!   records it (stream O's forwarder).
+//! * **Slices.** With the generated world tables (`D1_AH_WORLDS`) and their slice states, a phase's
+//!   region comes from content (the scenario state named by the phase, else the bubble the phase's
+//!   slice names), and each slice set the client enters makes its bundles active (`active_bundles`).
+//! * **Public events.** Stream G's `start_event` / `stop_event` send `event_start` / `event_stop`:
+//!   the event's bundle joins or leaves the active set.
 //! * **Client incidents** (udt 18) are translated with the 56578 catalogue: 3403 → `trigger`
 //!   (its row from the body), 891 / 1726 → `cinematic_finished` / `cinematic_skipped` (the row named
 //!   in the body as 3403 names its trigger, else the one cinematic playing; never a guess between
@@ -52,7 +66,7 @@
 
 use std::collections::{HashMap, VecDeque};
 use std::sync::mpsc;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use serde::{Deserialize, Serialize};
@@ -60,7 +74,7 @@ use serde_json::Value;
 
 use crate::incident_catalog::{known, IncidentCatalog};
 use crate::messages::ClientMessage;
-use crate::rewards::{ActivityOutcome, ActivityRewards, CharacterRef, NoRewards};
+use crate::rewards::{ActivityOutcome, ActivityRewards, CharacterRef, LoggedRewards};
 use crate::completion::{ActivityHashes, CompletionBody};
 use crate::row_encoders::{
     lifetime_image, lifetime_wire_state, CodecDone, CodecJob, CodecWorker, EncodeContext, Encoded, EndKind,
@@ -128,8 +142,13 @@ pub enum HostMsg {
     CinematicSkipped { bundle: u32, type_index: i16, key: String },
     Incident { id: u32, name_hash: u32 },
     SquadAlive { bundle: u32, type_index: i16, count: i32 },
-    /// The bundles whose threads run (a public bubble's, from stream G).
+    /// The bundles whose threads run (a public bubble's, from stream G; a slice set's, as the
+    /// client enters it).
     ActiveBundles { bundles: Vec<u32> },
+    /// One public event of a bundle starts: the bundle joins the active set.
+    EventStart { bundle: u32, event_id: u32 },
+    /// One public event stops: the bundle leaves the active set.
+    EventStop { bundle: u32, event_id: u32 },
     End,
 }
 
@@ -175,6 +194,15 @@ pub enum SidecarMsg {
         region: Option<u32>,
     },
     ActivityFlag { hash: u32, active: bool },
+    /// The answer to `event_start` / `event_stop`: `started`, `stopped` or `refused`.
+    Event {
+        bundle: u32,
+        #[serde(default)]
+        event_id: Option<u32>,
+        state: String,
+        #[serde(default)]
+        reason: Option<String>,
+    },
     ActivityComplete {},
     Ended {},
     HardWipeArmed {},
@@ -350,6 +378,21 @@ pub struct ScriptedActivity {
     /// The activity's manifest hashes for the `activity_complete` body (`type=`, `type2=`,
     /// `place=`, with `hash=`). Without them the completion is not sent.
     pub hashes: Option<ActivityHashes>,
+    /// The world (`world=`, else the activity name), for the generated tables.
+    pub world: String,
+    /// The start slice set (`start=`), when the table gives one.
+    pub start: Option<u32>,
+    /// The next activity of the story arc (`next=INDEX:HASH`): reported at completion.
+    pub next: Option<(u16, u32)>,
+    /// Slice set -> the bundle groups it loads (from the generated world tables).
+    pub slice_groups: HashMap<u32, Vec<u32>>,
+    /// Slice set -> its sensor list's rows (from the generated world tables): the list the client
+    /// registers there, sent again in full when it moves to that set.
+    pub slice_rows: HashMap<u32, Vec<(RowKey, Row)>>,
+    /// Mission phase name hash -> its slice set, and slice (region) hash -> the bubble's first
+    /// private slice set (from the generated world tables and their slice states).
+    pub phase_slices: HashMap<u32, u32>,
+    pub bubble_slices: HashMap<u32, u32>,
 }
 
 impl ScriptedActivity {
@@ -361,9 +404,20 @@ impl ScriptedActivity {
         base: &d1_oracle::sensor::SensorPhaseUpdate,
         read: &dyn Fn(&str) -> Result<String, String>,
     ) -> Result<Self, String> {
+        Self::parse_with(line, base, read, None)
+    }
+
+    /// [`Self::parse`] with the generated world tables: LIST may be `@generated` (the world's
+    /// sensor list for `start=`, as `D1_AH_WORLDS` builds it), and the slice tables are filled.
+    pub fn parse_with(
+        line: &str,
+        base: &d1_oracle::sensor::SensorPhaseUpdate,
+        read: &dyn Fn(&str) -> Result<String, String>,
+        worlds: Option<&crate::generated::GeneratedWorlds>,
+    ) -> Result<Self, String> {
         let f: Vec<&str> = line.split_whitespace().collect();
         if f.len() < 4 {
-            return Err(format!("{line:?}: want `INDEX ACTIVITY GROUP LIST [hash=H] [kind=cinematic] [type=H type2=H place=H] [bundles=PATH] [map=B:G,...] [regions=P:R,...] [team=0]`"));
+            return Err(format!("{line:?}: want `INDEX ACTIVITY GROUP LIST [hash=H] [kind=cinematic] [type=H type2=H place=H] [bundles=PATH] [map=B:G,...] [regions=P:R,...] [team=0] [world=W] [start=N] [next=I:H]`"));
         }
         let num = |s: &str| {
             s.strip_prefix("0x").map_or_else(|| s.parse::<u32>().ok(), |h| u32::from_str_radix(h, 16).ok())
@@ -373,6 +427,7 @@ impl ScriptedActivity {
         let (mut hash, mut bundles_path, mut team) = (0, None, -1);
         let (mut bundle_groups, mut regions) = (HashMap::new(), HashMap::new());
         let (mut end, mut kind, mut kind2, mut place) = (EndKind::Gameplay, None, None, None);
+        let (mut world, mut start, mut next) = (f[1].to_string(), None, None);
         for t in &f[4..] {
             if let Some(v) = t.strip_prefix("hash=") {
                 hash = num(v).ok_or_else(|| format!("{line:?}: bad hash"))?;
@@ -408,11 +463,49 @@ impl ScriptedActivity {
                 place = Some(num(v).ok_or_else(|| format!("{line:?}: bad place"))?);
             } else if let Some(v) = t.strip_prefix("team=") {
                 team = v.parse().map_err(|_| format!("{line:?}: bad team"))?;
+            } else if let Some(v) = t.strip_prefix("world=") {
+                world = v.to_string();
+            } else if let Some(v) = t.strip_prefix("start=") {
+                start = Some(num(v).ok_or_else(|| format!("{line:?}: bad start"))?);
+            } else if let Some(v) = t.strip_prefix("next=") {
+                let (i, h) = v.split_once(':').ok_or_else(|| format!("{line:?}: next is INDEX:HASH"))?;
+                let i = u16::try_from(num(i).ok_or_else(|| format!("{line:?}: bad next index"))?)
+                    .map_err(|_| format!("{line:?}: bad next index"))?;
+                next = Some((i, num(h).ok_or_else(|| format!("{line:?}: bad next hash"))?));
             } else {
                 return Err(format!("{line:?}: unknown field {t:?}"));
             }
         }
-        let text = read(f[3])?;
+        let text = if f[3] == "@generated" {
+            let w = worlds.ok_or_else(|| format!("{line:?}: @generated needs the generated world tables (D1_AH_WORLDS)"))?;
+            let s = start.ok_or_else(|| format!("{line:?}: @generated needs start="))?;
+            if !w.slices.contains_key(&(world.clone(), s)) {
+                return Err(format!("{line:?}: the world tables have no slice set {s} for {world}"));
+            }
+            w.sensor_list(&world, s)
+        } else {
+            read(f[3])?
+        };
+        let (mut slice_groups, mut phase_slices, mut bubble_slices) = (HashMap::new(), HashMap::new(), HashMap::new());
+        let mut slice_rows = HashMap::new();
+        if let Some(w) = worlds {
+            for s in w.slice_sets(&world) {
+                slice_groups.insert(s, w.slice_groups(&world, s));
+                if let Ok(p) = crate::sensor_list::params_for_list(base, group, team, &w.sensor_list(&world, s)) {
+                    slice_rows.insert(s, p.clients.iter().map(Row::from_client).collect::<Vec<_>>());
+                }
+                let Some(set) = w.slices.get(&(world.clone(), s)) else { continue };
+                if !set.valid {
+                    continue;
+                }
+                if let Some(h) = set.state_hash {
+                    phase_slices.entry(h).or_insert(s);
+                }
+                if let (Some(h), false) = (set.region_hash, set.public) {
+                    bubble_slices.entry(h).or_insert(s);
+                }
+            }
+        }
         let params = crate::sensor_list::params_for_list(base, group, team, &text).map_err(|e| format!("{}: {e:#}", f[3]))?;
         Ok(Self {
             index,
@@ -434,12 +527,29 @@ impl ScriptedActivity {
                 (None, None, None) => None,
                 _ => return Err(format!("{line:?}: the completion body needs hash=, type=, type2= and place= together")),
             },
+            world,
+            start,
+            next,
+            slice_groups,
+            slice_rows,
+            phase_slices,
+            bubble_slices,
         })
     }
 
     /// The machine the authority table gives the blocks to (block 0's peer), else 14.
     pub fn machine(&self) -> u8 {
         self.authority.as_ref().and_then(|a| a.image.get(5).copied()).unwrap_or(14)
+    }
+
+    /// The region (slice set) a phase runs in: the table's `regions=` first, else content's
+    /// (the state named by the phase, else the bubble its slice names).
+    pub fn region_of_phase(&self, index: u32, name_hash: u32, slice_hash: Option<u32>) -> Option<u32> {
+        self.regions
+            .get(&index)
+            .copied()
+            .or_else(|| self.phase_slices.get(&name_hash).copied())
+            .or_else(|| slice_hash.and_then(|h| self.bubble_slices.get(&h).copied()))
     }
 
     fn group_of(&self, bundle: u32) -> u32 {
@@ -467,8 +577,13 @@ pub struct ScriptConfig {
     pub send_unlisted: bool,
     pub delta_init: bool,
     pub scoreboard_columns: Vec<u32>,
-    pub rewards: Arc<dyn ActivityRewards>,
+    /// HOOK (stream O): the rewards service. [`LoggedRewards`] until O's forwarder is plugged
+    /// in (crate::rewards).
+    pub rewards: Arc<Mutex<dyn ActivityRewards + Send>>,
     pub codec: CodecMaker,
+    /// Send `active_bundles` as the client enters each slice set (default on when the activity
+    /// has slice tables; `D1_AH_SCRIPTS_ACTIVE_BUNDLES=0` turns it off).
+    pub active_bundles: bool,
 }
 
 impl std::fmt::Debug for ScriptConfig {
@@ -508,9 +623,40 @@ impl ScriptConfig {
             let path = crate::sensor_list::listed_path(&table, entry);
             std::fs::read_to_string(&path).map_err(|e| format!("{}: {e}", path.display()))
         };
+        // The generated world tables (stream E) and their slice states: `@generated` lists, the
+        // phase regions and the slice -> bundle table.
+        let worlds_dir = std::env::var("D1_AH_WORLDS").unwrap_or_else(|_| "ps4/fixtures/56578/worlds".into());
+        let worlds = match crate::generated::GeneratedWorlds::load(std::path::Path::new(&worlds_dir)) {
+            Ok(mut w) => {
+                let states = std::env::var("D1_AH_SCRIPTS_SLICE_STATES")
+                    .unwrap_or_else(|_| "ps4/fixtures/56578/scripts/slice-states.tsv".into());
+                match std::fs::read_to_string(&states) {
+                    Ok(t) => {
+                        let n = w.load_slice_states(&t).map_err(|e| format!("{states}: {e:#}"))?;
+                        tracing::info!("script bridge: {n} slice states from {states}");
+                    }
+                    Err(e) => tracing::warn!("script bridge: no slice states ({states}: {e}); phases take their regions from the table only"),
+                }
+                Some(w)
+            }
+            Err(e) => {
+                tracing::warn!("script bridge: no generated world tables ({worlds_dir}: {e:#}); `@generated` lists are refused");
+                None
+            }
+        };
+        let bundles_dir = std::env::var("D1_BUNDLES_DIR").ok();
         let mut activities = HashMap::new();
         for line in text.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()) {
-            let a = ScriptedActivity::parse(line, base, &read).map_err(|e| format!("D1_AH_SCRIPTS_ACTIVITIES: {e}"))?;
+            let mut a = ScriptedActivity::parse_with(line, base, &read, worlds.as_ref())
+                .map_err(|e| format!("D1_AH_SCRIPTS_ACTIVITIES: {e}"))?;
+            if a.bundles_path.is_none() {
+                // The private content export (tools/script-host/tools/export-bundles.mjs).
+                a.bundles_path = bundles_dir
+                    .as_ref()
+                    .map(|d| std::path::Path::new(d).join(format!("{}.json", a.world)))
+                    .filter(|p| p.exists())
+                    .map(|p| p.display().to_string());
+            }
             activities.insert(a.index, a);
         }
         let catalogue = std::env::var("D1_AH_SCRIPTS_INCIDENTS")
@@ -539,8 +685,9 @@ impl ScriptConfig {
             send_unlisted: on("D1_AH_ROWS_UNLISTED"),
             delta_init: on("D1_AH_ROWS_DELTA_INIT"),
             scoreboard_columns,
-            rewards: Arc::new(NoRewards),
+            rewards: Arc::new(Mutex::new(LoggedRewards)),
             codec: Self::host_codec(),
+            active_bundles: !std::env::var("D1_AH_SCRIPTS_ACTIVE_BUNDLES").is_ok_and(|v| v.trim() == "0"),
         }))
     }
 }
@@ -587,6 +734,10 @@ struct Run {
     wire_disagreed: bool,
     /// Sidecar messages waiting for the pending lifetime value to go out (see [`Self::holds`]).
     held: VecDeque<SidecarMsg>,
+    /// The slice set whose bundles were last made active.
+    active_slice: Option<u32>,
+    /// The slice set whose sensor list the row table serves (the start's at the join).
+    list_slice: Option<u32>,
 }
 
 impl Run {
@@ -754,16 +905,42 @@ impl ScriptBridge {
                 if let (Some(index), Some(hash)) = (u(0xB8), u(0xBC)) {
                     let region = index & 0x3FF;
                     if !matches!(hash, 0 | 0x811C_9DC5) && region != 0x3FF {
-                        // Protocol 1 takes `active_bundles`, which needs the slice -> bundle table
-                        // from content; until then the bridge only tracks the region (phase moves).
                         if let Some(run) = self.run.as_mut() {
                             run.current_slice = Some(region);
                         }
+                        self.activate_slice(region);
                     }
                 }
             }
             _ => {}
         }
+    }
+
+    /// The client entered slice set `region`: its bundles' threads run (the slice -> bundle table
+    /// from the generated world tables). Sent once per change, and only once the scripts run.
+    fn activate_slice(&mut self, region: u32) {
+        // The new slice set's own list (generated tables): the live host sent its full list after
+        // the move, with the rows' current values.
+        if let Some(run) = self.run.as_mut() {
+            if run.list_slice.is_some() && run.list_slice != Some(region) {
+                if let Some(list) = run.activity.slice_rows.get(&region) {
+                    tracing::info!("script bridge: slice set {region}: its list ({} rows) goes out in full", list.len());
+                    run.list_slice = Some(region);
+                    let lifetime = run.activity.lifetime;
+                    self.rows.relist(list.clone(), &[lifetime]);
+                }
+            }
+        }
+        let on = self.config.active_bundles;
+        let Some(run) = self.run.as_mut() else { return };
+        if !on || !run.started || run.active_slice == Some(region) {
+            return;
+        }
+        let Some(groups) = run.activity.slice_groups.get(&region).filter(|g| !g.is_empty()) else { return };
+        let bundles: Vec<u32> = groups.iter().map(|g| run.activity.bundle_of(*g)).collect();
+        run.active_slice = Some(region);
+        tracing::info!("script bridge: slice set {region} makes {} bundles active", bundles.len());
+        self.send(HostMsg::ActiveBundles { bundles });
     }
 
     /// A decoded udt 6 update, in the instance's current epoch.
@@ -803,6 +980,7 @@ impl ScriptBridge {
         if let Some(old) = self.run.take() {
             self.stop_run(old, now);
         }
+        let start = activity.start;
         let mut rows = activity.rows.clone();
         rows.push((activity.lifetime, self.lifetime_row(activity.lifetime_state, None)));
         self.rows.load_world(rows, activity.authority.clone());
@@ -835,6 +1013,8 @@ impl ScriptBridge {
             lifetime_sent: None,
             wire_disagreed: false,
             held: VecDeque::new(),
+            active_slice: None,
+            list_slice: start,
         });
     }
 
@@ -1026,6 +1206,9 @@ impl ScriptBridge {
                 .collect();
             self.send(HostMsg::Players { players });
             self.send(HostMsg::Start);
+            if let Some(region) = self.run.as_ref().and_then(|r| r.current_slice) {
+                self.activate_slice(region);
+            }
             return;
         }
         // The script clock: one `tick` per udt 5 stamp step (10 Hz), carrying the stamp, so a row's
@@ -1098,8 +1281,28 @@ impl ScriptBridge {
                 }
             }
             SidecarMsg::Rows { changes } => {
-                for c in changes {
+                // Each lifetime state in its own frame, within one message too (pregame and the
+                // cinematic hold set in one tick go out 1, then 4, as the live hosts sent them):
+                // the changes after a lifetime change wait for its frame when they move it again.
+                let mut rest = changes.into_iter();
+                while let Some(c) = rest.next() {
+                    let lifetime = c.kind == "lifetime";
                     self.apply_change(c, now);
+                    let Some(run) = self.run.as_mut() else { return };
+                    if lifetime && run.lifetime_unsent {
+                        let left: Vec<ItemChange> = rest.collect();
+                        if !left.is_empty() {
+                            let m = SidecarMsg::Rows { changes: left };
+                            if run.holds(&m) {
+                                run.held.push_front(m);
+                            } else if let SidecarMsg::Rows { changes } = m {
+                                for c in changes {
+                                    self.apply_change(c, now);
+                                }
+                            }
+                        }
+                        return;
+                    }
                 }
             }
             SidecarMsg::RowsCleared { items } => {
@@ -1111,12 +1314,12 @@ impl ScriptBridge {
                     self.rows.reset(k);
                 }
             }
-            SidecarMsg::Phase { index, name, name_hash, region, .. } => {
-                let region = region.or_else(|| run.activity.regions.get(&index).copied());
+            SidecarMsg::Phase { index, name, name_hash, slice_hash, region } => {
                 let name_hash = name_hash
                     .as_ref()
                     .and_then(hash_value)
                     .unwrap_or_else(|| crate::incident_catalog::fnv1(name.as_deref().unwrap_or("")));
+                let region = region.or_else(|| run.activity.region_of_phase(index, name_hash, slice_hash.as_ref().and_then(hash_value)));
                 run.mission_phase = Some(MissionPhase {
                     index: index as i32,
                     name_hash,
@@ -1131,6 +1334,12 @@ impl ScriptBridge {
                     self.region_out = Some(r);
                 }
                 self.set_lifetime();
+            }
+            SidecarMsg::Event { bundle, event_id, state, reason } => {
+                tracing::info!(
+                    "script bridge: public event {event_id:?} of bundle {bundle:#010x}: {state}{}",
+                    reason.map(|r| format!(" ({r})")).unwrap_or_default()
+                );
             }
             SidecarMsg::ActivityFlag { hash, active } => {
                 tracing::warn!("script bridge: activity flag {hash:#010x} = {active} has no 56578 encoding yet; not sent");
@@ -1175,6 +1384,7 @@ impl ScriptBridge {
                 run.ended = true;
                 let outcome = if run.complete { ActivityOutcome::Completed } else { ActivityOutcome::EndedIncomplete };
                 tracing::info!("⭐ script bridge: {} ended ({outcome:?})", run.activity.activity);
+                // Granted at the results (6) already, unless the run ended without them.
                 let mut run = self.run.take().expect("checked");
                 self.reward(&mut run, outcome);
                 self.run = Some(run);
@@ -1220,6 +1430,13 @@ impl ScriptBridge {
                     }
                     run.lifetime_state = s;
                     self.set_lifetime();
+                    if s == 6 {
+                        // Rewards at the results: the post-game (7) shows what the profile holds.
+                        let mut run = self.run.take().expect("checked");
+                        let outcome = if run.complete { ActivityOutcome::Completed } else { ActivityOutcome::EndedIncomplete };
+                        self.reward(&mut run, outcome);
+                        self.run = Some(run);
+                    }
                 }
                 None => tracing::warn!("script bridge: lifetime state {state} has no 56578 value; not sent"),
             }
@@ -1259,9 +1476,20 @@ impl ScriptBridge {
             return;
         }
         run.rewarded = true;
+        let Ok(mut rewards) = self.config.rewards.lock() else {
+            tracing::warn!("rewards for {}: the rewards service lock is poisoned", run.activity.activity);
+            return;
+        };
         for c in &self.players {
-            if let Err(e) = self.config.rewards.grant_activity_rewards(c, run.activity.hash, outcome) {
+            if let Err(e) = rewards.grant_activity_rewards(c, run.activity.hash, &outcome) {
                 tracing::warn!("rewards for {c:?}: {e}");
+            }
+            // The arc: a completed activity hands off to the next one its row names.
+            if let (ActivityOutcome::Completed, Some((index, hash))) = (outcome, run.activity.next) {
+                tracing::info!("⭐ script bridge: {} hands off to activity {index} ({hash:#010x})", run.activity.activity);
+                if let Err(e) = rewards.activity_hand_off(c, run.activity.hash, index, hash) {
+                    tracing::warn!("hand-off for {c:?}: {e}");
+                }
             }
         }
     }
@@ -1370,9 +1598,9 @@ impl ScriptBridge {
 }
 
 /// Stream G's seam (`public_events::BubbleScriptBridge`): a public bubble's host asks the bridge
-/// to run its bundles. Protocol 1 can say which bundles run (`active_bundles`); it has no message to
-/// start or stop one event, which runs from its own bundle's `@startup` once that bundle is active,
-/// so those two calls are refused rather than pretended.
+/// to run its bundles (`active_bundles`) and to start or stop one event (`event_start` /
+/// `event_stop`): an event runs from its own bundle's scripts, so its bundle joins or leaves the
+/// active set. The sidecar answers `event`; a bundle the activity does not load is refused there.
 impl crate::public_events::BubbleScriptBridge for ScriptBridge {
     fn start_bundles(&mut self, host: u64, bundles: &[u32]) -> Result<(), String> {
         if !self.run.as_ref().is_some_and(|r| r.started && r.halted.is_none()) {
@@ -1383,15 +1611,22 @@ impl crate::public_events::BubbleScriptBridge for ScriptBridge {
         Ok(())
     }
 
-    fn start_event(&mut self, _host: u64, bundle: u32, event: &crate::public_events::ScheduledEvent) -> Result<(), String> {
-        Err(format!(
-            "protocol 1 has no message to start event {} of bundle {bundle:#010x}: it runs from the bundle's own scripts",
-            event.id
-        ))
+    fn start_event(&mut self, host: u64, bundle: u32, event: &crate::public_events::ScheduledEvent) -> Result<(), String> {
+        if !self.run.as_ref().is_some_and(|r| r.started && r.halted.is_none()) {
+            return Err(format!("no scripted activity is running on this bridge to start event {}", event.id));
+        }
+        self.host_id = host;
+        self.send(HostMsg::EventStart { bundle, event_id: event.id });
+        Ok(())
     }
 
-    fn stop_event(&mut self, _host: u64, bundle: u32, event_id: u32) -> Result<(), String> {
-        Err(format!("protocol 1 has no message to stop event {event_id} of bundle {bundle:#010x}"))
+    fn stop_event(&mut self, host: u64, bundle: u32, event_id: u32) -> Result<(), String> {
+        if !self.run.as_ref().is_some_and(|r| r.started && r.halted.is_none()) {
+            return Err(format!("no scripted activity is running on this bridge to stop event {event_id}"));
+        }
+        self.host_id = host;
+        self.send(HostMsg::EventStop { bundle, event_id });
+        Ok(())
     }
 }
 
@@ -1458,7 +1693,12 @@ mod tests {
         frames: Vec<FramePlan>,
         bodies: Vec<(u32, Vec<u8>)>,
         rewards: Vec<(CharacterRef, u32, ActivityOutcome)>,
+        /// How many frames had been planned when each grant was made.
+        rewarded_after_frames: Vec<usize>,
+        hand_offs: Vec<(u64, u32, u16, u32)>,
         launches: u32,
+        /// The fake sidecar sets pregame and the cinematic hold in its answer to `start`.
+        combined_start: bool,
     }
 
     /// The synthetic script, in the shape of the reveal: pregame; cinematic 0 at the cinematic
@@ -1510,7 +1750,11 @@ mod tests {
                         return Ok(());
                     }
                     reply(SidecarMsg::Ready { unresolved: Vec::new(), drives_lifetime: true });
-                    reply(SidecarMsg::Rows { changes: vec![lifetime(0), playing(0, false), playing(1, false)] });
+                    if self.shared.lock().unwrap().combined_start {
+                        reply(SidecarMsg::Rows { changes: vec![lifetime(0), lifetime(3), playing(0, false), playing(1, false)] });
+                    } else {
+                        reply(SidecarMsg::Rows { changes: vec![lifetime(0), playing(0, false), playing(1, false)] });
+                    }
                     reply(phase(0, "cine_106_trv_phase"));
                 }
                 HostMsg::Tick { now } => {
@@ -1566,8 +1810,16 @@ mod tests {
 
     struct RecordingRewards(Arc<Mutex<Shared>>);
     impl ActivityRewards for RecordingRewards {
-        fn grant_activity_rewards(&self, c: &CharacterRef, hash: u32, outcome: ActivityOutcome) -> Result<(), String> {
-            self.0.lock().unwrap().rewards.push((c.clone(), hash, outcome));
+        fn grant_activity_rewards(&mut self, c: &CharacterRef, hash: u32, outcome: &ActivityOutcome) -> Result<(), String> {
+            let mut s = self.0.lock().unwrap();
+            // When: the lifetime value the bridge holds at the call.
+            let at = s.frames.len();
+            s.rewards.push((c.clone(), hash, *outcome));
+            s.rewarded_after_frames.push(at);
+            Ok(())
+        }
+        fn activity_hand_off(&mut self, c: &CharacterRef, from: u32, index: u16, hash: u32) -> Result<(), String> {
+            self.0.lock().unwrap().hand_offs.push((c.key(), from, index, hash));
             Ok(())
         }
     }
@@ -1597,9 +1849,26 @@ mod tests {
     const HOST: u64 = 0xD1A0_0000_0000_0042;
 
     fn bridge_with(shared: &Arc<Mutex<Shared>>, die_after_start: bool, stand_in: bool, line: &str) -> ScriptBridge {
-        let activity = ScriptedActivity::parse(line, &base(), &|_| Ok(LIST.to_string())).unwrap();
+        bridge_worlds(shared, die_after_start, stand_in, line, None)
+    }
+
+    fn bridge_worlds(
+        shared: &Arc<Mutex<Shared>>,
+        die_after_start: bool,
+        stand_in: bool,
+        line: &str,
+        worlds: Option<&crate::generated::GeneratedWorlds>,
+    ) -> ScriptBridge {
+        let activity = ScriptedActivity::parse_with(line, &base(), &|_| Ok(LIST.to_string()), worlds).unwrap();
+        if worlds.is_some() {
+            return bridge_of(shared, die_after_start, stand_in, activity);
+        }
         assert_eq!(activity.lifetime, RowKey { group: GROUP, kind: 0x10, index: 3 });
         assert_eq!(activity.machine(), 13);
+        bridge_of(shared, die_after_start, stand_in, activity)
+    }
+
+    fn bridge_of(shared: &Arc<Mutex<Shared>>, die_after_start: bool, stand_in: bool, activity: ScriptedActivity) -> ScriptBridge {
         let s = shared.clone();
         let config = ScriptConfig {
             sidecar: vec!["fake".into()],
@@ -1612,8 +1881,9 @@ mod tests {
             send_unlisted: false,
             delta_init: false,
             scoreboard_columns: Vec::new(),
-            rewards: Arc::new(RecordingRewards(shared.clone())),
+            rewards: Arc::new(Mutex::new(RecordingRewards(shared.clone()))),
             codec: Arc::new(move || CodecWorker::inline(recording(s.clone()))),
+            active_bundles: true,
         };
         let s = shared.clone();
         ScriptBridge::with_launcher(
@@ -1789,6 +2059,10 @@ mod tests {
         assert_eq!(stamp(coded[at(6)]), stamp(coded[at(8)]));
         assert_eq!(s.rewards.len(), 1, "rewards once, for the one character");
         assert_eq!((s.rewards[0].0.identity[0], s.rewards[0].1, s.rewards[0].2), (7, 0x0BBD_0E26, ActivityOutcome::Completed));
+        // ... at the results: the 6 had been planned, the 8 not yet.
+        let granted_at = s.rewarded_after_frames[0];
+        assert!(s.frames[..granted_at].iter().all(|p| lifetime_of(p) != Some(8)), "granted before the end");
+        assert_eq!(s.frames[..granted_at].iter().filter_map(lifetime_of).next_back(), Some(4), "granted as 6 was set, before its frame");
         let ticks = s.sent.iter().filter(|m| matches!(m, HostMsg::Tick { .. })).count();
         drop(s);
         run_for(&mut b, &mut t, 3.0, &mut wire);
@@ -1895,6 +2169,23 @@ mod tests {
         let event = crate::public_events::ScheduledEvent {
             id: 3, kind: crate::public_events::EventKind::Defend, activity_hash: 0, time_limit: Duration::from_secs(60),
         };
+        assert!(b.start_event(HOST, 1, &event).is_ok());
+        assert!(b.stop_event(HOST, 1, 3).is_ok());
+        let sent = shared.lock().unwrap().sent.clone();
+        assert_eq!(&sent[sent.len() - 2..], [HostMsg::EventStart { bundle: 1, event_id: 3 }, HostMsg::EventStop { bundle: 1, event_id: 3 }]);
+        assert_eq!(host_line(&sent[sent.len() - 2]), r#"{"type":"event_start","bundle":1,"event_id":3}"#);
+        let reply = parse_sidecar_line(r#"{"type":"event","bundle":1,"event_id":3,"state":"refused","reason":"no such bundle"}"#).unwrap();
+        assert!(matches!(reply, Some(SidecarMsg::Event { bundle: 1, event_id: Some(3), ref state, .. }) if state == "refused"));
+    }
+
+    #[test]
+    fn no_event_starts_before_the_scripts_run() {
+        use crate::public_events::BubbleScriptBridge;
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge(&shared, false);
+        let event = crate::public_events::ScheduledEvent {
+            id: 3, kind: crate::public_events::EventKind::Defend, activity_hash: 0, time_limit: Duration::from_secs(60),
+        };
         assert!(b.start_event(HOST, 1, &event).is_err());
         assert!(b.stop_event(HOST, 1, 3).is_err());
     }
@@ -1981,6 +2272,106 @@ mod tests {
         assert_eq!(squad_sense(&f), vec![SquadSense { group: 9, index: 2, state: 3, flag: true }]);
     }
 
+    /// Generated world tables for the synthetic reveal: bubble 3 is `plaza`, its states 24, 25 and
+    /// 26; 25 and 26 are named by the two phases. 24 loads only the world bundle.
+    fn worlds() -> crate::generated::GeneratedWorlds {
+        let worlds = "world\tscenario_tag\tprivate_checksum\tbubble_count\tchosen\n\
+            cine_reveal\t0x80c3e00a\t0x14cda256\t4\t0,1,2,3\n";
+        let slices = "world\tslice_set\tbubble\tvalid\tpublic\tregion_hash\tglobal\tauthoritative\tprivate\n\
+            cine_reveal\t24\t3\t1\t0\t0x1ad5e415\t0x80c4e00a\t-\t-\n\
+            cine_reveal\t25\t3\t1\t0\t0x1ad5e415\t0x80c3e710,0x80c4e00a\t-\t-\n\
+            cine_reveal\t26\t3\t1\t0\t0x1ad5e415\t0x80c3e715,0x80c4e00a\t-\t-\n";
+        let bundles = "bundle_tag\tgroup\tlookup_bubble\tclients\n\
+            0x80c4e00a\t0x4786c0e0\t-1\t15:0:10 16:3:10\n\
+            0x80c3e710\t0x2fe7dbe6\t-1\t6:0:10 6:1:10\n\
+            0x80c3e715\t0x2fe7dbe6\t-1\t6:0:10 6:1:10\n";
+        let activities = "index\thash\tname\tworld\tstart_region\tstart_public\tprivate_start\tstatus\n\
+            165\t0x6eaf0959\tA Guardian Rises\tcine_reveal\t25\t0\t0\tcross-checked\n";
+        let mut g = crate::generated::GeneratedWorlds::parse(worlds, slices, bundles, activities).unwrap();
+        let states = "world\tslice_set\tbubble\tvalid\tstate_hash\tregion_hash\n\
+            cine_reveal\t24\t3\t1\t0x040ebd4d\t0x1ad5e415\n\
+            cine_reveal\t25\t3\t1\t0x77a6931d\t0x1ad5e415\n\
+            cine_reveal\t26\t3\t1\t0xd77d27ff\t0x1ad5e415\n\
+            elsewhere\t0\t0\t1\t0x1\t0x2\n";
+        assert_eq!(g.load_slice_states(states).unwrap(), 3, "a world the tables do not have is skipped");
+        g
+    }
+
+    #[test]
+    fn content_gives_each_phase_its_region_and_each_slice_its_bundles() {
+        let g = worlds();
+        assert_eq!(g.phase_slice_set("cine_reveal", crate::incident_catalog::fnv1("cine_106_trv_phase"), None), Some(25));
+        assert_eq!(g.phase_slice_set("cine_reveal", crate::incident_catalog::fnv1("cine_107_twr_phase"), None), Some(26));
+        assert_eq!(g.phase_slice_set("cine_reveal", 0x1234, Some(0x1AD5_E415)), Some(24), "else the bubble the slice names");
+        assert_eq!(g.phase_slice_set("cine_reveal", 0x1234, None), None);
+        assert_eq!(g.slice_groups("cine_reveal", 25), vec![0x2FE7_DBE6, 0x4786_C0E0]);
+
+        // The bridge: no regions= in the line, so content places the phases.
+        let line = "165 cine_reveal 0x4786c0e0 @generated start=25 hash=0x0BBD0E26 kind=cinematic \
+            type=0x648999F4 type2=0x4D78882E place=0xB22417AE next=0:0x8AE8DA69";
+        let a = ScriptedActivity::parse_with(line, &base(), &|_| Err("no file".into()), Some(&g)).unwrap();
+        assert_eq!(a.rows.len(), 3, "the generated list of slice set 25, less the lifetime the bridge keys");
+        assert_eq!(a.region_of_phase(1, crate::incident_catalog::fnv1("cine_107_twr_phase"), None), Some(26));
+        assert_eq!(a.next, Some((0, 0x8AE8_DA69)));
+        assert!(ScriptedActivity::parse(line, &base(), &|_| Ok(LIST.to_string())).is_err(), "@generated needs the tables");
+        assert!(ScriptedActivity::parse_with(&line.replace("start=25", "start=99"), &base(), &|_| Ok(String::new()), Some(&g)).is_err());
+
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_worlds(&shared, false, false, line, Some(&g));
+        let mut t = Instant::now();
+        b.on_client_message(&join(7), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.75, &mut Vec::new());
+        assert_eq!(b.take_region_request(), Some(25), "phase 0 is state 25, by its name");
+        b.on_client_message(&slice(25), 165, HOST, t);
+        assert_eq!(
+            shared.lock().unwrap().sent.last(),
+            Some(&HostMsg::ActiveBundles { bundles: vec![0x2FE7_DBE6, 0x4786_C0E0] }),
+            "entering 25 makes its bundles active"
+        );
+        b.on_client_message(&slice(25), 165, HOST, t);
+        let actives = shared.lock().unwrap().sent.iter().filter(|m| matches!(m, HostMsg::ActiveBundles { .. })).count();
+        assert_eq!(actives, 1, "once per change");
+        run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        assert_eq!(b.take_region_request(), Some(26), "phase 1 is state 26, by its name");
+        b.on_client_message(&slice(26), 165, HOST, t);
+        run_for(&mut b, &mut t, 4.5, &mut Vec::new());
+        b.on_client_message(&incident(891, None), 165, HOST, t);
+        run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+        // The arc: the reveal completes and hands off to the Tower.
+        let s = shared.lock().unwrap();
+        assert_eq!(s.rewards.len(), 1);
+        assert_eq!(s.hand_offs, vec![(u64::from_le_bytes([7; 8]), 0x0BBD_0E26, 0, 0x8AE8_DA69)]);
+    }
+
+    #[test]
+    fn two_lifetime_states_in_one_message_go_out_in_frames_of_their_own() {
+        let shared = Arc::new(Mutex::new(Shared { combined_start: true, ..Default::default() }));
+        let mut b = bridge(&shared, false);
+        let mut t = Instant::now();
+        b.on_client_message(&join(7), 165, HOST, t);
+        run_for(&mut b, &mut t, 1.5, &mut Vec::new());
+        let s = shared.lock().unwrap();
+        let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+        seq.dedup();
+        assert_eq!(seq, [0, 1, 4], "pregame, then the hold, each in its own frame");
+        let hold = s.frames.iter().find(|p| lifetime_of(p) == Some(4)).unwrap();
+        assert!(hold.entries.iter().any(|(k, _)| k.kind == 6), "the rows after the second change ride with it");
+    }
+
+    #[test]
+    fn an_incomplete_run_hands_off_nothing() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_with(&shared, true, false, &format!("{CINE_LINE} next=0:0x8AE8DA69"));
+        let mut t = Instant::now();
+        b.on_client_message(&join(2), 165, HOST, t);
+        run_for(&mut b, &mut t, 5.0, &mut Vec::new());
+        let s = shared.lock().unwrap();
+        assert_eq!(s.rewards[0].2, ActivityOutcome::Abandoned);
+        assert!(s.hand_offs.is_empty());
+    }
+
     #[test]
     fn the_activity_table_line_parses_and_refuses_junk() {
         let read = |_: &str| Ok(LIST.to_string());
@@ -2005,5 +2396,10 @@ mod tests {
         assert!(a.hashes.is_none());
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt hash=0x5 type=0x1", &base(), &read).is_err(), "all four or none");
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt kind=pvp", &base(), &read).is_err());
+        let n = ScriptedActivity::parse("165 a 0x1 l.txt world=cine_reveal start=25 next=0:0x8ae8da69", &base(), &read).unwrap();
+        assert_eq!((n.world.as_str(), n.start, n.next), ("cine_reveal", Some(25), Some((0, 0x8AE8_DA69))));
+        assert_eq!(a.world, "cine_reveal", "the activity name when world= is absent");
+        assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=0", &base(), &read).is_err());
+        assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=70000:0x1", &base(), &read).is_err());
     }
 }

@@ -66,6 +66,13 @@ const COMMAND_SCRIPT_ORDERS = new Set([
   "terminate_delay", "terminate_immediate",
 ]);
 const COMMAND_SCRIPT_TYPES = new Set(["c_command_script", "command_script"]);
+// The verbs BullShcript's encounter manager object answers in its own
+// dispatcher (scheduling_threads.ts encounterManager), which the verb table
+// does not list either. The ambient bundles that content loads call them.
+const MANAGER_VERBS = new Set([
+  "add_ambient_encounter", "add_exclusion", "add_unmanaged_encounter", "suppress_encounter",
+]);
+const MANAGER_TYPES = new Set(["encounter_manager"]);
 const ARRAY_OF = /^(?:static|dynamic)_array<\s*([A-Za-z_]\w*)/;
 
 // Every verb a set of scripts calls on a native-typed member (self.<field>:
@@ -97,6 +104,7 @@ export function staticMissingNatives(bs, scripts, paths) {
           continue;
         }
         for (const method of methods) {
+          if (MANAGER_TYPES.has(type) && MANAGER_VERBS.has(method)) continue;
           if (COMMAND_SCRIPT_TYPES.has(type) ? COMMAND_SCRIPT_ORDERS.has(method) : scriptDefined.has(method)) {
             continue;
           }

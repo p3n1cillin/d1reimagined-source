@@ -892,7 +892,7 @@ fn main() -> anyhow::Result<()> {
                         .map(|mut c| {
                             // stream O: the bridge's end-of-activity grants go to the store.
                             if let Some(f) = grant_forwarder.clone() {
-                                c.rewards = std::sync::Arc::new(f);
+                                c.rewards = std::sync::Arc::new(std::sync::Mutex::new(f));
                             }
                             std::sync::Arc::new(c)
                         });
