@@ -1830,6 +1830,14 @@ impl ActivityInstance {
                 return Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 18, bytes: image }));
             }
         }
+        // Stream O3 (PR #328): a public event that ended in this instance: its completion incident
+        // set (the tier) for this client. ⚠ The live host sent the set in one udt 18; these go one
+        // incident a message, in the live order.
+        if let Some(p) = self.public.as_mut().filter(|p| p.is_public_instance()) {
+            for t in p.take_completion_incidents() {
+                self.pending_incidents.push((t, Vec::new()));
+            }
+        }
         if !matches!(self.state, InstanceState::Live) || self.pending_incidents.is_empty() {
             return None;
         }

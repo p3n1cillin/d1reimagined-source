@@ -179,6 +179,43 @@ pub enum EventPhase {
     Running { event: ScheduledEvent, since: Instant },
 }
 
+/// 56578 incident ids of a public event's completion (PR #328's patrol capture, "Public events";
+/// 51539 → 56578 by `incidents-51539-to-56578.tsv`): `public_event_complete` (1554 → 1918),
+/// `event_completion_reward2` (2413 → 3076), `event_completion_reward3` (2414 → 3077) and
+/// `public_event_complete_gold_tier` (604 → 732).
+pub const INCIDENT_PUBLIC_EVENT_COMPLETE: u32 = 1918;
+pub const INCIDENT_EVENT_REWARD2: u32 = 3076;
+pub const INCIDENT_EVENT_REWARD3: u32 = 3077;
+pub const INCIDENT_EVENT_GOLD_TIER: u32 = 732;
+
+/// The completion incidents the bubble's host sends for `result`, in the live order. **Gold** is
+/// 1918, 3077, 732 (Drill Site, 5 November; October's Warsat added 2217 beside them); **silver**
+/// is 1918, 3076 (the region-0 triple). ⚠ **Bronze was never captured**: it is the completion
+/// alone (1918), a labelled stand-in. A failed event sends none.
+pub fn completion_incidents(result: EventResult) -> &'static [u32] {
+    match result {
+        EventResult::Completed(EventTier::Gold) => &[INCIDENT_PUBLIC_EVENT_COMPLETE, INCIDENT_EVENT_REWARD3, INCIDENT_EVENT_GOLD_TIER],
+        EventResult::Completed(EventTier::Silver) => &[INCIDENT_PUBLIC_EVENT_COMPLETE, INCIDENT_EVENT_REWARD2],
+        EventResult::Completed(EventTier::Bronze) => &[INCIDENT_PUBLIC_EVENT_COMPLETE],
+        EventResult::Failed => &[],
+    }
+}
+
+/// The tier a completion incident set names (the inverse of [`completion_incidents`], for reading
+/// captures and replays): None when it is not a completion.
+pub fn tier_of_completion(types: &[u32]) -> Option<EventTier> {
+    if !types.contains(&INCIDENT_PUBLIC_EVENT_COMPLETE) {
+        return None;
+    }
+    Some(if types.contains(&INCIDENT_EVENT_GOLD_TIER) || types.contains(&INCIDENT_EVENT_REWARD3) {
+        EventTier::Gold
+    } else if types.contains(&INCIDENT_EVENT_REWARD2) {
+        EventTier::Silver
+    } else {
+        EventTier::Bronze
+    })
+}
+
 /// How an event ended.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EventResult {
@@ -337,6 +374,21 @@ impl PublicEventRunner {
 mod tests {
     use super::*;
     use crate::open_world::RecordingRewards;
+
+    /// PR #328: the tier is the completion incident set, both ways.
+    #[test]
+    fn an_events_tier_is_its_completion_incident_set() {
+        assert_eq!(completion_incidents(EventResult::Completed(EventTier::Gold)), [1918, 3077, 732]);
+        assert_eq!(completion_incidents(EventResult::Completed(EventTier::Silver)), [1918, 3076]);
+        assert!(completion_incidents(EventResult::Failed).is_empty());
+        assert_eq!(tier_of_completion(&[1918, 3077, 732]), Some(EventTier::Gold), "Drill Site");
+        assert_eq!(tier_of_completion(&[1918, 3076]), Some(EventTier::Silver), "the region-0 triple");
+        assert_eq!(tier_of_completion(&[1918, 3077, 732, 2217]), Some(EventTier::Gold), "October's Warsat");
+        assert_eq!(tier_of_completion(&[3076]), None, "no completion without 1918");
+        for t in [EventTier::Bronze, EventTier::Silver, EventTier::Gold] {
+            assert_eq!(tier_of_completion(completion_incidents(EventResult::Completed(t))), Some(t));
+        }
+    }
 
     const HOST: u64 = 0xD1A0_0000_0000_0002;
 

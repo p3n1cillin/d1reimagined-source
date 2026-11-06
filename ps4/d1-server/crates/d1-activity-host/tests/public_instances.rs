@@ -234,6 +234,12 @@ fn the_open_world_runs_once_per_instance() {
     inst_a.public_host().unwrap().report_event_finished(0x358E_BAE1, EventResult::Completed(EventTier::Gold), until);
     let granted: Vec<u64> = rewards.lock().unwrap().grants.iter().map(|(c, _, _)| *c).collect();
     assert_eq!(granted, vec![bob, alice]);
+    // Stream O3 (PR #328): each connection sends its client the gold completion set, once.
+    let mut pa = inst_a.public_host().unwrap().clone();
+    let mut pb = inst_b.public_host().unwrap().clone();
+    assert_eq!(pa.take_completion_incidents(), vec![1918, 3077, 732]);
+    assert!(pa.take_completion_incidents().is_empty(), "once");
+    assert_eq!(pb.take_completion_incidents(), vec![1918, 3077, 732], "and to the other member too");
 
     // A chest: once per character, after it shows.
     let chest = |i: &ActivityInstance, who, at| i.public_host().unwrap().open_loot(who, 0x00B0_2852, 0, at);
