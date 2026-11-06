@@ -1151,6 +1151,7 @@ impl ActivityInstance {
             Some(p) => tracing::info!("udt-5 sensor_auth_update send #{} (phase file: {p})", self.sensors_sent),
             None => tracing::info!("udt-5 sensor_auth_update send #{}", self.sensors_sent),
         }
+        crate::script_bridge::dump_host_frame(&payload);
         Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }))
     }
 
