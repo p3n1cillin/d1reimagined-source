@@ -257,7 +257,7 @@ fn starting_kit(
                 let (_, _, _, def) = c.entry_bytes_for_tag(tag)?;
                 src.0.insert(tag, d1_pkg::manifest::sha256_hex(&def));
                 let storage = crate::vendor_sales::parse_storage(&def)?;
-                list.push(json!({"index":index,"hash":hash,"bucket":storage.bucket}));
+                list.push(json!({"index":index,"hash":hash,"bucket":storage.bucket,"instanced":storage.instanced}));
             }
             lists.push(list);
         }

@@ -23,9 +23,9 @@
 //! a resolver answers, the field is left as the template has it and named in the result.
 //!
 //! Evidence needed to finish it: the node-state byte layout (a served instance with one node
-//! toggled, read back from the client), the level curve for Attack/Defense against level (tag
-//! `0x80A5E244`, as `d1-oracle character derived-stat` already runs), and the order of a
-//! definition's stat list at `def+0x68`.
+//! toggled, read back from the client), the per-item level inverse (the global curves from tag
+//! `0x80A5E244` are now in `items/stat-curves.json`, but offsets/rank/talents still matter), and
+//! the order of a definition's stat list at `def+0x68`.
 
 use anyhow::{bail, Result};
 
@@ -77,6 +77,17 @@ pub trait ClientIndex {
     fn level_for_primary(&self, item_hash: u32, primary: u32) -> Option<i32>;
     /// The position of `stat_hash` in the item definition's stat list (`def+0x68`), 0..8.
     fn stat_position(&self, item_hash: u32, stat_hash: u32) -> Option<usize>;
+}
+
+/// The committed 56578 item and progression indices. Item-specific curve offsets, talent-grid
+/// indices and rolled-stat positions still need their own resolver; missing answers remain open.
+pub struct ExportedIndex;
+impl ClientIndex for ExportedIndex {
+    fn content_index(&self, hash:u32) -> Option<u16> { crate::content::item_index(hash) }
+    fn progression_ordinal(&self, hash:u32) -> Option<u16> { crate::content::progression_index(hash) }
+    fn grid_index(&self, _:u32) -> Option<u16> { None }
+    fn level_for_primary(&self, _:u32, _:u32) -> Option<i32> { None }
+    fn stat_position(&self, _:u32, _:u32) -> Option<usize> { None }
 }
 
 pub const ELEMENT_BYTES: usize = 0xB8;

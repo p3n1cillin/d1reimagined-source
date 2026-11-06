@@ -99,7 +99,7 @@ The placeholders' values are all in `rewards/placeholders.rs`. A test checks thi
 | `light.common_roll` | Common and Uncommon drops are uniform between floor and cap | Needs evidence | placeholder |
 | `light.basis` | The basis is the highest Light the character could equip (one Exotic weapon, one Exotic armour piece) | Rise of Iron player reports | community |
 | `light.weights` | Character Light: weapons 6, armour 5, Ghost/Artifact/class item 4 of 50, floored | DIM's D1 code; needs checking against the client's `0x265EF0` | community |
-| `light.infusion` | The target rises to the fuel's Light, capped by its own maximum | Rise of Iron, community | community |
+| `light.infusion` | In primary input + quality curve units: gain = min(diff, max(diff × tier rate, Attack quality curve(tier floor index))) | Owned 56578 `items/infusion.tsv`, `items/stat-curves.json`; client `0x26F400` selects by definition `+0x8A` | verified |
 | `light.infusion_cost` | No cost | Needs evidence | placeholder |
 | `engram.bucket` | An engram decrypts into its own bucket | Manifest (engrams carry their slot's bucket) | verified |
 | `engram.class` | Armour is for the decrypting character's class | | community |
@@ -142,11 +142,29 @@ The placeholders' values are all in `rewards/placeholders.rs`. A test checks thi
 | `quests.advance` | A step completes with its objectives; the next in the questline follows | Manifest (questline order) | community |
 
 Count:
-- 19 verified;
-- 15 community;
+- 20 verified;
+- 14 community;
 - 19 placeholder.
 
 ## Evidence needed, by rule
+
+**Owned-content pass (offline).** `d1-oracle content-tables` exports all 36 stat-curve rows:
+integer control points, quality control points, flags and slot weights, plus seven infusion
+category rows, selected by the target definition's `+0x8A` tier byte. This corrects the earlier
+"per-bucket" description: inventory bucket selection uses `+0x88`. The rates are 0.5 or 1.
+A floor value is an index into the
+Attack quality curve: index 10 samples to 1 in primary coordinates, rather than a floor of 10.
+Every source entry has a SHA-256 digest in the table. The private-input regression test
+regenerates and compares every output, and skips with a reason if its inputs are missing.
+
+`content::StatCurve::primary` exposes the base primary conversion and `light::infuse` uses the
+tier formula in the client's pre-display coordinates. Its arguments are floats before the
+integer Attack/Defense mapping; displayed integer values lose information and cannot be
+silently substituted. The `inventory_ops` mutation still uses its older labelled stand-in.
+Per-item definition offsets, progression rank, nonzero explicit base stats and talent effects
+are still needed for `ClientIndex::level_for_primary`; `item.level_for_light` therefore remains
+open. Exporting the global curves does not verify an inverse for every item or a server mutation.
+Infusion costs, category validation and final wire mutation remain open. No game or lab run.
 
 - **Drop chances, the Light spread, decrypt upgrades, dismantle amounts and the Marks weekly
   cap:** counts from recordings or live captures. The private Xbox 360 captures

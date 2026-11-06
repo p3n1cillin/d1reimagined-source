@@ -9,13 +9,11 @@
 //! three per account, level 1, the starting kit in its buckets and equipped, and the introduction:
 //! the prologue, then A Guardian Rises (activity 164).
 //!
-//! ⚠ The starting kit is client content: character creation runs
-//! `c_investment_world_tag_loader_fill_desired_items_default_gear` (`0x574FB0`), whose default-gear
-//! list (`0x25D150`, three entries of world tags) is not fully read (`ps4/design/items-and-gear.md`
-//! §11). So the kit is a table, `D1_STARTING_KIT` (`class<TAB>bucket:content,...`), empty by default;
-//! the tutorial fixtures (`ps4/fixtures/56578/characters/inventory-tutorial`) are the Titan's served
-//! stand-in. Evidence needed: the default-gear list read with `d1-oracle` (content, no capture), or a
-//! retail capture of a new character's first profile.
+//! The 56578 default-gear asset loader (`0x576150`, re-found through RTTI) preloads the two class
+//! lists in `characters/starting-kit-lists.json`. Their contents are verified; granting exactly
+//! the first preload list as a new character's inventory is still an unverified policy. The
+//! `D1_STARTING_KIT` table (`class<TAB>bucket:content,...`) stays empty by default. Set it to
+//! `content` to choose the exported first list, or to a file to choose another policy.
 
 use std::collections::BTreeMap;
 
@@ -49,7 +47,15 @@ pub fn parse_kit(text: &str) -> Kit {
 }
 
 pub fn kit_from_env() -> Kit {
-    std::env::var_os("D1_STARTING_KIT").and_then(|p| std::fs::read_to_string(p).ok()).map(|t| parse_kit(&t)).unwrap_or_default()
+    match std::env::var_os("D1_STARTING_KIT") {
+        Some(p) if p == "content" => exported_default_gear(),
+        Some(p) => std::fs::read_to_string(p).ok().map(|t| parse_kit(&t)).unwrap_or_default(),
+        None => Kit::new(),
+    }
+}
+
+pub fn exported_default_gear() -> Kit {
+    parse_kit(include_str!("../../../../fixtures/56578/characters/starting-kit.tsv"))
 }
 
 /// Create a Guardian.
@@ -67,12 +73,18 @@ pub fn create<S: PlayerStore + Clone>(s: &mut S, t: &Tables, kit: &Kit, race: u8
     let mut placed = Vec::new();
     for &(bucket, content) in kit.get(&class).map(|v| v.as_slice()).unwrap_or(&[]) {
         let row = t.items.get(&content).copied();
+        let owned = crate::content::default_gear_item(content,class);
+        if let Some(item) = owned {
+            if item.bucket != bucket { return Err(format!("kit item {content} belongs in bucket {}",item.bucket)); }
+        }
         if let Some(r) = row {
             if r.class != 3 && r.class != class {
                 return Err(format!("kit item {content} is for class {}", r.class));
             }
         }
-        let instanced = row.map(|r| r.instanced()).unwrap_or(true);
+        // The manifest-derived social table omits some client starter definitions and carries
+        // stale storage for the horn. The owned definition is authoritative where exported.
+        let instanced = owned.map(|i|i.instanced).or_else(||row.map(|r|r.instanced())).unwrap_or(true);
         let inst = if instanced { work.mint_soid() } else { 0 };
         let item = if instanced { Item::instanced(content, inst, 0) } else { Item::stack(content, 1) };
         store::give(&mut work, store::owner_of(bucket, id), bucket, item, 0)?;
@@ -140,5 +152,22 @@ mod tests {
         let hunter_helm = *t.items.iter().filter(|(_, r)| r.bucket == 0x07 && r.class == 1 && r.equippable()).map(|(c, _)| c).min().unwrap();
         assert!(create(&mut s, t, &parse_kit(&format!("0 07:{hunter_helm}")), 0, 0, 0, vec![]).is_err());
         assert!(s.characters().is_empty(), "nothing half-made");
+    }
+    #[test]
+    fn exported_class_lists_create_with_the_owned_storage_metadata() {
+        let kit = exported_default_gear();
+        assert_eq!(kit.len(),3);
+        for (class,items) in &kit {
+            assert_eq!(items.len(),12);
+            for &(bucket,index) in items {
+                let row = crate::content::default_gear_item(index,*class).unwrap();
+                assert_eq!(row.bucket,bucket);
+                assert!(crate::content::item_hash(index).is_some());
+            }
+            let mut s = crate::store::MemoryStore::new();
+            let made = create(&mut s,crate::tables::tables(),&kit,0,0,*class,vec![]).unwrap();
+            assert_eq!(made.kit.len(),12);
+            assert!(made.kit.iter().all(|(_,_,soid)|*soid!=0));
+        }
     }
 }
