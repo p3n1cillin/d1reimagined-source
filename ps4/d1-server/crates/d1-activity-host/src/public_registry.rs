@@ -52,6 +52,7 @@ use std::collections::BTreeMap;
 use std::time::{Duration, Instant};
 
 use crate::open_world::{Destination, SocialSpace};
+use crate::rewards::CharacterRef;
 
 /// GDC 2015: "the standard bubble is 6 players".
 pub const PUBLIC_BUBBLE_PLAYER_CAP: usize = 6;
@@ -110,16 +111,20 @@ impl InstanceKey {
 }
 
 /// A player arriving: the character, its fireteam (0 = none) and the fireteam's size.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+///
+/// ⭐ Stream O2: the character is the client's whole 40-byte identity (`join_request+0x10`), as
+/// stream K's [`CharacterRef`] keys rewards, not its first 8 bytes: two characters of one console
+/// share those. A `u64` still converts ([`CharacterRef::from_key`]).
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Arrival {
-    pub character: u64,
+    pub character: CharacterRef,
     pub fireteam: u64,
     pub fireteam_size: u8,
 }
 
 impl Arrival {
-    pub fn solo(character: u64) -> Self {
-        Self { character, fireteam: 0, fireteam_size: 1 }
+    pub fn solo(character: impl Into<CharacterRef>) -> Self {
+        Self { character: character.into(), fireteam: 0, fireteam_size: 1 }
     }
 }
 
@@ -283,6 +288,49 @@ impl d1_mp::matchmaking::PublicInstances for DestinationInstances<'_> {
     }
 }
 
+/// ⭐ Stream O2: the registry across the process boundary. The responder's matchmaker answers
+/// the client's slot-1 (public bubble) searches, but this registry lives in the activity host. With
+/// `D1_AH_PUBLIC_INSTANCES_FILE` set (the same path for both servers), the host writes the
+/// registry's instances there ([`PublicRegistry::snapshot_json`]) whenever a member arrives or
+/// leaves, and the responder places a fireteam with `d1_mp::matchmaking::place_in_public` over
+/// that snapshot. Its reservations come back as `reserve HOST SLOTS` lines in
+/// `<file>.reserve`, which the host applies ([`PublicRegistry::apply_reservations`]) before the
+/// next arrival, so the arriving fireteam finds its slots held. Unset: nothing is written.
+pub const INSTANCES_FILE_KNOB: &str = "D1_AH_PUBLIC_INSTANCES_FILE";
+
+/// The reservation file beside the snapshot.
+pub fn reservations_file_for(snapshot: &std::path::Path) -> std::path::PathBuf {
+    let mut s = snapshot.as_os_str().to_owned();
+    s.push(".reserve");
+    std::path::PathBuf::from(s)
+}
+
+/// Apply the responder's reservations, then write the snapshot ([`INSTANCES_FILE_KNOB`]).
+pub fn sync_with_responder(registry: &mut PublicRegistry) {
+    let Some(path) = std::env::var_os(INSTANCES_FILE_KNOB).filter(|p| !p.is_empty()).map(std::path::PathBuf::from) else { return };
+    sync_file(registry, &path);
+}
+
+/// [`sync_with_responder`] for `path`.
+pub fn sync_file(registry: &mut PublicRegistry, path: &std::path::Path) {
+    let reserve = reservations_file_for(path);
+    let taken = reserve.with_extension("reserve.taken");
+    if std::fs::rename(&reserve, &taken).is_ok() {
+        if let Ok(text) = std::fs::read_to_string(&taken) {
+            let n = registry.apply_reservations(&text);
+            if n > 0 {
+                tracing::info!("⭐ public registry: {n} reservation(s) from the responder's matchmaker");
+            }
+        }
+        let _ = std::fs::remove_file(&taken);
+    }
+    let tmp = path.with_extension("tmp");
+    let text = serde_json::to_string_pretty(&registry.snapshot_json()).unwrap_or_default();
+    if std::fs::write(&tmp, text).is_err() || std::fs::rename(&tmp, path).is_err() {
+        tracing::warn!("⚠ public registry: could not write {}", path.display());
+    }
+}
+
 /// Every running public instance.
 #[derive(Debug)]
 pub struct PublicRegistry {
@@ -311,7 +359,8 @@ impl PublicRegistry {
     }
 
     /// The instance a character is in, if any.
-    pub fn instance_of(&self, character: u64) -> Option<u64> {
+    pub fn instance_of(&self, character: impl Into<CharacterRef>) -> Option<u64> {
+        let character = character.into();
         self.instances
             .values()
             .find(|i| i.members.iter().any(|m| m.character == character))
@@ -331,11 +380,11 @@ impl PublicRegistry {
         if size as usize > cap {
             return Err(PlaceError::FireteamTooLarge { size, cap });
         }
-        if let Some(host) = self.instance_of(who.character) {
+        if let Some(host) = self.instance_of(who.character.clone()) {
             if self.instances[&host].key == key {
                 return Ok(Placement { host_id: host, kind: JoinKind::Joins });
             }
-            self.leave(who.character, now);
+            self.leave(who.character.clone(), now);
         }
         let mate = self
             .instances
@@ -377,17 +426,18 @@ impl PublicRegistry {
     /// matchmaking already put the character there; a connection nobody placed (a single client
     /// with no matchmaker in front of it) registers its own instance, solo, so the registry still
     /// knows every instance that is running. Returns how the character got in.
-    pub fn attach(&mut self, host_id: u64, key: InstanceKey, character: u64, now: Instant) -> JoinKind {
+    pub fn attach(&mut self, host_id: u64, key: InstanceKey, character: impl Into<CharacterRef>, now: Instant) -> JoinKind {
+        let character = character.into();
         if let Some(i) = self.instances.get_mut(&host_id) {
             // The instance's first member is the one who started it.
-            let starter = i.members.first().map(|m| m.character) == Some(character);
+            let starter = i.members.first().map(|m| &m.character) == Some(&character);
             if !i.members.iter().any(|m| m.character == character) {
                 i.arrive(Arrival::solo(character));
             }
             return if starter { JoinKind::Starts } else { JoinKind::Joins };
         }
-        if self.instance_of(character).is_some() {
-            self.leave(character, now);
+        if self.instance_of(character.clone()).is_some() {
+            self.leave(character.clone(), now);
         }
         self.instances.insert(
             host_id,
@@ -413,8 +463,9 @@ impl PublicRegistry {
     /// A character left its instance (bubble exit, peer leave, lost connection). Returns the
     /// instance it left. Its fireteam's reservation goes with it once no member of that fireteam is
     /// left there.
-    pub fn leave(&mut self, character: u64, now: Instant) -> Option<u64> {
-        let host = self.instance_of(character)?;
+    pub fn leave(&mut self, character: impl Into<CharacterRef>, now: Instant) -> Option<u64> {
+        let character = character.into();
+        let host = self.instance_of(character.clone())?;
         let i = self.instances.get_mut(&host)?;
         i.members.retain(|m| m.character != character);
         if i.members.is_empty() {
@@ -448,6 +499,51 @@ impl PublicRegistry {
         true
     }
 
+    /// The instances as the responder's matchmaker reads them: `{"instances": [{"host", "region",
+    /// "destination", "social", "players", "reserved", "capacity", "started_ms"}]}` (`region` is the
+    /// slice-set id the client's slot-1 search names in its low bits; a social space has none).
+    pub fn snapshot_json(&self) -> serde_json::Value {
+        let rows: Vec<serde_json::Value> = self
+            .instances
+            .values()
+            .map(|i| {
+                let (region, destination, social) = match i.key {
+                    InstanceKey::Bubble { destination, region } => (Some(region), Some(format!("{destination:?}")), None),
+                    InstanceKey::Social(s) => (None, None, Some(format!("{s:?}"))),
+                };
+                serde_json::json!({
+                    "host": format!("{:#018x}", i.host_id),
+                    "region": region,
+                    "destination": destination,
+                    "social": social,
+                    "players": i.player_count(),
+                    "reserved": i.reserved(),
+                    "capacity": i.key.player_cap(),
+                    "started_ms": i.started.saturating_duration_since(self.epoch).as_millis() as u64,
+                })
+            })
+            .collect();
+        serde_json::json!({ "instances": rows })
+    }
+
+    /// Apply `reserve HOST SLOTS` lines (the responder's placements). Returns how many held.
+    pub fn apply_reservations(&mut self, text: &str) -> usize {
+        let mut n = 0;
+        for line in text.lines().map(str::trim).filter(|l| !l.is_empty() && !l.starts_with('#')) {
+            let f: Vec<&str> = line.split_whitespace().collect();
+            let parsed = match f.as_slice() {
+                ["reserve", host, slots] => u64::from_str_radix(host.trim_start_matches("0x"), 16).ok().zip(slots.parse::<usize>().ok()),
+                _ => None,
+            };
+            match parsed {
+                Some((host, slots)) if self.reserve_slots(host, slots) => n += 1,
+                Some((host, _)) => tracing::warn!("public registry: {line:?}: instance {host:#018x} is gone or full"),
+                None => tracing::warn!("public registry: {line:?} is not `reserve HOST SLOTS`"),
+            }
+        }
+        n
+    }
+
     /// Retire instances that have been empty for `linger` or longer. Returns their host ids.
     pub fn retire_idle(&mut self, now: Instant, linger: Duration) -> Vec<u64> {
         let gone: Vec<u64> = self
@@ -472,7 +568,56 @@ mod tests {
     const FIRST: u64 = 0xD1A0_0000_0000_0100;
 
     fn team(character: u64, fireteam: u64, size: u8) -> Arrival {
-        Arrival { character, fireteam, fireteam_size: size }
+        Arrival { character: character.into(), fireteam, fireteam_size: size }
+    }
+
+    /// Stream O2: the snapshot the responder reads, and its reservations coming back.
+    #[test]
+    fn the_responder_sees_the_instances_and_its_reservations_hold() {
+        let now = Instant::now();
+        let mut r = PublicRegistry::new(FIRST);
+        r.place(STEPPES, Arrival::solo(1), now).unwrap();
+        let dir = std::env::temp_dir().join(format!("d1-pub-feed-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("public-instances.json");
+        sync_file(&mut r, &path);
+        let v: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+        let row = &v["instances"][0];
+        assert_eq!((row["region"].as_u64(), row["players"].as_u64(), row["capacity"].as_u64()), (Some(56), Some(1), Some(6)));
+        assert_eq!(row["host"], format!("{FIRST:#018x}"));
+        // The responder holds 3 slots for a fireteam on its way.
+        std::fs::write(reservations_file_for(&path), format!("reserve {FIRST:#x} 3\nreserve 0x1 1\nnonsense\n")).unwrap();
+        sync_file(&mut r, &path);
+        assert_eq!(r.get(FIRST).unwrap().occupancy(), 4);
+        assert!(!reservations_file_for(&path).exists(), "taken");
+        let v: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+        assert_eq!(v["instances"][0]["reserved"].as_u64(), Some(3));
+        // An arriving member takes a held slot.
+        r.attach(FIRST, STEPPES, 2u64, now);
+        assert_eq!(r.get(FIRST).unwrap().occupancy(), 4);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// Stream O2: two characters whose identities share their first 8 bytes (one console) are
+    /// two members, not one.
+    #[test]
+    fn characters_are_keyed_by_the_whole_identity() {
+        let now = Instant::now();
+        let mut r = PublicRegistry::new(FIRST);
+        let id = |character: u8| {
+            let mut b = vec![0u8; 40];
+            b[..8].copy_from_slice(&0x0102_0304_0506_0708u64.to_le_bytes());
+            b[0x18] = character;
+            CharacterRef { identity: b }
+        };
+        let (a, b) = (id(1), id(2));
+        assert_eq!(a.key(), b.key(), "the same first 8 bytes");
+        r.place(STEPPES, Arrival::solo(a.clone()), now).unwrap();
+        r.place(STEPPES, Arrival::solo(b.clone()), now).unwrap();
+        assert_eq!(r.get(FIRST).unwrap().player_count(), 2);
+        assert_eq!(r.leave(a.clone(), now), Some(FIRST));
+        assert_eq!(r.instance_of(b), Some(FIRST), "the other character is still there");
+        assert_eq!(r.instance_of(a), None);
     }
 
     #[test]

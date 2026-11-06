@@ -21,6 +21,13 @@ const WORLD: &str = "act_cosmo_m1_dome_a";
 const STEPPES: InstanceKey = InstanceKey::Bubble { destination: Destination::Earth, region: 56 };
 const FRAME_56: &[u8] = &[0x56, 0x00, 0x01];
 
+/// The 40-byte identity [`join`] puts in its image (stream O2: the registry keys by all of it).
+fn identity(character: u64) -> d1_activity_host::rewards::CharacterRef {
+    let mut b = vec![0u8; 40];
+    b[..8].copy_from_slice(&character.to_le_bytes());
+    d1_activity_host::rewards::CharacterRef { identity: b }
+}
+
 fn join(kind: u8, mission_host: u64, fireteam: u64, character: u64) -> ClientMessage {
     let mut img = vec![0u8; 0x100];
     img[..4].copy_from_slice(&(character as u32).to_le_bytes()); // the nonce
@@ -120,9 +127,9 @@ fn two_clients_meet_in_one_public_instance() {
     mission_b.on_client_message(&join(3, 0, 0xF2, bob), t0);
 
     // ── Matchmaking places Alice first (she starts the instance) and Bob into it.
-    let a = registry.lock().unwrap().place(STEPPES, Arrival { character: alice, fireteam: 0xF1, fireteam_size: 1 }, t0).unwrap();
+    let a = registry.lock().unwrap().place(STEPPES, Arrival { character: identity(alice), fireteam: 0xF1, fireteam_size: 1 }, t0).unwrap();
     assert_eq!(a.kind, JoinKind::Starts);
-    let b = registry.lock().unwrap().place(STEPPES, Arrival { character: bob, fireteam: 0xF2, fireteam_size: 1 }, t0).unwrap();
+    let b = registry.lock().unwrap().place(STEPPES, Arrival { character: identity(bob), fireteam: 0xF2, fireteam_size: 1 }, t0).unwrap();
     assert_eq!((b.host_id, b.kind), (a.host_id, JoinKind::Joins));
     let host = a.host_id;
 
@@ -245,5 +252,5 @@ fn the_open_world_runs_once_per_instance() {
     tower.on_client_message(&join(2, 0, 0xF1, alice), t0);
     let r = registry.lock().unwrap();
     assert_eq!(r.get(host + 1).unwrap().key, InstanceKey::Social(SocialSpace::Tower));
-    assert_eq!(r.instance_of(alice), Some(host + 1), "arriving in the Tower left the Cosmodrome instance");
+    assert_eq!(r.instance_of(identity(alice)), Some(host + 1), "arriving in the Tower left the Cosmodrome instance");
 }

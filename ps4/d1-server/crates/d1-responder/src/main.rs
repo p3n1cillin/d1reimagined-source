@@ -77,6 +77,7 @@ mod tables;
 mod vendors;
 mod social_hooks;
 mod mp; // MP(H): multiplayer services, D1_MP=1
+mod public_feed; // stream O2: the activity host's public instances for the matchmaker
 // Stream M (rewards and growth): services behind `D1_REWARDS` (off by default), called by the
 // activity streams through `rewards::grant_activity_rewards`. The only hook here is its knobs.
 mod rewards;
@@ -2355,6 +2356,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_MP_FIRETEAM_CAP", "3", "MP(H): the fireteam cap with no activity selected"),
     ("D1_MP_RECONNECT_GRACE_MS", "120000", "MP(H): how long a disconnected member keeps their fireteam slot"),
     ("D1_AH_ACTIVITY_FRAMEWORK", "<unset>", "stream O2 (with D1_MP=1): the activity framework folder (or 1); its matchmaking-playlists.tsv feeds the matchmaker's playlists"),
+    ("D1_AH_PUBLIC_INSTANCES_FILE", "<unset>", "stream O2 (with D1_MP=1): the activity host's public-instance snapshot; slot-1 bubble searches place a fireteam there and hold its slots (public_feed.rs)"),
     ("D1_VENDOR_SALES", "<unset>", "vendor-sales.tsv (d1-oracle vendor-sales write): apply 901 purchases and push the account and profile"),
     ("D1_VENDOR_PROFILE_OBJ", "<unset>", "the served profile as a decoded C object (purchases add items to it)"),
     ("D1_VENDOR_ITEM_TEMPLATE", "<unset>", "a decoded 0x80801732 item element, the template for bought instances"),
