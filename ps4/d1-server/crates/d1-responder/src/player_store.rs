@@ -356,9 +356,9 @@ impl Identity {
     /// The responder's own knobs (and their defaults).
     pub fn from_env() -> Self {
         Identity {
-            account: crate::env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001),
-            character: crate::env_soid("D1_CHARACTER_SOID", 0xD100_0000_0000_0101),
-            profile: crate::env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201),
+            account: crate::env_soid_raw("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001),
+            character: crate::env_soid_raw("D1_CHARACTER_SOID", 0xD100_0000_0000_0101),
+            profile: crate::env_soid_raw("D1_PROFILE_SOID", 0xD100_0000_0000_0201),
         }
     }
 
@@ -916,6 +916,23 @@ impl Store {
 /// The first item instance a purchase mints when the store has none recorded (vendor.rs's too).
 pub const FIRST_ITEM_SOID: u64 = 0xD100_0000_0000_0601;
 
+/// Glimmer's 56578 content index (the account's slot 308 holds it).
+pub const GLIMMER_CONTENT: u16 = 869;
+/// ⭐ D1's Glimmer cap: 25,000 (the manifest's `maxStackSize`, `rewards::currencies::cap`; the
+/// live Tower capture's wallet stopped there, notes/d1-live-captures-patrol-tower-2026-11-06.md).
+/// Glimmer beyond it is lost, as in the game.
+pub const GLIMMER_CAP: u32 = 25_000;
+
+/// `after` for `content` once its cap holds: a gain stops at the cap (a wallet already above it,
+/// from an older record, is not taken down), a spend is never changed.
+pub fn capped(content: u16, have: u32, after: i64) -> i64 {
+    if content == GLIMMER_CONTENT && after > i64::from(have) {
+        after.min(i64::from(GLIMMER_CAP.max(have)))
+    } else {
+        after
+    }
+}
+
 /// The persistent player store as the other streams see it: one account and the character signed
 /// on. [`Store`] implements it on disk ([`Store::open`]) or in memory ([`Store::in_memory`]);
 /// [`with_store`] lends the responder's. Mutators change the in-memory record only: an important
@@ -1057,7 +1074,7 @@ impl PlayerStore for Store {
     fn adjust_currency(&mut self, content: u16, delta: i64) -> anyhow::Result<u32> {
         let slot = self.record.account.slots.iter_mut().find(|(_, (c, _))| *c == content)
             .ok_or_else(|| anyhow::anyhow!("no account slot holds content {content}"))?;
-        let after = i64::from(slot.1 .1) + delta;
+        let after = capped(content, slot.1 .1, i64::from(slot.1 .1) + delta);
         anyhow::ensure!((0..=i64::from(u32::MAX)).contains(&after), "content {content}: {} {delta:+} is out of range", slot.1 .1);
         slot.1 .1 = after as u32;
         Ok(after as u32)
@@ -1189,7 +1206,7 @@ impl PlayerStore for Store {
                 .or_else(|| (delta > 0).then(|| (first..first + n).find(|s| !slots.contains_key(s))).flatten())
                 .ok_or_else(|| anyhow::anyhow!("account bucket {bucket:#x}: no slot holds content {content} and none is free"))?;
             let have = slots.get(&slot).map_or(0, |e| e.1);
-            let after = i64::from(have) + delta;
+            let after = capped(content, have, i64::from(have) + delta);
             anyhow::ensure!((0..=i64::from(u32::MAX)).contains(&after), "content {content}: {have} {delta:+} is out of range");
             slots.insert(slot, (content, after as u32));
             return Ok(after as u32);
@@ -1364,14 +1381,130 @@ fn global() -> Option<&'static Mutex<Store>> {
     }).as_ref()
 }
 
+// ── several players (stream O3) ─────────────────────────────────────────────────────────────
+
+/// The other players' stores, by account: opened on first use from `identities.json`'s identity
+/// (integration review, finding 4). The responder's own player is [`global`]'s.
+fn other_stores() -> &'static Mutex<BTreeMap<u64, &'static Mutex<Store>>> {
+    static O: OnceLock<Mutex<BTreeMap<u64, &'static Mutex<Store>>>> = OnceLock::new();
+    O.get_or_init(Default::default)
+}
+
+fn others() -> Vec<&'static Mutex<Store>> {
+    other_stores().lock().map(|m| m.values().copied().collect()).unwrap_or_default()
+}
+
+/// The player `identities.json` in `dir` files under exactly this identity (account, character
+/// and profile), if any.
+pub fn filed_player(dir: &Path, id: &Identity) -> Option<String> {
+    let (v, _) = read_json_recovering(&dir.join("identities.json")).ok()?;
+    let ids: Identities = serde_json::from_value(v).ok()?;
+    ids.players.into_iter().find(|(_, i)| i == id).map(|(p, _)| p)
+}
+
+/// The player filed with this account and character (a grant's identity names both), if any.
+pub fn filed_identity(dir: &Path, account: u64, character: u64) -> Option<Identity> {
+    let (v, _) = read_json_recovering(&dir.join("identities.json")).ok()?;
+    let ids: Identities = serde_json::from_value(v).ok()?;
+    ids.players.into_values().find(|i| i.account == account && i.character == character)
+}
+
+/// The filed player whose character is `character` (a grant that names only a key), if exactly one.
+pub fn filed_character(dir: &Path, character: u64) -> Option<Identity> {
+    let (v, _) = read_json_recovering(&dir.join("identities.json")).ok()?;
+    let ids: Identities = serde_json::from_value(v).ok()?;
+    let mut found = ids.players.into_values().filter(|i| i.character == character);
+    let first = found.next()?;
+    found.next().is_none().then_some(first)
+}
+
+/// The store of the player with identity `id`: the responder's own ([`global`]) for its identity,
+/// else that player's record in `dir`, opened (and seeded from the fixtures on first sight) once.
+/// None when the store is off, or no player in `identities.json` has exactly this identity: a
+/// record is only ever opened for a filed player, so a grant matched by identity can only pay a
+/// real one.
+pub fn store_of(id: &Identity) -> Option<&'static Mutex<Store>> {
+    let primary = global()?;
+    if primary.lock().ok().is_some_and(|s| s.identity() == *id) {
+        return Some(primary);
+    }
+    let cfg = Config::from_env()?;
+    open_other(&cfg.dir, id)
+}
+
+/// [`store_of`] for another player, in `dir`.
+fn open_other(dir: &Path, id: &Identity) -> Option<&'static Mutex<Store>> {
+    let mut map = other_stores().lock().ok()?;
+    if let Some(m) = map.get(&id.account) {
+        return m.lock().ok().is_some_and(|s| s.identity() == *id).then_some(*m);
+    }
+    let Some(player) = filed_player(dir, id) else {
+        tracing::warn!("      ⛔ player store: no player in identities.json is {:#x}/{:#x}/{:#x}", id.account, id.character, id.profile);
+        return None;
+    };
+    match Store::open(dir, id.account, id.character, id.profile, &Sources::from_env()) {
+        Ok(mut s) => {
+            if s.record.player != player {
+                s.record.player = player.clone();
+                let _ = s.save(&format!("player {player}"));
+            }
+            tracing::warn!("      💾 player store: '{player}' ({:#x}) opened beside the responder's own player (D1_MP=1)", id.account);
+            let m: &'static Mutex<Store> = Box::leak(Box::new(Mutex::new(s)));
+            map.insert(id.account, m);
+            Some(m)
+        }
+        Err(e) => {
+            tracing::warn!("      ⛔ player store: '{player}' NOT opened ({e:#})");
+            None
+        }
+    }
+}
+
+/// The store the current work is for (`players::current`): the connection's or thread's player,
+/// else the responder's own.
+pub fn current_store() -> Option<&'static Mutex<Store>> {
+    match crate::players::current() {
+        Some(id) if crate::players::current_is_other() => store_of(&id),
+        _ => global(),
+    }
+}
+
+/// A player's own copy of a push file: the knob's path for the responder's own player (`None`),
+/// else `<stem>-<account>.<ext>` beside it, which only that player's primary connection delivers.
+pub fn player_file(base: &Path, account: Option<u64>) -> PathBuf {
+    let Some(account) = account else { return base.to_path_buf() };
+    let stem = base.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
+    let name = match base.extension() {
+        Some(e) => format!("{stem}-{account:016x}.{}", e.to_string_lossy()),
+        None => format!("{stem}-{account:016x}"),
+    };
+    base.with_file_name(name)
+}
+
+fn other_account() -> Option<u64> {
+    crate::players::current().filter(|_| crate::players::current_is_other()).map(|i| i.account)
+}
+
+/// `D1_PROFILE_PUSH_FILE` for the current player ([`player_file`]).
+pub fn profile_push_file() -> Option<PathBuf> {
+    std::env::var_os("D1_PROFILE_PUSH_FILE").filter(|p| !p.is_empty()).map(|p| player_file(Path::new(&p), other_account()))
+}
+
+/// `D1_ACCOUNT_PUSH_FILE` for the current player ([`player_file`]).
+pub fn account_push_file() -> Option<PathBuf> {
+    std::env::var_os("D1_ACCOUNT_PUSH_FILE").filter(|p| !p.is_empty()).map(|p| player_file(Path::new(&p), other_account()))
+}
+
 /// The world server's periodic save: every `every`, save if anything is waiting.
 fn start_periodic_save(every: std::time::Duration) {
     std::thread::spawn(move || loop {
         std::thread::sleep(every);
         let Some(m) = global() else { return };
-        if let Ok(mut s) = m.lock() {
-            if let Err(e) = s.flush() {
-                tracing::warn!("      ⛔ player store periodic save: {e:#}");
+        for m in std::iter::once(m).chain(others()) {
+            if let Ok(mut s) = m.lock() {
+                if let Err(e) = s.flush() {
+                    tracing::warn!("      ⛔ player store periodic save: {e:#}");
+                }
             }
         }
     });
@@ -1393,7 +1526,7 @@ fn reencode(s: &mut Store) -> anyhow::Result<()> {
 /// Lend the responder's store to another stream: None when it is off (`D1_STORE` unset).
 #[allow(dead_code)] // an entry point for streams I, M, J and H; not called by the responder yet
 pub fn with_store<T>(f: impl FnOnce(&mut dyn PlayerStore) -> T) -> Option<T> {
-    let m = global()?;
+    let m = current_store()?;
     let mut s = m.lock().ok()?;
     Some(f(&mut *s))
 }
@@ -1401,7 +1534,7 @@ pub fn with_store<T>(f: impl FnOnce(&mut dyn PlayerStore) -> T) -> Option<T> {
 /// After a [`PlayerStore`] edit to the profile (XP or reputation): re-encode, save, and push
 /// (`D1_PROFILE_PUSH_FILE`) as the control commands do. Nothing to do when it isn't stale.
 pub fn push_profile(what: &str) -> anyhow::Result<()> {
-    let m = global().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
+    let m = current_store().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
     let encoded = {
         let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
         let Some(encoded) = prepare_profile_push(&mut s, what)? else { return Ok(()) };
@@ -1433,7 +1566,7 @@ fn write_push(encoded: &[u8]) -> anyhow::Result<()> {
 
 /// Wait (up to 120 s) until the client took the last profile push (`D1_PROFILE_PUSH_FILE` gone).
 pub fn wait_for_push_taken() {
-    if let Some(push) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(PathBuf::from) {
+    if let Some(push) = profile_push_file() {
         for _ in 0..120 {
             if !push.exists() {
                 break;
@@ -1446,7 +1579,7 @@ pub fn wait_for_push_taken() {
 /// [`write_push`] with one new item: its encoded element and SOID beside the push
 /// (`.item`, `.soid`), as a purchase writes them (`vendor::publish`).
 fn write_push_with_item(encoded: &[u8], item: Option<(u64, &[u8])>) -> anyhow::Result<()> {
-    if let Some(push) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(PathBuf::from) {
+    if let Some(push) = profile_push_file() {
         // One push at a time: wait for the previous one to be delivered.
         wait_for_push_taken();
         if let Some((soid, element)) = item {
@@ -1463,14 +1596,14 @@ fn write_push_with_item(encoded: &[u8], item: Option<(u64, &[u8])>) -> anyhow::R
 /// This is the path for an account change when the vendor state is off (`D1_VENDOR_SALES` unset):
 /// with it on, the vendor state publishes instead ([`crate::vendor::adopt_store_state`]).
 pub fn push_account(what: &str) -> anyhow::Result<()> {
-    let m = global().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
+    let m = current_store().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
     let (slots, instances, refunds) = {
         let s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
         let a = &s.record.account;
         (a.slots.clone(), a.slot_instances.clone(), a.refunds.clone())
     };
     let payload = crate::vendor::account_payload(&crate::vendor::oracle_path(), &slots, &instances, &refunds)?;
-    if let Some(p) = std::env::var_os("D1_ACCOUNT_PUSH_FILE").map(PathBuf::from) {
+    if let Some(p) = account_push_file() {
         std::fs::write(&p, &payload)?;
     } else {
         tracing::warn!("      ⚠ {what}: D1_ACCOUNT_PUSH_FILE is unset: the account is saved but not pushed");
@@ -1481,12 +1614,14 @@ pub fn push_account(what: &str) -> anyhow::Result<()> {
 }
 
 /// Read from the store: None when it is off (the caller serves the knobs as before).
+///
+/// Stream O3: the current player's record (`players::current`; the responder's own otherwise).
 pub fn view<T>(f: impl FnOnce(&Store) -> T) -> Option<T> {
-    global().and_then(|m| m.lock().ok().map(|s| f(&s)))
+    current_store().and_then(|m| m.lock().ok().map(|s| f(&s)))
 }
 
 fn with(what: &str, f: impl FnOnce(&mut Store) -> anyhow::Result<Vec<String>>) {
-    let Some(m) = global() else { return };
+    let Some(m) = current_store() else { return };
     let Ok(mut s) = m.lock() else { return };
     match f(&mut s) {
         Ok(events) => events.iter().for_each(|e| tracing::warn!("      💾 {what}: {e}")),
@@ -1512,7 +1647,8 @@ pub fn roster_cards() -> Option<Vec<(String, Vec<u8>)>> {
 
 /// Decode `payload` with the client's codec off the caller's task, then adopt it.
 fn decode_later(payload: Vec<u8>) {
-    std::thread::spawn(move || {
+    let who = crate::players::current();
+    std::thread::spawn(move || crate::players::run_as(who, || {
         let oracle = crate::vendor::oracle_path();
         match crate::vendor::decode_object(&oracle, "0x80801743", &payload, "store-profile") {
             Ok(obj) => with("profile", |s| {
@@ -1534,7 +1670,7 @@ fn decode_later(payload: Vec<u8>) {
         if let Err(e) = push_profile("profile decoded: reputation folded in") {
             tracing::warn!("      ⛔ player store: the reputation push failed ({e:#})");
         }
-    });
+    }));
 }
 
 /// A profile push the client received (`D1_PROFILE_PUSH_FILE`, with its optional item).
@@ -1707,7 +1843,7 @@ pub fn edit_profile(obj: &mut [u8], cmd: &Command, store: &Store) -> anyhow::Res
 }
 
 fn run_command(cmd: Command) -> anyhow::Result<String> {
-    let m = global().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
+    let m = current_store().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
     match &cmd {
         Command::Checkpoint(a, step) => {
             let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
@@ -1727,8 +1863,11 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
             s.save(&format!("lockout {a} {encounter} week={week}"))?;
             return Ok(format!("lockout {a}: {encounter} paid in week {week}"));
         }
-        Command::Grant(g) => return run_grant(m, g),
-        Command::HandOff(h) => return run_handoff(m, h),
+        Command::Grant(g) => return grant_for_player(g),
+        Command::HandOff(h) => {
+            let (m, who) = target_store(&h.target)?;
+            return crate::players::run_as(who, || run_handoff(m, h));
+        }
         Command::Reputation(name, n) => {
             let (w, push) = {
                 let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
@@ -1792,6 +1931,71 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
 /// the vendor state when it is on (it serves the account and profile), through the store's own
 /// pushes otherwise ([`push_account`], the profile push), so the wallet reaches the client with
 /// `D1_VENDOR_SALES` or `D1_SOCIAL` unset.
+/// ⭐ Stream O3 (integration review, finding 4): which player's store a command from the activity
+/// host is for, matched by the full identity it names.
+///
+/// * The responder's own player (account and character both its own): its store.
+/// * Another player filed in `identities.json` under that account **and** character (an `id:`
+///   target), or under that character alone (a `0x` key, when exactly one player has it): that
+///   player's store, opened beside the first, with the player it runs as.
+/// * Anyone else: with `D1_MP=1` refused (no player of this responder has that identity, so
+///   nobody is paid by mistake); with it off, the responder's own player, as before (one player
+///   per process: the open world keys characters by the identity's first eight bytes).
+pub fn target_store(t: &crate::rewards::remote::GrantTarget) -> anyhow::Result<(&'static Mutex<Store>, Option<Identity>)> {
+    let primary = global().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
+    let own = primary.lock().map_err(|_| anyhow::anyhow!("poisoned"))?.identity();
+    let dir = Config::from_env().map(|c| c.dir);
+    target_store_in(t, primary, own, dir.as_deref(), crate::mp::enabled(), &|id| match &dir {
+        Some(d) => open_other(d, id),
+        None => None,
+    })
+}
+
+/// [`target_store`] without the environment: `own` is `primary`'s identity, `dir` the store's
+/// folder, `open` opens another player's store.
+pub(crate) fn target_store_in<'a>(
+    t: &crate::rewards::remote::GrantTarget,
+    primary: &'a Mutex<Store>,
+    own: Identity,
+    dir: Option<&Path>,
+    strict: bool,
+    open: &dyn Fn(&Identity) -> Option<&'a Mutex<Store>>,
+) -> anyhow::Result<(&'a Mutex<Store>, Option<Identity>)> {
+    use crate::rewards::remote::GrantTarget;
+    let (account, character) = match t {
+        GrantTarget::Identity(b) => {
+            let m = d1_mp::identity::MemberIdentity::parse(b).ok_or_else(|| anyhow::anyhow!("the identity does not parse"))?;
+            (Some(m.account.0), m.character.0)
+        }
+        GrantTarget::Key(k) => (None, *k),
+    };
+    if character == own.character && account.is_none_or(|a| a == own.account) {
+        return Ok((primary, None));
+    }
+    let other = dir.and_then(|d| match account {
+        Some(a) => filed_identity(d, a, character),
+        None => filed_character(d, character),
+    });
+    match other {
+        Some(id) if id != own => match open(&id) {
+            Some(m) => Ok((m, Some(id))),
+            None => anyhow::bail!("player {:#x}'s record could not be opened", id.account),
+        },
+        _ if strict => anyhow::bail!(
+            "no player of this responder is account {} character {character:#018x} (D1_MP=1: refused, so nobody else is paid)",
+            account.map(|a| format!("{a:#018x}")).unwrap_or_else(|| "?".into())
+        ),
+        _ => Ok((primary, None)),
+    }
+}
+
+/// A `grant` for the player its identity names ([`target_store`]), run as that player, so its
+/// pushes go to that player's own push files and connection.
+fn grant_for_player(g: &crate::rewards::remote::GrantCommand) -> anyhow::Result<String> {
+    let (m, who) = target_store(&g.target)?;
+    crate::players::run_as(who, || run_grant(m, g))
+}
+
 fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyhow::Result<String> {
     use crate::rewards::remote;
     anyhow::ensure!(crate::rewards::enabled(), "D1_REWARDS is off: the grant is not applied");
@@ -1839,11 +2043,14 @@ fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyh
     if changed && vendor_on {
         // The vendor state serves the account and profile: it publishes the new ones (and writes
         // them back to the store through `note_vendor`).
+        let had_wallet = wallet.is_some();
         let (slots, instances) = match wallet {
             Some(w) => w,
             None => view(|s| (s.record.account.slots.clone(), s.record.account.slot_instances.clone())).unwrap_or_default(),
         };
-        crate::vendor::adopt_store_state(slots, instances, profile, items, &what);
+        if !crate::vendor::adopt_store_state(slots, instances, profile.clone(), items.clone(), &what) {
+            push_store_state(m, had_wallet, profile.is_some(), &items, &what)?;
+        }
     } else if changed {
         push_store_state(m, wallet.is_some(), profile.is_some(), &items, &what)?;
     }
@@ -1863,7 +2070,7 @@ fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyh
         "{} for {:#018x}{}: {} currency line(s), {} item(s) ({} delivered), rules {:?}{completion}",
         summary.line,
         summary.character,
-        if summary.retargeted { " (the grant named another key; one player per responder: applied to it)" } else { "" },
+        if summary.retargeted { " (the grant named another key; D1_MP is off, one player per responder: applied to it)" } else { "" },
         summary.currencies.len(),
         summary.items,
         summary.delivered.len(),
@@ -2669,6 +2876,29 @@ mod tests {
     }
 
     // ── identity ──
+
+    /// Stream O3: each player has its own push files beside the knob's, and a record is opened
+    /// only for a player `identities.json` files under that exact identity.
+    #[test]
+    fn each_player_has_its_own_push_files_and_record() {
+        let base = Path::new("run").join("profile-push.bin");
+        assert_eq!(player_file(&base, None), base, "the responder's own player: the knob's file");
+        assert_eq!(player_file(&base, Some(0xD101_0000_0000_1001)), Path::new("run").join("profile-push-d101000000001001.bin"));
+        assert_eq!(player_file(&base, Some(1)).with_extension("item"), Path::new("run").join("profile-push-0000000000000001.item"));
+        let d = tempdir("o3-filed");
+        let first = Identity::from_env();
+        identity_for(&d.0, "local", first).unwrap();
+        let b = identity_for(&d.0, "friend", first).unwrap();
+        assert_eq!(filed_player(&d.0, &b).as_deref(), Some("friend"));
+        assert_eq!(filed_identity(&d.0, b.account, b.character), Some(b));
+        assert_eq!(filed_identity(&d.0, first.account, b.character), None, "account and character must both match");
+        assert_eq!(filed_character(&d.0, b.character), Some(b));
+        assert_eq!(filed_player(&d.0, &Identity { profile: 1, ..b }), None, "the whole identity");
+        let m = open_other(&d.0, &b).expect("a filed player's record opens");
+        assert_eq!(m.lock().unwrap().record.player, "friend");
+        assert!(std::ptr::eq(m, open_other(&d.0, &b).unwrap()), "opened once");
+        assert!(open_other(&d.0, &Identity::allocated(77)).is_none(), "never for an unfiled identity");
+    }
 
     #[test]
     fn identities_are_stable_and_never_reused() {

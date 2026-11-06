@@ -77,6 +77,7 @@ mod tables;
 mod vendors;
 mod social_hooks;
 mod mp; // MP(H): multiplayer services, D1_MP=1
+mod players; // stream O3: which player each connection and op is for (D1_MP=1)
 mod public_feed; // stream O2: the activity host's public instances for the matchmaker
 // Stream M (rewards and growth): services behind `D1_REWARDS` (off by default), called by the
 // activity streams through `rewards::grant_activity_rewards`. The only hook here is its knobs.
@@ -1127,6 +1128,11 @@ fn serves_no_characters(chr: u64) -> bool {
 /// The character SOID to serve: the one the operator pinned, or - once we have answered a **501** -
 /// the one we minted for the Guardian the client just created.
 fn effective_character_soid(chr: u64) -> u64 {
+    // Stream O3: another player's character is its own identity's; the created-character latch
+    // is the responder's own player's.
+    if players::current_is_other() {
+        return chr;
+    }
     let created = CREATED_CHARACTER_SOID.load(std::sync::atomic::Ordering::Relaxed);
     if created != 0 { created } else { chr }
 }
@@ -2367,7 +2373,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_STORE_PLAYER", "local", "💾 the player name the identity is filed under (the first player gets the D1_*_SOID knobs)"),
     ("D1_STORE_SAVE_SECS", "300", "💾 the periodic save (important events save at once)"),
     ("D1_STORE_CONTROL", "<unset>", "💾 a command file the store polls: activity N | xp N | complete N | checkpoint N STEP | checkpoint N - | lockout N ENCOUNTER week=W | grant CHARACTER HASH OUTCOME (D1_REWARDS=1) | reputation NAME N | unlock +N -N; the store writes <file>.state.json back"),
-    ("D1_REFUND_WINDOW", "<1800; with D1_STORE=1 the manifest's>", "seconds a vendor purchase stays refundable (forces it for every vendor; D1_STORE=1 alone gives Eververse/Silver Dust 900, others none)"),
+    ("D1_REFUND_WINDOW", "<1800; with D1_STORE=1 the manifest's>", "seconds a refundable vendor purchase stays refundable (the length only: with D1_STORE=1 the manifest says which, Eververse/Silver Dust items, 900 by default; with it off every purchase; the same with D1_SOCIAL on and off)"),
     ("D1_REFUND_POLICIES", "<repo table>", "override ps4/fixtures/56578/progression/refund-policies.tsv (which vendors refund, and for how long)"),
     ("D1_PROGRESSION_CURVES", "<repo table>", "override ps4/fixtures/56578/progression/progression-curves.tsv (XP and rank curves)"),
     ("D1_VENDOR_RESETS", "<repo table>", "override ps4/fixtures/56578/progression/vendor-resets.tsv (vendor reset schedules)"),
@@ -2891,7 +2897,7 @@ async fn main() -> Result<()> {
         }
     }
     let cfg = Cfg { npid: args.npid.clone(), account_id: args.account_id };
-    mp::init(&args.npid, env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001)); // MP(H)
+    mp::init(&args.npid, env_soid_raw("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001)); // MP(H)
 
     let mut tasks = Vec::new();
 
@@ -2928,7 +2934,8 @@ async fn main() -> Result<()> {
                                 // and only connection 0 owns the QueueZ character/family delivery.
                                 let conn_index = BAP_CONNECTIONS.fetch_add(1, Ordering::SeqCst);
                                 warn!("=== BAP TCP CONNECT #{conn_index} from {peer} ===");
-                                tokio::spawn(async move {
+                                // Stream O3: the task carries its connection, so every id it serves is its player's (players.rs).
+                                tokio::spawn(players::CONNECTION.scope(conn_index, async move {
                                     let _mp_guard = mp::ConnGuard(conn_index); // MP(H): sign-off on close
                                     use tokio::io::AsyncReadExt;
                                     // HOLD THE CONNECTION OPEN. The first version read once and
@@ -3151,6 +3158,7 @@ async fn main() -> Result<()> {
                                                             let inner_type = inner.as_ref().ok().map(|i| i.msg_type);
                                                             if inner_type == Some(d1_bap::TYPE_QUEUEZ_REGISTER_REQUEST) {
                                                                 let prev = PRIMARY_BAP_CONNECTION.swap(conn_index, Ordering::SeqCst);
+                                                                players::note_register(conn_index); // stream O3: each player's own primary
                                                                 if prev != conn_index {
                                                                     warn!("    ⭐ BAP connection #{conn_index} sent queuez_register - it is now the PRIMARY (was #{prev})");
                                                                 }
@@ -4618,7 +4626,7 @@ async fn main() -> Result<()> {
                                                             // baseline by then, i.e. the descriptor is at state 3.
                                                             let f4mode = family4_invalidate_mode();
                                                             if f4mode != Family4Invalidate::Off
-                                                                && conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
+                                                                && players::is_primary(conn_index, PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst))
                                                                 && !family4_invalidated
                                                                 && inner_type == Some(d1_bap::TYPE_ECHO_REQUEST)
                                                             {
@@ -4676,7 +4684,7 @@ async fn main() -> Result<()> {
                                                             // reply went out before this echo), hand the claimed item over
                                                             // as a family-4 delta carrying its 4/3 inventory element.
                                                             if !loot_grants_due.is_empty()
-                                                                && conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
+                                                                && players::is_primary(conn_index, PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst))
                                                                 && inner_type == Some(d1_bap::TYPE_ECHO_REQUEST)
                                                             {
                                                                 if family4_version.is_none() {
@@ -4737,11 +4745,11 @@ async fn main() -> Result<()> {
                                                             // The activity completion is a profile change: the client
                                                             // announces it when profile +0x2c38 (the completed flag of field
                                                             // [6], struct 0x808017b9 at +0x2c20) goes from 0 to 1.
-                                                            if conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
+                                                            if players::is_primary(conn_index, PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst))
                                                                 && inner_type == Some(d1_bap::TYPE_ECHO_REQUEST)
                                                                 && family4_version.is_some()
                                                             {
-                                                                if let Some(path) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(std::path::PathBuf::from) {
+                                                                if let Some(path) = player_store::profile_push_file() { // stream O3: this player's own file
                                                                     if let Ok(payload) = std::fs::read(&path) {
                                                                         let _ = std::fs::rename(&path, path.with_extension("sent"));
                                                                         vendor::note_profile_pushed(payload.clone());
@@ -4785,7 +4793,7 @@ async fn main() -> Result<()> {
                                                                 }
                                                                 // `D1_ACCOUNT_PUSH_FILE=<path>`: the same for the ACCOUNT object
                                                                 // (a client-encoded 0x80801803 payload), e.g. changed currencies.
-                                                                if let Some(path) = std::env::var_os("D1_ACCOUNT_PUSH_FILE").map(std::path::PathBuf::from) {
+                                                                if let Some(path) = player_store::account_push_file() { // stream O3: this player's own file
                                                                     if let Ok(payload) = std::fs::read(&path) {
                                                                         let _ = std::fs::rename(&path, path.with_extension("sent"));
                                                                         let version = family4_version.unwrap_or(0).wrapping_add(1);
@@ -4812,7 +4820,7 @@ async fn main() -> Result<()> {
                                                             }
 
                                                             if want_push
-                                                                && conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
+                                                                && players::is_primary(conn_index, PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst))
                                                                 && !pushed_character
                                                                 && inner_type == trigger
                                                             {
@@ -5045,7 +5053,7 @@ async fn main() -> Result<()> {
                                             Ok(Err(e)) => { warn!("    BAP TCP read error: {e}"); return }
                                         }
                                     }
-                                });
+                                }));
                             }
                             Err(e) => { warn!("bap tcp accept: {e}"); return }
                         }
@@ -5445,7 +5453,16 @@ mod tests {
 ///
 /// SOIDs must be **stable across runs** - the client checks the object-header SOID against the one
 /// serialized inside the RSAT payload, and downstream state is keyed on them.
+///
+/// Stream O3: with `D1_MP=1` the identity knobs (`D1_ACCOUNT_SOID`, `D1_CHARACTER_SOID`,
+/// `D1_PROFILE_SOID`) answer for the connection's own player (`players::soid_for`), so each
+/// connection is served its own ids. [`env_soid_raw`] reads the knob itself.
 fn env_soid(var: &str, default: u64) -> u64 {
+    players::soid_for(var).unwrap_or_else(|| env_soid_raw(var, default))
+}
+
+/// [`env_soid`] without the connection's player: the knob, or `default`.
+fn env_soid_raw(var: &str, default: u64) -> u64 {
     std::env::var(var)
         .ok()
         .and_then(|v| {
