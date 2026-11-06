@@ -344,15 +344,15 @@ sources, so the source counts overlap.
 | | Rows |
 |---|---:|
 | Built: yes | 30 |
-| Built: partial | 101 |
-| Built: no | 15 |
+| Built: partial | 102 |
+| Built: no | 14 |
 | Source names verified game data | 77 |
 | Source names a live capture | 32 |
 | Source names community data | 19 |
-| Source names a labelled placeholder | 32 |
+| Source names a labelled placeholder | 34 |
 | Tested: a baseline native run (before the build-out; some of them failures) | 35 |
-| Tested: unit only | 86 |
-| Tested: none | 25 |
+| Tested: unit only | 87 |
+| Tested: none | 24 |
 | Tested natively since the build-out | **0** |
 
 Missions: 43 story, cinematic and quest activities have a world, 30 of the scripts are written,
