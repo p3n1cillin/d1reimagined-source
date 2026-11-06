@@ -128,7 +128,7 @@ The placeholders' values are all in `rewards/placeholders.rs`. A test checks thi
 | `grid.prerequisites` | Prerequisites first; exclusive nodes exclude | Manifest fields | community |
 | `grid.auto_unlock` | `autoUnlocks` nodes activate when available | Manifest field | community |
 | `grid.random_roll` | Random nodes pick a step uniformly | Needs evidence | placeholder |
-| `grid.node_cost` | Nodes cost nothing | Needs evidence (the material sets aren't in DIM's manifest) | placeholder |
+| `grid.node_cost` | A weapon or armour node costs 500 Glimmer and 10 Weapon Parts (armour: Armor Materials); subclass nodes are free | One live 801 (#328) contradicted "free"; its third material is unnamed. The node steps' requirement lists are in the client's content (step `+0x98`), not exported ([investment ops](ps4-56578-investment-ops-2026-11-06.md)) | placeholder |
 | `grid.xp_share` | Each equipped grid item gains the full XP | Community says they all gain XP; the split needs evidence | placeholder |
 | `item.element_fields` | `0x80801732`: SOID `+0`, level `+0x18`, content index `+0x24`, XP `+0x38`, progression `+0x44`, grid `+0x58`, stats `+0x98` | Client ([items-and-gear §2](../ps4/design/items-and-gear.md)) | verified |
 | `item.node_state` | Node states `+0x5A` and step selection `+0x7E` | Not decoded, not written | placeholder |

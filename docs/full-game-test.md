@@ -170,6 +170,7 @@ as working.
 |---|---|---|---|
 | Player store (#307) | responder | `💾 player store ON: <dir> (player local, r<N>, schema 1, saved every 300s)`, then `💾 player store r<N>: <what>` on each important event. `⛔⛔ player store ... NOT USED` means it fell back to the fixtures. | A purchase, equip or dismantle in run 1 is still there after signing on in run 2 with the same store. `account-<soid>.json` changes in the store folder, and its `history` names the events. |
 | Social and vendors (#309) | responder | `⭐ SOCIAL (<id>) decoded: <op>` for each social request (901, 902, 903, 405, ...) | A Tower purchase, a vault move and a dismantle are applied and pushed back, each with its `VendorItemStatus`/`TransferStatuses` result, and the client shows them. |
+| Investment requests (stream P) | responder | `⭐ INVESTMENT <id>: <request>: <what>` for each 402 bounty turn-in, 406, 801, 802, 804, 904 and 1801-1803, then `⭐⭐ INVESTMENT <id> PUSH: family-4 delta version <v> (...)` before the reply; a refusal logs `REFUSED (<why>)` and pushes nothing. Needs `D1_SOCIAL=1` (402, 406, 904) or `D1_REWARDS=1` (the rest) and `D1_STORE=1` | In the Tower: lock and unlock a weapon (the lock icon stays after signing on again); upgrade a weapon node (500 Glimmer and 10 Weapon Parts go, the perk is active); swap between two unlocked perks (free); infuse a higher Legendary into a lower one (the source is gone, the target rises); claim a faction or Vanguard package at its vendor after a rank-up (500 Glimmer and a gear item in the inventory, 4 Motes for a faction; nothing in the Postmaster); turn in a completed bounty (it leaves, the equipped weapons gain XP). Each reply arrives after its push, with no `Failed to decode` line. [Note](../notes/ps4-56578-investment-ops-2026-11-06.md) |
 | Rewards (#311) | activity host, responder | Host: `⭐ rewards: grants go to the player store through <store-control.txt>`, then `⭐ rewards: forwarded to the store: grant ...` when an activity ends. Responder: `💾 control "grant ...": ... for 0x...: N currency line(s), ...`; `store-control.state.json` lists the grant. | A completed scripted activity's grant reaches the store (`rewards.grants` in the character's attributes) and a changed wallet is pushed. Only Glimmer has a content index ([integration note](../notes/ps4-56578-integration-wiring-2026-11-05.md)). |
 | Multiplayer (#312) | responder, activity host | `⭐ D1_MP=1: multiplayer services on (...)`; with the store, `⭐ MP: accounts resolve through the player store's identities.json`; per connection, `⭐ MP: connection #N is '<id>', <account>, in <fireteam>`; on a 42 search, `⭐ MP matchmaking (connection #N): ...`. In the host: `⭐ shared instances on (D1_AH_SHARED_INSTANCES): one membership per named host`. | With one client: it signs on as its own account in a fireteam of one, and its 42 searches get answers. Fireteams and shared instances need a second client. |
 | Activity framework (#313) | activity host | `activity framework: <coverage summary>`. Any `activity framework: ...` warning is a data problem. `... not loaded: ...` means it failed. | The summary line has the expected counts. A strike run would drive `ActivityRun` from the host's slice and trigger reports; no run has launched one. |
@@ -243,9 +244,10 @@ Collected from each stream's note. Each note has the full list.
   - Every dismantle amount (`D1_DISMANTLE_PLACEHOLDER`).
   - 902 read as "take back".
   - The Lost Items bucket.
-  - The infusion rule and its message.
-  - The bounty turn-in message.
-  - The rank-up package flow.
+  - Infusion's mutation (804 is served; its push is by analogy, never seen live).
+  - Node costs (one live 801 stands in for every weapon and armour node) and the node-state bytes.
+  - 904's interaction selectors, the Gunsmith turn-in's consumed weapon, the Shipwright's freebie.
+  - Record Book ordinals (1801-1803 are remembered, not granted).
   - The Vault's and Postmaster's vendor rows.
   - The client's stock message (1401 is the candidate).
   - 903, 902, 405 and 404 have never been seen on the wire.
