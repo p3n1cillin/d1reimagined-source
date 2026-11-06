@@ -234,7 +234,7 @@ if (-not $DryRun) {
     if ($Only -ne 'emulator' -and $running.Count) { Write-Error "d1-full-game: a lab run is active (process ids $($running.Id -join ', ')); end it first"; exit 2 }
     if ($Only -eq 'emulator' -and @($running | Where-Object ProcessName -eq 'shadPS4').Count) { Write-Error 'd1-full-game: an emulator is already running'; exit 2 }
     if ($problems.Count) { $problems | ForEach-Object { Write-Error "d1-full-game: $_" -ErrorAction Continue }; exit 2 }
-    New-Item -ItemType Directory -Force $loc.BIN | Out-Null
+    New-Item -ItemType Directory -Force $loc.RUN, $loc.BIN | Out-Null
     Say "d1-full-game $Name ($Only), profile $profilePath"
     if ($wantBuild) {
         if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) { Say 'cargo is not on PATH'; exit 3 }
