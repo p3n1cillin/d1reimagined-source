@@ -151,6 +151,11 @@ pub struct Character {
     pub current: Option<Current>,
     #[serde(default)]
     pub completions: BTreeMap<u16, Completion>,
+    /// The revision each activity last started at (field [6] named it, not completed): a
+    /// completion at or after it is this run's (run fg2j: one run's completion is never applied
+    /// twice).
+    #[serde(default)]
+    pub started: BTreeMap<u16, u64>,
     #[serde(default)]
     pub checkpoints: BTreeMap<u16, Checkpoint>,
     /// Weekly loot lockouts: activity index -> encounter id -> the reset week its loot was last paid
@@ -791,28 +796,12 @@ impl Store {
         if let Some((activity, completed)) = new.activity {
             if !completed && was != Some((activity, false)) {
                 self.chr_mut().current = Some(Current { activity, xp_at_start: new.xp });
+                self.chr_mut().started.insert(activity, revision);
                 events.push(format!("activity {activity} started at {} XP", new.xp));
             }
             if completed && was != Some((activity, true)) {
-                let entry = self.chr_mut().completions.entry(activity).or_default();
-                entry.count += 1;
-                entry.xp_after = new.xp;
-                entry.revision = revision;
                 self.chr_mut().current = None;
-                events.push(format!("activity {activity} completed ({} XP, level {})", new.xp, new.level));
-                if let Some(r) = self.rewards.0.get(&activity).cloned() {
-                    match self.change_unlock_flags(&r.unlock_add, &r.unlock_clear) {
-                        Ok(w) if !w.is_empty() => events.push(w),
-                        Ok(_) => {}
-                        Err(e) => events.push(format!("⛔ {e}")),
-                    }
-                    for (name, amount) in &r.reputation {
-                        events.push(self.add_reputation(name, *amount));
-                    }
-                    if r.status != "sourced" {
-                        events.push(format!("reward row {activity} is a {}: {}", r.status, r.source));
-                    }
-                }
+                events.extend(self.record_completion(activity, new.xp, new.level, revision));
             }
         }
         match self.sync_reputation() {
@@ -821,6 +810,45 @@ impl Store {
             Err(e) => events.push(format!("⛔ reputation not folded into the profile: {e}")),
         }
         Ok(events)
+    }
+
+    /// One completion of `activity` in the record: its count, its reward row's unlock flags and
+    /// reputation. Called when field [6] shows it completed, and for a completion aside
+    /// ([`Command::CompleteAside`]), which leaves field [6] alone.
+    fn record_completion(&mut self, activity: u16, xp: u64, level: u32, revision: u64) -> Vec<String> {
+        let mut events = Vec::new();
+        let entry = self.chr_mut().completions.entry(activity).or_default();
+        entry.count += 1;
+        entry.xp_after = xp;
+        entry.revision = revision;
+        events.push(format!("activity {activity} completed ({xp} XP, level {level})"));
+        if let Some(r) = self.rewards.0.get(&activity).cloned() {
+            match self.change_unlock_flags(&r.unlock_add, &r.unlock_clear) {
+                Ok(w) if !w.is_empty() => events.push(w),
+                Ok(_) => {}
+                Err(e) => events.push(format!("⛔ {e}")),
+            }
+            for (name, amount) in &r.reputation {
+                events.push(self.add_reputation(name, *amount));
+            }
+            if r.status != "sourced" {
+                events.push(format!("reward row {activity} is a {}: {}", r.status, r.source));
+            }
+        }
+        events
+    }
+
+    /// Whether `activity` was completed in its current run: a completion recorded at or after the
+    /// revision it last started at (any completion, when it never started in this record). Run
+    /// fg2j: the one-slot field [6] check let the grant complete 165 a second time, with its XP,
+    /// once the stand-in's completion of 164 had replaced 165's record.
+    pub fn completed_this_run(&self, activity: u16) -> bool {
+        let c = self.chr();
+        match (c.completions.get(&activity), c.started.get(&activity)) {
+            (Some(done), Some(start)) => done.revision >= *start,
+            (Some(_), None) => true,
+            (None, _) => false,
+        }
     }
 
     /// Fold the store's reputation into the decoded profile through each curve's exported runtime
@@ -1357,6 +1385,19 @@ fn global() -> Option<&'static Mutex<Store>> {
                 tracing::warn!("      💾 player store ON: {} (player {}, r{}, schema {}, saved every {:?})",
                                s.path().map(|p| p.display().to_string()).unwrap_or_default(), cfg.player,
                                s.record.revision, s.record.schema, cfg.save_every);
+                // ⚠ LAB ONLY: D1_STORE_SEED_COMPLETED (run fg2j). Each listed activity the record
+                // has no completion of is completed aside in the profile the client gets at
+                // sign-on, so the client launches the next story activity itself (A Guardian Rises
+                // done: the reveal, 165, launched for real rather than through a remap).
+                for index in seed_completed_from(std::env::var("D1_STORE_SEED_COMPLETED").ok().as_deref()) {
+                    if s.chr().completions.contains_key(&index) {
+                        continue;
+                    }
+                    match seed_completion(&mut s, index) {
+                        Ok(w) => tracing::warn!("      ⚠ D1_STORE_SEED_COMPLETED (lab only): {w}"),
+                        Err(e) => tracing::warn!("      ⛔ D1_STORE_SEED_COMPLETED: activity {index} not completed ({e:#})"),
+                    }
+                }
                 // Reputation granted while the profile was undecoded, or a record from before the
                 // profile carried it, is folded in first; then a changed object is re-encoded.
                 if let Err(e) = s.sync_reputation() {
@@ -1388,6 +1429,42 @@ fn global() -> Option<&'static Mutex<Store>> {
             }
         }
     }).as_ref()
+}
+
+/// `D1_STORE_SEED_COMPLETED=164[,…]`: the activity indices to seed completed (lab only).
+pub fn seed_completed_from(value: Option<&str>) -> Vec<u16> {
+    value.unwrap_or("").split(',').filter_map(|v| v.trim().parse().ok()).collect()
+}
+
+/// Complete `index` aside in `s`'s served profile (its subs and XP; field [6] left as seeded),
+/// re-encoded and adopted, so the next sign-on serves it, and the record notes the completion.
+fn seed_completion(s: &mut Store, index: u16) -> anyhow::Result<String> {
+    let oracle = crate::vendor::oracle_path();
+    let mut obj = match (s.chr().profile_object.clone(), s.chr().profile.clone()) {
+        (Some(o), _) => o,
+        (None, Some(p)) => crate::vendor::decode_object(&oracle, "0x80801743", &p, "store-seed-in")?,
+        (None, None) => anyhow::bail!("no served profile to edit"),
+    };
+    let what = apply_seed_completion(s, &mut obj, index)?;
+    let (encoded, _) = crate::vendor::encode(&oracle, "0x80801743", &obj, &crate::vendor::unique_name("store-seed-out"))?;
+    s.set_profile(&encoded, "seed-completed");
+    for e in s.adopt_object(&encoded, obj)? {
+        tracing::warn!("      💾 {e}");
+    }
+    s.save(&format!("seed: {what}"))?;
+    Ok(what)
+}
+
+/// The edit and the record of [`seed_completion`], without the codec: `obj` gains the completion,
+/// the record notes it.
+pub(crate) fn apply_seed_completion(s: &mut Store, obj: &mut [u8], index: u16) -> anyhow::Result<String> {
+    let what = edit_profile(obj, &Command::CompleteAside(index), s)?;
+    let summary = summarize(obj, &s.curves);
+    let revision = s.record.revision + 1;
+    for e in s.record_completion(index, summary.xp, summary.level, revision) {
+        tracing::warn!("      💾 {e}");
+    }
+    Ok(format!("activity {index} seeded completed: {what}"))
 }
 
 // ── several players (stream O3) ─────────────────────────────────────────────────────────────
@@ -1783,6 +1860,11 @@ pub enum Command {
     Xp(u32),
     /// The activity completes: field [6], the rewards table's subs and XP.
     Complete(u16),
+    /// The activity completes aside: its subs and XP, with field [6] left on the current activity
+    /// (the lab's remap stand-in, `D1_STORE_SEED_COMPLETED`).
+    CompleteAside(u16),
+    /// No current activity: field [6] = `ffff` (the live reset after a cinematic's 8).
+    ClearActivity,
     Checkpoint(u16, String),
     /// `checkpoint N -` or `clear-checkpoint N`: a full clear spends the checkpoint.
     ClearCheckpoint(u16),
@@ -1794,9 +1876,16 @@ pub enum Command {
     Grant(crate::rewards::remote::GrantCommand),
     /// `handoff CHARACTER ACTIVITY_INDEX [from=HASH] [hash=HASH]` (stream O2, `rewards::remote`).
     HandOff(crate::rewards::remote::HandOffCommand),
-    /// `completed CHARACTER ACTIVITY_HASH`: the activity host's scripts completed the activity
-    /// (`activity_complete`); `complete` for the player the target names, now (run fg2h).
-    Completed(crate::rewards::remote::GrantTarget, u32),
+    /// `completed CHARACTER ACTIVITY_HASH [aside]`: the activity host's scripts completed the
+    /// activity (`activity_complete`); `complete` for the player the target names, now (run fg2h).
+    /// `aside` (the lab's remap stand-in, run fg2i) keeps field [6] on the served activity.
+    Completed(crate::rewards::remote::GrantTarget, u32, bool),
+    /// `started CHARACTER ACTIVITY_HASH`: the activity host served the activity at the join; field
+    /// [6] names it, completed 0, as the live host's profile push at the join did (run fg2j).
+    Started(crate::rewards::remote::GrantTarget, u32),
+    /// `ended CHARACTER ACTIVITY_HASH`: a cinematic-only activity ended (its 8); field [6] = `ffff`
+    /// if it still names that activity, pushed with the reply to the client's next 104 (run fg2j).
+    Ended(crate::rewards::remote::GrantTarget, u32),
 }
 
 pub fn parse_command(line: &str) -> anyhow::Result<Command> {
@@ -1819,12 +1908,20 @@ pub fn parse_command(line: &str) -> anyhow::Result<Command> {
         }
         Some("grant") => Command::Grant(crate::rewards::remote::parse(&f[1..]).map_err(|e| anyhow::anyhow!("{line:?}: {e:#}"))?),
         Some("handoff") => Command::HandOff(crate::rewards::remote::parse_handoff(&f[1..]).map_err(|e| anyhow::anyhow!("{line:?}: {e:#}"))?),
-        Some("completed") => {
-            let [_, who, hash] = f.as_slice() else { anyhow::bail!("{line:?}: completed takes CHARACTER ACTIVITY_HASH") };
+        Some(word @ ("completed" | "started" | "ended")) => {
+            let (who, hash, aside) = match (word, f.as_slice()) {
+                (_, [_, who, hash]) => (who, hash, false),
+                ("completed", [_, who, hash, "aside"]) => (who, hash, true),
+                _ => anyhow::bail!("{line:?}: {word} takes CHARACTER ACTIVITY_HASH{}", if word == "completed" { " [aside]" } else { "" }),
+            };
             let target = crate::rewards::remote::parse_target(who).map_err(|e| anyhow::anyhow!("{line:?}: {e:#}"))?;
             let hash = hash.strip_prefix("0x").map_or_else(|| hash.parse::<u32>().ok(), |h| u32::from_str_radix(h, 16).ok())
                 .ok_or_else(|| anyhow::anyhow!("{line:?}: {hash:?} is not a 32-bit hash"))?;
-            Command::Completed(target, hash)
+            match word {
+                "completed" => Command::Completed(target, hash, aside),
+                "started" => Command::Started(target, hash),
+                _ => Command::Ended(target, hash),
+            }
         }
         Some("reputation") => Command::Reputation(f.get(1).ok_or_else(|| anyhow::anyhow!("{line:?}: no progression"))?.to_string(), num(2)?),
         Some("unlock") => {
@@ -1838,7 +1935,7 @@ pub fn parse_command(line: &str) -> anyhow::Result<Command> {
             }
             Command::Unlock { add, clear }
         }
-        _ => anyhow::bail!("{line:?}: not a store command (activity, xp, complete, checkpoint, clear-checkpoint, lockout, grant, handoff, completed, reputation, unlock)"),
+        _ => anyhow::bail!("{line:?}: not a store command (activity, xp, complete, checkpoint, clear-checkpoint, lockout, grant, handoff, completed, started, ended, reputation, unlock)"),
     })
 }
 
@@ -1858,6 +1955,8 @@ pub fn edit_profile(obj: &mut [u8], cmd: &Command, store: &Store) -> anyhow::Res
             }
             progression::complete_activity(obj, &store.curves, *a, reward, start).map(|r| r.0)
         }
+        Command::CompleteAside(a) => progression::complete_aside(obj, &store.curves, *a, store.rewards.0.get(a)).map(|r| r.0),
+        Command::ClearActivity => progression::clear_activity(obj),
         _ => anyhow::bail!("{cmd:?} does not edit the profile"),
     }
 }
@@ -1888,9 +1987,32 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
             let (m, who) = target_store(&h.target)?;
             return crate::players::run_as(who, || run_handoff(m, h));
         }
-        Command::Completed(target, hash) => {
+        Command::Completed(target, hash, aside) => {
             let (m, who) = target_store(target)?;
-            return crate::players::run_as(who, || run_completed(m, *hash));
+            return crate::players::run_as(who, || run_completed(m, *hash, *aside));
+        }
+        Command::Started(target, hash) => {
+            let (m, who) = target_store(target)?;
+            let index = activity_index_of(*hash).ok_or_else(|| anyhow::anyhow!("activity {hash:#010x} is not in the activity table"))?;
+            return crate::players::run_as(who, || {
+                let shown = m.lock().ok().and_then(|s| s.chr().summary.as_ref().and_then(|x| x.activity));
+                if shown == Some((index, false)) {
+                    return Ok(format!("activity {index} ({hash:#010x}): the profile already shows it started"));
+                }
+                run_command(Command::Activity(index)).map(|w| format!("activity {index} ({hash:#010x}) served at the join: {w}"))
+            });
+        }
+        Command::Ended(target, hash) => {
+            let (m, who) = target_store(target)?;
+            let index = activity_index_of(*hash).ok_or_else(|| anyhow::anyhow!("activity {hash:#010x} is not in the activity table"))?;
+            return crate::players::run_as(who, || {
+                let shown = m.lock().ok().and_then(|s| s.chr().summary.as_ref().and_then(|x| x.activity));
+                if shown.map(|s| s.0) != Some(index) {
+                    return Ok(format!("activity {index} ended; field [6] names {shown:?}, not it: left"));
+                }
+                hold_push_for_104();
+                run_command(Command::ClearActivity).map(|w| format!("activity {index} ({hash:#010x}) ended: {w}; pushed with the reply to the client's 104"))
+            });
         }
         Command::Reputation(name, n) => {
             let (w, push) = {
@@ -2084,8 +2206,9 @@ fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyh
     // unlock flags, reputation). The manifest's XP lines stay out of the grant
     // (`Adapter::xp_from_manifest` is off), so XP is paid once, by the table.
     let completion = match completion_index(g) {
-        // Run fg2h: recorded already at activity_complete (`completed`): not twice.
-        Some(index) if shows_completed(m, index) => format!("; store completion of {index}: already recorded"),
+        // Run fg2h: recorded already at activity_complete (`completed`): not twice (run fg2j: per
+        // activity, not by the one field [6] record).
+        Some(index) if completed_this_run(m, index) => format!("; store completion of {index}: already recorded"),
         Some(index) => match run_command(Command::Complete(index)) {
             Ok(w) => format!("; store completion of {index}: {w}"),
             Err(e) => format!("; store completion of {index} NOT applied: {e:#}"),
@@ -2199,21 +2322,50 @@ pub fn activity_index_of(hash: u32) -> Option<u16> {
     crate::tables::tables().activities.values().find(|a| a.hash == hash).map(|a| a.index)
 }
 
-/// Whether the store's profile already shows `index` completed (field [6]).
-fn shows_completed(m: &Mutex<Store>, index: u16) -> bool {
-    m.lock().ok().and_then(|s| s.chr().summary.as_ref().and_then(|x| x.activity)) == Some((index, true))
-}
-
 /// A `completed` from the activity host (run fg2h): the scripts' `activity_complete`, recorded at
 /// once with the same edit as `complete N` (field [6] completed, the rewards table's subs, XP) and
 /// pushed, so the client holds the completion before the activity ends. The grant at the results
 /// then finds it done and does not complete it again.
-fn run_completed(m: &Mutex<Store>, hash: u32) -> anyhow::Result<String> {
+fn run_completed(m: &Mutex<Store>, hash: u32, aside: bool) -> anyhow::Result<String> {
     let index = activity_index_of(hash).ok_or_else(|| anyhow::anyhow!("activity {hash:#010x} is not in the activity table"))?;
-    if shows_completed(m, index) {
-        return Ok(format!("activity {index} ({hash:#010x}): the profile already shows it completed"));
+    if completed_this_run(m, index) {
+        return Ok(format!("activity {index} ({hash:#010x}): already completed in this run"));
+    }
+    if aside {
+        let w = run_command(Command::CompleteAside(index))?;
+        // Field [6] did not move, so the record notes the completion itself.
+        let events = {
+            let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+            let (xp, level) = s.chr().summary.as_ref().map_or((0, 1), |x| (x.xp, x.level));
+            let revision = s.record.revision + 1;
+            let e = s.record_completion(index, xp, level, revision);
+            s.save(&format!("activity {index} completed aside"))?;
+            e
+        };
+        for e in &events {
+            tracing::warn!("      💾 {e}");
+        }
+        return Ok(format!("activity {index} ({hash:#010x}) completed aside at activity_complete (lab stand-in): {w}"));
     }
     run_command(Command::Complete(index)).map(|w| format!("activity {index} ({hash:#010x}) completed at activity_complete: {w}"))
+}
+
+/// [`Store::completed_this_run`] on a locked store.
+fn completed_this_run(m: &Mutex<Store>, index: u16) -> bool {
+    m.lock().ok().is_some_and(|s| s.completed_this_run(index))
+}
+
+/// The next profile push goes with the reply to the client's 104 as well as on an echo (the live
+/// host's `ffff` reset came in the push answering 104; `main.rs` reads this).
+static PUSH_ON_104: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn hold_push_for_104() {
+    PUSH_ON_104.store(true, std::sync::atomic::Ordering::SeqCst);
+}
+
+/// Whether a profile push is waiting for the client's 104 (taken: true once).
+pub fn take_push_on_104() -> bool {
+    PUSH_ON_104.swap(false, std::sync::atomic::Ordering::SeqCst)
 }
 
 /// The file the store writes beside its control file, for the activity host to read back at an
@@ -3071,16 +3223,60 @@ mod tests {
         assert_eq!(completion_index(&g(0xDEAD_BEEF, GrantOutcome::Completed, "script")), None);
     }
 
+    /// Run fg2j: a completion is this run's when it comes at or after the activity's start; the
+    /// stand-in's completion aside never moves field [6]; the seed completes 164 aside, once.
+    #[test]
+    fn completions_are_per_activity_and_per_run() {
+        let mut s = Store::in_memory(Identity::from_env(), &Sources::default());
+        let mut obj = vec![0u8; progression::layout::OBJECT_BYTES];
+        // The join: field [6] names 165, completed 0.
+        edit_profile(&mut obj, &Command::Activity(165), &s).unwrap();
+        s.chr_mut().profile = Some(vec![1]);
+        s.adopt_object(&[1], obj.clone()).unwrap();
+        s.save("step 1").unwrap();
+        assert!(s.chr().started.contains_key(&165));
+        assert!(!s.completed_this_run(165));
+        // activity_complete: 165 completed.
+        edit_profile(&mut obj, &Command::Complete(165), &s).unwrap();
+        s.chr_mut().profile = Some(vec![2]);
+        s.adopt_object(&[2], obj.clone()).unwrap();
+        s.save("step 2").unwrap();
+        assert!(s.completed_this_run(165));
+        // The stand-in: 164 aside; field [6] stays 165 completed, so 165 stays this run's.
+        let w = apply_seed_completion(&mut s, &mut obj, 164).unwrap();
+        s.save("aside").unwrap();
+        assert!(w.contains("aside"), "{w}");
+        assert_eq!(progression::activity_record(&obj), Some((165, true)), "field [6] never moves to 164");
+        assert!(s.completed_this_run(164) && s.completed_this_run(165), "both recorded, neither to repeat");
+        assert_eq!(s.chr().completions[&165].count, 1);
+        assert_eq!(s.chr().completions[&164].count, 1);
+        // A later run of 165 starts again, and its completion is due again.
+        edit_profile(&mut obj, &Command::Activity(165), &s).unwrap();
+        s.chr_mut().profile = Some(vec![3]);
+        s.adopt_object(&[3], obj.clone()).unwrap();
+        s.save("step 3").unwrap();
+        assert!(!s.completed_this_run(165), "a new run");
+        // The end of a cinematic: field [6] = ffff, no current activity.
+        edit_profile(&mut obj, &Command::ClearActivity, &s).unwrap();
+        assert_eq!(progression::activity_record(&obj), None);
+        assert_eq!(seed_completed_from(Some("164, 165,x")), vec![164, 165]);
+        assert!(seed_completed_from(None).is_empty());
+    }
+
     /// Run fg2h: the activity host's `completed TARGET HASH` line (the scripts' activity_complete)
     /// parses, names its player as the grant does, and maps the reveal's hash to 165.
     #[test]
     fn a_completed_line_names_its_player_and_activity() {
         const FG2G: &str = "e0d55e272f90000098ac2c43570fceb201000000000000d101020000000000d1f7bd728e56f51b90";
-        let Command::Completed(target, hash) = parse_command(&format!("completed id:{FG2G} 0x6eaf0959")).unwrap() else { panic!() };
+        let Command::Completed(target, hash, false) = parse_command(&format!("completed id:{FG2G} 0x6eaf0959")).unwrap() else { panic!() };
         assert_eq!(hash, 0x6EAF_0959);
         assert_eq!(target.character(), Some(0xD100_0000_0000_0201), "the profile SOID, matched by named_by");
         assert_eq!(activity_index_of(hash), Some(165));
-        assert!(matches!(parse_command("completed 0xd100000000000101 0x6eaf0959").unwrap(), Command::Completed(_, 0x6EAF_0959)));
+        assert!(matches!(parse_command("completed 0xd100000000000101 0x6eaf0959").unwrap(), Command::Completed(_, 0x6EAF_0959, false)));
+        assert!(matches!(parse_command("completed 0xd100000000000101 0x6e0dae89 aside").unwrap(), Command::Completed(_, 0x6E0D_AE89, true)));
+        assert!(matches!(parse_command("started 0xd100000000000101 0x6eaf0959").unwrap(), Command::Started(_, 0x6EAF_0959)));
+        assert!(matches!(parse_command("ended 0xd100000000000101 0x6eaf0959").unwrap(), Command::Ended(_, 0x6EAF_0959)));
+        assert!(parse_command("started 0xd100000000000101 0x6eaf0959 aside").is_err(), "aside is for completed only");
         assert!(parse_command("completed 0x1").is_err());
         assert!(parse_command("completed 0x1 nothash").is_err());
         // The own player's store takes it (the identity's account and profile are its own).

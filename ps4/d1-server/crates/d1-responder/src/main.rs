@@ -2372,9 +2372,10 @@ const KNOBS: &[(&str, &str, &str)] = &[
     // ── the player store (notes/ps4-56578-player-store-2026-11-05.md) ──────────────────────────
     ("D1_STORE", "<unset>", "💾 1 = persist the account and character (seeded from the knobs above on first sign-on, then served from it). Unset = off, as before"),
     ("D1_STORE_DIR", "<%LOCALAPPDATA%/d1reimagined/player-store>", "💾 where the store keeps identities.json and account-<soid>.json (OUTSIDE the repo)"),
+    ("D1_STORE_SEED_COMPLETED", "<unset>", "⚠ LAB ONLY: activity indices (164,…) completed aside in the profile served at sign-on when the record has no completion of them, so the client launches the next story activity itself (run fg2j)"),
     ("D1_STORE_PLAYER", "local", "💾 the player name the identity is filed under (the first player gets the D1_*_SOID knobs)"),
     ("D1_STORE_SAVE_SECS", "300", "💾 the periodic save (important events save at once)"),
-    ("D1_STORE_CONTROL", "<unset>", "💾 a command file the store polls: activity N | xp N | complete N | checkpoint N STEP | checkpoint N - | lockout N ENCOUNTER week=W | grant CHARACTER HASH OUTCOME (D1_REWARDS=1) | handoff CHARACTER N | completed CHARACTER HASH | reputation NAME N | unlock +N -N; the store writes <file>.state.json back"),
+    ("D1_STORE_CONTROL", "<unset>", "💾 a command file the store polls: activity N | xp N | complete N | checkpoint N STEP | checkpoint N - | lockout N ENCOUNTER week=W | grant CHARACTER HASH OUTCOME (D1_REWARDS=1) | handoff CHARACTER N | completed CHARACTER HASH [aside] | started CHARACTER HASH | ended CHARACTER HASH | reputation NAME N | unlock +N -N; the store writes <file>.state.json back"),
     ("D1_REFUND_WINDOW", "<1800; with D1_STORE=1 the manifest's>", "seconds a refundable vendor purchase stays refundable (the length only: with D1_STORE=1 the manifest says which, Eververse/Silver Dust items, 900 by default; with it off every purchase; the same with D1_SOCIAL on and off)"),
     ("D1_REFUND_POLICIES", "<repo table>", "override ps4/fixtures/56578/progression/refund-policies.tsv (which vendors refund, and for how long)"),
     ("D1_PROGRESSION_CURVES", "<repo table>", "override ps4/fixtures/56578/progression/progression-curves.tsv (XP and rank curves)"),
@@ -4771,8 +4772,14 @@ async fn main() -> Result<()> {
                                                             // The activity completion is a profile change: the client
                                                             // announces it when profile +0x2c38 (the completed flag of field
                                                             // [6], struct 0x808017b9 at +0x2c20) goes from 0 to 1.
+                                                            // Run fg2j: a push the store holds for the client's 104 (the
+                                                            // `ffff` reset after a cinematic's 8) goes with that reply, as
+                                                            // the live host's did, not on the next echo.
+                                                            let investment_104 = inner_type == Some(d1_bap::TYPE_CLIENT_TO_WORLD_SERVER_REQUEST)
+                                                                && plain.len() >= 8 && u16::from_be_bytes([plain[6], plain[7]]) == 104
+                                                                && player_store::take_push_on_104();
                                                             if players::is_primary(conn_index, PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst))
-                                                                && inner_type == Some(d1_bap::TYPE_ECHO_REQUEST)
+                                                                && (inner_type == Some(d1_bap::TYPE_ECHO_REQUEST) || investment_104)
                                                                 && family4_version.is_some()
                                                             {
                                                                 if let Some(path) = player_store::profile_push_file() { // stream O3: this player's own file

@@ -1407,6 +1407,18 @@ impl ScriptBridge {
                     }
                 }
                 self.join(activity_index, now);
+                // Run fg2j: the served activity is the character's current one from the join, as
+                // the live host's profile push at the join named it (completed 0).
+                if let (Some(run), Some(id)) = (self.run.as_ref(), struct_image.get(JOIN_REQUEST_IDENTITY..JOIN_REQUEST_IDENTITY + IDENTITY_SIZE)) {
+                    if run.activity.index == activity_index && run.activity.hash != 0 {
+                        let (c, hash) = (CharacterRef { identity: id.to_vec() }, run.activity.hash);
+                        if let Ok(mut rewards) = self.config.rewards.lock() {
+                            if let Err(e) = rewards.activity_started(&c, hash) {
+                                tracing::warn!("start of {hash:#010x} for {c:?}: {e}");
+                            }
+                        }
+                    }
+                }
             }
             ClientMessage::Other { user_defined_type: 18, struct_image } => self.on_incidents(struct_image),
             ClientMessage::ClientAuthoritativeDataUpdate { struct_image } => {
@@ -1964,17 +1976,22 @@ impl ScriptBridge {
                 let stood_in = self.remapped_launch.filter(|h| *h != 0 && *h != run.activity.hash);
                 if let Some(h) = stood_in {
                     tracing::warn!(
-                        "⚠ script bridge: the remap stood in for {h:#010x} (D1_AH_ACTIVITY_REMAP): completing it too \
-                         (lab only; the grant stays {}'s)",
+                        "⚠ script bridge: the remap stood in for {h:#010x} (D1_AH_ACTIVITY_REMAP): completing it too, \
+                         aside (lab only; field [6] and the grant stay {}'s)",
                         run.activity.activity
                     );
                 }
-                let hashes: Vec<u32> = [run.activity.hash].into_iter().chain(stood_in).filter(|h| *h != 0).collect();
                 if let Ok(mut rewards) = self.config.rewards.lock() {
                     for c in &self.players {
-                        for h in &hashes {
-                            if let Err(e) = rewards.activity_completed(c, *h) {
-                                tracing::warn!("completion of {h:#010x} for {c:?}: {e}");
+                        if run.activity.hash != 0 {
+                            if let Err(e) = rewards.activity_completed(c, run.activity.hash) {
+                                tracing::warn!("completion of {:#010x} for {c:?}: {e}", run.activity.hash);
+                            }
+                        }
+                        // Aside (run fg2j): the profile's current activity stays the served one.
+                        if let Some(h) = stood_in {
+                            if let Err(e) = rewards.activity_completed_aside(c, h) {
+                                tracing::warn!("completion aside of {h:#010x} for {c:?}: {e}");
                             }
                         }
                     }
@@ -2020,6 +2037,17 @@ impl ScriptBridge {
                 // Granted at the results (6) already, unless the run ended without them.
                 let mut run = self.run.take().expect("checked");
                 self.reward(&mut run, outcome);
+                // Run fg2j: a cinematic-only activity's 8 ends it for the client; the live host
+                // then reset the profile's current activity (`ffff`).
+                if run.activity.end == EndKind::Cinematic && run.activity.hash != 0 {
+                    if let Ok(mut rewards) = self.config.rewards.lock() {
+                        for c in &self.players {
+                            if let Err(e) = rewards.activity_ended(c, run.activity.hash) {
+                                tracing::warn!("end of {} for {c:?}: {e}", run.activity.activity);
+                            }
+                        }
+                    }
+                }
                 self.run = Some(run);
             }
             SidecarMsg::HardWipeArmed {} => {
@@ -2349,6 +2377,8 @@ mod tests {
         hand_offs: Vec<(u64, u32, u16, u32)>,
         /// `(character key, activity hash, frames planned when it was recorded)`.
         completions: Vec<(u64, u32, usize)>,
+        /// `(kind, activity hash, frames planned)`: "aside", "started", "ended".
+        lifecycle: Vec<(&'static str, u32, usize)>,
         launches: u32,
         /// The fake sidecar sets pregame and the cinematic hold in its answer to `start`.
         combined_start: bool,
@@ -2479,6 +2509,24 @@ mod tests {
             let mut s = self.0.lock().unwrap();
             let at = s.frames.len();
             s.completions.push((c.key(), hash, at));
+            Ok(())
+        }
+        fn activity_completed_aside(&mut self, _: &CharacterRef, hash: u32) -> Result<(), String> {
+            let mut s = self.0.lock().unwrap();
+            let at = s.frames.len();
+            s.lifecycle.push(("aside", hash, at));
+            Ok(())
+        }
+        fn activity_started(&mut self, _: &CharacterRef, hash: u32) -> Result<(), String> {
+            let mut s = self.0.lock().unwrap();
+            let at = s.frames.len();
+            s.lifecycle.push(("started", hash, at));
+            Ok(())
+        }
+        fn activity_ended(&mut self, _: &CharacterRef, hash: u32) -> Result<(), String> {
+            let mut s = self.0.lock().unwrap();
+            let at = s.frames.len();
+            s.lifecycle.push(("ended", hash, at));
             Ok(())
         }
     }
@@ -3035,6 +3083,11 @@ mod tests {
         assert_eq!((s.rewards[0].1, s.rewards[0].2), (0x6EAF_0959, ActivityOutcome::Completed));
         let granted_at = s.rewarded_after_frames[0];
         assert!(s.frames[..granted_at].iter().all(|p| lifetime_of(p) != Some(8)), "granted at 6, before 8");
+        // Run fg2j: the start went at the join (before any frame), the end after the 8 frame.
+        let started = s.lifecycle.iter().find(|l| l.0 == "started").expect("a start");
+        assert_eq!((started.1, started.2), (0x6EAF_0959, 0), "at the join, before the first frame");
+        let ended = s.lifecycle.iter().find(|l| l.0 == "ended").expect("an end");
+        assert!(s.frames[..ended.2].iter().any(|p| lifetime_of(p) == Some(8)), "after the 8 went out");
         // Run fg2h: the completion was recorded at activity_complete, long before the results:
         // while the lifetime was still 4, before the Tower cinematic played.
         assert_eq!(s.completions.len(), 1);
@@ -3049,14 +3102,17 @@ mod tests {
                 std::thread::sleep(Duration::from_millis(10));
                 std::fs::read_to_string(&control).unwrap_or_default()
             })
-            .find(|t| t.lines().count() >= 3)
+            .find(|t| t.lines().count() >= 5)
             .unwrap_or_default();
         let lines: Vec<&str> = text.lines().collect();
-        assert_eq!(lines.len(), 3, "{text}");
-        // Run fg2h: the completion at activity_complete, then the grant at 6, then the hand-off.
-        assert!(lines[0].starts_with("completed id:0707") && lines[0].ends_with(" 0x6eaf0959"), "{}", lines[0]);
-        assert!(lines[1].starts_with("grant id:0707") && lines[1].ends_with(" 0x6eaf0959 completed source=script"), "{}", lines[1]);
-        assert!(lines[2].starts_with("handoff id:0707") && lines[2].ends_with(" 0 from=0x6eaf0959 hash=0x8ae8da69"), "{}", lines[2]);
+        assert_eq!(lines.len(), 5, "{text}");
+        // Run fg2j: the start at the join; run fg2h: the completion at activity_complete; then the
+        // grant at 6, the hand-off, and the end after the 8.
+        assert!(lines[0].starts_with("started id:0707") && lines[0].ends_with(" 0x6eaf0959"), "{}", lines[0]);
+        assert!(lines[1].starts_with("completed id:0707") && lines[1].ends_with(" 0x6eaf0959"), "{}", lines[1]);
+        assert!(lines[2].starts_with("grant id:0707") && lines[2].ends_with(" 0x6eaf0959 completed source=script"), "{}", lines[2]);
+        assert!(lines[3].starts_with("handoff id:0707") && lines[3].ends_with(" 0 from=0x6eaf0959 hash=0x8ae8da69"), "{}", lines[3]);
+        assert!(lines[4].starts_with("ended id:0707") && lines[4].ends_with(" 0x6eaf0959"), "{}", lines[4]);
         let _ = std::fs::remove_dir_all(&dir);
     }
 
@@ -3222,10 +3278,14 @@ mod tests {
             run_for(&mut b, &mut t, 1.0, &mut Vec::new());
             let s = shared.lock().unwrap();
             let done: Vec<u32> = s.completions.iter().map(|c| c.1).collect();
+            assert_eq!(done, [0x6EAF_0959], "the served 165 is the one completion that moves field [6]");
+            let asides: Vec<u32> = s.lifecycle.iter().filter(|l| l.0 == "aside").map(|l| l.1).collect();
             match remapped {
-                Some(AGR) => assert_eq!(done, [0x6EAF_0959, AGR], "the served 165, then the launched 164"),
-                _ => assert_eq!(done, [0x6EAF_0959], "no remap (or the launch is the served one): 165 only"),
+                Some(AGR) => assert_eq!(asides, [AGR], "the launched 164, aside (run fg2j)"),
+                _ => assert!(asides.is_empty(), "no remap (or the launch is the served one): nothing aside"),
             }
+            let kinds: Vec<&str> = s.lifecycle.iter().filter(|l| l.0 != "aside").map(|l| l.0).collect();
+            assert_eq!(kinds, ["started", "ended"], "the join's start, the 8's end");
             assert_eq!(s.rewards.iter().map(|r| r.1).collect::<Vec<_>>(), [0x6EAF_0959], "the grant: 165 only");
             assert_eq!(s.hand_offs.iter().map(|h| (h.1, h.2)).collect::<Vec<_>>(), [(0x6EAF_0959, 0)], "the hand-off: 165 to the Tower");
         }
@@ -3293,6 +3353,14 @@ mod tests {
         fn activity_completed(&mut self, c: &CharacterRef, hash: u32) -> Result<(), String> {
             RecordingRewards(self.1.clone()).activity_completed(c, hash)?;
             self.0.activity_completed(c, hash)
+        }
+        fn activity_started(&mut self, c: &CharacterRef, hash: u32) -> Result<(), String> {
+            RecordingRewards(self.1.clone()).activity_started(c, hash)?;
+            self.0.activity_started(c, hash)
+        }
+        fn activity_ended(&mut self, c: &CharacterRef, hash: u32) -> Result<(), String> {
+            RecordingRewards(self.1.clone()).activity_ended(c, hash)?;
+            self.0.activity_ended(c, hash)
         }
     }
 

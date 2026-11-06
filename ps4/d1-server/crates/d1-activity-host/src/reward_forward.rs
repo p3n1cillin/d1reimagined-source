@@ -117,6 +117,23 @@ pub fn completed_line(target: &GrantTarget, activity_hash: u32) -> Result<String
     Ok(format!("completed {} {activity_hash:#010x}", target_word(target)?))
 }
 
+/// One of the lifecycle lines (run fg2j): `completed TARGET HASH aside` (the lab's remap stand-in),
+/// `started TARGET HASH` (the join), `ended TARGET HASH` (a cinematic's 8).
+pub fn lifecycle_line(word: &str, target: &GrantTarget, activity_hash: u32) -> Result<String, String> {
+    Ok(match word {
+        "aside" => format!("completed {} {activity_hash:#010x} aside", target_word(target)?),
+        _ => format!("{word} {} {activity_hash:#010x}", target_word(target)?),
+    })
+}
+
+fn target_of(character: &crate::rewards::CharacterRef) -> GrantTarget {
+    if character.identity.len() == d1_mp::identity::MemberIdentity::SIZE {
+        GrantTarget::Identity(character.identity.clone())
+    } else {
+        GrantTarget::Key(character.key())
+    }
+}
+
 pub fn handoff_line(target: &GrantTarget, next_index: u16, from_hash: u32, next_hash: u32) -> Result<String, String> {
     Ok(format!("handoff {} {next_index} from={from_hash:#010x} hash={next_hash:#010x}", target_word(target)?))
 }
@@ -331,6 +348,21 @@ impl crate::rewards::ActivityRewards for GrantForwarder {
         tracing::info!("rewards: {activity_hash:#010x} completed for {character:?}: the store records it now");
         self.send(line)
     }
+
+    fn activity_completed_aside(&mut self, character: &crate::rewards::CharacterRef, activity_hash: u32) -> Result<(), String> {
+        tracing::info!("rewards: {activity_hash:#010x} completed aside for {character:?} (lab stand-in)");
+        self.send(lifecycle_line("aside", &target_of(character), activity_hash)?)
+    }
+
+    fn activity_started(&mut self, character: &crate::rewards::CharacterRef, activity_hash: u32) -> Result<(), String> {
+        tracing::info!("rewards: {activity_hash:#010x} served to {character:?}: the store names it the current activity");
+        self.send(lifecycle_line("started", &target_of(character), activity_hash)?)
+    }
+
+    fn activity_ended(&mut self, character: &crate::rewards::CharacterRef, activity_hash: u32) -> Result<(), String> {
+        tracing::info!("rewards: {activity_hash:#010x} ended for {character:?}: the store resets the current activity");
+        self.send(lifecycle_line("ended", &target_of(character), activity_hash)?)
+    }
 }
 
 #[cfg(test)]
@@ -415,10 +447,16 @@ mod tests {
         f.grant_activity_rewards(&CharacterRef::from_key(7), 0x1111_2222, &failed).unwrap();
         assert!(f.activity_hand_off(&c, 0x6EAF_0959, 0, 0x8AE8_DA69).is_ok());
         assert!(f.activity_completed(&c, 0x6EAF_0959).is_ok());
-        let text = wait_for(&path, 5);
+        assert!(f.activity_completed_aside(&c, 0x6E0D_AE89).is_ok());
+        assert!(f.activity_started(&c, 0x6EAF_0959).is_ok());
+        assert!(f.activity_ended(&c, 0x6EAF_0959).is_ok());
+        let text = wait_for(&path, 8);
         let lines: Vec<&str> = text.lines().collect();
-        assert_eq!(lines.len(), 5, "{text}");
+        assert_eq!(lines.len(), 8, "{text}");
         assert!(lines[4].starts_with("completed id:0102030405060708") && lines[4].ends_with(" 0x6eaf0959"), "{}", lines[4]);
+        assert!(lines[5].starts_with("completed id:") && lines[5].ends_with(" 0x6e0dae89 aside"), "{}", lines[5]);
+        assert!(lines[6].starts_with("started id:") && lines[6].ends_with(" 0x6eaf0959"), "{}", lines[6]);
+        assert!(lines[7].starts_with("ended id:") && lines[7].ends_with(" 0x6eaf0959"), "{}", lines[7]);
         assert!(lines[3].starts_with("handoff id:0102030405060708") && lines[3].ends_with(" 0 from=0x6eaf0959 hash=0x8ae8da69"), "{}", lines[3]);
         assert!(lines[0].starts_with("grant id:") && lines[0].ends_with(" 0x0bbd0e26 completed source=script"));
         assert_eq!(lines[1], "grant 0x0102030405060708 0x11112222 completed source=event:12:gold");

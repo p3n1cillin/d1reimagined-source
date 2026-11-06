@@ -182,6 +182,26 @@ pub trait ActivityRewards {
     fn activity_completed(&mut self, _character: &CharacterRef, _activity_hash: u32) -> Result<(), String> {
         Ok(())
     }
+
+    /// ⚠ Lab only (run fg2i/fg2j): the activity a remap stood in for is completed **aside**: its
+    /// completion subs and XP, with the profile's current activity (field [6]) left on the served
+    /// one. The default does nothing.
+    fn activity_completed_aside(&mut self, _character: &CharacterRef, _activity_hash: u32) -> Result<(), String> {
+        Ok(())
+    }
+
+    /// The host serves the activity to the character (the join): the profile's current activity,
+    /// completed 0, as the live host pushed it at the join (run fg2j). The default does nothing.
+    fn activity_started(&mut self, _character: &CharacterRef, _activity_hash: u32) -> Result<(), String> {
+        Ok(())
+    }
+
+    /// A cinematic-only activity ended (its lifetime 8): the profile's current activity is reset
+    /// (`ffff`), as the live host's push answering the client's 104 did (run fg2j). The default
+    /// does nothing.
+    fn activity_ended(&mut self, _character: &CharacterRef, _activity_hash: u32) -> Result<(), String> {
+        Ok(())
+    }
 }
 
 /// The rewards a host reports with until stream O's forwarder is plugged in: each grant is
@@ -227,6 +247,10 @@ pub struct RecordingRewards {
     pub hand_offs: Vec<(u64, u32, u16, u32)>,
     /// `(character key, activity hash)` of each completion recorded at `activity_complete`.
     pub completions: Vec<(u64, u32)>,
+    /// The same for the lab's completions aside, the starts and the ends.
+    pub asides: Vec<(u64, u32)>,
+    pub starts: Vec<(u64, u32)>,
+    pub ends: Vec<(u64, u32)>,
 }
 
 impl ActivityRewards for RecordingRewards {
@@ -248,6 +272,21 @@ impl ActivityRewards for RecordingRewards {
 
     fn activity_completed(&mut self, character: &CharacterRef, activity_hash: u32) -> Result<(), String> {
         self.completions.push((character.key(), activity_hash));
+        Ok(())
+    }
+
+    fn activity_completed_aside(&mut self, character: &CharacterRef, activity_hash: u32) -> Result<(), String> {
+        self.asides.push((character.key(), activity_hash));
+        Ok(())
+    }
+
+    fn activity_started(&mut self, character: &CharacterRef, activity_hash: u32) -> Result<(), String> {
+        self.starts.push((character.key(), activity_hash));
+        Ok(())
+    }
+
+    fn activity_ended(&mut self, character: &CharacterRef, activity_hash: u32) -> Result<(), String> {
+        self.ends.push((character.key(), activity_hash));
         Ok(())
     }
 }
