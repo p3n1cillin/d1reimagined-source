@@ -132,6 +132,19 @@ class SrcpTest(unittest.TestCase):
         self.assertEqual(CLI.incident_body(words), b'\x01\x02\x03')
         self.assertEqual(CLI.incident_body({}), b'')
 
+    def test_moves_read_the_hosts_request_and_the_clients_slice_set(self):
+        im = bytearray(CLI.SLICE_REQUEST + 16)
+        im[CLI.SLICE_REQUEST] = 1
+        struct.pack_into('<II', im, CLI.SLICE_REQUEST + 8, 0x400 | 112, 0xEAEC2335)
+        self.assertEqual(CLI.slice_request(bytes(im)), (1, 112, 0xEAEC2335), 'a 10-bit index')
+        self.assertIsNone(CLI.slice_request(bytes(16)))
+        c = bytearray(0xC0)
+        struct.pack_into('<II', c, 0xB8, 24, 0x68935472)
+        self.assertEqual(CLI.client_slice(bytes(c)), (24, 0x68935472))
+        self.assertIsNone(CLI.client_slice(b''))
+        rows = [(1, 'a', 1), (2, 'a', 1), (3, 'b', 1), (4, 'a', None), (5, 'a', 2)]
+        self.assertEqual(CLI.value_changes(rows), [(1, 'a', 1), (3, 'b', 1), (5, 'a', 2)])
+
     def test_lifetime_values_are_signed_and_only_changes_print(self):
         self.assertEqual(CLI.lifetime_value('03ff01'), 3)
         self.assertEqual(CLI.lifetime_value('ff'), -1)
