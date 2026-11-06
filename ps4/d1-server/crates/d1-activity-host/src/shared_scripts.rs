@@ -145,6 +145,11 @@ impl ScriptHandle {
         self.with(|s| s.bridge.set_remapped_launch(hash));
     }
 
+    /// See [`ScriptBridge::set_world_bubbles`].
+    pub fn set_world_bubbles(&self, bubbles: Option<usize>) {
+        self.with(|s| s.bridge.set_world_bubbles(bubbles));
+    }
+
     /// See [`ScriptBridge::set_served_start`].
     pub fn set_served_start(&self, region: Option<u32>) {
         self.with(|s| s.bridge.set_served_start(region));
