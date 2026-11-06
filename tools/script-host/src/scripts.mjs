@@ -97,6 +97,24 @@ export class ScriptSet {
     };
   }
 
+  // A start-only stub for an activity no script starts (a world with no restored script): no
+  // root, no mission scripts, no phases. A session on it runs on the activity's content bundles
+  // (whose own scripts, if any, still run) and leaves the lifetime to the host, as the upstream
+  // start-only stubs do. Only with content: a stub on stand-in bundles has nothing to serve.
+  stubActivity(name) {
+    return {
+      bundle: undefined,
+      destination: undefined,
+      missions: [],
+      name,
+      phases: [],
+      root: undefined,
+      start: {},
+      stub: true,
+      synthesized: true,
+    };
+  }
+
   // The file whose class is named `decl`.
   fileOfDecl(decl) {
     return this.lookups.archetypeScript(decl);
@@ -222,6 +240,10 @@ export function standInBinder(scripts, activity) {
 export function standInBundles(scripts, activity, types, { extra = [] } = {}) {
   const notes = [];
   const bundles = [];
+  if (!activity.root) {
+    // A synthesized stub: no script declares any row.
+    return { bundles, notes: ["no script starts the activity: no stand-in bundles"] };
+  }
   const api = scripts.api;
   const rowType = (spelling) => {
     const key = NATIVE_ROW_TYPE[spelling] ?? STAND_IN_ROW_TYPE[spelling];

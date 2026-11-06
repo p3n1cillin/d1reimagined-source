@@ -90,6 +90,19 @@ class Rules(unittest.TestCase):
         self.assertEqual(self.lines[1][4].split()[:4], ['200', 'mission', '0x99999999', '@generated'])
         self.assertNotIn('type=', self.lines[1][4], 'no manifest definition: no completion body hashes')
 
+    def test_a_world_no_script_starts_is_marked_a_start_only_stub(self):
+        d = Path(self.tmp.name) / 'scripts' / 'es' / 'x'
+        d.mkdir(parents=True)
+        (d / 'cine.es').write_text('@activity("cine")' + chr(10), encoding='utf-8')
+        self.assertEqual(M.script_activities(d.parents[1]), {'cine'})
+        self.assertIsNone(M.script_activities(None))
+        lines, skipped = M.generate(Path(self.tmp.name), Path(self.tmp.name), Path(self.tmp.name) / 'activities.csv', d.parents[1])
+        self.assertEqual([l[6] for l in lines], [True, False])
+        rendered = M.render(lines, skipped)
+        self.assertIn('# Somewhere (ACTIVITY_TYPE_STORY, world generated; no script: a start-only stub)', rendered)
+        self.assertIn('# 1 of them name a world no restored script starts', rendered)
+        self.assertNotIn('start-only', M.render(self.lines, self.skipped), 'no marks without the scripts')
+
     def test_the_rendered_table_lists_what_has_no_world(self):
         rendered = M.render(self.lines, self.skipped)
         self.assertIn('201 Unbound (QUEST)', rendered)
@@ -109,10 +122,18 @@ class Committed(unittest.TestCase):
         reveal = next(l for l in rows if l.startswith('165 '))
         self.assertIn('next=0:0x8ae8da69', reveal)
 
-    @unittest.skipUnless(os.environ.get('D1_MANIFEST_DIR') and os.environ.get('D1_TABLE_2014'),
-                         'set D1_MANIFEST_DIR and D1_TABLE_2014 (local inputs) to regenerate')
+    def test_strikes_raids_and_arenas_are_in_and_the_open_world_is_not(self):
+        rows = {int(l.split()[0]): l for l in COMMITTED.read_text(encoding='utf-8').splitlines() if l[:1].isdigit()}
+        for i, world in ((160, 'raid_epiphany'), (380, 'raid_promise'), (27, 'arena_champion'), (302, 'cosmo_portal_1')):
+            self.assertEqual(rows[i].split()[1], world, i)
+        for i in (0, 1, 93, 424):   # the Tower, patrols: the open world and the public host serve them
+            self.assertNotIn(i, rows)
+
+    @unittest.skipUnless(os.environ.get('D1_MANIFEST_DIR') and os.environ.get('D1_TABLE_2014') and os.environ.get('D1_SCRIPTS_DIR'),
+                         'set D1_MANIFEST_DIR, D1_TABLE_2014 and D1_SCRIPTS_DIR (local inputs) to regenerate')
     def test_regeneration_is_byte_identical(self):
-        lines, skipped = M.generate(ROOT / 'ps4/fixtures/56578/worlds', os.environ['D1_MANIFEST_DIR'], os.environ['D1_TABLE_2014'])
+        lines, skipped = M.generate(ROOT / 'ps4/fixtures/56578/worlds', os.environ['D1_MANIFEST_DIR'], os.environ['D1_TABLE_2014'],
+                                    os.environ['D1_SCRIPTS_DIR'])
         self.assertEqual(M.render(lines, skipped), COMMITTED.read_text(encoding='utf-8'))
 
 

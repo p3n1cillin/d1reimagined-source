@@ -19,6 +19,10 @@
 // the bubble loads: the insertion points the client picks among by the transition name the server
 // sends (else `default`, 0x2EA8FB98). Positions are not kept.
 //
+// And the client's activity table (one tag of class 80801915, the investment globals' activities):
+// per activity index its hash and the name its definition carries at +0x58, the activity's bundle
+// name, which is the world it loads: `<name>:scenario_client` (see readActivityTable).
+//
 // The bundles section is keyed by bundle TAG (one bundle name can have several tags). Row names are
 // kept, so the output is game data: write it outside the repository. d1-world-table.py reads it and
 // commits identifiers only.
@@ -182,6 +186,52 @@ export function readInsertionPoints(g, set, worldHashes, problems = []) {
   return out;
 }
 
+// The client's activity table (investment globals, class 80801915): a tag block (+0x08) of 16-byte
+// entries {u32 activity hash, u32 0, i64 pointer to the definition}. The definition is the 360's
+// s_activity_definition (gibbon v41375 activity_definition.ts) widened to 64 bits: it starts with
+// the activity hash, and its `name` (the activity's bundle name, a self-relative string pointer)
+// sits at +0x58, its `fallback_name` at +0x60. On 56578 the name is the world the activity loads:
+// every live host the captures cross-check served the world its activity names. No name means the
+// definition names no world (playlists, the Crucible's modes, the credits).
+export const k_activity_table_class = 0x80801915;
+export const k_activity_table_entry_class = 0x808018a7;
+export const k_activity_definition_name = 0x58;
+export const k_activity_definition_fallback_name = 0x60;
+
+export function readActivityTable(g, set, problems = []) {
+  const refs = set.entries_of_class(k_activity_table_class);
+  if (refs.length !== 1) {
+    problems.push(`activity table: ${refs.length} tags of class ${hex(k_activity_table_class)}, not 1`);
+    return [];
+  }
+  const data = set.read_tag(refs[0].hash);
+  const header = g.tag_block_header(data, 8);
+  if (header === undefined || data.readUInt32LE(header + 8) !== k_activity_table_entry_class) {
+    problems.push(`activity table ${hex(refs[0].hash)}: no ${hex(k_activity_table_entry_class)} block at +0x08`);
+    return [];
+  }
+  const count = Number(data.readBigUInt64LE(header));
+  const str = g.tag_relative_string();
+  const out = [];
+  for (let index = 0; index < count; index++) {
+    const at = header + 16 + 16 * index;
+    const hash = data.readUInt32LE(at);
+    const def = at + 8 + Number(data.readBigInt64LE(at + 8));
+    if (def <= 0 || def + 0x68 > data.length || data.readUInt32LE(def) !== hash) {
+      problems.push(`activity ${index} ${hex(hash)}: definition does not start with its hash`);
+      out.push({ index, hash: hex(hash), name: null, fallback_name: null });
+      continue;
+    }
+    out.push({
+      index,
+      hash: hex(hash),
+      name: str.read(data, def + k_activity_definition_name) ?? null,
+      fallback_name: str.read(data, def + k_activity_definition_fallback_name) ?? null,
+    });
+  }
+  return out;
+}
+
 function main(argv) {
   const [dir, out, ...only] = argv;
   if (!dir || !out) {
@@ -194,12 +244,21 @@ function main(argv) {
   const hashes = new Set();
   for (const w of worlds) for (const b of w.bubbles) for (const s of b.states) if (s.world_hash) hashes.add(s.world_hash);
   const insertion_points = readInsertionPoints(g, set, [...hashes].sort(), problems);
+  const activities = only.length ? [] : readActivityTable(g, set, problems);
   writeFileSync(
     out,
-    JSON.stringify({ build: BUILD, generator: "tools/ps4_setup/d1-worlds.mjs", worlds, bundles, insertion_points, problems }) + "\n"
+    JSON.stringify({
+      build: BUILD,
+      generator: "tools/ps4_setup/d1-worlds.mjs",
+      worlds,
+      bundles,
+      insertion_points,
+      activities,
+      problems,
+    }) + "\n"
   );
   console.error(
-    `${worlds.length} worlds, ${Object.keys(bundles).length} bundle tags, ` +
+    `${worlds.length} worlds, ${Object.keys(bundles).length} bundle tags, ${activities.length} activities, ` +
       `${Object.keys(insertion_points).length} static worlds with insertion points, ${problems.length} problems -> ${out}`
   );
   for (const p of problems.slice(0, 20)) console.error("  " + p);
