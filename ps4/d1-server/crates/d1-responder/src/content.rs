@@ -56,6 +56,70 @@ pub fn progression_index(hash: u32) -> Option<u16> {
     indices().progressions.get(&hash).copied()
 }
 
+/// Where the client keeps items, by content index: the client bucket ordinal (`BUCKETS` in
+/// `vendor.rs`).
+struct Buckets {
+    /// From the item definitions themselves (`def+0x88`), as `vendor-sales.tsv` and the starting
+    /// kit export them: every sold item and every price item.
+    by_content: BTreeMap<u16, u8>,
+    /// Manifest `bucketHash` -> ordinal, derived from the rows above: each item with an ordinal
+    /// gives one pair, and a manifest bucket is kept only when all its pairs agree.
+    by_manifest: BTreeMap<u32, u8>,
+}
+
+fn buckets() -> &'static Buckets {
+    static TABLE: OnceLock<Buckets> = OnceLock::new();
+    TABLE.get_or_init(|| {
+        let mut by_content = BTreeMap::new();
+        let hex = |s: &str| u8::from_str_radix(s.trim_start_matches("0x"), 16).ok();
+        for l in include_str!("../../../../fixtures/56578/vendor/vendor-sales.tsv").lines() {
+            if l.starts_with('#') || l.starts_with("vendor") {
+                continue;
+            }
+            let f: Vec<&str> = l.split('\t').collect();
+            if f.len() != 7 {
+                continue;
+            }
+            if let (Ok(c), Some(b)) = (f[3].parse::<u16>(), hex(f[4])) {
+                by_content.insert(c, b);
+            }
+            for cost in f[6].split(',').filter(|c| *c != "-") {
+                let p: Vec<&str> = cost.split(':').collect();
+                if let (Some(Ok(c)), Some(Some(b))) = (p.first().map(|c| c.parse::<u16>()), p.get(2).map(|b| hex(b))) {
+                    by_content.insert(c, b);
+                }
+            }
+        }
+        for class in default_gear() {
+            for i in class.items.iter().chain(&class.alternate_items) {
+                by_content.entry(i.index).or_insert(i.bucket);
+            }
+        }
+        let mut pairs: BTreeMap<u32, Option<u8>> = BTreeMap::new();
+        for (&c, &b) in &by_content {
+            let Some(def) = item_hash(c).and_then(|h| crate::rewards::tables::tables().items.get(&h)) else { continue };
+            let e = pairs.entry(def.bucket).or_insert(Some(b));
+            if *e != Some(b) {
+                *e = None; // disagreeing rows: no derived ordinal for this manifest bucket
+            }
+        }
+        let by_manifest = pairs.into_iter().filter_map(|(m, b)| Some((m, b?))).collect();
+        Buckets { by_content, by_manifest }
+    })
+}
+
+/// The client bucket ordinal content index `index` is kept in: its own definition's (where it is
+/// sold or priced, or in the starting kit), else its manifest bucket's derived ordinal. `None`
+/// when neither is known.
+pub fn bucket_of(index: u16) -> Option<u8> {
+    let b = buckets();
+    if let Some(o) = b.by_content.get(&index) {
+        return Some(*o);
+    }
+    let def = crate::rewards::tables::tables().items.get(&item_hash(index)?)?;
+    b.by_manifest.get(&def.bucket).copied()
+}
+
 #[derive(Deserialize)]
 pub struct DefaultGearItem {
     pub index: u16,
@@ -201,6 +265,25 @@ mod tests {
         }
         assert_eq!(progression_index(1716568313), Some(117));
         assert_eq!(item_hash(u16::MAX), None);
+    }
+    #[test]
+    fn every_currency_has_a_client_bucket() {
+        use crate::rewards::currencies::*;
+        assert_eq!(bucket_of(869), Some(0x1F), "Glimmer: account slot 308");
+        assert_eq!(item_index(LEGENDARY_MARKS).and_then(bucket_of), Some(0x23), "Legendary Marks: account slot 310");
+        assert_eq!(item_index(VANGUARD_MARKS).and_then(bucket_of), Some(0x20));
+        assert_eq!(item_index(WEAPON_PARTS).and_then(bucket_of), Some(0x05), "Materials");
+        for h in [GLIMMER, LEGENDARY_MARKS, SILVER_DUST, STRANGE_COIN, MOTE_OF_LIGHT, WEAPON_PARTS, ARMOR_MATERIALS, EXOTIC_SHARD,
+                  ASCENDANT_SHARD, ASCENDANT_ENERGY, VANGUARD_MARKS, CRUCIBLE_MARKS].into_iter().chain(PLANETARY) {
+            let b = item_index(h).and_then(bucket_of);
+            assert!(b.and_then(crate::vendor::bucket).is_some(), "item {h}: bucket {b:?}");
+        }
+        // The derived manifest-bucket map never contradicts an item's own bucket.
+        for (&c, &b) in &buckets().by_content {
+            let Some(def) = item_hash(c).and_then(|h| crate::rewards::tables::tables().items.get(&h)) else { continue };
+            assert_eq!(buckets().by_manifest.get(&def.bucket), Some(&b), "content {c}");
+        }
+        assert!(buckets().by_manifest.len() >= 20);
     }
     #[test]
     fn infusion_uses_the_curve_floor_and_tier_rate() {

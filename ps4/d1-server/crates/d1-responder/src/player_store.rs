@@ -902,6 +902,16 @@ pub trait PlayerStore {
     // ── open attributes (any stream): the character's `attributes` map ──
     fn character_attribute(&self, key: &str) -> Option<&Value>;
     fn set_character_attribute(&mut self, key: &str, value: Value);
+
+    // ── stream O2: delivery into the client's buckets ──
+    /// Add `delta` (negative: take) of the stack item `content` in client bucket `bucket` (an
+    /// ordinal of `vendor::BUCKETS`): an account bucket's slots (`account.slots`), or a character
+    /// bucket's profile slots (the decoded profile object, which is then stale). The slot already
+    /// holding `content` first, else the bucket's first free slot. Returns the new quantity.
+    fn deliver_stack(&mut self, content: u16, bucket: u8, delta: i64) -> anyhow::Result<u32>;
+    /// Put a new instance `soid` of `content` into a free slot of `bucket` and keep its element.
+    /// Returns the slot.
+    fn deliver_instance(&mut self, content: u16, bucket: u8, soid: u64, element: &[u8]) -> anyhow::Result<u16>;
 }
 
 impl PlayerStore for Store {
@@ -942,7 +952,14 @@ impl PlayerStore for Store {
     }
 
     fn currency(&self, content: u16) -> u32 {
-        self.record.account.slots.values().filter(|(c, _)| *c == content).map(|(_, q)| *q).sum()
+        // The account's slots, plus the character's profile stacks (materials, Vanguard and
+        // Crucible Marks, Silver Dust: character buckets) when the profile object is decoded.
+        let account: u32 = self.record.account.slots.values().filter(|(c, _)| *c == content).map(|(_, q)| *q).sum();
+        let profile: u32 = self.chr().profile_object.as_deref().map_or(0, |p| {
+            (0..PROFILE_SLOT_COUNT).filter(|s| profile_slot_fits(p, *s)).map(|s| crate::vendor::profile_entry(p, s))
+                .filter(|(c, _)| *c == content).map(|(_, q)| q).sum()
+        });
+        account.saturating_add(profile)
     }
 
     fn adjust_currency(&mut self, content: u16, delta: i64) -> anyhow::Result<u32> {
@@ -1068,6 +1085,73 @@ impl PlayerStore for Store {
     fn set_character_attribute(&mut self, key: &str, value: Value) {
         self.chr_mut().attributes.insert(key.to_string(), value);
     }
+
+    fn deliver_stack(&mut self, content: u16, bucket: u8, delta: i64) -> anyhow::Result<u32> {
+        let (first, n, scope) = crate::vendor::bucket(bucket).ok_or_else(|| anyhow::anyhow!("unknown client bucket {bucket:#x}"))?;
+        if scope == 1 {
+            let slots = &mut self.record.account.slots;
+            let slot = (first..first + n).find(|s| slots.get(s).is_some_and(|e| e.0 == content))
+                .or_else(|| (delta > 0).then(|| (first..first + n).find(|s| !slots.contains_key(s))).flatten())
+                .ok_or_else(|| anyhow::anyhow!("account bucket {bucket:#x}: no slot holds content {content} and none is free"))?;
+            let have = slots.get(&slot).map_or(0, |e| e.1);
+            let after = i64::from(have) + delta;
+            anyhow::ensure!((0..=i64::from(u32::MAX)).contains(&after), "content {content}: {have} {delta:+} is out of range");
+            slots.insert(slot, (content, after as u32));
+            return Ok(after as u32);
+        }
+        let c = self.chr_mut();
+        let obj = c.profile_object.as_mut().ok_or_else(|| anyhow::anyhow!("character bucket {bucket:#x}: no decoded profile to put content {content} in"))?;
+        let slot = (first..first + n).filter(|s| profile_slot_fits(obj, *s)).find(|s| crate::vendor::profile_entry(obj, *s).0 == content)
+            .or_else(|| (delta > 0).then(|| (first..first + n).filter(|s| profile_slot_fits(obj, *s)).find(|s| crate::vendor::profile_entry(obj, *s).0 == 0xFFFF)).flatten())
+            .ok_or_else(|| anyhow::anyhow!("character bucket {bucket:#x}: no slot holds content {content} and none is free"))?;
+        let have = crate::vendor::profile_entry(obj, slot).1;
+        let after = i64::from(if crate::vendor::profile_entry(obj, slot).0 == content { have } else { 0 }) + delta;
+        anyhow::ensure!((0..=i64::from(u32::MAX)).contains(&after), "content {content}: {have} {delta:+} is out of range");
+        let e = crate::vendor::PROFILE_SLOTS + 32 * slot as usize;
+        if after == 0 {
+            // An emptied stack frees its slot, as a purchase's price does (vendor::apply).
+            obj[e..e + 2].copy_from_slice(&[0xFF, 0xFF]);
+        } else {
+            obj[e..e + 2].copy_from_slice(&content.to_le_bytes());
+        }
+        obj[e + 8..e + 16].fill(0);
+        obj[e + 0x10..e + 0x14].copy_from_slice(&(after as u32).to_le_bytes());
+        c.profile_stale = true;
+        Ok(after as u32)
+    }
+
+    fn deliver_instance(&mut self, content: u16, bucket: u8, soid: u64, element: &[u8]) -> anyhow::Result<u16> {
+        let (first, n, scope) = crate::vendor::bucket(bucket).ok_or_else(|| anyhow::anyhow!("unknown client bucket {bucket:#x}"))?;
+        let slot = if scope == 1 {
+            let a = &mut self.record.account;
+            let slot = (first..first + n).find(|s| !a.slots.contains_key(s))
+                .ok_or_else(|| anyhow::anyhow!("account bucket {bucket:#x} is full"))?;
+            a.slots.insert(slot, (content, 1));
+            a.slot_instances.insert(slot, soid);
+            slot
+        } else {
+            let c = self.chr_mut();
+            let obj = c.profile_object.as_mut().ok_or_else(|| anyhow::anyhow!("character bucket {bucket:#x}: no decoded profile to put {soid:#x} in"))?;
+            let slot = (first..first + n).filter(|s| profile_slot_fits(obj, *s)).find(|s| crate::vendor::profile_entry(obj, *s).0 == 0xFFFF)
+                .ok_or_else(|| anyhow::anyhow!("character bucket {bucket:#x} is full"))?;
+            // The entry a purchase writes (vendor::apply): content, instance, quantity 1.
+            let e = crate::vendor::PROFILE_SLOTS + 32 * slot as usize;
+            obj[e..e + 2].copy_from_slice(&content.to_le_bytes());
+            obj[e + 8..e + 16].copy_from_slice(&soid.to_le_bytes());
+            obj[e + 0x10..e + 0x14].copy_from_slice(&1u32.to_le_bytes());
+            c.profile_stale = true;
+            slot
+        };
+        Store::put_item(self, soid, element);
+        Ok(slot)
+    }
+}
+
+/// The profile's inventory slots (`vendor::BUCKETS`' character buckets end below 340).
+const PROFILE_SLOT_COUNT: u16 = 340;
+
+fn profile_slot_fits(obj: &[u8], slot: u16) -> bool {
+    crate::vendor::PROFILE_SLOTS + 32 * slot as usize + 0x14 <= obj.len()
 }
 
 /// The store's view of a profile object.
@@ -1232,17 +1316,56 @@ pub fn push_profile(what: &str) -> anyhow::Result<()> {
 
 /// Write a profile push for the responder to deliver, one at a time.
 fn write_push(encoded: &[u8]) -> anyhow::Result<()> {
+    write_push_with_item(encoded, None)
+}
+
+/// Wait (up to 120 s) until the client took the last profile push (`D1_PROFILE_PUSH_FILE` gone).
+pub fn wait_for_push_taken() {
     if let Some(push) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(PathBuf::from) {
-        // One push at a time: wait for the previous one to be delivered.
         for _ in 0..120 {
             if !push.exists() {
                 break;
             }
             std::thread::sleep(std::time::Duration::from_secs(1));
         }
+    }
+}
+
+/// [`write_push`] with one new item: its encoded element and SOID beside the push
+/// (`.item`, `.soid`), as a purchase writes them (`vendor::publish`).
+fn write_push_with_item(encoded: &[u8], item: Option<(u64, &[u8])>) -> anyhow::Result<()> {
+    if let Some(push) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(PathBuf::from) {
+        // One push at a time: wait for the previous one to be delivered.
+        wait_for_push_taken();
+        if let Some((soid, element)) = item {
+            std::fs::write(push.with_extension("item"), element)?;
+            std::fs::write(push.with_extension("soid"), format!("{soid:#x}"))?;
+        }
         std::fs::write(&push, encoded)?;
     }
     Ok(())
+}
+
+/// ⭐ Stream O2: push the store's account (its slots, vault instances and refund records) to the
+/// client, `D1_ACCOUNT_PUSH_FILE`, encoded as a purchase's account push (`vendor::account_payload`).
+/// This is the path for an account change when the vendor state is off (`D1_VENDOR_SALES` unset):
+/// with it on, the vendor state publishes instead ([`crate::vendor::adopt_store_state`]).
+pub fn push_account(what: &str) -> anyhow::Result<()> {
+    let m = global().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
+    let (slots, instances, refunds) = {
+        let s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+        let a = &s.record.account;
+        (a.slots.clone(), a.slot_instances.clone(), a.refunds.clone())
+    };
+    let payload = crate::vendor::account_payload(&crate::vendor::oracle_path(), &slots, &instances, &refunds)?;
+    if let Some(p) = std::env::var_os("D1_ACCOUNT_PUSH_FILE").map(PathBuf::from) {
+        std::fs::write(&p, &payload)?;
+    } else {
+        tracing::warn!("      ⚠ {what}: D1_ACCOUNT_PUSH_FILE is unset: the account is saved but not pushed");
+    }
+    let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+    s.record.account.payload = Some(payload);
+    s.save(&format!("{what}: account pushed"))
 }
 
 /// Read from the store: None when it is off (the caller serves the knobs as before).
@@ -1527,39 +1650,110 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
 
 /// A `grant` from the activity host (`rewards::remote`): stream M's grant on the live store, then
 /// the pushes. Needs `D1_REWARDS=1`.
+///
+/// Stream O2: every item with a 56578 content index and a known bucket is delivered into the
+/// client's slots (account buckets in the account's slots, character buckets in the profile
+/// object), new instances with their element (`D1_VENDOR_ITEM_TEMPLATE`), and then pushed: through
+/// the vendor state when it is on (it serves the account and profile), through the store's own
+/// pushes otherwise ([`push_account`], the profile push), so the wallet reaches the client with
+/// `D1_VENDOR_SALES` or `D1_SOCIAL` unset.
 fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyhow::Result<String> {
     use crate::rewards::remote;
     anyhow::ensure!(crate::rewards::enabled(), "D1_REWARDS is off: the grant is not applied");
     let class = std::env::var("D1_CHARACTER_CLASS").ok().and_then(|v| v.trim().parse().ok()).unwrap_or(0);
-    let (summary, wallet, stale) = {
+    let template = std::env::var_os("D1_VENDOR_ITEM_TEMPLATE").and_then(|p| std::fs::read(p).ok());
+    // The profile object the character buckets are edited in: the one the vendor state serves (it
+    // is what the client has), else the store's own, decoded from its payload when needed.
+    let vendor_on = crate::vendor::active();
+    let mut object = if vendor_on { crate::vendor::current_profile() } else { None };
+    if object.is_none() {
+        let (have, payload) = {
+            let s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+            (s.chr().profile_object.is_some(), s.chr().profile.clone())
+        };
+        if let (false, Some(p)) = (have, payload) {
+            match crate::vendor::decode_object(&crate::vendor::oracle_path(), "0x80801743", &p, &crate::vendor::unique_name("store-grant-in")) {
+                Ok(o) => object = Some(o),
+                Err(e) => tracing::warn!("      ⚠ rewards: the served profile did not decode ({e:#}); character-bucket items stay in the overlay"),
+            }
+        }
+    }
+    let (summary, wallet, profile, items) = {
         let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
-        let before = s.record.account.slots.clone();
-        let index = remote::ResponderIndex::from_slots(&before);
-        let summary = remote::execute(&mut *s, g, &index, class, crate::mp::enabled())?;
+        if let Some(o) = object {
+            s.chr_mut().profile_object = Some(o);
+        }
+        let before = (s.record.account.slots.clone(), s.record.account.slot_instances.clone());
+        let index = remote::ResponderIndex::from_slots(&before.0);
+        let summary = remote::execute_with(&mut *s, g, &index, class, crate::mp::enabled(), template.as_deref())?;
         s.save(&format!("rewards: {}", summary.line))?;
-        let after = s.record.account.slots.clone();
-        let wallet = (after != before).then(|| (after, s.record.account.slot_instances.clone()));
-        (summary, wallet, s.chr().profile_stale)
+        let after = (s.record.account.slots.clone(), s.record.account.slot_instances.clone());
+        let wallet = (after != before).then_some(after);
+        let profile = s.chr().profile_stale.then(|| s.chr().profile_object.clone()).flatten();
+        let items: Vec<(u64, Vec<u8>)> = summary.delivered.iter()
+            .filter_map(|id| s.chr().items.iter().find(|i| i.soid == *id).map(|i| (i.soid, i.element.clone())))
+            .collect();
+        (summary, wallet, profile, items)
     };
     for n in &summary.notes {
         tracing::warn!("      💾 rewards: {n}");
     }
-    if stale {
-        push_profile("rewards: XP")?;
-    }
-    if let Some((slots, instances)) = wallet {
-        // The wallet changed: the vendor state serves the account, so it publishes the new one.
-        crate::vendor::adopt_account_slots(slots, instances, &format!("rewards: {}", summary.line));
+    let what = format!("rewards: {}", summary.line);
+    let changed = wallet.is_some() || profile.is_some() || !items.is_empty();
+    if changed && vendor_on {
+        // The vendor state serves the account and profile: it publishes the new ones (and writes
+        // them back to the store through `note_vendor`).
+        let (slots, instances) = match wallet {
+            Some(w) => w,
+            None => view(|s| (s.record.account.slots.clone(), s.record.account.slot_instances.clone())).unwrap_or_default(),
+        };
+        crate::vendor::adopt_store_state(slots, instances, profile, items, &what);
+    } else if changed {
+        push_store_state(m, wallet.is_some(), profile.is_some(), &items, &what)?;
     }
     Ok(format!(
-        "{} for {:#018x}{}: {} currency line(s), {} item(s), rules {:?}",
+        "{} for {:#018x}{}: {} currency line(s), {} item(s) ({} delivered), rules {:?}",
         summary.line,
         summary.character,
         if summary.retargeted { " (the grant named another key; one player per responder: applied to it)" } else { "" },
         summary.currencies.len(),
         summary.items,
+        summary.delivered.len(),
         summary.rules
     ))
+}
+
+/// The store's own pushes for a change the vendor state did not serve: the profile (re-encoded
+/// from the edited object; each new item rides its own push) and the account.
+fn push_store_state(m: &Mutex<Store>, wallet: bool, profile: bool, items: &[(u64, Vec<u8>)], what: &str) -> anyhow::Result<()> {
+    if profile || !items.is_empty() {
+        let encoded = {
+            let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+            if s.chr().profile_stale {
+                reencode(&mut s)?;
+                s.save(what)?;
+            }
+            s.chr().profile.clone().unwrap_or_default()
+        };
+        let oracle = crate::vendor::oracle_path();
+        if items.is_empty() {
+            write_push(&encoded)?;
+        }
+        for (soid, element) in items {
+            let (e, _) = crate::vendor::encode(&oracle, "0x80801732", element, &crate::vendor::unique_name("store-grant-item"))?;
+            {
+                let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+                s.put_item(*soid, &e);
+            }
+            write_push_with_item(&encoded, Some((*soid, &e)))?;
+        }
+        tracing::warn!("      ⭐ {what}: profile pushed by the player store ({} item(s))", items.len());
+    }
+    if wallet {
+        push_account(what)?;
+        tracing::warn!("      ⭐ {what}: account pushed by the player store (vendor state off)");
+    }
+    Ok(())
 }
 
 /// The file the store writes beside its control file, for the activity host to read back at an
