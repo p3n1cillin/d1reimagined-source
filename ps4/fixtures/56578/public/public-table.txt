@@ -4,6 +4,7 @@ earth	0	public	public-earth-r0.txt	71
 earth	48	public	public-earth-r48.txt	341
 earth	56	public	public-earth-r56.txt	285
 earth	88	public	public-earth-r88.txt	140
+earth	96	public	public-earth-r96.txt	117
 earth	160	public	public-earth-r160.txt	197
 mars	8	public	public-mars-r8.txt	118
 mars	48	public	public-mars-r48.txt	54
@@ -20,5 +21,5 @@ venus	80	public	public-venus-r80.txt	98
 venus	120	public	public-venus-r120.txt	41
 venus	160	public	public-venus-r160.txt	41
 venus	224	public	public-venus-r224.txt	17
-tower	-	social	social-tower.txt	120
+tower	-	social	social-tower.txt	252
 reef	-	social	social-reef.txt	101
