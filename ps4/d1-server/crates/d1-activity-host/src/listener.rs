@@ -1112,6 +1112,9 @@ mod tests {
     /// `join_result` it frames, and the assertion below reads it out of the outgoing body.
     #[test]
     fn the_captured_live_join_request_decodes_and_both_pushes_are_framed() {
+        if !crate::eboot_or_skip("the_captured_live_join_request_decodes_and_both_pushes_are_framed") {
+            return;
+        }
         let mut c = conn(Arc::new(SchemaCodec));
         let now = Instant::now();
 

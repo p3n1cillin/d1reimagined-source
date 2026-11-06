@@ -1109,6 +1109,7 @@ dependencies = [
  "clap",
  "d1-bap",
  "d1-build",
+ "d1-mp",
  "d1-oracle",
  "d1-rsat",
  "serde",

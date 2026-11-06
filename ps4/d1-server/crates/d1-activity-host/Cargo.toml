@@ -41,6 +41,9 @@ d1-oracle = { path = "../d1-oracle" }
 # client's codec for every schema it covers, without running guest code.
 d1-rsat = { path = "../d1-rsat" } # GPL-2.0-or-later, this workspace
 d1-build = { path = "../d1-build" } # GPL-2.0-or-later, this workspace (build registry)
+# Stream O: the multiplayer types (the 40-byte member identity) and the public-instance placement
+# trait the registry implements. Pure state machines, no I/O.
+d1-mp = { path = "../d1-mp" } # GPL-2.0-or-later, this workspace
 
 [lib]
 name = "d1_activity_host"

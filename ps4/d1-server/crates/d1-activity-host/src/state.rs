@@ -1273,6 +1273,14 @@ impl ActivityInstance {
                 // and the slot handover answered (crate::public_host).
                 if let Some(p) = self.public.as_mut() {
                     if p.on_join(struct_image, &self.activity_name, self.ah_id, now).is_public_instance() {
+                        // stream O: the world's PUBLIC checksum (worlds.tsv), when it is known.
+                        if let Some(c) = p.public_checksum(&self.activity_name) {
+                            tracing::info!(
+                                "⭐ public instance: publishing {:?}'s PUBLIC checksum {c:#010x} (was {:#010x})",
+                                self.activity_name, self.activity_checksum
+                            );
+                            self.activity_checksum = c;
+                        }
                         self.pah_region = None;
                         self.sensor_payload = None;
                         self.sensor_team_frames = None;
