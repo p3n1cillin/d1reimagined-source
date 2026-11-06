@@ -142,8 +142,9 @@ Some choices in this profile are worth knowing about:
   two frame builds before the host listens. The hand table's rows (164, 165, 168, 0, 410, 416)
   still win over generated ones.
 - **Public starts.** `D1_AH_WORLDS_PRIVATE_START=1` serves Restoration from its private stand-in.
-  Public instances serve no list yet (below), so a public start would wait in an empty bubble, as
-  run sense125 did. To try the public start, pass `-Set D1_AH_WORLDS_PRIVATE_START=`.
+  Public instances now encode their lists as entry-only frames ([integration
+  note](../notes/ps4-56578-integration-wiring-2026-11-05.md)), but none has been served to the client
+  yet. To try the public start, pass `-Set D1_AH_WORLDS_PRIVATE_START=`.
 - **`D1_HITCH_HALT=0`** is the "on" value: the game reports the stall and carries on, where unset
   keeps the console's halt.
 - **Session knobs.** `lab-base.env` serves the geared Guardian, the Director flags without 308 and
@@ -169,11 +170,11 @@ as working.
 |---|---|---|---|
 | Player store (#307) | responder | `💾 player store ON: <dir> (player local, r<N>, schema 1, saved every 300s)`, then `💾 player store r<N>: <what>` on each important event. `⛔⛔ player store ... NOT USED` means it fell back to the fixtures. | A purchase, equip or dismantle in run 1 is still there after signing on in run 2 with the same store. `account-<soid>.json` changes in the store folder, and its `history` names the events. |
 | Social and vendors (#309) | responder | `⭐ SOCIAL (<id>) decoded: <op>` for each social request (901, 902, 903, 405, ...) | A Tower purchase, a vault move and a dismantle are applied and pushed back, each with its `VendorItemStatus`/`TransferStatuses` result, and the client shows them. |
-| Rewards (#311) | responder | Only the knob table: `D1_REWARDS = 1 SET`. Nothing in the responder calls `grant_activity_rewards` yet. In the host, open-world rewards log `open-world reward for ... - no progression service yet (stream M)`. | Not reachable in this run. It needs a caller across the process boundary (below). |
+| Rewards (#311) | activity host, responder | Host: `⭐ rewards: grants go to the player store through <store-control.txt>`, then `⭐ rewards: forwarded to the store: grant ...` when an activity ends. Responder: `💾 control "grant ...": ... for 0x...: N currency line(s), ...`; `store-control.state.json` lists the grant. | A completed scripted activity's grant reaches the store (`rewards.grants` in the character's attributes) and a changed wallet is pushed. Only Glimmer has a content index ([integration note](../notes/ps4-56578-integration-wiring-2026-11-05.md)). |
 | Multiplayer (#312) | responder, activity host | `⭐ D1_MP=1: multiplayer services on (...)`; with the store, `⭐ MP: accounts resolve through the player store's identities.json`; per connection, `⭐ MP: connection #N is '<id>', <account>, in <fireteam>`; on a 42 search, `⭐ MP matchmaking (connection #N): ...`. In the host: `⭐ shared instances on (D1_AH_SHARED_INSTANCES): one membership per named host`. | With one client: it signs on as its own account in a fireteam of one, and its 42 searches get answers. Fireteams and shared instances need a second client. |
 | Activity framework (#313) | activity host | `activity framework: <coverage summary>`. Any `activity framework: ...` warning is a data problem. `... not loaded: ...` means it failed. | The summary line has the expected counts. A strike run would drive `ActivityRun` from the host's slice and trigger reports; no run has launched one. |
 | Generated worlds (#314) | activity host | `⭐ D1_AH_WORLDS <dir>: N activities served from generated worlds (M distinct frames), K without one`. `⚠ D1_AH_WORLDS: <world> generated checksum ...` means the generated world disagrees with the measured one. | Launching Restoration (166) from the Director loads a world. Run sense125 got a black screen there. The same goes for 167, 168, 170, 172 and 186. |
-| Public instances (#316) | activity host | `⭐ D1_AH_PUBLIC_HOST=1 - N public lists from <table>, 0 frame(s) built`, then `⚠ public lists not servable yet: ...`. Both are expected until #319's entry-only frame (`SensorEntryFrame`) is plugged into the public host in `main.rs` (it still passes `encoder_pending()`, and the open world still has `PendingBridge`). A join logs `⭐ public instance <id> is <key>`; a Tower join logs `⭐ social space ...`. | A public instance's join is recognised (the role line) and its slot freed when the client leaves. Serving the instance's list waits for the encoder. |
+| Public instances (#316) | activity host | `public lists encoded as entry-only frames (gen 0) in ...`, then `⭐ D1_AH_PUBLIC_HOST=1 - N public lists from <table>, N frame(s) built`; `⭐ public instances: bundles go to the script bridge`; `⭐ public instances: M worlds' PUBLIC checksums`. A join logs `⭐ public instance: publishing ...'s PUBLIC checksum` and `⭐ public instance <id> is <key>`; a Tower join logs `⭐ social space ...`. | A public instance's join is recognised, its region's list is served (`⭐ public instance: serving ...'s sensor list`), and its slot is freed when the client leaves. Its events still wait on stream K's sidecar message. |
 | Native RSAT (#317) | activity host | One `native RSAT: udt N encode+decode native` line for each covered udt, and `native RSAT: ... stays on the client's codec: <why>` for the rest. | The client signs on, loads the boot world and the Tower, and stays connected with no native codec error. Compare the slow-turn warnings against the baseline. |
 | udt 5 stamp (#298) | activity host | `⭐ D1_AH_SENSOR_STAMP=1 - udt 5 stamped at 10 Hz, init on full lists, 3 s heartbeats` | The client keeps the world through idle stretches (heartbeats), and the cinematics start on time. |
 | Script bridge (#319) | activity host | `⭐ D1_AH_SCRIPTS=1 - scripted activities [165]`. On launching 165: `⭐ script bridge: cine_reveal scripts start`, then `⭐ script bridge: lifetime ...` lines, then `⭐ script bridge: cine_reveal ended (Completed)`. | The reveal cinematic plays and ends, driven by its script, in the live order 0 → 1 → 4 → 6 → 8, as the step schedule did in run cine-live13. |
@@ -251,11 +252,10 @@ Collected from each stream's note. Each note has the full list.
 - **Rewards** ([note](../notes/ps4-56578-rewards-and-growth-2026-11-05.md)):
   - 19 placeholder rules (drop chances, the Light spread, decrypt upgrades, dismantle amounts, the
     Marks weekly cap, node costs, XP sharing and more) and 15 community rules.
-  - No caller yet:
-    - the responder has no runtime call;
-    - the host's open world logs rewards (`LoggedRewards`) because stream M's service is in the
-      other process;
-    - the adapter's overlay (instances, counters, objectives, claims) is not saved into the store.
+  - Grants cross from the host through the store's command file ([integration
+    note](../notes/ps4-56578-integration-wiring-2026-11-05.md)). Only Glimmer has a content index;
+    other currencies stay in the kept overlay. The overlay's counters and slotless stacks are saved;
+    its instances and grids are not.
 - **Multiplayer** ([note](../notes/ps4-56578-multiplayer-2026-11-05.md)):
   - Never seen in the game.
   - The 56578 field numbers inside 42's `f7`/`f8` are inferred from 51539, and the search scores
@@ -268,19 +268,21 @@ Collected from each stream's note. Each note has the full list.
   - Every Crucible score limit, time limit and point value is a stand-in.
   - Strikes with neither a script nor a capture are one encounter each.
   - The raid encounter lists are D1 knowledge.
-  - The checkpoint clear and the loot lockouts have no store field; the launch checkpoint is read
-    from the launcher.
+  - The checkpoint clear, the loot lockouts and the launch read-back go through the store
+    (`store-control.state.json`); no run uses them yet.
   - Nothing drives a run on the wire yet.
 - **Generated worlds** ([note](../notes/ps4-56578-worlds-2026-11-05.md)):
   - Generated lists carry default values.
   - 363 activities have no evidence.
   - None of the generated rows has been served in the lab.
 - **Public instances** ([note](../notes/ps4-56578-public-instances-2026-11-05.md)):
-  - No list is served until #319's entry-only frame is plugged into the public host, and the open world's events wait on a real bridge (`PendingBridge` still refuses).
-  - The public instance publishes the mission's checksum, not the world's PUBLIC one.
+  - The lists are entry-only frames with default values, never served to a client yet. The open
+    world's bridge is the script bridge, which refuses until a bubble has a scripted run (stream K).
+  - The public instance publishes the world's PUBLIC checksum from `worlds.tsv`; not measured.
   - The event schedules, patrol beacons, loot timers and social-space cap are placeholders.
   - The authority-reset exchange and peer reservations are not served.
-  - The two placement rules (fullest vs emptiest) disagree.
+  - One placement rule now (the emptiest first), but the responder's matchmaker cannot see the
+    host's registry, so no search places into it yet.
 - **Native RSAT** ([note §5](../notes/ps4-56578-native-rsat-plan-2026-11-05.md)):
   - Kinds 0x22, 0x23, 0x26 and 0x0D stay on the oracle, so most mission lists still go through the
     control worker.

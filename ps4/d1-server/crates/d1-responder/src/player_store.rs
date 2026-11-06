@@ -87,6 +87,10 @@ pub struct Account {
     /// Account inventory slots: slot -> (content index, quantity). Glimmer, Silver, Marks.
     #[serde(default)]
     pub slots: BTreeMap<u16, (u16, u32)>,
+    /// The item instance an account slot holds (the vault: entry `+8`), slot -> instance SOID.
+    /// Stackables have none. Kept beside `slots` so a record written before it reads the same.
+    #[serde(default)]
+    pub slot_instances: BTreeMap<u16, u64>,
     /// The unlock-flag indices served on 503 and 205 (None: the responder's default set).
     #[serde(default)]
     pub unlock_flags: Option<Vec<u16>>,
@@ -149,6 +153,11 @@ pub struct Character {
     pub completions: BTreeMap<u16, Completion>,
     #[serde(default)]
     pub checkpoints: BTreeMap<u16, Checkpoint>,
+    /// Weekly loot lockouts: activity index -> encounter id -> the reset week its loot was last paid
+    /// (`checkpoints::reset_week` in the activity host). An encounter is locked while that week is
+    /// the current one.
+    #[serde(default)]
+    pub lockouts: BTreeMap<u16, BTreeMap<String, u64>>,
     /// Progress of progressions the profile has no known entry for (reputation): name -> progress.
     #[serde(default)]
     pub progress: BTreeMap<String, u64>,
@@ -537,6 +546,8 @@ pub struct VendorCommit {
     pub profile_object: Vec<u8>,
     pub account_payload: Vec<u8>,
     pub slots: BTreeMap<u16, (u16, u32)>,
+    /// The vault's instances (slot -> instance), written with `slots`.
+    pub slot_instances: BTreeMap<u16, u64>,
     pub next_item_soid: u64,
     pub refunds: Vec<Refund>,
     pub added: Option<(u64, Vec<u8>)>,
@@ -698,6 +709,8 @@ impl Store {
         let a = &mut self.record.account;
         a.payload = Some(c.account_payload);
         a.slots = c.slots;
+        // Only the slots that still hold something keep an instance.
+        a.slot_instances = c.slot_instances.into_iter().filter(|(slot, _)| a.slots.contains_key(slot)).collect();
         a.next_item_soid = Some(c.next_item_soid);
         a.refunds = c.refunds;
         self.save(&c.what)?;
@@ -881,6 +894,14 @@ pub trait PlayerStore {
     fn checkpoint(&self, activity: u16) -> Option<&Checkpoint>;
     fn set_checkpoint(&mut self, activity: u16, step: &str);
     fn clear_checkpoint(&mut self, activity: u16) -> bool;
+    /// The reset week `encounter`'s loot was last paid in `activity` (None: never).
+    fn lockout_week(&self, activity: u16, encounter: &str) -> Option<u64>;
+    /// Record that `encounter`'s loot was paid in reset week `week`.
+    fn set_lockout(&mut self, activity: u16, encounter: &str, week: u64);
+
+    // ── open attributes (any stream): the character's `attributes` map ──
+    fn character_attribute(&self, key: &str) -> Option<&Value>;
+    fn set_character_attribute(&mut self, key: &str, value: Value);
 }
 
 impl PlayerStore for Store {
@@ -1030,6 +1051,22 @@ impl PlayerStore for Store {
 
     fn clear_checkpoint(&mut self, activity: u16) -> bool {
         self.chr_mut().checkpoints.remove(&activity).is_some()
+    }
+
+    fn lockout_week(&self, activity: u16, encounter: &str) -> Option<u64> {
+        self.chr().lockouts.get(&activity)?.get(encounter).copied()
+    }
+
+    fn set_lockout(&mut self, activity: u16, encounter: &str, week: u64) {
+        self.chr_mut().lockouts.entry(activity).or_default().insert(encounter.to_string(), week);
+    }
+
+    fn character_attribute(&self, key: &str) -> Option<&Value> {
+        self.chr().attributes.get(key)
+    }
+
+    fn set_character_attribute(&mut self, key: &str, value: Value) {
+        self.chr_mut().attributes.insert(key.to_string(), value);
     }
 }
 
@@ -1320,15 +1357,16 @@ pub fn note_vendor(c: VendorCommit) {
 pub struct VendorSeed {
     pub profile: Option<Vec<u8>>,
     pub slots: BTreeMap<u16, (u16, u32)>,
+    pub slot_instances: BTreeMap<u16, u64>,
     pub next_item_soid: Option<u64>,
     pub refunds: Vec<Refund>,
 }
 
 pub fn vendor_seed() -> Option<VendorSeed> {
-    let (object, payload, source, slots, next, refunds) = view(|s| {
+    let (object, payload, source, slots, slot_instances, next, refunds) = view(|s| {
         let c = s.chr();
         (c.profile_object.clone(), c.profile.clone(), c.profile_source.clone(), s.record.account.slots.clone(),
-         s.record.account.next_item_soid, s.record.account.refunds.clone())
+         s.record.account.slot_instances.clone(), s.record.account.next_item_soid, s.record.account.refunds.clone())
     })?;
     let profile = match (object, payload) {
         (Some(o), _) => Some(o),
@@ -1342,7 +1380,7 @@ pub fn vendor_seed() -> Option<VendorSeed> {
         },
         (None, None) => None,
     };
-    Some(VendorSeed { profile, slots, next_item_soid: next, refunds })
+    Some(VendorSeed { profile, slots, slot_instances, next_item_soid: next, refunds })
 }
 
 // ── control commands ────────────────────────────────────────────────────────────────────────
@@ -1357,8 +1395,14 @@ pub enum Command {
     /// The activity completes: field [6], the rewards table's subs and XP.
     Complete(u16),
     Checkpoint(u16, String),
+    /// `checkpoint N -` or `clear-checkpoint N`: a full clear spends the checkpoint.
+    ClearCheckpoint(u16),
+    /// `lockout N ENCOUNTER week=W`: the encounter's loot was paid in reset week W.
+    Lockout(u16, String, u64),
     Reputation(String, u32),
     Unlock { add: Vec<u16>, clear: Vec<u16> },
+    /// `grant CHARACTER ACTIVITY_HASH OUTCOME ...` from the activity host (`rewards::remote`).
+    Grant(crate::rewards::remote::GrantCommand),
 }
 
 pub fn parse_command(line: &str) -> anyhow::Result<Command> {
@@ -1370,7 +1414,16 @@ pub fn parse_command(line: &str) -> anyhow::Result<Command> {
         Some("activity") => Command::Activity(num(1)? as u16),
         Some("xp") => Command::Xp(num(1)?),
         Some("complete") => Command::Complete(num(1)? as u16),
+        Some("checkpoint") if f.get(2..) == Some(&["-"][..]) => Command::ClearCheckpoint(num(1)? as u16),
         Some("checkpoint") => Command::Checkpoint(num(1)? as u16, f.get(2..).map(|r| r.join(" ")).unwrap_or_default()),
+        Some("clear-checkpoint") => Command::ClearCheckpoint(num(1)? as u16),
+        Some("lockout") => {
+            let week = f.get(3).and_then(|w| w.strip_prefix("week=")).and_then(|w| w.parse().ok())
+                .filter(|_| f.len() == 4)
+                .ok_or_else(|| anyhow::anyhow!("{line:?}: lockout takes N ENCOUNTER week=W"))?;
+            Command::Lockout(num(1)? as u16, f[2].to_string(), week)
+        }
+        Some("grant") => Command::Grant(crate::rewards::remote::parse(&f[1..]).map_err(|e| anyhow::anyhow!("{line:?}: {e:#}"))?),
         Some("reputation") => Command::Reputation(f.get(1).ok_or_else(|| anyhow::anyhow!("{line:?}: no progression"))?.to_string(), num(2)?),
         Some("unlock") => {
             let (mut add, mut clear) = (Vec::new(), Vec::new());
@@ -1383,7 +1436,7 @@ pub fn parse_command(line: &str) -> anyhow::Result<Command> {
             }
             Command::Unlock { add, clear }
         }
-        _ => anyhow::bail!("{line:?}: not a store command (activity, xp, complete, checkpoint, reputation, unlock)"),
+        _ => anyhow::bail!("{line:?}: not a store command (activity, xp, complete, checkpoint, clear-checkpoint, lockout, grant, reputation, unlock)"),
     })
 }
 
@@ -1416,6 +1469,19 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
             s.save(&format!("checkpoint {a} {step}"))?;
             return Ok(format!("checkpoint {a}: {step}"));
         }
+        Command::ClearCheckpoint(a) => {
+            let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+            let had = s.clear_checkpoint(*a);
+            s.save(&format!("checkpoint {a} cleared"))?;
+            return Ok(if had { format!("checkpoint {a} cleared") } else { format!("checkpoint {a}: none to clear") });
+        }
+        Command::Lockout(a, encounter, week) => {
+            let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+            s.set_lockout(*a, encounter, *week);
+            s.save(&format!("lockout {a} {encounter} week={week}"))?;
+            return Ok(format!("lockout {a}: {encounter} paid in week {week}"));
+        }
+        Command::Grant(g) => return run_grant(m, g),
         Command::Reputation(name, n) => {
             let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
             let w = s.add_reputation(name, *n);
@@ -1459,17 +1525,96 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
     Ok(what)
 }
 
+/// A `grant` from the activity host (`rewards::remote`): stream M's grant on the live store, then
+/// the pushes. Needs `D1_REWARDS=1`.
+fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyhow::Result<String> {
+    use crate::rewards::remote;
+    anyhow::ensure!(crate::rewards::enabled(), "D1_REWARDS is off: the grant is not applied");
+    let class = std::env::var("D1_CHARACTER_CLASS").ok().and_then(|v| v.trim().parse().ok()).unwrap_or(0);
+    let (summary, wallet, stale) = {
+        let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
+        let before = s.record.account.slots.clone();
+        let index = remote::ResponderIndex::from_slots(&before);
+        let summary = remote::execute(&mut *s, g, &index, class, crate::mp::enabled())?;
+        s.save(&format!("rewards: {}", summary.line))?;
+        let after = s.record.account.slots.clone();
+        let wallet = (after != before).then(|| (after, s.record.account.slot_instances.clone()));
+        (summary, wallet, s.chr().profile_stale)
+    };
+    for n in &summary.notes {
+        tracing::warn!("      💾 rewards: {n}");
+    }
+    if stale {
+        push_profile("rewards: XP")?;
+    }
+    if let Some((slots, instances)) = wallet {
+        // The wallet changed: the vendor state serves the account, so it publishes the new one.
+        crate::vendor::adopt_account_slots(slots, instances, &format!("rewards: {}", summary.line));
+    }
+    Ok(format!(
+        "{} for {:#018x}{}: {} currency line(s), {} item(s), rules {:?}",
+        summary.line,
+        summary.character,
+        if summary.retargeted { " (the grant named another key; one player per responder: applied to it)" } else { "" },
+        summary.currencies.len(),
+        summary.items,
+        summary.rules
+    ))
+}
+
+/// The file the store writes beside its control file, for the activity host to read back at an
+/// activity's launch: `<control>` with the extension `state.json` (`store-control.state.json`).
+pub fn state_file_for(control: &Path) -> PathBuf {
+    control.with_extension("state.json")
+}
+
+/// What the activity host reads back: the signed-on character, its checkpoints (the `step` the
+/// host wrote, `checkpoints::parse_step`), its weekly loot lockouts and the last grants.
+pub fn state_json(s: &Store) -> Value {
+    let c = s.chr();
+    serde_json::json!({
+        "schema": SCHEMA_VERSION,
+        "revision": s.record.revision,
+        "player": s.record.player,
+        "account": format!("{:#018x}", s.record.account_soid),
+        "character": format!("{:#018x}", s.character),
+        "checkpoints": c.checkpoints.iter().map(|(a, cp)| (a.to_string(), Value::String(cp.step.clone()))).collect::<serde_json::Map<_, _>>(),
+        "lockouts": c.lockouts.iter().map(|(a, l)| (a.to_string(), serde_json::json!(l))).collect::<serde_json::Map<_, _>>(),
+        "grants": c.attributes.get(crate::rewards::remote::ATTR_GRANTS).cloned().unwrap_or(Value::Array(Vec::new())),
+    })
+}
+
+fn write_state(control: &Path) {
+    let Some(text) = view(|s| serde_json::to_string_pretty(&state_json(s))) else { return };
+    let r = text.map_err(anyhow::Error::from).and_then(|t| atomic_write(&state_file_for(control), t.as_bytes()));
+    if let Err(e) = r {
+        tracing::warn!("      ⛔ player store state file: {e:#}");
+    }
+}
+
+/// Take the control file's commands: rename it `.taken` first, then read that, so a line another
+/// process appends meanwhile goes to a new file and waits for the next poll instead of being lost.
+fn take_commands(path: &Path) -> Option<String> {
+    let taken = path.with_extension("taken");
+    std::fs::rename(path, &taken).ok()?;
+    // An append that opened the file just before the rename finishes into `.taken`.
+    std::thread::sleep(std::time::Duration::from_millis(50));
+    std::fs::read_to_string(&taken).ok()
+}
+
 /// Poll the control file once a second: each line is a [`Command`]; the file is renamed `.taken`.
+/// After each batch (and at the start) the store's state file is written for the activity host.
 fn start_control(path: PathBuf) {
+    write_state(&path);
     std::thread::spawn(move || loop {
-        if let Ok(text) = std::fs::read_to_string(&path) {
-            let _ = std::fs::rename(&path, path.with_extension("taken"));
+        if let Some(text) = take_commands(&path) {
             for line in text.lines().map(str::trim).filter(|l| !l.is_empty() && !l.starts_with('#')) {
                 match parse_command(line).and_then(run_command) {
                     Ok(w) => tracing::warn!("      💾 control {line:?}: {w}"),
                     Err(e) => tracing::warn!("      ⛔ control {line:?}: {e:#}"),
                 }
             }
+            write_state(&path);
         }
         std::thread::sleep(std::time::Duration::from_secs(1));
     });
@@ -1786,6 +1931,138 @@ mod tests {
         assert_eq!(s.record.account.vendor_resets[&2668878854], (1_474_362_000 / 60) + 7 * 1440);
         let mut none = open(&tempdir("none").0, &Sources::default());
         assert!(none.change_unlock_flags(&[1], &[]).is_err(), "no served list, nothing to change");
+    }
+
+    /// Stream O: `ps4/profiles/full-game.env`'s `[server]` knobs (#320) through the responder's
+    /// parsers. The store, its command file and rewards resolve on, the state file is the one the
+    /// activity host reads (`checkpoints::state_file_for`), and every `[server]` knob the responder
+    /// reads is in its startup table (`=== d1-responder environment`), so the table shows it SET.
+    /// The activity host's side is `d1-activity-host/tests/full_game_profile.rs`.
+    #[test]
+    fn the_full_game_profile_turns_the_store_seams_on() {
+        let repo = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../..");
+        let profile = repo.join("ps4/profiles/full-game.env");
+        if !profile.is_file() {
+            eprintln!("SKIP: no {} (#320's profile)", profile.display());
+            return;
+        }
+        fn read(path: &Path, server: &mut BTreeMap<String, String>) {
+            let mut section = String::new();
+            for line in std::fs::read_to_string(path).unwrap().lines().map(str::trim) {
+                if line.is_empty() || line.starts_with('#') {
+                    continue;
+                }
+                if let Some(f) = line.strip_prefix("@include ") {
+                    read(&path.parent().unwrap().join(f.trim()), server);
+                } else if let Some(s) = line.strip_prefix('[').and_then(|l| l.strip_suffix(']')) {
+                    section = s.to_string();
+                } else if section == "server" {
+                    let (k, v) = line.trim_start_matches('?').split_once('=').unwrap();
+                    server.insert(k.to_string(), v.replace("${RUN}", "run").replace("${STAGING}", "staging"));
+                }
+            }
+        }
+        let mut server = BTreeMap::new();
+        read(&profile, &mut server);
+        let var = |k: &str| server.get(k).filter(|v| !v.is_empty()).cloned();
+        let cfg = Config::from_vars(var).expect("D1_STORE=1 in full-game.env");
+        let control = cfg.control.clone().expect("D1_STORE_CONTROL: the activity host's checkpoints and grants");
+        assert_eq!(state_file_for(&control), Path::new("run/store-control.state.json"));
+        assert_eq!(var("D1_REWARDS").as_deref(), Some("1"), "grants are applied (rewards::enabled)");
+        // The responder's own knobs: every one it reads is in its startup table.
+        let mut source = String::new();
+        // The responder's own source and d1-mp's, whose knobs it reads through `Services::from_env`.
+        let src = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
+        let mut dirs = vec![src, PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../d1-mp/src")];
+        while let Some(d) = dirs.pop() {
+            for e in std::fs::read_dir(&d).unwrap().flatten() {
+                let p = e.path();
+                if p.is_dir() {
+                    dirs.push(p);
+                } else if p.extension().is_some_and(|x| x == "rs") {
+                    source += &std::fs::read_to_string(&p).unwrap();
+                }
+            }
+        }
+        let table: Vec<&str> = crate::KNOBS.iter().chain(crate::rewards::KNOBS).map(|(k, _, _)| *k).collect();
+        let unlisted: Vec<&String> = server
+            .keys()
+            .filter(|k| source.contains(&format!("\"{k}\"")) && !table.contains(&k.as_str()))
+            .collect();
+        assert!(unlisted.is_empty(), "the responder reads these full-game knobs but its startup table does not list them: {unlisted:?}");
+    }
+
+    /// Stream O: the commands the activity host writes (checkpoint clears, lockouts, grants).
+    #[test]
+    fn the_hosts_commands_parse() {
+        assert_eq!(parse_command("checkpoint 15 -").unwrap(), Command::ClearCheckpoint(15));
+        assert_eq!(parse_command("clear-checkpoint 15").unwrap(), Command::ClearCheckpoint(15));
+        assert_eq!(parse_command("checkpoint 15 1 the-bridge week=2965").unwrap(), Command::Checkpoint(15, "1 the-bridge week=2965".into()));
+        assert_eq!(parse_command("lockout 15 the-abyss week=2965").unwrap(), Command::Lockout(15, "the-abyss".into(), 2965));
+        assert!(parse_command("lockout 15 the-abyss").is_err());
+        assert!(parse_command("lockout 15 the-abyss week=x").is_err());
+        let Command::Grant(g) = parse_command("grant 0xd100000000000101 0x0bbd0e26 completed source=script").unwrap() else { panic!() };
+        assert_eq!(g.activity_hash, 0x0BBD_0E26);
+        assert!(parse_command("grant 0x1 0x2 nope").is_err());
+    }
+
+    /// #309's gap: a vault item keeps its instance through a vendor commit, a save and a restart.
+    #[test]
+    fn vault_instances_and_lockouts_persist() {
+        let d = tempdir("vault");
+        let mut s = open(&d.0, &lab_sources());
+        let mut slots = s.record.account.slots.clone();
+        slots.insert(20, (1234, 1));
+        s.commit_vendor(VendorCommit {
+            profile_payload: b"vault".to_vec(),
+            profile_object: profile_object(),
+            account_payload: vec![1, 2, 3],
+            slots,
+            slot_instances: BTreeMap::from([(20, 0xD100_0000_0000_030B), (21, 0x999)]),
+            next_item_soid: 0x700,
+            refunds: Vec::new(),
+            added: None,
+            removed: None,
+            what: "vault move".into(),
+        })
+        .unwrap();
+        s.set_lockout(15, "the-abyss", 2965);
+        s.save("x").unwrap();
+        drop(s);
+        let s = open(&d.0, &Sources::default());
+        assert_eq!(s.record.account.slot_instances, BTreeMap::from([(20, 0xD100_0000_0000_030B)]), "slot 21 holds nothing, so no instance");
+        assert_eq!(s.lockout_week(15, "the-abyss"), Some(2965));
+        assert_eq!(s.lockout_week(15, "the-bridge"), None);
+        // A record from before the field reads with no instances.
+        let mut v = serde_json::to_value(&s.record).unwrap();
+        v["account"].as_object_mut().unwrap().remove("slot_instances");
+        v["characters"].as_object_mut().unwrap().values_mut().for_each(|c| { c.as_object_mut().unwrap().remove("lockouts"); });
+        let old = migrate(v).unwrap();
+        assert!(old.account.slot_instances.is_empty());
+    }
+
+    #[test]
+    fn the_state_file_carries_checkpoints_lockouts_and_the_character() {
+        let mut s = Store::in_memory(Identity::from_env(), &Sources::default());
+        s.set_checkpoint(15, "1 the-bridge week=2965");
+        s.set_lockout(15, "the-abyss", 2965);
+        let v = state_json(&s);
+        assert_eq!(v["character"], format!("{:#018x}", s.identity().character));
+        assert_eq!(v["checkpoints"]["15"], "1 the-bridge week=2965");
+        assert_eq!(v["lockouts"]["15"]["the-abyss"], 2965);
+        assert_eq!(state_file_for(Path::new("run/store-control.txt")), Path::new("run/store-control.state.json"));
+    }
+
+    #[test]
+    fn commands_are_taken_by_renaming_first() {
+        let d = tempdir("take");
+        let path = d.0.join("store-control.txt");
+        assert!(take_commands(&path).is_none(), "no file, nothing to take");
+        std::fs::write(&path, "checkpoint 15 -\n").unwrap();
+        assert_eq!(take_commands(&path).as_deref(), Some("checkpoint 15 -\n"));
+        assert!(!path.exists(), "the next writer starts a new file");
+        std::fs::write(&path, "xp 1\n").unwrap();
+        assert_eq!(take_commands(&path).as_deref(), Some("xp 1\n"), "a second batch replaces the old .taken");
     }
 
     #[test]

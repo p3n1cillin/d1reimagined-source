@@ -83,6 +83,9 @@ pub struct Plan {
 #[derive(Debug, Default)]
 pub struct GeneratedWorlds {
     pub worlds: HashMap<String, WorldFacts>,
+    /// `worlds.tsv`'s `public_checksum` (`scenario_record+0x10`), by world: what a public
+    /// instance of the world publishes (stream O; `public_host::PublicHost::public_checksum`).
+    pub public_checksums: HashMap<String, u32>,
     pub slices: HashMap<(String, u32), SliceSet>,
     /// Per bundle tag: (group, lookup bubble, clients), in file order.
     pub bundles: HashMap<u32, Vec<(u32, i32, Vec<Client>)>>,
@@ -139,6 +142,19 @@ fn rows<'a>(text: &'a str, want: &[&str]) -> Result<Vec<HashMap<&'a str, &'a str
         .collect()
 }
 
+/// Only `worlds.tsv`'s PUBLIC checksums, by world (what `GeneratedWorlds::public_checksums` holds),
+/// for a host that serves public instances without loading the other tables.
+pub fn read_public_checksums(dir: &Path) -> Result<HashMap<String, u32>> {
+    let text = std::fs::read_to_string(dir.join("worlds.tsv")).with_context(|| format!("{}", dir.join("worlds.tsv").display()))?;
+    let mut out = HashMap::new();
+    for r in rows(&text, &["world", "public_checksum"]).context("worlds.tsv")? {
+        if let Some(c) = opt(r["public_checksum"])?.filter(|c| *c != 0) {
+            out.insert(r["world"].to_string(), c);
+        }
+    }
+    Ok(out)
+}
+
 impl GeneratedWorlds {
     /// Read `worlds.tsv`, `slice-sets.tsv`, `bundles.tsv` and `activities.tsv` from `dir`.
     pub fn load(dir: &Path) -> Result<Self> {
@@ -175,6 +191,9 @@ impl GeneratedWorlds {
                 bubble_count: num(r["bubble_count"])?,
                 chosen: list(r["chosen"])?.into_iter().map(|b| b as usize).collect(),
             };
+            if let Some(c) = r.get("public_checksum").copied().map(opt).transpose()?.flatten().filter(|c| *c != 0) {
+                g.public_checksums.insert(w.name.clone(), c);
+            }
             g.worlds.insert(w.name.clone(), w);
         }
         for r in rows(
@@ -452,6 +471,18 @@ mod tests {
     fn committed() -> GeneratedWorlds {
         let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578/worlds");
         GeneratedWorlds::load(&dir).expect("committed tables")
+    }
+
+    /// Stream O: every world's PUBLIC checksum is read; a destination's worlds share one.
+    #[test]
+    fn committed_worlds_carry_their_public_checksums() {
+        let g = committed();
+        assert_eq!(g.public_checksums.get("act_cosmo_m1_dome_a"), Some(&0xe354_f1ea));
+        assert_eq!(g.public_checksums.get("act_cosmo_m0_highway"), Some(&0xe354_f1ea));
+        assert_eq!(g.public_checksums.get("act_mars_m01_valley"), Some(&0x325c_4bed));
+        assert!(g.public_checksums.len() >= g.worlds.len() / 2, "{} of {}", g.public_checksums.len(), g.worlds.len());
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578/worlds");
+        assert_eq!(read_public_checksums(&dir).unwrap(), g.public_checksums);
     }
 
     /// The committed tables agree with every world the host measured or read before them.

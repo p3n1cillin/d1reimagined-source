@@ -27,6 +27,7 @@ pub mod loot;
 pub mod placeholders;
 pub mod player_store_adapter;
 pub mod records;
+pub mod remote;
 pub mod store;
 pub mod tables;
 pub mod talent_grid;

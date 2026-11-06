@@ -428,6 +428,24 @@ pub trait PublicInstances {
     fn instances(&self, bubble: u32) -> Vec<PublicInstance>;
     /// Hold `slots` in `host` for an arriving fireteam. `false` if it no longer has room.
     fn reserve(&mut self, host: u64, slots: usize) -> bool;
+    /// The hosts to try for a fireteam reserving `reservation` slots, best first. The registry
+    /// that owns the instances owns the rule: stream G's registry (`d1-activity-host`,
+    /// `PublicRegistry::placement_order`) overrides this with its own. The default is the same
+    /// rule, [`emptiest_first`].
+    fn placement_order(&self, bubble: u32, reservation: usize) -> Vec<u64> {
+        emptiest_first(&self.instances(bubble), reservation)
+    }
+}
+
+/// ⭐ The public placement rule: the **emptiest** instance with room for the whole reservation,
+/// the oldest first on a tie (then the lowest host id). This is stream G's registry's rule, which
+/// it records as Bungie's stated design (`d1-activity-host/src/public_registry.rs`). It replaces the "fullest first"
+/// fill this module had: the live captures do not show which one the live matchmaker used, and
+/// the two rules must not disagree (`notes/ps4-56578-integration-wiring-2026-11-05.md`).
+pub fn emptiest_first(instances: &[PublicInstance], reservation: usize) -> Vec<u64> {
+    let mut v: Vec<&PublicInstance> = instances.iter().filter(|i| i.room() >= reservation.max(1)).collect();
+    v.sort_by_key(|i| (i.players + i.reserved, i.started_ms, i.host));
+    v.into_iter().map(|i| i.host).collect()
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -439,15 +457,14 @@ pub enum PublicPlacement {
     StartNew,
 }
 
-/// ⭐ Place a fireteam in a public bubble: the fullest instance with room for its whole
-/// reservation (`reservation`, at least its size: the fireteam's cap, so absent members can follow).
+/// ⭐ Place a fireteam in a public bubble with room for its whole reservation (`reservation`, at
+/// least its size: the fireteam's cap, so absent members can follow). The order is the registry's
+/// ([`PublicInstances::placement_order`]; [`emptiest_first`] by default), so the matchmaker and
+/// the registry place by one rule.
 pub fn place_in_public(bubble: u32, reservation: usize, registry: &mut dyn PublicInstances) -> PublicPlacement {
-    let mut v = registry.instances(bubble);
-    v.retain(|i| i.room() >= reservation.max(1));
-    v.sort_by_key(|i| (std::cmp::Reverse(i.players + i.reserved), i.started_ms, i.host));
-    for i in v {
-        if registry.reserve(i.host, reservation.max(1)) {
-            return PublicPlacement::Join { host: i.host };
+    for host in registry.placement_order(bubble, reservation) {
+        if registry.reserve(host, reservation.max(1)) {
+            return PublicPlacement::Join { host };
         }
     }
     PublicPlacement::StartNew
@@ -876,17 +893,41 @@ mod tests {
     }
 
     #[test]
-    fn public_fill_takes_the_fullest_instance_with_room_for_the_reservation() {
+    fn public_fill_takes_the_emptiest_instance_with_room_for_the_reservation() {
         let mut reg = InMemoryPublicInstances::default();
-        reg.by_bubble.insert(BUBBLE, vec![inst(10, 1, 2, 0), inst(11, 2, 1, 5), inst(12, 4, 0, 1)]);
-        // A fireteam reserving 3: 12 has only 2 left; 10 and 11 both hold 3, 10 started first.
-        assert_eq!(place_in_public(BUBBLE, 3, &mut reg), PublicPlacement::Join { host: 10 });
-        // 10 is now full (its reservation taken); next is 11.
+        reg.by_bubble.insert(BUBBLE, vec![inst(10, 1, 2, 0), inst(11, 1, 0, 5), inst(12, 4, 0, 1)]);
+        // A fireteam reserving 3: 12 has only 2 left; 11 (1 held) is emptier than 10 (3 held).
         assert_eq!(place_in_public(BUBBLE, 3, &mut reg), PublicPlacement::Join { host: 11 });
-        // A solo player still fits in 12.
+        // 10 and 11 now both hold 3 and have 3 left; 10 started first.
+        assert_eq!(place_in_public(BUBBLE, 3, &mut reg), PublicPlacement::Join { host: 10 });
+        // Both are full; a solo player still fits in 12.
         assert_eq!(place_in_public(BUBBLE, 1, &mut reg), PublicPlacement::Join { host: 12 });
         assert_eq!(place_in_public(BUBBLE, 3, &mut reg), PublicPlacement::StartNew);
         assert_eq!(place_in_public(0x8001_0030, 1, &mut reg), PublicPlacement::StartNew);
+    }
+
+    /// A registry that places by its own rule is asked for the order.
+    #[test]
+    fn the_registry_owns_the_placement_order() {
+        struct Reversed(InMemoryPublicInstances);
+        impl PublicInstances for Reversed {
+            fn instances(&self, bubble: u32) -> Vec<PublicInstance> {
+                self.0.instances(bubble)
+            }
+            fn reserve(&mut self, host: u64, slots: usize) -> bool {
+                self.0.reserve(host, slots)
+            }
+            fn placement_order(&self, bubble: u32, reservation: usize) -> Vec<u64> {
+                let mut v = emptiest_first(&self.instances(bubble), reservation);
+                v.reverse();
+                v
+            }
+        }
+        let mut reg = Reversed(InMemoryPublicInstances::default());
+        reg.0.by_bubble.insert(BUBBLE, vec![inst(10, 1, 0, 0), inst(11, 3, 0, 0)]);
+        assert_eq!(place_in_public(BUBBLE, 1, &mut reg), PublicPlacement::Join { host: 11 });
+        assert_eq!(emptiest_first(&reg.instances(BUBBLE), 1), vec![10, 11]);
+        assert_eq!(emptiest_first(&reg.instances(BUBBLE), 3), vec![10], "11 has 2 left");
     }
 
     fn ft(n: u64) -> FireteamId {
