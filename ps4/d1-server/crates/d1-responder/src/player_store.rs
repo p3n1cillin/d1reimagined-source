@@ -158,9 +158,13 @@ pub struct Character {
     /// the current one.
     #[serde(default)]
     pub lockouts: BTreeMap<u16, BTreeMap<String, u64>>,
-    /// Progress of progressions the profile has no known entry for (reputation): name -> progress.
+    /// Reputation totals by progression name, including legacy store-only grants.
     #[serde(default)]
     pub progress: BTreeMap<String, u64>,
+    /// Grants awaiting a decoded profile. These are deltas, so a seeded profile's existing
+    /// reputation is preserved when its codec finishes decoding. Absent in older records.
+    #[serde(default)]
+    pub reputation_pending: BTreeMap<String, u64>,
     /// The character's Light as the rewards stream last computed it (the client derives the shown
     /// value from the equipped gear; this is the server's copy for matchmaking and gates).
     #[serde(default)]
@@ -785,22 +789,78 @@ impl Store {
         Ok(events)
     }
 
-    /// Reputation or rank progress for a progression the profile carries no known entry for: kept
-    /// in the store, its rank from the curve.
+    /// Merge saved reputation into a decoded profile, using the exported curve ordinals. Work on
+    /// a copy: a full table or an unrepresentable total must not partially apply a grant.
+    fn sync_reputation(&mut self) -> anyhow::Result<()> {
+        if self.chr().progress.is_empty() {
+            return Ok(());
+        }
+        let mut object = self.chr().profile_object.clone()
+            .ok_or_else(|| anyhow::anyhow!("reputation awaits a decoded profile"))?;
+        let entries = progression::progressions(&object);
+        let mut applied = Vec::new();
+        for (name, saved) in &self.chr().progress {
+            let Some(index) = self.curves.by_name(name).and_then(|c| c.runtime_index) else { continue };
+            let pending = self.chr().reputation_pending.get(name).copied().unwrap_or(0);
+            let baseline = saved.saturating_sub(pending)
+                .max(u64::from(entries.get(&index).map(|p| p.0).unwrap_or(0)));
+            let total = u32::try_from(baseline.checked_add(pending)
+                .ok_or_else(|| anyhow::anyhow!("{name}: reputation overflow"))?)?;
+            progression::set_progress(&mut object, index, total)?;
+            applied.push((name.clone(), total));
+        }
+        let changed = self.chr().profile_object.as_ref() != Some(&object);
+        let summary = summarize(&object, &self.curves);
+        let c = self.chr_mut();
+        c.profile_object = Some(object);
+        c.summary = Some(summary);
+        c.profile_stale |= changed;
+        for (name, total) in applied {
+            c.reputation_pending.remove(&name);
+            c.progress.insert(name, u64::from(total));
+        }
+        Ok(())
+    }
+
+    /// Reputation through the curve's exported ordinal into the profile. Without a decoded
+    /// object, retain a pending delta for the next push/sign-on. Unknown ordinals stay labelled.
     pub fn add_reputation(&mut self, name: &str, amount: u32) -> String {
         let Some(curve) = self.curves.by_name(name).cloned() else {
             return format!("⛔ no progression curve named {name}");
         };
-        let p = self.chr_mut().progress.entry(name.to_string()).or_insert(0);
-        let before = curve.level(*p);
-        *p += u64::from(amount);
-        let after = curve.level(*p);
-        let mut s = format!("{name} +{amount} = {} (rank {before} -> {after})", *p);
-        if curve.runtime_index.is_some() {
-            // TODO(progression): write the exported ordinal's entry and re-encode the profile.
-            s.push_str("; kept in the store only");
+        if self.chr().profile_object.is_some() {
+            if let Err(e) = self.sync_reputation() {
+                return format!("⛔ {e}; reputation unchanged");
+            }
         }
-        s
+        let existing = curve.runtime_index.and_then(|index| self.chr().profile_object.as_ref()
+            .and_then(|o| progression::progressions(o).get(&index).map(|p| u64::from(p.0))))
+            .unwrap_or(0).max(self.chr().progress.get(name).copied().unwrap_or(0));
+        let Some(total) = existing.checked_add(u64::from(amount)).filter(|n| *n <= u64::from(u32::MAX)) else {
+            return format!("⛔ {name}: reputation overflow; unchanged");
+        };
+        let mut suffix = "; kept in the store only (no runtime index)";
+        if let Some(index) = curve.runtime_index {
+            if let Some(mut object) = self.chr().profile_object.clone() {
+                if let Err(e) = progression::set_progress(&mut object, index, total as u32) {
+                    return format!("⛔ {e}; reputation unchanged");
+                }
+                let summary = summarize(&object, &self.curves);
+                let c = self.chr_mut();
+                c.profile_object = Some(object);
+                c.summary = Some(summary);
+                c.profile_stale = true;
+                suffix = "; profile push required";
+            } else {
+                *self.chr_mut().reputation_pending.entry(name.to_string()).or_default() += u64::from(amount);
+                self.chr_mut().profile_stale = true;
+                suffix = "; awaiting decoded profile";
+            }
+        }
+        self.chr_mut().progress.insert(name.to_string(), total);
+        let message = format!("{name} +{amount} = {total} (rank {} -> {}){suffix}", curve.level(existing), curve.level(total));
+        self.touch(&message);
+        message
     }
 
     /// Note every vendor reset since the last look (epoch minutes `now`).
@@ -1152,7 +1212,7 @@ fn global() -> Option<&'static Mutex<Store>> {
                 tracing::warn!("      💾 player store ON: {} (player {}, r{}, schema {}, saved every {:?})",
                                s.path().map(|p| p.display().to_string()).unwrap_or_default(), cfg.player,
                                s.record.revision, s.record.schema, cfg.save_every);
-                if s.chr().profile_stale {
+                if s.chr().profile_stale || !s.chr().progress.is_empty() {
                     match reencode(&mut s) {
                         Ok(()) => tracing::warn!("      💾 the stored profile was edited since it was encoded: re-encoded"),
                         Err(e) => tracing::warn!("      ⛔ player store: re-encoding the edited profile failed ({e:#}); serving the last encoding"),
@@ -1195,6 +1255,7 @@ fn start_periodic_save(every: std::time::Duration) {
 
 /// Encode the edited profile object into the served payload (the client's codec).
 fn reencode(s: &mut Store) -> anyhow::Result<()> {
+    s.sync_reputation()?;
     let obj = s.chr().profile_object.clone().ok_or_else(|| anyhow::anyhow!("no profile object"))?;
     let oracle = crate::vendor::oracle_path();
     let (encoded, _) = crate::vendor::encode(&oracle, "0x80801743", &obj, &crate::vendor::unique_name("store-reencode"))?;
@@ -1213,21 +1274,27 @@ pub fn with_store<T>(f: impl FnOnce(&mut dyn PlayerStore) -> T) -> Option<T> {
     Some(f(&mut *s))
 }
 
-/// After a [`PlayerStore`] edit to the profile (XP): re-encode it, save, and push it to the client
+/// After a [`PlayerStore`] edit to the profile (XP or reputation): re-encode, save, and push
 /// (`D1_PROFILE_PUSH_FILE`) as the control commands do. Nothing to do when it isn't stale.
 #[allow(dead_code)] // an entry point for streams I, M, J and H; not called by the responder yet
 pub fn push_profile(what: &str) -> anyhow::Result<()> {
     let m = global().ok_or_else(|| anyhow::anyhow!("the store is off"))?;
     let encoded = {
         let mut s = m.lock().map_err(|_| anyhow::anyhow!("poisoned"))?;
-        if !s.chr().profile_stale {
-            return Ok(());
-        }
-        reencode(&mut s)?;
-        s.save(what)?;
-        s.chr().profile.clone().unwrap_or_default()
+        let Some(encoded) = prepare_profile_push(&mut s, what)? else { return Ok(()) };
+        encoded
     };
     write_push(&encoded)
+}
+
+fn prepare_profile_push(s: &mut Store, what: &str) -> anyhow::Result<Option<Vec<u8>>> {
+    s.sync_reputation()?;
+    if !s.chr().profile_stale {
+        return Ok(None);
+    }
+    reencode(s)?;
+    s.save(what)?;
+    Ok(s.chr().profile.clone())
 }
 
 /// Write a profile push for the responder to deliver, one at a time.
