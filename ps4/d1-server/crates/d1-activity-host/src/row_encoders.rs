@@ -591,11 +591,19 @@ impl RowEncoders {
                 if let Some(e) = expect(KIND_OBJECT) {
                     return e;
                 }
-                self.note_fields(kind, state, &["incarnation", "present"]);
+                self.note_fields(kind, state, &["incarnation", "present", "device"]);
                 let mut image = base_a(TAG_OBJECT).unwrap_or_else(object_default);
                 let incarnation = state.get("incarnation").and_then(Value::as_u64).unwrap_or(1) as u32;
                 put_u32(&mut image, 0, incarnation.max(1));
                 image[8] = u8::from(state.get("present").and_then(Value::as_bool).unwrap_or(false));
+                // F41 ⚠ inferred: a device's position at +4, the u32 the 56578 prop state added after
+                // 01.24 (blockers-2026-10-15). The Breach's light-up sets o_breach_control and
+                // o_breach_gating_lights to position 1 (enc_breach_m0's sc_ghost_light_up), and the
+                // step schedule's activation, built from the reference, set those props' +4 to 1.
+                // BullShcript's position stamp (`revision`) has no known field yet.
+                if let Some(position) = state.get("device").and_then(|d| d.get("position")).and_then(Value::as_u64) {
+                    put_u32(&mut image, 4, position as u32);
+                }
                 with_a(TAG_OBJECT, image)
             }
             "scoreboard" => {
@@ -939,7 +947,9 @@ mod tests {
         assert_eq!((u32_at(i, 0x48), i[0x74]), (Some(NONE_HASH), 0xFF));
 
         let ob = e.encode(RowKey { group: 1, kind: 4, index: 2 }, "object", &json!({"incarnation": 3, "present": true, "device": {"position": 1, "revision": 1}}), None, CTX, &no_map);
-        assert_eq!(&image(&ob)[0..0x14], &hex("030000000000000001000000c59d1c81ff00ffff"));
+        assert_eq!(&image(&ob)[0..0x14], &hex("030000000100000001000000c59d1c81ff00ffff"), "the device position at +4 (F41)");
+        let plain = e.encode(RowKey { group: 1, kind: 4, index: 3 }, "object", &json!({"incarnation": 1, "present": true}), None, CTX, &no_map);
+        assert_eq!(&image(&plain)[0..0x0C], &hex("010000000000000001000000"), "no device, +4 stays 0");
 
         let k = RowKey { group: 0x992B_B471, kind: 32, index: 7 };
         let active = e.encode(k, "playerObjective", &json!({"state": 2, "navPoints": [{"ref": {"bundle": 0x992B, "typeId": 0x2C, "typeIndex": 52}, "x": 0, "y": 0, "z": 0}]}), None, CTX, &map);
