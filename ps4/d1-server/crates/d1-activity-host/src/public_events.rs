@@ -307,7 +307,7 @@ impl PublicEventRunner {
         let outcome = ActivityOutcome::PublicEvent { event_id: event.id, completed, tier };
         let mut rewarded = 0;
         for c in self.participation.characters().collect::<Vec<_>>() {
-            match rewards.grant_activity_rewards(&crate::rewards::CharacterRef::from_key(c), event.activity_hash, &outcome) {
+            match rewards.grant_activity_rewards(&crate::rewards::CharacterRef::for_key(c), event.activity_hash, &outcome) {
                 Ok(()) => rewarded += 1,
                 Err(e) => tracing::warn!("public event {} reward for {c:#x} not granted: {e}", event.id),
             }

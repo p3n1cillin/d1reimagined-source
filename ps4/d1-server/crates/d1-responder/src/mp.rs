@@ -65,6 +65,22 @@ pub fn init(npid: &str, account: u64) {
                         })));
                         warn!("⭐ MP: accounts resolve through the player store's identities.json");
                     }
+                    // Stream O2: the activity framework's playlists (the host's data: this
+                    // process reads the table generated from it beside the definitions).
+                    match playlists_path().map(|p| (std::fs::read_to_string(&p), p)) {
+                        Some((Ok(text), p)) => match d1_mp::matchmaking::parse_playlists(&text) {
+                            Ok(list) => {
+                                let n = list.len();
+                                for pl in list {
+                                    s.matchmaker.add_playlist(pl);
+                                }
+                                warn!("⭐ MP: {n} matchmaking playlists from {}", p.display());
+                            }
+                            Err(e) => warn!("⚠ MP: {}: {e}; no playlists", p.display()),
+                        },
+                        Some((Err(e), p)) => warn!("⚠ MP: {}: {e}; no playlists", p.display()),
+                        None => {}
+                    }
                     warn!("⭐ D1_MP=1: multiplayer services on (identities, fireteams, matchmaking directory, platform sessions); \
                            '{npid}' is account {account:#018x}");
                     Some(Mutex::new(s))
@@ -78,6 +94,23 @@ pub fn init(npid: &str, account: u64) {
             None
         }
     });
+}
+
+/// Stream O2: where the matchmaker's playlists come from: `matchmaking-playlists.tsv` in the
+/// activity framework's folder (`D1_AH_ACTIVITY_FRAMEWORK`, a folder, or `1` for this checkout's
+/// `ps4/fixtures/56578/activities`). None when the framework is off.
+pub fn playlists_path() -> Option<std::path::PathBuf> {
+    playlists_path_for(std::env::var("D1_AH_ACTIVITY_FRAMEWORK").ok().as_deref())
+}
+
+fn playlists_path_for(knob: Option<&str>) -> Option<std::path::PathBuf> {
+    let v = knob.map(str::trim).filter(|v| !v.is_empty() && *v != "0")?;
+    let dir = if v == "1" {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578/activities")
+    } else {
+        std::path::PathBuf::from(v)
+    };
+    Some(dir.join("matchmaking-playlists.tsv"))
 }
 
 pub fn enabled() -> bool {
@@ -131,6 +164,11 @@ pub fn matchmaking_reply(conn: u64, body: &[u8]) -> Option<Vec<u8>> {
     with(|s| match s.matchmaking(ConnectionId(conn), body, now_ms()) {
         Ok(r) => {
             warn!("      ⭐ MP matchmaking (connection #{conn}): {:?}", r.action);
+            // Stream O2: a public-bubble search (slot 1) places the fireteam in the activity
+            // host's public instances and holds its slots there (public_feed.rs).
+            if let d1_mp::matchmaking::DirectoryAction::Searched { slot: 1, set_id, needed, .. } = r.action {
+                crate::public_feed::on_bubble_search(set_id, needed as usize);
+            }
             Some(r.body)
         }
         Err(e) => {
@@ -309,6 +347,25 @@ mod tests {
 
     /// With D1_MP unset every hook declines, so the single-player answers stand. (Runs in its
     /// own process state: `init` is never called here, so the services are absent.)
+    #[test]
+    fn the_committed_playlists_load_into_the_matchmaker() {
+        assert_eq!(playlists_path_for(None), None);
+        assert_eq!(playlists_path_for(Some("0")), None);
+        let p = playlists_path_for(Some("1")).unwrap();
+        let list = d1_mp::matchmaking::parse_playlists(&std::fs::read_to_string(&p).unwrap()).unwrap();
+        let n = list.len();
+        assert!(n > 0);
+        let coop = list.iter().find(|p| matches!(p.kind, d1_mp::matchmaking::PlaylistKind::Cooperative { .. })).unwrap().hash;
+        let mut s = d1_mp::Services::default();
+        for pl in list {
+            s.matchmaker.add_playlist(pl);
+        }
+        // A cooperative playlist places a fireteam at once: the playlist is known.
+        let id = d1_mp::identity::OnlineId::new("o2-test").unwrap();
+        s.sign_on(d1_mp::identity::ConnectionId(1), &id, 0).unwrap();
+        assert!(s.launch_playlist(d1_mp::identity::ConnectionId(1), coop, None, 0).is_ok(), "{n} playlists");
+    }
+
     #[test]
     fn every_hook_declines_when_mp_is_off() {
         assert!(!enabled());

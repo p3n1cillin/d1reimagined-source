@@ -121,27 +121,40 @@ fn main() -> anyhow::Result<()> {
             // loads the strike/raid/arena/Crucible data and logs its coverage. Off by default;
             // nothing on the wire changes. The script bridge and the host's event paths drive
             // `encounter_framework::ActivityRun` / `pvp::CrucibleMatch` from here on.
+            let mut framework: Option<(d1_activity_host::encounter_framework::ActivityLibrary, std::sync::Arc<dyn d1_activity_host::checkpoints::CheckpointStore>)> = None;
             if let Some(v) = std::env::var_os(d1_activity_host::encounter_framework::KNOB).filter(|v| !v.is_empty() && v != "0") {
                 use d1_activity_host::encounter_framework::{self as ef, ActivityLibrary};
                 let dir = if v == "1" { ActivityLibrary::default_dir() } else { std::path::PathBuf::from(v) };
-                match ActivityLibrary::load(&dir) {
+                let lib = match ActivityLibrary::load(&dir) {
                     Ok(lib) => {
                         tracing::info!("activity framework: {}", ef::summary(&lib));
                         for p in lib.validate() {
                             tracing::warn!("activity framework: {p}");
                         }
+                        Some(lib)
                     }
-                    Err(e) => tracing::warn!("activity framework: {} not loaded: {e}", dir.display()),
-                }
+                    Err(e) => {
+                        tracing::warn!("activity framework: {} not loaded: {e}", dir.display());
+                        None
+                    }
+                };
                 // stream O: where the framework's checkpoints and lockouts go (the responder's store).
-                match d1_activity_host::checkpoints::ControlFileCheckpointStore::from_env() {
-                    Some(c) => tracing::info!(
-                        "activity framework: checkpoints and lockouts go to the player store (character {:#018x}, read back from {})",
-                        c.character(),
-                        d1_activity_host::checkpoints::state_file_for(std::path::Path::new(&std::env::var("D1_STORE_CONTROL").unwrap_or_default())).display()
-                    ),
-                    None => tracing::info!("activity framework: checkpoints stay in memory (no D1_STORE=1 with D1_STORE_CONTROL)"),
-                }
+                let store: std::sync::Arc<dyn d1_activity_host::checkpoints::CheckpointStore> =
+                    match d1_activity_host::checkpoints::ControlFileCheckpointStore::from_env() {
+                        Some(c) => {
+                            tracing::info!(
+                                "activity framework: checkpoints and lockouts go to the player store (character {:#018x}, read back from {})",
+                                c.character(),
+                                d1_activity_host::checkpoints::state_file_for(std::path::Path::new(&std::env::var("D1_STORE_CONTROL").unwrap_or_default())).display()
+                            );
+                            std::sync::Arc::new(c)
+                        }
+                        None => {
+                            tracing::info!("activity framework: checkpoints stay in memory (no D1_STORE=1 with D1_STORE_CONTROL)");
+                            std::sync::Arc::new(d1_activity_host::checkpoints::MemoryCheckpointStore::new())
+                        }
+                    };
+                framework = lib.map(|l| (l, store));
             }
             // ── end HOOK ──
             // ── stream O ── rewards across the process boundary: with D1_REWARDS=1, D1_STORE=1 and
@@ -151,6 +164,22 @@ fn main() -> anyhow::Result<()> {
             match &grant_forwarder {
                 Some(f) => tracing::info!("⭐ rewards: grants go to the player store through {}", f.path().display()),
                 None => tracing::info!("rewards: no grant forwarding (needs D1_REWARDS=1, D1_STORE=1 and D1_STORE_CONTROL); grants are logged only"),
+            }
+            // ── stream O2 ── the framework's runs go on the wire (activity_driver.rs): each
+            // instance starts an `ActivityRun` at the join when a definition runs the activity.
+            if let Some((lib, store)) = framework {
+                let rewards: Option<std::sync::Arc<std::sync::Mutex<dyn d1_activity_host::rewards::ActivityRewards + Send>>> =
+                    grant_forwarder.clone().map(|f| std::sync::Arc::new(std::sync::Mutex::new(f)) as _);
+                let hash_of_index = d1_activity_host::activity_driver::activity_table_from_env();
+                let defs = lib.activities.len();
+                d1_activity_host::activity_driver::Framework::install(d1_activity_host::activity_driver::Framework {
+                    lib: std::sync::Arc::new(lib),
+                    store,
+                    rewards,
+                    hash_of_index,
+                });
+                tracing::info!("⭐ activity framework: {defs} definitions drive runs on the wire (outcomes {})",
+                               if grant_forwarder.is_some() { "go to the player store" } else { "are logged" });
             }
             if ah_id == 0 {
                 anyhow::bail!(

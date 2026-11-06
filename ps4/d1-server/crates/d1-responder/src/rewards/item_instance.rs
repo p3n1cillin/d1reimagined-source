@@ -34,7 +34,7 @@ use super::talent_grid::GridState;
 use super::tables::tables;
 use super::Rng;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct ItemInstance {
     pub id: InstanceId,
     pub item_hash: u32,

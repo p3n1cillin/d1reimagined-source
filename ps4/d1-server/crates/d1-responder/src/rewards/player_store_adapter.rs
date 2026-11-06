@@ -14,8 +14,11 @@
 //!   [`Adapter::finish`]).
 //!
 //! What C's record has no field for yet (instances with their grids and rolls, period counters,
-//! objectives, record-book claims) stays in [`Adapter::overlay`], a [`MemoryStore`]. Persisting it
-//! in the record's `attributes` maps is the next step; until then it lasts as long as the adapter.
+//! objectives, record-book claims) stays in [`Adapter::overlay`], a [`MemoryStore`].
+//! `rewards::remote` saves all of it in the record's `attributes` after each grant and restores
+//! it before the next (stream O2). With [`Adapter::deliver`] (the default) a stack or instance
+//! whose content index and client bucket are known goes into that bucket's slots instead
+//! (`PlayerStore::deliver_stack`, `deliver_instance`).
 //!
 //! In the responder:
 //! ```text
@@ -54,6 +57,12 @@ pub struct Adapter<'a> {
     in_store: HashSet<u32>,
     /// What went to the overlay instead of C's store, and element fields left open.
     pub notes: Vec<String>,
+    /// Stream O2: put stacks and new instances into their client buckets (`content::bucket_of`,
+    /// `PlayerStore::deliver_stack` / `deliver_instance`), not only into a slot that already holds
+    /// them. On by default; off is the first wiring pass's behaviour.
+    pub deliver: bool,
+    /// The instances delivered into a bucket by this adapter, in order: the caller pushes each.
+    pub delivered: Vec<InstanceId>,
 }
 
 impl<'a> Adapter<'a> {
@@ -72,7 +81,33 @@ impl<'a> Adapter<'a> {
             .filter(|d| index.content_index(d.hash).is_some_and(|c| store.currency(c) > 0))
             .map(|d| d.hash)
             .collect();
-        Adapter { store, index, class_type, xp_from_manifest: false, element_template: None, overlay, in_store, notes: Vec::new() }
+        Adapter { store, index, class_type, xp_from_manifest: false, element_template: None, overlay, in_store, notes: Vec::new(), deliver: true, delivered: Vec::new() }
+    }
+
+    /// The client bucket `item` is delivered into, when it has a content index and one is known.
+    pub fn bucket_for(&self, item: u32) -> Option<(u16, u8)> {
+        let c = self.index.content_index(item)?;
+        self.deliver.then(|| crate::content::bucket_of(c)).flatten().map(|b| (c, b))
+    }
+
+    /// Move stacks the overlay kept (an earlier grant's, restored from the record's attributes)
+    /// into their client buckets, now that they have one. Returns how many moved.
+    pub fn deliver_kept_stacks(&mut self) -> usize {
+        let kept: Vec<((Owner, u32), u32)> = self.overlay.stacks.iter().filter(|(_, n)| **n > 0).map(|(k, n)| (*k, *n)).collect();
+        let mut moved = 0;
+        for ((owner, item), n) in kept {
+            let Some((c, b)) = self.bucket_for(item) else { continue };
+            match self.store.deliver_stack(c, b, i64::from(n)) {
+                Ok(after) => {
+                    self.overlay.stacks.remove(&(owner, item));
+                    self.in_store.insert(item);
+                    self.notes.push(format!("item {item} (content {c}): {n} kept from an earlier grant delivered to bucket {b:#x} (now {after})"));
+                    moved += 1;
+                }
+                Err(e) => self.notes.push(format!("item {item} (content {c}): still kept in the overlay: {e:#}")),
+            }
+        }
+        moved
     }
 
     /// After a grant: record the character's Light basis in C's store and mark the record dirty.
@@ -103,11 +138,42 @@ impl RewardStore for Adapter<'_> {
 
     fn quantity(&self, owner: Owner, item: u32) -> u32 {
         match self.index.content_index(item) {
+            // Delivered items: what the client's buckets hold, plus what the overlay still keeps
+            // (an amount whose delivery failed).
+            Some(c) if self.bucket_for(item).is_some() => self.store.currency(c).saturating_add(self.overlay.quantity(owner, item)),
             Some(c) if self.in_store.contains(&item) => self.store.currency(c),
             _ => self.overlay.quantity(owner, item),
         }
     }
     fn set_quantity(&mut self, owner: Owner, item: u32, quantity: u32) {
+        if let Some((c, b)) = self.bucket_for(item) {
+            let kept = self.overlay.quantity(owner, item);
+            let delta = i64::from(quantity) - i64::from(self.store.currency(c)) - i64::from(kept);
+            if delta == 0 {
+                return;
+            }
+            if kept == 0 {
+                match self.store.deliver_stack(c, b, delta) {
+                    Ok(_) => {
+                        self.in_store.insert(item);
+                        return;
+                    }
+                    Err(e) => self.notes.push(format!("item {item} (content {c}, bucket {b:#x}): {e:#}; kept in the overlay")),
+                }
+                self.overlay.set_quantity(owner, item, delta.max(0) as u32);
+                return;
+            }
+            // The overlay keeps some (an earlier failed delivery): change that first, and take
+            // any rest from the bucket.
+            let left = i64::from(kept) + delta;
+            self.overlay.set_quantity(owner, item, left.max(0) as u32);
+            if left < 0 {
+                if let Err(e) = self.store.deliver_stack(c, b, left) {
+                    self.notes.push(format!("item {item} (content {c}): could not take {} from bucket {b:#x}: {e:#}", -left));
+                }
+            }
+            return;
+        }
         if let Some(c) = self.index.content_index(item) {
             let delta = i64::from(quantity) - i64::from(self.store.currency(c));
             if self.store.adjust_currency(c, delta).is_ok() {
@@ -128,7 +194,19 @@ impl RewardStore for Adapter<'_> {
         if let Some(t) = &self.element_template {
             match write_element(t, &item, self.index) {
                 Ok((element, open)) => {
-                    self.store.put_item(item.id, &element);
+                    match self.bucket_for(item.item_hash) {
+                        Some((c, b)) => match self.store.deliver_instance(c, b, item.id, &element) {
+                            Ok(slot) => {
+                                self.delivered.push(item.id);
+                                self.notes.push(format!("item {:#x} (content {c}) delivered to bucket {b:#x}, slot {slot}", item.id));
+                            }
+                            Err(e) => {
+                                self.notes.push(format!("item {:#x} (content {c}): not placed in bucket {b:#x}: {e:#}; element kept", item.id));
+                                self.store.put_item(item.id, &element);
+                            }
+                        },
+                        None => self.store.put_item(item.id, &element),
+                    }
                     if !open.is_empty() {
                         self.notes.push(format!("item {:#x}: left as the template has them: {}", item.id, open.join(", ")));
                     }

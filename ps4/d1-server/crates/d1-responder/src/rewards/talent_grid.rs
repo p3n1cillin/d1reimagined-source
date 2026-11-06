@@ -17,14 +17,14 @@ use super::tables::{tables, GridDef, ProgressionDef};
 use super::Rng;
 
 /// One node's state: the step it rolled (or was given) and whether it is active.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, serde::Serialize, serde::Deserialize)]
 pub struct NodeState {
     pub step: u16,
     pub active: bool,
 }
 
 /// An instance's grid: which grid, the XP put into it, and every node's state (in node order).
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct GridState {
     pub grid: u32,
     pub xp: u32,

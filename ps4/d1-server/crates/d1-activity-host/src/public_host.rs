@@ -56,8 +56,10 @@ pub const JOIN_SESSION_TYPE: usize = 0x38;
 pub const JOIN_MISSION_HOST: usize = 0xC8;
 /// `join_request +0xD8`: the fireteam id (0 on a public instance).
 pub const JOIN_FIRETEAM: usize = 0xD8;
-/// `join_request +0x10`: the client's 40-byte identity. Its first 8 bytes key the character here.
+/// `join_request +0x10`: the client's 40-byte identity, which keys the character here (stream O2).
 pub const JOIN_IDENTITY: usize = 0x10;
+/// The identity's size.
+pub const JOIN_IDENTITY_SIZE: usize = 40;
 
 /// What a connection is, read from its join request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -87,9 +89,16 @@ pub fn role_of_join(image: &[u8]) -> HostRole {
     }
 }
 
-/// The character key for the registry: the first 8 bytes of the join's identity.
+/// The character key for the open world: the first 8 bytes of the join's identity.
 pub fn character_of_join(image: &[u8]) -> u64 {
     u64_at(image, JOIN_IDENTITY)
+}
+
+/// ⭐ Stream O2: the character for the registry and for rewards: the join's whole 40-byte
+/// identity, as stream K's [`crate::rewards::CharacterRef`] (a short image gives what it has).
+pub fn identity_of_join(image: &[u8]) -> crate::rewards::CharacterRef {
+    let end = (JOIN_IDENTITY + JOIN_IDENTITY_SIZE).min(image.len());
+    crate::rewards::CharacterRef { identity: image.get(JOIN_IDENTITY..end).unwrap_or_default().to_vec() }
 }
 
 /// The two slice-set records of a udt 21 image: `(CURRENT, TARGET)` region ids, each present only
@@ -274,6 +283,8 @@ pub struct PublicHost {
     /// Shared by every connection (and, later, by matchmaking).
     registry: Arc<Mutex<PublicRegistry>>,
     role: Option<HostRole>,
+    /// The joined client's identity (the registry's key), and its 8-byte key (the open world's).
+    identity: crate::rewards::CharacterRef,
     character: u64,
     selected: Option<InstanceKey>,
     /// The open-world layer, when the host was given one ([`Self::with_open_world`]).
@@ -307,6 +318,7 @@ impl PublicHost {
             frames,
             registry,
             role: None,
+            identity: crate::rewards::CharacterRef { identity: Vec::new() },
             character: 0,
             selected: None,
             plans: Arc::new(HashMap::new()),
@@ -468,6 +480,8 @@ impl PublicHost {
         let role = role_of_join(join_request);
         self.role = Some(role);
         self.character = character_of_join(join_request);
+        self.identity = identity_of_join(join_request);
+        crate::rewards::remember_identity(&self.identity);
         self.selected = None;
         self.host_id = host_id;
         match role {
@@ -478,7 +492,12 @@ impl PublicHost {
                 if let Some(space) = SocialSpace::from_world_name(world) {
                     let key = InstanceKey::Social(space);
                     self.selected = Some(key);
-                    let joined = self.registry.lock().ok().map(|mut r| r.attach(host_id, key, self.character, now));
+                    let joined = self.registry.lock().ok().map(|mut r| {
+                        crate::public_registry::sync_with_responder(&mut r);
+                        let j = r.attach(host_id, key, self.identity.clone(), now);
+                        crate::public_registry::sync_with_responder(&mut r);
+                        j
+                    });
                     tracing::info!("⭐ social space {space:?} on host {host_id:#018x} (session {kind:?}, {joined:?})");
                     self.start_world(key, host_id, now);
                 }
@@ -505,7 +524,12 @@ impl PublicHost {
         let key = [target, current].into_iter().flatten().map(|region| InstanceKey::Bubble { destination, region })
             .find(|k| self.frames.contains_key(k))?;
         self.selected = Some(key);
-        let joined = self.registry.lock().ok().map(|mut r| r.attach(host_id, key, self.character, now));
+        let joined = self.registry.lock().ok().map(|mut r| {
+            crate::public_registry::sync_with_responder(&mut r);
+            let j = r.attach(host_id, key, self.identity.clone(), now);
+            crate::public_registry::sync_with_responder(&mut r);
+            j
+        });
         tracing::info!("⭐ public instance {host_id:#018x} is {key:?} ({joined:?})");
         self.start_world(key, host_id, now);
         Some(match &self.frames[&key] {
@@ -518,7 +542,8 @@ impl PublicHost {
     pub fn on_leave(&mut self, now: Instant) {
         if self.selected.take().is_some() {
             if let Ok(mut r) = self.registry.lock() {
-                r.leave(self.character, now);
+                r.leave(self.identity.clone(), now);
+                crate::public_registry::sync_with_responder(&mut r);
             }
             // The character's patrol ends with its visit; the instance's world runs on.
             let character = self.character;
