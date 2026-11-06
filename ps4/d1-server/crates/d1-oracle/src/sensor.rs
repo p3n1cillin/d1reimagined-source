@@ -167,6 +167,30 @@ impl SensorAuthority {
         }
         Self { changed: (1u128 << AUTHORITY_BLOCKS) - 1, image }
     }
+
+    /// The live hosts' grant at a join: each of `blocks` to the client's 8-byte machine id
+    /// (`join_request+0x10`; the entry is `{u8[8] machine @+0, u16 seq @+8, bool applied @+0xA}`,
+    /// tag `0x80800B83`), with sequence `seq`. In the live Restoration capture both the mission
+    /// host and the client's public instance sent blocks 0..bubbles-1 and 64, seq 1, not applied,
+    /// right after an empty table. The client's appliers read only the block, seq and applied.
+    pub fn grant(machine: [u8; 8], blocks: impl IntoIterator<Item = usize>, seq: u16, applied: bool) -> Self {
+        let mut image = vec![0u8; 4 + 12 * AUTHORITY_BLOCKS];
+        let mut changed = 0u128;
+        for i in blocks.into_iter().filter(|&i| i < AUTHORITY_BLOCKS) {
+            let e = 4 + 12 * i;
+            image[e..e + 8].copy_from_slice(&machine);
+            image[e + 8..e + 10].copy_from_slice(&seq.to_le_bytes());
+            image[e + 0xA] = u8::from(applied);
+            changed |= 1u128 << i;
+        }
+        Self { changed, image }
+    }
+
+    /// The live join grant for a world of `bubbles` bubbles: blocks `0..bubbles` and 64 (the
+    /// domain block), seq 1, not applied ([`Self::grant`]).
+    pub fn join_grant(machine: [u8; 8], bubbles: usize) -> Self {
+        Self::grant(machine, (0..bubbles.min(AUTHORITY_BLOCKS - 1)).chain([AUTHORITY_BLOCKS - 1]), 1, false)
+    }
 }
 
 /// One pending sensor entity client the frame must deliver for the walker terminator to accept it.

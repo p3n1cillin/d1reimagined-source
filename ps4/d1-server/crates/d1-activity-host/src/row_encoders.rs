@@ -187,6 +187,53 @@ pub const KIND_PLAYER_OBJECTIVE: u8 = 32;
 
 const NONE_HASH: u32 = 0x811C_9DC5;
 
+/// The type-12 player bundle's A value (`0x808022A5`, 0x78 bytes; B `0x80802C30` has the same
+/// layout). The client links its player to the bundle whose A `+0x40` equals the player's key,
+/// and rung 34's arrival hold (task 9) waits for that link. A Guardian Rises' hand lists carry one
+/// for `0x4786C0E0/0xC/5`; generated worlds and the public lists had none (run fg6d, F32).
+pub const TAG_PLAYER_BUNDLE: u32 = 0x8080_22A5;
+pub const KIND_PLAYER_BUNDLE: u8 = 12;
+pub const PLAYER_BUNDLE_LEN: usize = 0x78;
+/// The mission host's player bundle: `players[0]` is sub 5 of the world group (live, and A
+/// Guardian Rises' hand lists).
+pub const MISSION_PLAYER_SUB: i16 = 5;
+/// A public instance's players group (16 records of kind 12), led by every live public list.
+pub const PUBLIC_PLAYERS_GROUP: u32 = 0xEAAF_16E2;
+
+/// The player key a join names: the 8 bytes at `join_request+0x28` (identity `+0x18`), which a
+/// player bundle holds byte-reversed at `+0x40` (A Guardian Rises' lists; the live hosts).
+pub fn player_key_of_identity(identity: &[u8]) -> Option<[u8; 8]> {
+    let mut k: [u8; 8] = identity.get(0x18..0x20)?.try_into().ok()?;
+    k.reverse();
+    Some(k)
+}
+
+/// The client's 8-byte machine id from a join's identity (`join_request+0x10`, identity `+0`),
+/// the value the live hosts put in every authority entry they granted it.
+pub fn machine_of_identity(identity: &[u8]) -> Option<[u8; 8]> {
+    identity.get(0..8)?.try_into().ok()
+}
+
+/// A player bundle's A image naming `key`. `mission` is the mission host's form, as A Guardian
+/// Rises' working lists serve it (`+8`, `+9` = 1; `+0x72`, `+0x74` = 0); otherwise the public
+/// instance's live default (`+8`, `+9` = 0; `+0x72` = 0xBC00; `+0x74` = -1). Both: `+0` = -1,
+/// `+4` = the empty-name hash, `+0x38` = -1 (the spawn team), `+0x40` = the key.
+pub fn player_bundle_image(key: [u8; 8], mission: bool) -> Vec<u8> {
+    let mut v = vec![0u8; PLAYER_BUNDLE_LEN];
+    v[0..4].copy_from_slice(&(-1i32).to_le_bytes());
+    v[4..8].copy_from_slice(&NONE_HASH.to_le_bytes());
+    v[0x38..0x3C].copy_from_slice(&(-1i32).to_le_bytes());
+    v[0x40..0x48].copy_from_slice(&key);
+    if mission {
+        v[8] = 1;
+        v[9] = 1;
+    } else {
+        v[0x72..0x74].copy_from_slice(&0xBC00u16.to_le_bytes());
+        v[0x74..0x78].copy_from_slice(&(-1i32).to_le_bytes());
+    }
+    v
+}
+
 /// One row kind's A value as build 56578's own descriptor lays it out (`ps4/fixtures/56578/rtti/`
 /// `schemas.tsv` and `fields.tsv`, #308): the tag, the struct size, and the top-level fields as
 /// `(offset, codec kind)` (2 bool, 3 i8, 5 i32, 7 u8, 9 raw u32, 11 f32, 1 struct, 257 optional
@@ -788,6 +835,24 @@ fn object_default() -> Vec<u8> {
 mod tests {
     use super::*;
     use serde_json::json;
+
+    /// The mission form reproduces A Guardian Rises' working hand row for `0x4786C0E0/0xC/5`
+    /// from a join identity naming the lab player (key `0xD100000000000201` at identity `+0x18`,
+    /// little-endian as the join carries it).
+    #[test]
+    fn the_player_bundle_matches_the_working_hand_row() {
+        let hand = "ffffffffc59d1c81010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffff00000000d100000000000201000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+        let mut identity = vec![0u8; 40];
+        identity[0..8].copy_from_slice(&[9, 8, 7, 6, 5, 4, 3, 2]);
+        identity[0x18..0x20].copy_from_slice(&0xD100_0000_0000_0201u64.to_le_bytes());
+        let key = player_key_of_identity(&identity).unwrap();
+        let image: String = player_bundle_image(key, true).iter().map(|b| format!("{b:02x}")).collect();
+        assert_eq!(image, hand);
+        assert_eq!(machine_of_identity(&identity), Some([9, 8, 7, 6, 5, 4, 3, 2]));
+        let public = player_bundle_image(key, false);
+        assert_eq!((public[8], public[9], &public[0x72..0x78]), (0, 0, &[0x00, 0xBC, 0xFF, 0xFF, 0xFF, 0xFF][..]));
+        assert!(player_key_of_identity(&identity[..0x10]).is_none());
+    }
 
     const CTX: EncodeContext = EncodeContext { stamp_tick: 200, machine: 14 };
 

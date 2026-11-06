@@ -868,7 +868,7 @@ impl ActivityInstance {
             self.track_public_session(struct_image);
             // ── stream G hook ── a public instance learns its region from this report.
             let world = self.activity_name.clone();
-            match self.public.as_mut().and_then(|p| p.on_slice_report(&world, struct_image, self.ah_id, now)) {
+            match self.public.as_mut().and_then(|p| p.on_slice_report(&world, struct_image, self.ah_id, Some(self.bubble_count as usize).filter(|&n| n > 0), now)) {
                 Some(Ok((key, frame))) => {
                     tracing::info!("⭐ public instance: serving {key:?}'s sensor list ({} bytes)", frame.len());
                     self.sensor_payload = Some(frame);
@@ -908,6 +908,8 @@ impl ActivityInstance {
                 b.set_served_start(self.start_region.map(|(r, _)| r));
                 // Run fg2i: the activity the client launched, when a remap served another.
                 b.set_remapped_launch(self.remapped_launch);
+                // F32: the join grant covers the world's bubbles.
+                b.set_world_bubbles(Some(self.bubble_count as usize).filter(|&n| n > 0));
             }
             b.on_client_message(msg, self.activity_index, self.ah_id, now);
         }

@@ -153,6 +153,13 @@ pub struct ItemChange {
 pub struct PlayerInfo {
     pub key: String,
     pub slot: u32,
+    /// The scripts' `all_players_are_ready()`. Without it the sidecar waits for a
+    /// `player_spawned`, but the client spawns only once the lifetime is active, which the
+    /// scripts set only after that wait: Restoration sat at pregame in-world, black (run fg7).
+    /// ⚠ A stand-in: ready once the client answered a full list with its senses (udt 6). Live the
+    /// host copied the client's own player-bundle state (B, whose `+8` it writes each tick) into
+    /// the bundle's A about 0.6 s after its first senses; that copy is not decoded here yet.
+    pub ready: bool,
 }
 
 /// Host → sidecar (tools/script-host/PROTOCOL.md). A row is named by `bundle` and `type_index`.
@@ -1183,6 +1190,9 @@ pub struct ScriptBridge {
     /// The activity the client launched, when `D1_AH_ACTIVITY_REMAP` served another in its place
     /// ([`Self::set_remapped_launch`]).
     remapped_launch: Option<u32>,
+    /// The served world's bubble count, set by the instance before it passes the join on
+    /// ([`Self::set_world_bubbles`]): the join grant gives the client blocks `0..bubbles` and 64.
+    world_bubbles: Option<usize>,
     host_id: u64,
     pub frames_sent: u64,
     /// Stream O2: the scripts' phases, wipes and completion as activity-framework events, for the
@@ -1269,6 +1279,7 @@ impl ScriptBridge {
             region_out: None,
             served_start: None,
             remapped_launch: None,
+            world_bubbles: None,
             host_id: 0,
             frames_sent: 0,
             framework_events: Vec::new(),
@@ -1315,6 +1326,43 @@ impl ScriptBridge {
     /// passing the join on; `None` when no remap served this join.
     pub fn set_remapped_launch(&mut self, hash: Option<u32>) {
         self.remapped_launch = hash;
+    }
+
+    /// The served world's bubble count, for the join grant (see [`Self::world_bubbles`]).
+    pub fn set_world_bubbles(&mut self, bubbles: Option<usize>) {
+        self.world_bubbles = bubbles;
+    }
+
+    /// What the live mission host served a joining player that a list may lack (run fg6d, F32):
+    /// - its player bundle `<world group>/0xC/5` naming the player's key, when the list gives that
+    ///   row no value (A Guardian Rises' hand lists already do; generated worlds do not);
+    /// - the join grant, blocks `0..bubbles` and 64 to the player's machine, seq 1, not applied,
+    ///   when the list names no `@authority`.
+    ///
+    /// Returns the rows and the authority to serve.
+    fn personalise(
+        rows: &mut [(crate::rows::RowKey, crate::rows::Row)],
+        authority: Option<d1_oracle::sensor::SensorAuthority>,
+        world_group: u32,
+        player: Option<&CharacterRef>,
+        bubbles: Option<usize>,
+    ) -> Option<d1_oracle::sensor::SensorAuthority> {
+        use crate::row_encoders as re;
+        let Some(p) = player else { return authority };
+        if let Some(key) = re::player_key_of_identity(&p.identity) {
+            for (k, r) in rows.iter_mut() {
+                if k.group == world_group && k.kind == re::KIND_PLAYER_BUNDLE && k.index == re::MISSION_PLAYER_SUB && r.a.is_none() && r.has_a {
+                    r.a = Some((re::TAG_PLAYER_BUNDLE, re::player_bundle_image(key, true)));
+                    tracing::info!("⭐ script bridge: the player bundle {k} names the joining player (F32)");
+                }
+            }
+        }
+        if authority.is_some() {
+            return authority;
+        }
+        let (Some(machine), Some(bubbles)) = (re::machine_of_identity(&p.identity), bubbles) else { return None };
+        tracing::info!("⭐ script bridge: the join grant: authority blocks 0..{bubbles} and 64 to the player's machine, seq 1 (F32)");
+        Some(d1_oracle::sensor::SensorAuthority::join_grant(machine, bubbles))
     }
 
     /// The instance's teleport request to `region` finished (`state.rs`: state 1, then 3, then
@@ -1508,8 +1556,15 @@ impl ScriptBridge {
         let start = activity.start;
         let first = activity.initial_lifetime();
         let mut rows = activity.rows.clone();
+        let authority = Self::personalise(
+            &mut rows,
+            activity.authority.clone(),
+            activity.lifetime.group,
+            self.players.last(),
+            self.world_bubbles,
+        );
         rows.push((activity.lifetime, self.lifetime_row(first, None)));
-        self.rows.load_world(rows, activity.authority.clone());
+        self.rows.load_world(rows, authority);
         self.encoders.reset();
         self.in_flight = None;
         tracing::info!(
@@ -1761,11 +1816,12 @@ impl ScriptBridge {
                 run.full_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64()),
                 run.sensed_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64())
             );
+            let ready = run.sensed_at.is_some();
             let players = self
                 .players
                 .iter()
                 .enumerate()
-                .map(|(slot, c)| PlayerInfo { key: player_key(c), slot: slot as u32 })
+                .map(|(slot, c)| PlayerInfo { key: player_key(c), slot: slot as u32, ready })
                 .collect();
             self.send(HostMsg::Players { players });
             self.send(HostMsg::Start);
