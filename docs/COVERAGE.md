@@ -185,15 +185,15 @@ or content read of the activity → world rule (the host publishes it at `global
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Match flow (lobby, countdown, rounds, sudden death, mercy, results) | partial | placeholder (every limit) | `D1_AH_ACTIVITY_FRAMEWORK` | #313, #326 | unit (every mode plays to an end) | No `CrucibleMatch` is driven from the wire. Combat is peer to peer on a physics host. |
+| Match flow (lobby, countdown, rounds, sudden death, mercy, results) | partial | placeholder (every limit); capture (how a client reports kills and deaths, PvE) | `D1_AH_CRUCIBLE` | #313, #326, stream R | unit (every mode plays to an end; whole Control and Elimination matches through fake clients) | Stream R drives the match from the clients' udt 18 and serves lifetime 1, 2, 3, 6, 7, 8 ([Crucible wire](../notes/ps4-56578-crucible-wire-2026-11-06.md)). Kills are credited to the reporting console (stand-in: the selector-1 body `0x80800AAB` does not decode yet). The countdown's 2, the round breaks and the 7 → 8 delay are unverified. Combat is peer to peer on a physics host, elected by `group.rs`. |
 | Modes (Control, Zone Control, Clash, Mayhem, Rumble, Skirmish, Doubles, Salvage, Rift, Supremacy, Rumble Supremacy, Elimination, Trials, Combined Arms, Sparrow Racing, Arsenal) | partial | verified: team and party sizes; placeholder: score limits, time limits, points, mercy, rounds | as above | #313, #326 | unit | The client reads only `score_to_win`; no matchmade playlist sets it in content, and `time_limit` is server-side ([limits](../notes/ps4-56578-strikes-raids-crucible-2026-11-05.md#needs-evidence)). A capture of a Crucible match settles it. |
-| Scoreboard (row 15) | partial | verified: layout, 23 exported scoreboard programs; placeholder: which program a mode uses | `D1_AH_SCRIPTS_SCOREBOARD_COLUMNS` (unset) | #313, #322 | unit | Other players' rows are not encoded. |
+| Scoreboard (row 15) | partial | verified: layout, 23 exported scoreboard programs, three columns (kills, precision kills, deaths); placeholder: which program a mode uses, the other columns, the team score column | `D1_AH_CRUCIBLE_COLUMNS` (unset: the defaults) | #313, #322, stream R | unit; native RSAT encode with the eboot | Stream R writes every player, team, global and notification row. `score_to_win` can ride the lifetime's named-value list, but the int type tag is a candidate (`D1_AH_CRUCIBLE_SCORE_TO_WIN`, unset). |
 | Maps (36) | partial | verified (map rows); worlds: 12 generated, 48 of 60 activities missing | `D1_AH_WORLDS` (none listed) | #314 | baseline native: `pvp_city_defense` (Twilight Gap) loaded and spawned armed (citydef, [14 Oct](../notes/ps4-56578-blockers-2026-10-14.md)); `pvp_moonbase` is the lab's boot world | The rotation is a stand-in (every map). |
 | Playlists and matchmaking (86) | partial | verified (manifest playlists); placeholder (`min_players`) | `D1_MP=1`, `D1_AH_ACTIVITY_FRAMEWORK` | #312, #313, #327 | unit | Teams are assigned peer-side. A match can form with one team empty (review 22). |
 | Private matches | partial | lab hand rows (First Light) | lab-base | earlier | none | – |
-| Iron Banner | partial | verified: level 40, level advantages, its progression | as above | #307, #313 | unit | The Iron Banner Tower (`city_tower_iron_banner`) has no world. |
-| Trials of Osiris (cards, boons, the Lighthouse) | partial | community (nine wins, three losses, the boons); verified (passage progressions, fireteam of 3) | as above | #307, #313 | unit | The Lighthouse (40) has no world. Trials could form from one fireteam (review 22). |
-| Crucible rewards | partial | verified (playlist reward items); placeholder (drop chances) | `D1_REWARDS=1` | #311, #313 | unit | – |
+| Iron Banner | partial | verified: level 40, level advantages, its progression | as above | #307, #313, stream R | unit (an Iron Banner match's grant: `faction_event_iron_banner`) | The Iron Banner Tower (`city_tower_iron_banner`) has no world. |
+| Trials of Osiris (cards, boons, the Lighthouse) | partial | community (nine wins, three losses, the boons); verified (passage progressions, fireteam of 3) | as above | #307, #313, stream R | unit (a card over nine matches through fake clients) | The Lighthouse (40) has no world. Trials could form from one fireteam (review 22). The cards are kept in the host's memory; a new card replaces a finished one at the next match (stand-in). |
+| Crucible rewards | partial | verified (playlist reward items, faction progressions); placeholder (drop chances, reputation amounts) | `D1_REWARDS=1` | #311, #313, stream R | unit | One grant per player present at the results (`ActivityOutcome::Crucible`), its reputation as `rep=` tokens on the grant line. |
 | Skill matchmaking (BAP 34/35) | no | – | – | #308 (shape only) | none | Field meanings unknown. |
 
 ## 10. The Tower, the Reef and Felwinter Peak
@@ -399,7 +399,8 @@ emulator build.
 15. **Two clients** (after O3): two identities, one fireteam, one shared instance, grants to the
     right player.
 16. **A Crucible playlist or private match** on a generated map: the match state and the
-    scoreboard row.
+    scoreboard row (`D1_AH_CRUCIBLE=1` with the map's line in `D1_AH_CRUCIBLE_ACTIVITIES`; two
+    clients for a real match).
 
 ## Placeholders that need new evidence
 
@@ -407,6 +408,7 @@ emulator build.
 |---|---|---|
 | Crucible score limits, time limits, points, mercy and round counts | `activities/crucible.json` | A capture of a matchmade Crucible match of each mode, or a whole-package scan for what references the 46 preset option tags |
 | Which scoreboard program each mode uses | `crucible.json`, `scoreboard-definitions.json` | The same capture (its row 15), or the content that references the 23 definitions |
+| Crucible kill attribution, the countdown's lifetime, round breaks, the 7 → 8 delay, `score_to_win`'s list and type | `pvp_driver.rs`, `scoreboard_rows.rs` | The same capture: [what to record](../notes/ps4-56578-crucible-wire-2026-11-06.md#placeholders-and-what-one-captured-match-would-settle) |
 | `min_players` and the map rotation | `encounter_framework.rs` | A capture of a playlist's matchmaking |
 | Encounters of the eight strikes with neither script nor capture | `definitions/strikes.json` | Captures of those strikes, or Codie's scripts for them |
 | Checkpoints and darkness zones of capture-derived strikes | `definitions/strikes.json` | A capture with a wipe, or the scripts |
