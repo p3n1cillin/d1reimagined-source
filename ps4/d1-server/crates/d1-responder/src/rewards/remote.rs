@@ -235,7 +235,7 @@ pub fn format_handoff(c: &HandOffCommand) -> String {
     line
 }
 
-fn parse_target(who: &str) -> Result<GrantTarget> {
+pub fn parse_target(who: &str) -> Result<GrantTarget> {
     Ok(match who.strip_prefix("id:") {
         Some(h) => {
             let b = hex_bytes(h)?;

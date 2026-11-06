@@ -2374,7 +2374,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_STORE_DIR", "<%LOCALAPPDATA%/d1reimagined/player-store>", "💾 where the store keeps identities.json and account-<soid>.json (OUTSIDE the repo)"),
     ("D1_STORE_PLAYER", "local", "💾 the player name the identity is filed under (the first player gets the D1_*_SOID knobs)"),
     ("D1_STORE_SAVE_SECS", "300", "💾 the periodic save (important events save at once)"),
-    ("D1_STORE_CONTROL", "<unset>", "💾 a command file the store polls: activity N | xp N | complete N | checkpoint N STEP | checkpoint N - | lockout N ENCOUNTER week=W | grant CHARACTER HASH OUTCOME (D1_REWARDS=1) | reputation NAME N | unlock +N -N; the store writes <file>.state.json back"),
+    ("D1_STORE_CONTROL", "<unset>", "💾 a command file the store polls: activity N | xp N | complete N | checkpoint N STEP | checkpoint N - | lockout N ENCOUNTER week=W | grant CHARACTER HASH OUTCOME (D1_REWARDS=1) | handoff CHARACTER N | completed CHARACTER HASH | reputation NAME N | unlock +N -N; the store writes <file>.state.json back"),
     ("D1_REFUND_WINDOW", "<1800; with D1_STORE=1 the manifest's>", "seconds a refundable vendor purchase stays refundable (the length only: with D1_STORE=1 the manifest says which, Eververse/Silver Dust items, 900 by default; with it off every purchase; the same with D1_SOCIAL on and off)"),
     ("D1_REFUND_POLICIES", "<repo table>", "override ps4/fixtures/56578/progression/refund-policies.tsv (which vendors refund, and for how long)"),
     ("D1_PROGRESSION_CURVES", "<repo table>", "override ps4/fixtures/56578/progression/progression-curves.tsv (XP and rank curves)"),

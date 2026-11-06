@@ -1944,6 +1944,17 @@ impl ScriptBridge {
             SidecarMsg::ActivityComplete {} => {
                 run.complete = true;
                 self.framework_events.push(crate::encounter_framework::Event::ActivityCompleted);
+                // Run fg2h: the profile's completion goes now, in the 965 chain's tick, as the
+                // live host's did; the grant waits for the results.
+                if run.activity.hash != 0 {
+                    if let Ok(mut rewards) = self.config.rewards.lock() {
+                        for c in &self.players {
+                            if let Err(e) = rewards.activity_completed(c, run.activity.hash) {
+                                tracing::warn!("completion of {} for {c:?}: {e}", run.activity.activity);
+                            }
+                        }
+                    }
+                }
                 let player = self.players.first().map(|c| {
                     u64::from_le_bytes(c.identity.get(..8).and_then(|b| b.try_into().ok()).unwrap_or([0; 8]))
                 });
@@ -2312,6 +2323,8 @@ mod tests {
         /// How many frames had been planned when each grant was made.
         rewarded_after_frames: Vec<usize>,
         hand_offs: Vec<(u64, u32, u16, u32)>,
+        /// `(character key, activity hash, frames planned when it was recorded)`.
+        completions: Vec<(u64, u32, usize)>,
         launches: u32,
         /// The fake sidecar sets pregame and the cinematic hold in its answer to `start`.
         combined_start: bool,
@@ -2436,6 +2449,12 @@ mod tests {
         }
         fn activity_hand_off(&mut self, c: &CharacterRef, from: u32, index: u16, hash: u32) -> Result<(), String> {
             self.0.lock().unwrap().hand_offs.push((c.key(), from, index, hash));
+            Ok(())
+        }
+        fn activity_completed(&mut self, c: &CharacterRef, hash: u32) -> Result<(), String> {
+            let mut s = self.0.lock().unwrap();
+            let at = s.frames.len();
+            s.completions.push((c.key(), hash, at));
             Ok(())
         }
     }
@@ -2992,6 +3011,13 @@ mod tests {
         assert_eq!((s.rewards[0].1, s.rewards[0].2), (0x6EAF_0959, ActivityOutcome::Completed));
         let granted_at = s.rewarded_after_frames[0];
         assert!(s.frames[..granted_at].iter().all(|p| lifetime_of(p) != Some(8)), "granted at 6, before 8");
+        // Run fg2h: the completion was recorded at activity_complete, long before the results:
+        // while the lifetime was still 4, before the Tower cinematic played.
+        assert_eq!(s.completions.len(), 1);
+        let (_, hash, completed_at) = s.completions[0];
+        assert_eq!(hash, 0x6EAF_0959);
+        assert!(s.frames[..completed_at].iter().all(|p| lifetime_of(p).is_none_or(|v| v <= 4)), "recorded before 6");
+        assert!(s.frames[..completed_at].iter().all(|p| cinematic_of(p, 1).is_none_or(|c| c.2 == 0)), "before /6/1 plays");
         assert_eq!(s.hand_offs, vec![(u64::from_le_bytes([7; 8]), 0x6EAF_0959, 0, 0x8AE8_DA69)], "the hand-off to the Tower");
         drop(s);
         let text = (0..200)
@@ -2999,12 +3025,14 @@ mod tests {
                 std::thread::sleep(Duration::from_millis(10));
                 std::fs::read_to_string(&control).unwrap_or_default()
             })
-            .find(|t| t.lines().count() >= 2)
+            .find(|t| t.lines().count() >= 3)
             .unwrap_or_default();
         let lines: Vec<&str> = text.lines().collect();
-        assert_eq!(lines.len(), 2, "{text}");
-        assert!(lines[0].starts_with("grant id:0707") && lines[0].ends_with(" 0x6eaf0959 completed source=script"), "{}", lines[0]);
-        assert!(lines[1].starts_with("handoff id:0707") && lines[1].ends_with(" 0 from=0x6eaf0959 hash=0x8ae8da69"), "{}", lines[1]);
+        assert_eq!(lines.len(), 3, "{text}");
+        // Run fg2h: the completion at activity_complete, then the grant at 6, then the hand-off.
+        assert!(lines[0].starts_with("completed id:0707") && lines[0].ends_with(" 0x6eaf0959"), "{}", lines[0]);
+        assert!(lines[1].starts_with("grant id:0707") && lines[1].ends_with(" 0x6eaf0959 completed source=script"), "{}", lines[1]);
+        assert!(lines[2].starts_with("handoff id:0707") && lines[2].ends_with(" 0 from=0x6eaf0959 hash=0x8ae8da69"), "{}", lines[2]);
         let _ = std::fs::remove_dir_all(&dir);
     }
 
@@ -3206,6 +3234,10 @@ mod tests {
         fn activity_hand_off(&mut self, c: &CharacterRef, from: u32, index: u16, hash: u32) -> Result<(), String> {
             RecordingRewards(self.1.clone()).activity_hand_off(c, from, index, hash)?;
             self.0.activity_hand_off(c, from, index, hash)
+        }
+        fn activity_completed(&mut self, c: &CharacterRef, hash: u32) -> Result<(), String> {
+            RecordingRewards(self.1.clone()).activity_completed(c, hash)?;
+            self.0.activity_completed(c, hash)
         }
     }
 

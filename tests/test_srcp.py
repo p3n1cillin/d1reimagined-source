@@ -233,6 +233,34 @@ class SrcpTest(unittest.TestCase):
         self.assertEqual(rows[0][:4], (0.0, 'account', 7, [(308, None, 24050, None, False)]))
         self.assertEqual(rows[1][1:], ('profile', 7, [], 'partial'), 'a profile walk may stop early')
 
+    def test_current_rows_read_the_profiles_current_activity(self):
+        def push(objs):
+            s = struct.pack('>I', 1) + struct.pack('>IQIBI', 4, 0xD1, 9, 0, len(objs))
+            for it, body in objs:
+                s += struct.pack('>IQI', it, 1, len(body)) + body
+            return struct.pack('>HI', M.QUEUEZ_UPDATE, 5) + s
+        data = capture(record(1.0, 1, (10, 0, 0, 1), 1, push([(0xB5DF2907, b'a'), (0xEB4B8439, b'p')])),
+                       record(2.0, 1, (10, 0, 0, 1), 1, push([(0xEB4B8439, b'q')])))
+        size = 0x2C40
+
+        def image(fill, index, done):
+            im = bytearray([fill]) * size
+            if index is not None:
+                struct.pack_into('<H', im, CLI.CURRENT_ACTIVITY, index)
+            if done is not None:
+                im[CLI.CURRENT_COMPLETED] = done
+            return im.hex()
+
+        def decode(rows):
+            rows = list(rows)
+            self.assertEqual([r[0] for r in rows], [0x80801743] * 4, 'only the profile objects')
+            return [{'object': image(0, 162, 1)}, {'object': image(0xFF, 162, 1)},
+                    {'object': image(0, None, None)}, {'object': image(0xFF, None, None)}]
+        rows = CLI.current_rows(data, decode)
+        self.assertEqual([r[1:4] for r in rows], [(9, 162, 1), (9, None, None)])
+        self.assertEqual(rows[0][4], [(CLI.CURRENT_ACTIVITY, CLI.CURRENT_ACTIVITY + 1), (CLI.CURRENT_COMPLETED, CLI.CURRENT_COMPLETED)])
+        self.assertEqual(rows[1][4], [])
+
     def test_refuses_other_link_types(self):
         data = struct.pack('<IHHiIII', 0xa1b2c3d4, 2, 4, 0, 0, 0x40000, 1)
         with self.assertRaises(ValueError):

@@ -1794,6 +1794,9 @@ pub enum Command {
     Grant(crate::rewards::remote::GrantCommand),
     /// `handoff CHARACTER ACTIVITY_INDEX [from=HASH] [hash=HASH]` (stream O2, `rewards::remote`).
     HandOff(crate::rewards::remote::HandOffCommand),
+    /// `completed CHARACTER ACTIVITY_HASH`: the activity host's scripts completed the activity
+    /// (`activity_complete`); `complete` for the player the target names, now (run fg2h).
+    Completed(crate::rewards::remote::GrantTarget, u32),
 }
 
 pub fn parse_command(line: &str) -> anyhow::Result<Command> {
@@ -1816,6 +1819,13 @@ pub fn parse_command(line: &str) -> anyhow::Result<Command> {
         }
         Some("grant") => Command::Grant(crate::rewards::remote::parse(&f[1..]).map_err(|e| anyhow::anyhow!("{line:?}: {e:#}"))?),
         Some("handoff") => Command::HandOff(crate::rewards::remote::parse_handoff(&f[1..]).map_err(|e| anyhow::anyhow!("{line:?}: {e:#}"))?),
+        Some("completed") => {
+            let [_, who, hash] = f.as_slice() else { anyhow::bail!("{line:?}: completed takes CHARACTER ACTIVITY_HASH") };
+            let target = crate::rewards::remote::parse_target(who).map_err(|e| anyhow::anyhow!("{line:?}: {e:#}"))?;
+            let hash = hash.strip_prefix("0x").map_or_else(|| hash.parse::<u32>().ok(), |h| u32::from_str_radix(h, 16).ok())
+                .ok_or_else(|| anyhow::anyhow!("{line:?}: {hash:?} is not a 32-bit hash"))?;
+            Command::Completed(target, hash)
+        }
         Some("reputation") => Command::Reputation(f.get(1).ok_or_else(|| anyhow::anyhow!("{line:?}: no progression"))?.to_string(), num(2)?),
         Some("unlock") => {
             let (mut add, mut clear) = (Vec::new(), Vec::new());
@@ -1828,7 +1838,7 @@ pub fn parse_command(line: &str) -> anyhow::Result<Command> {
             }
             Command::Unlock { add, clear }
         }
-        _ => anyhow::bail!("{line:?}: not a store command (activity, xp, complete, checkpoint, clear-checkpoint, lockout, grant, handoff, reputation, unlock)"),
+        _ => anyhow::bail!("{line:?}: not a store command (activity, xp, complete, checkpoint, clear-checkpoint, lockout, grant, handoff, completed, reputation, unlock)"),
     })
 }
 
@@ -1877,6 +1887,10 @@ fn run_command(cmd: Command) -> anyhow::Result<String> {
         Command::HandOff(h) => {
             let (m, who) = target_store(&h.target)?;
             return crate::players::run_as(who, || run_handoff(m, h));
+        }
+        Command::Completed(target, hash) => {
+            let (m, who) = target_store(target)?;
+            return crate::players::run_as(who, || run_completed(m, *hash));
         }
         Command::Reputation(name, n) => {
             let (w, push) = {
@@ -2070,6 +2084,8 @@ fn run_grant(m: &Mutex<Store>, g: &crate::rewards::remote::GrantCommand) -> anyh
     // unlock flags, reputation). The manifest's XP lines stay out of the grant
     // (`Adapter::xp_from_manifest` is off), so XP is paid once, by the table.
     let completion = match completion_index(g) {
+        // Run fg2h: recorded already at activity_complete (`completed`): not twice.
+        Some(index) if shows_completed(m, index) => format!("; store completion of {index}: already recorded"),
         Some(index) => match run_command(Command::Complete(index)) {
             Ok(w) => format!("; store completion of {index}: {w}"),
             Err(e) => format!("; store completion of {index} NOT applied: {e:#}"),
@@ -2176,6 +2192,28 @@ fn run_handoff(m: &Mutex<Store>, h: &crate::rewards::remote::HandOffCommand) -> 
             Ok(format!("{what}; the profile already shows the completion"))
         }
     }
+}
+
+/// The activity index a completed activity's hash names (the activity table).
+pub fn activity_index_of(hash: u32) -> Option<u16> {
+    crate::tables::tables().activities.values().find(|a| a.hash == hash).map(|a| a.index)
+}
+
+/// Whether the store's profile already shows `index` completed (field [6]).
+fn shows_completed(m: &Mutex<Store>, index: u16) -> bool {
+    m.lock().ok().and_then(|s| s.chr().summary.as_ref().and_then(|x| x.activity)) == Some((index, true))
+}
+
+/// A `completed` from the activity host (run fg2h): the scripts' `activity_complete`, recorded at
+/// once with the same edit as `complete N` (field [6] completed, the rewards table's subs, XP) and
+/// pushed, so the client holds the completion before the activity ends. The grant at the results
+/// then finds it done and does not complete it again.
+fn run_completed(m: &Mutex<Store>, hash: u32) -> anyhow::Result<String> {
+    let index = activity_index_of(hash).ok_or_else(|| anyhow::anyhow!("activity {hash:#010x} is not in the activity table"))?;
+    if shows_completed(m, index) {
+        return Ok(format!("activity {index} ({hash:#010x}): the profile already shows it completed"));
+    }
+    run_command(Command::Complete(index)).map(|w| format!("activity {index} ({hash:#010x}) completed at activity_complete: {w}"))
 }
 
 /// The file the store writes beside its control file, for the activity host to read back at an
@@ -3031,6 +3069,29 @@ mod tests {
         assert_eq!(completion_index(&g(0x6E0D_AE89, GrantOutcome::Incomplete, "script")), None);
         assert_eq!(completion_index(&g(0x6E0D_AE89, GrantOutcome::Completed, "event:12:gold")), None);
         assert_eq!(completion_index(&g(0xDEAD_BEEF, GrantOutcome::Completed, "script")), None);
+    }
+
+    /// Run fg2h: the activity host's `completed TARGET HASH` line (the scripts' activity_complete)
+    /// parses, names its player as the grant does, and maps the reveal's hash to 165.
+    #[test]
+    fn a_completed_line_names_its_player_and_activity() {
+        const FG2G: &str = "e0d55e272f90000098ac2c43570fceb201000000000000d101020000000000d1f7bd728e56f51b90";
+        let Command::Completed(target, hash) = parse_command(&format!("completed id:{FG2G} 0x6eaf0959")).unwrap() else { panic!() };
+        assert_eq!(hash, 0x6EAF_0959);
+        assert_eq!(target.character(), Some(0xD100_0000_0000_0201), "the profile SOID, matched by named_by");
+        assert_eq!(activity_index_of(hash), Some(165));
+        assert!(matches!(parse_command("completed 0xd100000000000101 0x6eaf0959").unwrap(), Command::Completed(_, 0x6EAF_0959)));
+        assert!(parse_command("completed 0x1").is_err());
+        assert!(parse_command("completed 0x1 nothash").is_err());
+        // The own player's store takes it (the identity's account and profile are its own).
+        let own = Identity::from_env();
+        let dir = std::env::temp_dir().join(format!("d1-completed-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let primary = Mutex::new(Store::in_memory(own, &Sources::default()));
+        let (m, who) = target_store_in(&target, &primary, own, Some(&dir), true, &|_| None).unwrap();
+        assert!(std::ptr::eq(m, &primary) && who.is_none());
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     /// Stream O2, wire 8: the hand-off line records the next activity, names the completion to

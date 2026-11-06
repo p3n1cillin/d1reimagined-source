@@ -111,6 +111,12 @@ fn target_word(target: &GrantTarget) -> Result<String, String> {
 /// responder): `handoff CHARACTER ACTIVITY_INDEX from=HASH hash=HASH`. The responder records the
 /// completion of `from_hash` in the profile the client selects its next activity from, and the
 /// next activity in the record.
+/// The control line for a completion recorded at `activity_complete` (run fg2h): `completed TARGET
+/// ACTIVITY_HASH`, the responder's `complete` for the player the identity names.
+pub fn completed_line(target: &GrantTarget, activity_hash: u32) -> Result<String, String> {
+    Ok(format!("completed {} {activity_hash:#010x}", target_word(target)?))
+}
+
 pub fn handoff_line(target: &GrantTarget, next_index: u16, from_hash: u32, next_hash: u32) -> Result<String, String> {
     Ok(format!("handoff {} {next_index} from={from_hash:#010x} hash={next_hash:#010x}", target_word(target)?))
 }
@@ -313,6 +319,18 @@ impl crate::rewards::ActivityRewards for GrantForwarder {
         tracing::info!("rewards: {from_hash:#010x} hands off to activity {next_index} ({next_hash:#010x}) for {character:?}");
         self.send(line)
     }
+
+    /// Run fg2h: the completion goes to the store at `activity_complete`, ahead of the grant.
+    fn activity_completed(&mut self, character: &crate::rewards::CharacterRef, activity_hash: u32) -> Result<(), String> {
+        let target = if character.identity.len() == d1_mp::identity::MemberIdentity::SIZE {
+            GrantTarget::Identity(character.identity.clone())
+        } else {
+            GrantTarget::Key(character.key())
+        };
+        let line = completed_line(&target, activity_hash)?;
+        tracing::info!("rewards: {activity_hash:#010x} completed for {character:?}: the store records it now");
+        self.send(line)
+    }
 }
 
 #[cfg(test)]
@@ -396,9 +414,11 @@ mod tests {
         let failed = ActivityOutcome::PublicEvent { event_id: 13, completed: false, tier: None };
         f.grant_activity_rewards(&CharacterRef::from_key(7), 0x1111_2222, &failed).unwrap();
         assert!(f.activity_hand_off(&c, 0x6EAF_0959, 0, 0x8AE8_DA69).is_ok());
-        let text = wait_for(&path, 4);
+        assert!(f.activity_completed(&c, 0x6EAF_0959).is_ok());
+        let text = wait_for(&path, 5);
         let lines: Vec<&str> = text.lines().collect();
-        assert_eq!(lines.len(), 4, "{text}");
+        assert_eq!(lines.len(), 5, "{text}");
+        assert!(lines[4].starts_with("completed id:0102030405060708") && lines[4].ends_with(" 0x6eaf0959"), "{}", lines[4]);
         assert!(lines[3].starts_with("handoff id:0102030405060708") && lines[3].ends_with(" 0 from=0x6eaf0959 hash=0x8ae8da69"), "{}", lines[3]);
         assert!(lines[0].starts_with("grant id:") && lines[0].ends_with(" 0x0bbd0e26 completed source=script"));
         assert_eq!(lines[1], "grant 0x0102030405060708 0x11112222 completed source=event:12:gold");

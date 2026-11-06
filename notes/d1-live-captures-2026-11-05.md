@@ -155,6 +155,17 @@ The cinematics then run on the host's word. Each record's value is `{u32 start, 
 | +50 s | `/6/1` | state 2: the second cinematic plays |
 | +96.7 s | `/6/1` | state 4. Then udt 23 and 24, and the client moves to the Tower |
 
+**How the client got to the Tower** (read 6 November with `d1-srcp.py current`, `investment` and
+`matchmaking`):
+- At the host's closing incident chain (+49.6 s from the join), the profile push set field [6]
+  (cine_reveal, index 162 on 51539) completed 1 and completion byte `+0x53e9` = 2.
+- Lifetime 6 and 8 came in one tick at +97.5 s.
+- Then the client itself sent matchmaking 42, kind 4, for the Tower (`0xdf283afb`, 4.6 s after
+  the 8), and joined the Tower's public instance.
+
+No server message named the Tower
+([script-bridge note, run fg2h](ps4-56578-script-bridge-2026-11-05.md#run-fg2h-the-reveal-ends-in-orbit-not-the-tower-the-live-host-completed-it-48-s-earlier)).
+
 We served 165 an empty sensor list. The live host served both cinematic records, then stepped them through these states.
 
 ### Serving it (5 November)

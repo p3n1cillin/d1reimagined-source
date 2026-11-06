@@ -171,6 +171,17 @@ pub trait ActivityRewards {
     ) -> Result<(), String> {
         Ok(())
     }
+
+    /// The scripts completed the activity (`activity_complete`, the host's 965 chain): record the
+    /// completion in the character's profile **now**, not at the results. Run fg2h (6 November):
+    /// the reveal's completion reached the profile only after its lifetime 8, the client read the
+    /// profile without it and went to orbit. The live host pushed the profile's completion (field
+    /// [6] completed, completion sub 41) in the same tick as the 965 chain, 48 s before the 8, and
+    /// the client then launched the Tower itself. The grant still comes at the results. The
+    /// default does nothing.
+    fn activity_completed(&mut self, _character: &CharacterRef, _activity_hash: u32) -> Result<(), String> {
+        Ok(())
+    }
 }
 
 /// The rewards a host reports with until stream O's forwarder is plugged in: each grant is
@@ -214,6 +225,8 @@ pub struct RecordingRewards {
     pub characters: Vec<CharacterRef>,
     /// `(character key, from hash, next index, next hash)`.
     pub hand_offs: Vec<(u64, u32, u16, u32)>,
+    /// `(character key, activity hash)` of each completion recorded at `activity_complete`.
+    pub completions: Vec<(u64, u32)>,
 }
 
 impl ActivityRewards for RecordingRewards {
@@ -230,6 +243,11 @@ impl ActivityRewards for RecordingRewards {
 
     fn activity_hand_off(&mut self, character: &CharacterRef, from_hash: u32, next_index: u16, next_hash: u32) -> Result<(), String> {
         self.hand_offs.push((character.key(), from_hash, next_index, next_hash));
+        Ok(())
+    }
+
+    fn activity_completed(&mut self, character: &CharacterRef, activity_hash: u32) -> Result<(), String> {
+        self.completions.push((character.key(), activity_hash));
         Ok(())
     }
 }
