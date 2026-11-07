@@ -21,6 +21,8 @@
     d1-srcp.py queuez CAPTURE.pcap [...]                (QueueZ 123 pushes: family, type checksum, length)
     d1-srcp.py stacks CAPTURE.pcap [...]                (the account and profile slots each push writes:
                                                         content, quantity and its change; d1-rsat)
+    d1-srcp.py dismantles CAPTURE.pcap [...]            (402 requests, matched replies and candidate stack
+                                                        changes; private JSONL, never a yields table)
     d1-srcp.py current CAPTURE.pcap [...]               (each profile push's current activity, field [6]:
                                                         its activity index and completed flag, and the
                                                         byte ranges the push writes, offsets only; d1-rsat)
@@ -523,6 +525,85 @@ def stack_rows(data, decode=rsat_decode):
     return rows
 
 
+def correlate_item_actions(messages, actions, stacks):
+    """Candidate deltas between a 402 and its matched reply, never inferred reward rules.
+
+    actions is [(message, decoded-fields-or-None)]. Sequence numbers and item instances are
+    used internally only. Other requests in the window make attribution ambiguous; even an
+    isolated window is an observation, not proof of a tier/bucket formula.
+    """
+    out = []
+    for k, (request, fields) in enumerate(actions):
+        t, direction, sequence, _, service, _ = request
+        if direction != 'req':
+            continue
+        row = dict(time=t, content=None, instanced=None, quantity=None, accepted=False,
+                   issues=[], candidates=[])
+        out.append(row)
+        if fields is None or not all(key in fields for key in ('f0.f0', 'f0.f2', 'f1')):
+            row['issues'].append('request schema did not consume the complete message')
+            continue
+        row.update(content=fields['f0.f2'], instanced=bool(fields['f0.f0']), quantity=fields['f1'])
+        replies = [(m, f) for m, f in actions[k + 1:]
+                   if m[1] == 'rsp' and m[2] == sequence]
+        if len(replies) != 1 or sum(m[1] == 'req' and m[2] == sequence for m, _ in actions) != 1:
+            row['issues'].append('missing or ambiguous reply sequence')
+            continue
+        reply, result = replies[0]
+        end = reply[0]
+        row['accepted'] = (reply[3] == 200 and result is not None
+                           and result.get('f0.f0') == 0 and result.get('f0.f1') == 0)
+        if not row['accepted']:
+            row['issues'].append('reply refused or did not decode completely')
+            continue
+        if any(t <= m[0] <= end and m[1] == 'req' and m[2] != sequence and m[4] != 702
+               for m in messages):
+            row['issues'].append('another investment request overlaps this window')
+        if not row['instanced']:
+            row['issues'].append('stack item action; not necessarily a dismantle')
+        for pushed, scope, version, changes, note in stacks:
+            if not t <= pushed <= end:
+                continue
+            if note:
+                issue = 'inventory decode: ' + note
+                if issue not in row['issues']:
+                    row['issues'].append(issue)
+            for slot, content, quantity, previous, instance_written in changes:
+                if quantity is not None and previous == quantity and not instance_written:
+                    continue
+                delta = quantity - previous if quantity is not None and previous is not None else None
+                row['candidates'].append(dict(scope=scope, slot=slot, content=content,
+                                              before=previous, after=quantity, delta=delta,
+                                              instance_written=instance_written))
+    return out
+
+
+def dismantle_rows(data, decode=rsat_decode):
+    """Decode 402 only using existing schemas, then correlate existing stack_rows.
+
+    A complete message must end with only its 0..7 alignment bits after the payload tail.
+    Partial decodes and different-build layouts cannot become silently accepted observations.
+    """
+    messages = d1_srcp.investment_messages(data)
+    selected = [m for m in messages if m[4] == 402]
+    if not selected:
+        return []
+    request_tag, response_tag = load_services()[402]
+    todo = [(request_tag if m[1] == 'req' else response_tag, m[5], 16) for m in selected]
+    decoded = decode(todo)
+    if len(decoded) != len(todo):
+        raise ValueError('native codec returned an incomplete batch')
+    fields, actions = load_fields(), []
+    for message, (tag, bits, _), result in zip(selected, todo, decoded):
+        valid = 'object' in result and 'error' not in result and result.get('end', len(bits) * 8 + 1) < len(bits) * 8
+        if valid:
+            _, _, end = payload_tail(bits, result['end'])
+            valid = 0 <= len(bits) * 8 - end < 8
+        values = dict(render_fields(tag, bytes.fromhex(result['object']), fields)) if valid else None
+        actions.append((message, values))
+    return correlate_item_actions(messages, actions, stack_rows(data, decode=decode))
+
+
 # The profile's field [6], the current activity (struct 0x808017b9 at +0x2c20): its activity index
 # (u16 @+0x2c20, the build's own numbering) and its completed flag (+0x2c38).
 CURRENT_ACTIVITY, CURRENT_COMPLETED = 0x2C20, 0x2C38
@@ -617,7 +698,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('command', choices=('summary', 'incidents', 'sensors', 'lifetime', 'sessions', 'mission',
                                         'hosts', 'regions', 'export', 'matchmaking', 'investment', 'queuez',
-                                        'stacks', 'current', 'moves', 'values'))
+                                        'stacks', 'current', 'moves', 'values', 'dismantles'))
     ap.add_argument('--skip', default='702',
                     help='investment: service ids to leave out (comma-separated; default 702, the periodic one)')
     ap.add_argument('capture', type=Path, nargs='+')
@@ -631,6 +712,11 @@ def main():
     ap.add_argument('--activity-table', type=Path,
                     help='mission: the client\'s index -> activity hash TSV (activity-table.tsv)')
     a = ap.parse_args()
+    if a.command == 'dismantles':
+        for cap in a.capture:
+            for row in dismantle_rows(cap.read_bytes()):
+                print(json.dumps(dict(capture=cap.stem, **row), sort_keys=True))
+        return
     if a.command == 'sessions':
         names = activity_names()
         for cap in a.capture:
