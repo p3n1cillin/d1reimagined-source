@@ -175,6 +175,7 @@ impl Session {
             Some(Command::GetToken) => self.handle_get_token(&packet),
             Some(Command::GetServerFeatures) => self.handle_server_features(&packet),
             Some(Command::SetClientVersion) => self.handle_client_version(&packet),
+            Some(Command::GetAuthorizationCode) => self.handle_authorization_code(&packet),
             Some(Command::Terminate) => {
                 info!(peer = %self.peer, "client requested Terminate");
                 self.reply(&packet, ErrorType::NoError, &[])
@@ -258,6 +259,18 @@ impl Session {
             npid: identity.npid,
         };
         info!(peer = %self.peer, "<-- GetTokenReply");
+        self.reply(packet, ErrorType::NoError, &reply.encode_to_vec())
+    }
+
+    /// `sceNpAuthGetAuthorizationCode` (shadNet 42; upstream shadPS4 asks the server since its NP
+    /// rework, merged into the fork 7 Nov, fork PR #10). PSN gave the game a single-use code for its
+    /// own backend, which Destiny trades at the responder's `/2.0/oauth/token` (any code is taken
+    /// there). The `d1` branch's stub answered `AUTHEN`; the same code keeps the token exchange as
+    /// it was. Unanswered (error 33), sign-in failed with `error.bungie_server_connection` (run agr34).
+    fn handle_authorization_code(&mut self, packet: &Packet) -> Result<(), ()> {
+        let req = shadnet_proto::GetAuthorizationCodeRequest::decode(packet.request_blob()).unwrap_or_default();
+        info!(peer = %self.peer, client_id = %req.client_id, scope = %req.scope, "<-- GetAuthorizationCodeReply");
+        let reply = shadnet_proto::GetAuthorizationCodeReply { code: AUTHORIZATION_CODE.into(), expires_in: 300 };
         self.reply(packet, ErrorType::NoError, &reply.encode_to_vec())
     }
 
@@ -774,6 +787,9 @@ impl Session {
         self.reply(packet, matching::emit_error_type(&e), &[])
     }
 }
+
+/// The code [`Session::handle_authorization_code`] hands out.
+pub const AUTHORIZATION_CODE: &str = "AUTHEN";
 
 fn is_room_command(c: Command) -> bool {
     (c as u16) >= 100 && (c as u16) <= 115

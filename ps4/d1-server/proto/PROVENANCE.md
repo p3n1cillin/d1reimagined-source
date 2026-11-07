@@ -8,8 +8,8 @@ Vendored **verbatim** from the shadPS4 emulator, `src/shadnet/shadnet.proto`.
 
 | | |
 |---|---|
-| sha256 | `87520f427ee254db3bf0a66af9cad42fc4569d2fc28903f55492dffb0cc99c17` |
-| taken from | [d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4) branch `d1`, commit `34c579fee98c5fec3ce0910d3d939213e702dec1` (1 November 2026) |
+| sha256 | `00caee32f645afbd0b6154dc4767a3632222e8d6886e7d7795ec2da0bcebba01` |
+| taken from | [d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4) branch `d1-upstream-1107` (fork PR #10), commit `79b8a71e96e16d108942283699eb7866110d638b` (7 November 2026: upstream shadPS4 50c5c1b merged into the fork, branch `d1-upstream-1107`, fork PR #10) |
 | earlier upstream commit | `8bdec718b6512ac8d17a44efa0039c06c6810f6e` |
 | upstream | <https://github.com/shadps4-emu/shadPS4> |
 | licence | GPL-2.0-or-later (header: rpcsn Project 2019-2026, shadNET Project 2026) |
@@ -44,10 +44,10 @@ against the client's own text instead of against numbers somebody typed in.
 
 | source | sha256 |
 |---|---|
-| `src/shadnet/client.h` (`PacketType`, `CommandType`, `NotificationType`, `ErrorType`) | `987e69ee45183a1403caaa964fcde72fc3f169ffe58d854d31bbebd019e87639` |
-| `src/core/libraries/np/np_types2.h` (`OrbisNpMatching2Event`, `OrbisNpMatching2EventCause`) | `31e801dff01898ceaf3fbc079c9229231f204ab459ad327cc602364e3d30580d` |
+| `src/shadnet/client.h` (`PacketType`, `CommandType`, `NotificationType`, `ErrorType`) | `4aa258b67fb9585878700f3993b1b471c06729fd74b68c6240a35f8908007c0c` |
+| `src/core/libraries/np/np_types2.h` (`OrbisNpMatching2Event`, `OrbisNpMatching2EventCause`) | `eb600e689777ed6058d6f586d37dc3b4a0f78ec2514b80a30d33fdd542f4d73c` |
 
-Taken from d1reimagined-shadps4 `d1` at `34c579fee98c5fec3ce0910d3d939213e702dec1` on 1 November 2026 (first from `~/dev/shadPS4-d1trace` at `1a51a41696a17a9a3b67ad6658dda547ddca4a98`). That brought 21 new commands (13 `SetClientVersion`, 41 `LookupOnlineId`, 201-214 TUS and TSS, 301-302 trophies) and `ErrorType::TooLarge`.
+Taken from d1reimagined-shadps4 `d1-upstream-1107` (fork PR #10) at `79b8a71e96e16d108942283699eb7866110d638b` on 7 November 2026 (first from `~/dev/shadPS4-d1trace` at `1a51a41696a17a9a3b67ad6658dda547ddca4a98`). That brought 21 new commands (13 `SetClientVersion`, 41 `LookupOnlineId`, 201-214 TUS and TSS, 301-302 trophies) and `ErrorType::TooLarge`.
 
 `shadnet-server controls` re-derives both hashes **and** asserts each block still occurs verbatim in
 the upstream file, whenever the shadPS4 tree is present (`SHADPS4_SRC`, default
