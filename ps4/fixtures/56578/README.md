@@ -64,6 +64,12 @@ Every served profile (`characters/`, `grants/`, `postgame/`) has its unused stat
 marked absent (key `0xFF`; `tools/ps4_setup/d1-profile-override-tail.py`, 7 November 2026). Written
 as (0, 0) they reset the effective rating to 0 (notes/ps4-56578-content-gates-2026-11-07.md).
 
+Every served peer card (`f0t1-*.bin`) and profile carries a coherent look (identity and
+customization; `tools/ps4_setup/d1-fixture-look.py`, 7 November 2026). They had race 0, gender 0,
+class 1 (a Hunter, on a Titan with Titan gear) and an all-zero customization, and the character
+screen drew no Guardian. The look written is a stand-in: the client's own default Exo male Titan
+from its character creation (run new1).
+
 The tutorial profiles carry the same gear during the mission. `profile-tutorial-t.bin` (served at
 boot) holds the subclass, armour, Ghost and vehicle. `grants/profile-tutorial-th.bin` (pushed with
 the Breach rifle) adds the Khvostov. The character screen at the start of the mission (run sense86)
