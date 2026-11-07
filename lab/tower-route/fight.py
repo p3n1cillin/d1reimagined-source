@@ -14,6 +14,10 @@ RATE = 2.26 / 1000 * 1.14          # rad per ms of right-stick hold (d1-navfollo
 CX, CY, R_IN, R_OUT = 185, 189, 14, 95   # radar centre and the ring searched, full-res window capture
 
 
+SHOT_GAP = 3.1                     # s between emulator screenshots while they carry a notification
+_last_shot = (0.0, None)
+
+
 def _emulator_shot(h, rect, timeout=3.0):
     """The emulator's own game-only screenshot (its F12 hotkey), placed where the game's frame sits
     in the window, so the result lines up with a desktop grab of the window. None on failure.
@@ -23,7 +27,18 @@ def _emulator_shot(h, rect, timeout=3.0):
     7 November was black (agr32-agr40), the combat bot fought blind, and a black screen after the
     Preacher (F55) was read into it. The emulator's screenshot is read back from the GPU instead.
     It lands in <shadPS4>/user/screenshots as <title>_<time>_game_<seq>.png; it is moved out once
-    read, so the folder doesn't fill up."""
+    read, so the folder doesn't fill up.
+
+    Each screenshot also queues a 3 s "Saved screenshot" notification holding the picture as a GPU
+    texture, shown one at a time: several a second ran the GPU out of memory and lost the device
+    (agr41, 7 November). So at most one per SHOT_GAP seconds, the last one standing in between,
+    unless the bot's environment has D1_SCREENSHOT_TOAST=0, which says the emulator was started
+    with fork #11's knob of that name (no notification): pass emulator:D1_SCREENSHOT_TOAST=0 to
+    d1-full-game.ps1 and export it for the bot."""
+    global _last_shot
+    if os.environ.get('D1_SCREENSHOT_TOAST') != '0' and _last_shot[1] is not None \
+            and time.time() - _last_shot[0] < SHOT_GAP:
+        return _last_shot[1].copy()
     import ctypes, ctypes.wintypes as wt
     import d1_keys, d1paths
     shots = os.path.join(str(d1paths.shadps4()), 'user', 'screenshots')
@@ -55,6 +70,7 @@ def _emulator_shot(h, rect, timeout=3.0):
                 os.remove(f)
             except OSError:
                 pass
+            _last_shot = (time.time(), out)
             return out
         time.sleep(0.05)
     return None
