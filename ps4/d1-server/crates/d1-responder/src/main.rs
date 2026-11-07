@@ -2344,6 +2344,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_PROGRESSION_ROOT", "<unset>", "family 2 root payload"),
     ("D1_PROGRESSION_KEY_BASE", "0xD100000000000401", "fallback progression key"),
     ("D1_ORACLE", "d1-server/target/release/d1-oracle", "native encoder used to stage loadouts"),
+    ("D1_RSAT_NATIVE", "1", "the client's codec in process (d1-rsat) for profile and item objects; 0 = a d1-oracle start per call (2.2 s each)"),
     ("D1_LOOT_GRANT", "<unset>", "NONCE=SOID:FILE[|PROFILE][;…] - the item a claimed world drop delivers"),
     ("D1_LOOT_GRANT_ROSTER", "<unset>", "roster fixtures served after a loot grant"),
     ("D1_PROFILE_PUSH_FILE", "<unset>", "on-demand family-4 profile delta: write this file (plus optional .item/.soid) to push it"),

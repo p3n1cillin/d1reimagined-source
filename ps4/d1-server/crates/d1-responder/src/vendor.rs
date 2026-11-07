@@ -181,8 +181,40 @@ pub(crate) fn unique_name(prefix: &str) -> String {
     format!("{prefix}-{}-{}", std::process::id(), N.fetch_add(1, std::sync::atomic::Ordering::SeqCst))
 }
 
+/// The client's codec in process (`d1-rsat`, schemas read from the owned eboot once), unless
+/// `D1_RSAT_NATIVE=0`. User report, run agr30 (7 Nov): "Contacting Destiny Servers" now and then.
+/// Each `d1-oracle` start took 2.2 s (loading the eboot under Unicorn), and a loot pickup ran three
+/// (7 s with the client's request unanswered). Natively a decode or encode takes milliseconds. A
+/// schema the native walk does not cover, or a native failure, goes to the oracle as before.
+fn native_codec() -> bool {
+    std::env::var("D1_RSAT_NATIVE").map(|v| v.trim() != "0").unwrap_or(true)
+}
+
+fn tag_u32(tag: &str) -> Option<u32> {
+    u32::from_str_radix(tag.trim_start_matches("0x").trim_start_matches("0X"), 16).ok()
+}
+
+fn native_fallback(what: &str, tag: &str, e: &d1_rsat::RsatError) {
+    static SEEN: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
+    let key = format!("{what} {tag}");
+    if let Ok(mut seen) = SEEN.lock() {
+        if !seen.contains(&key) {
+            tracing::warn!("      ⚠ native codec: {what} {tag} goes to the oracle: {e}");
+            seen.push(key);
+        }
+    }
+}
+
 /// Decode a client-encoded payload into its C object (`d1-oracle object --decode-file ... --out-obj`).
 pub(crate) fn decode_object(oracle: &str, tag: &str, payload: &[u8], name: &str) -> anyhow::Result<Vec<u8>> {
+    if native_codec() {
+        if let Some(t) = tag_u32(tag) {
+            match d1_rsat::decode(t, payload) {
+                Ok(d) => return Ok(d.object),
+                Err(e) => native_fallback("decode", tag, &e),
+            }
+        }
+    }
     let dir = std::env::temp_dir().join("d1-vendor");
     std::fs::create_dir_all(&dir)?;
     let name = unique_name(name);
@@ -200,6 +232,14 @@ pub(crate) fn decode_object(oracle: &str, tag: &str, payload: &[u8], name: &str)
 
 /// Run `d1-oracle object --tag TAG --obj-file …`; returns the payload and its bit count.
 pub(crate) fn encode(oracle: &str, tag: &str, obj: &[u8], name: &str) -> anyhow::Result<(Vec<u8>, usize)> {
+    if native_codec() {
+        if let Some(t) = tag_u32(tag) {
+            match d1_rsat::encode(t, obj) {
+                Ok(e) => return Ok((e.payload, e.bits as usize)),
+                Err(e) => native_fallback("encode", tag, &e),
+            }
+        }
+    }
     let dir = std::env::temp_dir().join("d1-vendor");
     std::fs::create_dir_all(&dir)?;
     let src = dir.join(format!("{name}.obj"));
