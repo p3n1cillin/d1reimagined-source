@@ -233,8 +233,10 @@ if ($NoServers) {
     # ahead of the emulator's threads; they use little CPU themselves.
     foreach ($p in $winServers) { try { $p.PriorityClass = 'AboveNormal' } catch { } }
     # A first start (a new player store being seeded, a new server path being scanned) took longer
-    # than 30 s (run fg2b, 6 Nov 2026); a normal start listens within a few seconds.
-    $deadline = (Get-Date).AddSeconds(90)
+    # than 30 s (run fg2b, 6 Nov 2026); a normal start listens within a few seconds. With the F: disk
+    # busy (another program's video checks, run agr27, 7 Nov 2026) the responder had not listened
+    # after 90 s.
+    $deadline = (Get-Date).AddSeconds(240)
     do {
         Start-Sleep -Milliseconds 300
         $listen = @(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -in $winServers.Id })
