@@ -45,6 +45,11 @@ def main():
     ap.add_argument('--steps', type=int, default=8)
     ap.add_argument('--hold-ms', type=int, default=1600)
     a = ap.parse_args()
+    if os.environ.get('D1_LAB_SKIP_CACHE') == '1':
+        # Lab switch: leave the cache shut (agr32's equipped Preacher blacked out the screen, F55,
+        # and the bot fights by screen reads).
+        print('cache left shut (D1_LAB_SKIP_CACHE=1)', flush=True)
+        return 0
     start = 0
     if reported(a.host_log, 0):
         print('cache already opened (report in the host log)', flush=True)

@@ -680,6 +680,14 @@ impl RowEncoders {
                             image[at + 8..at + 12].copy_from_slice(&(position as f32).to_le_bytes());
                         }
                     }
+                } else if object_empty_command() && image.len() >= 0x34 && u32_at(&image, 0x20) == Some(0) {
+                    // F52 (A/B, D1_AH_OBJECT_EMPTY_COMMAND=1): every Breach object the live host sent
+                    // (the seven tripwires among them, 581 s) had one command of no type: count 1
+                    // at +0x20, tag 0xFFFFFFFF at +0x30. Ours had none, and the tripwires drew no
+                    // beam. ⚠ Read with the 56578 schema from a 51539 capture: the layout is
+                    // inferred, so this stays a lab experiment until a run shows the beams.
+                    put_u32(&mut image, 0x20, 1);
+                    put_u32(&mut image, 0x30, u32::MAX);
                 }
                 with_a(TAG_OBJECT, image)
             }
@@ -821,6 +829,13 @@ impl RowEncoders {
             other => Encoded::Unsupported(format!("no 56578 field map for {other} rows yet")),
         }
     }
+}
+
+/// `D1_AH_OBJECT_EMPTY_COMMAND=1` (F52 experiment): objects without a device go out with one
+/// untyped command, as the live host's did.
+fn object_empty_command() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var("D1_AH_OBJECT_EMPTY_COMMAND").is_ok_and(|v| v.trim() == "1"))
 }
 
 fn image_with_cinematic(image: &mut [u8], counter: u32, playing: bool, ctx: EncodeContext) -> Vec<u8> {
