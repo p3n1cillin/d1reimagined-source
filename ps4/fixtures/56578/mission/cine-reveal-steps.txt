@@ -13,11 +13,10 @@
 # Wait for CURRENT slice 26 before starting the reconstructed four-second sleep. The existing
 # % gate's 900 s fallback is diagnostic; it does not prove arrival if it expires.
 165  %26|900   0x4786c0e0  cine_reveal-move-26.txt
-# set_activity_complete belongs HERE, while lifetime stays at 4 and /6/1 remains idle.
-# Its content-derived PS4 incident type is 965, but the metadata body is unresolved. This line
-# only republishes idle state; it DOES NOT mark the activity complete. Do not use an empty body
-# or paste the 51539 capture's wire bytes into incident=TYPE:BODYHEX.
-165  +4        0x4786c0e0  cine_reveal-move-26.txt
+# set_activity_complete belongs HERE, while lifetime stays at 4 and /6/1 remains idle: the 965
+# chain with one 0x80800595 body (complete=, completion.rs; the hashes from scripts/activities.txt),
+# and the store records it. Never paste a capture's wire bytes into incident=TYPE:BODYHEX.
+165  +4        0x4786c0e0  cine_reveal-move-26.txt  complete=0x6eaf0959:0x648999f4:0x4d78882e:0xdf617463
 # The half-second separation is an explicit diagnostic scheduling choice, not part of sleep(4).
 165  +0.5      0x4786c0e0  cine_reveal-play-1.txt
 165  @891|900  0x4786c0e0  cine_reveal-done-1.txt
