@@ -51,13 +51,41 @@ The unit tests:
 - `look_image` equals the client encoder's C object for every codec vector;
 - `write_look` keeps the key, the destination and the helmet field.
 
+## The class's starting gear (new4, new5)
+
+new4 created a Hunter. The client drew a Hunter body, because the card's class now follows the
+request, but the character screen showed the level-1 set's Titan gear. The store serves
+`D1_INVENTORY`'s items; `D1_STARTING_KIT` was never applied to them. That set is a later save's
+gear anyway: Striker, the Oryx Mask, the Competitive Shell.
+
+The content's first default-gear list (`characters/starting-kit.tsv`, which the client's default-gear
+loader `0x576150` preloads) is D1's starter gear. The archived manifest names it:
+
+| Class | Helmet, gauntlets, chest, legs | Class item |
+| --- | --- | --- |
+| Titan | Lightmail | Mark of the Risen |
+| Hunter | Prototype 0.9 | Makeshift Scarf |
+
+All classes get the Generalist Shell Ghost.
+
+So on a 501, with `D1_STARTING_KIT` set, `player_store::class_kit` and `apply_kit_to_profile` put
+the class's armour and Ghost, and its starting subclass, into the slots the served set already
+equips. The subclasses by content index are Striker 710, Gunslinger 709 and Voidwalker 713. Each
+slot keeps its instance, and those instances' item elements get the new content index (`+0x24`).
+Weapons stay out: a new Guardian has none until the Khvostov. So do the ship, vehicle, emblem,
+emote and horn the list also names; their policy is unverified.
+
+new5, a Human female Hunter: all seven swapped 120 ms after the 501. Then the prologue and A
+Guardian Rises to the rifle. The character screen shows Gunslinger, the Prototype 0.9 armour, the
+Makeshift Scarf, the Generalist Shell and the Khvostov, on a female Hunter's silhouette.
+
 ## Open
 
+- **Warlock** creation is untested.
 - **The look can't be seen yet.** The creation screen's Guardian preview is empty, and the character
   screen draws the Guardian as a black silhouette. That's F47, the black and see-through models, so
   that the chosen face reaches the screen is unconfirmed.
-- **Class.** The kit has the class's own armour, but the level-1 set's subclass item and cards are
-  the Titan's. A Hunter or Warlock needs its class's subclass and card.
+- ~~Class.~~ Done the same evening, below.
 - **The stock fixtures' look** is all zeros. A captured character's customization would make the
   served Guardian look like one; whether the zero look causes F57's headless Titan is to test.
 - **Retail's first activity.** The client chose the prologue and A Guardian Rises by itself from the

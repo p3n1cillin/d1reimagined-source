@@ -1754,12 +1754,77 @@ pub fn write_look(object: &mut [u8], look: &[u8; d1_bap::character_lifecycle::LO
 /// The peer view (`0x808017FD`): the family-0 type-1 roster card.
 const PEER_VIEW_TAG: &str = "0x808017FD";
 
+/// The buckets a created Guardian's class kit replaces: helmet, gauntlets, chest, legs, class item
+/// and Ghost. Weapons stay out (a new Guardian has none until the Khvostov), and so do the ship,
+/// vehicle, emblem, emote and horn the content list also names (their policy is unverified).
+const CLASS_KIT_BUCKETS: [u8; 6] = [0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0E];
+/// The starting subclass per class, by content index (56578 item index; the archived manifest names
+/// them): Titan Striker 710, Hunter Gunslinger 709, Warlock Voidwalker 713.
+const STARTING_SUBCLASS: [u16; 3] = [710, 709, 713];
+const SUBCLASS_BUCKET: u8 = 0x06;
+/// An item element's content index (`0x80801732` `+0x24`, as vendor.rs writes it).
+const ITEM_CONTENT: usize = 0x24;
+
+/// `(bucket, content)` a created Guardian of `class` starts with: `D1_STARTING_KIT`'s entries for
+/// [`CLASS_KIT_BUCKETS`] and the class's starting subclass. Empty when the knob is unset. The
+/// content's first default-gear list (`D1_STARTING_KIT=content`) is the classic starter gear:
+/// Lightmail and the Mark of the Risen (Titan), Prototype 0.9 and the Makeshift Scarf (Hunter),
+/// and the Generalist Shell.
+pub fn class_kit(class: u8) -> Vec<(u8, u16)> {
+    let kit = crate::character_create::kit_from_env();
+    let Some(items) = kit.get(&class) else { return Vec::new() };
+    let mut wants: Vec<(u8, u16)> = items.iter().copied().filter(|(b, _)| CLASS_KIT_BUCKETS.contains(b)).collect();
+    if let Some(&sub) = STARTING_SUBCLASS.get(class as usize) {
+        wants.push((SUBCLASS_BUCKET, sub));
+    }
+    wants
+}
+
+/// Put each `(bucket, content)` into the first occupied slot of that character bucket in a decoded
+/// profile object, keeping its instance. Returns `(instance, content, bucket)` for each changed
+/// instanced slot; an empty bucket is left empty (the served set has nothing equipped there).
+pub fn apply_kit_to_profile(profile: &mut [u8], wants: &[(u8, u16)]) -> Vec<(u64, u16, u8)> {
+    let mut changed = Vec::new();
+    for &(b, content) in wants {
+        let Some(info) = crate::store::bucket(b).filter(|i| i.scope == 0) else { continue };
+        for slot in info.first..info.first + info.count {
+            let e = crate::store::PROFILE_SLOTS + 32 * slot as usize;
+            let Some(entry) = profile.get_mut(e..e + 16) else { break };
+            if u16::from_le_bytes([entry[0], entry[1]]) == 0xFFFF {
+                continue;
+            }
+            entry[0..2].copy_from_slice(&content.to_le_bytes());
+            let instance = u64::from_le_bytes(entry[8..16].try_into().unwrap());
+            if instance != 0 {
+                changed.push((instance, content, b));
+            }
+            break;
+        }
+    }
+    changed
+}
+
+/// Set a decoded item element's content index. False when the object is too short.
+pub fn set_item_content(item: &mut [u8], content: u16) -> bool {
+    match item.get_mut(ITEM_CONTENT..ITEM_CONTENT + 2) {
+        Some(at) => {
+            at.copy_from_slice(&content.to_le_bytes());
+            true
+        }
+        None => false,
+    }
+}
+
 /// ⭐ 501 `login_create_character`: give the store's character the look the player chose. Until
 /// 7 November 2026 the served peer cards and profile kept their fixtures' look (an all-zero
 /// customization), so a created Guardian came out as the fixture's, whatever was picked (run new2:
 /// an Awoken female chosen). Each family-0 peer card and the profile are decoded with the client's
 /// codec, the look written (`write_look`), and re-encoded; the profile is pushed. A card or profile
 /// that does not decode or encode is left as it was, and the event says so.
+///
+/// With `D1_STARTING_KIT` set, the class's starting gear ([`class_kit`]) replaces the content of
+/// the served set's equipped armour, Ghost and subclass (run new4: a Hunter was served the Titan
+/// set's Oryx Mask and Striker), in the profile slots and those instances' item elements.
 pub fn apply_created_look(look: [u8; d1_bap::character_lifecycle::LOOK_BYTES]) {
     let who = crate::players::current();
     // Off the 501 reply: the codec falls back to the oracle (seconds) when the native one refuses.
@@ -1788,20 +1853,49 @@ pub fn apply_created_look(look: [u8; d1_bap::character_lifecycle::LOOK_BYTES]) {
             (None, Some(payload)) => Some(crate::vendor::decode_object(&oracle, "0x80801743", &payload, "created-look-profile")),
             (None, None) => None,
         };
+        // The class's starting gear (D1_STARTING_KIT): its content into the slots the served set
+        // already equips, and into those instances' item elements.
+        let wants = class_kit(look[2]);
+        let mut new_items = Vec::new();
+        let object = object.map(|o| o.map(|mut obj| {
+            if !write_look(&mut obj, &look) {
+                events.push("⛔ created look: the profile object is too short; look not written".into());
+            } else {
+                events.push("created look written into the profile".into());
+            }
+            let swapped = apply_kit_to_profile(&mut obj, &wants);
+            let items = view(|s| s.chr().items.iter().map(|i| (i.soid, i.element.clone())).collect::<BTreeMap<_, _>>()).unwrap_or_default();
+            for (instance, content, bucket) in swapped {
+                let Some(element) = items.get(&instance) else {
+                    events.push(format!("⛔ class kit: bucket {bucket:#x}'s instance {instance:#x} has no item element; the profile slot alone changed"));
+                    continue;
+                };
+                let step = crate::vendor::decode_object(&oracle, "0x80801732", element, "class-kit-item").and_then(|mut item| {
+                    anyhow::ensure!(set_item_content(&mut item, content), "the decoded item is too short");
+                    Ok(crate::vendor::encode(&oracle, "0x80801732", &item, &crate::vendor::unique_name("class-kit-item"))?.0)
+                });
+                match step {
+                    Ok(encoded) => {
+                        events.push(format!("class kit: bucket {bucket:#x} -> content {content} (instance {instance:#x})"));
+                        new_items.push((instance, encoded));
+                    }
+                    Err(e) => events.push(format!("⛔ class kit: item {instance:#x} kept ({e:#})")),
+                }
+            }
+            obj
+        }));
         let mut profile_edited = false;
         with("created look", |s| {
             s.put_cards(new_cards);
+            for (soid, element) in &new_items {
+                s.put_item(*soid, element);
+            }
             match object {
-                Some(Ok(mut obj)) => {
-                    if write_look(&mut obj, &look) {
-                        let c = s.chr_mut();
-                        c.profile_object = Some(obj);
-                        c.profile_stale = true;
-                        profile_edited = true;
-                        events.push("created look written into the profile".into());
-                    } else {
-                        events.push("⛔ created look: the profile object is too short; kept".into());
-                    }
+                Some(Ok(obj)) => {
+                    let c = s.chr_mut();
+                    c.profile_object = Some(obj);
+                    c.profile_stale = true;
+                    profile_edited = true;
                 }
                 Some(Err(e)) => events.push(format!("⛔ created look: the profile did not decode ({e:#}); kept")),
                 None => events.push("created look: no profile to edit".into()),
@@ -2679,6 +2773,35 @@ mod tests {
         assert_eq!(u32::from_le_bytes(obj[0x28..0x2C].try_into().unwrap()), 0x9320_15BB, "the destination");
         assert_eq!(obj[0x2C], 1, "the helmet field");
         assert!(!super::write_look(&mut vec![0u8; 0x20], &look), "too short: left alone");
+    }
+
+    /// The class kit goes into each bucket's first occupied slot and keeps its instance; an empty
+    /// bucket and an account bucket are left alone; the item element's content index follows.
+    #[test]
+    fn a_class_kit_swaps_the_equipped_contents_and_keeps_the_instances() {
+        let slot_of = |b: u8| crate::store::bucket(b).unwrap().first as usize;
+        let mut profile = vec![0u8; crate::store::PROFILE_SLOTS + 32 * crate::store::PROFILE_SLOT_COUNT];
+        for s in 0..crate::store::PROFILE_SLOT_COUNT {
+            let e = crate::store::PROFILE_SLOTS + 32 * s;
+            profile[e..e + 2].copy_from_slice(&0xFFFFu16.to_le_bytes());
+        }
+        let put = |p: &mut Vec<u8>, slot: usize, content: u16, instance: u64| {
+            let e = crate::store::PROFILE_SLOTS + 32 * slot;
+            p[e..e + 2].copy_from_slice(&content.to_le_bytes());
+            p[e + 8..e + 16].copy_from_slice(&instance.to_le_bytes());
+        };
+        put(&mut profile, slot_of(0x06), 710, 0xD100_0000_0000_0301); // Striker
+        put(&mut profile, slot_of(0x07), 6514, 0xD100_0000_0000_0303); // Oryx Mask
+        let changed = super::apply_kit_to_profile(&mut profile, &[(0x07, 15), (0x06, 709), (0x08, 9)]);
+        assert_eq!(changed, vec![(0xD100_0000_0000_0303, 15, 0x07), (0xD100_0000_0000_0301, 709, 0x06)], "gauntlets empty: skipped");
+        let e = crate::store::PROFILE_SLOTS + 32 * slot_of(0x07);
+        assert_eq!(u16::from_le_bytes([profile[e], profile[e + 1]]), 15, "Prototype 0.9c Helmet");
+        assert_eq!(u64::from_le_bytes(profile[e + 8..e + 16].try_into().unwrap()), 0xD100_0000_0000_0303, "same instance");
+
+        let mut item = vec![0u8; 0x40];
+        assert!(super::set_item_content(&mut item, 709));
+        assert_eq!(u16::from_le_bytes([item[0x24], item[0x25]]), 709);
+        assert!(!super::set_item_content(&mut vec![0u8; 0x10], 709));
     }
 
     #[test]
