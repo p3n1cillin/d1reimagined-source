@@ -1736,6 +1736,87 @@ pub fn unlock_flag_spec() -> Option<String> {
     }
 }
 
+/// Write a created Guardian's look (`d1_bap::character_lifecycle::CreateCharacterRequest::look_image`)
+/// into a decoded peer view or profile object at `LOOK_AT`. Returns false (and leaves it) when the
+/// object is too short. Everything past the look stays: the customization's f10 (the profile's
+/// last-orbited destination) and f11 (the wear-helmet field).
+pub fn write_look(object: &mut [u8], look: &[u8; d1_bap::character_lifecycle::LOOK_BYTES]) -> bool {
+    use d1_bap::character_lifecycle::{LOOK_AT, LOOK_BYTES};
+    match object.get_mut(LOOK_AT..LOOK_AT + LOOK_BYTES) {
+        Some(at) => {
+            at.copy_from_slice(look);
+            true
+        }
+        None => false,
+    }
+}
+
+/// The peer view (`0x808017FD`): the family-0 type-1 roster card.
+const PEER_VIEW_TAG: &str = "0x808017FD";
+
+/// ⭐ 501 `login_create_character`: give the store's character the look the player chose. Until
+/// 7 November 2026 the served peer cards and profile kept their fixtures' look (an all-zero
+/// customization), so a created Guardian came out as the fixture's, whatever was picked (run new2:
+/// an Awoken female chosen). Each family-0 peer card and the profile are decoded with the client's
+/// codec, the look written (`write_look`), and re-encoded; the profile is pushed. A card or profile
+/// that does not decode or encode is left as it was, and the event says so.
+pub fn apply_created_look(look: [u8; d1_bap::character_lifecycle::LOOK_BYTES]) {
+    let who = crate::players::current();
+    // Off the 501 reply: the codec falls back to the oracle (seconds) when the native one refuses.
+    std::thread::spawn(move || crate::players::run_as(who, || {
+        let oracle = crate::vendor::oracle_path();
+        let mut events = Vec::new();
+        let cards = view(|s| s.chr().roster.iter().filter(|c| c.name.starts_with("f0t1-"))
+            .map(|c| (c.name.clone(), c.payload.clone())).collect::<Vec<_>>()).unwrap_or_default();
+        let mut new_cards = Vec::new();
+        for (name, payload) in cards {
+            let step = crate::vendor::decode_object(&oracle, PEER_VIEW_TAG, &payload, "created-look-card").and_then(|mut obj| {
+                anyhow::ensure!(write_look(&mut obj, &look), "the decoded card is too short");
+                Ok(crate::vendor::encode(&oracle, PEER_VIEW_TAG, &obj, &crate::vendor::unique_name("created-look-card"))?.0)
+            });
+            match step {
+                Ok(encoded) => {
+                    events.push(format!("created look written into {name}"));
+                    new_cards.push((name, encoded));
+                }
+                Err(e) => events.push(format!("⛔ created look: {name} kept as it was ({e:#})")),
+            }
+        }
+        let profile = view(|s| (s.chr().profile_object.clone(), s.chr().profile.clone())).unwrap_or((None, None));
+        let object = match profile {
+            (Some(obj), _) => Some(Ok(obj)),
+            (None, Some(payload)) => Some(crate::vendor::decode_object(&oracle, "0x80801743", &payload, "created-look-profile")),
+            (None, None) => None,
+        };
+        let mut profile_edited = false;
+        with("created look", |s| {
+            s.put_cards(new_cards);
+            match object {
+                Some(Ok(mut obj)) => {
+                    if write_look(&mut obj, &look) {
+                        let c = s.chr_mut();
+                        c.profile_object = Some(obj);
+                        c.profile_stale = true;
+                        profile_edited = true;
+                        events.push("created look written into the profile".into());
+                    } else {
+                        events.push("⛔ created look: the profile object is too short; kept".into());
+                    }
+                }
+                Some(Err(e)) => events.push(format!("⛔ created look: the profile did not decode ({e:#}); kept")),
+                None => events.push("created look: no profile to edit".into()),
+            }
+            s.save("created look")?;
+            Ok(std::mem::take(&mut events))
+        });
+        if profile_edited {
+            if let Err(e) = push_profile("created look") {
+                tracing::warn!("      ⛔ player store: the created look's profile push failed ({e:#})");
+            }
+        }
+    }));
+}
+
 /// The roster cards: the store's, or `D1_ROSTER_DIR`'s.
 pub fn roster_cards() -> Option<Vec<(String, Vec<u8>)>> {
     match view(|s| s.chr().roster.iter().map(|c| (c.name.clone(), c.payload.clone())).collect::<Vec<_>>()) {
@@ -2579,6 +2660,27 @@ mod hex64 {
 
 #[cfg(test)]
 mod tests {
+    /// A created look replaces identity and customization f0..f9 and nothing else: the object's
+    /// key, the profile's last-orbited destination (f10, +0x28) and the wear-helmet field (+0x2C)
+    /// stay.
+    #[test]
+    fn a_created_look_keeps_the_key_the_destination_and_the_helmet_field() {
+        let mut obj = vec![0u8; 0x40];
+        obj[..8].copy_from_slice(&0xD100_0000_0000_0201u64.to_le_bytes());
+        obj[0x28..0x2C].copy_from_slice(&0x9320_15BBu32.to_le_bytes());
+        obj[0x2C] = 1;
+        let mut look = [0u8; d1_bap::character_lifecycle::LOOK_BYTES];
+        look[..3].copy_from_slice(&[1, 1, 0]); // Awoken, female, Titan
+        look[4..6].copy_from_slice(&551i16.to_le_bytes());
+        assert!(super::write_look(&mut obj, &look));
+        assert_eq!(&obj[8..11], &[1, 1, 0]);
+        assert_eq!(i16::from_le_bytes([obj[0x0C], obj[0x0D]]), 551);
+        assert_eq!(u64::from_le_bytes(obj[..8].try_into().unwrap()), 0xD100_0000_0000_0201, "the key");
+        assert_eq!(u32::from_le_bytes(obj[0x28..0x2C].try_into().unwrap()), 0x9320_15BB, "the destination");
+        assert_eq!(obj[0x2C], 1, "the helmet field");
+        assert!(!super::write_look(&mut vec![0u8; 0x20], &look), "too short: left alone");
+    }
+
     #[test]
     fn a_pickup_applies_the_grants_change_and_keeps_the_stores_own() {
         let base = [0xFFu8, 0xFF, 1, 0, 5, 0];

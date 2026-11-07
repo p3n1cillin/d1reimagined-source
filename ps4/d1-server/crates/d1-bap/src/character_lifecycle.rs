@@ -312,7 +312,42 @@ impl<'a> BitReader<'a> {
     }
 }
 
+/// Where a Guardian's look sits in the objects that carry it: the peer view `0x808017FD` and the
+/// profile's character record `0x80801714` (at `+0` of `0x80801743`) both hold the identity
+/// `0x808017FC` at `+0x08` and the customization `0x8080181A` at `+0x0C`
+/// (`ps4/fixtures/56578/rtti/fields.tsv`), as this request does at `+0x00` and `+0x04`.
+pub const LOOK_AT: usize = 0x08;
+/// [`CreateCharacterRequest::look_image`]: the identity (4 bytes with its pad) and customization
+/// fields f0..f9 (block `+0x00..+0x1C`).
+pub const LOOK_BYTES: usize = 0x20;
+
 impl CreateCharacterRequest {
+    /// The look the player chose, as the bytes `[LOOK_AT, LOOK_AT + LOOK_BYTES)` of a peer view or
+    /// profile object: race, gender and class (then the pad), and customization f0..f9 with the
+    /// block's pads at 0. f10 (a name hash: the profile's last-orbited destination) and f11 (the
+    /// wear-helmet field, absolute `+0x2C`) are not part of it; the target keeps its own.
+    pub fn look_image(&self) -> [u8; LOOK_BYTES] {
+        let mut b = [0u8; LOOK_BYTES];
+        b[0] = self.race as u8;
+        b[1] = self.gender as u8;
+        b[2] = self.class as u8;
+        let c = &self.customization;
+        let mut at = |o: usize, v: &[u8]| b[4 + o..4 + o + v.len()].copy_from_slice(v);
+        at(0x00, &c.f0.to_le_bytes());
+        at(0x02, &[c.f1 as u8, c.f2 as u8, c.f3 as u8]);
+        at(0x06, &c.f4.to_le_bytes());
+        at(0x08, &c.f5.to_le_bytes());
+        at(0x0A, &c.f6.to_le_bytes());
+        for (i, v) in c.f7.iter().enumerate() {
+            at(0x0C + 2 * i, &v.to_le_bytes());
+        }
+        for (i, v) in c.f8.iter().enumerate() {
+            at(0x12 + 2 * i, &v.to_le_bytes());
+        }
+        at(0x18, &c.f9.to_le_bytes());
+        b
+    }
+
     /// Decode the argument bitstream of investment message **501**.
     ///
     /// `bits` is everything after the two-byte message id in the `0x000A` body.
@@ -640,6 +675,19 @@ mod tests {
 
             assert_eq!(&d.name[..], &obj[0x28..0x28 + 17], "char[17] @+0x28");
         }
+    }
+
+    /// The look image is the client's own C object, byte for byte, over identity and customization
+    /// f0..f9 (`+0x00..+0x20`), for every codec vector.
+    #[test]
+    fn the_look_image_is_the_c_objects_identity_and_customization() {
+        for (obj_hex, payload_hex) in VECTORS {
+            let obj = unhex(obj_hex);
+            let d = CreateCharacterRequest::decode(&unhex(payload_hex)).unwrap();
+            assert_eq!(&d.look_image()[..], &obj[..LOOK_BYTES], "the C object's first 0x20 bytes");
+        }
+        // f10 (+0x20) and f11 (+0x24) lie past it.
+        assert_eq!(LOOK_AT + LOOK_BYTES, 0x28, "the profile's last-orbited destination starts here");
     }
 
     /// ⚠ NEGATIVE CONTROL - the bias table must be load-bearing. If the 4-bit / 2-bit fields used
