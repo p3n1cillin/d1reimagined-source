@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Set a served profile's completion record (field [11]) through the client's own codec.
 
     d1-profile-completions.py IN OUT [--clear] [--set SUB=VALUE ...] [--list]
@@ -19,9 +20,12 @@ import os
 import subprocess
 import sys
 import tempfile
+import json
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import d1paths  # sibling: local paths from D1_ROOT or paths.json
+from d1_new_guardian import select_defaults
 
 TAG = '0x80801743'
 FIELD11, FIELD11_BYTES = 0x53C0, 2200
@@ -42,6 +46,26 @@ def subs(obj):
     return {i: obj[FIELD11 + i] for i in range(FIELD11_BYTES) if obj[FIELD11 + i]}
 
 
+def apply_creation_defaults(obj, document):
+    """Clear the old save, then seed the selected race/class's authored profile flags.
+
+    Account flags are separate: copying their subindices into this field would corrupt
+    unrelated character completions. The generator emits them in its environment snippet.
+    """
+    flags = select_defaults(document, obj[0xA], obj[8])
+    edits = {}
+    for flag in flags:
+        if flag['kind'] != 3:
+            continue
+        sub, value = flag['sub'], flag['value']
+        if not 0 <= sub < FIELD11_BYTES or not 0 <= value <= 2 or sub in edits:
+            raise ValueError('invalid creation completion')
+        edits[sub] = value
+    obj[FIELD11:FIELD11 + FIELD11_BYTES] = bytes(FIELD11_BYTES)
+    for sub, value in edits.items():
+        obj[FIELD11 + sub] = value
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('input')
@@ -49,7 +73,11 @@ def main():
     ap.add_argument('--clear', action='store_true', help='clear every completion first')
     ap.add_argument('--set', action='append', default=[], metavar='SUB=VALUE')
     ap.add_argument('--list', action='store_true', help='print the record and stop')
+    ap.add_argument('--creation-defaults', type=Path,
+                    help='clear the later save and apply the owned 56578 creation flags for this profile identity')
     a = ap.parse_args()
+    if a.output and Path(a.input).resolve() == Path(a.output).resolve():
+        ap.error('input and output must differ')
     with tempfile.TemporaryDirectory() as d:
         obj_path = os.path.join(d, 'in.obj')
         run('object', '--tag', TAG, '--decode-file', a.input, '--out-obj', obj_path)
@@ -59,6 +87,8 @@ def main():
             return
         if a.clear:
             obj[FIELD11:FIELD11 + FIELD11_BYTES] = bytes(FIELD11_BYTES)
+        if a.creation_defaults:
+            apply_creation_defaults(obj, json.loads(a.creation_defaults.read_text(encoding='utf-8')))
         for item in a.set:
             sub, value = (int(x, 0) for x in item.split('='))
             if not 0 <= sub < FIELD11_BYTES or not 0 <= value < 256:
@@ -67,9 +97,13 @@ def main():
         new = os.path.join(d, 'new.obj')
         open(new, 'wb').write(obj)
         out = run('object', '--tag', TAG, '--obj-file', new, '--out', a.output)
-    if 'IDENTICAL' not in out:
-        os.remove(a.output) if os.path.exists(a.output) else None
-        sys.exit(f'the client codec did not round-trip the edited object: {out[-400:]}')
+        if 'IDENTICAL' not in out:
+            os.remove(a.output) if os.path.exists(a.output) else None
+            sys.exit(f'the client codec did not round-trip the edited object: {out[-400:]}')
+        run('object', '--tag', TAG, '--decode-file', a.output, '--out-obj', obj_path)
+        if Path(obj_path).read_bytes() != obj:
+            os.remove(a.output)
+            sys.exit('re-decoded output differs from the edited profile')
     print(f'{a.output}: {len(subs(obj))} completions: {subs(obj)}; round trip identical')
 
 
