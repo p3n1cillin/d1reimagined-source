@@ -545,10 +545,22 @@ impl RowEncoders {
                     || state.get("bodies").and_then(Value::as_i64).is_some_and(|n| n > 0)
                     || roster.as_ref().is_some_and(|r| r.iter().any(|n| *n > 0))
                     || state.get("placedAt").is_some_and(|p| !p.is_null());
+                if !placed && squad_unplaced_explicit() {
+                    // The live host sent every squad explicitly, an unplaced one too (A Guardian
+                    // Rises' hangar squads 7-12 at 866 s; the Breach's squad 21): the objective at
+                    // +0, the roster's cell count at +0x2C with no bodies, generation 0, +0x60 1,
+                    // tasks -1 at +0x68/+0x6C, +0x48 and +0x74 0. Served as the client's default
+                    // instead, the Wall's and the Divide's squads spawn from the client's own
+                    // defaults besides the scripts' placements (runs agr32/33: twice the Fallen).
+                    // ⚠ A/B behind D1_AH_SQUAD_UNPLACED_EXPLICIT=1 until a lab run shows it.
+                    let mut image = squad_unplaced_live();
+                    put_ref(&mut image, 0, state.get("objective").and_then(map));
+                    put_u32(&mut image, 0x2C, roster.as_ref().map_or(0, |r| r.len() as u32));
+                    return with_a(TAG_SQUAD, image);
+                }
                 if !placed {
                     // Never placed: the client's own default, as an unplaced squad is served.
-                    // (The live host sent unplaced squads explicitly: the objective, the roster's
-                    // cell count, tasks -1. Open: the Breach's and the Divide's default spawns.)
+                    // (The live host sent unplaced squads explicitly: see above.)
                     return Encoded::Row(base.map_or(
                         Row { has_a: true, has_b: false, a: None, b: None },
                         Row::defaulted,
@@ -831,6 +843,29 @@ impl RowEncoders {
     }
 }
 
+/// `D1_AH_SQUAD_UNPLACED_EXPLICIT=1`: unplaced squads go out explicitly, as the live host's did.
+fn squad_unplaced_explicit() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var("D1_AH_SQUAD_UNPLACED_EXPLICIT").is_ok_and(|v| v.trim() == "1"))
+}
+
+/// The live host's unplaced squad value (A Guardian Rises' hangar squad 7 at 866 s, read with
+/// `d1-srcp.py values --kind 1 --tag 0x8080071E`): refs absent at +0x08/+0x50/+0x58, hashes absent
+/// at +0x4C/+0x78, +0x60 = 1, tasks -1. The objective and the cell count are the caller's.
+fn squad_unplaced_live() -> Vec<u8> {
+    let mut b = vec![0u8; 124];
+    for at in [0x00, 0x08, 0x50, 0x58] {
+        put_ref(&mut b, at, None);
+    }
+    for at in [0x4C, 0x78] {
+        put_u32(&mut b, at, NONE_HASH);
+    }
+    put_u32(&mut b, 0x60, 1);
+    put_u32(&mut b, 0x68, u32::MAX);
+    put_u32(&mut b, 0x6C, u32::MAX);
+    b
+}
+
 /// `D1_AH_OBJECT_EMPTY_COMMAND=1` (F52 experiment): objects without a device go out with one
 /// untyped command, as the live host's did.
 fn object_empty_command() -> bool {
@@ -933,6 +968,10 @@ fn object_default() -> Vec<u8> {
 
 #[cfg(test)]
 mod tests {
+    fn hex_str(b: &[u8]) -> String {
+        b.iter().map(|x| format!("{x:02x}")).collect()
+    }
+
     use super::*;
     use serde_json::json;
 
@@ -1046,6 +1085,11 @@ mod tests {
         let i = image(&init_b);
         assert_eq!((u32_at(i, 0x10), u32_at(i, 0x14), u32_at(i, 0x2C), &i[0x30..0x32]), (Some(1), Some(0x8AEF_BA13), Some(1), &[1u8, 0][..]));
         assert_eq!((u32_at(i, 0x44), u32_at(i, 0x68), u32_at(i, 0x6C)), (Some(1), Some(2), Some(1)));
+        // The live unplaced layout (hangar squad 7 at 866 s, objective 0x062DD95D/3/4, three cells).
+        let mut live7 = squad_unplaced_live();
+        put_ref(&mut live7, 0, Some(MappedRef { group: 0x062D_D95D, kind: 3, index: 4 }));
+        put_u32(&mut live7, 0x2C, 3);
+        assert_eq!(hex_str(&live7), "5dd92d0603000400c59d1c81ff00ffff000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000c59d1c81c59d1c81ff00ffffc59d1c81ff00ffff0100000000000000ffffffffffffffff0000000000000000c59d1c81");
         let unplaced0 = e.encode(sq, "squad", &json!({"carried": false, "wave": 0, "bodies": 0, "roster": [0, 0]}), None, CTX, &map);
         assert_eq!(unplaced0, Encoded::Row(Row { has_a: true, has_b: false, a: None, b: None }), "no bodies: still unplaced");
 
