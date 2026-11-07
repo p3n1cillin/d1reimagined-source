@@ -399,6 +399,8 @@ pub struct ActivityInstance {
     incidents: Vec<(u32, Instant)>,
     /// The slice set the client last reported as current (udt 21), for [`StepWhen::OnSlice`].
     current_slice: Option<u32>,
+    /// The last udt-21 slice records logged (diagnostic, see `track_current_slice`).
+    slice_records_seen: Option<(u32, u32, u32, u32, u8)>,
     /// Player-trigger reports (incident 3403) by name, and whether a step has used each.
     trigger_reports: Vec<((u32, u8, u16), bool)>,
     /// Connection/world-local observations. Decoder errors and backlog hold kill gates.
@@ -680,6 +682,7 @@ impl ActivityInstance {
             mission_step_at: None,
             incidents: Vec::new(),
             current_slice: None,
+            slice_records_seen: None,
             trigger_reports: Vec::new(),
             squad_live: crate::sense::SquadObservations::default(),
             squad_hold_logged: None,
@@ -2190,12 +2193,29 @@ impl ActivityInstance {
     }
 
     /// Record the client's current slice set from udt 21 (`+0xB8` = {10-bit index, name hash}).
-    /// The update is a delta: the record is present only when its hash is (not 0 / FNV basis).
+    /// The update is a delta: the record is absent when its hash is 0 (or it is index 0 with the
+    /// FNV basis, the unset record); a private slice set's record carries the FNV basis.
     fn track_current_slice(&mut self, image: &[u8]) {
         let u = |o: usize| image.get(o..o + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()));
         let (Some(index), Some(hash)) = (u(0xB8), u(0xBC)) else { return };
+        // Diagnostic (7 November 2026): in cinematic worlds this tracker never saw the slice set a
+        // host teleport moved the client to (cine_reveal 26, The Awoken 1), so their `%S` gates
+        // waited out their fallbacks. Log the raw current and target records whenever they change.
+        let seen = (index, hash, u(0x158).unwrap_or(0), u(0x15C).unwrap_or(0), image.get(0x1F8).copied().unwrap_or(0));
+        if self.slice_records_seen != Some(seen) {
+            tracing::info!(
+                "udt 21 slice records: current {:#x}/{:#010x}, target {:#x}/{:#010x}, token {} ({} B)",
+                seen.0, seen.1, seen.2, seen.3, seen.4, image.len()
+            );
+            self.slice_records_seen = Some(seen);
+        }
         let index = index & 0x3FF;
-        if matches!(hash, 0 | 0x811C_9DC5) || index == 0x3FF || self.current_slice == Some(index) {
+        // Absent: hash 0, the "none" index 0x3FF, or the FNV basis on index 0. A PRIVATE slice set
+        // has no name, so its record carries the FNV basis (run awk6: `0x11/0x811c9dc5` after the
+        // join, The Awoken's PRV17.17); rejecting every basis hash hid the private slice sets the
+        // host teleports to, and the `%S` mission gates waited out their fallbacks.
+        let absent = hash == 0 || index == 0x3FF || (hash == 0x811C_9DC5 && index == 0);
+        if absent || self.current_slice == Some(index) {
             return;
         }
         tracing::info!("⭐ client is now in slice set {index} (hash {hash:#010x}, was {:?})", self.current_slice);
@@ -2899,6 +2919,31 @@ mod tests {
         image[0xB8..0xBC].copy_from_slice(&105u32.to_le_bytes());
         i.track_current_slice(&image);
         assert_ne!(epoch, i.squad_epoch());
+    }
+
+    /// A private slice set's current record carries the FNV basis as its hash (run awk6:
+    /// `0x11/0x811c9dc5`, The Awoken's PRV17.17) and still counts; hash 0 and the unset index-0
+    /// basis record do not.
+    #[test]
+    fn a_private_slice_set_with_the_fnv_basis_hash_is_tracked() {
+        let now = Instant::now();
+        let mut i = ActivityInstance::new(0xD1A0_0000_0000_0001, "d1ah-test", now);
+        let image = |index: u32, hash: u32| {
+            let mut b = vec![0u8; 0x220];
+            b[0xB8..0xBC].copy_from_slice(&index.to_le_bytes());
+            b[0xBC..0xC0].copy_from_slice(&hash.to_le_bytes());
+            b
+        };
+        i.track_current_slice(&image(0, 0));
+        assert_eq!(i.current_slice, None, "hash 0: absent");
+        i.track_current_slice(&image(0, 0x811C_9DC5));
+        assert_eq!(i.current_slice, None, "index 0 with the basis: the unset record");
+        i.track_current_slice(&image(0x11, 0x811C_9DC5));
+        assert_eq!(i.current_slice, Some(17), "a private slice set");
+        i.track_current_slice(&image(1, 0x811C_9DC5));
+        assert_eq!(i.current_slice, Some(1), "the teleport to slice set 1");
+        i.track_current_slice(&image(24, 0x6893_5472));
+        assert_eq!(i.current_slice, Some(24), "a named slice set, as before");
     }
 
     /// ⭐ A teleport step asks (state 1), finishes (state 3) and drops the group slice-set request,
