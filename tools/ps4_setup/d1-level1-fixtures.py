@@ -123,9 +123,12 @@ GRID_AT, NODES_AT = 0x58, 0x5A
 def fresh_subclass(path, clear):
     """Clear the given talent nodes of the subclass item at `path` in place: a new Guardian's grid
     before any subclass XP. The reference footage (A Guardian Rises at launch, to the loot cache)
-    shows no grenade, melee or Super, and no ability icons (F54, 7 November). Clearing all 14
-    default-active Striker nodes made the client refuse the character baseline ("failed to process
-    update for family 4", error chicken; run agr43), so only the ability rows are cleared."""
+    shows no grenade, melee or Super, and no ability icons (F54, 7 November). The default clears
+    only the ability rows' nodes. Clearing all 14 default-active nodes is untested: run agr43,
+    which tried it, failed at sign-in ("failed to process update for family 4", error chicken)
+    in a machine stall (26 s from the subscription to the baseline push), and spk4 failed the
+    same way with the unedited fixtures. The HUD's icons follow the peer view's ability rows
+    (--no-ability-rows), not these nodes."""
     before = decode(path, ITEM)
     b = bytearray(before)
     grid = struct.unpack_from('<H', b, GRID_AT)[0]
