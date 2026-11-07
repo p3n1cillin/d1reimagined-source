@@ -814,6 +814,18 @@ pub struct WorldLoot {
     pub world: u32,
 }
 
+/// The objective row a squad value names at `+0` (`group u32, kind u8, 0, index i16`), when it is
+/// a kind-3 row.
+pub fn squad_objective(row: &Row) -> Option<RowKey> {
+    let (tag, image) = row.a.as_ref()?;
+    if *tag != crate::row_encoders::TAG_SQUAD || image.len() < 8 || image[4] != crate::row_encoders::KIND_OBJECTIVE {
+        return None;
+    }
+    let group = u32::from_le_bytes(image[0..4].try_into().ok()?);
+    let index = i16::from_le_bytes(image[6..8].try_into().ok()?);
+    (group != crate::row_encoders::NONE_HASH && index >= 0).then_some(RowKey { group, kind: crate::row_encoders::KIND_OBJECTIVE, index })
+}
+
 /// The world-loot drop incident (`gather_material`) and its body's tag.
 pub const WORLD_LOOT_CHAIN: &[u32] = &[1851];
 pub const WORLD_LOOT_TAG: u32 = 0x8080_0CB6;
@@ -1255,6 +1267,8 @@ struct Run {
     current_slice: Option<u32>,
     /// F42: world-loot rows already announced in this run.
     loot_announced: std::collections::BTreeSet<RowKey>,
+    /// F49: the loot cache's special weapon was granted in this run.
+    special_weapon_granted: bool,
     unsupported: std::collections::HashSet<String>,
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
@@ -1592,6 +1606,9 @@ impl ScriptBridge {
             cushion.as_secs_f64()
         );
         self.rows.request_full();
+        if self.run.as_ref().is_some_and(|r| r.started) {
+            self.send_active_bundles(region);
+        }
     }
 
     // ── inputs ────────────────────────────────────────────────────────────────────────────────
@@ -1659,9 +1676,21 @@ impl ScriptBridge {
         if matches!(self.run.as_ref().and_then(|r| r.arrival), Some(Arrival::Moving { region: r, .. }) if r == region) {
             self.arrived(region, now, "the client reports it (udt 21)");
         }
+        if self.run.as_ref().is_some_and(|r| r.started) {
+            self.send_active_bundles(region);
+        }
+    }
+
+    /// Make `region`'s bundles the active set (once per change). F44 (run agr24): BullShcript runs
+    /// every bundle until it is told the active set, and our client's reports of its first slice
+    /// sets (113, 112) carry no name hash, so none went out until the walk into 24. Every
+    /// encounter ran from the start: the hangar's `sc_hangar_main` placed its squads while the
+    /// client was on the highway, and they never appeared in the hangar. The scripts' start now
+    /// sends the start slice set's bundles before `start`, and a teleport's arrival its own.
+    fn send_active_bundles(&mut self, region: u32) {
         let on = self.config.active_bundles;
         let Some(run) = self.run.as_mut() else { return };
-        if !on || !run.started || run.active_slice == Some(region) {
+        if !on || run.active_slice == Some(region) {
             return;
         }
         let Some(groups) = run.activity.slice_groups.get(&region).filter(|g| !g.is_empty()) else { return };
@@ -1751,6 +1780,7 @@ impl ScriptBridge {
             rewarded: false,
             current_slice: None,
             loot_announced: Default::default(),
+            special_weapon_granted: false,
             unsupported: Default::default(),
             lifetime_unsent: false,
             lifetime_sent: None,
@@ -1785,9 +1815,31 @@ impl ScriptBridge {
         let Some(n) = image.get(0..4).map(|b| u32::from_le_bytes(b.try_into().unwrap())) else { return };
         for k in 0..n.min(8) as usize {
             let Some(t) = image.get(4 + 4 * k..8 + 4 * k).map(|b| u32::from_le_bytes(b.try_into().unwrap())) else { break };
+            if t == known::TUTORIAL_WEAPON_SPECIAL.index {
+                self.tutorial_special_weapon();
+            }
             let msg = self.translate_incident(t, image);
             if let Some(m) = msg {
                 self.send(m);
+            }
+        }
+    }
+
+    /// F49: the client opened the loot cache. Each player's class special weapon is granted once a
+    /// run (the cache is one object; a second report is the same opening).
+    fn tutorial_special_weapon(&mut self) {
+        let Some(run) = self.run.as_mut() else { return };
+        if std::mem::replace(&mut run.special_weapon_granted, true) {
+            tracing::info!("script bridge: tutorial_weapon_special again: already granted this run");
+            return;
+        }
+        tracing::info!("⭐ script bridge: tutorial_weapon_special: the loot cache opened; the special weapon is granted (F49)");
+        let players = self.players.clone();
+        if let Ok(mut rewards) = self.config.rewards.lock() {
+            for c in &players {
+                if let Err(e) = rewards.tutorial_special_weapon(c) {
+                    tracing::warn!("special weapon for {c:?}: {e}");
+                }
             }
         }
     }
@@ -1984,6 +2036,10 @@ impl ScriptBridge {
                 .map(|(slot, c)| PlayerInfo { key: player_key(c), slot: slot as u32, ready })
                 .collect();
             self.send(HostMsg::Players { players });
+            // F44: the start slice set's bundles are the active set before the scripts start.
+            if let Some(region) = self.run.as_ref().and_then(|r| r.current_slice.or(r.believed_slice)) {
+                self.send_active_bundles(region);
+            }
             self.send(HostMsg::Start);
             let waiting: Vec<HostMsg> = self.run.as_mut().map(|r| r.before_start.drain(..).collect()).unwrap_or_default();
             for m in waiting {
@@ -2382,7 +2438,11 @@ impl ScriptBridge {
             Encoded::Row(row) => {
                 let created = key.kind == crate::row_encoders::KIND_OBJECT
                     && row.a.as_ref().is_some_and(|(_, image)| image.get(8) == Some(&1));
+                let objective = (key.kind == crate::row_encoders::KIND_SQUAD).then(|| squad_objective(&row)).flatten();
                 self.rows.set(key, row);
+                if let Some(o) = objective {
+                    self.objective_due(o);
+                }
                 if created {
                     self.world_loot_due(key);
                 }
@@ -2394,6 +2454,19 @@ impl ScriptBridge {
                 }
             }
         }
+    }
+
+    /// F46 (run agr30): a placed squad names its objective at `+0` (a kind-3 row of its area). The
+    /// live host gave that row a value (28 zero bytes, `0x808004FA`) when the area's squads were
+    /// first placed; ours never did, and the hangar's placed squads never got a member. A named
+    /// objective with no value yet gets the live one.
+    fn objective_due(&mut self, key: RowKey) {
+        if self.rows.get(&key).is_some_and(|r| r.a.is_some()) {
+            return;
+        }
+        let has_b = self.rows.get(&key).is_some_and(|r| r.has_b);
+        tracing::info!("script bridge: objective {key} named by a placed squad: its live value (28 zero bytes) goes out (F46)");
+        self.rows.set(key, Row { has_a: true, has_b, a: Some((crate::row_encoders::TAG_OBJECTIVE, vec![0; crate::row_encoders::OBJECTIVE_SIZE])), b: None });
     }
 
     fn reward(&mut self, run: &mut Run, outcome: ActivityOutcome) {
@@ -2982,7 +3055,9 @@ mod tests {
         {
             let s = shared.lock().unwrap();
             let start = s.sent.iter().position(|m| matches!(m, HostMsg::Start)).expect("start after loaded and the full list");
-            assert!(matches!(s.sent[start - 1], HostMsg::Players { ref players } if players.len() == 1));
+            // F44: the start slice set's bundles go out between the players and the start.
+            let before = if matches!(s.sent[start - 1], HostMsg::ActiveBundles { .. }) { start - 2 } else { start - 1 };
+            assert!(matches!(s.sent[before], HostMsg::Players { ref players } if players.len() == 1));
             let pregame = s.frames.last().unwrap();
             assert!(!pregame.full && !pregame.init, "a delta");
             assert_eq!(lifetime_of(pregame), Some(1), "pregame -> 1");
@@ -3254,7 +3329,8 @@ mod tests {
         {
             let s = shared.lock().unwrap();
             let start = s.sent.iter().position(|m| matches!(m, HostMsg::Start)).expect("the scripts start after the cushion");
-            assert!(matches!(s.sent[start - 1], HostMsg::Players { ref players } if players.len() == 1));
+            let before = if matches!(s.sent[start - 1], HostMsg::ActiveBundles { .. }) { start - 2 } else { start - 1 };
+            assert!(matches!(s.sent[before], HostMsg::Players { ref players } if players.len() == 1), "players, (F44: the start's active bundles,) then start");
             assert!(matches!(s.sent[start + 1], HostMsg::PlayerSpawned { .. }), "the incident from the cushion follows the start");
             let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
             seq.dedup();
@@ -3976,12 +4052,14 @@ mod tests {
         // Phase 0 is state 25, by its name: the start slice set the client loads at the join, so
         // no teleport (run fg2: one sent during the initial load stalled it).
         assert_eq!(b.take_region_request(), None, "phase 0 is state 25, where the client starts");
+        {
+            // F44: the start slice set's bundles go out before the scripts start, not at a report.
+            let s = shared.lock().unwrap();
+            let active = s.sent.iter().position(|m| *m == HostMsg::ActiveBundles { bundles: vec![0x2FE7_DBE6, 0x4786_C0E0] });
+            let start = s.sent.iter().position(|m| matches!(m, HostMsg::Start));
+            assert!(active.is_some() && active < start, "25's bundles are active before the start: {:?}", s.sent);
+        }
         b.on_client_message(&slice(25), 165, HOST, t);
-        assert_eq!(
-            shared.lock().unwrap().sent.last(),
-            Some(&HostMsg::ActiveBundles { bundles: vec![0x2FE7_DBE6, 0x4786_C0E0] }),
-            "entering 25 makes its bundles active"
-        );
         b.on_client_message(&slice(25), 165, HOST, t);
         let actives = shared.lock().unwrap().sent.iter().filter(|m| matches!(m, HostMsg::ActiveBundles { .. })).count();
         assert_eq!(actives, 1, "once per change");
@@ -4055,6 +4133,18 @@ mod tests {
         assert_eq!(a.world, "cine_reveal", "the activity name when world= is absent");
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=0", &base(), &read).is_err());
         assert!(ScriptedActivity::parse("165 a 0x1 l.txt next=70000:0x1", &base(), &read).is_err());
+    }
+
+    #[test]
+    fn a_placed_squad_names_its_objective_row() {
+        // F46: the hangar's sq_m0_fallen_init names 0x062DD95D/3/4 at +0 (live 866.2 s).
+        let mut image = vec![0u8; 124];
+        image[0..8].copy_from_slice(&[0x5D, 0xD9, 0x2D, 0x06, 3, 0, 4, 0]);
+        let row = Row { has_a: true, has_b: false, a: Some((crate::row_encoders::TAG_SQUAD, image.clone())), b: None };
+        assert_eq!(squad_objective(&row), Some(RowKey { group: 0x062D_D95D, kind: 3, index: 4 }));
+        image[0..8].copy_from_slice(&[0xC5, 0x9D, 0x1C, 0x81, 0xFF, 0, 0xFF, 0xFF]);
+        let none = Row { a: Some((crate::row_encoders::TAG_SQUAD, image)), ..row };
+        assert_eq!(squad_objective(&none), None, "an absent objective names nothing");
     }
 
     #[test]

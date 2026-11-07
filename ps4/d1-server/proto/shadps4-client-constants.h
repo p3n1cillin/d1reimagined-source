@@ -9,13 +9,13 @@
 // typed in ourselves. See `crates/shadnet-server/src/controls.rs`.
 //
 //   src/shadnet/client.h
-//     sha256 987e69ee45183a1403caaa964fcde72fc3f169ffe58d854d31bbebd019e87639
+//     sha256 4aa258b67fb9585878700f3993b1b471c06729fd74b68c6240a35f8908007c0c
 //   src/core/libraries/np/np_types2.h
-//     sha256 31e801dff01898ceaf3fbc079c9229231f204ab459ad327cc602364e3d30580d
+//     sha256 eb600e689777ed6058d6f586d37dc3b4a0f78ec2514b80a30d33fdd542f4d73c
 //
 // Upstream: https://github.com/shadps4-emu/shadPS4
 // Taken from d1reimagined-shadps4 (branch d1) at commit
-//   34c579fee98c5fec3ce0910d3d939213e702dec1
+//   79b8a71e96e16d108942283699eb7866110d638b
 // (first from the local working tree $HOME/dev/shadPS4-d1trace at 1a51a41696a17a9a3b67ad6658dda547ddca4a98)
 // (`src/shadnet/shadnet.proto` in that same tree hashes to the sha256 recorded in
 //  ATTRIBUTION.md for our vendored `proto/shadnet.proto`, i.e. the schema has not moved.)
@@ -61,6 +61,7 @@ enum class CommandType : u16 {
     GetToken = 39,
     SetAppearOffline = 40,
     LookupOnlineId = 41,
+    GetAuthorizationCode = 42,
     // Matchmaking
     ContextStart = 100,
     CreateRoom = 101,
@@ -78,6 +79,7 @@ enum class CommandType : u16 {
     GetUserInfoList = 113,
     GetRoomMemberDataExternalList = 114,
     SendRoomMessage = 115,
+    SetRoomMemberDataInternal = 116,
     // Title User Storage (TUS)
     TusSetData = 201,
     TusGetData = 202,
@@ -105,7 +107,9 @@ enum class NotificationType : u16 {
     FriendStatus = 8,
     RoomEvent = 10,
     RoomMessage = 11,
-    WebApiPushEvent = 17, // Generic NP WebApi push event
+    WebApiPushEvent = 17,    // Generic NP WebApi push event
+    ServiceUnavailable = 18, // Server refused a service (e.g. matchmaking full)
+    ClientRejected = 19,     // Server is signing this client out (e.g. version not accepted)
 };
 
 enum class ErrorType : uint8_t {
@@ -164,6 +168,7 @@ enum OrbisNpMatching2Event : u16 {
     ORBIS_NP_MATCHING2_REQUEST_EVENT_SEND_ROOM_MESSAGE = 0x0108,
     ORBIS_NP_MATCHING2_REQUEST_EVENT_SET_ROOM_DATA_INTERNAL = 0x0109,
     ORBIS_NP_MATCHING2_REQUEST_EVENT_GET_ROOM_DATA_INTERNAL = 0x010A,
+    ORBIS_NP_MATCHING2_REQUEST_EVENT_SET_ROOM_MEMBER_DATA_INTERNAL = 0x010B,
     ORBIS_NP_MATCHING2_REQUEST_EVENT_JOIN_LOBBY = 0x0201,
     ORBIS_NP_MATCHING2_REQUEST_EVENT_SIGNALING_GET_PING_INFO = 0x0E01,
     ORBIS_NP_MATCHING2_ROOM_EVENT_MEMBER_JOINED = 0x1101,
@@ -185,6 +190,7 @@ enum OrbisNpMatching2Event : u16 {
     ORBIS_NP_MATCHING2_REQUEST_EVENT_GET_ROOM_MEMBER_DATA_EXTERNAL_LIST_A = 0x7003,
     ORBIS_NP_MATCHING2_REQUEST_EVENT_GET_ROOM_DATA_EXTERNAL_LIST_A = 0x7005,
     ORBIS_NP_MATCHING2_REQUEST_EVENT_SEARCH_ROOM_A = 0x7106,
+    ORBIS_NP_MATCHING2_REQUEST_EVENT_GET_ROOM_MEMBER_DATA_INTERNAL_A = 0x710C,
     ORBIS_NP_MATCHING2_ROOM_EVENT_MEMBER_JOINED_A = 0x8101,
     ORBIS_NP_MATCHING2_ROOM_EVENT_MEMBER_LEFT_A = 0x8102,
     ORBIS_NP_MATCHING2_ROOM_EVENT_UPDATED_ROOM_MEMBER_DATA_INTERNAL_A = 0x8107,

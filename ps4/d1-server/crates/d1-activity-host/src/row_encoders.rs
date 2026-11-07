@@ -159,6 +159,16 @@ pub const TAG_LIFETIME: u32 = d1_oracle::sensor::TAG_SENSOR_VALUE;
 pub const TAG_CINEMATIC: u32 = 0x8080_254D;
 pub const TAG_PLAYER_TRIGGER: u32 = 0x8080_0463;
 pub const TAG_SQUAD: u32 = 0x8080_071E;
+/// A kind-3 objective row's value (live capture: A Guardian Rises' three, each sent as 28 zero bytes
+/// when its area's squads were first placed: 0xFC0E45A3/3/20 at 581 s, 0x9243DFFB/3/3 at 772.6 s,
+/// 0x062DD95D/3/4 at 866.2 s).
+pub const TAG_OBJECTIVE: u32 = 0x8080_04FA;
+pub const OBJECTIVE_SIZE: usize = 28;
+pub const KIND_OBJECTIVE: u8 = 3;
+/// A squad value's body-count cells: u16s from `+0x30` to the generation at `+0x44`.
+pub const SQUAD_CELLS: usize = 10;
+/// A squad value's temperament hashes: u32s from `+0x14` to the cell count at `+0x2C`.
+pub const SQUAD_TEMPERAMENTS: usize = 6;
 pub const TAG_PLAYER_OBJECTIVE: u32 = d1_oracle::sensor_objective::TAG;
 pub const TAG_OBJECT: u32 = 0x8080_07D9;
 /// A prop command's typed value: three (i32, i32, f32) channels (JOIN210, 01.24; the Breach's
@@ -190,7 +200,7 @@ pub const KIND_LIFETIME: u8 = 16;
 pub const KIND_PLAYER_TRIGGER: u8 = 29;
 pub const KIND_PLAYER_OBJECTIVE: u8 = 32;
 
-const NONE_HASH: u32 = 0x811C_9DC5;
+pub const NONE_HASH: u32 = 0x811C_9DC5;
 
 /// The type-12 player bundle's A value (`0x808022A5`, 0x78 bytes; B `0x80802C30` has the same
 /// layout). The client links its player to the bundle whose A `+0x40` equals the player's key,
@@ -519,25 +529,84 @@ impl RowEncoders {
                 if let Some(e) = expect(KIND_SQUAD) {
                     return e;
                 }
-                self.note_fields(kind, state, &["wave", "bodies", "objective"]);
+                self.note_fields(kind, state, &["wave", "bodies", "objective", "roster", "task", "taskInfluencer", "temperaments", "placedAt"]);
                 let wave = state.get("wave").and_then(Value::as_u64).unwrap_or(0);
-                if wave == 0 {
+                let roster: Option<Vec<i64>> = state
+                    .get("roster")
+                    .and_then(Value::as_array)
+                    .map(|a| a.iter().map(|v| v.as_i64().unwrap_or(0)).collect())
+                    .filter(|r: &Vec<i64>| !r.is_empty() && r.len() <= SQUAD_CELLS);
+                // F46 (offline replay of A Guardian Rises' scripts, 7 Nov): BullShcript's place()
+                // leaves the wave at 0 and sets the bodies, the roster and placedAt; only a drop
+                // squad's respawn bumps the wave. Taking wave 0 for "never placed" sent every
+                // placed squad as the client's default: the hangar's never got a member (the Wall's
+                // and the Divide's spawn from the client's own defaults).
+                let placed = wave > 0
+                    || state.get("bodies").and_then(Value::as_i64).is_some_and(|n| n > 0)
+                    || roster.as_ref().is_some_and(|r| r.iter().any(|n| *n > 0))
+                    || state.get("placedAt").is_some_and(|p| !p.is_null());
+                if !placed && squad_unplaced_explicit() {
+                    // The live host sent every squad explicitly, an unplaced one too (A Guardian
+                    // Rises' hangar squads 7-12 at 866 s; the Breach's squad 21): the objective at
+                    // +0, the roster's cell count at +0x2C with no bodies, generation 0, +0x60 1,
+                    // tasks -1 at +0x68/+0x6C, +0x48 and +0x74 0. Served as the client's default
+                    // instead, the Wall's and the Divide's squads spawn from the client's own
+                    // defaults besides the scripts' placements (runs agr32/33: twice the Fallen).
+                    // ⚠ A/B behind D1_AH_SQUAD_UNPLACED_EXPLICIT=1 until a lab run shows it.
+                    let mut image = squad_unplaced_live();
+                    put_ref(&mut image, 0, state.get("objective").and_then(map));
+                    put_u32(&mut image, 0x2C, roster.as_ref().map_or(0, |r| r.len() as u32));
+                    return with_a(TAG_SQUAD, image);
+                }
+                if !placed {
                     // Never placed: the client's own default, as an unplaced squad is served.
+                    // (The live host sent unplaced squads explicitly: see above.)
                     return Encoded::Row(base.map_or(
                         Row { has_a: true, has_b: false, a: None, b: None },
                         Row::defaulted,
                     ));
                 }
                 let mut image = base_a(TAG_SQUAD).unwrap_or_else(squad_default);
-                // +0x44 is the generation; a new value re-runs the squad. Our proven placement is
-                // generation 2, BullShcript's first placement is wave 1: generation = wave + 1.
+                // +0x44 is the generation; a new value re-runs the squad. The live host's first
+                // placement was 1 (hangar, 866 s), BullShcript's place() wave 0: generation =
+                // wave + 1.
                 put_u32(&mut image, 0x44, (wave + 1) as u32);
-                match state.get("bodies").and_then(Value::as_i64) {
-                    Some(n) => {
+                // The live host's tasks: +0x68 the task's influencer, +0x6C the task (both -1
+                // unplaced); hangar squads 6, 11 and 12 at 866/938 s match BullShcript's
+                // (taskInfluencer, task) = (2, 1), (6, 7) and (7, 5).
+                let num = |k: &str| state.get(k).and_then(Value::as_i64);
+                put_u32(&mut image, 0x68, num("taskInfluencer").unwrap_or(-1) as i32 as u32);
+                put_u32(&mut image, 0x6C, num("task").unwrap_or(-1) as i32 as u32);
+                // Temperaments: +0x10 the count, +0x14 the hashes (squad 6's 0x8AEFBA13 live, the
+                // script's activate_temperament("0x8AEFBA13")).
+                let temperaments: Vec<u32> = state
+                    .get("temperaments")
+                    .and_then(Value::as_array)
+                    .map(|a| a.iter().filter_map(Value::as_u64).map(|h| h as u32).take(SQUAD_TEMPERAMENTS).collect())
+                    .unwrap_or_default();
+                put_u32(&mut image, 0x10, temperaments.len() as u32);
+                for i in 0..SQUAD_TEMPERAMENTS {
+                    put_u32(&mut image, 0x14 + 4 * i, temperaments.get(i).copied().unwrap_or(0));
+                }
+                match (roster, state.get("bodies").and_then(Value::as_i64)) {
+                    (Some(cells), _) => {
+                        // F46 (run agr28): a squad whose script authored its counts (@member_counts)
+                        // goes out as the live host's did: +0x2C the number of cells, +0x30 one u16
+                        // body count per cell (A Guardian Rises' hangar, 866 s and 938 s into the
+                        // live capture: sq_m0_fallen_init [1, 1], sq_m0_fallen_1 [3], sq_m0_fallen_2
+                        // [1, 2]). Sent as no cells, the hangar's squads were placed with no one.
+                        put_u32(&mut image, 0x2C, cells.len() as u32);
+                        image[0x30..0x30 + 2 * SQUAD_CELLS].fill(0);
+                        for (i, n) in cells.iter().enumerate() {
+                            let at = 0x30 + 2 * i;
+                            image[at..at + 2].copy_from_slice(&(*n).clamp(0, i16::MAX as i64).to_le_bytes()[..2]);
+                        }
+                    }
+                    (None, Some(n)) => {
                         put_u32(&mut image, 0x2C, 1);
                         image[0x30..0x32].copy_from_slice(&(n.clamp(0, i16::MAX as i64) as i16).to_le_bytes());
                     }
-                    None => {
+                    (None, None) => {
                         // Unset leaves the authored count: no count entry, the client's default.
                         put_u32(&mut image, 0x2C, 0);
                         image[0x30..0x32].copy_from_slice(&0i16.to_le_bytes());
@@ -623,6 +692,14 @@ impl RowEncoders {
                             image[at + 8..at + 12].copy_from_slice(&(position as f32).to_le_bytes());
                         }
                     }
+                } else if object_empty_command() && image.len() >= 0x34 && u32_at(&image, 0x20) == Some(0) {
+                    // F52 (A/B, D1_AH_OBJECT_EMPTY_COMMAND=1): every Breach object the live host sent
+                    // (the seven tripwires among them, 581 s) had one command of no type: count 1
+                    // at +0x20, tag 0xFFFFFFFF at +0x30. Ours had none, and the tripwires drew no
+                    // beam. ⚠ Read with the 56578 schema from a 51539 capture: the layout is
+                    // inferred, so this stays a lab experiment until a run shows the beams.
+                    put_u32(&mut image, 0x20, 1);
+                    put_u32(&mut image, 0x30, u32::MAX);
                 }
                 with_a(TAG_OBJECT, image)
             }
@@ -766,6 +843,36 @@ impl RowEncoders {
     }
 }
 
+/// `D1_AH_SQUAD_UNPLACED_EXPLICIT=1`: unplaced squads go out explicitly, as the live host's did.
+fn squad_unplaced_explicit() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var("D1_AH_SQUAD_UNPLACED_EXPLICIT").is_ok_and(|v| v.trim() == "1"))
+}
+
+/// The live host's unplaced squad value (A Guardian Rises' hangar squad 7 at 866 s, read with
+/// `d1-srcp.py values --kind 1 --tag 0x8080071E`): refs absent at +0x08/+0x50/+0x58, hashes absent
+/// at +0x4C/+0x78, +0x60 = 1, tasks -1. The objective and the cell count are the caller's.
+fn squad_unplaced_live() -> Vec<u8> {
+    let mut b = vec![0u8; 124];
+    for at in [0x00, 0x08, 0x50, 0x58] {
+        put_ref(&mut b, at, None);
+    }
+    for at in [0x4C, 0x78] {
+        put_u32(&mut b, at, NONE_HASH);
+    }
+    put_u32(&mut b, 0x60, 1);
+    put_u32(&mut b, 0x68, u32::MAX);
+    put_u32(&mut b, 0x6C, u32::MAX);
+    b
+}
+
+/// `D1_AH_OBJECT_EMPTY_COMMAND=1` (F52 experiment): objects without a device go out with one
+/// untyped command, as the live host's did.
+fn object_empty_command() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var("D1_AH_OBJECT_EMPTY_COMMAND").is_ok_and(|v| v.trim() == "1"))
+}
+
 fn image_with_cinematic(image: &mut [u8], counter: u32, playing: bool, ctx: EncodeContext) -> Vec<u8> {
     // Live: every play's start was the host's frame stamp minus one (The Speaker 0xC7 at 200).
     // Ours is the stamp when the change is encoded, which goes out at the next frame.
@@ -861,6 +968,10 @@ fn object_default() -> Vec<u8> {
 
 #[cfg(test)]
 mod tests {
+    fn hex_str(b: &[u8]) -> String {
+        b.iter().map(|x| format!("{x:02x}")).collect()
+    }
+
     use super::*;
     use serde_json::json;
 
@@ -965,6 +1076,31 @@ mod tests {
         assert_eq!(&i[0..8], [0x2D, 0x06, 0xFF, 0xFF, 3, 0, 4, 0]);
         assert_eq!((u32_at(i, 0x2C), &i[0x30..0x32], u32_at(i, 0x44)), (Some(1), &[1u8, 0][..], Some(2)));
         assert_eq!((u32_at(i, 0x48), i[0x74]), (Some(NONE_HASH), 0xFF));
+
+        // F46: BullShcript's place() leaves wave 0: the hangar's sq_m0_fallen_init_b as the offline
+        // replay emits it, and as the live host sent squad 6 at 866 s (+0x10 one temperament
+        // 0x8AEFBA13, cells [1], generation 1, influencer 2 at +0x68, task 1 at +0x6C).
+        let init_b = e.encode(RowKey { group: 0x062D_D95D, kind: 1, index: 6 }, "squad", &json!({"carried": false, "wave": 0,
+            "bodies": 1, "roster": [1], "temperaments": [2330966547u32], "task": 1, "taskInfluencer": 2, "placedAt": 1}), None, CTX, &map);
+        let i = image(&init_b);
+        assert_eq!((u32_at(i, 0x10), u32_at(i, 0x14), u32_at(i, 0x2C), &i[0x30..0x32]), (Some(1), Some(0x8AEF_BA13), Some(1), &[1u8, 0][..]));
+        assert_eq!((u32_at(i, 0x44), u32_at(i, 0x68), u32_at(i, 0x6C)), (Some(1), Some(2), Some(1)));
+        // The live unplaced layout (hangar squad 7 at 866 s, objective 0x062DD95D/3/4, three cells).
+        let mut live7 = squad_unplaced_live();
+        put_ref(&mut live7, 0, Some(MappedRef { group: 0x062D_D95D, kind: 3, index: 4 }));
+        put_u32(&mut live7, 0x2C, 3);
+        assert_eq!(hex_str(&live7), "5dd92d0603000400c59d1c81ff00ffff000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000c59d1c81c59d1c81ff00ffffc59d1c81ff00ffff0100000000000000ffffffffffffffff0000000000000000c59d1c81");
+        let unplaced0 = e.encode(sq, "squad", &json!({"carried": false, "wave": 0, "bodies": 0, "roster": [0, 0]}), None, CTX, &map);
+        assert_eq!(unplaced0, Encoded::Row(Row { has_a: true, has_b: false, a: None, b: None }), "no bodies: still unplaced");
+
+        // F46: an authored roster goes out as the live host's hangar squads did (sq_m0_fallen_2,
+        // @member_counts dreg 1, shank 2: +0x2C 2 cells, +0x30 [1, 2], live 938 s).
+        let hangar = RowKey { group: 0x062D_D95D, kind: 1, index: 12 };
+        let placed = e.encode(hangar, "squad", &json!({"carried": false, "wave": 1, "roster": [1, 2]}), None, CTX, &map);
+        let i = image(&placed);
+        assert_eq!((u32_at(i, 0x2C), &i[0x30..0x36]), (Some(2), &[1u8, 0, 2, 0, 0, 0][..]));
+        let named = e.encode(hangar, "squad", &json!({"carried": false, "wave": 2, "roster": [0, 3], "bodies": 3}), None, CTX, &map);
+        assert_eq!((u32_at(image(&named), 0x2C), &image(&named)[0x30..0x34]), (Some(2), &[0u8, 0, 3, 0][..]), "the roster wins over bodies");
 
         let ob = e.encode(RowKey { group: 1, kind: 4, index: 2 }, "object", &json!({"incarnation": 3, "present": true, "device": {"position": 1, "revision": 1}}), None, CTX, &no_map);
         assert_eq!(&image(&ob)[0..0x14], &hex("030000000100000001000000c59d1c81ff00ffff"), "the stamp at +4 (F41)");

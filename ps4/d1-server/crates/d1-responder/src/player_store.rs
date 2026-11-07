@@ -1288,6 +1288,18 @@ impl PlayerStore for Store {
             obj[e..e + 2].copy_from_slice(&content.to_le_bytes());
             obj[e + 8..e + 16].copy_from_slice(&soid.to_le_bytes());
             obj[e + 0x10..e + 0x14].copy_from_slice(&1u32.to_le_bytes());
+            // F49 (run agr31): a weapon that reaches an empty weapon slot is equipped, as a pickup is
+            // in the game: the loot cache's special weapon goes straight to the special slot ("Push
+            // Triangle to swap to your special weapon"). Delivered unequipped, it did not show.
+            if (0x02..=0x04).contains(&bucket) {
+                if let Some(index) = crate::vendor::equipped_index(bucket) {
+                    let at = crate::progression::layout::EQUIPPED + 8 * index;
+                    if obj.len() >= at + 8 && obj[at..at + 8] == [0u8; 8] {
+                        obj[at..at + 8].copy_from_slice(&soid.to_le_bytes());
+                        tracing::warn!("      💾 rewards: {soid:#x} equipped at index {index} (its bucket {bucket:#x} had none)");
+                    }
+                }
+            }
             c.profile_stale = true;
             slot
         };
@@ -3290,7 +3302,7 @@ mod tests {
     fn a_scripted_completed_grant_names_its_store_completion() {
         use crate::rewards::remote::{GrantCommand, GrantOutcome, GrantTarget};
         let g = |hash: u32, outcome, source: &str| GrantCommand {
-            target: GrantTarget::Key(1), activity_hash: hash, outcome, page: None, engrams: false, seed: None, source: Some(source.into()), reputation: Vec::new(),
+            target: GrantTarget::Key(1), activity_hash: hash, outcome, page: None, engrams: false, seed: None, source: Some(source.into()), reputation: Vec::new(), item: None,
         };
         assert_eq!(completion_index(&g(0x6E0D_AE89, GrantOutcome::Completed, "script")), Some(164), "A Guardian Rises");
         assert_eq!(completion_index(&g(0x6E0D_AE89, GrantOutcome::Incomplete, "script")), None);

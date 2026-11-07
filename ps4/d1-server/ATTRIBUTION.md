@@ -8,9 +8,9 @@ projects published theirs.
 
 **`proto/shadnet.proto`** is vendored **verbatim** from the shadPS4 emulator
 (`src/shadnet/shadnet.proto`), sha256
-`87520f427ee254db3bf0a66af9cad42fc4569d2fc28903f55492dffb0cc99c17`, taken on 1 November 2026 from
+`00caee32f645afbd0b6154dc4767a3632222e8d6886e7d7795ec2da0bcebba01`, taken on 1 November 2026 from
 the project's build of it, [d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4)
-branch `d1` at commit `34c579fee98c5fec3ce0910d3d939213e702dec1` (shadPS4 v0.19.0 and its later shadNet
+branch `d1-upstream-1107` (fork PR #10) at commit `79b8a71e96e16d108942283699eb7866110d638b` (shadPS4 v0.19.0 and its later shadNet
 work). Earlier copies were taken at upstream commit `8bdec718b6512ac8d17a44efa0039c06c6810f6e`. Its own
 header reads:
 
@@ -33,11 +33,11 @@ must match exactly or the wire breaks, so they are quoted rather than invented.
 
 **`proto/shadps4-client-constants.h`** is a **verbatim excerpt** of six enum blocks -
 `PacketType`, `CommandType`, `NotificationType` and `ErrorType` from `src/shadnet/client.h`
-(sha256 `987e69ee45183a1403caaa964fcde72fc3f169ffe58d854d31bbebd019e87639`), plus
+(sha256 `4aa258b67fb9585878700f3993b1b471c06729fd74b68c6240a35f8908007c0c`), plus
 `OrbisNpMatching2Event` and `OrbisNpMatching2EventCause` from
 `src/core/libraries/np/np_types2.h`
-(sha256 `31e801dff01898ceaf3fbc079c9229231f204ab459ad327cc602364e3d30580d`) - taken from the same
-d1reimagined-shadps4 commit `34c579fee98c5fec3ce0910d3d939213e702dec1` (first from the local working tree at
+(sha256 `eb600e689777ed6058d6f586d37dc3b4a0f78ec2514b80a30d33fdd542f4d73c`) - taken from the same
+d1reimagined-shadps4 commit `79b8a71e96e16d108942283699eb7866110d638b` (first from the local working tree at
 `1a51a41696a17a9a3b67ad6658dda547ddca4a98`). It is vendored so that
 `shadnet-server controls` can check our Rust enums against **the client's own text** rather than
 against constants we typed in ourselves. See `proto/PROVENANCE.md`.

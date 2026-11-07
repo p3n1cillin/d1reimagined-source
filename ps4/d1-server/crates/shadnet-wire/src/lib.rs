@@ -107,6 +107,7 @@ commands! {
     GetToken = 39,
     SetAppearOffline = 40,
     LookupOnlineId = 41,
+    GetAuthorizationCode = 42,
     ContextStart = 100,
     CreateRoom = 101,
     JoinRoom = 102,
@@ -123,6 +124,7 @@ commands! {
     GetUserInfoList = 113,
     GetRoomMemberDataExternalList = 114,
     SendRoomMessage = 115,
+    SetRoomMemberDataInternal = 116,
     TusSetData = 201,
     TusGetData = 202,
     TusSetMultiSlotVariable = 203,
@@ -158,6 +160,8 @@ pub enum Notification {
     RoomEvent = 10,
     RoomMessage = 11,
     WebApiPushEvent = 17,
+    ServiceUnavailable = 18,
+    ClientRejected = 19,
 }
 
 impl Notification {
@@ -169,6 +173,8 @@ impl Notification {
         ("RoomEvent", 10),
         ("RoomMessage", 11),
         ("WebApiPushEvent", 17),
+        ("ServiceUnavailable", 18),
+        ("ClientRejected", 19),
     ];
 }
 

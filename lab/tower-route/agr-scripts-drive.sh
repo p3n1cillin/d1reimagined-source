@@ -25,6 +25,10 @@ waitlog() { local pat=$1 secs=$2; local end=$(( $(date +%s) + secs )); until gre
 waitlog "incident 2014 reported" 1500 || { echo "no spawn"; exit 1; }
 echo "spawned $(date -u +%T)"; sleep 25
 walk enter-wall $RT/enter_the_wall.json 650 2.5
+# Runs agr29 and agr32 (7 Nov): the first walk right after spawn can fail before the Guardian's unit
+# is readable ("Current Guardian unit is unavailable"); one more try after a pause.
+if ! waitlog "mission phase 2 \|mission step 5 at" 20 && grep -q "unit is unavailable" $R/walk-enter-wall.log; then
+  sleep 10; walk enter-wall-2 $RT/enter_the_wall.json 650 2.5; fi
 waitlog "mission phase 2 \|mission step 5 at" 60 && echo "phase 2 $(date -u +%T)" || { echo "NO phase 2"; exit 1; }
 walk breach $RT/breach.json 640 1.3 --avoid 330,-837,340,-812
 walk platform $RT/breach_platform.json 200 1.3

@@ -363,6 +363,16 @@ impl crate::rewards::ActivityRewards for GrantForwarder {
         tracing::info!("rewards: {activity_hash:#010x} ended for {character:?}: the store resets the current activity");
         self.send(lifecycle_line("ended", &target_of(character), activity_hash)?)
     }
+    fn tutorial_special_weapon(&mut self, character: &crate::rewards::CharacterRef) -> Result<(), String> {
+        tracing::info!("rewards: the loot cache: {character:?}'s class special weapon (F49)");
+        self.send(special_weapon_line(&target_of(character))?)
+    }
+}
+
+/// F49: the loot cache's grant, `grant CHARACTER 0x00000000 completed source=chest
+/// item=tutorial-special` (`rewards::remote` in the responder picks the class's weapon).
+pub fn special_weapon_line(target: &GrantTarget) -> Result<String, String> {
+    Ok(format!("grant {} 0x00000000 completed source=chest item=tutorial-special", target_word(target)?))
 }
 
 #[cfg(test)]
@@ -381,6 +391,9 @@ mod tests {
     /// The lines `d1-responder`'s `rewards::remote` tests read (keep the two in step).
     #[test]
     fn lines_follow_the_responders_grammar() {
+        assert_eq!(special_weapon_line(&GrantTarget::Key(0xD100_0000_0000_0101)).unwrap(),
+                   "grant 0xd100000000000101 0x00000000 completed source=chest item=tutorial-special",
+                   "rewards::remote::tests::an_item_grant_line_round_trips reads it");
         let d = GrantDetails { page: Some("siva-crisis-heroic-strike-playlist".into()), engrams: true, seed: Some(0xD1F0), source: Some("script".into()), reputation: Vec::new() };
         assert_eq!(
             grant_line(&GrantTarget::Key(0xD100_0000_0000_0101), 0x0BBD_0E26, GrantOutcome::Completed, &d).unwrap(),

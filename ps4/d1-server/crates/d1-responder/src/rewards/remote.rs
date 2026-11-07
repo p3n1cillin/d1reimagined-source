@@ -112,6 +112,18 @@ pub struct GrantCommand {
     /// ── stream R ── `rep=NAME:N` (repeatable): progression progress to add for the character the
     /// grant names, after its rewards (a Crucible match's faction, its Trials card's tickets).
     pub reputation: Vec<(String, u32)>,
+    /// F49: `item=HASH` (or `item=tutorial-special`): grant this one item instead of the activity's
+    /// rewards. The live host answered the client's `tutorial_weapon_special` (A Guardian Rises'
+    /// loot cache) with the class's special weapon pushed into the inventory.
+    pub item: Option<NamedItem>,
+}
+
+/// What a `grant ... item=` names.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NamedItem {
+    Hash(u32),
+    /// The class's tutorial special weapon ([`super::loot::tutorial_special_weapon`]).
+    TutorialSpecial,
 }
 
 fn num64(s: &str) -> Result<u64> {
@@ -142,7 +154,7 @@ pub fn parse(fields: &[&str]) -> Result<GrantCommand> {
         "abandoned" => GrantOutcome::Abandoned,
         o => bail!("outcome {o:?} is not completed, incomplete or abandoned"),
     };
-    let mut c = GrantCommand { target, activity_hash, outcome, page: None, engrams: false, seed: None, source: None, reputation: Vec::new() };
+    let mut c = GrantCommand { target, activity_hash, outcome, page: None, engrams: false, seed: None, source: None, reputation: Vec::new(), item: None };
     for t in rest {
         match t.split_once('=') {
             Some(("page", v)) if !v.is_empty() => c.page = Some(v.to_string()),
@@ -157,7 +169,11 @@ pub fn parse(fields: &[&str]) -> Result<GrantCommand> {
                 let n = u32::try_from(num64(n)?).map_err(|_| anyhow!("{t:?}: the amount is not 32-bit"))?;
                 c.reputation.push((name.to_string(), n));
             }
-            _ => bail!("{t:?}: not page=, engrams=, seed=, source= or rep="),
+            Some(("item", "tutorial-special")) => c.item = Some(NamedItem::TutorialSpecial),
+            Some(("item", v)) => {
+                c.item = Some(NamedItem::Hash(u32::try_from(num64(v)?).map_err(|_| anyhow!("{t:?}: the item hash is not 32-bit"))?))
+            }
+            _ => bail!("{t:?}: not page=, engrams=, seed=, source=, rep= or item="),
         }
     }
     Ok(c)
@@ -180,6 +196,11 @@ pub fn format(c: &GrantCommand) -> String {
     }
     for (name, n) in &c.reputation {
         line += &format!(" rep={name}:{n}");
+    }
+    match c.item {
+        Some(NamedItem::Hash(h)) => line += &format!(" item={h:#010x}"),
+        Some(NamedItem::TutorialSpecial) => line += " item=tutorial-special",
+        None => {}
     }
     line
 }
@@ -543,7 +564,15 @@ pub fn execute_with(store: &mut dyn PlayerStore, cmd: &GrantCommand, index: &dyn
         a.element_template = template.map(<[u8]>::to_vec);
         restore_overlay(&mut a, own, &kept);
         a.deliver_kept_stacks();
-        let g = super::grant_activity_rewards(&mut a, own, cmd.activity_hash, &outcome)?;
+        let g = match cmd.item {
+            Some(NamedItem::Hash(h)) => super::loot::grant_item(&mut a, own, h, cmd.seed)?,
+            Some(NamedItem::TutorialSpecial) => {
+                let h = super::loot::tutorial_special_weapon(class_type)
+                    .ok_or_else(|| anyhow!("class {class_type} has no tutorial special weapon"))?;
+                super::loot::grant_item(&mut a, own, h, cmd.seed)?
+            }
+            None => super::grant_activity_rewards(&mut a, own, cmd.activity_hash, &outcome)?,
+        };
         a.finish(&format!("rewards: {line}"))?;
         (g, a.notes.clone(), overlay_attributes(&a, own), a.delivered.clone())
     };
@@ -578,6 +607,16 @@ pub fn execute_with(store: &mut dyn PlayerStore, cmd: &GrantCommand, index: &dyn
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn an_item_grant_line_round_trips() {
+        let c = parse(&["0xd100000000000101", "0", "completed", "item=tutorial-special", "source=chest"]).unwrap();
+        assert_eq!((c.item, c.source.as_deref()), (Some(NamedItem::TutorialSpecial), Some("chest")));
+        assert_eq!(format(&c), "grant 0xd100000000000101 0x00000000 completed source=chest item=tutorial-special");
+        let h = parse(&["0xd100000000000101", "0", "completed", "item=0xc94104a0"]).unwrap();
+        assert_eq!(h.item, Some(NamedItem::Hash(0xC941_04A0)));
+        assert_eq!(parse(&format(&h).split_whitespace().skip(1).collect::<Vec<_>>()).unwrap(), h);
+    }
+
     use super::*;
     use crate::player_store::{Identity, Sources, Store};
     use crate::rewards::tables::tables;
@@ -664,7 +703,7 @@ mod tests {
         let (activity, item) = currency_activity().expect("the manifest table has activities that grant currencies");
         let index = ResponderIndex::from_slots(&s.record.account.slots);
         assert_eq!(index.glimmer, Some(869), "slot 308's content");
-        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(1), source: Some("test".into()), reputation: Vec::new() };
+        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(1), source: Some("test".into()), reputation: Vec::new(), item: None };
         let held = |s: &Store| -> u32 {
             if item == currencies::GLIMMER {
                 return s.currency(869);
@@ -902,7 +941,7 @@ mod tests {
         let parts = currencies::WEAPON_PARTS;
         let row = json!([[format!("c{me:x}"), parts, 7]]);
         s.set_character_attribute(ATTR_STACKS, row.clone());
-        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None, reputation: Vec::new() };
+        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None, reputation: Vec::new(), item: None };
         execute(&mut s, &cmd, &index, 0, true).unwrap();
         assert_eq!(s.character_attribute(ATTR_STACKS), Some(&row), "no profile yet: still kept");
         s.chr_mut().profile_object = Some(fixture("vendor-profile.obj"));
@@ -996,7 +1035,7 @@ mod tests {
         let mut s = lab_store();
         let index = ResponderIndex::from_slots(&s.record.account.slots);
         let activity = tables().activities.keys().next().copied().unwrap();
-        let mut cmd = GrantCommand { target: GrantTarget::Key(0x1234), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None, reputation: Vec::new() };
+        let mut cmd = GrantCommand { target: GrantTarget::Key(0x1234), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None, reputation: Vec::new(), item: None };
         assert!(execute(&mut s, &cmd, &index, 0, true).is_err(), "D1_MP=1: not this player's");
         let g = execute(&mut s, &cmd, &index, 0, false).unwrap();
         assert!(g.retargeted && g.currencies.is_empty() && g.rules.is_empty(), "single player: applied, and nothing for an incomplete run");
@@ -1016,7 +1055,7 @@ mod tests {
         let mut s = lab_store();
         let me = s.identity().character;
         let index = ResponderIndex::from_slots(&s.record.account.slots);
-        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity.hash, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(7), source: None, reputation: Vec::new() };
+        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity.hash, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(7), source: None, reputation: Vec::new(), item: None };
         let limit = activity.rewards.iter().find_map(|(h, _)| t.weekly_bonus.get(h).copied()).unwrap();
         // Each grant here is a fresh adapter, as each control line is; the bonus still runs down.
         let mut lefts = Vec::new();
