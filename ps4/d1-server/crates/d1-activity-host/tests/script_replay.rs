@@ -245,7 +245,10 @@ fn cine_reveal_replays_from_its_own_scripts_on_content() {
     // Phase regions came from content: 25 for the Traveler, 26 for the Tower (no regions= in the table).
     assert_eq!(a.activity.phase_slices.get(&0x77A6_931D), Some(&25));
     assert_eq!(a.activity.phase_slices.get(&0xD77D_27FF), Some(&26));
-    assert_eq!(a.regions, [25, 26], "the Traveler in 25, then the Tower cinematic in 26, as the live host moved the client");
+    // The client loads 25, the live start region (the start slice set from content), so the only
+    // move is phase 1's to 26 (unit test: "phase 0 is region 25, the start slice set the client
+    // loaded"). This replay needs private inputs, so CI skips it; it still expected a move to 25.
+    assert_eq!(a.regions, [26], "the Traveler in 25 (loaded), then the Tower cinematic in 26");
     assert!(a.frames.iter().filter(|p| p.full).count() >= 2, "26's own list goes out in full after the move");
     assert!(a.sent.lock().unwrap().iter().any(|m| matches!(m, HostMsg::ActiveBundles { .. })), "26's bundles made active");
     // The completion: one envelope, the cinematic chain, granted once as Completed, and the hand-off.
