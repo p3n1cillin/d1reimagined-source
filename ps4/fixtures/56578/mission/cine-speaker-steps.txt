@@ -1,0 +1,14 @@
+# Activity 167 (The Speaker, cine_speaker): its one cinematic and its completion, as a
+# D1_AH_MISSION_STEPS schedule. It replaces d1-cine-watch.py's states from run spk3
+# (notes/ps4-56578-speaker-2026-11-07.md): phase 1, the play list a second later, done on the
+# cinematic's 891, the end a second after. Live, the record played about 18 s after the join and the
+# mission ended at 197 s with lifetime 6 and 8 in one tick.
+# The completion rides the done step: activity_complete 965 and its chain with one 0x80800595 body
+# (cinematic-only, so no 3235), the hashes as scripts/activities.txt names them.
+# The 20 s is the cushion spk3's --start-after used, not a retail wait.
+# index  when      group       list                                  [region]
+167  0         0x4786c0e0  sensor-clients-cine_speaker-live.txt
+167  20        0x4786c0e0  cine_speaker-phase-1.txt
+167  +1        0x4786c0e0  cine_speaker-play.txt
+167  @891|900  0x4786c0e0  cine_speaker-done.txt  complete=0xd8b2ad53:0x648999f4:0x4d78882e:0xdf617463
+167  +1        0x4786c0e0  cine_speaker-end.txt
