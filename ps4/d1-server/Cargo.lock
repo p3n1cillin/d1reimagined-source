@@ -1273,6 +1273,7 @@ dependencies = [
  "d1-bap",
  "d1-loadout",
  "d1-mp",
+ "d1-rsat",
  "rustls",
  "serde",
  "serde_json",
