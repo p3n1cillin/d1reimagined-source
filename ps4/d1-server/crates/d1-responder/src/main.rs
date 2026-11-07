@@ -1317,6 +1317,10 @@ fn character_lifecycle_reply(id: u16, args: &[u8], wire_body: &[u8]) -> Option<V
             }
             CREATED_CHARACTER_SOID.store(soid, std::sync::atomic::Ordering::Relaxed);
             CHARACTER_CREATED.store(true, std::sync::atomic::Ordering::Relaxed);
+            // The look the player chose goes into the served peer cards and profile (D1_STORE).
+            if let Ok(r) = &decoded {
+                player_store::apply_created_look(r.look_image());
+            }
             Some(cl::create_character_response_body(soid))
         }
         cl::DELETE_CHARACTER => {
