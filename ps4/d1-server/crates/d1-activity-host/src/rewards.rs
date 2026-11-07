@@ -202,6 +202,12 @@ pub trait ActivityRewards {
     fn activity_ended(&mut self, _character: &CharacterRef, _activity_hash: u32) -> Result<(), String> {
         Ok(())
     }
+    /// F49: the client opened A Guardian Rises' loot cache (`tutorial_weapon_special`): the
+    /// character's class's special weapon goes into its inventory, pushed, as the live host's answer
+    /// did (live capture, 685 s). The default does nothing.
+    fn tutorial_special_weapon(&mut self, _character: &CharacterRef) -> Result<(), String> {
+        Ok(())
+    }
 }
 
 /// The rewards a host reports with until stream O's forwarder is plugged in: each grant is

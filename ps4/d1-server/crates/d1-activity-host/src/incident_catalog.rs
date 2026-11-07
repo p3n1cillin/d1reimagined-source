@@ -42,8 +42,11 @@ pub mod known {
     pub const PLAYER_SPAWNED_INITIAL: Known = Known { index: 2014, hash: 0x84D5_0D24, name: "player_spawned_initial" };
     pub const PLAYER_DIED: Known = Known { index: 2079, hash: 0x88CD_EB67, name: "player_died" };
     pub const INVENTORY_ITEM_ADDED: Known = Known { index: 2899, hash: 0xBD1F_B418, name: "inventory_item_added" };
+    /// F49: the client opened A Guardian Rises' loot cache (live capture, 684.5 s: `gather_material`
+    /// 1851 with this one; the host's answer was the special weapon's push).
+    pub const TUTORIAL_WEAPON_SPECIAL: Known = Known { index: 1131, hash: 0x4BE0_1A52, name: "tutorial_weapon_special" };
 
-    pub const ALL: [Known; 9] = [
+    pub const ALL: [Known; 10] = [
         CINEMATIC_FINISHED,
         CINEMATIC_STARTED,
         CINEMATIC_SKIP,
@@ -53,6 +56,7 @@ pub mod known {
         PLAYER_SPAWNED_INITIAL,
         PLAYER_DIED,
         INVENTORY_ITEM_ADDED,
+        TUTORIAL_WEAPON_SPECIAL,
     ];
 }
 

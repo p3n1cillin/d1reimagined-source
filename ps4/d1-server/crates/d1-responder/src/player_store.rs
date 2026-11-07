@@ -3290,7 +3290,7 @@ mod tests {
     fn a_scripted_completed_grant_names_its_store_completion() {
         use crate::rewards::remote::{GrantCommand, GrantOutcome, GrantTarget};
         let g = |hash: u32, outcome, source: &str| GrantCommand {
-            target: GrantTarget::Key(1), activity_hash: hash, outcome, page: None, engrams: false, seed: None, source: Some(source.into()), reputation: Vec::new(),
+            target: GrantTarget::Key(1), activity_hash: hash, outcome, page: None, engrams: false, seed: None, source: Some(source.into()), reputation: Vec::new(), item: None,
         };
         assert_eq!(completion_index(&g(0x6E0D_AE89, GrantOutcome::Completed, "script")), Some(164), "A Guardian Rises");
         assert_eq!(completion_index(&g(0x6E0D_AE89, GrantOutcome::Incomplete, "script")), None);

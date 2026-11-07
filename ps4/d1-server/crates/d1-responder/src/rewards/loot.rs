@@ -84,6 +84,29 @@ fn note(rules: &mut Vec<&'static str>, r: &'static str) {
     }
 }
 
+/// F49: the class's special weapon from A Guardian Rises' loot cache (Fight through the Wall), the
+/// quality-0 tutorial items beside the Khvostov 7G-02 (content 3598) in 56578's item table:
+/// Titan the Preacher Mk. 20 shotgun (3605), Hunter the Calcutta-LR2 sniper rifle (3606), both seen
+/// in launch-day recordings (notes/a-guardian-rises-timeline.md, row 5c). The Warlock's Tengoku FR2
+/// fusion rifle (3599) is the set's remaining special weapon: INFERRED, no recording yet.
+pub fn tutorial_special_weapon(class_type: u32) -> Option<u32> {
+    match class_type {
+        0 => Some(0xC941_04A0),
+        1 => Some(0x3DDE_17F4),
+        2 => Some(0x4C9E_B9C3),
+        _ => None,
+    }
+}
+
+/// F49: one named item, at the item's own lowest Light (`ItemInstance::roll` clamps), as the live
+/// host's push answered the client's `tutorial_weapon_special` (live capture, 685 s).
+pub fn grant_item(store: &mut dyn RewardStore, character: CharacterId, item_hash: u32, seed: Option<u64>) -> Result<RewardGrant> {
+    let seed = seed.unwrap_or_else(|| super::seed_from_env(store.now()));
+    let id = store.new_instance_id();
+    store.put_item(character, ItemInstance::roll(id, item_hash, 0, &mut Rng::new(seed))?);
+    Ok(RewardGrant { character, seed, items: vec![id], rules: vec!["item.named"], ..Default::default() })
+}
+
 /// Grant one player's rewards for an activity. See the module documentation.
 pub fn grant_activity_rewards(store: &mut dyn RewardStore, character: CharacterId, activity_hash: u32, outcome: &ActivityOutcome) -> Result<RewardGrant> {
     let t = tables();
@@ -211,6 +234,24 @@ mod tests {
         let mut v: Vec<_> = tables().activities.values().filter(|a| a.rewards.iter().any(|(h, v)| *h == display && *v > 0)).map(|a| a.hash).collect();
         v.sort();
         v[0]
+    }
+
+    #[test]
+    fn the_loot_cache_grants_the_classs_tutorial_special_weapon() {
+        // F49: Titan the Preacher Mk. 20, Hunter the Calcutta-LR2, Warlock the Tengoku FR2 (inferred).
+        assert_eq!(
+            (0..4).map(tutorial_special_weapon).collect::<Vec<_>>(),
+            vec![Some(0xC941_04A0), Some(0x3DDE_17F4), Some(0x4C9E_B9C3), None]
+        );
+        for class in 0..3 {
+            let mut s = store();
+            let item = tutorial_special_weapon(class).unwrap();
+            let g = grant_item(&mut s, CHARACTER, item, Some(1)).unwrap();
+            assert_eq!(g.items.len(), 1, "class {class}");
+            let inst = s.item(g.items[0]).unwrap();
+            assert_eq!(inst.item_hash, item);
+            assert!(s.items_of(CHARACTER).contains(&g.items[0]));
+        }
     }
 
     #[test]

@@ -623,6 +623,7 @@ def main():
     ap.add_argument('capture', type=Path, nargs='+')
     ap.add_argument('--dir', choices=('s2c', 'c2s'), default='s2c')
     ap.add_argument('--out', type=Path)
+    ap.add_argument('--bodies', action='store_true', help='incidents: print each metadata body in hex')
     ap.add_argument('--host', help='only the activity host whose id ends in these hex digits')
     ap.add_argument('--kind', type=lambda v: int(v, 0), help='values: the sensor kind (0x1d = player triggers)')
     ap.add_argument('--group', type=lambda v: int(v, 0), help='values: only this group hash')
@@ -762,7 +763,7 @@ def main():
             w = words[(udt, body)]
             meta = f'metadata {len(incident_body(w))} B' if w else ''
             print(f'{t:8.1f} host ..{host & 0xFFFF:04x} types {incident_types(w) if w else "(refused)"}  '
-                  f'body {len(body)} B {meta}')
+                  f'body {len(body)} B {meta}' + (f' {incident_body(w).hex()}' if a.bodies and w else ''))
     elif a.command == 'lifetime':
         mine = [m for m in msgs if m[1] == 's2c' and m[4] == SENSOR]
         frames = sensor_frames(body for *_, body in mine)

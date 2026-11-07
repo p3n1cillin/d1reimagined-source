@@ -159,6 +159,12 @@ pub const TAG_LIFETIME: u32 = d1_oracle::sensor::TAG_SENSOR_VALUE;
 pub const TAG_CINEMATIC: u32 = 0x8080_254D;
 pub const TAG_PLAYER_TRIGGER: u32 = 0x8080_0463;
 pub const TAG_SQUAD: u32 = 0x8080_071E;
+/// A kind-3 objective row's value (live capture: A Guardian Rises' three, each sent as 28 zero bytes
+/// when its area's squads were first placed: 0xFC0E45A3/3/20 at 581 s, 0x9243DFFB/3/3 at 772.6 s,
+/// 0x062DD95D/3/4 at 866.2 s).
+pub const TAG_OBJECTIVE: u32 = 0x8080_04FA;
+pub const OBJECTIVE_SIZE: usize = 28;
+pub const KIND_OBJECTIVE: u8 = 3;
 /// A squad value's body-count cells: u16s from `+0x30` to the generation at `+0x44`.
 pub const SQUAD_CELLS: usize = 10;
 pub const TAG_PLAYER_OBJECTIVE: u32 = d1_oracle::sensor_objective::TAG;
@@ -192,7 +198,7 @@ pub const KIND_LIFETIME: u8 = 16;
 pub const KIND_PLAYER_TRIGGER: u8 = 29;
 pub const KIND_PLAYER_OBJECTIVE: u8 = 32;
 
-const NONE_HASH: u32 = 0x811C_9DC5;
+pub const NONE_HASH: u32 = 0x811C_9DC5;
 
 /// The type-12 player bundle's A value (`0x808022A5`, 0x78 bytes; B `0x80802C30` has the same
 /// layout). The client links its player to the bundle whose A `+0x40` equals the player's key,
