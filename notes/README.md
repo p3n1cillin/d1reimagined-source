@@ -29,6 +29,7 @@ is the current summary. Titles below are the notes' own.
 - [PS4 56578: a native RSAT codec plan (5 November 2026)](ps4-56578-native-rsat-plan-2026-11-05.md)
 - [PS4 56578: the reveal cinematic plays (cine-live13, 5 November 2026)](ps4-56578-cine-live13-2026-11-05.md)
 - [PS4 56578: The Speaker plays (spk3, 7 November 2026)](ps4-56578-speaker-2026-11-07.md)
+- [PS4 56578: orbit and the Director, driven by pad (7 November 2026)](ps4-56578-director-2026-11-07.md)
 - [PS4 56578: cinematic binding registration (5 November 2026)](ps4-56578-cine-binding-2026-11-05.md)
 - [Live-server message captures (5 November 2026)](d1-live-captures-2026-11-05.md)
 - [Bungie's own description of the activity host (GDC 2015 talk)](d1-gdc2015-activity-hosts.md)
