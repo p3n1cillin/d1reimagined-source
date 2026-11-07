@@ -159,6 +159,8 @@ pub const TAG_LIFETIME: u32 = d1_oracle::sensor::TAG_SENSOR_VALUE;
 pub const TAG_CINEMATIC: u32 = 0x8080_254D;
 pub const TAG_PLAYER_TRIGGER: u32 = 0x8080_0463;
 pub const TAG_SQUAD: u32 = 0x8080_071E;
+/// A squad value's body-count cells: u16s from `+0x30` to the generation at `+0x44`.
+pub const SQUAD_CELLS: usize = 10;
 pub const TAG_PLAYER_OBJECTIVE: u32 = d1_oracle::sensor_objective::TAG;
 pub const TAG_OBJECT: u32 = 0x8080_07D9;
 /// A prop command's typed value: three (i32, i32, f32) channels (JOIN210, 01.24; the Breach's
@@ -519,7 +521,7 @@ impl RowEncoders {
                 if let Some(e) = expect(KIND_SQUAD) {
                     return e;
                 }
-                self.note_fields(kind, state, &["wave", "bodies", "objective"]);
+                self.note_fields(kind, state, &["wave", "bodies", "objective", "roster"]);
                 let wave = state.get("wave").and_then(Value::as_u64).unwrap_or(0);
                 if wave == 0 {
                     // Never placed: the client's own default, as an unplaced squad is served.
@@ -532,12 +534,30 @@ impl RowEncoders {
                 // +0x44 is the generation; a new value re-runs the squad. Our proven placement is
                 // generation 2, BullShcript's first placement is wave 1: generation = wave + 1.
                 put_u32(&mut image, 0x44, (wave + 1) as u32);
-                match state.get("bodies").and_then(Value::as_i64) {
-                    Some(n) => {
+                let roster: Option<Vec<i64>> = state
+                    .get("roster")
+                    .and_then(Value::as_array)
+                    .map(|a| a.iter().map(|v| v.as_i64().unwrap_or(0)).collect())
+                    .filter(|r: &Vec<i64>| !r.is_empty() && r.len() <= SQUAD_CELLS);
+                match (roster, state.get("bodies").and_then(Value::as_i64)) {
+                    (Some(cells), _) => {
+                        // F46 (run agr28): a squad whose script authored its counts (@member_counts)
+                        // goes out as the live host's did: +0x2C the number of cells, +0x30 one u16
+                        // body count per cell (A Guardian Rises' hangar, 866 s and 938 s into the
+                        // live capture: sq_m0_fallen_init [1, 1], sq_m0_fallen_1 [3], sq_m0_fallen_2
+                        // [1, 2]). Sent as no cells, the hangar's squads were placed with no one.
+                        put_u32(&mut image, 0x2C, cells.len() as u32);
+                        image[0x30..0x30 + 2 * SQUAD_CELLS].fill(0);
+                        for (i, n) in cells.iter().enumerate() {
+                            let at = 0x30 + 2 * i;
+                            image[at..at + 2].copy_from_slice(&(*n).clamp(0, i16::MAX as i64).to_le_bytes()[..2]);
+                        }
+                    }
+                    (None, Some(n)) => {
                         put_u32(&mut image, 0x2C, 1);
                         image[0x30..0x32].copy_from_slice(&(n.clamp(0, i16::MAX as i64) as i16).to_le_bytes());
                     }
-                    None => {
+                    (None, None) => {
                         // Unset leaves the authored count: no count entry, the client's default.
                         put_u32(&mut image, 0x2C, 0);
                         image[0x30..0x32].copy_from_slice(&0i16.to_le_bytes());
@@ -965,6 +985,15 @@ mod tests {
         assert_eq!(&i[0..8], [0x2D, 0x06, 0xFF, 0xFF, 3, 0, 4, 0]);
         assert_eq!((u32_at(i, 0x2C), &i[0x30..0x32], u32_at(i, 0x44)), (Some(1), &[1u8, 0][..], Some(2)));
         assert_eq!((u32_at(i, 0x48), i[0x74]), (Some(NONE_HASH), 0xFF));
+
+        // F46: an authored roster goes out as the live host's hangar squads did (sq_m0_fallen_2,
+        // @member_counts dreg 1, shank 2: +0x2C 2 cells, +0x30 [1, 2], live 938 s).
+        let hangar = RowKey { group: 0x062D_D95D, kind: 1, index: 12 };
+        let placed = e.encode(hangar, "squad", &json!({"carried": false, "wave": 1, "roster": [1, 2]}), None, CTX, &map);
+        let i = image(&placed);
+        assert_eq!((u32_at(i, 0x2C), &i[0x30..0x36]), (Some(2), &[1u8, 0, 2, 0, 0, 0][..]));
+        let named = e.encode(hangar, "squad", &json!({"carried": false, "wave": 2, "roster": [0, 3], "bodies": 3}), None, CTX, &map);
+        assert_eq!((u32_at(image(&named), 0x2C), &image(&named)[0x30..0x34]), (Some(2), &[0u8, 0, 3, 0][..]), "the roster wins over bodies");
 
         let ob = e.encode(RowKey { group: 1, kind: 4, index: 2 }, "object", &json!({"incarnation": 3, "present": true, "device": {"position": 1, "revision": 1}}), None, CTX, &no_map);
         assert_eq!(&image(&ob)[0..0x14], &hex("030000000100000001000000c59d1c81ff00ffff"), "the stamp at +4 (F41)");

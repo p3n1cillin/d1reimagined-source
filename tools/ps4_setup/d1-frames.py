@@ -4,6 +4,9 @@
     d1-frames.py summary DUMP                      (each frame: source, stamp, full/delta, entries, init, authority)
     d1-frames.py compare DUMP_A DUMP_B --group G   (the first full list naming group G in each dump, entry by entry:
                                                     rows only one names, and rows whose bodies differ, by group/kind)
+    d1-frames.py values DUMP --group G --kind K --tag T
+                                                   (each row's decoded value image as it changes, frame by frame,
+                                                    as d1-srcp.py values reads a live capture)
 
 Frames are decoded with the client's own codec (`d1-oracle sensor decode-batch`, D1_ORACLE and D1_EBOOT as for
 d1-srcp.py). A dump holds the player's machine id: keep it outside the repository. Run F40 (6 November) was found
@@ -54,9 +57,11 @@ def compare(a, b):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('command', choices=('summary', 'compare'))
+    ap.add_argument('command', choices=('summary', 'compare', 'values'))
     ap.add_argument('dump', type=Path, nargs='+')
     ap.add_argument('--group', type=lambda v: int(v, 0))
+    ap.add_argument('--kind', type=lambda v: int(v, 0), help='values: the row kind (1 = squads)')
+    ap.add_argument('--tag', type=lambda v: int(v, 0), help='values: the value tag (0x8080071E = squads)')
     a = ap.parse_args()
     fmt = lambda k: f'{k[0]:#010x}/{k[1]:#x}/{k[2]}' if len(k) == 3 else f'{k[0]:#010x}/{k[1]:#x}'
     if a.command == 'summary':
@@ -66,6 +71,21 @@ def main():
                 continue
             print(f"{r.get('source', 'bridge'):6} stamp {d['stamp']:6} {'init' if d['init'] else '    '} "
                   f"{len(d.get('entries', [])):4} entries {d.get('bits', 0):7} bits authority {d.get('authority')}")
+        return
+    if a.command == 'values':
+        if a.kind is None or a.tag is None:
+            ap.error('values needs --kind and --tag')
+        rows = [(i, d['stamp'], (int(str(e['hash']), 0), e['sub']), e['body'])
+                for i, (r, d) in enumerate(load(a.dump[0])) if d
+                for e in d.get('entries', [])
+                if e['i8'] == a.kind and (a.group is None or int(str(e['hash']), 0) == a.group)]
+        values = srcp.sensor_values(a.tag, [r[3] for r in rows])
+        last = {}
+        for i, stamp, (g, sub), b in rows:
+            image = (values.get(b) or {}).get('image')
+            if image is not None and last.get((g, sub)) != image:
+                last[(g, sub)] = image
+                print(f'frame {i:5} stamp {stamp:6} {g:#010x}/{a.kind:#x}/{sub} {image}')
         return
     if len(a.dump) != 2 or a.group is None:
         ap.error('compare needs two dumps and --group')
