@@ -233,6 +233,36 @@ fn progressions(c: &mut Content) -> Result<String> {
     Ok(src.header() + &text)
 }
 
+/// Grid ordinals are positions in the 56578 table, not definition tags or manifest order.
+fn talent_grid_rows(b: &[u8]) -> Result<Vec<(u16, u32)>> {
+    let mut hashes = BTreeSet::new();
+    block(b, 8, 24, 0x8080_17CB)?
+        .into_iter()
+        .enumerate()
+        .map(|(index, at)| {
+            let index = u16::try_from(index)
+                .ok()
+                .filter(|i| *i != u16::MAX)
+                .ok_or_else(|| shape("talent-grid index reaches reserved absent value"))?;
+            let hash = u32_at(b, at)?;
+            if !hashes.insert(hash) {
+                return Err(shape("duplicate talent-grid hash"));
+            }
+            Ok((index, hash))
+        })
+        .collect()
+}
+
+fn talent_grids(c: &mut Content) -> Result<String> {
+    let mut src = Sources::default();
+    let b = src.read(c, 0x80A5_E227, 0x8080_18C2)?;
+    let mut text = "index\thash\n".to_string();
+    for (index, hash) in talent_grid_rows(&b)? {
+        text.push_str(&format!("{index}\t{hash}\n"));
+    }
+    Ok(src.header() + &text)
+}
+
 fn starting_kit(
     c: &mut Content,
     items: &crate::item_index::SourceTable,
@@ -457,6 +487,7 @@ pub fn export(c: &mut Content) -> Result<BTreeMap<String, String>> {
     out.insert("vendor/vendor-index.tsv".into(), all);
     out.insert("vendor/vendor-roles.tsv".into(), roles);
     out.insert("progression/progression-index.tsv".into(), progressions(c)?);
+    out.insert("items/talent-grid-index.tsv".into(), talent_grids(c)?);
     let (kit, detail) = starting_kit(c, &items)?;
     out.insert("characters/starting-kit.tsv".into(), kit);
     out.insert("characters/starting-kit-lists.json".into(), detail);
@@ -509,8 +540,24 @@ mod tests {
     }
 
     #[test]
+    fn talent_grid_indices_follow_rows_and_reject_ambiguous_or_short_tables() {
+        let mut b = vec![0; 48 + 2 * 24];
+        b[8..16].copy_from_slice(&2u64.to_le_bytes());
+        b[16..24].copy_from_slice(&16u64.to_le_bytes());
+        b[28..32].copy_from_slice(&0x8080_0184u32.to_le_bytes());
+        b[32..40].copy_from_slice(&2u64.to_le_bytes());
+        b[40..44].copy_from_slice(&0x8080_17CBu32.to_le_bytes());
+        b[48..52].copy_from_slice(&99u32.to_le_bytes());
+        b[72..76].copy_from_slice(&12u32.to_le_bytes());
+        assert_eq!(talent_grid_rows(&b).unwrap(), [(0, 99), (1, 12)]);
+        assert!(talent_grid_rows(&b[..b.len() - 1]).is_err());
+        b[72..76].copy_from_slice(&99u32.to_le_bytes());
+        assert!(talent_grid_rows(&b).is_err());
+    }
+
+    #[test]
     fn owned_56578_exports_match_every_committed_table() {
-        let Some(eboot) = std::env::var_os("D1_EBOOT").filter(|p| Path::new(p).is_file()) else {
+        let Some(eboot) = std::env::var_os("D1_EBOOT") else {
             eprintln!("SKIP: set D1_EBOOT to the owned 56578 executable");
             return;
         };
@@ -525,7 +572,7 @@ mod tests {
         assert!(Path::new(&eboot).is_file());
         let mut c = Content::open_default().unwrap();
         let out = export(&mut c).unwrap();
-        assert_eq!(out.len(), 12);
+        assert_eq!(out.len(), 13);
         for (name, expected) in out {
             let path = Path::new(&repo).join("ps4/fixtures/56578").join(&name);
             assert_eq!(

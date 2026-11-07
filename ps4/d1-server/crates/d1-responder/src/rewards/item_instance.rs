@@ -19,7 +19,7 @@
 //! | `+0x98` 8 x u32 | stat values, by the definition's stat-list position | [`ClientIndex::stat_position`] |
 //!
 //! The indices are 56578 table positions, not manifest hashes, so they come from the caller (the
-//! responder builds them from `capture-rig/item-content-index.tsv` and the content tables). Until
+//! responder builds them from `ps4/fixtures/56578/items` and the content tables). Until
 //! a resolver answers, the field is left as the template has it and named in the result.
 //!
 //! Evidence needed to finish it: the node-state byte layout (a served instance with one node
@@ -79,13 +79,15 @@ pub trait ClientIndex {
     fn stat_position(&self, item_hash: u32, stat_hash: u32) -> Option<usize>;
 }
 
-/// The committed 56578 item and progression indices. Item-specific curve offsets, talent-grid
-/// indices and rolled-stat positions still need their own resolver; missing answers remain open.
+/// The committed 56578 item, progression and talent-grid indices. Item-specific curve offsets
+/// and rolled-stat positions still need their own resolver; missing answers remain open.
 pub struct ExportedIndex;
 impl ClientIndex for ExportedIndex {
     fn content_index(&self, hash:u32) -> Option<u16> { crate::content::item_index(hash) }
     fn progression_ordinal(&self, hash:u32) -> Option<u16> { crate::content::progression_index(hash) }
-    fn grid_index(&self, _:u32) -> Option<u16> { None }
+    fn grid_index(&self, hash:u32) -> Option<u16> { crate::content::grid_index(hash) }
+    // The global curves alone cannot invert an item's explicit base, quality offset,
+    // progression rank and talent contributions. Keep the unresolved field visible.
     fn level_for_primary(&self, _:u32, _:u32) -> Option<i32> { None }
     fn stat_position(&self, _:u32, _:u32) -> Option<usize> { None }
 }
@@ -213,6 +215,57 @@ mod tests {
         }
         assert_eq!(ItemInstance::roll(7, hash, 0, &mut Rng::new(1)).unwrap().primary, def.primary_min);
         assert!(ItemInstance::roll(7, crate::rewards::currencies::GLIMMER, 0, &mut Rng::new(1)).is_err());
+    }
+
+    #[test]
+    fn starter_weapon_grids_are_written_from_the_export() {
+        for (hash, grid_hash, ordinal) in [(0x1CBA_8A98, 0xFD2A_FFAD, 279), (0xC941_04A0, 1_363_610_267, 286)] {
+            let inst = ItemInstance::roll(7, hash, 5, &mut Rng::new(1)).unwrap();
+            assert_eq!(inst.grid.as_ref().unwrap().grid, grid_hash);
+            let grid = ExportedIndex.grid_index(grid_hash).expect("56578 starter weapon grid");
+            assert_eq!(grid, ordinal);
+            let (e, open) = write_element(&vec![0xAA; ELEMENT_BYTES], &inst, &ExportedIndex).unwrap();
+            assert_eq!(u16::from_le_bytes(e[0x58..0x5A].try_into().unwrap()), grid);
+            assert!(!open.contains(&"talent grid index (+0x58)"));
+            // Neither manifest grid supplies a progression hash. The existing progression
+            // export cannot answer hash 0; retain and report this gap instead of inventing one.
+            assert_eq!(tables().grids[&grid_hash].progression, 0);
+            assert_eq!(ExportedIndex.progression_ordinal(0), None);
+            assert!(open.contains(&"progression ordinal (+0x44)"));
+            assert!(open.contains(&"level (+0x18)"));
+        }
+        assert_eq!(ExportedIndex.grid_index(0), None);
+        assert_eq!(ExportedIndex.level_for_primary(0xC941_04A0, 5), None);
+    }
+
+    #[test]
+    fn served_khvostov_sentinel_is_preserved_until_the_writer_resolves_it() {
+        use std::path::Path;
+        let Some(eboot) = std::env::var_os("D1_EBOOT") else {
+            eprintln!("SKIP: set D1_EBOOT to the owned 56578 executable");
+            return;
+        };
+        let Some(repo) = std::env::var_os("D1_REPO") else {
+            eprintln!("SKIP: set D1_REPO to the repository root");
+            return;
+        };
+        assert!(Path::new(&eboot).is_file());
+        let wire = std::fs::read(Path::new(&repo).join("ps4/fixtures/56578/characters/grants/khvostov-3598.bin")).unwrap();
+        let decoded = d1_rsat::decode(0x8080_1732, &wire).unwrap();
+        assert_eq!(decoded.object.len(), ELEMENT_BYTES);
+        assert_eq!(u16::from_le_bytes(decoded.object[0x24..0x26].try_into().unwrap()), ExportedIndex.content_index(0x1CBA_8A98).unwrap());
+        let grid_hash = tables().items[&0x1CBA_8A98].talent_grid;
+        let served_grid = u16::from_le_bytes(decoded.object[0x58..0x5A].try_into().unwrap());
+        let exported_grid = ExportedIndex.grid_index(grid_hash).unwrap();
+        // The served fixture uses the absent sentinel. This comparison establishes the
+        // writer's output, not that a client needs the ordinal to render the weapon.
+        assert_eq!(served_grid, NONE16);
+        assert_eq!(exported_grid, 279);
+        assert_ne!(served_grid, exported_grid);
+        let inst = ItemInstance::roll(7, 0x1CBA_8A98, 5, &mut Rng::new(1)).unwrap();
+        let (written, open) = write_element(&decoded.object, &inst, &ExportedIndex).unwrap();
+        assert_eq!(u16::from_le_bytes(written[0x58..0x5A].try_into().unwrap()), exported_grid);
+        assert!(!open.contains(&"talent grid index (+0x58)"));
     }
 
     #[test]

@@ -11,6 +11,7 @@ struct Indices {
     by_index: BTreeMap<u16, u32>,
     by_hash: BTreeMap<u32, u16>,
     progressions: BTreeMap<u32, u16>,
+    grids: BTreeMap<u32, u16>,
 }
 
 fn indices() -> &'static Indices {
@@ -20,6 +21,7 @@ fn indices() -> &'static Indices {
             by_index: BTreeMap::new(),
             by_hash: BTreeMap::new(),
             progressions: BTreeMap::new(),
+            grids: BTreeMap::new(),
         };
         for l in include_str!("../../../../fixtures/56578/items/item-content-index.tsv")
             .lines()
@@ -42,6 +44,15 @@ fn indices() -> &'static Indices {
                 .insert(h.parse().unwrap(), i.parse().unwrap())
                 .is_none());
         }
+        for l in include_str!("../../../../fixtures/56578/items/talent-grid-index.tsv")
+            .lines()
+            .filter(|l| !l.starts_with('#') && !l.starts_with("index") && !l.is_empty())
+        {
+            let (i, h) = l.split_once('\t').expect("exported talent-grid row");
+            let i: u16 = i.parse().expect("exported talent-grid index");
+            assert_ne!(i, u16::MAX, "reserved absent grid index");
+            assert!(t.grids.insert(h.parse().expect("exported talent-grid hash"), i).is_none());
+        }
         t
     })
 }
@@ -54,6 +65,9 @@ pub fn item_index(hash: u32) -> Option<u16> {
 }
 pub fn progression_index(hash: u32) -> Option<u16> {
     indices().progressions.get(&hash).copied()
+}
+pub fn grid_index(hash: u32) -> Option<u16> {
+    indices().grids.get(&hash).copied()
 }
 
 /// Where the client keeps items, by content index: the client bucket ordinal (`BUCKETS` in
@@ -259,11 +273,18 @@ mod tests {
     fn every_exported_index_round_trips() {
         assert_eq!(indices().by_index.len(), 8609);
         assert_eq!(indices().progressions.len(), 252);
+        assert_eq!(indices().grids.len(), 1405);
+        let mut grid_indices: Vec<_> = indices().grids.values().copied().collect();
+        grid_indices.sort_unstable();
+        assert!(grid_indices.iter().copied().eq(0..1405));
         for (&index, &hash) in &indices().by_index {
             assert_eq!(item_index(hash), Some(index));
             assert_eq!(item_hash(index), Some(hash));
         }
         assert_eq!(progression_index(1716568313), Some(117));
+        assert_eq!(grid_index(0xFD2A_FFAD), Some(279));
+        assert_eq!(grid_index(1_363_610_267), Some(286));
+        assert_eq!(grid_index(0), None);
         assert_eq!(item_hash(u16::MAX), None);
     }
     #[test]
