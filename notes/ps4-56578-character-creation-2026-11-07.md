@@ -65,6 +65,7 @@ loader `0x576150` preloads) is D1's starter gear. The archived manifest names it
 | --- | --- | --- |
 | Titan | Lightmail | Mark of the Risen |
 | Hunter | Prototype 0.9 | Makeshift Scarf |
+| Warlock | Born Spark | Potential Bond |
 
 All classes get the Generalist Shell Ghost.
 
@@ -79,9 +80,12 @@ new5, a Human female Hunter: all seven swapped 120 ms after the 501. Then the pr
 Guardian Rises to the rifle. The character screen shows Gunslinger, the Prototype 0.9 armour, the
 Makeshift Scarf, the Generalist Shell and the Khvostov, on a female Hunter's silhouette.
 
+new6, a Human female Warlock: Born Spark, the Potential Bond, the Generalist Shell and Voidwalker,
+then A Guardian Rises to the rifle. On "Choose your class", the class preview drew part of a Warlock
+(a dark robe and hand), the first sign of the creation preview drawing anything.
+
 ## Open
 
-- **Warlock** creation is untested.
 - **The look can't be seen yet.** The creation screen's Guardian preview is empty, and the character
   screen draws the Guardian as a black silhouette. That's F47, the black and see-through models, so
   that the chosen face reaches the screen is unconfirmed.
