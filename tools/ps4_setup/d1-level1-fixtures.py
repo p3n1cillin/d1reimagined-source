@@ -120,15 +120,19 @@ def edit(src, out, tag, changes):
 GRID_AT, NODES_AT = 0x58, 0x5A
 
 
-def fresh_subclass(path, nodes):
-    """Clear the talent node states of the subclass item at `path` in place: a new Guardian's grid
+def fresh_subclass(path, clear):
+    """Clear the given talent nodes of the subclass item at `path` in place: a new Guardian's grid
     before any subclass XP. The reference footage (A Guardian Rises at launch, to the loot cache)
-    shows no grenade, melee or Super, and no ability icons (F54, 7 November)."""
+    shows no grenade, melee or Super, and no ability icons (F54, 7 November). Clearing all 14
+    default-active Striker nodes made the client refuse the character baseline ("failed to process
+    update for family 4", error chicken; run agr43), so only the ability rows are cleared."""
     before = decode(path, ITEM)
     b = bytearray(before)
     grid = struct.unpack_from('<H', b, GRID_AT)[0]
+    nodes = max(clear) + 1
     old = [i for i in range(nodes) if b[NODES_AT + i]]
-    b[NODES_AT:NODES_AT + nodes] = bytes(nodes)
+    for i in clear:
+        b[NODES_AT + i] = 0
     line = encode(bytes(b), ITEM, path)
     after = decode(path, ITEM)
     if after != bytes(b):
@@ -139,8 +143,35 @@ def fresh_subclass(path, nodes):
     REPORT.append({'output': str(path.relative_to(HERE)), 'tag': hex(ITEM), 'encoder': line,
                    'redecoded_equals_edited': True, 'changed_bytes': [hex(i) for i in diff],
                    'fields': [{'offset': hex(NODES_AT), 'field': f'grid {grid} node states',
-                               'old': f'active {old}', 'new': 'none active'}]})
-    print(f'{path.relative_to(HERE)}: grid {grid} nodes {old} -> none active')
+                               'old': f'active {old}', 'new': f'cleared {sorted(clear)}'}]})
+    print(f'{path.relative_to(HERE)}: grid {grid} active nodes {old}, cleared {sorted(clear)}')
+
+
+# The peer view's five ability rows (block 0x80805513: u8 row + 16 x u32 option hashes, 68 bytes
+# each) at +0x40; d1-character-fixup.py fills them from the subclass grid (issue #134).
+PEER_ROWS, ROWS_BYTES = 0x40, 5 * 68
+
+
+def clear_ability_rows(path):
+    """Empty the peer view's ability rows at `path` in place, keeping its perks (+0x798): a new
+    Guardian has no grenade, melee or Super in A Guardian Rises but can sprint (the launch
+    footage's "Click L3 to sprint"). Issue #134 found empty rows AND perks took sprint away too.
+    Clearing the subclass item's ability nodes alone left the HUD's icons (run agr44)."""
+    before = decode(path, PEER)
+    b = bytearray(before)
+    b[PEER_ROWS:PEER_ROWS + ROWS_BYTES] = bytes(ROWS_BYTES)
+    line = encode(bytes(b), PEER, path)
+    after = decode(path, PEER)
+    if after != bytes(b):
+        sys.exit(f'{path}: re-decoded peer view differs from the edited one')
+    diff = [i for i, (x, y) in enumerate(zip(before, after)) if x != y]
+    if any(not PEER_ROWS <= i < PEER_ROWS + ROWS_BYTES for i in diff):
+        sys.exit(f'{path}: unintended bytes differ: {[hex(i) for i in diff]}')
+    REPORT.append({'output': str(path.relative_to(HERE)), 'tag': hex(PEER), 'encoder': line,
+                   'redecoded_equals_edited': True, 'changed_bytes': len(diff),
+                   'fields': [{'offset': hex(PEER_ROWS), 'field': 'ability rows', 'old': 'served',
+                               'new': 'empty'}]})
+    print(f'{path.relative_to(HERE)}: ability rows emptied ({len(diff)} bytes)')
 
 
 def copy(src, out, tag):
@@ -173,9 +204,11 @@ def main():
     ap.add_argument('--out', type=Path, default=HERE)
     ap.add_argument('--light-native', action='store_true',
                     help='clear the Light override in the profiles, so the client computes Light from the level-1 gear')
-    ap.add_argument('--fresh-subclass', type=int, nargs='?', const=30, metavar='NODES',
-                    help='also clear the subclass talent nodes (default 30, the Striker grid): no '
-                         'grenade, melee, jump or Super, as a new Guardian (F54)')
+    ap.add_argument('--fresh-subclass', nargs='?', const='4,7,9,13', metavar='NODES',
+                    help='also clear these subclass talent nodes (default 4,7,9,13: the Striker '
+                         "grid's ability rows, from d1-talent-grid.py 132), as a new Guardian (F54)")
+    ap.add_argument('--no-ability-rows', action='store_true',
+                    help="also empty the f0t1 peer views' ability rows, keeping the perks (F54)")
     a = ap.parse_args()
     F, OUT = a.fixtures, a.out.resolve()
     HERE = OUT                                   # report paths are relative to the output folder
@@ -186,7 +219,8 @@ def main():
     edit(F / 'grants' / 'khvostov-3598.bin', OUT / 'grants-l1' / 'khvostov-3598.bin', ITEM,
          [(0x18, 'u32', LEVEL, 'item level', 40)])
     if a.fresh_subclass:
-        fresh_subclass(OUT / 'inventory-tutorial-l1' / '00-Subclass.bin', a.fresh_subclass)
+        fresh_subclass(OUT / 'inventory-tutorial-l1' / '00-Subclass.bin',
+                       [int(n) for n in a.fresh_subclass.split(',')])
 
     # 2. Profiles: the Light override (+0x6FDC present = 1, +0x6FE0 {key 0, value}) value 385 -> LIGHT.
     # The post-game pushes too (postgame5.sh): level1-run2 served the level-1 boot profiles, and
@@ -263,6 +297,11 @@ def main():
         final = decode(OUT / 'roster-def-l1' / src.name, PEER)
         if final != a_obj[:0x840] + final[0x840:0x848] + a_obj[0x848:]:
             sys.exit('roster-def-l1 differs from the derived-stat output outside the Defense entry')
+
+    if a.no_ability_rows:
+        for d in (OUT / 'rosters-f0-tutorial-l1', OUT / 'grants-l1' / 'rosters-f0-tutorial-khv', OUT / 'roster-def-l1'):
+            for f in sorted(d.glob('f0t1-*.bin')):
+                clear_ability_rows(f)
 
     (OUT / 'checks').mkdir(exist_ok=True)
     (OUT / 'checks' / 'report.json').write_text(json.dumps({
