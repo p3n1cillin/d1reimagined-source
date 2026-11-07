@@ -10,7 +10,7 @@ and ordinals reaching the absent sentinel are rejected. The export records the s
 SHA-256; no definition payload or binary fixture is added.
 
 The generated table pins Khvostov's grid hash `0xFD2AFFAD` to ordinal **279**, and
-Preacher Mk. 11's grid hash `1363610267` to ordinal **286**. Both the lookup regression and
+Preacher Mk. 20's grid hash `1363610267` to ordinal **286**. Both the lookup regression and
 the item writer regression check these content-derived targets; runtime values come from the TSV.
 
 ## Template comparison
