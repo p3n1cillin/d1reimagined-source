@@ -48,7 +48,12 @@ param(
     # With -DryRun: print the manifest as JSON only.
     [switch]$Json,
     # The cargo target folder (default: this checkout's ps4/d1-server/target; CARGO_TARGET_DIR is ignored).
-    [string]$TargetDir = ''
+    [string]$TargetDir = '',
+    # Where run folders go (default STAGING\full-game). Every server and emulator log of the run is
+    # written there, so a slow disk stalls the servers: on 7 November 2026 the F: hard disk took over
+    # a second per write and the responder missed the client's sign-in (run ven4, error centipede).
+    # The server binaries stay in STAGING\full-game\bin.
+    [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
 
@@ -73,7 +78,8 @@ foreach ($pair in @(@('ROOT', 'Root'), @('TOOLS', 'Tools'), @('WORKSPACE', 'Work
     catch { $loc[$pair[0]] = "<unresolved $($pair[1])>"; Problem "location $($pair[1]): $($_.Exception.Message)" }
 }
 $stamp = [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss')
-$loc['RUN'] = Join-Path (Join-Path $loc.STAGING 'full-game') "$stamp-$Name"
+$runRoot = if ($RunRoot) { $RunRoot } else { Join-Path $loc.STAGING 'full-game' }
+$loc['RUN'] = Join-Path $runRoot "$stamp-$Name"
 # One fixed folder for the servers a run uses. Windows Firewall keys its answer to a program's path,
 # so a new folder per run asked again on every run (6 Nov 2026). Only one lab runs at a time (the
 # launcher refuses over a running one), and each manifest records the SHA-256 of what it ran.

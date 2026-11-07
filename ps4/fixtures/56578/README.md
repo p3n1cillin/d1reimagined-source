@@ -60,6 +60,10 @@ array (`d1-character-fixup.py --item`; notes/ps4-56578-equip-2026-11-01.md). Wit
 screen after the mission was empty. The items are the ones `characters/inventory-tutorial` and the
 rifle grant serve.
 
+Every served profile (`characters/`, `grants/`, `postgame/`) has its unused stat-override entries
+marked absent (key `0xFF`; `tools/ps4_setup/d1-profile-override-tail.py`, 7 November 2026). Written
+as (0, 0) they reset the effective rating to 0 (notes/ps4-56578-content-gates-2026-11-07.md).
+
 The tutorial profiles carry the same gear during the mission. `profile-tutorial-t.bin` (served at
 boot) holds the subclass, armour, Ghost and vehicle. `grants/profile-tutorial-th.bin` (pushed with
 the Breach rifle) adds the Khvostov. The character screen at the start of the mission (run sense86)

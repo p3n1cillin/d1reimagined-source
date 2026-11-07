@@ -7,14 +7,15 @@
 #   bash lab/tower-route/agr-scripts-drive.sh NAME
 #
 # NAME is the full-game run's name (tools/ps4_setup/d1-full-game.ps1 -Name NAME); the script finds
-# its newest run folder under STAGING/full-game and writes walk-*.log there. It also accepts the
+# its newest run folder under STAGING/full-game (or D1_RUN_ROOT) and writes walk-*.log there. It also accepts the
 # step schedule's markers (mission step 5), so a full-game run with the bridge off can be driven
 # the same way. Walks use d1-walk.py --native-unit (missions/routes). A "unit unavailable" error on
 # the first walk is a start-up race: run the script again (it resumes from the spawn).
 # Runs agr4-agr20 and stepfg1-2 (6 Nov, notes/ps4-56578-full-game-test-2026-11-06.md).
 NAME=${1:?run name}
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
-FG=${D1_STAGING:-/f/d1/d1preservation-main/cfw-staging}/full-game
+# D1_RUN_ROOT: the launcher's -RunRoot, when run folders are not under STAGING/full-game.
+FG=${D1_RUN_ROOT:-${D1_STAGING:-/f/d1/d1preservation-main/cfw-staging}/full-game}
 until R=$(ls -d $FG/*-$NAME 2>/dev/null | tail -1) && [ -n "$R" ] && [ -f $R/boot/activity-host.log ]; do sleep 3; done
 H=$R/boot/activity-host.log; RT=missions/routes; cd "$HERE"; echo "run $R"
 walk() { local name=$1 route=$2 secs=$3 tol=$4; shift 4
