@@ -13,12 +13,14 @@
 186  +1        0x4786c0e0  cine_awoken-play-0.txt
 # /6/0 finished: stop its row and move to slice set 1 (bubble 0, state 1).
 186  @891|900  0x4786c0e0  cine_awoken-move-1.txt               1
-# Wait for CURRENT slice set 1, or 30 s. In run awk5 the host never logged the client's slice set
-# here (its udt-21 tracker logs none in this world, as in cine_reveal's start slice set), so the gate
-# waited its whole 900 s; the client's own log had finished the teleport to PRV01.01 30 s after 891,
-# and /6/1 started 13 s after its play list. Live, /6/1 played 83 s after /6/0 (stamps 228 and 1060),
-# about 11 s after a 72 s first cinematic.
+# Wait for CURRENT slice set 1 (30 s fallback). Since #352 the host sees the private slice set's
+# record (FNV-basis hash): in awk9 the client was in slice set 1 1.7 s after the teleport, and /6/1
+# started 3.5 s after the first cinematic ended. Live, /6/1 played 83 s after /6/0 (stamps 228 and
+# 1060), about 11 s after a 72 s first cinematic.
 186  %1|30     0x4786c0e0  cine_awoken-move-1.txt
 186  +1        0x4786c0e0  cine_awoken-play-1.txt
-186  @891|900  0x4786c0e0  cine_awoken-done.txt
+# The second 891: done (phase 6) and the activity's completion: activity_complete 965 and its
+# chain with one 0x80800595 body (the hashes as scripts/activities.txt names them; cinematic-only, so
+# no 3235). Live, a cinematic-only activity sent lifetime 6 and 8 in one tick with its completion.
+186  @891|900  0x4786c0e0  cine_awoken-done.txt  complete=0x9a7acc78:0x648999f4:0x4d78882e:0x95c17d0f
 186  +1        0x4786c0e0  cine_awoken-end.txt

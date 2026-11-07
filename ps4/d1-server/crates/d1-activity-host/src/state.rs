@@ -153,6 +153,39 @@ pub struct MissionStep {
     /// line): udt 18 is also AH → client. E.g. 1504, the world-loot drop that announces the
     /// starter rifle in The Breach (body = a `0x80800CB6` object).
     pub incident: Option<(u32, Vec<u8>)>,
+    /// ⭐ `complete=HASH:TYPE:TYPE2:PLACE[:gameplay]` on the steps line: the `activity_complete`
+    /// chain and its `0x80800595` body (`completion.rs`) go out when the step fires. The script
+    /// bridge sends it when its scripts complete; a cinematic served by a step schedule (bridge
+    /// off: The Awoken, the reveal, The Speaker) had no completion at all.
+    pub complete: Option<StepCompletion>,
+}
+
+/// The activity a step completes: its manifest hashes (as the script bridge's activity table names
+/// them) and how it ends.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct StepCompletion {
+    pub hashes: crate::completion::ActivityHashes,
+    pub end: crate::row_encoders::EndKind,
+}
+
+impl StepCompletion {
+    /// `HASH:TYPE:TYPE2:PLACE` (hex, `0x` optional) and an optional `:gameplay` (else cinematic).
+    pub fn parse(v: &str) -> Option<Self> {
+        let f: Vec<&str> = v.split(':').collect();
+        let hex = |t: &str| u32::from_str_radix(t.trim_start_matches("0x"), 16).ok();
+        let end = match f.get(4).copied() {
+            None | Some("cinematic") => crate::row_encoders::EndKind::Cinematic,
+            Some("gameplay") => crate::row_encoders::EndKind::Gameplay,
+            Some(_) => return None,
+        };
+        if !(4..=5).contains(&f.len()) {
+            return None;
+        }
+        Some(Self {
+            hashes: crate::completion::ActivityHashes { activity: hex(f[0])?, kind: hex(f[1])?, kind2: hex(f[2])?, place: hex(f[3])? },
+            end,
+        })
+    }
 }
 
 /// When a [`MissionStep`] fires. Steps fire in order, one after another.
@@ -408,6 +441,8 @@ pub struct ActivityInstance {
     squad_hold_logged: Option<usize>,
     /// Host incidents waiting to be sent (see [`MissionStep::incident`]).
     pending_incidents: Vec<(u32, Vec<u8>)>,
+    /// Whole udt-18 images waiting to be sent: a step's completion envelope ([`MissionStep::complete`]).
+    pending_envelopes: Vec<Vec<u8>>,
     /// ⭐ `D1_AH_CONTROL_FILE`: lines `incident TYPE BODYHEX` queue host incidents on demand
     /// (the file is consumed: read, then deleted). A diagnostic lever, like the 01.24 control file.
     control_file: Option<std::path::PathBuf>,
@@ -687,6 +722,7 @@ impl ActivityInstance {
             squad_live: crate::sense::SquadObservations::default(),
             squad_hold_logged: None,
             pending_incidents: Vec::new(),
+            pending_envelopes: Vec::new(),
             control_file: None,
             control_builder: None,
             control_builds: Vec::new(),
@@ -1923,12 +1959,51 @@ impl ActivityInstance {
     /// The next host incident to send, as udt 18 (`0x8080097D`, 716 bytes): `+0` the count (5 bits),
     /// `+4` the 12-bit types, `+0x68` an optional list (left empty), `+0xD4` the body length in bytes
     /// (9 bits) and `+0xD8` the body (up to 500 bytes).
+    /// The udt-18 image a step's completion sends: the chain for its end kind and one `0x80800595`
+    /// body built as the script bridge builds it (`completion::CompletionBody`, with its stand-ins),
+    /// for the joined player (the first qword of its identity) and this host.
+    fn completion_envelope(&self, c: StepCompletion) -> Result<Vec<u8>, String> {
+        let body = self.completion_body(c)?;
+        let e = d1_rsat::encode(crate::completion::BODY_TAG, &body.image()).map_err(|e| format!("the body did not encode: {e}"))?;
+        crate::completion::envelope(crate::completion::chain(c.end), &e.payload, e.bits as u32)
+    }
+
+    /// The store records a step's completion for the joined player, as the script bridge's
+    /// `activity_complete` does (rewards forwarder: a `completed` line in the store's command
+    /// file). Nothing when the forwarder is off (D1_REWARDS, D1_STORE, D1_STORE_CONTROL).
+    fn record_completion(&self, activity_hash: u32) {
+        use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
+        let Some(rewards) = crate::activity_driver::Framework::get().and_then(|f| f.rewards.clone()) else { return };
+        let Some(id) = self.join_request_image.as_ref().and_then(|img| img.get(JOIN_REQUEST_IDENTITY..JOIN_REQUEST_IDENTITY + IDENTITY_SIZE)) else { return };
+        let c = crate::rewards::CharacterRef { identity: id.to_vec() };
+        let result = match rewards.lock() {
+            Ok(mut r) => r.activity_completed(&c, activity_hash),
+            Err(_) => return,
+        };
+        if let Err(e) = result {
+            tracing::warn!("completion of {activity_hash:#010x} for {c:?}: {e}");
+        }
+    }
+
+    fn completion_body(&self, c: StepCompletion) -> Result<crate::completion::CompletionBody, String> {
+        use d1_oracle::activity_host::replicate_membership::JOIN_REQUEST_IDENTITY;
+        let player = self.join_request_image.as_ref()
+            .and_then(|img| img.get(JOIN_REQUEST_IDENTITY..JOIN_REQUEST_IDENTITY + 8))
+            .map(|b| u64::from_le_bytes(b.try_into().unwrap()))
+            .ok_or("no joined player identity")?;
+        Ok(crate::completion::CompletionBody { instance_word: self.ah_id as u32, host: self.ah_id, player, hashes: c.hashes, end: c.end })
+    }
+
     pub fn incident_due(&mut self) -> Option<AhPush> {
         self.poll_control();
         // D1_AH_SCRIPTS hook (script_bridge.rs): the completion envelope, a whole udt 18 image
         // (a chain of incidents and one body), once Live.
         if matches!(self.state, InstanceState::Live) {
             if let Some(image) = self.script_bridge.as_mut().and_then(|b| b.take_incident()) {
+                return Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 18, bytes: image }));
+            }
+            if !self.pending_envelopes.is_empty() {
+                let image = self.pending_envelopes.remove(0);
                 return Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 18, bytes: image }));
             }
         }
@@ -2103,6 +2178,19 @@ impl ActivityInstance {
         if let Some((t, body)) = step.incident.clone() {
             tracing::info!("⭐ mission step {i}: host incident {t} ({} body bytes)", body.len());
             self.pending_incidents.push((t, body));
+        }
+        if let Some(c) = step.complete {
+            match self.completion_envelope(c) {
+                Ok(image) => {
+                    tracing::info!(
+                        "⭐ mission step {i}: activity {:#010x} complete; host incidents {:?} with one 0x80800595 body",
+                        c.hashes.activity, crate::completion::chain(c.end)
+                    );
+                    self.pending_envelopes.push(image);
+                    self.record_completion(c.hashes.activity);
+                }
+                Err(e) => tracing::warn!("** NAMED GATE ** mission step {i}: the completion is not sent: {e}"),
+            }
         }
         self.sensor_payload = Some(if team0 { step.team0 } else { step.team_minus1 });
         self.frames_installed += 1;
@@ -2653,6 +2741,7 @@ mod tests {
             team_minus1: vec![b],
             region,
             incident: None,
+            complete: None,
         };
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![step(0, 1, None), step(70, 2, None), step(120, 3, Some(112))]);
@@ -2840,7 +2929,7 @@ mod tests {
         assert_eq!(StepWhen::parse("+5"), Some(StepWhen::AfterPrevious(Duration::from_secs(5))));
         assert_eq!(StepWhen::parse("120"), Some(StepWhen::At(Duration::from_secs(120))));
         let (mut i, now) = instance();
-        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None };
+        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None, complete: None };
         let on891 = StepWhen::parse("@891|70").unwrap();
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1), step(on891.clone(), 2), step(on891, 3)]);
@@ -2877,7 +2966,7 @@ mod tests {
     fn kill_gate_holds_past_deadline_until_the_full_current_cohort_is_zero() {
         use crate::sense::{SquadCount, SenseUpdate};
         let (mut i, now) = instance();
-        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None };
+        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None, complete: None };
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1),
             step(StepWhen::parse("!0x062dd95d:5,6|10").unwrap(), 2)]);
@@ -2921,6 +3010,38 @@ mod tests {
         assert_ne!(epoch, i.squad_epoch());
     }
 
+    /// `complete=` parses the table's four hashes (cinematic unless `:gameplay`), and a step that
+    /// carries one queues a whole udt-18 envelope: the cinematic chain and a natively encoded body.
+    #[test]
+    fn a_completing_step_queues_the_activity_complete_envelope() {
+        let c = StepCompletion::parse("0x9a7acc78:0x648999f4:0x4d78882e:0x95c17d0f").unwrap();
+        assert_eq!(c.end, crate::row_encoders::EndKind::Cinematic);
+        assert_eq!(c.hashes.place, 0x95C1_7D0F);
+        assert_eq!(StepCompletion::parse("1:2:3:4:gameplay").unwrap().end, crate::row_encoders::EndKind::Gameplay);
+        assert!(StepCompletion::parse("1:2:3").is_none() && StepCompletion::parse("1:2:3:4:x").is_none());
+
+        let (mut i, now) = instance();
+        i.on_client_message(&join_request([1, 2, 3, 4]), now);
+        let mut steps = std::collections::HashMap::new();
+        steps.insert(i.activity_index(), vec![MissionStep {
+            when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: None, incident: None, complete: Some(c),
+        }]);
+        i.set_mission_steps(steps);
+        let body = i.completion_body(c).expect("a joined player");
+        assert_eq!(body.hashes.activity, 0x9A7A_CC78);
+        assert_eq!(body.image()[0x10..0x18], i.ah_id.to_le_bytes(), "the host at +0x10");
+        // The native codec needs the build's schemas (D1_BUILDS/D1_BUILD), which the lab host has.
+        if d1_rsat::schemas().is_err() {
+            return;
+        }
+        assert!(i.advance_mission(now));
+        assert_eq!(i.pending_envelopes.len(), 1, "the envelope is queued");
+        let image = &i.pending_envelopes[0];
+        assert_eq!(image.len(), crate::completion::ENVELOPE_SIZE);
+        assert_eq!(u32::from_le_bytes(image[0..4].try_into().unwrap()), 4, "the cinematic chain: 965, 2937, 2009, 614");
+        assert_eq!(u32::from_le_bytes(image[4..8].try_into().unwrap()), 965);
+    }
+
     /// A private slice set's current record carries the FNV basis as its hash (run awk6:
     /// `0x11/0x811c9dc5`, The Awoken's PRV17.17) and still counts; hash 0 and the unset index-0
     /// basis record do not.
@@ -2956,7 +3077,7 @@ mod tests {
         let mut steps = std::collections::HashMap::new();
         steps.insert(
             i.activity_index(),
-            vec![MissionStep { when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: Some(112), incident: None }],
+            vec![MissionStep { when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: Some(112), incident: None, complete: None }],
         );
         i.set_mission_steps(steps);
         assert!(i.advance_mission(now));

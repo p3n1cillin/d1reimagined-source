@@ -866,14 +866,21 @@ fn main() -> anyhow::Result<()> {
                             .map_err(|e| anyhow::anyhow!("D1_AH_MISSION_STEPS {path}: {e}"))?;
                         for line in text.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()) {
                             let f: Vec<&str> = line.split_whitespace().collect();
-                            if !(4..=6).contains(&f.len()) {
-                                anyhow::bail!("D1_AH_MISSION_STEPS line {line:?}: want `index seconds sensor_group sensor_file [region] [incident=TYPE:BODYHEX]`");
+                            if !(4..=7).contains(&f.len()) {
+                                anyhow::bail!("D1_AH_MISSION_STEPS line {line:?}: want `index seconds sensor_group sensor_file [region] [incident=TYPE:BODYHEX] [complete=HASH:TYPE:TYPE2:PLACE[:gameplay]]`");
                             }
                             // ⭐ incident=TYPE:BODYHEX: a host incident sent when the step fires.
                             let mut incident = None;
+                            // ⭐ complete=HASH:TYPE:TYPE2:PLACE[:gameplay]: the activity_complete
+                            // chain and body (completion.rs) sent when the step fires, the hashes
+                            // as the script bridge's activity table gives them.
+                            let mut complete = None;
                             let mut rest: Vec<&str> = Vec::new();
                             for t in &f[4..] {
-                                if let Some(v) = t.strip_prefix("incident=") {
+                                if let Some(v) = t.strip_prefix("complete=") {
+                                    complete = Some(d1_activity_host::state::StepCompletion::parse(v)
+                                        .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad complete {v:?} (want HASH:TYPE:TYPE2:PLACE[:gameplay])"))?);
+                                } else if let Some(v) = t.strip_prefix("incident=") {
                                     let (ty, hex) = v.split_once(':')
                                         .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad incident {v:?} (want TYPE:BODYHEX)"))?;
                                     let body = (0..hex.len()).step_by(2)
@@ -915,6 +922,7 @@ fn main() -> anyhow::Result<()> {
                                 team_minus1,
                                 region,
                                 incident,
+                                complete,
                             });
                         }
                     }
