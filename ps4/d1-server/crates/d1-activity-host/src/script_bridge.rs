@@ -1592,6 +1592,9 @@ impl ScriptBridge {
             cushion.as_secs_f64()
         );
         self.rows.request_full();
+        if self.run.as_ref().is_some_and(|r| r.started) {
+            self.send_active_bundles(region);
+        }
     }
 
     // ── inputs ────────────────────────────────────────────────────────────────────────────────
@@ -1659,9 +1662,21 @@ impl ScriptBridge {
         if matches!(self.run.as_ref().and_then(|r| r.arrival), Some(Arrival::Moving { region: r, .. }) if r == region) {
             self.arrived(region, now, "the client reports it (udt 21)");
         }
+        if self.run.as_ref().is_some_and(|r| r.started) {
+            self.send_active_bundles(region);
+        }
+    }
+
+    /// Make `region`'s bundles the active set (once per change). F44 (run agr24): BullShcript runs
+    /// every bundle until it is told the active set, and our client's reports of its first slice
+    /// sets (113, 112) carry no name hash, so none went out until the walk into 24. Every
+    /// encounter ran from the start: the hangar's `sc_hangar_main` placed its squads while the
+    /// client was on the highway, and they never appeared in the hangar. The scripts' start now
+    /// sends the start slice set's bundles before `start`, and a teleport's arrival its own.
+    fn send_active_bundles(&mut self, region: u32) {
         let on = self.config.active_bundles;
         let Some(run) = self.run.as_mut() else { return };
-        if !on || !run.started || run.active_slice == Some(region) {
+        if !on || run.active_slice == Some(region) {
             return;
         }
         let Some(groups) = run.activity.slice_groups.get(&region).filter(|g| !g.is_empty()) else { return };
@@ -1984,6 +1999,10 @@ impl ScriptBridge {
                 .map(|(slot, c)| PlayerInfo { key: player_key(c), slot: slot as u32, ready })
                 .collect();
             self.send(HostMsg::Players { players });
+            // F44: the start slice set's bundles are the active set before the scripts start.
+            if let Some(region) = self.run.as_ref().and_then(|r| r.current_slice.or(r.believed_slice)) {
+                self.send_active_bundles(region);
+            }
             self.send(HostMsg::Start);
             let waiting: Vec<HostMsg> = self.run.as_mut().map(|r| r.before_start.drain(..).collect()).unwrap_or_default();
             for m in waiting {
@@ -2982,7 +3001,9 @@ mod tests {
         {
             let s = shared.lock().unwrap();
             let start = s.sent.iter().position(|m| matches!(m, HostMsg::Start)).expect("start after loaded and the full list");
-            assert!(matches!(s.sent[start - 1], HostMsg::Players { ref players } if players.len() == 1));
+            // F44: the start slice set's bundles go out between the players and the start.
+            let before = if matches!(s.sent[start - 1], HostMsg::ActiveBundles { .. }) { start - 2 } else { start - 1 };
+            assert!(matches!(s.sent[before], HostMsg::Players { ref players } if players.len() == 1));
             let pregame = s.frames.last().unwrap();
             assert!(!pregame.full && !pregame.init, "a delta");
             assert_eq!(lifetime_of(pregame), Some(1), "pregame -> 1");
@@ -3254,7 +3275,8 @@ mod tests {
         {
             let s = shared.lock().unwrap();
             let start = s.sent.iter().position(|m| matches!(m, HostMsg::Start)).expect("the scripts start after the cushion");
-            assert!(matches!(s.sent[start - 1], HostMsg::Players { ref players } if players.len() == 1));
+            let before = if matches!(s.sent[start - 1], HostMsg::ActiveBundles { .. }) { start - 2 } else { start - 1 };
+            assert!(matches!(s.sent[before], HostMsg::Players { ref players } if players.len() == 1), "players, (F44: the start's active bundles,) then start");
             assert!(matches!(s.sent[start + 1], HostMsg::PlayerSpawned { .. }), "the incident from the cushion follows the start");
             let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
             seq.dedup();
@@ -3976,12 +3998,14 @@ mod tests {
         // Phase 0 is state 25, by its name: the start slice set the client loads at the join, so
         // no teleport (run fg2: one sent during the initial load stalled it).
         assert_eq!(b.take_region_request(), None, "phase 0 is state 25, where the client starts");
+        {
+            // F44: the start slice set's bundles go out before the scripts start, not at a report.
+            let s = shared.lock().unwrap();
+            let active = s.sent.iter().position(|m| *m == HostMsg::ActiveBundles { bundles: vec![0x2FE7_DBE6, 0x4786_C0E0] });
+            let start = s.sent.iter().position(|m| matches!(m, HostMsg::Start));
+            assert!(active.is_some() && active < start, "25's bundles are active before the start: {:?}", s.sent);
+        }
         b.on_client_message(&slice(25), 165, HOST, t);
-        assert_eq!(
-            shared.lock().unwrap().sent.last(),
-            Some(&HostMsg::ActiveBundles { bundles: vec![0x2FE7_DBE6, 0x4786_C0E0] }),
-            "entering 25 makes its bundles active"
-        );
         b.on_client_message(&slice(25), 165, HOST, t);
         let actives = shared.lock().unwrap().sent.iter().filter(|m| matches!(m, HostMsg::ActiveBundles { .. })).count();
         assert_eq!(actives, 1, "once per change");
