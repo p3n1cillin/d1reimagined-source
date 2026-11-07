@@ -115,6 +115,34 @@ def edit(src, out, tag, changes):
     check(src, out, tag, before, bytes(b), fields, line)
 
 
+# The subclass item's talent grid (+0x58, u16) and one state byte per node from +0x5A; served
+# 00-Subclass.bin is the Striker grid 132 (30 nodes) with its 14 default-active nodes set to 1.
+GRID_AT, NODES_AT = 0x58, 0x5A
+
+
+def fresh_subclass(path, nodes):
+    """Clear the talent node states of the subclass item at `path` in place: a new Guardian's grid
+    before any subclass XP. The reference footage (A Guardian Rises at launch, to the loot cache)
+    shows no grenade, melee or Super, and no ability icons (F54, 7 November)."""
+    before = decode(path, ITEM)
+    b = bytearray(before)
+    grid = struct.unpack_from('<H', b, GRID_AT)[0]
+    old = [i for i in range(nodes) if b[NODES_AT + i]]
+    b[NODES_AT:NODES_AT + nodes] = bytes(nodes)
+    line = encode(bytes(b), ITEM, path)
+    after = decode(path, ITEM)
+    if after != bytes(b):
+        sys.exit(f'{path}: re-decoded subclass differs from the edited one')
+    diff = [i for i, (x, y) in enumerate(zip(before, after)) if x != y]
+    if any(not NODES_AT <= i < NODES_AT + nodes for i in diff):
+        sys.exit(f'{path}: unintended bytes differ: {[hex(i) for i in diff]}')
+    REPORT.append({'output': str(path.relative_to(HERE)), 'tag': hex(ITEM), 'encoder': line,
+                   'redecoded_equals_edited': True, 'changed_bytes': [hex(i) for i in diff],
+                   'fields': [{'offset': hex(NODES_AT), 'field': f'grid {grid} node states',
+                               'old': f'active {old}', 'new': 'none active'}]})
+    print(f'{path.relative_to(HERE)}: grid {grid} nodes {old} -> none active')
+
+
 def copy(src, out, tag):
     out.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(src, out)
@@ -145,6 +173,9 @@ def main():
     ap.add_argument('--out', type=Path, default=HERE)
     ap.add_argument('--light-native', action='store_true',
                     help='clear the Light override in the profiles, so the client computes Light from the level-1 gear')
+    ap.add_argument('--fresh-subclass', type=int, nargs='?', const=30, metavar='NODES',
+                    help='also clear the subclass talent nodes (default 30, the Striker grid): no '
+                         'grenade, melee, jump or Super, as a new Guardian (F54)')
     a = ap.parse_args()
     F, OUT = a.fixtures, a.out.resolve()
     HERE = OUT                                   # report paths are relative to the output folder
@@ -154,6 +185,8 @@ def main():
         edit(src, OUT / 'inventory-tutorial-l1' / src.name, ITEM, [(0x18, 'u32', LEVEL, 'item level', 40)])
     edit(F / 'grants' / 'khvostov-3598.bin', OUT / 'grants-l1' / 'khvostov-3598.bin', ITEM,
          [(0x18, 'u32', LEVEL, 'item level', 40)])
+    if a.fresh_subclass:
+        fresh_subclass(OUT / 'inventory-tutorial-l1' / '00-Subclass.bin', a.fresh_subclass)
 
     # 2. Profiles: the Light override (+0x6FDC present = 1, +0x6FE0 {key 0, value}) value 385 -> LIGHT.
     # The post-game pushes too (postgame5.sh): level1-run2 served the level-1 boot profiles, and
