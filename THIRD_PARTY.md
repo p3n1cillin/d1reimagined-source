@@ -10,6 +10,9 @@ in this repository. The settings generator is project code derived from the nati
   ([notes/rsat-blam-crosscheck.md](notes/rsat-blam-crosscheck.md)). The native codec
   `ps4/d1-server/crates/d1-rsat` adapts no code from it: it is written from the owned eboot's own
   descriptors and walkers, and tested against `d1-oracle`.
+  Its MIT gibbon character/unlock schemas also informed the creation-default field investigation
+  (`d1-new-guardian-defaults.py`); the 176-byte 56578 records and source digests are checked against
+  owned content. Extraction reuses the existing oracle and tag-array reader; no gibbon code is copied.
 - [quicktag](https://github.com/v4nguard/quicktag): tag-format research reference.
 - [Ghidra](https://github.com/NationalSecurityAgency/ghidra) (Apache-2.0), run headless on a
   [Temurin](https://adoptium.net/) JDK 25: decompiling the owned eboot (`tools/ps4_setup/d1-ghidra.ps1`);
