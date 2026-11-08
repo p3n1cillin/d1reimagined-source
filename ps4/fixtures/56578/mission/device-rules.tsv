@@ -1,0 +1,17 @@
+# Props the live A Guardian Rises host served with a device command (0x8080279A), and the player
+# trigger whose report armed them (D1_AH_SCRIPTS_DEVICE_RULES; script_bridge::DeviceRule; F52).
+# Read from the live capture with the 51539 object layout (8 November 2026): at their creation the
+# Breach's tripwires (o_fallen_tripwire_1..7, rows 13-19; notes/mission-objects-highway.md) carried
+# channels (0,0,1.0) (0,0,0) (0,0,0); when the client reported pt_tripmines (0xFC0E45A3/0x1D/104,
+# "Tripmines! Don't touch them."), channel 2 went to (1,0,1.0), one tripwire every 0.2 s, and the
+# grates 2a/2b (rows 11, 12) changed with the last one. Values are rules, not capture bytes.
+# activity  object                 trigger                  order
+164  0xfc0e45a3/0x4/13  0xfc0e45a3/0x1d/104  0
+164  0xfc0e45a3/0x4/14  0xfc0e45a3/0x1d/104  1
+164  0xfc0e45a3/0x4/15  0xfc0e45a3/0x1d/104  2
+164  0xfc0e45a3/0x4/16  0xfc0e45a3/0x1d/104  3
+164  0xfc0e45a3/0x4/17  0xfc0e45a3/0x1d/104  4
+164  0xfc0e45a3/0x4/18  0xfc0e45a3/0x1d/104  5
+164  0xfc0e45a3/0x4/19  0xfc0e45a3/0x1d/104  6
+164  0xfc0e45a3/0x4/11  0xfc0e45a3/0x1d/104  6
+164  0xfc0e45a3/0x4/12  0xfc0e45a3/0x1d/104  6
