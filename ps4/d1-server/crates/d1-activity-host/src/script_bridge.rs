@@ -1751,6 +1751,19 @@ impl ScriptBridge {
             self.players.last(),
             self.world_bubbles,
         );
+        // F54: a Guardian who starts the activity unarmed is served unarmed (D1_AH_UNARMED_UNTIL_PHASE).
+        if unarmed_until(activity_index).is_some() {
+            for (k, r) in rows.iter_mut() {
+                if k.group == activity.lifetime.group && k.kind == crate::row_encoders::KIND_PLAYER_BUNDLE
+                    && k.index == crate::row_encoders::MISSION_PLAYER_SUB
+                {
+                    if let Some((_, image)) = r.a.as_mut() {
+                        set_bundle_armed(image, false);
+                        tracing::info!("⭐ script bridge: the player bundle {k} goes out unarmed (+8, +9 = 0) until the scripts arm it (F54)");
+                    }
+                }
+            }
+        }
         rows.push((activity.lifetime, self.lifetime_row(first, None)));
         self.rows.load_world(rows, authority);
         self.encoders.reset();
@@ -2190,6 +2203,24 @@ impl ScriptBridge {
                 );
                 if let Some(n) = name.clone().filter(|n| !n.is_empty()) {
                     self.framework_events.push(crate::encounter_framework::Event::ScriptPhase(n));
+                }
+                // F54: the live A Guardian Rises host armed the player bundle (+8, +9 = 1) 3 s after
+                // the rifle's checkpoint (527 s); our scripts' phase 3 is the rifle in hand.
+                if unarmed_until(run.activity.index).is_some_and(|p| index as i32 >= p) {
+                    let key = RowKey {
+                        group: run.activity.lifetime.group,
+                        kind: crate::row_encoders::KIND_PLAYER_BUNDLE,
+                        index: crate::row_encoders::MISSION_PLAYER_SUB,
+                    };
+                    if let Some(mut row) = self.rows.get(&key).cloned() {
+                        if let Some((_, image)) = row.a.as_mut() {
+                            if !bundle_armed(image) {
+                                set_bundle_armed(image, true);
+                                self.rows.set(key, row);
+                                tracing::info!("⭐ script bridge: phase {index}: the player bundle {key} is armed (+8, +9 = 1), as the live host after the rifle (F54)");
+                            }
+                        }
+                    }
                 }
                 // F37: the live AGR host asked for a slice set only within the bubble the client
                 // was in (113 -> 112 in bubble 14, 104 -> 105 in 13; the reveal's 25 -> 26 in 3).
@@ -2656,8 +2687,59 @@ impl crate::public_events::BubbleScriptBridge for ScriptBridge {
     }
 }
 
+/// ⭐ `D1_AH_UNARMED_UNTIL_PHASE=INDEX:PHASE[,...]`: the activities a Guardian starts unarmed, and
+/// the script phase that arms them. F54: the live A Guardian Rises host served the player bundle
+/// (`0x808022A5`) with its field-0 bools `+8` and `+9` at 0 from the spawn and set both to 1 three
+/// seconds after the rifle's checkpoint (527 s; Codex's #340 audit, notes/ps4-56578-ghost-option-
+/// 2026-11-08.md). Our lists served 1 from the start, and the client showed the Ghost over an empty
+/// hand until the rifle. `164:3`: A Guardian Rises, armed at its phase 3 (the rifle in hand).
+pub fn unarmed_until(activity: u16) -> Option<i32> {
+    static TABLE: std::sync::OnceLock<HashMap<u16, i32>> = std::sync::OnceLock::new();
+    TABLE
+        .get_or_init(|| std::env::var("D1_AH_UNARMED_UNTIL_PHASE").map(|t| parse_unarmed_until(&t)).unwrap_or_default())
+        .get(&activity)
+        .copied()
+}
+
+pub fn parse_unarmed_until(text: &str) -> HashMap<u16, i32> {
+    text.split(',')
+        .filter_map(|p| {
+            let (a, ph) = p.trim().split_once(':')?;
+            Some((a.trim().parse().ok()?, ph.trim().parse().ok()?))
+        })
+        .collect()
+}
+
+/// The player bundle's field-0 bools `+8` and `+9` (`0x80800540`), which the live host raised
+/// together when the player took the rifle.
+pub fn set_bundle_armed(image: &mut [u8], armed: bool) {
+    if image.len() > 9 {
+        image[8] = u8::from(armed);
+        image[9] = u8::from(armed);
+    }
+}
+
+pub fn bundle_armed(image: &[u8]) -> bool {
+    image.len() > 9 && image[8] == 1 && image[9] == 1
+}
+
 #[cfg(test)]
 mod tests {
+    /// F54: `164:3` names A Guardian Rises, armed at phase 3; the bundle's +8/+9 flip together.
+    #[test]
+    fn an_unarmed_start_flips_the_bundles_two_bools() {
+        let t = parse_unarmed_until("164:3, 168:x, junk");
+        assert_eq!(t.get(&164), Some(&3));
+        assert_eq!(t.len(), 1);
+        let mut image = crate::row_encoders::player_bundle_image([1; 8], true);
+        assert!(bundle_armed(&image), "the hand lists' mission form starts armed");
+        set_bundle_armed(&mut image, false);
+        assert_eq!((image[8], image[9]), (0, 0));
+        assert!(!bundle_armed(&image));
+        set_bundle_armed(&mut image, true);
+        assert!(bundle_armed(&image));
+    }
+
     use super::*;
     use crate::row_encoders::EncodedFrame;
     use std::sync::Mutex;
