@@ -1761,6 +1761,34 @@ const CLASS_KIT_BUCKETS: [u8; 6] = [0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0E];
 /// The starting subclass per class, by content index (56578 item index; the archived manifest names
 /// them): Titan Striker 710, Hunter Gunslinger 709, Warlock Voidwalker 713.
 const STARTING_SUBCLASS: [u16; 3] = [710, 709, 713];
+/// The second subclass a created Guardian holds (locked until level 15), per class: the live A
+/// Guardian Rises capture's new Warlock was granted Sunsinger 712 beside Voidwalker 713 (bucket 0x06's
+/// second slot). Titan Defender 711 and Hunter Bladedancer 708 by the same pairing (inferred; no
+/// capture of their creation).
+const SECOND_SUBCLASS: [u16; 3] = [711, 708, 712];
+
+/// Put a second subclass into a decoded profile: a copy of bucket 0x06's first held slot (content
+/// and instance replaced) in the bucket's first empty slot. Returns the instance it copied from, so
+/// its item element can be copied too; None when the bucket has no held slot or no empty one.
+pub fn add_second_subclass(profile: &mut [u8], content: u16, instance: u64) -> Option<u64> {
+    let info = crate::store::bucket(SUBCLASS_BUCKET).filter(|i| i.scope == 0)?;
+    let slot = |s: u16| crate::store::PROFILE_SLOTS + 32 * s as usize;
+    let range = info.first..info.first + info.count;
+    let held = range.clone().find(|&s| {
+        profile.get(slot(s)..slot(s) + 16).is_some_and(|e| u16::from_le_bytes([e[0], e[1]]) != 0xFFFF && e[8..16] != [0; 8])
+    })?;
+    if range.clone().any(|s| profile.get(slot(s)..slot(s) + 2).is_some_and(|e| u16::from_le_bytes([e[0], e[1]]) == content)) {
+        return None;
+    }
+    let empty = range.clone().find(|&s| profile.get(slot(s)..slot(s) + 2).is_some_and(|e| u16::from_le_bytes([e[0], e[1]]) == 0xFFFF))?;
+    let src: [u8; 32] = profile[slot(held)..slot(held) + 32].try_into().ok()?;
+    let from = u64::from_le_bytes(src[8..16].try_into().unwrap());
+    let dst = &mut profile[slot(empty)..slot(empty) + 32];
+    dst.copy_from_slice(&src);
+    dst[0..2].copy_from_slice(&content.to_le_bytes());
+    dst[8..16].copy_from_slice(&instance.to_le_bytes());
+    Some(from)
+}
 const SUBCLASS_BUCKET: u8 = 0x06;
 /// An item element's content index (`0x80801732` `+0x24`, as vendor.rs writes it).
 const ITEM_CONTENT: usize = 0x24;
@@ -1900,7 +1928,11 @@ pub fn apply_created_look(look: [u8; d1_bap::character_lifecycle::LOOK_BYTES]) {
         // The class's starting gear (D1_STARTING_KIT): its content into the slots the served set
         // already equips, and into those instances' item elements.
         let wants = class_kit(look[2]);
+        // With a kit, the class's second subclass too (a new instance, minted now).
+        let second = (!wants.is_empty()).then(|| SECOND_SUBCLASS.get(look[2] as usize).copied()).flatten()
+            .and_then(|c| current_store().and_then(|m| m.lock().ok().map(|mut s| (c, s.mint_item_soid()))));
         let mut new_items = Vec::new();
+        let mut second_from: Option<(u64, u64)> = None;
         let object = object.map(|o| o.map(|mut obj| {
             if !write_look(&mut obj, &look) {
                 events.push("⛔ created look: the profile object is too short; look not written".into());
@@ -1908,6 +1940,18 @@ pub fn apply_created_look(look: [u8; d1_bap::character_lifecycle::LOOK_BYTES]) {
                 events.push("created look written into the profile".into());
             }
             let swapped = apply_kit_to_profile(&mut obj, &wants);
+            let mut swapped = swapped;
+            if let Some((content, instance)) = second {
+                match add_second_subclass(&mut obj, content, instance) {
+                    // Its element: the first subclass's, with this content (below, with the kit's).
+                    Some(from) => {
+                        events.push(format!("second subclass: content {content} as instance {instance:#x} (from {from:#x})"));
+                        swapped.push((instance, content, SUBCLASS_BUCKET | 0x80));
+                        second_from = Some((from, instance));
+                    }
+                    None => events.push(format!("second subclass {content}: no held subclass slot, or no empty one, or already held; not added")),
+                }
+            }
             // D1_CREATION_FLAGS=content: the creation record's flags, not the served save's.
             if let Some(flags) = creation_flags_from_env(look[2], look[0]) {
                 if flags.is_empty() {
@@ -1920,12 +1964,25 @@ pub fn apply_created_look(look: [u8; d1_bap::character_lifecycle::LOOK_BYTES]) {
             }
             let items = view(|s| s.chr().items.iter().map(|i| (i.soid, i.element.clone())).collect::<BTreeMap<_, _>>()).unwrap_or_default();
             for (instance, content, bucket) in swapped {
-                let Some(element) = items.get(&instance) else {
+                // The second subclass's element is a copy of the first subclass's.
+                let source = match second_from {
+                    Some((from, to)) if to == instance => from,
+                    _ => instance,
+                };
+                let bucket = bucket & 0x7F;
+                let Some(element) = items.get(&source) else {
                     events.push(format!("⛔ class kit: bucket {bucket:#x}'s instance {instance:#x} has no item element; the profile slot alone changed"));
                     continue;
                 };
                 let step = crate::vendor::decode_object(&oracle, "0x80801732", element, "class-kit-item").and_then(|mut item| {
                     anyhow::ensure!(set_item_content(&mut item, content), "the decoded item is too short");
+                    // A copied element names its own instance at +0: the client refuses a QueueZ
+                    // object whose header and payload ids differ (run cf5:
+                    // error.investment_server_object_queuez_id_mismatch_in_header_and_rsat_payload).
+                    if source != instance {
+                        anyhow::ensure!(item.len() >= 8, "the decoded item is too short");
+                        item[0..8].copy_from_slice(&instance.to_le_bytes());
+                    }
                     Ok(crate::vendor::encode(&oracle, "0x80801732", &item, &crate::vendor::unique_name("class-kit-item"))?.0)
                 });
                 match step {
@@ -2852,6 +2909,28 @@ mod tests {
         assert_eq!(obj[layout::COMPLETIONS + layout::COMPLETION_BYTES], 9);
         assert!(!write_completion_record(&mut obj, &[(2200, 2)]));
         assert!(!write_completion_record(&mut [0u8; 16], &want));
+    }
+
+    /// The second subclass is a copy of the held subclass slot in the bucket's next empty slot,
+    /// with its own content and instance; once held, it is not added again.
+    #[test]
+    fn a_second_subclass_copies_the_held_slot_with_its_own_content_and_instance() {
+        let info = crate::store::bucket(0x06).expect("the subclass bucket");
+        let mut p = vec![0u8; crate::store::PROFILE_SLOTS + 32 * crate::store::PROFILE_SLOT_COUNT];
+        for s in info.first..info.first + info.count {
+            let e = crate::store::PROFILE_SLOTS + 32 * s as usize;
+            p[e..e + 2].copy_from_slice(&0xFFFFu16.to_le_bytes());
+        }
+        let first = crate::store::PROFILE_SLOTS + 32 * info.first as usize;
+        p[first..first + 2].copy_from_slice(&713u16.to_le_bytes());
+        p[first + 8..first + 16].copy_from_slice(&0xD1_0301u64.to_le_bytes());
+        p[first + 0x10] = 7;
+        assert_eq!(add_second_subclass(&mut p, 712, 0xD1_0400), Some(0xD1_0301));
+        let second = first + 32;
+        assert_eq!(u16::from_le_bytes([p[second], p[second + 1]]), 712);
+        assert_eq!(u64::from_le_bytes(p[second + 8..second + 16].try_into().unwrap()), 0xD1_0400);
+        assert_eq!(p[second + 0x10], 7, "the rest of the entry is the held slot's");
+        assert_eq!(add_second_subclass(&mut p, 712, 0xD1_0401), None, "already held");
     }
 
     #[test]
