@@ -8,4 +8,7 @@
 164  act_cosmo_m0_highway  0x4786c0e0  sensor-clients-act_cosmo_m0_highway-r113-cine.txt  113
 168  act_cosmo_m1_dome_a   0x4786c0e0  sensor-clients-act_cosmo_m1_dome_a-bundle.txt  8
 0    city_tower_default1   0x40aebf90  sensor-clients-city_tower_default1-squads.txt  0
+# Index 1 (0xdf283afb) is the Tower the client itself launches after the reveal: the live AGR capture
+# (notes/d1-live-captures-2026-11-05.md) and run rev6b (7 Nov). Index 0 (0x8ae8da69) is also a Tower.
+1    city_tower_default1   0x40aebf90  sensor-clients-city_tower_default1-squads.txt  0
 165  cine_reveal           0x4786c0e0  sensor-clients-cine_reveal-live.txt  25
