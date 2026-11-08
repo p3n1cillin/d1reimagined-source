@@ -590,7 +590,13 @@ impl AhCodec {
                 )));
             }
             // `ObjectOracle::new` runs the pinned object control first and refuses otherwise.
-            let mut o = ObjectOracle::new(tag)?;
+            // udt 1 (global_activity_state) carries the activity option list, whose entries hold
+            // typed values (bool `0x80800004`, int `0x80800007`): its codec must know those types.
+            let mut o = if user_defined_type == 1 {
+                ObjectOracle::with_types(tag, crate::sensor::TYPED_VALUE_TYPES)?
+            } else {
+                ObjectOracle::new(tag)?
+            };
             if self.rewind_disabled {
                 o.set_rewind_enabled(false);
             }

@@ -87,7 +87,12 @@ pub const TAG_AUTHORITY: u32 = 0x8080_0CF7;
 /// entry in the kind-15 scoreboard's player row (`0x808008D0`). Without it the client's codec
 /// faults on the unresolved type (a negative `memset`); with it a one-reward scoreboard image
 /// round-trips byte-identical (2,388 bits).
-pub const TYPED_VALUE_TYPES: &[u32] = &[0x8080_279A, 0x8080_1732];
+/// `0x80800004` (a 1-byte bool) and `0x80800007` (an i32 biased by `0x80000000`): the bool and int
+/// typed values of an activity option list (`0x8080533D`; entries `{u32 name; typed value}`). The
+/// client's well-known type table (`0x1997310`, cells from `0x28DB450`, bound by `0xEE100`) maps the
+/// bool cell to `0x80800004` and the int cell (`0x28DBD70`) to `0x80800007`; a bool entry is 66 bits
+/// and round-trips byte-identical (notes/ps4-56578-ghost-option-2026-11-08.md).
+pub const TYPED_VALUE_TYPES: &[u32] = &[0x8080_279A, 0x8080_1732, 0x8080_0004, 0x8080_0007];
 /// Entries in the authority table: 65 blocks of 12 bytes after a `u32`.
 pub const AUTHORITY_BLOCKS: usize = 65;
 

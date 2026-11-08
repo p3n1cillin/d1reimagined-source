@@ -560,6 +560,64 @@ impl GlobalActivityState {
         Ok(())
     }
 
+    /// ⭐ **Set an activity option** in the blob's option list (the same `0x8080533D` list at
+    /// [`Self::LAUNCH_SLOT_COUNT`] / [`Self::LAUNCH_SLOTS`]; 8 November 2026,
+    /// notes/ps4-56578-ghost-option-2026-11-08.md). The client copies the list at its world
+    /// transition (`0x7a9880`) into its game options, and at activity start `0x417b00` builds the
+    /// "Activity Options Game State" table from it, the table `0x118870` looks options up in
+    /// (e.g. `0xB3C6F690`, which the Ghost spawn gate `0x741af0` reads). Each 24-byte entry is
+    /// `{u32 name hash; typed value}`: the type handle at `+4` (bool `0x80800004`, int
+    /// `0x80800007`) and the value at `+8`. An option already present is replaced.
+    pub fn set_option(&mut self, name: u32, value: OptionValue) -> Result<(), AhError> {
+        let count = self.launch_slot_count() as usize;
+        let existing = (0..count.min(Self::LAUNCH_SLOT_CAPACITY)).find(|&i| {
+            let at = Self::LAUNCH_SLOTS + i * Self::LAUNCH_SLOT_STRIDE;
+            self.blob[at..at + 4] == name.to_le_bytes()
+        });
+        let index = match existing {
+            Some(i) => i,
+            None if count < Self::LAUNCH_SLOT_CAPACITY => count,
+            None => {
+                return Err(AhError::FieldOverflow {
+                    field: "global_activity_state.options",
+                    len: count + 1,
+                    max: Self::LAUNCH_SLOT_CAPACITY,
+                })
+            }
+        };
+        let at = Self::LAUNCH_SLOTS + index * Self::LAUNCH_SLOT_STRIDE;
+        let entry = &mut self.blob[at..at + Self::LAUNCH_SLOT_STRIDE];
+        entry.fill(0);
+        entry[0..4].copy_from_slice(&name.to_le_bytes());
+        match value {
+            OptionValue::Bool(b) => {
+                entry[4..8].copy_from_slice(&OPTION_TYPE_BOOL.to_le_bytes());
+                entry[8] = u8::from(b);
+            }
+            OptionValue::Int(v) => {
+                entry[4..8].copy_from_slice(&OPTION_TYPE_INT.to_le_bytes());
+                entry[8..12].copy_from_slice(&v.to_le_bytes());
+            }
+        }
+        if existing.is_none() {
+            self.blob[Self::LAUNCH_SLOT_COUNT..Self::LAUNCH_SLOT_COUNT + 4]
+                .copy_from_slice(&((count + 1) as u32).to_le_bytes());
+        }
+        Ok(())
+    }
+
+    /// The option list's entries whose typed value the codec cannot encode (a type handle other
+    /// than the bool's or the int's), by index.
+    fn unencodable_options(&self) -> Vec<usize> {
+        (0..(self.launch_slot_count() as usize).min(Self::LAUNCH_SLOT_CAPACITY))
+            .filter(|&i| {
+                let at = Self::LAUNCH_SLOTS + i * Self::LAUNCH_SLOT_STRIDE + 4;
+                let t = u32::from_le_bytes(self.blob[at..at + 4].try_into().unwrap());
+                t != OPTION_TYPE_BOOL && t != OPTION_TYPE_INT
+            })
+            .collect()
+    }
+
     pub fn struct_bytes(&self) -> Result<Vec<u8>, AhError> {
         if self.blob.len() != GLOBAL_ACTIVITY_STATE_BLOB_SIZE {
             return Err(AhError::BadStructSize {
@@ -573,7 +631,7 @@ impl GlobalActivityState {
         // activity-slot count makes the client's own encoder deref the content registry
         // (*DAT_01A0B420) to size a dynamic-width leaf, which a static image does not carry.
         // ⇒ Self::LAUNCH_SLOT_COUNT.
-        if self.launch_slot_count() != 0 {
+        if self.launch_slot_count() as usize > Self::LAUNCH_SLOT_CAPACITY || !self.unencodable_options().is_empty() {
             return Err(AhError::FieldOverflow {
                 field: "global_activity_state.launch_slot_count is non-zero: the CLIENT'S OWN \
                         encoder faults on the content registry (READ_UNMAPPED at 0x105B74A via \
@@ -587,6 +645,18 @@ impl GlobalActivityState {
         Ok(self.blob.clone())
     }
 }
+
+/// An activity option's typed value ([`GlobalActivityState::set_option`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OptionValue {
+    Bool(bool),
+    Int(i32),
+}
+
+/// The typed-value handle of a bool option (a 1-byte struct, one kind-2 field).
+pub const OPTION_TYPE_BOOL: u32 = 0x8080_0004;
+/// The typed-value handle of an int option (an i32 biased by `0x80000000` on the wire).
+pub const OPTION_TYPE_INT: u32 = 0x8080_0007;
 
 /// `[C]` udt **11** `replicate_membership` - ⭐ the fourth and last message `FUN_00298EF0` waits
 /// on, and the one that sets `ac+0x131 & 1`.
@@ -1256,6 +1326,56 @@ mod tests {
         assert_eq!(b.len(), 0x88);
         assert_eq!(&b[0..8], &0xAABBu64.to_le_bytes());
         assert_eq!(&b[8..12], b"sess");
+    }
+
+    /// F54, through the CLIENT'S OWN encoder: a blob with a bool option and an int option encodes
+    /// and decodes back to the same entries. Needs the owned 56578 executable (`D1_EBOOT`).
+    #[test]
+    fn a_typed_option_list_round_trips_through_the_clients_codec() {
+        if std::env::var_os("D1_EBOOT").is_none() {
+            eprintln!("SKIP: set D1_EBOOT to the owned 56578 executable");
+            return;
+        }
+        let mut s = GlobalActivityState::for_activity("act_cosmo_m0_highway").expect("blob");
+        s.set_option(0xB3C6_F690, OptionValue::Bool(true)).unwrap();
+        s.set_option(0xBE4D_B480, OptionValue::Int(50)).unwrap();
+        let img = s.struct_bytes().unwrap();
+        let mut codec = d1_oracle::activity_host::AhCodec::new();
+        let wire = codec.encode(1, &img).expect("the client's encoder takes typed options");
+        let back = codec.decode(1, &wire.payload).expect("and decodes them").object;
+        let (a, b) = (GlobalActivityState::LAUNCH_SLOT_COUNT, GlobalActivityState::LAUNCH_SLOTS + 2 * GlobalActivityState::LAUNCH_SLOT_STRIDE);
+        assert_eq!(back[a..a + 4], img[a..a + 4], "the count");
+        for e in 0..2 {
+            let at = GlobalActivityState::LAUNCH_SLOTS + e * GlobalActivityState::LAUNCH_SLOT_STRIDE;
+            assert_eq!(back[at..at + 9], img[at..at + 9], "entry {e}: name, type, value");
+        }
+        assert!(b <= back.len());
+    }
+
+    /// F54: an option is a 24-byte `{name, type handle, value}` entry counted at `+0x64`; a bool
+    /// and an int encode, a second set replaces, and an entry of an unknown type still refuses.
+    #[test]
+    fn options_fill_the_list_and_only_typed_entries_encode() {
+        let mut s = GlobalActivityState::empty();
+        s.set_option(0xB3C6_F690, OptionValue::Bool(true)).unwrap();
+        s.set_option(0xBE4D_B480, OptionValue::Int(50)).unwrap();
+        s.set_option(0xB3C6_F690, OptionValue::Bool(false)).unwrap();
+        assert_eq!(s.launch_slot_count(), 2, "the second bool replaced the first");
+        let b = s.struct_bytes().expect("typed entries encode");
+        let e = GlobalActivityState::LAUNCH_SLOTS;
+        assert_eq!(&b[e..e + 4], &0xB3C6_F690u32.to_le_bytes());
+        assert_eq!(&b[e + 4..e + 8], &OPTION_TYPE_BOOL.to_le_bytes());
+        assert_eq!(b[e + 8], 0);
+        let e2 = e + GlobalActivityState::LAUNCH_SLOT_STRIDE;
+        assert_eq!(&b[e2 + 4..e2 + 8], &OPTION_TYPE_INT.to_le_bytes());
+        assert_eq!(&b[e2 + 8..e2 + 12], &50i32.to_le_bytes());
+        let mut bad = GlobalActivityState::empty();
+        bad.set_launch_slot_unencodable(0, 0xDEAD_BEEF).unwrap();
+        assert!(bad.struct_bytes().is_err(), "an untyped entry stays refused");
+        let o = crate::state::parse_activity_options("164:0xb3c6f690=true, 410:be4db480=50, junk");
+        assert_eq!(o[&164], vec![(0xB3C6_F690, OptionValue::Bool(true))]);
+        assert_eq!(o[&410], vec![(0xBE4D_B480, OptionValue::Int(50))]);
+        assert_eq!(o.len(), 2);
     }
 
     #[test]

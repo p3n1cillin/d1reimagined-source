@@ -140,6 +140,43 @@ pub enum EvictionReason {
     ClientLeft,
 }
 
+/// ⭐ `D1_AH_ACTIVITY_OPTIONS=INDEX:HASH=VALUE[,...]`: activity options served in the
+/// `global_activity_state` of activity INDEX (VALUE `true`, `false` or a decimal int). E.g.
+/// `164:0xb3c6f690=true`: the option the client's Ghost spawn gate (`0x741af0`) reads, F54
+/// (notes/ps4-56578-ghost-option-2026-11-08.md). Unparsable entries are skipped with a warning.
+pub fn parse_activity_options(text: &str) -> std::collections::HashMap<u16, Vec<(u32, crate::messages::OptionValue)>> {
+    use crate::messages::OptionValue;
+    let mut out: std::collections::HashMap<u16, Vec<(u32, OptionValue)>> = std::collections::HashMap::new();
+    for item in text.split(',').map(str::trim).filter(|t| !t.is_empty()) {
+        let parsed = (|| {
+            let (index, rest) = item.split_once(':')?;
+            let (name, value) = rest.split_once('=')?;
+            let index: u16 = index.trim().parse().ok()?;
+            let name = u32::from_str_radix(name.trim().trim_start_matches("0x"), 16).ok()?;
+            let value = match value.trim() {
+                "true" => OptionValue::Bool(true),
+                "false" => OptionValue::Bool(false),
+                v => OptionValue::Int(v.parse().ok()?),
+            };
+            Some((index, name, value))
+        })();
+        match parsed {
+            Some((index, name, value)) => out.entry(index).or_default().push((name, value)),
+            None => tracing::warn!("D1_AH_ACTIVITY_OPTIONS: skipped {item:?} (want INDEX:HASH=true|false|INT)"),
+        }
+    }
+    out
+}
+
+fn activity_options(index: u16) -> &'static [(u32, crate::messages::OptionValue)] {
+    static OPTIONS: std::sync::OnceLock<std::collections::HashMap<u16, Vec<(u32, crate::messages::OptionValue)>>> =
+        std::sync::OnceLock::new();
+    OPTIONS
+        .get_or_init(|| std::env::var("D1_AH_ACTIVITY_OPTIONS").map(|t| parse_activity_options(&t)).unwrap_or_default())
+        .get(&index)
+        .map_or(&[], Vec::as_slice)
+}
+
 /// ⭐ One timed mission step (`D1_AH_MISSION_STEPS`): from `at` after the first sensor frame, serve
 /// these object states (prebuilt for both spawn teams) and, if set, move the player to `region`
 /// (the host teleport, carried by the next global-state publish).
@@ -1266,6 +1303,13 @@ impl ActivityInstance {
         }
         if let Some((region, hash)) = self.start_region {
             s.set_start_region(region, hash);
+        }
+        // D1_AH_ACTIVITY_OPTIONS: this activity's option list (the client copies it at its world
+        // transition and builds the activity's option table from it at activity start).
+        for &(name, value) in activity_options(self.activity_index) {
+            if let Err(e) = s.set_option(name, value) {
+                tracing::warn!("activity option {name:#010x} for activity {}: {e}", self.activity_index);
+            }
         }
         AhPush::new(self.ah_id, AhMessage::GlobalActivityState(s))
     }
