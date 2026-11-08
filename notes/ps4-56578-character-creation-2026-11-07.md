@@ -84,6 +84,25 @@ new6, a Human female Warlock: Born Spark, the Potential Bond, the Generalist She
 then A Guardian Rises to the rifle. On "Choose your class", the class preview drew part of a Warlock
 (a dark robe and hand), the first sign of the creation preview drawing anything.
 
+## The creation record's profile flags (cf2, 8 November)
+
+Build 56578 keeps one creation record per class and race (investment globals `0x80A58001 +0xE8`,
+nine 176-byte records; exported in #338 as `characters/new-guardian-defaults.json`). Their
+profile entries (master-table kind 3, field [11]) are the same in all nine: subs **341, 673, 693,
+706 and 826 = 2**. Their kind-1 entries are account flags, not profile bytes. The served tutorial
+profile instead carries a later save's 94 completions, Restoration's (42) among them.
+
+With `D1_CREATION_FLAGS=content`, the 501 path (`player_store::apply_created_look`) replaces the
+profile's completion record with exactly the creation record's
+(`creation_profile_flags`, `write_completion_record`).
+
+Run cf2 (a Titan, the level-1 look set, the class kit):
+- the store logged `creation flags: the completion record is the creation record's [(673, 2),
+  (693, 2), (341, 2), (706, 2), (826, 2)]`;
+- the profile was pushed (seq 3);
+- the client went straight on to the prologue, launched A Guardian Rises (164) itself, and spawned
+  (2014) about 6 minutes after creation.
+
 ## Open
 
 - **The look can't be seen yet.** The creation screen's Guardian preview is empty, and the character
