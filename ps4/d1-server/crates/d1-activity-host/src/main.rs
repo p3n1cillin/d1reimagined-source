@@ -866,8 +866,8 @@ fn main() -> anyhow::Result<()> {
                             .map_err(|e| anyhow::anyhow!("D1_AH_MISSION_STEPS {path}: {e}"))?;
                         for line in text.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()) {
                             let f: Vec<&str> = line.split_whitespace().collect();
-                            if !(4..=7).contains(&f.len()) {
-                                anyhow::bail!("D1_AH_MISSION_STEPS line {line:?}: want `index seconds sensor_group sensor_file [region] [incident=TYPE:BODYHEX] [complete=HASH:TYPE:TYPE2:PLACE[:gameplay]]`");
+                            if !(4..=8).contains(&f.len()) {
+                                anyhow::bail!("D1_AH_MISSION_STEPS line {line:?}: want `index seconds sensor_group sensor_file [region] [incident=TYPE:BODYHEX] [complete=HASH:TYPE:TYPE2:PLACE[:gameplay] [next=INDEX:HASH]]`");
                             }
                             // ⭐ incident=TYPE:BODYHEX: a host incident sent when the step fires.
                             let mut incident = None;
@@ -875,9 +875,15 @@ fn main() -> anyhow::Result<()> {
                             // chain and body (completion.rs) sent when the step fires, the hashes
                             // as the script bridge's activity table gives them.
                             let mut complete = None;
+                            // ⭐ next=INDEX:HASH: the activity the completion hands off to (the
+                            // store's `handoff`), as the activity table's next column names it.
+                            let mut next = None;
                             let mut rest: Vec<&str> = Vec::new();
                             for t in &f[4..] {
-                                if let Some(v) = t.strip_prefix("complete=") {
+                                if let Some(v) = t.strip_prefix("next=") {
+                                    next = Some(d1_activity_host::state::StepCompletion::parse_next(v)
+                                        .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad next {v:?} (want INDEX:HASH)"))?);
+                                } else if let Some(v) = t.strip_prefix("complete=") {
                                     complete = Some(d1_activity_host::state::StepCompletion::parse(v)
                                         .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad complete {v:?} (want HASH:TYPE:TYPE2:PLACE[:gameplay])"))?);
                                 } else if let Some(v) = t.strip_prefix("incident=") {
@@ -891,6 +897,13 @@ fn main() -> anyhow::Result<()> {
                                 } else {
                                     rest.push(t);
                                 }
+                            }
+                            if next.is_some() && complete.is_none() {
+                                anyhow::bail!("D1_AH_MISSION_STEPS line {line:?}: next= hands off a completion; the step needs complete=");
+                            }
+                            if let (Some(c), Some(n)) = (complete.as_mut(), next) {
+                                let c: &mut d1_activity_host::state::StepCompletion = c;
+                                c.next = Some(n);
                             }
                             let index: u16 = f[0].parse()?;
                             let when = d1_activity_host::state::StepWhen::parse(f[1])
@@ -923,6 +936,7 @@ fn main() -> anyhow::Result<()> {
                                 region,
                                 incident,
                                 complete,
+                                lifetime: d1_activity_host::sensor_list::listed_phase(&list),
                             });
                         }
                     }

@@ -1,0 +1,16 @@
+# LAB STAND-IN (not retail timing): A Guardian Rises skipped to its completion and post-game, so
+# CONTINUE launches 165 by the client's own choice; then the reveal's own schedule.
+# index  when      group       list                                  [region]
+164  0         0x4786c0e0  sensor-clients-act_cosmo_m0_highway-r113-cine.txt
+164  @2014|120 0x4786c0e0  sensor-clients-act_cosmo_m0_highway-r113-cine.txt
+164  +60       0x4786c0e0  lab-agr-quick-phase6.txt  complete=0x6e0dae89:0x648999f4:0x648999f4:0xdf617463:gameplay
+164  +30       0x4786c0e0  lab-agr-quick-phase7.txt
+165  0         0x4786c0e0  sensor-clients-cine_reveal-live.txt
+165  60        0x4786c0e0  cine_reveal-phase-1.txt
+165  +1        0x4786c0e0  cine_reveal-play-0.txt
+165  @891|900  0x4786c0e0  cine_reveal-move-26.txt  26
+165  %26|900   0x4786c0e0  cine_reveal-move-26.txt
+165  +4        0x4786c0e0  cine_reveal-move-26.txt  complete=0x6eaf0959:0x648999f4:0x4d78882e:0xdf617463  next=1:0xdf283afb
+165  +0.5      0x4786c0e0  cine_reveal-play-1.txt
+165  @891|900  0x4786c0e0  cine_reveal-done-1.txt
+165  +1        0x4786c0e0  cine_reveal-end-1.txt
