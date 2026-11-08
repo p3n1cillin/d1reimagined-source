@@ -2363,6 +2363,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_CHARACTER_LEVEL", "40", "the served character's level for stream I's rules (sale requiredLevel)"),
     ("D1_ACTIVITY_RULES", "<content: 653>", "override rows of the exported 56578 activity launch programs (director::parse_rules)"),
     ("D1_STARTING_KIT", "<unset>", "a starting-kit file, or content for the exported first default-gear list; grant policy remains unverified"),
+    ("D1_CREATION_FLAGS", "<unset>", "content: a created Guardian's completion record (profile field [11]) is its class/race creation record's (subs 341, 673, 693, 706, 826 = 2; new-guardian-defaults.json) instead of the served save's"),
     ("D1_MP", "0", "MP(H): 1 = multiplayer services (identities, fireteams, the 42/43 matchmaking directory, PSN sessions); mp.rs, d1-mp"),
     ("D1_MM_CONFIG_FILE", "<unset>", "MP(H): the kind-4 matchmaking configurations (ps4/fixtures/56578/matchmaking/configurations.json)"),
     ("D1_MP_ACCOUNTS", "<unset>", "MP(H): explicit online id -> account SOID bindings, <online id>=<soid>,..."),

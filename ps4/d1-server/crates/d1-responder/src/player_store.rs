@@ -1804,6 +1804,50 @@ pub fn apply_kit_to_profile(profile: &mut [u8], wants: &[(u8, u16)]) -> Vec<(u64
     changed
 }
 
+/// ⭐ The profile flags a created Guardian starts with: build 56578's own creation record for its
+/// class and race (investment globals `0x80A58001 +0xE8`, nine 176-byte records; exported by
+/// tools/ps4_setup/d1-new-guardian-defaults.py, #338), the entries whose master-table storage is
+/// profile field [11] (kind 3). All nine give subs 341, 673, 693, 706 and 826 = 2. Its kind-1
+/// entries are account flags (D1_UNLOCK_FLAGS), not profile bytes. Empty when the record is absent.
+pub fn creation_profile_flags(class: u8, race: u8) -> Vec<(u16, u8)> {
+    static DOC: OnceLock<Value> = OnceLock::new();
+    let doc = DOC.get_or_init(|| {
+        serde_json::from_str(include_str!("../../../../fixtures/56578/characters/new-guardian-defaults.json")).unwrap_or(Value::Null)
+    });
+    let Some(rows) = doc.get("data").and_then(Value::as_array) else { return Vec::new() };
+    let Some(row) = rows.iter().find(|r| r["character_class"].as_u64() == Some(class as u64) && r["race"].as_u64() == Some(race as u64)) else {
+        return Vec::new();
+    };
+    row["flags"].as_array().map(|f| f.iter()
+        .filter(|g| g["kind"].as_u64() == Some(3))
+        .filter_map(|g| Some((u16::try_from(g["sub"].as_u64()?).ok()?, u8::try_from(g["value"].as_u64()?).ok()?)))
+        .collect()).unwrap_or_default()
+}
+
+/// `D1_CREATION_FLAGS=content`: a created Guardian's completion record is its creation record's
+/// ([`creation_profile_flags`]) instead of the served profile's (a later save's 94 completions,
+/// Restoration's among them). Unset: the served record stays.
+pub fn creation_flags_from_env(class: u8, race: u8) -> Option<Vec<(u16, u8)>> {
+    match std::env::var("D1_CREATION_FLAGS").ok().as_deref() {
+        Some("content") => Some(creation_profile_flags(class, race)),
+        _ => None,
+    }
+}
+
+/// Replace a decoded profile's completion record (field [11], `layout::COMPLETIONS`) with exactly
+/// `flags`. False (and nothing written) when the object is too short or a sub is out of range.
+pub fn write_completion_record(profile: &mut [u8], flags: &[(u16, u8)]) -> bool {
+    let Some(record) = profile.get_mut(layout::COMPLETIONS..layout::COMPLETIONS + layout::COMPLETION_BYTES) else { return false };
+    if flags.iter().any(|&(sub, _)| sub as usize >= layout::COMPLETION_BYTES) {
+        return false;
+    }
+    record.fill(0);
+    for &(sub, value) in flags {
+        record[sub as usize] = value;
+    }
+    true
+}
+
 /// Set a decoded item element's content index. False when the object is too short.
 pub fn set_item_content(item: &mut [u8], content: u16) -> bool {
     match item.get_mut(ITEM_CONTENT..ITEM_CONTENT + 2) {
@@ -1864,6 +1908,16 @@ pub fn apply_created_look(look: [u8; d1_bap::character_lifecycle::LOOK_BYTES]) {
                 events.push("created look written into the profile".into());
             }
             let swapped = apply_kit_to_profile(&mut obj, &wants);
+            // D1_CREATION_FLAGS=content: the creation record's flags, not the served save's.
+            if let Some(flags) = creation_flags_from_env(look[2], look[0]) {
+                if flags.is_empty() {
+                    events.push(format!("⛔ creation flags: no creation record for class {} race {}; the served record stays", look[2], look[0]));
+                } else if write_completion_record(&mut obj, &flags) {
+                    events.push(format!("creation flags: the completion record is the creation record's {flags:?}"));
+                } else {
+                    events.push("⛔ creation flags: the profile object is too short; the served record stays".into());
+                }
+            }
             let items = view(|s| s.chr().items.iter().map(|i| (i.soid, i.element.clone())).collect::<BTreeMap<_, _>>()).unwrap_or_default();
             for (instance, content, bucket) in swapped {
                 let Some(element) = items.get(&instance) else {
@@ -2777,6 +2831,29 @@ mod tests {
 
     /// The class kit goes into each bucket's first occupied slot and keeps its instance; an empty
     /// bucket and an account bucket are left alone; the item element's content index follows.
+    /// Every 56578 creation record gives the same five profile flags; a created Guardian's record
+    /// becomes exactly those (the served save's other completions cleared).
+    #[test]
+    fn a_created_guardian_starts_with_its_creation_records_flags() {
+        let want = vec![(341, 2), (673, 2), (693, 2), (706, 2), (826, 2)];
+        for class in 0..3 {
+            for race in 0..3 {
+                let mut got = creation_profile_flags(class, race);
+                got.sort();
+                assert_eq!(got, want, "class {class} race {race}");
+            }
+        }
+        assert!(creation_profile_flags(3, 0).is_empty());
+        let mut obj = vec![0u8; layout::COMPLETIONS + layout::COMPLETION_BYTES + 4];
+        obj[layout::COMPLETIONS + 42] = 2; // Restoration, from a later save
+        obj[layout::COMPLETIONS + layout::COMPLETION_BYTES] = 9; // past the record: kept
+        assert!(write_completion_record(&mut obj, &want));
+        assert_eq!(progression::completion_subs(&obj).into_iter().collect::<Vec<_>>(), want);
+        assert_eq!(obj[layout::COMPLETIONS + layout::COMPLETION_BYTES], 9);
+        assert!(!write_completion_record(&mut obj, &[(2200, 2)]));
+        assert!(!write_completion_record(&mut [0u8; 16], &want));
+    }
+
     #[test]
     fn a_class_kit_swaps_the_equipped_contents_and_keeps_the_instances() {
         let slot_of = |b: u8| crate::store::bucket(b).unwrap().first as usize;
