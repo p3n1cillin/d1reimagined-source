@@ -797,11 +797,56 @@ pub struct ScriptConfig {
     /// `D1_AH_SCRIPTS_WORLD_LOOT` (F42): world-loot drops the host announces when the scripts
     /// create their row (the starter rifle's `o_weapon`).
     pub world_loot: Vec<WorldLoot>,
+    /// ⭐ F52: props that carry a device command, and the player trigger that arms them
+    /// (`D1_AH_SCRIPTS_DEVICE_RULES`).
+    pub device_rules: Vec<DeviceRule>,
 }
 
 /// A world-loot drop the host announces with incident 1851 (`gather_material`, body `0x80800CB6`)
 /// when the scripts create its row: in 56578 the loot exists only once the host announces it, and
 /// the client claims it with service 601 (notes/ps4-56578-blockers-2026-10-26.md).
+/// ⭐ F52: a prop the live host served with a device command (the tripwires of A Guardian Rises'
+/// Breach), and the player trigger whose report arms it, in order. A table line:
+/// `activity group/kind/index trigger_group/kind/index order` (the arming goes out `order` x 0.2 s
+/// after the report, as the live host's did, one tripwire every 0.2 s).
+#[derive(Debug, Clone, PartialEq)]
+pub struct DeviceRule {
+    pub activity: u16,
+    pub object: RowKey,
+    pub trigger: RowKey,
+    pub order: u32,
+}
+
+impl DeviceRule {
+    pub fn parse_table(text: &str) -> Result<Vec<Self>, String> {
+        let key = |t: &str| -> Option<RowKey> {
+            let mut p = t.split('/');
+            let hex = |v: &str| u32::from_str_radix(v.trim_start_matches("0x"), 16).ok();
+            let group = hex(p.next()?)?;
+            let kind = hex(p.next()?)? as u8;
+            let index: i16 = p.next()?.parse().ok()?;
+            Some(RowKey { group, kind, index })
+        };
+        text.lines()
+            .map(|l| l.split('#').next().unwrap_or("").trim())
+            .filter(|l| !l.is_empty())
+            .map(|l| {
+                let f: Vec<&str> = l.split_whitespace().collect();
+                let bad = || format!("device rule {l:?}: want activity group/kind/index trigger_group/kind/index order");
+                if f.len() != 4 {
+                    return Err(bad());
+                }
+                Ok(DeviceRule {
+                    activity: f[0].parse().map_err(|_| bad())?,
+                    object: key(f[1]).ok_or_else(bad)?,
+                    trigger: key(f[2]).ok_or_else(bad)?,
+                    order: f[3].parse().map_err(|_| bad())?,
+                })
+            })
+            .collect()
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct WorldLoot {
     pub activity: u16,
@@ -1187,6 +1232,15 @@ impl ScriptConfig {
             }
             None => Vec::new(),
         };
+        let device_rules = match std::env::var("D1_AH_SCRIPTS_DEVICE_RULES").ok().filter(|p| !p.trim().is_empty()) {
+            Some(path) => {
+                let text = std::fs::read_to_string(&path).map_err(|e| format!("D1_AH_SCRIPTS_DEVICE_RULES {path}: {e}"))?;
+                let rules = DeviceRule::parse_table(&text)?;
+                tracing::info!("script bridge: {} device rules from {path} (D1_AH_SCRIPTS_DEVICE_RULES)", rules.len());
+                rules
+            }
+            None => Vec::new(),
+        };
         let start_delay = start_delay_from(std::env::var("D1_AH_SCRIPTS_START_DELAY").ok().as_deref())?;
         let arrival_cushion = arrival_cushion_from(std::env::var("D1_AH_SCRIPTS_ARRIVAL_CUSHION").ok().as_deref())?;
         let list_retry = list_retry_from(std::env::var("D1_AH_SCRIPTS_LIST_RETRY").ok().as_deref())?;
@@ -1228,6 +1282,7 @@ impl ScriptConfig {
             arrival_cushion,
             list_retry,
             world_loot,
+            device_rules,
         }))
     }
 }
@@ -1269,6 +1324,9 @@ struct Run {
     loot_announced: std::collections::BTreeSet<RowKey>,
     /// F49: the loot cache's special weapon was granted in this run.
     special_weapon_granted: bool,
+    /// F52: device armings due (when, object), and the props already armed.
+    device_arming: Vec<(Instant, RowKey)>,
+    devices_armed: std::collections::HashSet<RowKey>,
     unsupported: std::collections::HashSet<String>,
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
@@ -1794,6 +1852,8 @@ impl ScriptBridge {
             current_slice: None,
             loot_announced: Default::default(),
             special_weapon_granted: false,
+            device_arming: Vec::new(),
+            devices_armed: Default::default(),
             unsupported: Default::default(),
             lifetime_unsent: false,
             lifetime_sent: None,
@@ -1831,6 +1891,11 @@ impl ScriptBridge {
             if t == known::TUTORIAL_WEAPON_SPECIAL.index {
                 self.tutorial_special_weapon();
             }
+            if t == known::PLAYER_TRIGGER.index {
+                if let Some((group, kind, index)) = crate::state::trigger_report(image) {
+                    self.devices_triggered(RowKey { group, kind, index: index as i16 });
+                }
+            }
             let msg = self.translate_incident(t, image);
             if let Some(m) = msg {
                 self.send(m);
@@ -1853,6 +1918,44 @@ impl ScriptBridge {
                 if let Err(e) = rewards.tutorial_special_weapon(c) {
                     tracing::warn!("special weapon for {c:?}: {e}");
                 }
+            }
+        }
+    }
+
+    /// F52: a reported player trigger arms the props its rules name, `order` x 0.2 s apart.
+    fn devices_triggered(&mut self, trigger: RowKey) {
+        let Some(run) = self.run.as_mut() else { return };
+        let now = Instant::now();
+        let mut queued = 0;
+        for r in self.config.device_rules.iter().filter(|r| r.activity == run.activity.index && r.trigger == trigger) {
+            if !run.devices_armed.contains(&r.object) && !run.device_arming.iter().any(|(_, k)| *k == r.object) {
+                run.device_arming.push((now + Duration::from_millis(200 * u64::from(r.order)), r.object));
+                queued += 1;
+            }
+        }
+        if queued > 0 {
+            tracing::info!("⭐ script bridge: trigger {trigger} reported: {queued} props arm, 0.2 s apart, as the live host's tripwires (F52)");
+        }
+    }
+
+    /// F52: the armings that are due: channel 2 (the position) goes to 1, animated.
+    fn devices_due(&mut self, now: Instant) {
+        let Some(run) = self.run.as_mut() else { return };
+        let due: Vec<RowKey> = run.device_arming.iter().filter(|(t, _)| *t <= now).map(|(_, k)| *k).collect();
+        if due.is_empty() {
+            return;
+        }
+        run.device_arming.retain(|(t, _)| *t > now);
+        for key in due {
+            run.devices_armed.insert(key);
+            let Some(mut row) = self.rows.get(&key).cloned() else { continue };
+            let Some((_, image)) = row.a.as_mut() else {
+                tracing::info!("script bridge: prop {key} armed before the scripts created it; it goes out armed when they do (F52)");
+                continue;
+            };
+            if crate::row_encoders::set_device_command(image, crate::row_encoders::DEVICE_ARMED) {
+                self.rows.set(key, row);
+                tracing::info!("⭐ script bridge: prop {key} armed: device channel 2 = (1, 0, 1.0) (F52)");
             }
         }
     }
@@ -2466,7 +2569,20 @@ impl ScriptBridge {
             .or_else(|| run.activity.served_value(&key))
             .or(held);
         match self.encoders.encode(key, &c.kind, &c.state, base.as_ref(), ctx, &map) {
-            Encoded::Row(row) => {
+            Encoded::Row(mut row) => {
+                // F52: a rule's prop carries the live host's device command (at rest until armed).
+                if key.kind == crate::row_encoders::KIND_OBJECT {
+                    let run = self.run.as_ref().expect("checked");
+                    if self.config.device_rules.iter().any(|r| r.activity == run.activity.index && r.object == key) {
+                        let armed = run.devices_armed.contains(&key);
+                        if let Some((_, image)) = row.a.as_mut() {
+                            crate::row_encoders::set_device_command(
+                                image,
+                                if armed { crate::row_encoders::DEVICE_ARMED } else { crate::row_encoders::DEVICE_AT_REST },
+                            );
+                        }
+                    }
+                }
                 let created = key.kind == crate::row_encoders::KIND_OBJECT
                     && row.a.as_ref().is_some_and(|(_, image)| image.get(8) == Some(&1));
                 let objective = (key.kind == crate::row_encoders::KIND_SQUAD).then(|| squad_objective(&row)).flatten();
@@ -2529,6 +2645,7 @@ impl ScriptBridge {
     /// heartbeat. Also runs the sidecar (events in, the clock). Call it on every poll.
     pub fn sensor_due(&mut self, now: Instant) -> Option<Vec<u8>> {
         self.run.as_ref()?;
+        self.devices_due(now);
         self.list_retry_due(now);
         self.drive(now);
         let mut frame = None;
@@ -2725,6 +2842,31 @@ pub fn bundle_armed(image: &[u8]) -> bool {
 
 #[cfg(test)]
 mod tests {
+    /// F52: the device rules table parses, and a prop's command goes from at rest to armed.
+    #[test]
+    fn device_rules_parse_and_the_command_arms_channel_2() {
+        let rules = DeviceRule::parse_table("# c
+164  0xfc0e45a3/0x4/13  0xfc0e45a3/0x1d/104  0
+").unwrap();
+        assert_eq!(rules, vec![DeviceRule {
+            activity: 164,
+            object: RowKey { group: 0xFC0E_45A3, kind: 4, index: 13 },
+            trigger: RowKey { group: 0xFC0E_45A3, kind: 0x1D, index: 104 },
+            order: 0,
+        }]);
+        assert!(DeviceRule::parse_table("164 0xfc0e45a3/0x4/13").is_err());
+        let mut image = vec![0u8; 240];
+        assert!(crate::row_encoders::set_device_command(&mut image, crate::row_encoders::DEVICE_AT_REST));
+        assert_eq!(u32::from_le_bytes(image[0x20..0x24].try_into().unwrap()), 1);
+        assert_eq!(u32::from_le_bytes(image[0x30..0x34].try_into().unwrap()), 0x8080_279A);
+        assert_eq!(f32::from_le_bytes(image[0x48..0x4C].try_into().unwrap()), 1.0, "channel 0 at rest: (0, 0, 1.0)");
+        assert!(crate::row_encoders::set_device_command(&mut image, crate::row_encoders::DEVICE_ARMED));
+        assert_eq!(&image[0x58..0x64], &[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x80, 0x3F], "channel 2 armed: (1, 0, 1.0)");
+        assert!(!crate::row_encoders::set_device_command(&mut [0u8; 16], crate::row_encoders::DEVICE_ARMED));
+        let table = std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/../../../fixtures/56578/mission/device-rules.tsv")).unwrap();
+        assert_eq!(DeviceRule::parse_table(&table).unwrap().len(), 9, "the committed table: 7 tripwires and 2 grates");
+    }
+
     /// F54: `164:3` names A Guardian Rises, armed at phase 3; the bundle's +8/+9 flip together.
     #[test]
     fn an_unarmed_start_flips_the_bundles_two_bools() {
@@ -3034,6 +3176,7 @@ mod tests {
             arrival_cushion: Duration::ZERO,
             list_retry: None,
             world_loot: Vec::new(),
+            device_rules: Vec::new(),
         };
         let s = shared.clone();
         ScriptBridge::with_launcher(

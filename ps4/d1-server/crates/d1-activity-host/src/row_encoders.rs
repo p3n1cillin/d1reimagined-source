@@ -229,6 +229,31 @@ pub fn machine_of_identity(identity: &[u8]) -> Option<[u8; 8]> {
     identity.get(0..8)?.try_into().ok()
 }
 
+/// ⭐ Write a prop's device command into an object image (`0x808007D9`): count 1 at `+0x20`, the
+/// typed value `0x8080279A` at `+0x30`, and its three `(i32 a, i32 b, f32 v)` channels at `+0x40`.
+/// The client (`0x5d33a0`) applies a channel only when its `a` rises above the stored counter; a
+/// rise in `b` snaps instead of animating; channel 2 is the position (`0x5d2920`). False when the
+/// image is too short. F52: the live A Guardian Rises host's tripwires (8 November).
+pub fn set_device_command(image: &mut [u8], channels: [(i32, i32, f32); 3]) -> bool {
+    if image.len() < DEVICE_COMMAND_END {
+        return false;
+    }
+    put_u32(image, 0x20, 1);
+    put_u32(image, 0x30, TAG_DEVICE_COMMAND);
+    for (c, (a, b, v)) in channels.into_iter().enumerate() {
+        let at = 0x40 + 0xC * c;
+        put_u32(image, at, a as u32);
+        put_u32(image, at + 4, b as u32);
+        image[at + 8..at + 12].copy_from_slice(&v.to_le_bytes());
+    }
+    true
+}
+
+/// The live host's command for a device at rest (F52: every tripwire at its creation).
+pub const DEVICE_AT_REST: [(i32, i32, f32); 3] = [(0, 0, 1.0), (0, 0, 0.0), (0, 0, 0.0)];
+/// ... and once armed: channel 2 (the position) set to 1, counter 1, animated (`b` 0).
+pub const DEVICE_ARMED: [(i32, i32, f32); 3] = [(0, 0, 1.0), (0, 0, 0.0), (1, 0, 1.0)];
+
 /// A player bundle's A image naming `key`. `mission` is the mission host's form, as A Guardian
 /// Rises' working lists serve it (`+8`, `+9` = 1; `+0x72`, `+0x74` = 0); otherwise the public
 /// instance's live default (`+8`, `+9` = 0; `+0x72` = 0xBC00; `+0x74` = -1). Both: `+0` = -1,
