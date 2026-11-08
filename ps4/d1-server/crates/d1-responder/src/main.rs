@@ -1813,7 +1813,23 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                                 let base = env_soid("D1_ITEM_SOID_BASE", 0xD100_0000_0000_0301);
                                                                                 player_store::read_inventory(&spec, base)
                                                                             }));
-                                                                        for (i, (key, raw, name)) in items.unwrap_or_default().into_iter().enumerate() {
+                                                                        // 🧪 D1_LOOT_GRANT_AT_SIGNIN=NONCE (lab): the D1_LOOT_GRANT entry for
+                                                                        // NONCE is in the inventory from sign-in, so a character served
+                                                                        // with that grant's PROFILE (D1_PROFILE_FILE) spawns holding the
+                                                                        // item (F53: a RenderDoc capture of the Khvostov's sight at spawn,
+                                                                        // where the game runs too slowly under RenderDoc to walk to it).
+                                                                        let mut items = items.unwrap_or_default();
+                                                                        if let Some(nonce) = loot_grant_at_signin() {
+                                                                            match loot_grant_for(nonce) {
+                                                                                Some((soid, element, _)) if !items.iter().any(|(k, _, _)| *k == soid) => {
+                                                                                    warn!("      🧪 D1_LOOT_GRANT_AT_SIGNIN {nonce:#x}: item {soid:#x} served from sign-in");
+                                                                                    items.push((soid, element, "D1_LOOT_GRANT_AT_SIGNIN".to_string()));
+                                                                                }
+                                                                                Some(_) => {}
+                                                                                None => warn!("      ⛔ D1_LOOT_GRANT_AT_SIGNIN {nonce:#x}: no D1_LOOT_GRANT entry"),
+                                                                            }
+                                                                        }
+                                                                        for (i, (key, raw, name)) in items.into_iter().enumerate() {
                                                                             warn!("      ⭐ inventory item {i}: {name} ({} B, instance {:#010x}, key {key:#018x})",
                                                                                   raw.len(), d1_bap::INVENTORY_INSTANCE_TYPE);
                                                                             extras.push((d1_bap::INVENTORY_INSTANCE_TYPE, key, raw));
@@ -2350,6 +2366,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_ORACLE", "d1-server/target/release/d1-oracle", "native encoder used to stage loadouts"),
     ("D1_RSAT_NATIVE", "1", "the client's codec in process (d1-rsat) for profile and item objects; 0 = a d1-oracle start per call (2.2 s each)"),
     ("D1_LOOT_GRANT", "<unset>", "NONCE=SOID:FILE[|PROFILE][;…] - the item a claimed world drop delivers"),
+    ("D1_LOOT_GRANT_AT_SIGNIN", "<unset>", "🧪 NONCE - that D1_LOOT_GRANT entry's item is in the inventory from sign-in (lab, F53)"),
     ("D1_LOOT_GRANT_ROSTER", "<unset>", "roster fixtures served after a loot grant"),
     ("D1_PROFILE_PUSH_FILE", "<unset>", "on-demand family-4 profile delta: write this file (plus optional .item/.soid) to push it"),
     ("D1_ACCOUNT_PUSH_FILE", "<unset>", "on-demand family-4 account delta: write this file (a client-encoded account) to push it"),
@@ -5521,6 +5538,16 @@ fn env_soid_raw(var: &str, default: u64) -> u64 {
 /// is the pending-loot nonce id the 601 claim names, `SOID` the new item instance, `FILE` its 4/3
 /// inventory element as `d1-oracle object --tag 0x80801732` encodes it, and `PROFILE` (optional)
 /// the character profile after the pickup, delivered in the same delta.
+/// `D1_LOOT_GRANT_AT_SIGNIN=NONCE` (lab): serve that D1_LOOT_GRANT entry's item from sign-in.
+fn loot_grant_at_signin() -> Option<u64> {
+    let t = std::env::var("D1_LOOT_GRANT_AT_SIGNIN").ok()?;
+    let t = t.trim();
+    if t.is_empty() {
+        return None;
+    }
+    t.strip_prefix("0x").map_or_else(|| t.parse().ok(), |h| u64::from_str_radix(h, 16).ok())
+}
+
 fn loot_grant_for(nonce: u64) -> Option<(u64, Vec<u8>, Option<Vec<u8>>)> {
     let spec = std::env::var("D1_LOOT_GRANT").ok()?;
     let num = |t: &str| -> Option<u64> {
