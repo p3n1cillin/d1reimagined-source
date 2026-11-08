@@ -35,9 +35,29 @@ param(
     [switch]$AllowUnredirected,
     # The isolated "D1 Lab" adapter address from d1-lab-net.cmd (the game rejects a loopback-only
     # transport). Empty = the original loopback setup.
-    [ValidateSet('', '10.77.0.2')][string]$LabIp = ''
+    [ValidateSet('', '10.77.0.2')][string]$LabIp = '',
+    # The run's evidence folder (must not exist yet). Empty = cfw-staging\contained-boot\<utc>-<Name>.
+    [string]$OutDir = '',
+    # With -LabIp: the folder the Windows servers are started from. Empty = the workspace's
+    # d1-server\target\release (d1-full-game.ps1 passes a per-run snapshot of the binaries).
+    [string]$ServerBin = '',
+    # A file of D1_KEY=VALUE lines (blank lines and # comments skipped), applied before
+    # -ExtraServerEnv. An empty VALUE unsets the knob. Avoids passing long lists through -File.
+    [string]$ServerEnvFile = '',
+    # With -LabIp: start the servers only. They run until a file named `stop` appears in the
+    # output folder or -Minutes pass. Containment is checked as for a full boot.
+    [switch]$NoEmulator,
+    # With -LabIp: start the emulator only, against servers already listening on <LabIp>:443
+    # (for example from a -NoEmulator run). Containment is checked as for a full boot.
+    [switch]$NoServers
 )
 $ErrorActionPreference = 'Stop'
+if ($NoEmulator -and $NoServers) { throw '-NoEmulator and -NoServers exclude each other' }
+if (($NoEmulator -or $NoServers -or $ServerBin) -and -not $LabIp) { throw '-NoEmulator, -NoServers and -ServerBin need -LabIp (the Windows servers)' }
+if ($ServerEnvFile) {
+    $fromFile = @(Get-Content -LiteralPath $ServerEnvFile | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') })
+    $ExtraServerEnv = $fromFile + @($ExtraServerEnv)
+}
 # A contained Windows boot of the selected build: shadPS4 on Windows, the existing servers in WSL
 # bound to loopback. Containment is checked first and the run refuses on any failure: the exact
 # emulator has an enabled outbound block on every profile, all firewall profiles are on, and the
@@ -53,7 +73,7 @@ $entry = $registry.builds.$Build
 if ($null -eq $entry) { throw "Unknown build: $Build" }
 $launch = Join-Path $Repo $entry.launch
 if (-not $Manifest) { $Manifest = Join-Path $Repo $entry.manifest }
-$out = Join-Path $Repo "cfw-staging\contained-boot\$((Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss'))-$Name"
+$out = if ($OutDir) { $OutDir } else { Join-Path $Repo "cfw-staging\contained-boot\$((Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss'))-$Name" }
 if (Test-Path -LiteralPath $out) { throw "Refusing existing output: $out" }
 New-Item -ItemType Directory -Path $out | Out-Null
 $checks = [ordered]@{}
@@ -112,6 +132,7 @@ $receipt = [ordered]@{
         sha256 = (Get-FileHash -LiteralPath $ClientPatch).Hash.ToLowerInvariant(); synthetic = $true } } else { $null }
     input = if ($OperatorInput) { 'operator' } else { "virtual key $TitleKey x$TitleTaps after ${TitleDelaySeconds}s; up to $WizardTaps wizard taps every ${WizardIntervalSeconds}s while in profile_setup" }
     checks = $checks
+    mode = if ($NoEmulator) { 'servers only' } elseif ($NoServers) { 'emulator only' } else { 'servers and emulator' }
 }
 $failed = @($checks.Keys | Where-Object { -not $checks[$_].pass })
 if ($failed.Count) {
@@ -131,8 +152,14 @@ function Stop-WinServers {
     "stopped $([DateTime]::UtcNow.ToString('o')): $(@($winServers.Id) -join ' ') alive=$($alive -join ' ')" |
         Set-Content -LiteralPath (Join-Path $out 'servers-stopped.txt')
 }
-if ($LabIp) {
-    $bin = Join-Path $Repo 'd1-server\target\release'
+if ($NoServers) {
+    # Emulator only: the servers of an earlier -NoEmulator run must already be listening.
+    $up = @(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.LocalAddress -eq $LabIp -and $_.LocalPort -eq 443 })
+    if (-not $up.Count) { throw "Refusing: -NoServers but nothing listens on ${LabIp}:443 (start the servers first)" }
+    $receipt.serverPids = @($up.OwningProcess | Sort-Object -Unique)
+} elseif ($LabIp) {
+    $bin = if ($ServerBin) { (Get-Item -LiteralPath $ServerBin).FullName } else { Join-Path $Repo 'd1-server\target\release' }
+    $receipt.serverBin = $bin
     $openssl = 'C:\Program Files\Git\mingw64\bin\openssl.exe'
     & $openssl req -x509 -newkey rsa:2048 -nodes -keyout (Join-Path $out 'tls.key') -out (Join-Path $out 'tls.crt') -days 2 `
         -subj '/CN=signon.deadorbit.net' `
@@ -165,7 +192,12 @@ if ($LabIp) {
         if ($kv -notmatch '^(D1_[A-Z0-9_]+)=(.*)$') { throw "ExtraServerEnv entry is not D1_KEY=VALUE: $kv" }
         $serverEnv[$Matches[1]] = $Matches[2]
     }
-    foreach ($k in $serverEnv.Keys) { Set-Item -Path "env:$k" -Value $serverEnv[$k] }
+    # An empty value UNSETS the knob. PowerShell 7.6 keeps a variable that Set-Item gives an empty
+    # value, and a server reading an empty knob as a path or number fails (run fg1, 6 Nov 2026).
+    foreach ($k in $serverEnv.Keys) {
+        if ($serverEnv[$k] -eq '') { Remove-Item -Path "env:$k" -ErrorAction SilentlyContinue }
+        else { Set-Item -Path "env:$k" -Value $serverEnv[$k] }
+    }
     $serverEnv.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" } | Set-Content -LiteralPath (Join-Path $out 'server-environment.txt')
     $cert = @('--cert', (Join-Path $out 'tls.crt'), '--key', (Join-Path $out 'tls.key'))
     $winServers += Start-Process -FilePath (Join-Path $bin 'shadnet-server.exe') -ArgumentList @('--bind', '127.0.0.1:31313') -PassThru -WindowStyle Hidden `
@@ -179,14 +211,32 @@ if ($LabIp) {
             -RedirectStandardOutput (Join-Path $out 'activity-host.log') -RedirectStandardError (Join-Path $out 'activity-host.err.log')
     }
     # The emulator's own WebAPI (friend list) is configured on 127.0.0.1:31315.
-    $winServers += Start-Process -FilePath (Join-Path $bin 'd1-responder.exe') -ArgumentList (@('--bind', '127.0.0.1') + $cert) -PassThru -WindowStyle Hidden `
-        -RedirectStandardOutput (Join-Path $out 'responder-loopback.log') -RedirectStandardError (Join-Path $out 'responder-loopback.err.log')
+    # The player store, its command file and the multiplayer services belong to the serving responder
+    # only: a second responder with D1_STORE would open the same record, poll the same control file
+    # (taking the host's grants and checkpoints half the time) and overwrite the record at its next
+    # save (integration review, 5 Nov, finding 2). The loopback responder starts without them.
+    $primaryOnly = @('D1_STORE', 'D1_STORE_DIR', 'D1_STORE_PLAYER', 'D1_STORE_CONTROL', 'D1_MP', 'D1_REWARDS', 'D1_AH_PUBLIC_INSTANCES_FILE')
+    $kept = @{}
+    foreach ($k in $primaryOnly) {
+        $v = [Environment]::GetEnvironmentVariable($k)
+        if ($null -ne $v) { $kept[$k] = $v; Remove-Item -Path "env:$k" }
+    }
+    try {
+        $winServers += Start-Process -FilePath (Join-Path $bin 'd1-responder.exe') -ArgumentList (@('--bind', '127.0.0.1') + $cert) -PassThru -WindowStyle Hidden `
+            -RedirectStandardOutput (Join-Path $out 'responder-loopback.log') -RedirectStandardError (Join-Path $out 'responder-loopback.err.log')
+    } finally {
+        foreach ($k in $kept.Keys) { Set-Item -Path "env:$k" -Value $kept[$k] }
+    }
     # The client waits for each reply, and shows "Contacting Destiny Servers" when one is slow. At orbit
     # load the emulator takes every core, and at normal priority a trivial reply waited 0.9-1.4 s
     # (session toast-stock-b, notes/ps4-56578-new-guardian-2026-11-03.md). Above normal keeps the servers
     # ahead of the emulator's threads; they use little CPU themselves.
     foreach ($p in $winServers) { try { $p.PriorityClass = 'AboveNormal' } catch { } }
-    $deadline = (Get-Date).AddSeconds(30)
+    # A first start (a new player store being seeded, a new server path being scanned) took longer
+    # than 30 s (run fg2b, 6 Nov 2026); a normal start listens within a few seconds. With the F: disk
+    # busy (another program's video checks, run agr27, 7 Nov 2026) the responder had not listened
+    # after 90 s.
+    $deadline = (Get-Date).AddSeconds(240)
     do {
         Start-Sleep -Milliseconds 300
         $listen = @(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -in $winServers.Id })
@@ -217,6 +267,21 @@ while (-not (Test-Path -LiteralPath (Join-Path $out 'servers.ready'))) {
 }
 $tcp = Test-NetConnection -ComputerName $target -Port 443 -WarningAction SilentlyContinue
 $receipt.windowsReaches443 = [ordered]@{ address = $target; ok = $tcp.TcpTestSucceeded }
+if ($NoEmulator) {
+    # Servers only: hold them until `stop` appears in the output folder or the time is up.
+    $receipt.serverPids = @($winServers.Id)
+    $receipt | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $out 'receipt.json') -Encoding utf8
+    "Servers up (pids $(@($winServers.Id) -join ' ')); create $(Join-Path $out 'stop') to stop them"
+    $end = (Get-Date).AddMinutes($Minutes)
+    while ((Get-Date) -lt $end -and -not (Test-Path -LiteralPath (Join-Path $out 'stop')) -and
+        -not @($winServers | Where-Object HasExited).Count) { Start-Sleep -Seconds 1 }
+    $receipt.serversExitedByThemselves = @($winServers | Where-Object HasExited | ForEach-Object { $_.Id })
+    Stop-WinServers
+    $receipt.endedUtc = [DateTime]::UtcNow.ToString('o')
+    $receipt | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $out 'receipt.json') -Encoding utf8
+    "Run evidence: $out"
+    return
+}
 
 # -- emulator -------------------------------------------------------------------------------------
 Add-Type -Namespace D1 -Name Win -MemberDefinition @'
@@ -280,8 +345,11 @@ $receipt.emulatorPid = $emu.Id
 $taps = 0; $nextSnap = $started.AddSeconds(15); $shot = 0
 $shadLog = Join-Path $userDir 'log\shad_log.txt'
 $logPos = 0L; $inWizard = $false; $wizardTapCount = 0; $nextWizardTap = Get-Date; $nextLogRead = Get-Date
+$atTitle = $false; $titleStateTaps = 0; $nextTitleStateTap = Get-Date
 $end = $started.AddMinutes($Minutes)
-while (-not $emu.HasExited -and (Get-Date) -lt $end) {
+# A stuck run can end early and cleanly: create OUT\stop (as with -ServersOnly); the evidence still runs.
+$stopFile = Join-Path $out 'stop'
+while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -LiteralPath $stopFile)) {
     Start-Sleep -Milliseconds 500
     $emu.Refresh()
     $h = $emu.MainWindowHandle
@@ -304,12 +372,20 @@ while (-not $emu.HasExited -and (Get-Date) -lt $end) {
                 $text = (New-Object IO.StreamReader($fs)).ReadToEnd()
                 $logPos = $fs.Length
             } finally { $fs.Dispose() }
+            # The timed taps can all land before the title: a boot that compiles shaders reached it
+            # 4 minutes in (run base1, 6 Nov 2026). Tap again while the log says the title is up.
+            if ($text -match "Entering state 'bootflow:intro_screen_display'") { $atTitle = $true }
+            if ($text -match "Leaving state 'bootflow:intro_screen_display'") { $atTitle = $false }
             if ($text -match "Entering state 'bootflow:profile_setup'") { $inWizard = $true }
             if ($text -match "Leaving state 'bootflow:profile_setup'") {
                 $inWizard = $false
                 Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) left profile_setup after $wizardTapCount wizard tap(s)"
             }
         } catch { }
+    }
+    if (-not $OperatorInput -and $atTitle -and $titleStateTaps -lt $TitleTaps -and (Get-Date) -ge $nextTitleStateTap) {
+        $how = Tap $h $TitleKey; $titleStateTaps++; $nextTitleStateTap = (Get-Date).AddSeconds($TapIntervalSeconds)
+        Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) title tap $TitleKey ($titleStateTaps, $how; the log shows the title)"
     }
     if ($inWizard -and $wizardTapCount -lt $WizardTaps -and (Get-Date) -ge $nextWizardTap) {
         $how = Tap $h $TitleKey; $wizardTapCount++; $nextWizardTap = (Get-Date).AddSeconds($WizardIntervalSeconds)
@@ -323,7 +399,7 @@ $receipt.emulatorExitCode = if ($emu.HasExited) { $emu.ExitCode } else { $null }
 $receipt.endedUtc = [DateTime]::UtcNow.ToString('o')
 
 # -- evidence -------------------------------------------------------------------------------------
-New-Item -ItemType File -Path (Join-Path $out 'stop') | Out-Null
+New-Item -ItemType File -Path (Join-Path $out 'stop') -Force | Out-Null
 if ($LabIp) { Stop-WinServers } else { $server.WaitForExit(30000) | Out-Null }
 $receipt.serverHost = if ($LabIp) { 'windows' } else { 'wsl' }
 $receipt.serversStopped = Test-Path -LiteralPath (Join-Path $out 'servers-stopped.txt')

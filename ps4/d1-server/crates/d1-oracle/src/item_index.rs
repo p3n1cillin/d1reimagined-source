@@ -497,9 +497,7 @@ impl SourceTable {
         ));
         s.push_str(&format!("# sha256(entry payload) = {}\n", self.source_sha256()));
         s.push_str("# the index is the ELEMENT INDEX, and it is the argument of the client's own\n");
-        s.push_str(&format!(
-            "# definition lookup {DEF_LOOKUP:#x} = investment_globals->vtbl[0x410](u16).\n"
-        ));
+        s.push_str("# definition lookup investment_globals->vtbl[0x410](u16); entry point is build-specific.\n");
         s.push_str("item_hash\tcontent_index\tworld_tag\n");
         for (i, (h, _mid, tag)) in self.rows.iter().enumerate() {
             s.push_str(&format!("{h:#010x}\t{i}\t{tag:#010x}\n"));

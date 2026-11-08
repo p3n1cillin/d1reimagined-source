@@ -149,6 +149,13 @@ impl HostRegistry {
         }
     }
 
+    /// A registry whose first allocation is `first` (non-zero; 0 falls back to
+    /// [`FIRST_ACTIVITY_HOST_ID`]). An activity-host connection answers message 6 with the id its
+    /// instance presents, so that connection's message 7 and its pushes name the same host.
+    pub fn with_first_id(endpoint: SocketAddrV4, first: u64) -> Self {
+        Self { next: if first == 0 { FIRST_ACTIVITY_HOST_ID } else { first }, ..Self::new(endpoint) }
+    }
+
     /// Allocate an Activity Host for a launch command line.
     pub fn allocate(&mut self, launch_args: &str) -> &HostEntry {
         let ah_id = self.next;
@@ -289,6 +296,26 @@ mod tests {
         let rsp = r.answer_proxy_request(GetActivityHostProxyRequest { activity_host_id: 0 });
         assert_eq!(rsp.activity_host_id, 0);
         assert_eq!(rsp.port(), 4110);
+    }
+
+    /// A connection's registry answers message 6 with the id its instance presents (a second
+    /// connection under D1_AH_DISTINCT_HOST_IDS presents the next id), and 0 is never handed out.
+    #[test]
+    fn a_registry_can_start_at_the_instances_id() {
+        let req = ActivityHostManagerRequest {
+            inner_type: 3,
+            args: Vec::new(),
+            nested_msg: Vec::new(),
+            bitstream: Vec::new(),
+            trailing_id: 0,
+        };
+        let endpoint = SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 0);
+        let mut r = HostRegistry::with_first_id(endpoint, FIRST_ACTIVITY_HOST_ID + 1);
+        let (rsp, entry) = r.answer_manager_request(&req).unwrap();
+        assert_eq!(rsp.host_token, FIRST_ACTIVITY_HOST_ID + 1);
+        assert_eq!(entry.session_id, format!("d1ah-{:016x}", FIRST_ACTIVITY_HOST_ID + 1));
+        let mut zero = HostRegistry::with_first_id(endpoint, 0);
+        assert_eq!(zero.answer_manager_request(&req).unwrap().0.host_token, FIRST_ACTIVITY_HOST_ID);
     }
 
     /// The `[U]` this module closes: message 7's `host_text` is the session id, not an address.

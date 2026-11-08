@@ -21,6 +21,15 @@ The helpers support exact-input checks, content-only validation, planning and bo
 
 The package-owner and canonical-preparation patches must be applied only to their expected source revisions. Preserve unrelated changes and retain existing upstream licences. External reader modifications require their corresponding source and notices when distributed; this repository supplies no reader executable. See THIRD_PARTY_NOTICES.md.
 
+## The full-game test
+
+`d1-full-game.ps1` starts the served lab session with every new subsystem switched on: the store,
+social services, rewards, multiplayer, the activity framework, generated worlds, public instances,
+native RSAT, the udt 5 stamp, the script bridge and sidecar, and the fork's draw-cost and PC-client
+knobs. Its profiles are in `ps4/profiles` (`full-game.env`, and `baseline.env` with all of them off).
+It checks every input, builds stale servers, and writes a run folder with a manifest of the knobs in
+effect. `-DryRun` prints all of it and starts nothing. See [docs/full-game-test.md](../../docs/full-game-test.md).
+
 ## The whole mission, unattended
 
 `lab/tower-route/ending-run.ps1 -Name <unique-name>` plays A Guardian Rises from boot to Tower North

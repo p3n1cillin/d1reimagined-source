@@ -58,6 +58,11 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
+    /// Export identifier/number tables from owned 56578 content, without writing game payloads.
+    ContentTables {
+        #[arg(long)]
+        out: PathBuf,
+    },
     /// The positive controls. Exit 2 on failure.
     Control,
     /// Rebuild and re-verify every pinned payload.
@@ -296,6 +301,12 @@ enum AhCmd {
         #[arg(long)]
         wire: Option<String>,
     },
+    /// Decode many payloads with one codec: stdin lines `UDT HEX [STREAM]`, one JSON object per
+    /// line on stdout (`{"udt", "tag", "bits", "size", "words": {"0x0": "0x…"}}` or
+    /// `{"udt", "error"}`). One emulator start for the batch instead of one a payload (about 3 s
+    /// each). With STREAM, the replicated udts 11 and 21 decode against that stream's previous
+    /// image (they carry only what changed); without it, against zeros.
+    DecodeBatch,
     /// Encode a struct image for a `user_defined_type`. The image must be exactly the struct size.
     Encode {
         #[arg(long, value_parser = parse_int)]
@@ -309,6 +320,13 @@ enum AhCmd {
 /// `d1-oracle sensor …` - see [`d1_oracle::sensor`] for the frame grammar and the executed proof.
 #[derive(Subcommand)]
 enum SensorCmd {
+    /// Decode `sensor_auth_update` (udt 5) payloads: stdin lines of hex, one JSON object per line
+    /// (gen, the authority mask, stamp, init and each entry's name and raw body) or `{"error"}`.
+    DecodeBatch,
+    /// Decode entry values: stdin lines `TAG BODYHEX` (an entry body from `decode-batch` whose
+    /// list row has an A value), one JSON object per line with the A value's struct image, decoded
+    /// from bit 2 (after `fresh` and `presence`) with the typed-value codec, and the bits it used.
+    DecodeValues,
     /// Decode an ordered, private udt-6 capture with native-observed kind:B-tag mappings.
     DecodeSense {
         #[arg(long)]
@@ -807,6 +825,76 @@ fn run_sensor(_cli: &Cli, cmd: &SensorCmd) -> anyhow::Result<ExitCode> {
             );
             Ok(if ok { ExitCode::SUCCESS } else { ExitCode::from(2) })
         }
+        SensorCmd::DecodeBatch => {
+            use std::io::BufRead;
+            let mut frames = sensor::FrameDecoder::new()?;
+            for line in std::io::stdin().lock().lines() {
+                let line = line?;
+                let h = line.trim();
+                if h.is_empty() {
+                    continue;
+                }
+                let out = match hex(h).and_then(|b| frames.decode(&b).map_err(Into::into)) {
+                    Ok(f) => serde_json::json!({
+                        "gen": f.gen, "stamp": f.stamp, "init": f.init, "bits": f.bits,
+                        "authority": f.authority.as_ref().map(|a| format!("{:#x}", a.changed)),
+                        // Each changed authority block: {block, peer (the machine), seq, applied}
+                        // (entry layout `{peer u8 @+1, seq u16 @+8, applied @+0xA}`, 12 bytes after
+                        // a 4-byte head; see `SensorAuthority`).
+                        "authority_blocks": f.authority.as_ref().map(|a| (0..128usize)
+                            .filter(|i| (a.changed >> i) & 1 == 1)
+                            .filter_map(|i| {
+                                let e = a.image.get(4 + 12 * i..4 + 12 * i + 12)?;
+                                Some(serde_json::json!({
+                                    "block": i, "peer": e[1],
+                                    "seq": u16::from_le_bytes([e[8], e[9]]), "applied": e[0xA],
+                                }))
+                            })
+                            .collect::<Vec<_>>()),
+                        "entries": f.entries.iter().map(|e| serde_json::json!({
+                            "hash": format!("{:#010x}", e.name_hash), "i8": e.name_i8,
+                            "sub": e.name_sub, "body_bits": e.body_bits, "body": hexs(&e.body),
+                        })).collect::<Vec<_>>(),
+                    }),
+                    Err(e) => serde_json::json!({"error": format!("{e:#}")}),
+                };
+                println!("{out}");
+            }
+            Ok(ExitCode::SUCCESS)
+        }
+
+        SensorCmd::DecodeValues => {
+            use std::io::BufRead;
+            let mut codecs: std::collections::HashMap<u32, ObjectOracle> = std::collections::HashMap::new();
+            for line in std::io::stdin().lock().lines() {
+                let line = line?;
+                let mut parts = line.split_whitespace();
+                let (Some(tag), Some(h)) = (parts.next(), parts.next()) else { continue };
+                let result = (|| -> anyhow::Result<serde_json::Value> {
+                    let tag = u32::from_str_radix(tag.trim_start_matches("0x"), 16)?;
+                    let body = hex(h)?;
+                    if body.is_empty() || body[0] & 0xC0 != 0xC0 {
+                        anyhow::bail!("body does not start with fresh = 1, presence = 1");
+                    }
+                    // Drop the two leading bits: the value object starts at bit 2.
+                    let shifted: Vec<u8> = (0..body.len())
+                        .map(|i| (body[i] << 2) | body.get(i + 1).map_or(0, |b| b >> 6))
+                        .collect();
+                    let codec = match codecs.entry(tag) {
+                        std::collections::hash_map::Entry::Occupied(e) => e.into_mut(),
+                        std::collections::hash_map::Entry::Vacant(e) => {
+                            e.insert(ObjectOracle::with_types(tag, sensor::TYPED_VALUE_TYPES)?)
+                        }
+                    };
+                    let d = codec.decode(&shifted)?;
+                    Ok(serde_json::json!({"tag": format!("{tag:#010x}"), "bits": d.bits, "image": hexs(&d.object)}))
+                })();
+                let out = result.unwrap_or_else(|e| serde_json::json!({"error": format!("{e:#}")}));
+                println!("{out}");
+            }
+            Ok(ExitCode::SUCCESS)
+        }
+
         SensorCmd::Build { gen, name_hash, name_i8, name_sub, phase, tail_id, tail_hash } => {
             let tail = match (tail_id, tail_hash) {
                 (Some(i), Some(h)) => Some((
@@ -1125,6 +1213,41 @@ fn run_activity_host(cli: &Cli, cmd: &AhCmd) -> anyhow::Result<ExitCode> {
             );
             for (off, v) in d.nonzero_qwords() {
                 println!("  +{off:#06x}  {v:#018x}");
+            }
+            Ok(ExitCode::SUCCESS)
+        }
+
+        AhCmd::DecodeBatch => {
+            use std::io::BufRead;
+            let mut codec = AhCodec::new();
+            // A third column names the stream (a host connection and direction). Replicated
+            // messages (udt 11, 21) carry only what changed, so with a stream they decode against
+            // that stream's previous image, as the receiver does; without one, against zeros.
+            let mut images: std::collections::HashMap<(String, u32), Vec<u8>> = Default::default();
+            for line in std::io::stdin().lock().lines() {
+                let line = line?;
+                let mut parts = line.split_whitespace();
+                let (Some(udt), Some(h)) = (parts.next(), parts.next()) else { continue };
+                let udt: u32 = udt.parse()?;
+                let stream = parts.next().filter(|_| activity_host::is_replicated(udt));
+                let key = stream.map(|s| (s.to_string(), udt));
+                let seed = key.as_ref().and_then(|k| images.get(k)).cloned().unwrap_or_default();
+                let out = match hex(h).and_then(|bytes| codec.decode_seeded(udt, &bytes, &seed).map_err(Into::into)) {
+                    Ok(d) => {
+                        if let Some(k) = key {
+                            images.insert(k, d.object.clone());
+                        }
+                        serde_json::json!({
+                        "udt": udt, "tag": format!("{:#010x}", d.tag), "bits": d.bits,
+                        "size": d.object.len(),
+                        "words": d.nonzero_qwords().iter()
+                            .map(|(off, v)| (format!("{off:#x}"), serde_json::json!(format!("{v:#x}"))))
+                            .collect::<serde_json::Map<_, _>>(),
+                        })
+                    }
+                    Err(e) => serde_json::json!({"udt": udt, "error": format!("{e:#}")}),
+                };
+                println!("{out}");
             }
             Ok(ExitCode::SUCCESS)
         }
@@ -2644,6 +2767,11 @@ fn run(cli: &Cli) -> anyhow::Result<ExitCode> {
         Cmd::ArtArrangement(a) => run_art(cli, a),
         Cmd::ActivityModes(a) => run_activity_modes(cli, a),
         Cmd::VendorSales(v) => run_vendor_sales(v),
+        Cmd::ContentTables { out } => {
+            let mut content = d1_oracle::oodle::Content::open_default()?;
+            d1_oracle::content_tables::write(&mut content, out)?;
+            Ok(ExitCode::SUCCESS)
+        }
 
         Cmd::Message { tag, msgid, request_tag, obj, span } => {
             let tag = *tag as u32;

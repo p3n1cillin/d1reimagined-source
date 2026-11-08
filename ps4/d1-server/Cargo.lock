@@ -1109,7 +1109,11 @@ dependencies = [
  "clap",
  "d1-bap",
  "d1-build",
+ "d1-mp",
  "d1-oracle",
+ "d1-rsat",
+ "serde",
+ "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -1206,11 +1210,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "d1-mp"
+version = "0.1.0"
+dependencies = [
+ "d1-bap",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "d1-oracle"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "d1-bap",
  "d1-build",
  "d1-eboot",
  "d1-pkg",
@@ -1258,12 +1272,24 @@ dependencies = [
  "clap",
  "d1-bap",
  "d1-loadout",
+ "d1-mp",
+ "d1-rsat",
  "rustls",
  "serde",
  "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "d1-rsat"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "d1-eboot",
+ "d1-oracle",
 ]
 
 [[package]]

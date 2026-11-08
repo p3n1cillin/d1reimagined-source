@@ -236,6 +236,12 @@ class Replay:
                 i, chosen = self.nearest_leg(legs, upto=i), True
                 print(f'{name}: restarting from {legs[i][0]} after {type(error).__name__}', flush=True)
                 continue
+            if legs[i][0] == 'chest' and not getattr(self, 'cache_tried', False):
+                # F49 (7 Nov): the chest leg ends by A Guardian Rises' loot cache; open it as a
+                # player does (hold Square), once. The host logs the client's report.
+                self.cache_tried = True
+                self.command('open-cache', [sys.executable, '-u', '-I', str(LAB/'open-cache.py'),
+                                            '--host-log', str(self.host_log)], 60, check=False)
             # The next leg may rejoin from where this one left the Guardian: it has just finished
             # the leg before, not respawned. sense123's junction leg ended with a fight that pulled
             # it back 18 m from junction-west's route, which then took it for a respawn and sent it

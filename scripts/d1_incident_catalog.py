@@ -1,12 +1,14 @@
-"""Read incident identities and payload selectors from an extracted 01.24 catalog.
+"""Read incident identities and payload selectors from extracted D1 catalogs.
 
-The incident database getter 0x5aef50 resolves the handle returned by 0x4696f4.
+In 01.24, database getter 0x5aef50 resolves the handle returned by 0x4696f4.
 JOIN218 identifies tag 0x816564aa, class 0x80800659. Its array at +0x10 has
 0x808003d3 records with stride 20. The selector at record +16 matches the
 native client incident context's +0x134 in the observed cinematic case.
 Definition blobs and the four auxiliary u16 fields are deliberately opaque;
 this is not a loot grant, an incident-body encoder or a recovered event name.
-Extracted inputs and generated reports must remain private.
+The PS4 56578 layout uses a 64-bit array at +0x20 and 32-byte records:
+hash +0, signed field-relative i64 definition +8, four u16 +16, selector +24.
+Extracted inputs and full generated reports must remain private.
 """
 
 import argparse
@@ -23,33 +25,40 @@ MAX_RECORDS = 65536
 MAX_INPUT = 16 * 1024 * 1024
 
 
-def parse_catalog(data):
+def parse_catalog(data, *, ps4=False):
     if not 0x50 <= len(data) <= MAX_INPUT:
         raise ValueError("incident catalog size is unsupported")
     try:
-        count, first, kind = dyn_array(data, 0x10)
+        if ps4 and struct.unpack_from("<Q", data)[0] != len(data):
+            raise ValueError("incident catalog declared size differs from input")
+        count, first, kind = dyn_array(data, 0x20 if ps4 else 0x10, ps4=ps4)
     except (ValueError, struct.error) as exc:
         raise ValueError("incident catalog array header is invalid") from exc
     if kind != RECORD_CLASS or not 0 < count <= MAX_RECORDS:
         raise ValueError("incident catalog record class or count is unsupported")
-    if first < 0x20 or first + count * STRIDE > len(data):
+    stride = 32 if ps4 else STRIDE
+    endian = "<" if ps4 else ">"
+    pointer_offset, auxiliary_offset, selector_offset = (8, 16, 24) if ps4 else (4, 8, 16)
+    if first < (0x30 if ps4 else 0x20) or first + count * stride > len(data):
         raise ValueError("incident catalog records exceed the input")
     rows = []
     for index in range(count):
-        offset = first + index * STRIDE
-        name_hash, relative = struct.unpack_from(">II", data, offset)
+        offset = first + index * stride
+        name_hash, = struct.unpack_from(endian + "I", data, offset)
+        relative, = struct.unpack_from(endian + ("q" if ps4 else "i"),
+                                       data, offset + pointer_offset)
         definition = None
         definition_class = None
-        if relative not in (0, 0xFFFFFFFF):
+        if relative not in (0, -1):
             # Relative to the pointer field, not to the containing record.
-            displacement = relative - 0x100000000 if relative & 0x80000000 else relative
-            definition = offset + 4 + displacement
+            definition = offset + pointer_offset + relative
             if definition < 0 or definition + 8 > len(data):
                 raise ValueError(f"incident {index} definition exceeds the input")
-            definition_class, = struct.unpack_from(">I", data, definition + 4)
+            definition_class, = struct.unpack_from(endian + "I", data, definition + 4)
         rows.append({"index": index, "name_hash": f"0x{name_hash:08x}",
-                     "payload_selector": data[offset + 16],
-                     "auxiliary_u16": list(struct.unpack_from(">4H", data, offset + 8)),
+                     "payload_selector": data[offset + selector_offset],
+                     "auxiliary_u16": list(struct.unpack_from(endian + "4H", data,
+                                                               offset + auxiliary_offset)),
                      "definition_offset": definition,
                      "definition_class": (f"0x{definition_class:08x}"
                                           if definition_class is not None else None)})

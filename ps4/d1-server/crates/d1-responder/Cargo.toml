@@ -13,7 +13,9 @@ path = "src/main.rs"
 [dependencies]
 anyhow.workspace = true
 d1-bap = { path = "../d1-bap" }
+d1-mp = { path = "../d1-mp" } # MP(H): multiplayer services, D1_MP=1
 d1-loadout = { path = "../d1-loadout" }
+d1-rsat = { path = "../d1-rsat" } # native client codec, in process (the oracle stays the fallback)
 axum.workspace = true
 axum-server = { version = "0.7", features = ["tls-rustls"] }
 # Direct, so `main()` can name the crypto provider instead of letting rustls guess. Both `ring` and
@@ -45,3 +47,6 @@ serde_json.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
+
+[dev-dependencies]
+d1-rsat = { path = "../d1-rsat" }

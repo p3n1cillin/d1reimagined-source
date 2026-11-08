@@ -560,6 +560,64 @@ impl GlobalActivityState {
         Ok(())
     }
 
+    /// ⭐ **Set an activity option** in the blob's option list (the same `0x8080533D` list at
+    /// [`Self::LAUNCH_SLOT_COUNT`] / [`Self::LAUNCH_SLOTS`]; 8 November 2026,
+    /// notes/ps4-56578-ghost-option-2026-11-08.md). The client copies the list at its world
+    /// transition (`0x7a9880`) into its game options, and at activity start `0x417b00` builds the
+    /// "Activity Options Game State" table from it, the table `0x118870` looks options up in
+    /// (e.g. `0xB3C6F690`, which the Ghost spawn gate `0x741af0` reads). Each 24-byte entry is
+    /// `{u32 name hash; typed value}`: the type handle at `+4` (bool `0x80800004`, int
+    /// `0x80800007`) and the value at `+8`. An option already present is replaced.
+    pub fn set_option(&mut self, name: u32, value: OptionValue) -> Result<(), AhError> {
+        let count = self.launch_slot_count() as usize;
+        let existing = (0..count.min(Self::LAUNCH_SLOT_CAPACITY)).find(|&i| {
+            let at = Self::LAUNCH_SLOTS + i * Self::LAUNCH_SLOT_STRIDE;
+            self.blob[at..at + 4] == name.to_le_bytes()
+        });
+        let index = match existing {
+            Some(i) => i,
+            None if count < Self::LAUNCH_SLOT_CAPACITY => count,
+            None => {
+                return Err(AhError::FieldOverflow {
+                    field: "global_activity_state.options",
+                    len: count + 1,
+                    max: Self::LAUNCH_SLOT_CAPACITY,
+                })
+            }
+        };
+        let at = Self::LAUNCH_SLOTS + index * Self::LAUNCH_SLOT_STRIDE;
+        let entry = &mut self.blob[at..at + Self::LAUNCH_SLOT_STRIDE];
+        entry.fill(0);
+        entry[0..4].copy_from_slice(&name.to_le_bytes());
+        match value {
+            OptionValue::Bool(b) => {
+                entry[4..8].copy_from_slice(&OPTION_TYPE_BOOL.to_le_bytes());
+                entry[8] = u8::from(b);
+            }
+            OptionValue::Int(v) => {
+                entry[4..8].copy_from_slice(&OPTION_TYPE_INT.to_le_bytes());
+                entry[8..12].copy_from_slice(&v.to_le_bytes());
+            }
+        }
+        if existing.is_none() {
+            self.blob[Self::LAUNCH_SLOT_COUNT..Self::LAUNCH_SLOT_COUNT + 4]
+                .copy_from_slice(&((count + 1) as u32).to_le_bytes());
+        }
+        Ok(())
+    }
+
+    /// The option list's entries whose typed value the codec cannot encode (a type handle other
+    /// than the bool's or the int's), by index.
+    fn unencodable_options(&self) -> Vec<usize> {
+        (0..(self.launch_slot_count() as usize).min(Self::LAUNCH_SLOT_CAPACITY))
+            .filter(|&i| {
+                let at = Self::LAUNCH_SLOTS + i * Self::LAUNCH_SLOT_STRIDE + 4;
+                let t = u32::from_le_bytes(self.blob[at..at + 4].try_into().unwrap());
+                t != OPTION_TYPE_BOOL && t != OPTION_TYPE_INT
+            })
+            .collect()
+    }
+
     pub fn struct_bytes(&self) -> Result<Vec<u8>, AhError> {
         if self.blob.len() != GLOBAL_ACTIVITY_STATE_BLOB_SIZE {
             return Err(AhError::BadStructSize {
@@ -573,7 +631,7 @@ impl GlobalActivityState {
         // activity-slot count makes the client's own encoder deref the content registry
         // (*DAT_01A0B420) to size a dynamic-width leaf, which a static image does not carry.
         // ⇒ Self::LAUNCH_SLOT_COUNT.
-        if self.launch_slot_count() != 0 {
+        if self.launch_slot_count() as usize > Self::LAUNCH_SLOT_CAPACITY || !self.unencodable_options().is_empty() {
             return Err(AhError::FieldOverflow {
                 field: "global_activity_state.launch_slot_count is non-zero: the CLIENT'S OWN \
                         encoder faults on the content registry (READ_UNMAPPED at 0x105B74A via \
@@ -587,6 +645,18 @@ impl GlobalActivityState {
         Ok(self.blob.clone())
     }
 }
+
+/// An activity option's typed value ([`GlobalActivityState::set_option`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OptionValue {
+    Bool(bool),
+    Int(i32),
+}
+
+/// The typed-value handle of a bool option (a 1-byte struct, one kind-2 field).
+pub const OPTION_TYPE_BOOL: u32 = 0x8080_0004;
+/// The typed-value handle of an int option (an i32 biased by `0x80000000` on the wire).
+pub const OPTION_TYPE_INT: u32 = 0x8080_0007;
 
 /// `[C]` udt **11** `replicate_membership` - ⭐ the fourth and last message `FUN_00298EF0` waits
 /// on, and the one that sets `ac+0x131 & 1`.
@@ -742,6 +812,38 @@ impl ReplicateMembership {
     pub const PAH_AMBASSADORSHIP: usize = 0x09;
     /// Region record `+0x0A`: the ambassador's peer index.
     pub const PAH_AMBASSADOR_PEER: usize = 0x0A;
+    /// Region record `+0x04`: 1 for a PUBLIC region. The live host set it for Restoration's public
+    /// regions 56 and 48 and left it 0 for A Guardian Rises' private ones
+    /// (notes/d1-live-captures-2026-11-05.md, "Restoration's public start").
+    pub const PAH_REGION_PUBLIC: usize = 0x04;
+    /// Region record `+0x08`: 1 alongside the ambassadorship in every live record, private regions
+    /// included. `[U]` meaning.
+    pub const PAH_REGION_08: usize = 0x08;
+    /// Region record `+0x19`: **a player has reached the matchmaking threshold for the region**.
+    /// `FUN_0077C3D0` (the ambassador's matchmaking task) reads the TARGET copy (`sstm+0x490 +
+    /// 0x19`): non-zero logs "A player has reached the matchmaking threshold for region '%s',
+    /// aborting and spinning up a new public activity session", stops the search and creates the
+    /// public session. Without it a lone ambassador searches for ever (run fg5b: 43 empty
+    /// searches in 3.5 min). The live PAH set it 10.2 s after publishing Restoration's public
+    /// region 56, and the client asked for its new host 0.2 s later
+    /// (notes/d1-live-captures-2026-11-05.md, "The PAH's region records").
+    pub const PAH_REGION_THRESHOLD: usize = 0x19;
+    /// Region record `+0x20`: 1 in every live record. `[U]` meaning.
+    pub const PAH_REGION_20: usize = 0x20;
+
+    /// The live host's flags for one region record: with `ambassador`, `+0x08 = 1`, `+0x09 = 1`,
+    /// `+0x0A = peer_index` and `+0x20 = 1` (every live session); with `public`, also `+0x04 = 1`.
+    pub fn apply_region_flags(record: &mut [u8], peer_index: usize, ambassador: bool, public: bool) {
+        if ambassador {
+            record[Self::PAH_REGION_08] = 1;
+            record[Self::PAH_AMBASSADORSHIP] = 1;
+            record[Self::PAH_AMBASSADOR_PEER] = peer_index as u8;
+            record[Self::PAH_REGION_20] = 1;
+        }
+        if public {
+            record[Self::PAH_REGION_PUBLIC] = 1;
+        }
+    }
 
     /// ⭐⭐ Publish **one** PAH-tabulated region record, in slot 0, and terminate the array.
     ///
@@ -808,15 +910,76 @@ impl ReplicateMembership {
             .copy_from_slice(&region_id.to_le_bytes());
         self.image[slot0 + Self::PAH_PEER_TOKENS + peer_index] = token;
         // D1_AH_PUBLIC_AMBASSADOR=1: assign the region's ambassadorship to this peer (step 2 of
-        // the public-session plan). Set here so every re-publish path re-applies it.
-        if std::env::var("D1_AH_PUBLIC_AMBASSADOR").is_ok_and(|v| v == "1") {
-            self.image[slot0 + Self::PAH_AMBASSADORSHIP] = 1;
-            self.image[slot0 + Self::PAH_AMBASSADOR_PEER] = peer_index as u8;
-        }
+        // the public-session plan), as the live host did for every region; D1_AH_PUBLIC_REGIONS
+        // (comma-separated region ids) marks those regions public. Set here so every re-publish
+        // path re-applies them.
+        let ambassador = std::env::var("D1_AH_PUBLIC_AMBASSADOR").is_ok_and(|v| v == "1");
+        let public = std::env::var("D1_AH_PUBLIC_REGIONS").is_ok_and(|v| {
+            v.split(',').any(|r| r.trim().parse::<u32>().is_ok_and(|r| r == region_id))
+        });
+        Self::apply_region_flags(&mut self.image[slot0..slot0 + Self::PAH_REGION_STRIDE], peer_index, ambassador, public);
         // The terminator. See the doc comment - this is load-bearing, not hygiene.
         let slot1 = Self::PAH_REGIONS + Self::PAH_REGION_STRIDE;
         self.image[slot1 + Self::PAH_REGION_ID..slot1 + Self::PAH_REGION_ID + 4]
             .copy_from_slice(&u32::MAX.to_le_bytes());
+        Ok(())
+    }
+
+    /// Mark slot 0's region record public (`+0x04 = 1`), for a region the served world's content
+    /// lists as public (`slice-sets.tsv`). `D1_AH_PUBLIC_REGIONS` does the same by hand.
+    pub fn set_region_public(&mut self) -> Result<(), AhError> {
+        self.region_byte(Self::PAH_REGION_PUBLIC, 1)
+    }
+
+    /// Set or clear slot 0's matchmaking threshold (see [`Self::PAH_REGION_THRESHOLD`]).
+    pub fn set_region_threshold(&mut self, reached: bool) -> Result<(), AhError> {
+        self.region_byte(Self::PAH_REGION_THRESHOLD, u8::from(reached))
+    }
+
+    fn region_byte(&mut self, offset: usize, value: u8) -> Result<(), AhError> {
+        let o = Self::PAH_REGIONS + offset;
+        let Some(b) = self.image.get_mut(o) else {
+            return Err(AhError::BadStructSize {
+                user_defined_type: protocol::UDT_REPLICATE_MEMBERSHIP,
+                got: self.image.len(),
+                want: Self::STRUCT_SIZE,
+            });
+        };
+        *b = value;
+        Ok(())
+    }
+
+    /// Region record `+0x4C`: the advertised public session, `0x84` bytes up to `+0xD0`.
+    pub const PAH_ADVERTISED_SESSION: usize = 0x4C;
+    pub const PAH_ADVERTISED_SESSION_LEN: usize = 0x84;
+    /// Region record `+0xD0`: the advertised public session's activity-host id.
+    pub const PAH_ADVERTISED_HOST: usize = 0xD0;
+
+    /// Advertise a public session in slot 0's region record (plan step 5 in
+    /// notes/ps4-56578-public-sessions-2026-11-02.md). The live PAH copied both from the client's
+    /// own udt 21 slice-set record once the client had joined its new public instance
+    /// (notes/d1-live-captures-2026-11-05.md): the session at `+0x4C` and that instance's host
+    /// id at `+0xD0`. The session is the client's platform session, echoed, never built here.
+    pub fn set_region_advertisement(&mut self, session: &[u8], host: u64) -> Result<(), AhError> {
+        if session.len() != Self::PAH_ADVERTISED_SESSION_LEN {
+            return Err(AhError::FieldOverflow {
+                field: "replicate_membership.pah_region.advertised_session",
+                len: session.len(),
+                max: Self::PAH_ADVERTISED_SESSION_LEN,
+            });
+        }
+        let slot0 = Self::PAH_REGIONS;
+        if self.image.len() < slot0 + Self::PAH_REGION_STRIDE {
+            return Err(AhError::BadStructSize {
+                user_defined_type: protocol::UDT_REPLICATE_MEMBERSHIP,
+                got: self.image.len(),
+                want: Self::STRUCT_SIZE,
+            });
+        }
+        let s = slot0 + Self::PAH_ADVERTISED_SESSION;
+        self.image[s..s + Self::PAH_ADVERTISED_SESSION_LEN].copy_from_slice(session);
+        let h = slot0 + Self::PAH_ADVERTISED_HOST;
+        self.image[h..h + 8].copy_from_slice(&host.to_le_bytes());
         Ok(())
     }
 
@@ -1085,6 +1248,41 @@ impl ClientMessage {
 mod tests {
     use super::*;
 
+    /// The region record's flags as the live host set them.
+    #[test]
+    fn region_flags_match_the_live_records() {
+        // notes/d1-live-captures-2026-11-05.md: private `01 01 00 00` at +0x08, public also +0x04 = 1.
+        let mut private = vec![0u8; ReplicateMembership::PAH_REGION_STRIDE];
+        ReplicateMembership::apply_region_flags(&mut private, 0, true, false);
+        assert_eq!(&private[0x04..0x0C], &[0, 0, 0, 0, 1, 1, 0, 0]);
+        let mut public = vec![0u8; ReplicateMembership::PAH_REGION_STRIDE];
+        ReplicateMembership::apply_region_flags(&mut public, 0, true, true);
+        assert_eq!(&public[0x04..0x0C], &[1, 0, 0, 0, 1, 1, 0, 0]);
+        assert_eq!((private[0x20], public[0x20]), (1, 1), "+0x20 = 1 in every live record");
+        assert_eq!(public[ReplicateMembership::PAH_REGION_THRESHOLD], 0, "the threshold is the host's to set later");
+        let mut off = vec![0u8; ReplicateMembership::PAH_REGION_STRIDE];
+        ReplicateMembership::apply_region_flags(&mut off, 3, false, false);
+        assert!(off.iter().all(|b| *b == 0));
+    }
+
+    /// `set_region_public` and `set_region_threshold` write slot 0's `+0x04` and `+0x19` (the
+    /// TARGET copy `FUN_0077C3D0` reads at `sstm+0x4A9`), and nothing else.
+    #[test]
+    fn the_public_flag_and_the_threshold_land_in_slot_zero() {
+        let mut m = ReplicateMembership { image: vec![0u8; ReplicateMembership::STRUCT_SIZE] };
+        m.set_pah_region(56, 0, 1).unwrap();
+        let before = m.image.clone();
+        m.set_region_public().unwrap();
+        m.set_region_threshold(true).unwrap();
+        let slot0 = ReplicateMembership::PAH_REGIONS;
+        assert_eq!(m.image[slot0 + 0x04], 1);
+        assert_eq!(m.image[slot0 + 0x19], 1);
+        let changed: Vec<usize> = (0..m.image.len()).filter(|&i| m.image[i] != before[i]).collect();
+        assert_eq!(changed, vec![slot0 + 0x04, slot0 + 0x19]);
+        m.set_region_threshold(false).unwrap();
+        assert_eq!(m.image[slot0 + 0x19], 0);
+    }
+
     /// Every offset in the `join_result` doc-comment, asserted at the byte. If one of these ever
     /// moves, the client silently reads a different field - there is no error path for it.
     #[test]
@@ -1130,8 +1328,61 @@ mod tests {
         assert_eq!(&b[8..12], b"sess");
     }
 
+    /// F54, through the CLIENT'S OWN encoder: a blob with a bool option and an int option encodes
+    /// and decodes back to the same entries. Needs the owned 56578 executable (`D1_EBOOT`).
+    #[test]
+    fn a_typed_option_list_round_trips_through_the_clients_codec() {
+        if std::env::var_os("D1_EBOOT").is_none() {
+            eprintln!("SKIP: set D1_EBOOT to the owned 56578 executable");
+            return;
+        }
+        let mut s = GlobalActivityState::for_activity("act_cosmo_m0_highway").expect("blob");
+        s.set_option(0xB3C6_F690, OptionValue::Bool(true)).unwrap();
+        s.set_option(0xBE4D_B480, OptionValue::Int(50)).unwrap();
+        let img = s.struct_bytes().unwrap();
+        let mut codec = d1_oracle::activity_host::AhCodec::new();
+        let wire = codec.encode(1, &img).expect("the client's encoder takes typed options");
+        let back = codec.decode(1, &wire.payload).expect("and decodes them").object;
+        let (a, b) = (GlobalActivityState::LAUNCH_SLOT_COUNT, GlobalActivityState::LAUNCH_SLOTS + 2 * GlobalActivityState::LAUNCH_SLOT_STRIDE);
+        assert_eq!(back[a..a + 4], img[a..a + 4], "the count");
+        for e in 0..2 {
+            let at = GlobalActivityState::LAUNCH_SLOTS + e * GlobalActivityState::LAUNCH_SLOT_STRIDE;
+            assert_eq!(back[at..at + 9], img[at..at + 9], "entry {e}: name, type, value");
+        }
+        assert!(b <= back.len());
+    }
+
+    /// F54: an option is a 24-byte `{name, type handle, value}` entry counted at `+0x64`; a bool
+    /// and an int encode, a second set replaces, and an entry of an unknown type still refuses.
+    #[test]
+    fn options_fill_the_list_and_only_typed_entries_encode() {
+        let mut s = GlobalActivityState::empty();
+        s.set_option(0xB3C6_F690, OptionValue::Bool(true)).unwrap();
+        s.set_option(0xBE4D_B480, OptionValue::Int(50)).unwrap();
+        s.set_option(0xB3C6_F690, OptionValue::Bool(false)).unwrap();
+        assert_eq!(s.launch_slot_count(), 2, "the second bool replaced the first");
+        let b = s.struct_bytes().expect("typed entries encode");
+        let e = GlobalActivityState::LAUNCH_SLOTS;
+        assert_eq!(&b[e..e + 4], &0xB3C6_F690u32.to_le_bytes());
+        assert_eq!(&b[e + 4..e + 8], &OPTION_TYPE_BOOL.to_le_bytes());
+        assert_eq!(b[e + 8], 0);
+        let e2 = e + GlobalActivityState::LAUNCH_SLOT_STRIDE;
+        assert_eq!(&b[e2 + 4..e2 + 8], &OPTION_TYPE_INT.to_le_bytes());
+        assert_eq!(&b[e2 + 8..e2 + 12], &50i32.to_le_bytes());
+        let mut bad = GlobalActivityState::empty();
+        bad.set_launch_slot_unencodable(0, 0xDEAD_BEEF).unwrap();
+        assert!(bad.struct_bytes().is_err(), "an untyped entry stays refused");
+        let o = crate::state::parse_activity_options("164:0xb3c6f690=true, 410:be4db480=50, junk");
+        assert_eq!(o[&164], vec![(0xB3C6_F690, OptionValue::Bool(true))]);
+        assert_eq!(o[&410], vec![(0xBE4D_B480, OptionValue::Int(50))]);
+        assert_eq!(o.len(), 2);
+    }
+
     #[test]
     fn global_activity_state_is_exactly_1712_bytes_and_not_8_more() {
+        if !crate::eboot_or_skip("global_activity_state_is_exactly_1712_bytes_and_not_8_more") {
+            return;
+        }
         let s = GlobalActivityState::empty();
         let b = s.struct_bytes().unwrap();
         assert_eq!(b.len(), 1712, "the descriptor's struct_size, NOT 8 + 1712");

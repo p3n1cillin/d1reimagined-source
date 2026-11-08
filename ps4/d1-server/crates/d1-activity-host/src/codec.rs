@@ -122,6 +122,42 @@ pub trait AhWireCodec: Send + Sync {
     fn decode_seeded(&self, user_defined_type: u32, wire: &[u8], _seed: &[u8]) -> Result<Vec<u8>, AhError> {
         self.decode(user_defined_type, wire)
     }
+
+    /// ── D1_AH_SCRIPTS (script_bridge.rs) ── A udt 5 frame of exactly these entries (the script
+    /// bridge's full lists and deltas), stamp 0, with the stamp's bit offset. The client's own codec
+    /// on [`rows_oracle`] by default; `native::NativeCodec` builds it natively where it can.
+    fn encode_sensor_entries(
+        &self,
+        frame: &d1_oracle::sensor::SensorEntryFrame,
+    ) -> Result<(Vec<u8>, usize), AhError> {
+        oracle_sensor_entries(frame)
+    }
+
+    /// ── D1_AH_SCRIPTS (script_bridge.rs) ── One RSAT object by schema tag, `(bits, payload)`: an
+    /// incident's metadata body (`0x80800595` for `activity_complete`). Same routing as above.
+    fn encode_object(&self, tag: u32, image: &[u8]) -> Result<(u32, Vec<u8>), AhError> {
+        oracle_object(tag, image)
+    }
+}
+
+/// [`AhWireCodec::encode_sensor_entries`] through the client's own codec, on [`rows_oracle`].
+pub fn oracle_sensor_entries(
+    frame: &d1_oracle::sensor::SensorEntryFrame,
+) -> Result<(Vec<u8>, usize), AhError> {
+    let b = rows_oracle()
+        .call(|reply| Job::BuildEntries { frame: frame.clone(), reply })
+        .map_err(|detail| AhError::SchemaCodec { user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE, detail })?;
+    let (bit, bytes) = b.split_at(8);
+    Ok((bytes.to_vec(), u64::from_le_bytes(bit.try_into().expect("8 bytes")) as usize))
+}
+
+/// [`AhWireCodec::encode_object`] through the client's own codec, on [`rows_oracle`].
+pub fn oracle_object(tag: u32, image: &[u8]) -> Result<(u32, Vec<u8>), AhError> {
+    let b = rows_oracle()
+        .call(|reply| Job::EncodeObject { tag, image: image.to_vec(), reply })
+        .map_err(|detail| AhError::SchemaCodec { user_defined_type: 18, detail })?;
+    let (bits, payload) = b.split_at(4);
+    Ok((u32::from_le_bytes(bits.try_into().expect("4 bytes")), payload.to_vec()))
 }
 
 // ── the oracle worker ────────────────────────────────────────────────────────────────────────────
@@ -136,8 +172,25 @@ enum Job {
         params: d1_oracle::sensor::SensorPhaseUpdate,
         reply: Sender<Result<Vec<u8>, String>>,
     },
+    /// The stamp bit of a udt-5 frame built elsewhere (the sensor cache): measuring the authority
+    /// table needs the client's codec, so it runs here too.
+    StampBit {
+        frame: Vec<u8>,
+        reply: Sender<Result<Vec<u8>, String>>,
+    },
     /// ⭐ The oracle's bump-arena accounting, per udt. See [`OracleWorker::arena_stats`].
     Arena { reply: Sender<Vec<ArenaStats>> },
+    /// D1_AH_SCRIPTS: an entry-only udt 5 frame; the reply is the stamp bit (u64 LE), then the frame.
+    BuildEntries {
+        frame: d1_oracle::sensor::SensorEntryFrame,
+        reply: Sender<Result<Vec<u8>, String>>,
+    },
+    /// D1_AH_SCRIPTS: one object by tag; the reply is its bit count (u32 LE), then the payload.
+    EncodeObject {
+        tag: u32,
+        image: Vec<u8>,
+        reply: Sender<Result<Vec<u8>, String>>,
+    },
 }
 
 pub use d1_oracle::activity_host::ArenaStats;
@@ -158,6 +211,11 @@ impl OracleWorker {
             .name("d1-ah-oracle".into())
             .spawn(move || {
                 let mut codec = d1_oracle::activity_host::AhCodec::new();
+                let mut frames: Option<d1_oracle::sensor::FrameDecoder> = None;
+                // D1_AH_SCRIPTS: kept between frames, so each codec starts once.
+                let mut entries = d1_oracle::sensor::SensorFrameEncoder::new();
+                let mut objects: std::collections::HashMap<u32, d1_oracle::object::ObjectOracle> =
+                    std::collections::HashMap::new();
                 while let Ok(job) = rx.recv() {
                     match job {
                         Job::Encode { udt, image, reply } => {
@@ -185,8 +243,42 @@ impl OracleWorker {
                             let r = params.encode().map_err(|e| e.to_string());
                             let _ = reply.send(r);
                         }
+                        Job::StampBit { frame, reply } => {
+                            let r = (|| {
+                                if frames.is_none() {
+                                    frames = Some(d1_oracle::sensor::FrameDecoder::new()?);
+                                }
+                                frames.as_mut().expect("just set").stamp_bit(&frame)
+                            })()
+                            .map(|b| (b as u64).to_le_bytes().to_vec())
+                            .map_err(|e| e.to_string());
+                            let _ = reply.send(r);
+                        }
                         Job::Arena { reply } => {
                             let _ = reply.send(codec.arena_stats());
+                        }
+                        Job::BuildEntries { frame, reply } => {
+                            let r = entries
+                                .encode(&frame)
+                                .map(|(bytes, bit)| [(bit as u64).to_le_bytes().to_vec(), bytes].concat())
+                                .map_err(|e| e.to_string());
+                            let _ = reply.send(r);
+                        }
+                        Job::EncodeObject { tag, image, reply } => {
+                            let r = (|| {
+                                use std::collections::hash_map::Entry;
+                                let o = match objects.entry(tag) {
+                                    Entry::Occupied(e) => e.into_mut(),
+                                    Entry::Vacant(v) => v.insert(d1_oracle::object::ObjectOracle::with_types(
+                                        tag,
+                                        d1_oracle::sensor::TYPED_VALUE_TYPES,
+                                    )?),
+                                };
+                                o.encode(&image, 0x1_0000)
+                            })()
+                            .map(|e| [e.bits.to_le_bytes().to_vec(), e.payload].concat())
+                            .map_err(|e| e.to_string());
+                            let _ = reply.send(r);
                         }
                     }
                 }
@@ -245,6 +337,13 @@ pub fn control_oracle() -> &'static OracleWorker {
     W.get_or_init(OracleWorker::spawn)
 }
 
+/// D1_AH_SCRIPTS: a third worker for the script bridge's frames and incident bodies, so a script
+/// tick's encodes never queue behind the host's own (or an operator's control build).
+pub fn rows_oracle() -> &'static OracleWorker {
+    static W: OnceLock<OracleWorker> = OnceLock::new();
+    W.get_or_init(OracleWorker::spawn)
+}
+
 // ── the codecs ───────────────────────────────────────────────────────────────────────────────────
 
 /// ⭐ **The real codec.** It runs `FUN_002A4090` / `FUN_002A4140` - the client's own functions -
@@ -291,27 +390,95 @@ impl SchemaCodec {
     /// ~4 s of `ObjectOracle` setup never lands on the heartbeat or the join path. Call it at
     /// instance construction, like [`Self::prewarm`].
     pub fn build_sensor(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Result<Vec<u8>, AhError> {
-        sensor_cache::cached(params, || {
+        let frame = sensor_cache::cached(params, || {
+            // `D1_RSAT_NATIVE=1`: no codec worker when every value schema is covered.
+            if let Some(r) = crate::native::try_sensor_frame(params) {
+                return r.map_err(|detail| AhError::SchemaCodec {
+                    user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
+                    detail,
+                });
+            }
             oracle()
-                .call(|reply| Job::BuildSensor { params: params.clone(), reply })
+                .call(|reply| Job::BuildSensor {
+                    params: params.clone(),
+                    reply,
+                })
                 .map_err(|detail| AhError::SchemaCodec {
                     user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
                     detail,
                 })
-        })
+        })?;
+        Self::measure_stamp_bit(oracle(), &frame);
+        Ok(frame)
     }
 
     /// [`Self::build_sensor`] on [`control_oracle`], so the build doesn't queue the host's own
     /// encodes behind it. For operator control lines, which are built off the tick.
-    pub fn build_sensor_aside(params: &d1_oracle::sensor::SensorPhaseUpdate) -> Result<Vec<u8>, AhError> {
-        sensor_cache::cached(params, || {
+    pub fn build_sensor_aside(
+        params: &d1_oracle::sensor::SensorPhaseUpdate,
+    ) -> Result<Vec<u8>, AhError> {
+        let frame = sensor_cache::cached(params, || {
+            if let Some(r) = crate::native::try_sensor_frame(params) {
+                return r.map_err(|detail| AhError::SchemaCodec {
+                    user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
+                    detail,
+                });
+            }
             control_oracle()
-                .call(|reply| Job::BuildSensor { params: params.clone(), reply })
+                .call(|reply| Job::BuildSensor {
+                    params: params.clone(),
+                    reply,
+                })
                 .map_err(|detail| AhError::SchemaCodec {
                     user_defined_type: crate::protocol::UDT_SENSOR_AUTH_UPDATE,
                     detail,
                 })
-        })
+        })?;
+        Self::measure_stamp_bit(control_oracle(), &frame);
+        Ok(frame)
+    }
+
+    /// In stamp mode (`D1_AH_SENSOR_STAMP=1`), make sure a built frame's stamp bit is known before
+    /// the frame reaches a connection: a sensor-cache hit skips the encode that records it, so it is
+    /// measured here, on the building thread (startup, or a control build's own thread) and never on
+    /// a connection loop, where a codec queued behind a long build would hold it past the client's
+    /// silence limit. Off otherwise: measuring every cached frame would slow every start.
+    fn measure_stamp_bit(worker: &OracleWorker, frame: &[u8]) {
+        static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+        if !*ON.get_or_init(|| std::env::var("D1_AH_SENSOR_STAMP").is_ok_and(|v| v.trim() == "1")) {
+            return;
+        }
+        if d1_oracle::sensor::known_stamp_bit(frame).is_some() {
+            return;
+        }
+        // `D1_RSAT_NATIVE=1`: measure natively (a cached frame's authority table decodes without
+        // the worker).
+        if let Some(Ok(bit)) = crate::native::sensor_stamp_bit(frame) {
+            d1_oracle::sensor::remember_stamp_bit(frame, bit);
+            return;
+        }
+        let measured = worker
+            .call(|reply| Job::StampBit {
+                frame: frame.to_vec(),
+                reply,
+            })
+            .and_then(|b| {
+                <[u8; 8]>::try_from(b.as_slice()).map_err(|_| "stamp bit reply size".to_string())
+            });
+        match measured {
+            Ok(b) => d1_oracle::sensor::remember_stamp_bit(frame, u64::from_le_bytes(b) as usize),
+            Err(e) => tracing::warn!(
+                "udt-5 frame's stamp bit not measured ({e}); it will not be sent in stamp mode"
+            ),
+        }
+    }
+
+    /// Where a built udt-5 frame's `stamp` sits, if known: recorded at encode, or measured when the
+    /// frame was built ([`Self::measure_stamp_bit`]). Never runs the codec, so a connection loop
+    /// may call it.
+    pub fn sensor_stamp_bit(frame: &[u8]) -> Result<usize, String> {
+        d1_oracle::sensor::known_stamp_bit(frame)
+            .ok_or_else(|| "its stamp bit was not measured when it was built".to_string())
     }
 
     /// The struct size the schema declares, for callers that must build an exact image.
@@ -454,6 +621,9 @@ mod tests {
     /// against the captured wire, and the nonce landing at `+0x00` of the decode.
     #[test]
     fn the_default_codec_round_trips_the_captured_live_join_request() {
+        if !crate::eboot_or_skip("the_default_codec_round_trips_the_captured_live_join_request") {
+            return;
+        }
         let wire = hex(d1_oracle::activity_host::CAPTURED_JOIN_REQUEST);
         assert_eq!(wire.len(), 238);
 
@@ -478,6 +648,9 @@ mod tests {
     /// The message that actually has to go out. It must encode, and it must **not** be the struct.
     #[test]
     fn a_join_result_encodes_to_schema_bytes_that_are_not_the_struct_image() {
+        if !crate::eboot_or_skip("a_join_result_encodes_to_schema_bytes_that_are_not_the_struct_image") {
+            return;
+        }
         let msg = AhMessage::JoinResult(JoinResult::accepted([1, 2, 3, 4], 0xD1, "sess", 0));
         let wire = SchemaCodec.encode(&msg).expect("join_result must encode");
         let raw = RawStructCodec.encode(&msg).expect("the experiment always encodes");
@@ -494,6 +667,9 @@ mod tests {
     /// read, and for those the codec must still name the gate rather than improvise a tag.
     #[test]
     fn an_unpinned_user_defined_type_still_refuses_and_says_so() {
+        if !crate::eboot_or_skip("an_unpinned_user_defined_type_still_refuses_and_says_so") {
+            return;
+        }
         // udt 42 `advance_replication_epoch` is sendable and has NO CALL_SITES row.
         let msg = AhMessage::AdvanceReplicationEpoch { epoch: 1, suppress: 0 };
         let err = SchemaCodec.encode(&msg).unwrap_err();
@@ -505,6 +681,25 @@ mod tests {
         assert!(SchemaCodec
             .encode(&AhMessage::JoinResult(JoinResult::accepted([0; 4], 1, "s", 0)))
             .is_ok());
+    }
+
+    /// The slot handover's answers (udt 23, 24) go through the client's own codec on a build
+    /// whose call sites pin them (56578).
+    #[test]
+    fn the_slot_handover_answers_encode() {
+        if !crate::eboot_or_skip("the_slot_handover_answers_encode") {
+            return;
+        }
+        if !d1_oracle::activity_host::call_sites().iter().any(|(u, _, _)| *u == 23) {
+            return;
+        }
+        for (udt, len) in [(23u32, 0x608usize), (24, 0x604)] {
+            let mut bytes = vec![0u8; len];
+            bytes[if udt == 23 { 0x604 } else { 0 }] = 4;
+            bytes[4] = 0x18;
+            let msg = AhMessage::Opaque { user_defined_type: udt, bytes };
+            assert!(SchemaCodec.encode(&msg).is_ok(), "udt {udt}");
+        }
     }
 
     #[test]
@@ -530,6 +725,9 @@ mod tests {
     /// Two instruments, one answer - and the literals are what a reader of this file sees.
     #[test]
     fn the_pinned_tags_equal_the_derived_ones() {
+        if !crate::eboot_or_skip("the_pinned_tags_equal_the_derived_ones") {
+            return;
+        }
         assert_eq!(d1_oracle::activity_host::tag_for_udt(3).unwrap(), TAG_JOIN_REQUEST);
         assert_eq!(d1_oracle::activity_host::tag_for_udt(4).unwrap(), TAG_JOIN_RESULT);
         // The DESCRIPTOR_GLOBAL_* pins are 01.29's; `descriptor_global` follows the selected build.
@@ -561,15 +759,35 @@ mod tests {
 /// connection. DeRveXx ran this idea locally for PR #193's route checks.
 ///
 /// The key is a 128-bit FNV-1a hash of everything the build reads: the parameters (their `Debug`
-/// text covers every field and client state), the selected build (`D1_BUILD`) and a format
-/// version. Unset, nothing is cached. A cache entry that can't be read is rebuilt.
+/// text covers every field and client state), the selected build (`D1_BUILD`), the encoder that
+/// builds the frame (the native one under `D1_RSAT_NATIVE=1`, else the client's own codec) and a
+/// format version. Unset, nothing is cached. A cache entry that can't be read is rebuilt.
+///
+/// Integration review, finding 18: the key used to name neither the encoder nor its revision, so
+/// frames cached before #321's ScalarFloat correction were still served, and a native run could
+/// be served the oracle's frame (and the other way round) from the shared `${STAGING}/sensor-cache`.
+/// The format is now `v2` (every older entry is a miss) and the encoder is in the key. Bump
+/// [`ENCODER_REVISION`] whenever either encoder's output changes.
 pub mod sensor_cache {
     use std::path::PathBuf;
 
-    const FORMAT: &str = "sensor-cache-v1";
+    const FORMAT: &str = "sensor-cache-v2";
+    /// The encoders' revision: bump it when the native encoder (d1-rsat) or the oracle's sensor
+    /// build changes what it writes. 1: #321's ScalarFloat correction.
+    pub const ENCODER_REVISION: u32 = 1;
+
+    /// The encoder a build here uses: `native` under `D1_RSAT_NATIVE=1`, else `oracle`.
+    pub fn encoder() -> &'static str {
+        if crate::native::enabled() { "native" } else { "oracle" }
+    }
 
     pub fn key(params: &d1_oracle::sensor::SensorPhaseUpdate, build: &str) -> u128 {
-        let text = format!("{FORMAT}|{build}|{params:?}");
+        key_with(params, build, encoder())
+    }
+
+    /// [`key`] for `encoder` (`native` or `oracle`).
+    pub fn key_with(params: &d1_oracle::sensor::SensorPhaseUpdate, build: &str, encoder: &str) -> u128 {
+        let text = format!("{FORMAT}|{build}|{encoder}|r{ENCODER_REVISION}|{params:?}");
         let fnv = |basis: u64| {
             text.bytes().fold(basis, |h, b| (h ^ u64::from(b)).wrapping_mul(0x0000_0100_0000_01B3))
         };
@@ -620,6 +838,15 @@ pub mod sensor_cache {
             assert_eq!(key(&params(1), "later-56578"), key(&params(1), "later-56578"));
             assert_ne!(key(&params(1), "later-56578"), key(&params(2), "later-56578"));
             assert_ne!(key(&params(1), "later-56578"), key(&params(1), "other"));
+            // Finding 18: the encoder is in the key, so native and oracle frames never mix.
+            assert_ne!(key_with(&params(1), "later-56578", "native"), key_with(&params(1), "later-56578", "oracle"));
+            // And the format moved on: a v1 entry (no encoder, no revision) is never this key.
+            let v1 = {
+                let text = format!("sensor-cache-v1|later-56578|{:?}", params(1));
+                let fnv = |basis: u64| text.bytes().fold(basis, |h, b| (h ^ u64::from(b)).wrapping_mul(0x0000_0100_0000_01B3));
+                (u128::from(fnv(0xCBF2_9CE4_8422_2325)) << 64) | u128::from(fnv(0x84222325_CBF29CE4))
+            };
+            assert_ne!(key_with(&params(1), "later-56578", "oracle"), v1);
         }
 
         #[test]

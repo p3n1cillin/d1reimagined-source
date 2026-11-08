@@ -221,6 +221,7 @@ pub const BAP_TYPE_CLIENT_TO_AH_NOTIFICATION: u16 = 8;
 impl AhConnection {
     pub fn new(instance: ActivityInstance, codec: Arc<dyn AhWireCodec>) -> Self {
         let sense = crate::sense::SenseWorker::from_env(instance.squad_epoch());
+        let host_id = instance.ah_id();
         Self {
             conv: BapConversation::with_default_deadline(),
             channel: None,
@@ -230,10 +231,11 @@ impl AhConnection {
             pending_pushes: Vec::new(),
             // The endpoint here only feeds message 17, which `d1-responder` answers on the primary
             // channel; this connection never hands out an address. Placeholder, not a claim.
-            registry: crate::registry::HostRegistry::new(std::net::SocketAddrV4::new(
-                std::net::Ipv4Addr::UNSPECIFIED,
-                0,
-            )),
+            // Message 7 names the host this connection's instance presents.
+            registry: crate::registry::HostRegistry::with_first_id(
+                std::net::SocketAddrV4::new(std::net::Ipv4Addr::UNSPECIFIED, 0),
+                host_id,
+            ),
             captured: std::collections::BTreeSet::new(),
             client_update_capture: None,
             client_authoritative_image: Vec::new(),
@@ -455,6 +457,8 @@ impl AhConnection {
         if udt == 6 {
             if let Some(sense) = self.sense.as_mut() { sense.submit(payload); }
             self.instance.set_sense_ready(false);
+            // D1_AH_SCRIPTS hook (script_bridge.rs, run fg2f): the client's answer to the full list.
+            self.instance.on_sense_payload(now);
         }
         if let Some(why) = crate::codec::undecodable_reason(udt) {
             events.push(AhEvent::NotDecoded {
@@ -723,6 +727,26 @@ fn log_event(peer: &str, e: &AhEvent, prefix: &str) {
 }
 
 /// One connection's read loop.
+/// A turn of the connection loop longer than this blocks every write, heartbeats included: the
+/// client declares the host crashed after 20.5 s without hearing from it.
+pub const SLOW_TURN: Duration = Duration::from_millis(1500);
+
+/// Warn when one `on_frame` or `on_tick` held the loop for longer than [`SLOW_TURN`], naming what
+/// it produced. Run cine-live9 (5 November) lost its host after the log fell silent for 16.8 s
+/// mid-mission while a large build ran on the machine; this says which step was slow.
+fn warn_if_slow(peer: &str, what: &str, took: Duration, events: &[AhEvent]) {
+    if took < SLOW_TURN {
+        return;
+    }
+    let first = events.first().map(|e| format!("{e:?}")).unwrap_or_default();
+    let first: String = first.chars().take(160).collect();
+    tracing::warn!(
+        "[{peer}] slow {what}: {} ms holding the connection loop ({} event(s); first {first})",
+        took.as_millis(),
+        events.len()
+    );
+}
+
 async fn drive(
     mut sock: tokio::net::TcpStream,
     peer: String,
@@ -756,6 +780,7 @@ async fn drive(
             Err(_elapsed) => {
                 last_tick = Instant::now();
                 let (replies, events) = conn.on_tick(last_tick);
+                warn_if_slow(&peer, "tick", last_tick.elapsed(), &events);
                 for e in events {
                     // ⭐⭐ The heartbeat path used to print EVERY event at INFO, including the
                     // codec fault that killed run 20260809-120451-MOONBASE-FRESH. Route it the
@@ -781,7 +806,9 @@ async fn drive(
                 break;
             }
             let frame: Vec<u8> = buf.drain(..6 + size).collect();
-            let (replies, events) = conn.on_frame(&frame, Instant::now());
+            let started = Instant::now();
+            let (replies, events) = conn.on_frame(&frame, started);
+            warn_if_slow(&peer, "frame", started.elapsed(), &events);
             for e in events {
                 log_event(&peer, &e, "");
             }
@@ -796,6 +823,7 @@ async fn drive(
         if last_tick.elapsed() >= poll {
             last_tick = Instant::now();
             let (replies, events) = conn.on_tick(last_tick);
+            warn_if_slow(&peer, "tick", last_tick.elapsed(), &events);
             for e in events {
                 log_event(&peer, &e, "heartbeat ");
             }
@@ -816,6 +844,42 @@ pub async fn serve(
     codec: Arc<dyn AhWireCodec>,
 ) -> anyhow::Result<()> {
     let factory = Arc::new(instance_factory);
+    // D1_AH_DISTINCT_HOST_IDS=1: each connection presents its own activity-host id, the first
+    // the configured one and each later one the next (message 7, join_result +0x08 and every
+    // push). The live client holds several host connections at once, each a different host: in
+    // the live Restoration capture its mission host (the PAH) stays connected all mission while a
+    // public instance it starts joins beside it (notes/d1-live-captures-2026-11-05.md). Off, every
+    // connection presents the same id, as all served runs so far have.
+    let distinct_ids = std::env::var("D1_AH_DISTINCT_HOST_IDS").is_ok_and(|v| v == "1");
+    let connections = Arc::new(std::sync::atomic::AtomicU64::new(0));
+    // MP(H) D1_AH_SHARED_INSTANCES=1: connections whose join requests name the same host share one
+    // instance (one membership for all, peer slots, physics-host election; crate::group). Off,
+    // every connection is its own solo instance, as all served runs so far have been.
+    // ── stream R hook ── D1_AH_CRUCIBLE=1 turns them on too: a Crucible match is one instance of
+    // every player, and its physics host is elected here (group.rs); the server simulates no combat.
+    let shared = (std::env::var("D1_AH_SHARED_INSTANCES").is_ok_and(|v| v == "1") || crate::pvp_driver::enabled())
+        .then(crate::group::InstanceGroups::shared);
+    if shared.is_some() {
+        tracing::info!("⭐ shared instances on (D1_AH_SHARED_INSTANCES): one membership and one script bridge per named host");
+    }
+    // Stream O3 (integration review, finding 9): one script bridge per shared instance.
+    let scripts = shared.is_some().then(crate::shared_scripts::SharedScripts::new);
+    let factory = Arc::new(move || {
+        let mut instance = factory();
+        let n = connections.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        if distinct_ids && n > 0 {
+            let id = instance.ah_id().wrapping_add(n);
+            tracing::info!("⭐ connection {n} presents activity host {id:#018x} (D1_AH_DISTINCT_HOST_IDS)");
+            instance.set_ah_id(id);
+        }
+        if let Some(groups) = &shared {
+            instance.set_group(crate::group::GroupLink::new(groups.clone(), n));
+        }
+        if let Some(s) = &scripts {
+            instance.set_shared_scripts(s.clone());
+        }
+        instance
+    });
 
     match bind {
         AhBind::Listen(addr) => {
@@ -1057,6 +1121,9 @@ mod tests {
     /// `join_result` it frames, and the assertion below reads it out of the outgoing body.
     #[test]
     fn the_captured_live_join_request_decodes_and_both_pushes_are_framed() {
+        if !crate::eboot_or_skip("the_captured_live_join_request_decodes_and_both_pushes_are_framed") {
+            return;
+        }
         let mut c = conn(Arc::new(SchemaCodec));
         let now = Instant::now();
 

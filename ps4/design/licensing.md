@@ -51,7 +51,14 @@ LICENSE file means public domain" is exactly backwards, and it is easy to get wr
    **not read**, including as a source of facts extracted by a human or an agent. This is stronger
    than a reference-only posture on purpose: "read the code, write your own" is a practice
    reasonable people disagree about; not reading it is not arguable.
-2. **No unlicensed material either**, on the stricter grounds in section 2.
+2. **No unlicensed material either**, on the stricter grounds in section 2. **One exception, decided by
+   the project owner on 5 November 2026:** Blam Network's (Codie's) unlicensed Destiny work, namely
+   tiger's `fukugen-daihon` restored mission scripts and the `tiger_test_harness` server, may be
+   read, run and loaded as an **external input from a local checkout**. It is never copied into this
+   repository, never redistributed, and only described here in our own words, with credit. A
+   licence from Blam Network is still being sought. The alpha scripts decompiled from a leaked
+   Bungie build are not quoted. Blam Network's MIT packages (`bullshcript`, `gibbon`, `rsat`,
+   `datamine`, `poodle`) are ordinary permissive code under rule 3.
 3. **GPL and permissive prior art is in bounds** - fork it, crib from it, port from it, with
    credit. Every derivation gets an entry in `d1-server/ATTRIBUTION.md` naming the specific files
    and the upstream commit, not a vague nod, and every source file carries an SPDX header.

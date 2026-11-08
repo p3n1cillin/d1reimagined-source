@@ -258,6 +258,12 @@ pub const CALL_SITES_56578: &[(u32, u64, Option<usize>)] = &[
     (48, 0x0191_A478, Some(0x004)),
     (14, 0x0191_A390, Some(0x014)),
     (21, 0x0191_A300, Some(0x220)),
+    // udt 23 and 24, which the live host sends at gameplay start and transitions (the client
+    // answers with 25 and 26): rx-dispatch entries 9 and 10 (`0x1910518` -> `0x10190F0`,
+    // `0x1910528` -> `0x1019270`) load these globals exactly as udt 0's handler loads
+    // `0x191A3A0` (`lea rax,[rip+G]`, `mov edx,-1`, `call 0xE8680`). No size is stated there.
+    (23, 0x0191_A3C8, None),
+    (24, 0x0191_A3D8, None),
 ];
 
 /// Build 56578's [`RAW_SEND`]. The same three udts pass descriptor `0xFFFFFFFF` to `0x299D10`, with
@@ -287,7 +293,11 @@ pub fn is_raw_send(user_defined_type: u32) -> Option<(u64, &'static str)> {
 /// ⭐ Descriptor field kind **0x22** - a *dynamic flags* bitset, and the one field kind this oracle
 /// cannot run.
 ///
-/// Two Activity-Host messages consist of exactly one such field and nothing else - udt **33**
+/// This classification is retained for **01.29 only**. On 56578, the relocated handler
+/// pair 0x102A3D0/0x102D220 implements a typed value (handle plus payload at +0x10),
+/// including in udts 33/37; `dynamic_flags_reason` does not gate that build.
+///
+/// Two reference-build Activity-Host messages consist of exactly one such field - udt **33**
 /// `process_debug_command` (`0x80800A3D`, `0x210`) and udt **37** `send_client_heartbeat`
 /// (`0x80800D06`, `0xB1E0`). Decoding either faults, and the fault is **not** about the message:
 ///
@@ -318,6 +328,12 @@ pub const DYNAMIC_FLAGS_GROW_FN: u64 = 0x002C_6BA0;
 /// Whether a tag's top-level fields include a [`FIELD_KIND_DYNAMIC_FLAGS`] one, and if so why that
 /// is fatal here. Memoised through [`dynamic_flags_tags`].
 pub fn dynamic_flags_reason(tag: u32) -> Result<Option<String>> {
+    // The old field-kind label is build-specific. 56578's relocated 0x22 handlers
+    // are 0x102A3D0/0x102D220: handle through 0x1996050, payload at +0x10.
+    // They do not allocate a dynamic bitset. Keep the 01.29 refusal on that build.
+    if addrs() == &crate::codec::CODEC_56578 {
+        return Ok(None);
+    }
     if !dynamic_flags_tags()?.contains(&tag) {
         return Ok(None);
     }
@@ -343,6 +359,9 @@ pub fn dynamic_flags_reason(tag: u32) -> Result<Option<String>> {
 pub fn dynamic_flags_tags() -> Result<&'static BTreeSet<u32>> {
     static T: OnceLock<std::result::Result<BTreeSet<u32>, String>> = OnceLock::new();
     match T.get_or_init(|| {
+        if addrs() == &crate::codec::CODEC_56578 {
+            return Ok(BTreeSet::new());
+        }
         let image = Image::open_default().map_err(|e| e.to_string())?;
         let index = descriptors::index(&image).map_err(|e| e.to_string())?;
         let schemas = schemas().as_ref().map_err(|e| e.clone())?;
@@ -571,7 +590,13 @@ impl AhCodec {
                 )));
             }
             // `ObjectOracle::new` runs the pinned object control first and refuses otherwise.
-            let mut o = ObjectOracle::new(tag)?;
+            // udt 1 (global_activity_state) carries the activity option list, whose entries hold
+            // typed values (bool `0x80800004`, int `0x80800007`): its codec must know those types.
+            let mut o = if user_defined_type == 1 {
+                ObjectOracle::with_types(tag, crate::sensor::TYPED_VALUE_TYPES)?
+            } else {
+                ObjectOracle::new(tag)?
+            };
             if self.rewind_disabled {
                 o.set_rewind_enabled(false);
             }
@@ -1749,10 +1774,13 @@ pub fn controls() -> Result<Vec<Control>> {
     c.push(check(
         "⭐ udts whose descriptor is a DYNAMIC FLAGS bitset are refused with their cause, and the \
          set is derived",
-        df == vec![33, 37]
-            && df_err.contains("DYNAMIC FLAGS")
-            && df_err.contains("FUN_000B0550")
-            && codec.struct_size(1).is_ok(),
+        (if addrs() != &crate::codec::CODEC_56578 {
+            df == vec![33, 37]
+                && df_err.contains("DYNAMIC FLAGS")
+                && df_err.contains("FUN_000B0550")
+        } else {
+            df.is_empty() && df_err.is_empty()
+        }) && codec.struct_size(1).is_ok(),
         format!(
             "derived {df:?} from field kind {FIELD_KIND_DYNAMIC_FLAGS:#04x}; the fault is \
              {:?} after {:#x}; udt 1 is the positive control on the same call",
@@ -1814,6 +1842,34 @@ mod tests {
         assert_eq!(tag_for_udt(1).unwrap(), 0x8080_0E76);
         // ⭐ The fourth establish-client message, closed 2026-08-09.
         assert_eq!(tag_for_udt(11).unwrap(), 0x8080_09ED);
+    }
+
+    /// udt 23 `claim_authority_over_abandoned_entity_slots` and 24 `purge_abandoned_entity_slots`
+    /// (pinned for 56578 from rx-dispatch entries 9 and 10) derive their tags and round-trip the
+    /// shapes the live host sent (notes/d1-live-captures-2026-11-05.md): 23 {u8, slot set, u3},
+    /// 24 {u3, u8, slot set}. Skips for a build whose call sites do not pin them.
+    #[test]
+    fn the_entity_slot_handover_udts_are_pinned_and_round_trip() {
+        if !crate::test_inputs::selected_eboot() || !call_sites().iter().any(|(u, _, _)| *u == 23) {
+            return;
+        }
+        assert_eq!(tag_for_udt(23).unwrap(), 0x8080_0D58);
+        assert_eq!(tag_for_udt(24).unwrap(), 0x8080_0D10);
+        let mut codec = AhCodec::new();
+        let mut claim = vec![0u8; codec.struct_size(23).unwrap()];
+        assert_eq!(claim.len(), 0x608);
+        claim[0] = 5;
+        claim[4..8].copy_from_slice(&0xFB6F_F818u32.to_le_bytes());
+        claim[0x604] = 4;
+        let e = codec.encode(23, &claim).unwrap();
+        assert_eq!(codec.decode(23, &e.payload).unwrap().object, claim);
+        let mut purge = vec![0u8; codec.struct_size(24).unwrap()];
+        assert_eq!(purge.len(), 0x604);
+        purge[0] = 4;
+        purge[1] = 6;
+        purge[4..8].copy_from_slice(&0xFB6F_F818u32.to_le_bytes());
+        let e = codec.encode(24, &purge).unwrap();
+        assert_eq!(codec.decode(24, &e.payload).unwrap().object, purge);
     }
 
     /// ⭐ The retraction, asserted rather than only written down: `0x29CDE0` is udt **7**

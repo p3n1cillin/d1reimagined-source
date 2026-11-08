@@ -80,6 +80,24 @@ pub fn params_for_list(
     Ok(params)
 }
 
+/// The lifetime phase a list names itself with `@phase N`, if it does. [`params_for_list`] falls
+/// back to the launch phase (`D1_AH_SENSOR_PHASE`) without one; the script bridge does not (it
+/// starts every world at the live hosts' first value, 0).
+pub fn listed_phase(text: &str) -> Option<i8> {
+    text.lines()
+        .map(|l| l.split('#').next().unwrap_or("").trim())
+        .find(|l| l.split_whitespace().next() == Some("@phase"))
+        .and_then(|l| l.trim_start_matches("@phase").trim().parse().ok())
+        .filter(|p| (-1..=14).contains(p))
+}
+
+/// Whether a list names its own launch authority (`@authority`).
+pub fn lists_authority(text: &str) -> bool {
+    text.lines()
+        .map(|l| l.split('#').next().unwrap_or("").trim())
+        .any(|l| l.split_whitespace().next() == Some("@authority"))
+}
+
 fn parse_authority(value: &str) -> Result<SensorAuthority> {
     let fields: Vec<&str> = value.split(',').map(str::trim).collect();
     if !(1..=3).contains(&fields.len()) || fields.iter().any(|f| f.is_empty()) {
@@ -252,6 +270,42 @@ mod tests {
         }
     }
 
+    /// The live hosts stepped a cinematic world's lifetime phase 0 -> 1 -> 4 and played each
+    /// cinematic at 4, then 6 (notes/d1-live-speaker-timeline-2026-11-05.md). Our lists must say so,
+    /// and name the world's lifetime record (sub 3), or the host's launch phase (3) goes out instead.
+    #[test]
+    fn the_cinematic_lists_carry_the_live_lifetime_phases() {
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../fixtures/56578/mission");
+        for world in ["cine_reveal", "cine_speaker", "cine_awoken"] {
+            let play: &[&str] = match world {
+                "cine_reveal" => &["cine_reveal-play-0.txt"],
+                "cine_speaker" => &["cine_speaker-play.txt"],
+                _ => &["cine_awoken-play-0.txt", "cine_awoken-play-1.txt"],
+            };
+            let mut lists = vec![
+                (format!("sensor-clients-{world}-live.txt"), 0),
+                (format!("{world}-phase-1.txt"), 1),
+            ];
+            lists.extend(play.iter().map(|f| (f.to_string(), 4)));
+            lists.push((format!("{world}-done.txt"), 6));
+            lists.push((format!("{world}-end.txt"), 8));
+            for (file, phase) in lists {
+                let text = std::fs::read_to_string(dir.join(&file))
+                    .unwrap_or_else(|e| panic!("{file}: {e}"));
+                let p = params_for_list(&base(), 0x4786_C0E0, -1, &text)
+                    .unwrap_or_else(|e| panic!("{file}: {e:#}"));
+                assert_eq!((p.phase, p.name_sub), (phase, 3), "{file}");
+                assert!(
+                    !p.clients
+                        .iter()
+                        .any(|c| c.name_hash == 0x4786_C0E0 && c.name_i8 == 16 && c.name_sub == 3),
+                    "{file}: the lifetime record is the phase entry, not a client"
+                );
+            }
+        }
+    }
+
     #[test]
     fn malformed_phase_is_rejected_instead_of_ignored_or_wrapped() {
         for value in ["", "15", "-2", "256", "no", "7 8"] {
@@ -259,5 +313,14 @@ mod tests {
             assert!(error.to_string().contains("line 1"), "{value}: {error}");
         }
         assert!(params_for_list(&base(), 99, -1, "@phase 7\n@phase 3").is_err());
+    }
+
+    #[test]
+    fn a_list_names_its_phase_and_authority_or_does_not() {
+        assert_eq!(listed_phase("# x\n @phase 0 # the live first value\n99 1 4 1 0"), Some(0));
+        assert_eq!(listed_phase("99 1 4 1 0\n# @phase 4"), None, "a comment is not a phase");
+        assert_eq!(listed_phase("99 1 4 1 0"), None, "params_for_list's launch phase is not the list's");
+        assert!(lists_authority("@authority 12"));
+        assert!(!lists_authority("# @authority 12\n99 1 4 1 0"));
     }
 }

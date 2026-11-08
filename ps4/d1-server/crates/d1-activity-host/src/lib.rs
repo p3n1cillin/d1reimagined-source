@@ -75,17 +75,39 @@
 //! completed an Activity-Host handshake against anything we built. The moment one does, everything
 //! downstream is `synthetic_ancestor`.
 
+pub mod activity_driver; // stream O2: drives encounter_framework::ActivityRun on the wire
+pub mod checkpoints;
 pub mod codec;
+pub mod completion;
 pub mod controls;
+pub mod encounter_framework;
 pub mod entity;
 pub mod fireteam;
+pub mod generated;
+pub mod group; // MP(H): several clients in one instance
+pub mod incident_catalog;
 pub mod listener;
 pub mod messages;
+pub mod native;
+pub mod open_world;
 pub mod protocol;
+pub mod public_events;
+pub mod public_host;
+pub mod public_registry;
 pub mod push;
+pub mod pvp;
+pub mod pvp_driver; // stream R: Crucible matches driven by the clients' reports
+pub mod pvp_wire; // stream R: a Crucible match on each client's udt 5
 pub mod registry;
+pub mod reward_forward; // stream O: grants to the responder's store
+pub mod rewards;
+pub mod row_encoders;
+pub mod rows;
+pub mod scoreboard_rows; // stream R: the whole kind-15 scoreboard and the lifetime's named values
+pub mod script_bridge;
 pub mod sense;
 pub mod sensor_list;
+pub mod shared_scripts; // stream O3: one script bridge per shared instance
 pub mod state;
 pub mod worlds;
 
@@ -191,3 +213,17 @@ impl AhError {
 }
 
 impl std::error::Error for AhError {}
+
+/// For the tests that run the client's own codec: whether the owned eboot with a codec set is
+/// there (`D1_EBOOT`, else the default dump). Without it the test is skipped with a message, as
+/// the crate's other eboot tests are, instead of failing on a missing file.
+#[cfg(test)]
+pub(crate) fn eboot_or_skip(test: &str) -> bool {
+    match d1_oracle::codec::selected() {
+        Ok(_) => true,
+        Err(e) => {
+            eprintln!("SKIP {test}: needs the owned eboot (set D1_EBOOT to the 56578 executable): {e}");
+            false
+        }
+    }
+}

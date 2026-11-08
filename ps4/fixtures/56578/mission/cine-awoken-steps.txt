@@ -1,0 +1,26 @@
+# Activity 186 (The Awoken, act_cinematic_queen_101): its two cinematics with the bubble change between
+# them, as the live host served it (notes/d1-live-captures-2026-11-05.md: slice sets "starts 17, 1"; the
+# second cinematic /6/1 played after the bubble change, at stamp 1060). The shape of cine-reveal-steps.txt,
+# whose region move played both reveal cinematics in run fg3b.
+# Run awk3 (7 November) served the first four lists through d1-cine-watch.py without the move: cinematic 1
+# played and the client then stayed in slice set 17 with /6/1 never starting. Run awk5, this schedule:
+# the client teleported to PRV01.01 and /6/1 played (the Queen's throne room).
+# D1_AH_MISSION_STEPS; times start at the host's first sensor frame for 186. The 20 s is the cushion
+# d1-cine-watch.py's --start-after used in spk3 and awk3, not a retail wait.
+# index  when      group       list                               [region]
+186  0         0x4786c0e0  sensor-clients-cine_awoken-live.txt
+186  20        0x4786c0e0  cine_awoken-phase-1.txt
+186  +1        0x4786c0e0  cine_awoken-play-0.txt
+# /6/0 finished: stop its row and move to slice set 1 (bubble 0, state 1).
+186  @891|900  0x4786c0e0  cine_awoken-move-1.txt               1
+# Wait for CURRENT slice set 1 (30 s fallback). Since #352 the host sees the private slice set's
+# record (FNV-basis hash): in awk9 the client was in slice set 1 1.7 s after the teleport, and /6/1
+# started 3.5 s after the first cinematic ended. Live, /6/1 played 83 s after /6/0 (stamps 228 and
+# 1060), about 11 s after a 72 s first cinematic.
+186  %1|30     0x4786c0e0  cine_awoken-move-1.txt
+186  +1        0x4786c0e0  cine_awoken-play-1.txt
+# The second 891: done (phase 6) and the activity's completion: activity_complete 965 and its
+# chain with one 0x80800595 body (the hashes as scripts/activities.txt names them; cinematic-only, so
+# no 3235). Live, a cinematic-only activity sent lifetime 6 and 8 in one tick with its completion.
+186  @891|900  0x4786c0e0  cine_awoken-done.txt  complete=0x9a7acc78:0x648999f4:0x4d78882e:0x95c17d0f
+186  +1        0x4786c0e0  cine_awoken-end.txt

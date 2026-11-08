@@ -37,7 +37,7 @@ The [PS4 source tree](ps4/README.md) now includes the Rust services, protocol
 libraries, diagnostic tools, canonical harness and generators from aknumbers'
 [Destiny 1 Preservation Project](CREDITS.md#aknumbers-the-destiny-1-preservation-project), with the latest preparation and content-reader fixes.
 The retained PlayStation 3 implementation targets version 01.24 with RPCS3.
-See [current results and contribution priorities](docs/STATUS.md). The first
+See [current results and contribution priorities](docs/STATUS.md) and [the full-game coverage matrix](docs/COVERAGE.md). The first
 mission, A Guardian Rises, now runs from the Cosmodrome through the Divide and
 Dock 13 to its outro and post-game screens, with the project's services driving
 its steps. The Breach's Fallen come on the mission script's own triggers and play their authored
@@ -64,7 +64,7 @@ This is a research repository, not a ready-to-play installer. The `data/` direct
 | `tools/ps4_setup/` | Original preparation helpers and narrow patches for the PS4 runtime |
 | `tests/` | Additional regression cases |
 | `ps4/` | Active Rust preservation services, tools, research docs and canonical harness |
-| `docs/` | Current contributor checkpoint and publication provenance |
+| `docs/` | Current contributor checkpoint, full-game coverage matrix and publication provenance |
 | `notes/` | Imported PS3/PS4 research journals and historical evidence |
 | `data/` | Derived PS3 schemas, logs, update diffs and checksum manifest (no game files) |
 
@@ -112,7 +112,12 @@ reports go privately via [SECURITY.md](SECURITY.md).
 
 ## Licence and third-party rights
 
-Original project source is offered under GPL-2.0-only unless a file carries a different existing licence notice, including GPL-2.0-or-later annotations. See LICENSE and THIRD_PARTY_NOTICES.md, and [CREDITS.md](CREDITS.md) for whose work is used. Preserve upstream copyright and licence notices when applying patches. Source licensing does not cover Destiny assets, executables, firmware, trademarks or third-party binaries. Imported `data/` payloads retain their original ownership and are not relicensed by the project source licence.
+The project is licensed under the GNU General Public License, not the AGPL; [LICENSE](LICENSE) holds the GPL version 2 text. Each file's SPDX header gives its terms:
+
+- **The PS4 route** (`ps4/`, `tools/`, `lab/`, `tests/`) is **GPL-2.0-or-later**. The "or later" is required, not optional: the PS4 servers build on shadPS4's GPL-2.0-or-later shadNet schema and link Apache-2.0 crates (prost, ring and others), which GPLv3 can combine with and GPL-2.0-only cannot ([licensing](ps4/design/licensing.md)).
+- **The retained PS3 route** (the RPCS3 patches and the original PS3 files without their own notice) is **GPL-2.0-only**, as RPCS3 is.
+
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and [CREDITS.md](CREDITS.md) for whose work is used. Preserve upstream copyright and licence notices when applying patches. Source licensing does not cover Destiny assets, executables, firmware, trademarks or third-party binaries. Imported `data/` payloads retain their original ownership and are not relicensed by the project source licence.
 
 D1 Reimagined is not affiliated with or endorsed by Bungie, Sony Interactive Entertainment, or RPCS3. Destiny and associated names and assets belong to their respective rights holders. There is no warranty, compatibility promise, legal immunity or announced playable release.
 

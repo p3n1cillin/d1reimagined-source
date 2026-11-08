@@ -90,6 +90,10 @@ pub struct MatchmakingCoreRequest {
     pub matchmaking_set_id: Option<u32>,
     pub advertisement_slot: Option<u32>,
     pub matchmaking_key: Option<MatchmakingKey>,
+    /// `f8.1` - the advertisement id the client repeats in a kind-2 update once the service has
+    /// acknowledged its advertisement (`f5.1` of the reply; live-server capture of Restoration,
+    /// notes/d1-live-captures-2026-11-05.md). Absent on the first advertisement.
+    pub advertisement_id: Option<u64>,
 }
 
 impl MatchmakingCoreRequest {
@@ -117,6 +121,10 @@ impl MatchmakingCoreRequest {
             }
             None => None,
         };
+        let advertisement_id = match crate::optional_bytes(&fields, 8)? {
+            Some(bytes) => optional_varint(&parse_proto_fields(bytes)?, 1)?,
+            None => None,
+        };
         Ok(Self {
             version: optional_varint(&fields, 1)?.map(|v| u32_field(v, 1)).transpose()?,
             request_kind: optional_varint(&fields, 2)?.map(|v| u32_field(v, 2)).transpose()?,
@@ -127,6 +135,7 @@ impl MatchmakingCoreRequest {
                 .map(|v| u32_field(v, 6))
                 .transpose()?,
             matchmaking_key: key,
+            advertisement_id,
         })
     }
 
@@ -147,6 +156,11 @@ impl MatchmakingCoreRequest {
                 push_varint(&mut inner, 3, u64::from(skill));
             }
             push_bytes(&mut b, 11, &inner);
+        }
+        if let Some(id) = self.advertisement_id {
+            let mut inner = Vec::new();
+            push_varint(&mut inner, 1, id);
+            push_bytes(&mut b, 8, &inner);
         }
         b
     }
@@ -189,13 +203,36 @@ pub struct MatchmakingCoreResponse {
     /// the generic parse loop `0xA17D0` rather than the nested-message handler `0xA2920`, and the
     /// latter is what was disassembled. The non-empty form removes the risk at no cost.
     pub configuration: Option<Vec<u8>>,
+    /// `f3` raw body: the session search results. The live services answered a search with
+    /// `{1: one candidate session, 2: 400}`; [`Self::search_found_none`] sends `{2: 400}`.
+    pub search_results: Option<Vec<u8>>,
+    /// `f5.1`: the advertisement id that acknowledges a kind-2 advertisement. The live services
+    /// gave one per advertisement, and echoed it to every update that repeated it.
+    pub advertisement_ack: Option<u64>,
 }
 
+/// The live `f3.2` beside the search results (`0x190`). `[U]` meaning.
+pub const SEARCH_RESULTS_F2: u64 = 400;
+
 impl MatchmakingCoreResponse {
+    /// ⭐ A kind-1 search answered with no sessions found: the solo-lab answer, after which the
+    /// client creates its own public session (public-session plan step 3). The live services sent
+    /// `f3 = {1: candidate, 2: 400}`; this keeps `f3.2` and leaves the candidates out. `[I]`.
+    pub fn search_found_none(nonce: u64) -> Self {
+        let mut f3 = Vec::new();
+        push_varint(&mut f3, 2, SEARCH_RESULTS_F2);
+        Self { kind: Some(MM_KIND_SESSION_SEARCH), nonce: Some(nonce), search_results: Some(f3), ..Self::default() }
+    }
+
+    /// ⭐ A kind-2 advertisement acknowledged with `id` (`f5 = {1: id}`), as the live services did.
+    pub fn advertisement_acknowledged(nonce: u64, id: u64) -> Self {
+        Self { kind: Some(MM_KIND_UPDATE_ADVERTISEMENT), nonce: Some(nonce), advertisement_ack: Some(id), ..Self::default() }
+    }
+
     /// ⭐ The minimal safe stub: echo the kind and nonce, and emit an `f4` whose only content is an
     /// empty `f4.1`. On the wire the load-bearing part is four bytes: `22 02 0A 00`.
     pub fn minimal_configuration(kind: u32, nonce: u64) -> Self {
-        Self { kind: Some(kind), nonce: Some(nonce), configuration: Some(vec![0x0A, 0x00]) }
+        Self { kind: Some(kind), nonce: Some(nonce), configuration: Some(vec![0x0A, 0x00]), ..Self::default() }
     }
 
     /// The reply to a decoded request, echoing both fields the client sent.
@@ -210,8 +247,16 @@ impl MatchmakingCoreResponse {
         let mut b = Vec::new();
         push_opt_varint(&mut b, 1, self.kind.map(u64::from));
         push_opt_varint(&mut b, 2, self.nonce);
+        if let Some(results) = &self.search_results {
+            push_bytes(&mut b, 3, results);
+        }
         if let Some(config) = &self.configuration {
             push_bytes(&mut b, 4, config);
+        }
+        if let Some(id) = self.advertisement_ack {
+            let mut inner = Vec::new();
+            push_varint(&mut inner, 1, id);
+            push_bytes(&mut b, 5, &inner);
         }
         b
     }
@@ -222,11 +267,16 @@ impl MatchmakingCoreResponse {
             kind: optional_varint(&fields, 1)?.map(|v| u32_field(v, 1)).transpose()?,
             nonce: optional_varint(&fields, 2)?,
             configuration: crate::optional_bytes(&fields, 4)?.map(<[u8]>::to_vec),
+            search_results: crate::optional_bytes(&fields, 3)?.map(<[u8]>::to_vec),
+            advertisement_ack: match crate::optional_bytes(&fields, 5)? {
+                Some(bytes) => optional_varint(&parse_proto_fields(bytes)?, 1)?,
+                None => None,
+            },
         })
     }
 }
 
-fn push_varint(out: &mut Vec<u8>, field: u32, mut value: u64) {
+pub(crate) fn push_varint(out: &mut Vec<u8>, field: u32, mut value: u64) {
     push_tag(out, field, 0);
     loop {
         let byte = (value & 0x7F) as u8;
@@ -245,7 +295,7 @@ fn push_opt_varint(out: &mut Vec<u8>, field: u32, value: Option<u64>) {
     }
 }
 
-fn push_bytes(out: &mut Vec<u8>, field: u32, value: &[u8]) {
+pub(crate) fn push_bytes(out: &mut Vec<u8>, field: u32, value: &[u8]) {
     push_tag(out, field, 2);
     let mut len = value.len() as u64;
     loop {
@@ -258,6 +308,12 @@ fn push_bytes(out: &mut Vec<u8>, field: u32, value: &[u8]) {
         out.push(byte | 0x80);
     }
     out.extend_from_slice(value);
+}
+
+/// A wire-type-5 field (a little-endian `f32`'s bits). Used by [`crate::matchmaking_sessions`].
+pub(crate) fn push_fixed32(out: &mut Vec<u8>, field: u32, bits: u32) {
+    push_tag(out, field, 5);
+    out.extend_from_slice(&bits.to_le_bytes());
 }
 
 fn push_tag(out: &mut Vec<u8>, field: u32, wire: u8) {
@@ -275,6 +331,34 @@ fn push_tag(out: &mut Vec<u8>, field: u32, wire: u8) {
 
 #[cfg(test)]
 mod tests {
+    /// ⭐ The live services' reply to the first advertisement in the Restoration capture (body
+    /// after message 43's header): kind 2, the request's nonce, and `f5 = {1: 0x33CE1A5}`.
+    #[test]
+    fn an_advertisement_ack_encodes_as_the_live_reply() {
+        let live = [0x08, 0x02, 0x10, 0xa6, 0xb1, 0xb5, 0xb3, 0xad, 0xc5, 0xc0, 0xfd, 0xa1, 0x01, 0x2a, 0x05, 0x08,
+                    0xa5, 0xc3, 0xf3, 0x19];
+        let rsp = MatchmakingCoreResponse::decode(&live).unwrap();
+        assert_eq!(rsp.advertisement_ack, Some(0x33C_E1A5));
+        assert_eq!(MatchmakingCoreResponse::advertisement_acknowledged(rsp.nonce.unwrap(), 0x33C_E1A5).encode(), live);
+    }
+
+    /// A search with nothing found keeps the live `f3.2` and carries no candidates.
+    #[test]
+    fn a_search_found_none_carries_only_f3_2() {
+        let b = MatchmakingCoreResponse::search_found_none(7).encode();
+        assert_eq!(b, [0x08, 0x01, 0x10, 0x07, 0x1a, 0x03, 0x10, 0x90, 0x03]);
+        assert_eq!(MatchmakingCoreResponse::decode(&b).unwrap().search_results, Some(vec![0x10, 0x90, 0x03]));
+    }
+
+    /// An update repeats the acknowledged id in `f8.1`; a first advertisement has none.
+    #[test]
+    fn the_advertisement_id_round_trips_in_f8() {
+        let req = MatchmakingCoreRequest { request_kind: Some(2), nonce: Some(9), advertisement_id: Some(0x33C_E1A5), ..Default::default() };
+        assert_eq!(MatchmakingCoreRequest::decode(&req.encode()).unwrap().advertisement_id, Some(0x33C_E1A5));
+        let first = MatchmakingCoreRequest { request_kind: Some(2), nonce: Some(9), ..Default::default() };
+        assert_eq!(MatchmakingCoreRequest::decode(&first.encode()).unwrap().advertisement_id, None);
+    }
+
     use super::*;
 
     #[test]
@@ -291,7 +375,8 @@ mod tests {
                 matchmaking_content_hash: MM_CONTENT_HASH_SOCIAL,
                 skill_bucket_hash: None,
             }),
-        };
+        advertisement_id: None,
+    };
         let bytes = req.encode();
         assert_eq!(MatchmakingCoreRequest::decode(&bytes), Ok(req));
         assert_eq!(MatchmakingCoreRequest::decode(&bytes).unwrap().encode(), bytes);
@@ -374,7 +459,8 @@ mod tests {
                 matchmaking_content_hash: 0,
                 skill_bucket_hash: Some(0),
             }),
-        };
+        advertisement_id: None,
+    };
         let zero_wire: [u8; 20] = [
             0x08, 0x00, 0x10, 0x00, 0x18, 0x00, 0x20, 0x00, 0x28, 0x00, 0x30, 0x00, 0x5a, 0x06,
             0x08, 0x00, 0x10, 0x00, 0x18, 0x00,
@@ -394,7 +480,8 @@ mod tests {
                 matchmaking_content_hash: u32::MAX,
                 skill_bucket_hash: Some(u32::MAX),
             }),
-        };
+        advertisement_id: None,
+    };
         assert_eq!(
             MatchmakingCoreRequest::decode(&maximum.encode()),
             Ok(maximum)
@@ -420,6 +507,8 @@ mod tests {
                 kind: None,
                 nonce: None,
                 configuration: Some(vec![0xa5; size]),
+                search_results: None,
+                advertisement_ack: None,
             };
             let wire = response.encode();
             assert!(wire.starts_with(&header), "wrong length prefix for {size}");
@@ -431,6 +520,8 @@ mod tests {
             kind: Some(u32::MAX),
             nonce: Some(u64::MAX),
             configuration: Some(vec![0x0a, 0x00]),
+            search_results: None,
+            advertisement_ack: None,
         };
         assert_eq!(
             MatchmakingCoreResponse::decode(&max_echo.encode()),
@@ -483,6 +574,8 @@ mod tests {
             kind: Some(4),
             nonce: Some(42),
             configuration: Some(vec![0x0a, 0x00]),
+            search_results: None,
+            advertisement_ack: None,
         };
         let mut response_wire = response.encode();
         response_wire.extend_from_slice(&[0x78, 0x7f]);

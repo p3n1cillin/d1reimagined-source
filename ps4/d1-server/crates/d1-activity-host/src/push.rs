@@ -386,6 +386,9 @@ mod tests {
     /// raw-struct experiment's, and a message with an unpinned tag must still be blocked.
     #[test]
     fn the_default_codec_now_produces_a_schema_body_that_is_not_the_struct() {
+        if !crate::eboot_or_skip("the_default_codec_now_produces_a_schema_body_that_is_not_the_struct") {
+            return;
+        }
         let body = a_push().to_bap_body(&SchemaCodec).unwrap();
         let raw = a_push().to_bap_body(&RawStructCodec).unwrap();
         assert_eq!(&body[9..13], &4u32.to_be_bytes(), "udt 4 = join_result");

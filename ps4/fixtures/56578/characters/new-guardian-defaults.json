@@ -1,0 +1,900 @@
+{
+  "build": "56578.17.04.12.1251.evil",
+  "generator": "d1-new-guardian-defaults.py",
+  "sources": [
+    {
+      "tag": 2158329857,
+      "sha256": "b1fc4cc4ef0ab5c1338bd85df0a9f925c7c2e5e6eb2e24acced28b242c49cf02"
+    },
+    {
+      "tag": 2158362573,
+      "sha256": "1bbaca1d43a948b3c001bacf9f2b0f93d541e1e2fae611bd37367bb9a1e94a54"
+    },
+    {
+      "tag": 2158377588,
+      "sha256": "2274f648e6126bb53cd3dd789ce776ebf6c2d3c6a0e713bbaee1c71039fbe12c"
+    }
+  ],
+  "data": [
+    {
+      "character_class": 0,
+      "race": 0,
+      "flags": [
+        {
+          "index": 2838,
+          "hash": 741976951,
+          "kind": 3,
+          "sub": 673,
+          "value": 2
+        },
+        {
+          "index": 2859,
+          "hash": 334775385,
+          "kind": 3,
+          "sub": 693,
+          "value": 2
+        },
+        {
+          "index": 931,
+          "hash": 2374793812,
+          "kind": 1,
+          "sub": 472,
+          "value": 2
+        },
+        {
+          "index": 932,
+          "hash": 1376257862,
+          "kind": 1,
+          "sub": 473,
+          "value": 2
+        },
+        {
+          "index": 844,
+          "hash": 2296210958,
+          "kind": 1,
+          "sub": 385,
+          "value": 2
+        },
+        {
+          "index": 882,
+          "hash": 4260935377,
+          "kind": 1,
+          "sub": 423,
+          "value": 2
+        },
+        {
+          "index": 894,
+          "hash": 2788983739,
+          "kind": 1,
+          "sub": 435,
+          "value": 2
+        },
+        {
+          "index": 898,
+          "hash": 506586581,
+          "kind": 1,
+          "sub": 439,
+          "value": 2
+        },
+        {
+          "index": 843,
+          "hash": 3115288269,
+          "kind": 1,
+          "sub": 384,
+          "value": 2
+        },
+        {
+          "index": 1875,
+          "hash": 4216656276,
+          "kind": 3,
+          "sub": 341,
+          "value": 2
+        },
+        {
+          "index": 899,
+          "hash": 1400127604,
+          "kind": 1,
+          "sub": 440,
+          "value": 2
+        },
+        {
+          "index": 2874,
+          "hash": 1565010676,
+          "kind": 3,
+          "sub": 706,
+          "value": 2
+        },
+        {
+          "index": 1105,
+          "hash": 2120136665,
+          "kind": 1,
+          "sub": 646,
+          "value": 2
+        },
+        {
+          "index": 3740,
+          "hash": 4227941069,
+          "kind": 3,
+          "sub": 826,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "character_class": 0,
+      "race": 2,
+      "flags": [
+        {
+          "index": 2838,
+          "hash": 741976951,
+          "kind": 3,
+          "sub": 673,
+          "value": 2
+        },
+        {
+          "index": 2859,
+          "hash": 334775385,
+          "kind": 3,
+          "sub": 693,
+          "value": 2
+        },
+        {
+          "index": 931,
+          "hash": 2374793812,
+          "kind": 1,
+          "sub": 472,
+          "value": 2
+        },
+        {
+          "index": 932,
+          "hash": 1376257862,
+          "kind": 1,
+          "sub": 473,
+          "value": 2
+        },
+        {
+          "index": 844,
+          "hash": 2296210958,
+          "kind": 1,
+          "sub": 385,
+          "value": 2
+        },
+        {
+          "index": 884,
+          "hash": 1510070372,
+          "kind": 1,
+          "sub": 425,
+          "value": 2
+        },
+        {
+          "index": 894,
+          "hash": 2788983739,
+          "kind": 1,
+          "sub": 435,
+          "value": 2
+        },
+        {
+          "index": 898,
+          "hash": 506586581,
+          "kind": 1,
+          "sub": 439,
+          "value": 2
+        },
+        {
+          "index": 843,
+          "hash": 3115288269,
+          "kind": 1,
+          "sub": 384,
+          "value": 2
+        },
+        {
+          "index": 1875,
+          "hash": 4216656276,
+          "kind": 3,
+          "sub": 341,
+          "value": 2
+        },
+        {
+          "index": 899,
+          "hash": 1400127604,
+          "kind": 1,
+          "sub": 440,
+          "value": 2
+        },
+        {
+          "index": 2874,
+          "hash": 1565010676,
+          "kind": 3,
+          "sub": 706,
+          "value": 2
+        },
+        {
+          "index": 3740,
+          "hash": 4227941069,
+          "kind": 3,
+          "sub": 826,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "character_class": 0,
+      "race": 1,
+      "flags": [
+        {
+          "index": 2838,
+          "hash": 741976951,
+          "kind": 3,
+          "sub": 673,
+          "value": 2
+        },
+        {
+          "index": 2859,
+          "hash": 334775385,
+          "kind": 3,
+          "sub": 693,
+          "value": 2
+        },
+        {
+          "index": 931,
+          "hash": 2374793812,
+          "kind": 1,
+          "sub": 472,
+          "value": 2
+        },
+        {
+          "index": 932,
+          "hash": 1376257862,
+          "kind": 1,
+          "sub": 473,
+          "value": 2
+        },
+        {
+          "index": 844,
+          "hash": 2296210958,
+          "kind": 1,
+          "sub": 385,
+          "value": 2
+        },
+        {
+          "index": 883,
+          "hash": 2201733810,
+          "kind": 1,
+          "sub": 424,
+          "value": 2
+        },
+        {
+          "index": 894,
+          "hash": 2788983739,
+          "kind": 1,
+          "sub": 435,
+          "value": 2
+        },
+        {
+          "index": 898,
+          "hash": 506586581,
+          "kind": 1,
+          "sub": 439,
+          "value": 2
+        },
+        {
+          "index": 843,
+          "hash": 3115288269,
+          "kind": 1,
+          "sub": 384,
+          "value": 2
+        },
+        {
+          "index": 1875,
+          "hash": 4216656276,
+          "kind": 3,
+          "sub": 341,
+          "value": 2
+        },
+        {
+          "index": 899,
+          "hash": 1400127604,
+          "kind": 1,
+          "sub": 440,
+          "value": 2
+        },
+        {
+          "index": 2874,
+          "hash": 1565010676,
+          "kind": 3,
+          "sub": 706,
+          "value": 2
+        },
+        {
+          "index": 3740,
+          "hash": 4227941069,
+          "kind": 3,
+          "sub": 826,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "character_class": 1,
+      "race": 0,
+      "flags": [
+        {
+          "index": 2838,
+          "hash": 741976951,
+          "kind": 3,
+          "sub": 673,
+          "value": 2
+        },
+        {
+          "index": 2859,
+          "hash": 334775385,
+          "kind": 3,
+          "sub": 693,
+          "value": 2
+        },
+        {
+          "index": 931,
+          "hash": 2374793812,
+          "kind": 1,
+          "sub": 472,
+          "value": 2
+        },
+        {
+          "index": 932,
+          "hash": 1376257862,
+          "kind": 1,
+          "sub": 473,
+          "value": 2
+        },
+        {
+          "index": 854,
+          "hash": 3307331407,
+          "kind": 1,
+          "sub": 395,
+          "value": 2
+        },
+        {
+          "index": 882,
+          "hash": 4260935377,
+          "kind": 1,
+          "sub": 423,
+          "value": 2
+        },
+        {
+          "index": 894,
+          "hash": 2788983739,
+          "kind": 1,
+          "sub": 435,
+          "value": 2
+        },
+        {
+          "index": 898,
+          "hash": 506586581,
+          "kind": 1,
+          "sub": 439,
+          "value": 2
+        },
+        {
+          "index": 843,
+          "hash": 3115288269,
+          "kind": 1,
+          "sub": 384,
+          "value": 2
+        },
+        {
+          "index": 1875,
+          "hash": 4216656276,
+          "kind": 3,
+          "sub": 341,
+          "value": 2
+        },
+        {
+          "index": 899,
+          "hash": 1400127604,
+          "kind": 1,
+          "sub": 440,
+          "value": 2
+        },
+        {
+          "index": 2874,
+          "hash": 1565010676,
+          "kind": 3,
+          "sub": 706,
+          "value": 2
+        },
+        {
+          "index": 3740,
+          "hash": 4227941069,
+          "kind": 3,
+          "sub": 826,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "character_class": 1,
+      "race": 1,
+      "flags": [
+        {
+          "index": 2838,
+          "hash": 741976951,
+          "kind": 3,
+          "sub": 673,
+          "value": 2
+        },
+        {
+          "index": 2859,
+          "hash": 334775385,
+          "kind": 3,
+          "sub": 693,
+          "value": 2
+        },
+        {
+          "index": 931,
+          "hash": 2374793812,
+          "kind": 1,
+          "sub": 472,
+          "value": 2
+        },
+        {
+          "index": 932,
+          "hash": 1376257862,
+          "kind": 1,
+          "sub": 473,
+          "value": 2
+        },
+        {
+          "index": 854,
+          "hash": 3307331407,
+          "kind": 1,
+          "sub": 395,
+          "value": 2
+        },
+        {
+          "index": 883,
+          "hash": 2201733810,
+          "kind": 1,
+          "sub": 424,
+          "value": 2
+        },
+        {
+          "index": 894,
+          "hash": 2788983739,
+          "kind": 1,
+          "sub": 435,
+          "value": 2
+        },
+        {
+          "index": 898,
+          "hash": 506586581,
+          "kind": 1,
+          "sub": 439,
+          "value": 2
+        },
+        {
+          "index": 843,
+          "hash": 3115288269,
+          "kind": 1,
+          "sub": 384,
+          "value": 2
+        },
+        {
+          "index": 1875,
+          "hash": 4216656276,
+          "kind": 3,
+          "sub": 341,
+          "value": 2
+        },
+        {
+          "index": 899,
+          "hash": 1400127604,
+          "kind": 1,
+          "sub": 440,
+          "value": 2
+        },
+        {
+          "index": 2874,
+          "hash": 1565010676,
+          "kind": 3,
+          "sub": 706,
+          "value": 2
+        },
+        {
+          "index": 3740,
+          "hash": 4227941069,
+          "kind": 3,
+          "sub": 826,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "character_class": 1,
+      "race": 2,
+      "flags": [
+        {
+          "index": 2838,
+          "hash": 741976951,
+          "kind": 3,
+          "sub": 673,
+          "value": 2
+        },
+        {
+          "index": 2859,
+          "hash": 334775385,
+          "kind": 3,
+          "sub": 693,
+          "value": 2
+        },
+        {
+          "index": 931,
+          "hash": 2374793812,
+          "kind": 1,
+          "sub": 472,
+          "value": 2
+        },
+        {
+          "index": 932,
+          "hash": 1376257862,
+          "kind": 1,
+          "sub": 473,
+          "value": 2
+        },
+        {
+          "index": 854,
+          "hash": 3307331407,
+          "kind": 1,
+          "sub": 395,
+          "value": 2
+        },
+        {
+          "index": 884,
+          "hash": 1510070372,
+          "kind": 1,
+          "sub": 425,
+          "value": 2
+        },
+        {
+          "index": 894,
+          "hash": 2788983739,
+          "kind": 1,
+          "sub": 435,
+          "value": 2
+        },
+        {
+          "index": 898,
+          "hash": 506586581,
+          "kind": 1,
+          "sub": 439,
+          "value": 2
+        },
+        {
+          "index": 843,
+          "hash": 3115288269,
+          "kind": 1,
+          "sub": 384,
+          "value": 2
+        },
+        {
+          "index": 1875,
+          "hash": 4216656276,
+          "kind": 3,
+          "sub": 341,
+          "value": 2
+        },
+        {
+          "index": 899,
+          "hash": 1400127604,
+          "kind": 1,
+          "sub": 440,
+          "value": 2
+        },
+        {
+          "index": 2874,
+          "hash": 1565010676,
+          "kind": 3,
+          "sub": 706,
+          "value": 2
+        },
+        {
+          "index": 3740,
+          "hash": 4227941069,
+          "kind": 3,
+          "sub": 826,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "character_class": 2,
+      "race": 0,
+      "flags": [
+        {
+          "index": 2838,
+          "hash": 741976951,
+          "kind": 3,
+          "sub": 673,
+          "value": 2
+        },
+        {
+          "index": 2859,
+          "hash": 334775385,
+          "kind": 3,
+          "sub": 693,
+          "value": 2
+        },
+        {
+          "index": 931,
+          "hash": 2374793812,
+          "kind": 1,
+          "sub": 472,
+          "value": 2
+        },
+        {
+          "index": 932,
+          "hash": 1376257862,
+          "kind": 1,
+          "sub": 473,
+          "value": 2
+        },
+        {
+          "index": 864,
+          "hash": 1885184187,
+          "kind": 1,
+          "sub": 405,
+          "value": 2
+        },
+        {
+          "index": 882,
+          "hash": 4260935377,
+          "kind": 1,
+          "sub": 423,
+          "value": 2
+        },
+        {
+          "index": 894,
+          "hash": 2788983739,
+          "kind": 1,
+          "sub": 435,
+          "value": 2
+        },
+        {
+          "index": 898,
+          "hash": 506586581,
+          "kind": 1,
+          "sub": 439,
+          "value": 2
+        },
+        {
+          "index": 843,
+          "hash": 3115288269,
+          "kind": 1,
+          "sub": 384,
+          "value": 2
+        },
+        {
+          "index": 1875,
+          "hash": 4216656276,
+          "kind": 3,
+          "sub": 341,
+          "value": 2
+        },
+        {
+          "index": 899,
+          "hash": 1400127604,
+          "kind": 1,
+          "sub": 440,
+          "value": 2
+        },
+        {
+          "index": 2874,
+          "hash": 1565010676,
+          "kind": 3,
+          "sub": 706,
+          "value": 2
+        },
+        {
+          "index": 3740,
+          "hash": 4227941069,
+          "kind": 3,
+          "sub": 826,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "character_class": 2,
+      "race": 1,
+      "flags": [
+        {
+          "index": 2838,
+          "hash": 741976951,
+          "kind": 3,
+          "sub": 673,
+          "value": 2
+        },
+        {
+          "index": 2859,
+          "hash": 334775385,
+          "kind": 3,
+          "sub": 693,
+          "value": 2
+        },
+        {
+          "index": 931,
+          "hash": 2374793812,
+          "kind": 1,
+          "sub": 472,
+          "value": 2
+        },
+        {
+          "index": 932,
+          "hash": 1376257862,
+          "kind": 1,
+          "sub": 473,
+          "value": 2
+        },
+        {
+          "index": 864,
+          "hash": 1885184187,
+          "kind": 1,
+          "sub": 405,
+          "value": 2
+        },
+        {
+          "index": 883,
+          "hash": 2201733810,
+          "kind": 1,
+          "sub": 424,
+          "value": 2
+        },
+        {
+          "index": 894,
+          "hash": 2788983739,
+          "kind": 1,
+          "sub": 435,
+          "value": 2
+        },
+        {
+          "index": 898,
+          "hash": 506586581,
+          "kind": 1,
+          "sub": 439,
+          "value": 2
+        },
+        {
+          "index": 843,
+          "hash": 3115288269,
+          "kind": 1,
+          "sub": 384,
+          "value": 2
+        },
+        {
+          "index": 1875,
+          "hash": 4216656276,
+          "kind": 3,
+          "sub": 341,
+          "value": 2
+        },
+        {
+          "index": 899,
+          "hash": 1400127604,
+          "kind": 1,
+          "sub": 440,
+          "value": 2
+        },
+        {
+          "index": 2874,
+          "hash": 1565010676,
+          "kind": 3,
+          "sub": 706,
+          "value": 2
+        },
+        {
+          "index": 3740,
+          "hash": 4227941069,
+          "kind": 3,
+          "sub": 826,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "character_class": 2,
+      "race": 2,
+      "flags": [
+        {
+          "index": 2838,
+          "hash": 741976951,
+          "kind": 3,
+          "sub": 673,
+          "value": 2
+        },
+        {
+          "index": 2859,
+          "hash": 334775385,
+          "kind": 3,
+          "sub": 693,
+          "value": 2
+        },
+        {
+          "index": 931,
+          "hash": 2374793812,
+          "kind": 1,
+          "sub": 472,
+          "value": 2
+        },
+        {
+          "index": 932,
+          "hash": 1376257862,
+          "kind": 1,
+          "sub": 473,
+          "value": 2
+        },
+        {
+          "index": 864,
+          "hash": 1885184187,
+          "kind": 1,
+          "sub": 405,
+          "value": 2
+        },
+        {
+          "index": 884,
+          "hash": 1510070372,
+          "kind": 1,
+          "sub": 425,
+          "value": 2
+        },
+        {
+          "index": 894,
+          "hash": 2788983739,
+          "kind": 1,
+          "sub": 435,
+          "value": 2
+        },
+        {
+          "index": 898,
+          "hash": 506586581,
+          "kind": 1,
+          "sub": 439,
+          "value": 2
+        },
+        {
+          "index": 843,
+          "hash": 3115288269,
+          "kind": 1,
+          "sub": 384,
+          "value": 2
+        },
+        {
+          "index": 1875,
+          "hash": 4216656276,
+          "kind": 3,
+          "sub": 341,
+          "value": 2
+        },
+        {
+          "index": 899,
+          "hash": 1400127604,
+          "kind": 1,
+          "sub": 440,
+          "value": 2
+        },
+        {
+          "index": 2874,
+          "hash": 1565010676,
+          "kind": 3,
+          "sub": 706,
+          "value": 2
+        },
+        {
+          "index": 3740,
+          "hash": 4227941069,
+          "kind": 3,
+          "sub": 826,
+          "value": 2
+        }
+      ]
+    }
+  ]
+}

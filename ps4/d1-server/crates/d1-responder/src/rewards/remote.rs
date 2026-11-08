@@ -1,0 +1,1070 @@
+// SPDX-FileCopyrightText: Copyright 2026 Destiny 1 Preservation Project
+// SPDX-License-Identifier: GPL-2.0-or-later
+//! Grants from the activity host: the `grant` command of the store's control file.
+//!
+//! The activity host decides when an activity ends, but stream M's services run here, beside the
+//! player store, in another process. The host writes one line per character into the store's
+//! command file (`D1_STORE_CONTROL`, polled each second; `player_store::start_control`):
+//!
+//! ```text
+//! grant CHARACTER ACTIVITY_HASH OUTCOME [page=PAGE] [engrams=1] [seed=SEED] [source=WORD]
+//! ```
+//!
+//! * `CHARACTER`: `0x` and 16 hex digits, a character SOID (or the 8-byte key the host has), or
+//!   `id:` and the 80 hex digits of the client's 40-byte identity (`join_request+0x10`,
+//!   `d1_mp::identity::MemberIdentity`), whose character SOID is at `+0x18`;
+//! * `ACTIVITY_HASH`: the manifest hash the client launched (`0x` hex or decimal);
+//! * `OUTCOME`: `completed`, `incomplete` or `abandoned` (only `completed` grants anything, as
+//!   [`super::loot::grant_activity_rewards`] rules);
+//! * `page=`: the Cryptarch guide page ([`super::ActivityOutcome::community_page`]), `engrams=1`
+//!   the placeholder engram roll, `seed=` a fixed seed, `source=` a free word for the log (for
+//!   example `script`, `event:12:gold`, `chest`).
+//!
+//! The activity host's writer is `d1_activity_host::reward_forward` (same grammar, tested against
+//! the same lines). [`execute`] runs one grant through [`super::player_store_adapter::Adapter`] on
+//! the live store; `player_store` then saves, pushes the profile when XP changed it, and has the
+//! vendor state publish the account when a wallet changed.
+//!
+//! **Which character (stream O3).** With `D1_MP=1` the responder serves several players, each
+//! with its own account, character and profile SOIDs (`identities.json`'s scheme). A grant goes to
+//! the player its full identity names (`player_store::target_store`: the account at `+0x10` and
+//! the character at `+0x18`), and [`execute`] checks both against the store it runs on, so two
+//! players in one instance are each paid once, each into their own record. A grant naming nobody
+//! the responder serves is refused. With `D1_MP` off (one player per process) a grant naming
+//! another character is applied to the signed-on one, with the mismatch in the log: with one
+//! client, every grant is its own (the open world keys characters by the identity's first 8
+//! bytes, not the SOID).
+//!
+//! **What reaches the client (stream O2).** Every item has its 56578 content index from the
+//! exported item table (`content::item_index`) and a client bucket (`content::bucket_of`): stacks
+//! go into the account's slots (account buckets: Glimmer, Legendary Marks) or the profile's
+//! (character buckets: materials, Vanguard and Crucible Marks, Silver Dust), new instances into a
+//! free slot of their bucket with an element from `D1_VENDOR_ITEM_TEMPLATE`. `player_store` then
+//! pushes the account and the profile (through the vendor state when it is on, by itself when it
+//! is off). A stack that cannot be placed (no decoded profile yet, a full bucket) is kept in the
+//! overlay and delivered by a later grant.
+//!
+//! **What persists.** The adapter keeps what C's record has no field for in an overlay, and all
+//! of it is saved in the character's `attributes` ([`OVERLAY_ATTRIBUTES`]: the period counters,
+//! stacks not yet placed, item instances with their talent grids and rolls, progressions,
+//! objectives, Record Book claims, the Grimoire's cards and stats) and restored before the next
+//! grant, so nothing is lost when the adapter goes away, and the weekly limits hold across grants
+//! and restarts.
+
+use anyhow::{anyhow, bail, Result};
+use serde_json::{json, Value};
+
+use crate::player_store::PlayerStore;
+
+use super::item_instance::ClientIndex;
+use super::player_store_adapter::Adapter;
+use super::store::{Owner, Period, RewardStore};
+use super::{currencies, ActivityOutcome};
+
+/// How the activity ended for the character, as the host reports it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GrantOutcome {
+    Completed,
+    Incomplete,
+    Abandoned,
+}
+
+impl GrantOutcome {
+    pub fn word(self) -> &'static str {
+        match self {
+            Self::Completed => "completed",
+            Self::Incomplete => "incomplete",
+            Self::Abandoned => "abandoned",
+        }
+    }
+}
+
+/// Who a grant is for.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum GrantTarget {
+    /// A character SOID, or the 8-byte key the host keyed the character by.
+    Key(u64),
+    /// The client's 40-byte identity.
+    Identity(Vec<u8>),
+}
+
+impl GrantTarget {
+    /// The character SOID it names: the key itself, or the identity's `+0x18`, where the client
+    /// writes its **profile** SOID (run fg2g); match it with `Identity::named_by`.
+    pub fn character(&self) -> Option<u64> {
+        match self {
+            Self::Key(k) => Some(*k),
+            Self::Identity(b) => d1_mp::identity::MemberIdentity::parse(b).map(|m| m.character.0),
+        }
+    }
+}
+
+/// One `grant` line.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GrantCommand {
+    pub target: GrantTarget,
+    pub activity_hash: u32,
+    pub outcome: GrantOutcome,
+    pub page: Option<String>,
+    pub engrams: bool,
+    pub seed: Option<u64>,
+    pub source: Option<String>,
+    /// ── stream R ── `rep=NAME:N` (repeatable): progression progress to add for the character the
+    /// grant names, after its rewards (a Crucible match's faction, its Trials card's tickets).
+    pub reputation: Vec<(String, u32)>,
+    /// F49: `item=HASH` (or `item=tutorial-special`): grant this one item instead of the activity's
+    /// rewards. The live host answered the client's `tutorial_weapon_special` (A Guardian Rises'
+    /// loot cache) with the class's special weapon pushed into the inventory.
+    pub item: Option<NamedItem>,
+}
+
+/// What a `grant ... item=` names.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NamedItem {
+    Hash(u32),
+    /// The class's tutorial special weapon ([`super::loot::tutorial_special_weapon`]).
+    TutorialSpecial,
+}
+
+fn num64(s: &str) -> Result<u64> {
+    match s.strip_prefix("0x").or_else(|| s.strip_prefix("0X")) {
+        Some(h) => u64::from_str_radix(h, 16),
+        None => s.parse(),
+    }
+    .map_err(|e| anyhow!("{s:?}: {e}"))
+}
+
+fn hex_bytes(s: &str) -> Result<Vec<u8>> {
+    if s.len() % 2 != 0 {
+        bail!("odd hex length {}", s.len());
+    }
+    (0..s.len()).step_by(2).map(|i| u8::from_str_radix(&s[i..i + 2], 16).map_err(|e| anyhow!("{s:?}: {e}"))).collect()
+}
+
+/// Parse the fields after the word `grant`.
+pub fn parse(fields: &[&str]) -> Result<GrantCommand> {
+    let [who, hash, outcome, rest @ ..] = fields else {
+        bail!("grant takes CHARACTER ACTIVITY_HASH OUTCOME [page=..] [engrams=1] [seed=..] [source=..]");
+    };
+    let target = parse_target(who)?;
+    let activity_hash = u32::try_from(num64(hash)?).map_err(|_| anyhow!("activity hash {hash:?} is not 32-bit"))?;
+    let outcome = match *outcome {
+        "completed" => GrantOutcome::Completed,
+        "incomplete" => GrantOutcome::Incomplete,
+        "abandoned" => GrantOutcome::Abandoned,
+        o => bail!("outcome {o:?} is not completed, incomplete or abandoned"),
+    };
+    let mut c = GrantCommand { target, activity_hash, outcome, page: None, engrams: false, seed: None, source: None, reputation: Vec::new(), item: None };
+    for t in rest {
+        match t.split_once('=') {
+            Some(("page", v)) if !v.is_empty() => c.page = Some(v.to_string()),
+            Some(("engrams", v)) => c.engrams = v == "1",
+            Some(("seed", v)) => c.seed = Some(num64(v)?),
+            Some(("source", v)) => c.source = Some(v.to_string()),
+            Some(("rep", v)) => {
+                let (name, n) = v.rsplit_once(':').ok_or_else(|| anyhow!("{t:?}: rep= is NAME:N"))?;
+                if name.is_empty() {
+                    bail!("{t:?}: rep= names no progression");
+                }
+                let n = u32::try_from(num64(n)?).map_err(|_| anyhow!("{t:?}: the amount is not 32-bit"))?;
+                c.reputation.push((name.to_string(), n));
+            }
+            Some(("item", "tutorial-special")) => c.item = Some(NamedItem::TutorialSpecial),
+            Some(("item", v)) => {
+                c.item = Some(NamedItem::Hash(u32::try_from(num64(v)?).map_err(|_| anyhow!("{t:?}: the item hash is not 32-bit"))?))
+            }
+            _ => bail!("{t:?}: not page=, engrams=, seed=, source=, rep= or item="),
+        }
+    }
+    Ok(c)
+}
+
+/// The canonical line for `c` (what the activity host writes).
+pub fn format(c: &GrantCommand) -> String {
+    let mut line = format!("grant {} {:#010x} {}", target_word(&c.target), c.activity_hash, c.outcome.word());
+    if let Some(p) = &c.page {
+        line += &format!(" page={p}");
+    }
+    if c.engrams {
+        line += " engrams=1";
+    }
+    if let Some(s) = c.seed {
+        line += &format!(" seed={s:#x}");
+    }
+    if let Some(s) = &c.source {
+        line += &format!(" source={s}");
+    }
+    for (name, n) in &c.reputation {
+        line += &format!(" rep={name}:{n}");
+    }
+    match c.item {
+        Some(NamedItem::Hash(h)) => line += &format!(" item={h:#010x}"),
+        Some(NamedItem::TutorialSpecial) => line += " item=tutorial-special",
+        None => {}
+    }
+    line
+}
+
+/// ⭐ Stream O2: one `handoff` line, the story arc's next activity (stream K's
+/// `ActivityRewards::activity_hand_off`; cine_reveal 165 -> the Tower 0):
+///
+/// ```text
+/// handoff CHARACTER ACTIVITY_INDEX [from=HASH] [hash=HASH]
+/// ```
+///
+/// * `CHARACTER` as in a `grant`;
+/// * `ACTIVITY_INDEX`: the next activity's index in the client's activity table;
+/// * `from=`: the manifest hash of the activity that completed (the store records its completion
+///   in the profile's current-activity field, which the client selects its next activity from);
+/// * `hash=`: the next activity's manifest hash, checked against the activity table.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HandOffCommand {
+    pub target: GrantTarget,
+    pub next: u16,
+    pub from: Option<u32>,
+    pub next_hash: Option<u32>,
+}
+
+/// Parse the fields after the word `handoff`.
+pub fn parse_handoff(fields: &[&str]) -> Result<HandOffCommand> {
+    let [who, next, rest @ ..] = fields else {
+        bail!("handoff takes CHARACTER ACTIVITY_INDEX [from=HASH] [hash=HASH]");
+    };
+    let target = parse_target(who)?;
+    let next = u16::try_from(num64(next)?).map_err(|_| anyhow!("activity index {next:?} is not 16-bit"))?;
+    let mut c = HandOffCommand { target, next, from: None, next_hash: None };
+    for t in rest {
+        let hash = |v: &str| u32::try_from(num64(v)?).map_err(|_| anyhow!("{v:?} is not a 32-bit hash"));
+        match t.split_once('=') {
+            Some(("from", v)) => c.from = Some(hash(v)?),
+            Some(("hash", v)) => c.next_hash = Some(hash(v)?),
+            _ => bail!("{t:?}: not from= or hash="),
+        }
+    }
+    Ok(c)
+}
+
+/// The canonical line for `c` (what the activity host writes).
+pub fn format_handoff(c: &HandOffCommand) -> String {
+    let mut line = format!("handoff {} {}", target_word(&c.target), c.next);
+    if let Some(h) = c.from {
+        line += &format!(" from={h:#010x}");
+    }
+    if let Some(h) = c.next_hash {
+        line += &format!(" hash={h:#010x}");
+    }
+    line
+}
+
+pub fn parse_target(who: &str) -> Result<GrantTarget> {
+    Ok(match who.strip_prefix("id:") {
+        Some(h) => {
+            let b = hex_bytes(h)?;
+            if b.len() != d1_mp::identity::MemberIdentity::SIZE {
+                bail!("an identity is {} bytes, got {}", d1_mp::identity::MemberIdentity::SIZE, b.len());
+            }
+            GrantTarget::Identity(b)
+        }
+        None => GrantTarget::Key(num64(who)?),
+    })
+}
+
+fn target_word(t: &GrantTarget) -> String {
+    match t {
+        GrantTarget::Key(k) => format!("{k:#018x}"),
+        GrantTarget::Identity(b) => format!("id:{}", b.iter().map(|x| format!("{x:02x}")).collect::<String>()),
+    }
+}
+
+/// Which character a command applies to on this responder (one player per process): the
+/// signed-on one; `strict` (multiplayer on) refuses another player's. Returns it and whether the
+/// command named another key.
+pub fn resolve_target(t: &GrantTarget, own: &crate::player_store::Identity, strict: bool) -> Result<(u64, bool)> {
+    let named = t.character().ok_or_else(|| anyhow!("the identity does not parse"))?;
+    // An identity names the account too; both halves must be this player's.
+    let account_ok = match t {
+        GrantTarget::Identity(b) => d1_mp::identity::MemberIdentity::parse(b).is_some_and(|m| m.account.0 == own.account),
+        GrantTarget::Key(_) => true,
+    };
+    let mine = own.named_by(named) && account_ok;
+    if !mine && strict {
+        bail!(
+            "command for character {named:#018x}, but this responder serves account {:#018x} character {:#018x} profile {:#018x} (D1_MP=1: another player's)",
+            own.account, own.character, own.profile
+        );
+    }
+    Ok((own.character, !mine))
+}
+
+/// The client indices the responder knows: every item's 56578 content index from the exported
+/// item table (#322, `content::item_index`, 8,609 items), and the progression ordinals from the
+/// exported progression table. Glimmer's is the one the account's slot 308 holds when it holds
+/// one (the client's bucket table puts Glimmer at slot 308, account scope); the export agrees
+/// (869). Grid indices, curve levels and stat positions are still open (`ExportedIndex`).
+pub struct ResponderIndex {
+    pub glimmer: Option<u16>,
+}
+
+/// The account slot that holds Glimmer (the client's bucket table, slot 308, scope 1).
+pub const GLIMMER_SLOT: u16 = 308;
+
+impl ResponderIndex {
+    pub fn from_slots(slots: &std::collections::BTreeMap<u16, (u16, u32)>) -> Self {
+        Self { glimmer: slots.get(&GLIMMER_SLOT).map(|(c, _)| *c) }
+    }
+}
+
+impl ClientIndex for ResponderIndex {
+    fn content_index(&self, item: u32) -> Option<u16> {
+        if item == currencies::GLIMMER {
+            self.glimmer.or_else(|| crate::content::item_index(item))
+        } else {
+            crate::content::item_index(item)
+        }
+    }
+    fn progression_ordinal(&self, progression: u32) -> Option<u16> {
+        crate::content::progression_index(progression)
+    }
+    fn grid_index(&self, _: u32) -> Option<u16> {
+        None
+    }
+    fn level_for_primary(&self, _: u32, _: u32) -> Option<i32> {
+        None
+    }
+    fn stat_position(&self, _: u32, _: u32) -> Option<usize> {
+        None
+    }
+}
+
+/// What a grant did, for the log, the record's history and the store's state file.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GrantSummary {
+    pub line: String,
+    pub character: u64,
+    /// The grant named another character and was applied to the signed-on one.
+    pub retargeted: bool,
+    /// `(item hash, granted)` for every currency line.
+    pub currencies: Vec<(u32, u32)>,
+    pub items: usize,
+    pub rules: Vec<&'static str>,
+    pub notes: Vec<String>,
+    /// New instances placed in a bucket (stream O2), in order: each is pushed with the profile.
+    pub delivered: Vec<u64>,
+}
+
+impl GrantSummary {
+    pub fn json(&self) -> Value {
+        json!({
+            "line": self.line,
+            "character": format!("{:#018x}", self.character),
+            "retargeted": self.retargeted,
+            "currencies": self.currencies.iter().map(|(h, n)| json!([h, n])).collect::<Vec<_>>(),
+            "items": self.items,
+            "rules": self.rules,
+        })
+    }
+}
+
+fn owner_word(o: Owner) -> String {
+    match o {
+        Owner::Account(a) => format!("a{a:x}"),
+        Owner::Character(c) => format!("c{c:x}"),
+    }
+}
+
+fn owner_of(w: &str) -> Option<Owner> {
+    // Integration review, finding 30: an empty word is no owner (split_at(1) panicked on it,
+    // under the store's lock).
+    let (k, v) = (w.get(..1)?, w.get(1..)?);
+    let v = u64::from_str_radix(v, 16).ok()?;
+    match k {
+        "a" => Some(Owner::Account(v)),
+        "c" => Some(Owner::Character(v)),
+        _ => None,
+    }
+}
+
+fn period_word(p: Period) -> &'static str {
+    match p {
+        Period::Daily => "daily",
+        Period::Weekly => "weekly",
+        Period::Forever => "forever",
+    }
+}
+
+fn period_of(w: &str) -> Option<Period> {
+    match w {
+        "daily" => Some(Period::Daily),
+        "weekly" => Some(Period::Weekly),
+        "forever" => Some(Period::Forever),
+        _ => None,
+    }
+}
+
+/// The character attributes [`execute`] keeps the adapter's overlay in (stream O2: everything the
+/// overlay holds, so nothing is lost when the adapter goes away).
+pub const ATTR_COUNTERS: &str = "rewards.counters";
+pub const ATTR_STACKS: &str = "rewards.stacks";
+pub const ATTR_GRANTS: &str = "rewards.grants";
+/// The overlay's item instances with their talent grids and rolls: `[{"item": .., "equipped": b}]`.
+pub const ATTR_INSTANCES: &str = "rewards.instances";
+/// Progressions the overlay keeps (all but XP through C's curves): `[[hash, value]]`.
+pub const ATTR_PROGRESSIONS: &str = "rewards.progressions";
+/// Objective values (bounties, quests, Record Book records): `[[hash, value]]`.
+pub const ATTR_OBJECTIVES: &str = "rewards.objectives";
+/// Record Book rewards claimed: `[[book, rank]]`.
+pub const ATTR_CLAIMS: &str = "rewards.claims";
+/// The Grimoire state (C's record keeps the scores; this keeps cards and stats):
+/// `{"cards": [..], "stats": [[card, stat, value]]}`.
+pub const ATTR_GRIMOIRE: &str = "rewards.grimoire";
+/// Every overlay attribute, in the order [`overlay_attributes`] writes them.
+pub const OVERLAY_ATTRIBUTES: [&str; 7] = [ATTR_COUNTERS, ATTR_STACKS, ATTR_INSTANCES, ATTR_PROGRESSIONS, ATTR_OBJECTIVES, ATTR_CLAIMS, ATTR_GRIMOIRE];
+/// How many grant summaries the record keeps.
+pub const GRANTS_KEPT: usize = 50;
+
+fn rows(v: Option<&Value>) -> impl Iterator<Item = &[Value]> {
+    v.and_then(Value::as_array).into_iter().flatten().map(|r| r.as_array().map(Vec::as_slice).unwrap_or_default())
+}
+
+/// The overlay as the record's attributes kept it (`kept[i]` is [`OVERLAY_ATTRIBUTES`]`[i]`).
+fn restore_overlay(a: &mut Adapter<'_>, character: u64, kept: &[Option<Value>]) {
+    let get = |k: &str| OVERLAY_ATTRIBUTES.iter().position(|x| *x == k).and_then(|i| kept.get(i)).and_then(Option::as_ref);
+    for r in rows(get(ATTR_COUNTERS)) {
+        if let [o, k, p, i, n] = r {
+            if let (Some(o), Some(k), Some(p), Some(i), Some(n)) =
+                (o.as_str().and_then(owner_of), k.as_str(), p.as_str().and_then(period_of), i.as_u64(), n.as_u64())
+            {
+                a.overlay.counters.insert((o, k.to_string(), p, i), n as u32);
+            }
+        }
+    }
+    for r in rows(get(ATTR_STACKS)) {
+        if let [o, item, n] = r {
+            if let (Some(o), Some(item), Some(n)) = (o.as_str().and_then(owner_of), item.as_u64(), n.as_u64()) {
+                a.overlay.stacks.insert((o, item as u32), n as u32);
+            }
+        }
+    }
+    for row in get(ATTR_INSTANCES).and_then(Value::as_array).into_iter().flatten() {
+        let Some(item) = row.get("item").cloned().and_then(|v| serde_json::from_value::<super::item_instance::ItemInstance>(v).ok()) else { continue };
+        let id = item.id;
+        a.overlay.put_item(character, item);
+        if row.get("equipped").and_then(Value::as_bool) == Some(true) {
+            a.overlay.equip(character, id);
+        }
+    }
+    for r in rows(get(ATTR_PROGRESSIONS)) {
+        if let [h, v] = r {
+            if let (Some(h), Some(v)) = (h.as_u64(), v.as_u64()) {
+                a.overlay.progressions.insert((character, h as u32), v as u32);
+            }
+        }
+    }
+    for r in rows(get(ATTR_OBJECTIVES)) {
+        if let [h, v] = r {
+            if let (Some(h), Some(v)) = (h.as_u64(), v.as_i64()) {
+                a.overlay.objectives.insert((character, h as u32), v);
+            }
+        }
+    }
+    for r in rows(get(ATTR_CLAIMS)) {
+        if let [b, rank] = r {
+            if let (Some(b), Some(rank)) = (b.as_u64(), rank.as_u64()) {
+                a.overlay.claimed.entry(character).or_default().insert((b as u32, rank as u32));
+            }
+        }
+    }
+    if let Some(g) = get(ATTR_GRIMOIRE) {
+        let mut state = super::grimoire::GrimoireState::default();
+        state.cards = g.get("cards").and_then(Value::as_array).into_iter().flatten().filter_map(Value::as_u64).map(|c| c as u32).collect();
+        for r in rows(g.get("stats")) {
+            if let [c, n, v] = r {
+                if let (Some(c), Some(n), Some(v)) = (c.as_u64(), n.as_u64(), v.as_u64()) {
+                    state.stats.insert((c as u32, n as u32), v);
+                }
+            }
+        }
+        let account = a.store.identity().account;
+        a.overlay.grimoire.insert(account, state);
+    }
+}
+
+/// The overlay as attributes: `(key, value)` for each of [`OVERLAY_ATTRIBUTES`].
+fn overlay_attributes(a: &Adapter<'_>, character: u64) -> Vec<(&'static str, Value)> {
+    let o = &a.overlay;
+    let mut counters: Vec<_> = o.counters.iter().map(|((w, k, p, i), n)| (owner_word(*w), k.clone(), period_word(*p), *i, *n)).collect();
+    counters.sort();
+    let mut stacks: Vec<_> = o.stacks.iter().filter(|(_, n)| **n > 0).map(|((w, item), n)| (owner_word(*w), *item, *n)).collect();
+    stacks.sort();
+    let equipped: std::collections::BTreeSet<u64> = o.characters.get(&character).map(|c| c.equipped.clone()).unwrap_or_default();
+    let instances: Vec<Value> = o.instances.values().map(|i| json!({ "item": i, "equipped": equipped.contains(&i.id) })).collect();
+    let mut progressions: Vec<_> = o.progressions.iter().filter(|((c, _), _)| *c == character).map(|((_, h), v)| (*h, *v)).collect();
+    progressions.sort();
+    let mut objectives: Vec<_> = o.objectives.iter().filter(|((c, _), _)| *c == character).map(|((_, h), v)| (*h, *v)).collect();
+    objectives.sort();
+    let claims: Vec<_> = o.claimed.get(&character).into_iter().flatten().map(|(b, r)| json!([b, r])).collect();
+    let account = a.store.identity().account;
+    let grimoire = o.grimoire.get(&account).map(|g| {
+        json!({
+            "cards": g.cards.iter().collect::<Vec<_>>(),
+            "stats": g.stats.iter().map(|((c, n), v)| json!([c, n, v])).collect::<Vec<_>>(),
+        })
+    });
+    vec![
+        (ATTR_COUNTERS, Value::Array(counters.into_iter().map(|(w, k, p, i, n)| json!([w, k, p, i, n])).collect())),
+        (ATTR_STACKS, Value::Array(stacks.into_iter().map(|(w, item, n)| json!([w, item, n])).collect())),
+        (ATTR_INSTANCES, Value::Array(instances)),
+        (ATTR_PROGRESSIONS, Value::Array(progressions.into_iter().map(|(h, v)| json!([h, v])).collect())),
+        (ATTR_OBJECTIVES, Value::Array(objectives.into_iter().map(|(h, v)| json!([h, v])).collect())),
+        (ATTR_CLAIMS, Value::Array(claims)),
+        (ATTR_GRIMOIRE, grimoire.unwrap_or(Value::Null)),
+    ]
+}
+
+/// Run one grant on `store` (the signed-on player): stream M's `grant_activity_rewards` through
+/// the adapter, with `index` for the content indices and `class_type` the character's class.
+/// `strict` (multiplayer on) refuses a grant for another character. The record is marked dirty;
+/// the caller saves it.
+pub fn execute(store: &mut dyn PlayerStore, cmd: &GrantCommand, index: &dyn ClientIndex, class_type: u32, strict: bool) -> Result<GrantSummary> {
+    execute_with(store, cmd, index, class_type, strict, None)
+}
+
+/// [`execute`] with an item element template (a decoded `0x80801732`, `D1_VENDOR_ITEM_TEMPLATE`):
+/// new instances are written as elements and delivered into a slot of their bucket
+/// ([`GrantSummary::delivered`]); without one they are kept in the overlay only.
+pub fn execute_with(store: &mut dyn PlayerStore, cmd: &GrantCommand, index: &dyn ClientIndex, class_type: u32, strict: bool, template: Option<&[u8]>) -> Result<GrantSummary> {
+    let me = store.identity();
+    let own = me.character;
+    let named = cmd.target.character().ok_or_else(|| anyhow!("the identity does not parse"))?;
+    // The client's identity names the profile SOID (run fg2g); a key names the character.
+    let retargeted = !me.named_by(named);
+    if retargeted && strict {
+        bail!("grant for character {named:#018x}, but this record is {own:#018x}'s (profile {:#018x}; D1_MP=1: another player's)", me.profile);
+    }
+    // Integration review, finding 4: with multiplayer on, the grant was routed to the store of the
+    // player its full identity names (`player_store::target_store`); the account (`+0x10`) must
+    // match that store as the character does, so a grant can never pay another player.
+    if let (true, GrantTarget::Identity(b)) = (strict, &cmd.target) {
+        let account = d1_mp::identity::MemberIdentity::parse(b).map(|m| m.account.0);
+        let mine = store.identity().account;
+        if account != Some(mine) {
+            bail!("grant for account {account:?}, but this record is {mine:#018x}'s (D1_MP=1: another player's)");
+        }
+    }
+    let outcome = ActivityOutcome {
+        completed: cmd.outcome == GrantOutcome::Completed,
+        community_page: cmd.page.clone(),
+        roll_engrams: cmd.engrams,
+        seed: cmd.seed,
+    };
+    let kept: Vec<Option<Value>> = OVERLAY_ATTRIBUTES.iter().map(|k| store.character_attribute(k).cloned()).collect();
+    let line = format(cmd);
+    let (g, notes, attributes, delivered) = {
+        let mut a = Adapter::new(store, index, class_type);
+        a.element_template = template.map(<[u8]>::to_vec);
+        restore_overlay(&mut a, own, &kept);
+        a.deliver_kept_stacks();
+        let g = match cmd.item {
+            Some(NamedItem::Hash(h)) => super::loot::grant_item(&mut a, own, h, cmd.seed)?,
+            Some(NamedItem::TutorialSpecial) => {
+                let h = super::loot::tutorial_special_weapon(class_type)
+                    .ok_or_else(|| anyhow!("class {class_type} has no tutorial special weapon"))?;
+                super::loot::grant_item(&mut a, own, h, cmd.seed)?
+            }
+            None => super::grant_activity_rewards(&mut a, own, cmd.activity_hash, &outcome)?,
+        };
+        a.finish(&format!("rewards: {line}"))?;
+        (g, a.notes.clone(), overlay_attributes(&a, own), a.delivered.clone())
+    };
+    for (k, v) in attributes {
+        store.set_character_attribute(k, v);
+    }
+    let summary = GrantSummary {
+        line,
+        character: own,
+        retargeted,
+        currencies: g.currencies.iter().map(|c| (c.item, c.granted)).collect(),
+        items: g.items.len(),
+        rules: g.rules.clone(),
+        notes,
+        delivered,
+    };
+    // ── stream R ── the grant's reputation (a Crucible match), for the character it named: the
+    // checks above refused another player's under D1_MP=1.
+    let mut summary = summary;
+    for (name, n) in &cmd.reputation {
+        let w = store.add_reputation(name, *n);
+        summary.notes.push(format!("reputation {name} +{n}: {w}"));
+    }
+    let mut kept = store.character_attribute(ATTR_GRANTS).and_then(Value::as_array).cloned().unwrap_or_default();
+    kept.push(summary.json());
+    let drop = kept.len().saturating_sub(GRANTS_KEPT);
+    kept.drain(..drop);
+    store.set_character_attribute(ATTR_GRANTS, Value::Array(kept));
+    store.mark_dirty(&summary.line);
+    Ok(summary)
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn an_item_grant_line_round_trips() {
+        let c = parse(&["0xd100000000000101", "0", "completed", "item=tutorial-special", "source=chest"]).unwrap();
+        assert_eq!((c.item, c.source.as_deref()), (Some(NamedItem::TutorialSpecial), Some("chest")));
+        assert_eq!(format(&c), "grant 0xd100000000000101 0x00000000 completed source=chest item=tutorial-special");
+        let h = parse(&["0xd100000000000101", "0", "completed", "item=0xc94104a0"]).unwrap();
+        assert_eq!(h.item, Some(NamedItem::Hash(0xC941_04A0)));
+        assert_eq!(parse(&format(&h).split_whitespace().skip(1).collect::<Vec<_>>()).unwrap(), h);
+    }
+
+    use super::*;
+    use crate::player_store::{Identity, Sources, Store};
+    use crate::rewards::tables::tables;
+
+    const IDENTITY: &str = "0102030405060708\
+                            1112131415161718\
+                            0100000000000000\
+                            0101000000000000\
+                            0000000000000000";
+
+    #[test]
+    fn crucible_lines_carry_reputation() {
+        // d1_activity_host::reward_forward::tests::lines_follow_the_responders_grammar writes it.
+        let line = "grant 0xd100000000000101 0x0bbd0e26 completed source=crucible:won:ib:place=1 rep=faction_event_iron_banner:150";
+        let f: Vec<&str> = line.split_whitespace().collect();
+        let c = parse(&f[1..]).unwrap();
+        assert_eq!(c.reputation, vec![("faction_event_iron_banner".to_string(), 150)]);
+        assert_eq!(format(&c), line);
+        let dotted = parse(&["0x1", "0x2", "completed", "rep=r1_s4_tickets.pvp.trials_of_osiris.wins:2"]).unwrap();
+        assert_eq!(dotted.reputation, vec![("r1_s4_tickets.pvp.trials_of_osiris.wins".to_string(), 2)]);
+        assert!(parse(&["0x1", "0x2", "completed", "rep=faction_pvp"]).is_err());
+        assert!(parse(&["0x1", "0x2", "completed", "rep=:5"]).is_err());
+    }
+
+    #[test]
+    fn handoff_lines_round_trip() {
+        let line = "handoff 0xd100000000000101 0 from=0x6eaf0959 hash=0x8ae8da69";
+        let f: Vec<&str> = line.split_whitespace().collect();
+        let c = parse_handoff(&f[1..]).unwrap();
+        assert_eq!(c, HandOffCommand { target: GrantTarget::Key(0xD100_0000_0000_0101), next: 0, from: Some(0x6EAF_0959), next_hash: Some(0x8AE8_DA69) });
+        assert_eq!(format_handoff(&c), line);
+        let id = format!("id:{}", IDENTITY.replace(' ', ""));
+        assert_eq!(parse_handoff(&[&id, "166"]).unwrap().target.character(), Some(0x0101));
+        assert!(parse_handoff(&["0x1"]).is_err());
+        assert!(parse_handoff(&["0x1", "70000"]).is_err(), "an index is 16-bit");
+        assert!(parse_handoff(&["0x1", "0", "to=3"]).is_err());
+        let me = crate::player_store::Identity { account: 1, character: 7, profile: 9 };
+        assert_eq!(resolve_target(&GrantTarget::Key(5), &me, false).unwrap(), (7, true));
+        assert!(resolve_target(&GrantTarget::Key(5), &me, true).is_err());
+        assert_eq!(resolve_target(&GrantTarget::Key(9), &me, true).unwrap(), (7, false), "the profile SOID names the player");
+    }
+
+    #[test]
+    fn grant_lines_round_trip_and_name_the_character() {
+        let line = "grant 0xd100000000000101 0x0bbd0e26 completed page=siva-crisis-heroic-strike-playlist engrams=1 seed=0xd1f0 source=script";
+        let f: Vec<&str> = line.split_whitespace().collect();
+        let c = parse(&f[1..]).unwrap();
+        assert_eq!(c.target, GrantTarget::Key(0xD100_0000_0000_0101));
+        assert_eq!((c.activity_hash, c.outcome, c.engrams, c.seed), (0x0BBD_0E26, GrantOutcome::Completed, true, Some(0xD1F0)));
+        assert_eq!(format(&c), line);
+        let id = format!("id:{}", IDENTITY.replace(' ', ""));
+        let c = parse(&[&id, "12345", "abandoned"]).unwrap();
+        assert_eq!(c.target.character(), Some(0x0101), "the identity's character is at +0x18");
+        assert_eq!(c.outcome, GrantOutcome::Abandoned);
+        assert!(parse(&["0x1", "0x2"]).is_err());
+        assert!(parse(&["0x1", "0x2", "won"]).is_err());
+        assert!(parse(&["id:0102", "0x2", "completed"]).is_err(), "an identity is 40 bytes");
+        assert!(parse(&["0x1", "0x1ffffffff", "completed"]).is_err());
+    }
+
+    fn lab_store() -> Store {
+        let src = Sources { vendor_account_slots: Some("308:869:100,309:873:500".into()), ..Sources::default() };
+        Store::in_memory(Identity::from_env(), &src)
+    }
+
+    /// The lowest-hash activity whose completion grants a currency, with that currency (so the
+    /// test is the same on every run).
+    fn currency_activity() -> Option<(u32, u32)> {
+        use crate::rewards::store::MemoryStore;
+        let mut hashes: Vec<u32> = tables().activities.keys().copied().collect();
+        hashes.sort_unstable();
+        hashes.into_iter().find_map(|h| {
+            let mut m = MemoryStore::with_character(1, 2, 0, 40);
+            let done = ActivityOutcome { completed: true, seed: Some(1), ..ActivityOutcome::default() };
+            let g = crate::rewards::grant_activity_rewards(&mut m, 2, h, &done).ok()?;
+            g.currencies.iter().find(|c| c.granted > 0).map(|c| (h, c.item))
+        })
+    }
+
+    #[test]
+    fn a_completed_grant_is_applied_and_kept_between_grants() {
+        let mut s = lab_store();
+        let me = s.identity().character;
+        let (activity, item) = currency_activity().expect("the manifest table has activities that grant currencies");
+        let index = ResponderIndex::from_slots(&s.record.account.slots);
+        assert_eq!(index.glimmer, Some(869), "slot 308's content");
+        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(1), source: Some("test".into()), reputation: Vec::new(), item: None };
+        let held = |s: &Store| -> u32 {
+            if item == currencies::GLIMMER {
+                return s.currency(869);
+            }
+            // Delivered into its client bucket (stream O2), or kept in the overlay.
+            let delivered = crate::content::item_index(item).map_or(0, |c| s.currency(c));
+            let stacks = s.character_attribute(ATTR_STACKS).and_then(Value::as_array).cloned().unwrap_or_default();
+            delivered + stacks.iter().filter(|r| r[1].as_u64() == Some(u64::from(item))).filter_map(|r| r[2].as_u64()).sum::<u64>() as u32
+        };
+        let before = held(&s);
+        let g = execute(&mut s, &cmd, &index, 0, true).unwrap();
+        assert!(!g.retargeted);
+        assert!(g.rules.contains(&"loot.activity_rewards"));
+        let granted: u32 = g.currencies.iter().filter(|(h, _)| *h == item).map(|(_, n)| n).sum();
+        assert!(granted > 0);
+        assert_eq!(held(&s), before + granted, "in the wallet (Glimmer) or the kept overlay");
+        // A second grant (a fresh adapter, as each control line is) starts from what was kept.
+        let g2 = execute(&mut s, &cmd, &index, 0, true).unwrap();
+        let granted2: u32 = g2.currencies.iter().filter(|(h, _)| *h == item).map(|(_, n)| n).sum();
+        assert_eq!(held(&s), before + granted + granted2);
+        assert_eq!(s.character_attribute(ATTR_GRANTS).and_then(Value::as_array).map(Vec::len), Some(2));
+        assert!(s.is_dirty());
+    }
+
+    /// The 40-byte identity a client's join request carries (`MemberIdentity`: machine, player,
+    /// account, character, fireteam), as the activity host forwards it.
+    fn member(machine: u64, account: u64, character: u64) -> Vec<u8> {
+        d1_mp::identity::MemberIdentity {
+            machine: machine.to_le_bytes(),
+            player: (machine ^ 1).to_le_bytes(),
+            account: d1_mp::identity::AccountSoid(account),
+            character: d1_mp::identity::CharacterSoid(character),
+            fireteam: 0,
+        }
+        .to_bytes()
+        .to_vec()
+    }
+
+    /// ⭐ Stream O3, the multi-client scenario (responder side; the host side is
+    /// `d1-activity-host/tests/multiplayer_rewards.rs`): two players with `D1_MP=1`, each with
+    /// their own identity from `identities.json`, finish one strike together and one public
+    /// event. The host's grant lines (one per member, by full identity) reach each player's own
+    /// record once, each with its own profile, and nobody else's.
+    #[test]
+    fn two_players_are_each_paid_once_into_their_own_record() {
+        use crate::player_store::{identity_for, target_store_in};
+        let dir = std::env::temp_dir().join(format!("d1-o3-two-players-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let src = Sources { vendor_account_slots: Some("308:869:100,309:873:500".into()), ..Sources::default() };
+        let first = Identity::from_env();
+        let a = identity_for(&dir, "local", first).unwrap();
+        let b = identity_for(&dir, "friend", first).unwrap();
+        assert_eq!(a, first, "the responder's own player keeps the knobs");
+        assert_eq!(b, Identity::allocated(1));
+        assert_ne!((a.account, a.character, a.profile), (b.account, b.character, b.profile));
+        let ma = std::sync::Mutex::new(Store::open(&dir, a.account, a.character, a.profile, &src).unwrap());
+        let mb = std::sync::Mutex::new(Store::open(&dir, b.account, b.character, b.profile, &src).unwrap());
+        let open = |id: &Identity| (*id == b).then_some(&mb);
+        let (activity, item) = currency_activity().unwrap();
+        let wallet = |m: &std::sync::Mutex<Store>| -> u32 {
+            let s = m.lock().unwrap();
+            if item == currencies::GLIMMER { s.currency(869) } else { s.character_attribute(ATTR_GRANTS).and_then(Value::as_array).map_or(0, |v| v.len() as u32) }
+        };
+        let paid = |m: &std::sync::Mutex<Store>| m.lock().unwrap().character_attribute(ATTR_GRANTS).and_then(Value::as_array).map_or(0, Vec::len);
+        let (wa, wb) = (wallet(&ma), wallet(&mb));
+        // The host's lines: the strike's bridge grants each member once at lifetime 6, then a
+        // public event pays both engaged players. Same grammar as `reward_forward`.
+        let lines = [
+            format!("grant id:{} {activity:#010x} completed source=script", hex(&member(0x1111, a.account, a.character))),
+            format!("grant id:{} {activity:#010x} completed source=script", hex(&member(0x2222, b.account, b.character))),
+            format!("grant id:{} {activity:#010x} completed source=event:12:gold", hex(&member(0x1111, a.account, a.character))),
+            format!("grant id:{} {activity:#010x} completed source=event:12:gold", hex(&member(0x2222, b.account, b.character))),
+        ];
+        for line in &lines {
+            let crate::player_store::Command::Grant(g) = crate::player_store::parse_command(line).unwrap() else { panic!("{line}") };
+            let (m, who) = target_store_in(&g.target, &ma, a, Some(&dir), true, &open).unwrap();
+            assert_eq!(who.is_some(), std::ptr::eq(m, &mb), "another player's grant runs as them");
+            let mut s = m.lock().unwrap();
+            let index = ResponderIndex::from_slots(&s.record.account.slots);
+            let summary = execute(&mut *s, &g, &index, 0, true).unwrap();
+            assert!(!summary.retargeted);
+        }
+        // Each player paid once per completion (strike, event), into their own record.
+        assert_eq!((paid(&ma), paid(&mb)), (2, 2));
+        assert!(wallet(&ma) > wa && wallet(&mb) > wb);
+        assert_eq!(wallet(&ma) - wa, wallet(&mb) - wb, "the same grants, once each");
+        // Each record is its own player's: its account, character and profile.
+        for (m, id) in [(&ma, a), (&mb, b)] {
+            assert_eq!(m.lock().unwrap().identity(), id);
+        }
+        // An identity no player of this responder has: refused under D1_MP=1, nobody is paid.
+        let stranger = GrantTarget::Identity(member(0x3333, 0xD101_0000_0000_9001, 0xD101_0000_0000_9101));
+        assert!(target_store_in(&stranger, &ma, a, Some(&dir), true, &open).is_err());
+        // A's account with B's character is nobody: both halves must match.
+        let mixed = GrantTarget::Identity(member(0x1111, a.account, b.character));
+        assert!(target_store_in(&mixed, &ma, a, Some(&dir), true, &open).is_err());
+        // With D1_MP off, one player per process: the stranger's grant is the signed-on one's.
+        let (m, who) = target_store_in(&stranger, &ma, a, Some(&dir), false, &open).unwrap();
+        assert!(std::ptr::eq(m, &ma) && who.is_none());
+        // A bare key routes by character when exactly one player has it.
+        let (m, _) = target_store_in(&GrantTarget::Key(b.character), &ma, a, Some(&dir), true, &open).unwrap();
+        assert!(std::ptr::eq(m, &mb));
+        drop((ma, mb));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// Run fg2g (6 November): the bridge's grant and hand-off for the responder's own player,
+    /// with the exact identity the client sent (`+0x18` = its PROFILE SOID `0xd100000000000201`),
+    /// against that run's `identities.json` (`local` and the stray allocated `D1Guardian`).
+    #[test]
+    fn the_clients_identity_names_the_profile_and_reaches_its_own_player() {
+        use crate::player_store::{target_store_in, Command};
+        const FG2G: &str = "e0d55e272f90000098ac2c43570fceb201000000000000d101020000000000d1f7bd728e56f51b90";
+        let m = d1_mp::identity::MemberIdentity::parse(&(0..FG2G.len()).step_by(2).map(|i| u8::from_str_radix(&FG2G[i..i + 2], 16).unwrap()).collect::<Vec<u8>>()).unwrap();
+        assert_eq!((m.account.0, m.character.0), (0xD100_0000_0000_0001, 0xD100_0000_0000_0201), "account, then the profile SOID");
+        let dir = std::env::temp_dir().join(format!("d1-fg2g-identity-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(
+            dir.join("identities.json"),
+            r#"{"schema":1,"allocated":2,"players":{
+                "D1Guardian":{"account":"0xd101000000001001","character":"0xd101000000001101","profile":"0xd101000000001201"},
+                "local":{"account":"0xd100000000000001","character":"0xd100000000000101","profile":"0xd100000000000201"}}}"#,
+        )
+        .unwrap();
+        let local = Identity::from_env();
+        assert_eq!((local.account, local.character, local.profile), (0xD100_0000_0000_0001, 0xD100_0000_0000_0101, 0xD100_0000_0000_0201));
+        let guardian = Identity::allocated(1);
+        let src = Sources::default();
+        let ma = std::sync::Mutex::new(Store::open(&dir, local.account, local.character, local.profile, &src).unwrap());
+        let mb = std::sync::Mutex::new(Store::open(&dir, guardian.account, guardian.character, guardian.profile, &src).unwrap());
+        let open = |id: &Identity| (*id == guardian).then_some(&mb);
+
+        // The two lines fg2g's responder refused, byte for byte: now the responder's own player.
+        let grant = format!("grant id:{FG2G} 0x6eaf0959 completed source=script");
+        let Command::Grant(g) = crate::player_store::parse_command(&grant).unwrap() else { panic!() };
+        let (store, who) = target_store_in(&g.target, &ma, local, Some(&dir), true, &open).unwrap();
+        assert!(std::ptr::eq(store, &ma) && who.is_none(), "the responder's own player, run as itself");
+        let summary = {
+            let mut s = ma.lock().unwrap();
+            let index = ResponderIndex::from_slots(&s.record.account.slots);
+            execute(&mut *s, &g, &index, 0, true).unwrap()
+        };
+        assert!(!summary.retargeted, "its own grant, not another player's");
+        let handoff = format!("handoff id:{FG2G} 0 from=0x6eaf0959 hash=0x8ae8da69");
+        let Command::HandOff(h) = crate::player_store::parse_command(&handoff).unwrap() else { panic!() };
+        let (store, who) = target_store_in(&h.target, &ma, local, Some(&dir), true, &open).unwrap();
+        assert!(std::ptr::eq(store, &ma) && who.is_none());
+        let (record, _) = crate::player_store::note_handoff(&mut ma.lock().unwrap(), &h, true).unwrap();
+        assert_eq!(record.activity, 0, "the Tower is next");
+
+        // The stranger check is not loosened: the profile or character of one player with the
+        // account of another is nobody, and an unknown identity is refused.
+        let bytes = |account: u64, soid: u64| GrantTarget::Identity(member(0xE0D5, account, soid));
+        for t in [bytes(local.account, guardian.profile), bytes(guardian.account, local.profile), bytes(local.account, 0xD100_0000_0000_0301)] {
+            assert!(target_store_in(&t, &ma, local, Some(&dir), true, &open).is_err(), "{t:?}");
+        }
+        // The allocated player is reached by its own account and profile (or character).
+        for soid in [guardian.profile, guardian.character] {
+            let (store, who) = target_store_in(&bytes(guardian.account, soid), &ma, local, Some(&dir), true, &open).unwrap();
+            assert!(std::ptr::eq(store, &mb) && who == Some(guardian));
+        }
+        drop((ma, mb));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn an_empty_owner_word_is_no_owner() {
+        assert_eq!(owner_of(""), None);
+        assert_eq!(owner_of("a"), None);
+        assert_eq!(owner_of("c1f"), Some(Owner::Character(0x1f)));
+        assert_eq!(owner_of("x1"), None);
+    }
+
+    fn hex(b: &[u8]) -> String {
+        b.iter().map(|x| format!("{x:02x}")).collect()
+    }
+
+    fn fixture(name: &str) -> Vec<u8> {
+        std::fs::read(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578/vendor").join(name)).unwrap()
+    }
+
+    /// The lab store with the lab's served profile decoded (`vendor-profile.obj`), so character
+    /// buckets can be written.
+    fn lab_store_with_profile() -> Store {
+        let mut s = lab_store();
+        s.chr_mut().profile_object = Some(fixture("vendor-profile.obj"));
+        s
+    }
+
+    /// Stream O2, wire 1: every currency the rewards grant reaches a client bucket by its exported
+    /// content index, none stays in the overlay: account buckets in the account's slots, character
+    /// buckets in the profile object.
+    #[test]
+    fn every_currency_is_delivered_into_its_client_bucket() {
+        use crate::rewards::currencies::*;
+        let mut s = lab_store_with_profile();
+        let me = s.identity().character;
+        let index = ResponderIndex::from_slots(&s.record.account.slots);
+        let all = [GLIMMER, LEGENDARY_MARKS, SILVER_DUST, STRANGE_COIN, MOTE_OF_LIGHT, WEAPON_PARTS, ARMOR_MATERIALS, EXOTIC_SHARD,
+                   ASCENDANT_SHARD, ASCENDANT_ENERGY, VANGUARD_MARKS, CRUCIBLE_MARKS, PLANETARY[0], PLANETARY[1], PLANETARY[2], PLANETARY[3], PLANETARY[4]];
+        let before: Vec<u32> = all.iter().map(|h| s.currency(crate::content::item_index(*h).unwrap())).collect();
+        let mut granted = Vec::new();
+        {
+            let mut a = Adapter::new(&mut s, &index, 0);
+            for h in all {
+                granted.push(grant(&mut a, me, h, 3, &Source::Other).granted);
+            }
+            assert!(a.overlay.stacks.values().all(|n| *n == 0), "nothing kept in the overlay: {:?}", a.notes);
+        }
+        // The lab profile holds Silver Dust, Vanguard and Crucible Marks at their manifest caps,
+        // so those grant nothing; every other line grants its 3.
+        assert_eq!(granted.iter().filter(|g| **g == 3).count(), all.len() - 3, "{granted:?}");
+        for ((h, b), g) in all.iter().zip(&before).zip(&granted) {
+            let c = crate::content::item_index(*h).unwrap();
+            assert_eq!(s.currency(c), b + g, "item {h} (content {c}) is in its bucket");
+        }
+        // Legendary Marks: account bucket 0x23, slot 310. Weapon Parts: character bucket 0x05
+        // (the profile's slots 0-19), so the profile is now stale and is pushed.
+        assert_eq!(s.record.account.slots.get(&310).map(|e| e.0), crate::content::item_index(LEGENDARY_MARKS));
+        let parts = crate::content::item_index(WEAPON_PARTS).unwrap();
+        let p = s.chr().profile_object.clone().unwrap();
+        assert!((0..20).any(|slot| crate::vendor::profile_entry(&p, slot) == (parts, 3)));
+        assert!(s.chr().profile_stale);
+    }
+
+    /// Stacks an earlier grant left in the overlay (no profile to put them in then) are delivered
+    /// by the next grant.
+    #[test]
+    fn stacks_kept_by_an_earlier_grant_are_delivered_later() {
+        let mut s = lab_store();
+        let me = s.identity().character;
+        let index = ResponderIndex::from_slots(&s.record.account.slots);
+        let (activity, _) = currency_activity().unwrap();
+        let parts = currencies::WEAPON_PARTS;
+        let row = json!([[format!("c{me:x}"), parts, 7]]);
+        s.set_character_attribute(ATTR_STACKS, row.clone());
+        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None, reputation: Vec::new(), item: None };
+        execute(&mut s, &cmd, &index, 0, true).unwrap();
+        assert_eq!(s.character_attribute(ATTR_STACKS), Some(&row), "no profile yet: still kept");
+        s.chr_mut().profile_object = Some(fixture("vendor-profile.obj"));
+        let g = execute(&mut s, &cmd, &index, 0, true).unwrap();
+        assert_eq!(s.currency(crate::content::item_index(parts).unwrap()), 7);
+        assert_eq!(s.character_attribute(ATTR_STACKS), Some(&json!([])));
+        assert!(g.notes.iter().any(|n| n.contains("kept from an earlier grant delivered")), "{:?}", g.notes);
+    }
+
+    /// Stream O2, wire 2: the whole overlay (instances with grids, progressions, objectives,
+    /// Record Book claims, the Grimoire, counters) survives the adapter, through the record.
+    #[test]
+    fn the_whole_overlay_survives_the_adapter() {
+        use crate::rewards::store::RewardStore;
+        let mut s = lab_store();
+        let me = s.identity().character;
+        let index = ResponderIndex::from_slots(&s.record.account.slots);
+        let t = tables();
+        let mut hashes: Vec<u32> = t.items.values().filter(|d| d.instanced && d.talent_grid != 0).map(|d| d.hash).collect();
+        hashes.sort_unstable();
+        let inst = crate::rewards::item_instance::ItemInstance::roll(0xD100_0000_0000_7001, hashes[0], 300, &mut crate::rewards::Rng::new(5)).unwrap();
+        let card = t.grimoire.iter().find(|c| c.points > 0).unwrap().id;
+        let saved = {
+            let mut a = Adapter::new(&mut s, &index, 0);
+            a.put_item(me, inst.clone());
+            a.overlay.equip(me, inst.id);
+            a.add_progression(me, 0x1234, 55);
+            a.set_objective(me, 0xBEEF, -3);
+            a.set_claimed(me, 7, 2);
+            let mut g = crate::rewards::grimoire::GrimoireState::default();
+            g.cards.insert(card);
+            g.stats.insert((card, 1), 9);
+            let account = a.store.identity().account;
+            a.overlay.grimoire.insert(account, g.clone());
+            a.add_counter(Owner::Account(1), "k.bonus", Period::Weekly, 2);
+            (overlay_attributes(&a, me), g)
+        };
+        for (k, v) in &saved.0 {
+            s.set_character_attribute(k, v.clone());
+        }
+        // The record goes through its JSON form, as a save and a restart do.
+        let text = serde_json::to_string(&s.record).unwrap();
+        s.record = serde_json::from_str(&text).unwrap();
+        let kept: Vec<Option<Value>> = OVERLAY_ATTRIBUTES.iter().map(|k| s.character_attribute(k).cloned()).collect();
+        let mut a = Adapter::new(&mut s, &index, 0);
+        restore_overlay(&mut a, me, &kept);
+        let account = a.store.identity().account;
+        assert_eq!(a.item(inst.id), Some(&inst), "the instance with its grid and rolls");
+        assert_eq!(a.equipped(me), vec![inst.id]);
+        assert_eq!(a.progression(me, 0x1234), 55);
+        assert_eq!(a.objective(me, 0xBEEF), -3);
+        assert!(a.claimed(me).contains(&(7, 2)));
+        assert_eq!(a.grimoire(account), saved.1);
+        assert_eq!(a.counter(Owner::Account(1), "k.bonus", Period::Weekly), 2);
+        assert_eq!(overlay_attributes(&a, me), saved.0, "restored and saved again: the same attributes");
+    }
+
+    /// New instances are written from the item template and placed in a slot of their bucket.
+    #[test]
+    fn a_new_instance_is_delivered_into_its_bucket_with_its_element() {
+        use crate::rewards::store::RewardStore;
+        let mut s = lab_store_with_profile();
+        let me = s.identity().character;
+        let index = ResponderIndex::from_slots(&s.record.account.slots);
+        let t = tables();
+        let character_bucket = |h: u32| {
+            crate::content::item_index(h).and_then(crate::content::bucket_of).and_then(crate::vendor::bucket).is_some_and(|b| b.2 == 0)
+        };
+        let mut hashes: Vec<u32> = t.items.values().filter(|d| d.instanced && character_bucket(d.hash)).map(|d| d.hash).collect();
+        hashes.sort_unstable();
+        let inst = crate::rewards::item_instance::ItemInstance::roll(0xD100_0000_0000_7002, hashes[0], 300, &mut crate::rewards::Rng::new(5)).unwrap();
+        let delivered = {
+            let mut a = Adapter::new(&mut s, &index, 0);
+            a.element_template = Some(fixture("vendor-item-template.obj"));
+            a.put_item(me, inst.clone());
+            a.delivered.clone()
+        };
+        assert_eq!(delivered, vec![inst.id]);
+        let c = crate::content::item_index(inst.item_hash).unwrap();
+        let p = s.chr().profile_object.clone().unwrap();
+        let at = |x: u16| crate::vendor::PROFILE_SLOTS + 32 * x as usize;
+        let slot = (0..340u16).find(|x| crate::vendor::profile_entry(&p, *x).0 == c && p[at(*x) + 8..at(*x) + 16] == inst.id.to_le_bytes()).expect("a profile slot holds it");
+        let (first, n, _) = crate::vendor::bucket(crate::content::bucket_of(c).unwrap()).unwrap();
+        assert!((first..first + n).contains(&slot));
+        let e = &s.chr().items.iter().find(|i| i.soid == inst.id).unwrap().element;
+        assert_eq!(u16::from_le_bytes([e[0x24], e[0x25]]), c, "the element names the content index");
+    }
+
+    #[test]
+    fn an_incomplete_grant_gives_nothing_and_another_players_is_refused_with_mp() {
+        let mut s = lab_store();
+        let index = ResponderIndex::from_slots(&s.record.account.slots);
+        let activity = tables().activities.keys().next().copied().unwrap();
+        let mut cmd = GrantCommand { target: GrantTarget::Key(0x1234), activity_hash: activity, outcome: GrantOutcome::Incomplete, page: None, engrams: false, seed: Some(1), source: None, reputation: Vec::new(), item: None };
+        assert!(execute(&mut s, &cmd, &index, 0, true).is_err(), "D1_MP=1: not this player's");
+        let g = execute(&mut s, &cmd, &index, 0, false).unwrap();
+        assert!(g.retargeted && g.currencies.is_empty() && g.rules.is_empty(), "single player: applied, and nothing for an incomplete run");
+        cmd.activity_hash = 0xDEAD_BEEF;
+        cmd.outcome = GrantOutcome::Completed;
+        assert!(execute(&mut s, &cmd, &index, 0, false).is_err(), "not in the manifest table");
+    }
+
+    #[test]
+    fn weekly_counters_survive_between_grants() {
+        // The weekly-bonus activities: their counter must be read back from the attributes.
+        let t = tables();
+        let Some(activity) = t.activities.values().find(|a| a.rewards.iter().any(|(h, _)| t.weekly_bonus.contains_key(h))) else {
+            eprintln!("SKIP: no weekly-bonus activity in the manifest table");
+            return;
+        };
+        let mut s = lab_store();
+        let me = s.identity().character;
+        let index = ResponderIndex::from_slots(&s.record.account.slots);
+        let cmd = GrantCommand { target: GrantTarget::Key(me), activity_hash: activity.hash, outcome: GrantOutcome::Completed, page: None, engrams: false, seed: Some(7), source: None, reputation: Vec::new(), item: None };
+        let limit = activity.rewards.iter().find_map(|(h, _)| t.weekly_bonus.get(h).copied()).unwrap();
+        // Each grant here is a fresh adapter, as each control line is; the bonus still runs down.
+        let mut lefts = Vec::new();
+        for _ in 0..=limit {
+            lefts.push(execute(&mut s, &cmd, &index, 0, true).unwrap().rules.contains(&"loot.weekly_bonus"));
+        }
+        assert!(lefts.iter().all(|x| *x));
+        let counters = s.character_attribute(ATTR_COUNTERS).and_then(Value::as_array).cloned().unwrap();
+        let used = counters.iter().find(|r| r[1].as_str().is_some_and(|k| k.ends_with(".bonus"))).and_then(|r| r[4].as_u64());
+        assert_eq!(used, Some(u64::from(limit)), "the counter stops at the limit and is kept");
+    }
+}

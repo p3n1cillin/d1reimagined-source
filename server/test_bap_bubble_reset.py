@@ -132,12 +132,14 @@ class BubbleResetControl(unittest.TestCase):
                 result.append((changed, roster[4], reader.get(32)))
             return result
 
-        before = rosters(fixture.run_client(client, 0.14)[1])
+        # Windows CI (PR #342) once read no push at all in a 0.14 s window; the windows are a
+        # minimum wait for the next heartbeat push, so longer ones only cost time.
+        before = rosters(fixture.run_client(client, 0.5)[1])
         self.assertTrue(before)
         self.assertTrue(all(roster[168][8] == 1 for _, roster, _ in before))  # stale startup line skipped
         with path.open("a", encoding="utf-8") as stream:
             stream.write('{"bubble_reset":"14:2"}\n')
-        after = rosters(fixture.run_client(client, 0.2)[1])
+        after = rosters(fixture.run_client(client, 0.6)[1])
         updated = [entry for entry in after if entry[1][168].get(8) == 2]
         self.assertGreaterEqual(len(updated), 2)
         for changed, roster, _ in updated:
@@ -148,7 +150,7 @@ class BubbleResetControl(unittest.TestCase):
         self.assertGreater(updated[-1][2], updated[0][2])
         with path.open("a", encoding="utf-8") as stream:
             stream.write('{"bubble_reset":"14:3,0:2"}\n')
-        rejected = rosters(fixture.run_client(client, 0.14)[1])
+        rejected = rosters(fixture.run_client(client, 0.5)[1])
         self.assertTrue(rejected)
         self.assertTrue(all(roster[168].get(8) == 2 and roster[0][0xA]
                             for _, roster, _ in rejected))

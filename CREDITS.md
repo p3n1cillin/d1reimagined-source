@@ -60,9 +60,20 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
   TypeScript libraries for Destiny's Tiger engine (MIT for the code packages).
   - Its `gibbon` reader, with definitions for our exact build `56578.17.04.12.1251.evil`, names
     every row of every activity bundle: `tools/ps4_setup/d1-bundle-rows.mjs` uses it to map each
-    sensor index the host serves to its authored name.
+    sensor index the host serves to its authored name. `tools/ps4_setup/d1-worlds.mjs` uses it to
+    read every world's scenario record, slice sets, bundles and spawn points for the generated world
+    tables (`ps4/fixtures/56578/worlds/`).
+  - Its 2014 activity table (`dictionary`, build 41375; no licence, used from a local checkout
+    only) binds activities to worlds for `tools/ps4_setup/d1-world-table.py`; only the derived
+    activity-to-world names are committed.
   - Its Fukugen Daihon reconstructions of the mission scripts (`enc_breach_m0`,
-    `act_cosmo_m0_highway`) show which squads each Breach trigger places.
+    `act_cosmo_m0_highway`) show which squads each Breach trigger places. Its restored scripts for
+    build 56578 are the reference for how each activity runs. They carry no licence, so they are used
+    from a local checkout only, never copied here ([related projects](notes/related-projects.md)).
+    Its BullShcript compiler and runtime are MIT.
+  - Its [tiger_test_harness](https://github.com/Blam-Network/tiger_test_harness), a test server
+    running BullShcript missions for D1's launch-era builds, is the reference for how a mission
+    script drives the client (read locally; unlicensed, not copied).
   - Its dictionary maps bundle hashes to names (`0xFC0E45A3` = `enc_breach_m0`). It also names
     the 2014 build's message ids.
   - Its independent `rsat` codec cross-checks ours byte for byte (`tools/rsat_crosscheck`,
@@ -84,20 +95,13 @@ Most of the PS4 work here is built on **aknumbers'** Destiny 1 Preservation Proj
 
 ## Other games' revival servers (read for design)
 
-These servers rebuilt online games from the retail client. They were read for their designs (spawn
-phases, vendor ledgers, sessions), not copied; see [`notes/similar-projects.md`](notes/similar-projects.md).
-
-- **[Crypto137](https://github.com/Crypto137)** and contributors:
-  [MHServerEmu](https://github.com/Crypto137/MHServerEmu) (Marvel Heroes, AGPL-3.0).
-- **[NexusForever](https://github.com/NexusForever)**: [NexusForever](https://github.com/NexusForever/NexusForever)
-  (WildStar, AGPL-3.0).
-- **[spaceninjaserver](https://github.com/spaceninjaserver)**:
-  [SpaceNinjaServer](https://github.com/spaceninjaserver/SpaceNinjaServer) (Warframe, AGPL-3.0).
 - **[PocketRelay](https://github.com/PocketRelay)**: [PocketRelay](https://github.com/PocketRelay/Server)
-  (Mass Effect 3 multiplayer, MIT).
-- **[mixutin](https://github.com/mixutin)** and **[SyST3MDeV](https://github.com/SyST3MDeV)**:
-  [Dauntless Revived](https://github.com/mixutin/dauntless-revived) and
-  [Undaunted](https://github.com/SyST3MDeV/Undaunted) (Dauntless, AGPL-3.0).
+  (Mass Effect 3 multiplayer, MIT), read for its handler router and matchmaking; see
+  [`notes/similar-projects.md`](notes/similar-projects.md).
+
+AGPL projects are not used and not read ([licensing](ps4/design/licensing.md)). Four that were read on
+1 November despite that rule are listed, with the correction, in
+[`notes/similar-projects.md`](notes/similar-projects.md); nothing from them is in this repository.
 
 ## Tools used (not bundled)
 
@@ -129,6 +133,12 @@ phases, vendor ledgers, sessions), not copied; see [`notes/similar-projects.md`]
   - the d1-oracle test guards.
 - **[DeRveXx](https://github.com/DeRveXx)**: pad testing on the PS4 route, and the trigger deadzone
   for Hall-effect pads (`shadps4-input-kbm.ini`).
+- **TSOLfan** and **SiscentShade**: recorded 55 private Destiny 1 sessions on the live servers (Xbox
+  360, November 2026). These are missions, strikes, a raid, Cosmodrome patrol with its beacons and
+  public events, and a full Tower visit. They are the evidence behind the reveal cinematic's
+  lifetime phases, the activity-complete message, public instances and much of the server's
+  timing. The recordings themselves stay private
+  ([notes/d1-live-captures-2026-11-05.md](notes/d1-live-captures-2026-11-05.md)).
 - **Dependabot**: dependency updates.
 - **AI assistance:** much of the code and documentation was written with AI assistants, under the
   maintainer's direction:

@@ -319,11 +319,12 @@ pub struct ProfileSpec {
     /// `{race, gender, class}` - must agree with the family-3 character object.
     pub identity: [u8; 3],
     pub last_orbited_destination: u32,
-    /// Up to [`STAT_OVERRIDE_SLOTS`] `{stat_index, value}` pairs. Non-empty sets `+0x6CDC`.
+    /// Up to [`STAT_OVERRIDE_SLOTS`] `{stat_index, value}` pairs. Non-empty sets the selected
+    /// build's `off_stat_override_present` (`+0x6CDC` on 01.29, `+0x6FDC` on 56578).
     ///
-    /// ⚠ `0x265EF0` returns the **first** entry whose key matches, then stops. Unused entries stay
-    /// `{0, 0}`, which is unreachable for index 0 (entry 0 matches first) and inert for every other
-    /// index, because a miss falls through to the ordinary gear summation.
+    /// The scalar reader returns the first matching key, but 56578's bulk reader `0x281860`
+    /// applies every non-`0xFF` entry in order. Unused entries must carry the absent key;
+    /// a `{0, 0}` tail overwrites Light in the derived-stat path used by activity permissions.
     pub stat_overrides: Vec<(u8, u32)>,
     /// Up to [`EQUIPPED_SLOTS`] item-instance SOIDs. Each must resolve in family 4/3 -
     /// [`inventory_soids`] reads them out of the staged elements so they cannot drift.
@@ -483,6 +484,12 @@ impl ProfileSpec {
 
         if !self.stat_overrides.is_empty() {
             o[off_stat_override_present] = 1;
+            // 56578's bulk reader (0x281860) applies all seven non-sentinel keys in order.
+            // A zero-filled tail writes stat 0 = 0 after a requested Light override;
+            // the scalar reader (0x2661e0) takes the first match and hides that loss.
+            for i in 0..STAT_OVERRIDE_SLOTS {
+                o[off_stat_override + i * STAT_OVERRIDE_STRIDE] = crate::character::EMPTY_STAT_KEY;
+            }
             for (i, (key, value)) in self.stat_overrides.iter().enumerate() {
                 let at = off_stat_override + i * STAT_OVERRIDE_STRIDE;
                 o[at] = *key;
@@ -638,6 +645,16 @@ pub fn verify(spec: &ProfileSpec, dec: &Decoded) -> Result<()> {
             return bad(format!(
                 "stat override[{i}] @+{at:#06x} is {{index {}, value {}}}, expected {{index {key}, \
                  value {value}}}", dec.object[at], u32_at(at + 4)));
+        }
+    }
+    if want_present != 0 {
+        for i in spec.stat_overrides.len()..STAT_OVERRIDE_SLOTS {
+            let at = off_stat_override + i * STAT_OVERRIDE_STRIDE;
+            if dec.object[at] != crate::character::EMPTY_STAT_KEY {
+                return bad(format!(
+                    "unused stat override[{i}] @+{at:#06x} must have the absent key 0xFF; \
+                     the bulk reader would apply key {}", dec.object[at]));
+            }
         }
     }
     // ⚠ Two bits, asserted in BOTH directions: an off-by-one that landed the flag on a neighbouring
@@ -1224,6 +1241,68 @@ pub fn controls(baseline: Option<&Path>) -> Result<Vec<Control>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn unused_stat_overrides_are_absent_on_both_builds() {
+        for offsets in [OFFS_0129, OFFS_56578] {
+            let spec = ProfileSpec {
+                stat_overrides: vec![(LIGHT_STAT_INDEX, 385), (11, 0)],
+                ..ProfileSpec::default()
+            };
+            let o = spec.to_object_for(offsets).unwrap();
+            let base = offsets.off_stat_override;
+            assert_eq!(o[base], LIGHT_STAT_INDEX);
+            assert_eq!(o[base + STAT_OVERRIDE_STRIDE], 11, "an explicit zero is still an override");
+            for i in spec.stat_overrides.len()..STAT_OVERRIDE_SLOTS {
+                assert_eq!(o[base + i * STAT_OVERRIDE_STRIDE], crate::character::EMPTY_STAT_KEY);
+            }
+            let empty = ProfileSpec { stat_overrides: Vec::new(), ..ProfileSpec::default() }
+                .to_object_for(offsets).unwrap();
+            assert_eq!(empty[offsets.off_stat_override_present], 0);
+            assert!(empty[base..base + STAT_OVERRIDE_SLOTS * STAT_OVERRIDE_STRIDE]
+                .iter().all(|&b| b == 0), "absent optional data stays zero for the codec");
+        }
+    }
+
+    /// Execute the 56578 bulk consumer, including the old image as a negative control.
+    /// No packages, running process or derived binary fixture is needed.
+    #[test]
+    fn stat_overrides_survive_the_56578_bulk_reader() {
+        let Some(path) = std::env::var_os("D1_EBOOT").filter(|p| Path::new(p).is_file()) else {
+            eprintln!("SKIP: stat override reader needs the owned 56578 executable in D1_EBOOT");
+            return;
+        };
+        let image = Image::open(path).expect("read D1_EBOOT");
+        if image.sha256() != crate::weapon_stats::MEASURED_EBOOT_SHA256 {
+            eprintln!("SKIP: stat override reader address is derived only for build 56578");
+            return;
+        }
+        let mut harness = crate::Harness::new(&image).expect("offline harness");
+        let spec = ProfileSpec {
+            stat_overrides: vec![(LIGHT_STAT_INDEX, 385), (11, 0)],
+            ..ProfileSpec::default()
+        };
+        let object = spec.to_object_for(OFFS_56578).unwrap();
+        let mut oracle = ObjectOracle::new(TAG).expect("56578 profile codec");
+        let (_, decoded) = oracle.round_trip(&object, 0x9000).expect("sentinels survive the codec");
+        let block = OFFS_56578.off_stat_override_present;
+        let mut overrides = decoded.object[block..block + 4 + STAT_OVERRIDE_SLOTS * STAT_OVERRIDE_STRIDE].to_vec();
+        let source = harness.alloc(overrides.len() as u64).unwrap();
+        let output = harness.alloc(0x100).unwrap();
+        for old_tail in [false, true] {
+            if old_tail {
+                for i in spec.stat_overrides.len()..STAT_OVERRIDE_SLOTS {
+                    overrides[4 + i * STAT_OVERRIDE_STRIDE] = 0;
+                }
+            }
+            harness.write(source, &overrides).unwrap();
+            harness.write(output, &[0; 0x100]).unwrap();
+            harness.write_u32(output + 11 * 4, 17).unwrap();
+            harness.call(0x281860, &[source, output]).expect("client bulk override reader");
+            assert_eq!(harness.read_u32(output).unwrap(), if old_tail { 0 } else { 385 });
+            assert_eq!(harness.read_u32(output + 11 * 4).unwrap(), 0, "explicit zero applies");
+        }
+    }
 
     /// Completions land at the build's field-[11] base plus the subindex, as `2`, and nowhere else;
     /// a subindex past the field is refused instead of spilling into field [12].

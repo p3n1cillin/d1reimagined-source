@@ -54,7 +54,35 @@ use clap::Parser;
 use serde_json::json;
 use tracing::{info, warn};
 
+mod player_store;
+mod progression;
 mod vendor;
+// ⭐ Stream I (2026-11-05): the social services between activities. The service logic and its
+// tables; the wire hooks are in `social_hooks`, behind `D1_SOCIAL=1`. Parts are not called by the
+// responder yet (their wire is not decoded), hence the allow.
+#[allow(dead_code)]
+mod bounties;
+#[allow(dead_code)]
+mod character_create;
+#[allow(dead_code)]
+mod director;
+mod content;
+#[allow(dead_code)]
+mod inventory_ops;
+#[allow(dead_code)]
+mod store;
+#[allow(dead_code)]
+mod tables;
+#[allow(dead_code)]
+mod vendors;
+mod social_hooks;
+mod mp; // MP(H): multiplayer services, D1_MP=1
+mod players; // stream O3: which player each connection and op is for (D1_MP=1)
+mod investment; // ⭐ stream P: 402 turn-in, 406, 801/802, 804, 904, 1801-1803 (investment/mod.rs)
+mod public_feed; // stream O2: the activity host's public instances for the matchmaker
+// Stream M (rewards and growth): services behind `D1_REWARDS` (off by default), called by the
+// activity streams through `rewards::grant_activity_rewards`. The only hook here is its knobs.
+mod rewards;
 
 #[derive(Clone)]
 struct Cfg {
@@ -211,8 +239,9 @@ const SESSION_ID: &str = "000-d1000000-0000-4000-8000-000000000001";
 /// PSN answers with the created session's id. `sessionId` is the field the client needs back;
 /// everything else here is shape, not contract. Reach tag: **`synthetic-minimal`** - invented, and
 /// therefore `[U]` until a capture or the client's own parser confirms the field set.
-async fn create_session(headers: HeaderMap, body: Bytes) -> impl IntoResponse {
+async fn create_session(headers: HeaderMap, body: Bytes) -> axum::response::Response {
     log_req("POST", &headers, "/v1/sessions", &body);
+    if let Some(r) = mp::create_session(&headers, &body) { return r; } // MP(H)
     // ⚠ THE SHAPE MATTERS. The first attempt returned `d1-fireteam-0000000000000001` and the client
     // could not parse it: it immediately did `PUT /v1/sessions/000-00000000-0000-0000-0000-000000000000`
     // - an ALL-ZERO id - proving it had parsed our string into nothing. PSN session ids are
@@ -220,7 +249,7 @@ async fn create_session(headers: HeaderMap, body: Bytes) -> impl IntoResponse {
     let session_id = SESSION_ID;
     warn!("<-- 201 ** PSN SESSION CREATED ** /v1/sessions ({}B body) -> sessionId={session_id}",
           body.len());
-    (StatusCode::CREATED, Json(json!({"sessionId": session_id})))
+    (StatusCode::CREATED, Json(json!({"sessionId": session_id}))).into_response()
 }
 
 /// `DELETE /v1/users/{npid}/presence/gameStatus` - also 404'd in the same run. Presence teardown;
@@ -228,10 +257,11 @@ async fn create_session(headers: HeaderMap, body: Bytes) -> impl IntoResponse {
 async fn delete_game_status(
     AxPath(npid): AxPath<String>,
     headers: HeaderMap,
-) -> impl IntoResponse {
+) -> axum::response::Response {
     log_req("DELETE", &headers, &format!("/v1/users/{npid}/presence/gameStatus"), &Bytes::new());
+    if let Some(r) = mp::delete_game_status(&npid) { return r; } // MP(H)
     info!("<-- 204 presence gameStatus cleared");
-    StatusCode::NO_CONTENT
+    StatusCode::NO_CONTENT.into_response()
 }
 
 
@@ -243,15 +273,16 @@ async fn update_session(
     AxPath(id): AxPath<String>,
     headers: HeaderMap,
     body: Bytes,
-) -> impl IntoResponse {
+) -> axum::response::Response {
     log_req("PUT", &headers, &format!("/v1/sessions/{id}"), &body);
+    if let Some(r) = mp::update_session(&id, &body) { return r; } // MP(H)
     if id != SESSION_ID {
         warn!("<-- 200 session update for UNEXPECTED id {id} (we issued {SESSION_ID}) - \
                accepting anyway, but the id round-trip is broken");
     } else {
         info!("<-- 200 session updated ({}B)", body.len());
     }
-    (StatusCode::OK, Json(json!({"sessionId": id})))
+    (StatusCode::OK, Json(json!({"sessionId": id}))).into_response()
 }
 
 /// `PUT /v1/users/{npid}/presence/gameData` - presence payload alongside the session. Also 404'd.
@@ -259,10 +290,11 @@ async fn put_game_data(
     AxPath(npid): AxPath<String>,
     headers: HeaderMap,
     body: Bytes,
-) -> impl IntoResponse {
+) -> axum::response::Response {
     log_req("PUT", &headers, &format!("/v1/users/{npid}/presence/gameData"), &body);
+    if let Some(r) = mp::put_game_data(&npid, &body) { return r; } // MP(H)
     info!("<-- 204 presence gameData accepted ({}B)", body.len());
-    StatusCode::NO_CONTENT
+    StatusCode::NO_CONTENT.into_response()
 }
 
 /// Anything unimplemented: a **named gate**, in PSN's error shape so the client can parse the refusal.
@@ -1002,13 +1034,14 @@ fn router(cfg: Cfg) -> Router {
         .route("/v1/users/{npid}/friendList", get(friend_list))
         // PSN session creation - the platform-session gate (see `create_session`).
         .route("/v1/sessions", post(create_session))
-        .route("/v1/sessions/{id}", put(update_session))
+        .route("/v1/sessions/{id}", put(update_session).get(mp::get_session)) // MP(H): GET 404s unless D1_MP=1
         .route("/v1/users/{npid}/presence/gameData", put(put_game_data))
         .route("/v1/users/{npid}/presence/gameStatus", delete(delete_game_status))
         // ⭐ The loadout editor's control plane. NOT a game protocol message - a call between our
         // own tools. `d1_loadout::APPLY_PATH` is the single constant both sides use so the path
         // cannot drift in two string literals.
         .route(d1_loadout::APPLY_PATH, post(loadout_apply))
+        .merge(mp::add_routes(Router::new())) // MP(H): sessions, members, invitations
         .fallback(any(fallback))
         .with_state(cfg)
 }
@@ -1096,6 +1129,11 @@ fn serves_no_characters(chr: u64) -> bool {
 /// The character SOID to serve: the one the operator pinned, or - once we have answered a **501** -
 /// the one we minted for the Guardian the client just created.
 fn effective_character_soid(chr: u64) -> u64 {
+    // Stream O3: another player's character is its own identity's; the created-character latch
+    // is the responder's own player's.
+    if players::current_is_other() {
+        return chr;
+    }
     let created = CREATED_CHARACTER_SOID.load(std::sync::atomic::Ordering::Relaxed);
     if created != 0 { created } else { chr }
 }
@@ -1279,6 +1317,10 @@ fn character_lifecycle_reply(id: u16, args: &[u8], wire_body: &[u8]) -> Option<V
             }
             CREATED_CHARACTER_SOID.store(soid, std::sync::atomic::Ordering::Relaxed);
             CHARACTER_CREATED.store(true, std::sync::atomic::Ordering::Relaxed);
+            // The look the player chose goes into the served peer cards and profile (D1_STORE).
+            if let Ok(r) = &decoded {
+                player_store::apply_created_look(r.look_image());
+            }
             Some(cl::create_character_response_body(soid))
         }
         cl::DELETE_CHARACTER => {
@@ -1760,46 +1802,33 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                         // `d1guest tag`. That premise was "believed, not
                                                                         // measured" until then, and it is what makes the whole
                                                                         // gear lane viable.
-                                                                        if let Ok(spec) = std::env::var("D1_INVENTORY") {
-                                                                            let mut files: Vec<std::path::PathBuf> = Vec::new();
-                                                                            let path = std::path::Path::new(&spec);
-                                                                            if path.is_dir() {
-                                                                                if let Ok(rd) = std::fs::read_dir(path) {
-                                                                                    let mut v: Vec<_> = rd.filter_map(|e| e.ok().map(|e| e.path()))
-                                                                                        .filter(|p| p.extension().map(|e| e == "bin").unwrap_or(false))
-                                                                                        .collect();
-                                                                                    v.sort();
-                                                                                    files = v;
-                                                                                }
-                                                                            } else if !spec.is_empty() {
-                                                                                files.push(path.to_path_buf());
-                                                                            }
-                                                                            // Item instance SOIDs are ours to mint; the client
-                                                                            // keys the registry slot by them, and they must be
-                                                                            // distinct or later items overwrite earlier ones.
-                                                                            let base = env_soid("D1_ITEM_SOID_BASE", 0xD100_0000_0000_0301);
-                                                                            for (i, f) in files.iter().enumerate() {
-                                                                                match std::fs::read(f) {
-                                                                                    Ok(raw) => {
-                                                                                        let key = base + i as u64;
-                                                                                        warn!("      ⭐ inventory item {i}: {} ({} B, instance {:#010x}, key {key:#018x})",
-                                                                                              f.file_name().unwrap_or_default().to_string_lossy(),
-                                                                                              raw.len(), d1_bap::INVENTORY_INSTANCE_TYPE);
-                                                                                        extras.push((d1_bap::INVENTORY_INSTANCE_TYPE, key, raw));
-                                                                                    }
-                                                                                    Err(e) => warn!("      ⛔ D1_INVENTORY {}: {e}", f.display()),
-                                                                                }
-                                                                            }
+                                                                        // ⭐ D1_STORE=1: the items the player store keeps (seeded from these
+                                                                        // same files, so its first serve is identical), else the files.
+                                                                        let items: Option<Vec<(u64, Vec<u8>, String)>> = player_store::view(|s| s.chr().items.iter()
+                                                                            .map(|i| (i.soid, i.element.clone(), "player store".to_string())).collect())
+                                                                            .or_else(|| std::env::var("D1_INVENTORY").ok().map(|spec| {
+                                                                                // Item instance SOIDs are ours to mint; the client
+                                                                                // keys the registry slot by them, and they must be
+                                                                                // distinct or later items overwrite earlier ones.
+                                                                                let base = env_soid("D1_ITEM_SOID_BASE", 0xD100_0000_0000_0301);
+                                                                                player_store::read_inventory(&spec, base)
+                                                                            }));
+                                                                        for (i, (key, raw, name)) in items.unwrap_or_default().into_iter().enumerate() {
+                                                                            warn!("      ⭐ inventory item {i}: {name} ({} B, instance {:#010x}, key {key:#018x})",
+                                                                                  raw.len(), d1_bap::INVENTORY_INSTANCE_TYPE);
+                                                                            extras.push((d1_bap::INVENTORY_INSTANCE_TYPE, key, raw));
                                                                         }
                                                                         // ⚠ BOTH branches must receive `unlocks`. The live boot
                                                                         // route goes through D1_PROFILE_FILE; wiring only the
                                                                         // other branch would silently do nothing on the path
                                                                         // that actually runs.
-                                                                        match std::env::var("D1_PROFILE_FILE").ok()
-                                                                            .and_then(|p| std::fs::read(&p).ok())
+                                                                        let stored_profile = player_store::view(|s| s.chr().profile.clone());
+                                                                        match stored_profile.clone().unwrap_or_else(|| std::env::var("D1_PROFILE_FILE").ok()
+                                                                            .and_then(|p| std::fs::read(&p).ok()))
                                                                         {
                                                                             Some(raw) => {
-                                                                                warn!("      ⭐ profile from D1_PROFILE_FILE ({} B, oracle-encoded full object)", raw.len());
+                                                                                warn!("      ⭐ profile from {} ({} B, oracle-encoded full object)",
+                                                                                      if stored_profile.is_some() { "the player store" } else { "D1_PROFILE_FILE" }, raw.len());
                                                                                 // `D1_ACCOUNT_FILE`: the account verbatim as well, e.g. with
                                                                                 // currencies in its inventory (field [6]). ⚠ Encode only the
                                                                                 // fields you mean to send: a full re-encode of a decoded
@@ -1809,12 +1838,13 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                                 // post-creation shape: before creation the account must
                                                                                 // withhold the profile SOID (see above), which a fixed
                                                                                 // file cannot follow.
-                                                                                let account = std::env::var("D1_ACCOUNT_FILE").ok()
-                                                                                    .filter(|_| prof != 0)
-                                                                                    .and_then(|p| std::fs::read(&p).ok());
+                                                                                let account = player_store::view(|s| s.record.account.payload.clone())
+                                                                                    .unwrap_or_else(|| std::env::var("D1_ACCOUNT_FILE").ok().and_then(|p| std::fs::read(&p).ok()))
+                                                                                    .filter(|_| prof != 0);
                                                                                 match account {
                                                                                     Some(a) => {
-                                                                                        warn!("      ⭐ account from D1_ACCOUNT_FILE ({} B, oracle-encoded full object)", a.len());
+                                                                                        warn!("      ⭐ account from {} ({} B, oracle-encoded full object)",
+                                                                                              if stored_profile.is_some() { "the player store" } else { "D1_ACCOUNT_FILE" }, a.len());
                                                                                         d1_bap::queuez_family4_baseline_body_raw_account_and_profile(
                                                                                             acct, prof, &a, &raw, unlocks.as_deref(), &extras)
                                                                                     }
@@ -1903,14 +1933,17 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                         // struct>`. The built-in encoder emits identity only -
                                                                         // no level, no light, no gear - which is exactly what
                                                                         // the operator sees on a blank character.
-                                                                        let raw_char = std::env::var("D1_CHARACTER_FILE").ok()
+                                                                        let raw_char = match player_store::view(|s| s.chr().character.clone()) {
+                                                                            Some(stored) => stored,
+                                                                            None => std::env::var("D1_CHARACTER_FILE").ok()
                                                                             .and_then(|p| match std::fs::read(&p) {
                                                                                 Ok(b) => { warn!("      ⭐ character from D1_CHARACTER_FILE ({} B, oracle-encoded full object)", b.len()); Some(b) }
                                                                                 // Loud: silently falling back to the identity-only
                                                                                 // character would look like "the full object made
                                                                                 // no difference".
                                                                                 Err(e) => { warn!("      ⛔ D1_CHARACTER_FILE={p}: {e} - falling back to identity-only"); None }
-                                                                            });
+                                                                            }),
+                                                                        };
                                                                         warn!("      QUEUEZ family 3 baseline: roster (instance {:#010x}) + character (instance {:#010x})",
                                                                               d1_bap::ROSTER_INSTANCE_TYPE,
                                                                               d1_bap::CHARACTER_INSTANCE_TYPE);
@@ -2042,19 +2075,12 @@ const ROSTER_INSTANCE_TYPES: &[((u32, u32), u32)] = &[
 ///
 /// ⚠ `D1_ANSWER_FAMILIES` is still required - this supplies CONTENTS, not the subscription answer.
 fn build_roster_family_body(family: u32, root_soid: u64) -> Option<Vec<u8>> {
-    let dir = std::env::var("D1_ROSTER_DIR").ok().filter(|d| !d.is_empty())?;
-    let mut files: Vec<std::path::PathBuf> = std::fs::read_dir(&dir)
-        .map_err(|e| warn!("      ⛔ D1_ROSTER_DIR {dir}: {e}"))
-        .ok()?
-        .flatten()
-        .map(|e| e.path())
-        .filter(|p| p.extension().map(|x| x == "bin").unwrap_or(false))
-        .collect();
-    files.sort();
-
+    // ⭐ D1_STORE=1: the player store's cards (seeded from this directory, then the loot grants'), else
+    // the directory itself, sorted by name.
+    let cards = player_store::roster_cards()?;
     let mut items: Vec<(u32, u64, Vec<u8>)> = Vec::new();
-    for f in &files {
-        let name = f.file_name().and_then(|s| s.to_str()).unwrap_or_default();
+    for (name, raw) in cards {
+        let name = name.as_str();
         let parsed = name
             .strip_suffix(".bin")
             .and_then(|s| s.strip_prefix('f'))
@@ -2079,14 +2105,8 @@ fn build_roster_family_body(family: u32, root_soid: u64) -> Option<Vec<u8>> {
             warn!("      ⛔ D1_ROSTER_DIR: family {fam}/type {ty} has no known instance checksum - SKIPPED");
             continue;
         };
-        match std::fs::read(f) {
-            Ok(raw) => {
-                warn!("      ⭐ roster {fam}/{ty}: {name} ({} B, instance {instance:#010x}, key {key:#018x})",
-                      raw.len());
-                items.push((instance, key, raw));
-            }
-            Err(e) => warn!("      ⛔ D1_ROSTER_DIR {}: {e}", f.display()),
-        }
+        warn!("      ⭐ roster {fam}/{ty}: {name} ({} B, instance {instance:#010x}, key {key:#018x})", raw.len());
+        items.push((instance, key, raw));
     }
     if items.is_empty() {
         return None;
@@ -2232,6 +2252,7 @@ fn stage_loadout(loadout: &d1_loadout::Loadout, dir: &str) -> anyhow::Result<usi
 /// environment block at startup. If a knob is added below and not added here, that is the bug.
 const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_RESPONDER_LOG_TIME", "0", "1 = prefix every log line with the UTC time"),
+    ("D1_MM_LIVE_REPLIES", "0", "1 = answer matchmaking searches (no sessions found) and advertisements (an id) as the live services did"),
     // ── ⭐ the correlation table (new, 2026-08-08) ────────────────────────────────────────────
     ("D1_BAP_DUMP_DIR", "<unset>", "write every decrypted inbound BAP body, whole, to this directory"),
     ("D1_BAP_FIFO", "1", "⭐ correlation table ON. 0 = legacy immediate-write (reproduces the Weasel)"),
@@ -2327,20 +2348,52 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_PROGRESSION_ROOT", "<unset>", "family 2 root payload"),
     ("D1_PROGRESSION_KEY_BASE", "0xD100000000000401", "fallback progression key"),
     ("D1_ORACLE", "d1-server/target/release/d1-oracle", "native encoder used to stage loadouts"),
+    ("D1_RSAT_NATIVE", "1", "the client's codec in process (d1-rsat) for profile and item objects; 0 = a d1-oracle start per call (2.2 s each)"),
     ("D1_LOOT_GRANT", "<unset>", "NONCE=SOID:FILE[|PROFILE][;…] - the item a claimed world drop delivers"),
     ("D1_LOOT_GRANT_ROSTER", "<unset>", "roster fixtures served after a loot grant"),
     ("D1_PROFILE_PUSH_FILE", "<unset>", "on-demand family-4 profile delta: write this file (plus optional .item/.soid) to push it"),
     ("D1_ACCOUNT_PUSH_FILE", "<unset>", "on-demand family-4 account delta: write this file (a client-encoded account) to push it"),
+    ("D1_SOCIAL", "0", "1: stream I's social services on 901-905 and 402-405 (vendor rules, vault, Postmaster, refunds, bounties, Armsday, Cryptarch); social_hooks.rs"),
+    ("D1_SOCIAL_STOCK", "0", "1 (with D1_SOCIAL): refuse sales outside the vendor's current stock (the placeholder rotation)"),
+    ("D1_DISMANTLE_YIELDS", "<unset>", "a sourced dismantle yields table (content<TAB>content:quantity:bucket, ...); its rows win over the placeholder ones (integration review, finding 32)"),
+    ("D1_DISMANTLE_PLACEHOLDER", "0", "1 (with D1_SOCIAL): dismantles give the labelled PLACEHOLDER yields of inventory_ops::PLACEHOLDER_YIELDS"),
+    ("D1_VAULT_VENDOR", "<content: 26>", "override the Vault's row in the client's vendor table (903/902 to it store and take)"),
+    ("D1_POSTMASTER_VENDOR", "<content: 20,36>", "additional Postmaster row; both exported variants are recognized (903 to it collects)"),
+    ("D1_CHARACTER_CLASS", "0", "the served character's class for stream I's rules (0 Titan, 1 Hunter, 2 Warlock)"),
+    ("D1_CHARACTER_LEVEL", "40", "the served character's level for stream I's rules (sale requiredLevel)"),
+    ("D1_ACTIVITY_RULES", "<content: 653>", "override rows of the exported 56578 activity launch programs (director::parse_rules)"),
+    ("D1_STARTING_KIT", "<unset>", "a starting-kit file, or content for the exported first default-gear list; grant policy remains unverified"),
+    ("D1_CREATION_FLAGS", "<unset>", "content: a created Guardian's completion record (profile field [11]) is its class/race creation record's (subs 341, 673, 693, 706, 826 = 2; new-guardian-defaults.json) instead of the served save's"),
+    ("D1_MP", "0", "MP(H): 1 = multiplayer services (identities, fireteams, the 42/43 matchmaking directory, PSN sessions); mp.rs, d1-mp"),
+    ("D1_MM_CONFIG_FILE", "<unset>", "MP(H): the kind-4 matchmaking configurations (ps4/fixtures/56578/matchmaking/configurations.json)"),
+    ("D1_MP_ACCOUNTS", "<unset>", "MP(H): explicit online id -> account SOID bindings, <online id>=<soid>,..."),
+    ("D1_MP_FIRETEAM_CAP", "3", "MP(H): the fireteam cap with no activity selected"),
+    ("D1_MP_RECONNECT_GRACE_MS", "120000", "MP(H): how long a disconnected member keeps their fireteam slot"),
+    ("D1_AH_ACTIVITY_FRAMEWORK", "<unset>", "stream O2 (with D1_MP=1): the activity framework folder (or 1); its matchmaking-playlists.tsv feeds the matchmaker's playlists"),
+    ("D1_AH_PUBLIC_INSTANCES_FILE", "<unset>", "stream O2 (with D1_MP=1): the activity host's public-instance snapshot; slot-1 bubble searches place a fireteam there and hold its slots (public_feed.rs)"),
     ("D1_VENDOR_SALES", "<unset>", "vendor-sales.tsv (d1-oracle vendor-sales write): apply 901 purchases and push the account and profile"),
     ("D1_VENDOR_PROFILE_OBJ", "<unset>", "the served profile as a decoded C object (purchases add items to it)"),
     ("D1_VENDOR_ITEM_TEMPLATE", "<unset>", "a decoded 0x80801732 item element, the template for bought instances"),
     ("D1_VENDOR_ACCOUNT_SLOTS", "<unset>", "slot:content:quantity,... - the account slots D1_ACCOUNT_FILE serves (e.g. 308:869:25000 = Glimmer)"),
+    // ── the player store (notes/ps4-56578-player-store-2026-11-05.md) ──────────────────────────
+    ("D1_STORE", "<unset>", "💾 1 = persist the account and character (seeded from the knobs above on first sign-on, then served from it). Unset = off, as before"),
+    ("D1_STORE_DIR", "<%LOCALAPPDATA%/d1reimagined/player-store>", "💾 where the store keeps identities.json and account-<soid>.json (OUTSIDE the repo)"),
+    ("D1_STORE_SEED_COMPLETED", "<unset>", "⚠ LAB ONLY: activity indices (164,…) completed aside in the profile served at sign-on when the record has no completion of them, so the client launches the next story activity itself (run fg2j)"),
+    ("D1_STORE_PLAYER", "local", "💾 the player name the identity is filed under (the first player gets the D1_*_SOID knobs)"),
+    ("D1_STORE_SAVE_SECS", "300", "💾 the periodic save (important events save at once)"),
+    ("D1_STORE_CONTROL", "<unset>", "💾 a command file the store polls: activity N | xp N | complete N | checkpoint N STEP | checkpoint N - | lockout N ENCOUNTER week=W | grant CHARACTER HASH OUTCOME (D1_REWARDS=1) | handoff CHARACTER N | completed CHARACTER HASH [aside] | started CHARACTER HASH | ended CHARACTER HASH | reputation NAME N | unlock +N -N; the store writes <file>.state.json back"),
+    ("D1_REFUND_WINDOW", "<1800; with D1_STORE=1 the manifest's>", "seconds a refundable vendor purchase stays refundable (the length only: with D1_STORE=1 the manifest says which, Eververse/Silver Dust items, 900 by default; with it off every purchase; the same with D1_SOCIAL on and off)"),
+    ("D1_REFUND_POLICIES", "<repo table>", "override ps4/fixtures/56578/progression/refund-policies.tsv (which vendors refund, and for how long)"),
+    ("D1_PROGRESSION_CURVES", "<repo table>", "override ps4/fixtures/56578/progression/progression-curves.tsv (XP and rank curves)"),
+    ("D1_VENDOR_RESETS", "<repo table>", "override ps4/fixtures/56578/progression/vendor-resets.tsv (vendor reset schedules)"),
+    ("D1_ACTIVITY_REWARDS", "<repo table>", "override ps4/fixtures/56578/progression/activity-rewards.tsv (what completing an activity gives)"),
 ];
 
 /// Print [`KNOBS`] with each knob's effective value.
 fn print_knobs() {
     info!("=== d1-responder environment (⭐ = new for the rung 28-30 activity-host lane) ===");
-    for (name, default, meaning) in KNOBS {
+    // HOOK (stream M): the rewards module's knobs are printed with the rest.
+    for (name, default, meaning) in KNOBS.iter().chain(rewards::KNOBS) {
         match std::env::var(name) {
             Ok(v) => {
                 let v: String = v.chars().take(48).collect();
@@ -2448,7 +2501,8 @@ fn served_205_body() -> Vec<u8> {
 /// ⛔ More than 50 is refused (container `0x80804717` is 50 x 4 B), and the bodies are decoded back
 /// before use: a body that reads back as anything other than exactly this list is not served.
 fn unlock_flag_override() -> Option<(Vec<u8>, Vec<u8>)> {
-    let spec = std::env::var("D1_UNLOCK_FLAGS").ok().filter(|v| !v.is_empty())?;
+    // D1_STORE=1: the player store's list (seeded from D1_UNLOCK_FLAGS, changed by completions).
+    let spec = player_store::unlock_flag_spec()?;
     let indices: Vec<u16> = match spec.split(',').map(|s| s.trim().parse::<u16>()).collect() {
         Ok(v) => v,
         Err(e) => {
@@ -2852,6 +2906,7 @@ async fn main() -> Result<()> {
         }
     }
     let cfg = Cfg { npid: args.npid.clone(), account_id: args.account_id };
+    mp::init(&args.npid, env_soid_raw("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001)); // MP(H)
 
     let mut tasks = Vec::new();
 
@@ -2888,7 +2943,9 @@ async fn main() -> Result<()> {
                                 // and only connection 0 owns the QueueZ character/family delivery.
                                 let conn_index = BAP_CONNECTIONS.fetch_add(1, Ordering::SeqCst);
                                 warn!("=== BAP TCP CONNECT #{conn_index} from {peer} ===");
-                                tokio::spawn(async move {
+                                // Stream O3: the task carries its connection, so every id it serves is its player's (players.rs).
+                                tokio::spawn(players::CONNECTION.scope(conn_index, async move {
+                                    let _mp_guard = mp::ConnGuard(conn_index); // MP(H): sign-off on close
                                     use tokio::io::AsyncReadExt;
                                     // HOLD THE CONNECTION OPEN. The first version read once and
                                     // dropped the socket, and the client reported
@@ -3110,6 +3167,7 @@ async fn main() -> Result<()> {
                                                             let inner_type = inner.as_ref().ok().map(|i| i.msg_type);
                                                             if inner_type == Some(d1_bap::TYPE_QUEUEZ_REGISTER_REQUEST) {
                                                                 let prev = PRIMARY_BAP_CONNECTION.swap(conn_index, Ordering::SeqCst);
+                                                                players::note_register(conn_index); // stream O3: each player's own primary
                                                                 if prev != conn_index {
                                                                     warn!("    ⭐ BAP connection #{conn_index} sent queuez_register - it is now the PRIMARY (was #{prev})");
                                                                 }
@@ -3293,8 +3351,9 @@ async fn main() -> Result<()> {
                                                                                          &d[..d.iter().position(|&c| c == 0).unwrap_or(d.len())])
                                                                                          .to_string())
                                                                                      .collect::<Vec<_>>());
-                                                                            let entries: Vec<_> =
-                                                                                ids.iter().map(|id| (*id, acct)).collect();
+                                                                            // MP(H): each platform id its own account.
+                                                                            let entries: Vec<_> = mp::translate(conn_index, &ids)
+                                                                                .unwrap_or_else(|| ids.iter().map(|id| (*id, acct)).collect());
                                                                             warn!("      -> 0x0018 rsp: {} id(s) -> account SOID {acct:#018x}, \
                                                                                    seq {}", entries.len(), i.sequence);
                                                                             Some(d1_bap::account_id_translation_response(
@@ -3562,6 +3621,30 @@ async fn main() -> Result<()> {
                                                                         }
                                                                         Some(d1_bap::investment_message_response_with_body(
                                                                             i.sequence, id, st, &body))
+                                                                    } else if let Some(served) = investment::serve(id, plain.get(8..).unwrap_or(&[]), family4_version) {
+                                                                        // ⭐ STREAM P (investment/mod.rs): 402 bounty turn-in, 406, 801, 802, 804, 904,
+                                                                        // 1801-1803 with D1_SOCIAL / D1_REWARDS and the store on. The live order: the
+                                                                        // family-4 push first, then the reply naming its version.
+                                                                        warn!("      ⭐ INVESTMENT {id}: {}", served.what);
+                                                                        if let Some((version, push)) = &served.push {
+                                                                            match conv.push_with_sequence(d1_bap::TYPE_QUEUEZ_OBJECT, server_seq, push) {
+                                                                                Ok(frame) => {
+                                                                                    let sn = nonces.peek(d1_bap::Direction::ServerToClient);
+                                                                                    if let Ok(f) = d1_bap::seal_channel_frame(key, sn, &frame) {
+                                                                                        nonces.advance(d1_bap::Direction::ServerToClient);
+                                                                                        if sock.write_all(&f).await.is_ok() {
+                                                                                            warn!("      ⭐⭐ INVESTMENT {id} PUSH: family-4 delta version {version} ({} objects, {}B), seq {server_seq}",
+                                                                                                  d1_bap::queuez_span_object_count(push).unwrap_or(0), push.len());
+                                                                                            family4_version = Some(*version);
+                                                                                            server_seq += 1;
+                                                                                            served.delivered();
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                Err(e) => warn!("      [conv] ⛔ investment {id} push REFUSED by the push accept-set: {e}"),
+                                                                            }
+                                                                        }
+                                                                        Some(d1_bap::investment_message_response_with_body(i.sequence, id, st, &served.reply))
                                                                     } else {
                                                                     let schema_body = if id == d1_bap::INVESTMENT_MESSAGE_ID_503 {
                                                                     // ⛔⛔ THIS ARM USED TO BE NESTED INSIDE `D1_503_SOID`
@@ -3717,6 +3800,9 @@ async fn main() -> Result<()> {
                                                                             vendor::on_equip(req.to_vec());
                                                                         } else if id == 402 {
                                                                             vendor::on_item_action(req.to_vec());
+                                                                        } else if social_hooks::enabled() {
+                                                                            // ⭐ Stream I: 404 unequip, 405 transfer.
+                                                                            vendor::on_social(id, req.to_vec());
                                                                         }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 905 {
@@ -3730,6 +3816,22 @@ async fn main() -> Result<()> {
                                                                         warn!("      ⭐ VENDOR REFUND (905) ({}B request): {}", req.len(),
                                                                               req.iter().map(|x| format!("{x:02x}")).collect::<String>());
                                                                         vendor::on_refund(req);
+                                                                        if social_hooks::enabled() {
+                                                                            vendor::on_social(905, req.to_vec()); // ⭐ Stream I
+                                                                        }
+                                                                        Some(d1_bap::investment_701_response_body())
+                                                                    } else if id == 902 {
+                                                                        // ⭐ Stream I: 902 vendor_buyback_item (Blam Network's name),
+                                                                        // request 0x8080180D {bool, u64, i16} + i16, response 0x808016EF,
+                                                                        // the same {u4, i32} result composite as 901/903. Read as taking an
+                                                                        // item back out of the Vault (vendors::sell::buyback), applied only
+                                                                        // with D1_SOCIAL=1. No run has sent one yet.
+                                                                        let req = plain.get(8..).unwrap_or(&[]);
+                                                                        warn!("      ⭐ VENDOR BUYBACK (902) ({}B request): {}", req.len(),
+                                                                              req.iter().map(|x| format!("{x:02x}")).collect::<String>());
+                                                                        if social_hooks::enabled() {
+                                                                            vendor::on_social(902, req.to_vec());
+                                                                        }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 901 || id == 903 {
                                                                         // 901 vendor_buy_item / 903 vendor_sell_item. Responses
@@ -3749,6 +3851,9 @@ async fn main() -> Result<()> {
                                                                             vendor::on_buy(req.to_vec());
                                                                         } else {
                                                                             vendor::on_sell(req.to_vec());
+                                                                            if social_hooks::enabled() {
+                                                                                vendor::on_social(903, req.to_vec()); // ⭐ Stream I
+                                                                            }
                                                                         }
                                                                         Some(d1_bap::investment_701_response_body())
                                                                     } else if id == 104 {
@@ -4201,15 +4306,30 @@ async fn main() -> Result<()> {
                                                                                     }
                                                                                 }
                                                                             }
-                                                                            if req.request_kind
-                                                                                != Some(d1_bap::matchmaking::MM_KIND_MATCHMAKING_CONFIGURATION)
-                                                                            {
-                                                                                warn!("      ⚠ kind is not 4 (matchmaking_configuration) - \
-                                                                                       kinds 1/2/3 are session search and advertisement, and \
-                                                                                       we answer them with the same minimal configuration. \
-                                                                                       That is a stub, not a contract.");
+                                                                            // ⭐ D1_MM_LIVE_REPLIES=1: kinds 1 and 2 as the live services answered them
+                                                                            // (notes/d1-live-captures-2026-11-05.md): a search finds no session (the solo
+                                                                            // answer), and an advertisement gets an id that its updates repeat in f8.1.
+                                                                            let live = env_flag("D1_MM_LIVE_REPLIES", false);
+                                                                            let nonce = req.nonce.unwrap_or(0);
+                                                                            match req.request_kind {
+                                                                                Some(d1_bap::matchmaking::MM_KIND_SESSION_SEARCH) if live => {
+                                                                                    warn!("      ⭐ session search: answering no sessions found");
+                                                                                    d1_bap::matchmaking::MatchmakingCoreResponse::search_found_none(nonce)
+                                                                                }
+                                                                                Some(d1_bap::matchmaking::MM_KIND_UPDATE_ADVERTISEMENT) if live => {
+                                                                                    static NEXT_AD: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
+                                                                                    let id = req.advertisement_id
+                                                                                        .unwrap_or_else(|| NEXT_AD.fetch_add(1, std::sync::atomic::Ordering::Relaxed));
+                                                                                    warn!("      ⭐ advertisement acknowledged as {id:#x}");
+                                                                                    d1_bap::matchmaking::MatchmakingCoreResponse::advertisement_acknowledged(nonce, id)
+                                                                                }
+                                                                                kind => {
+                                                                                    if kind != Some(d1_bap::matchmaking::MM_KIND_MATCHMAKING_CONFIGURATION) {
+                                                                                        warn!("      ⚠ kind {kind:?} is not 4 (matchmaking_configuration): answered with the minimal configuration (D1_MM_LIVE_REPLIES=1 answers searches and advertisements as the live services did)");
+                                                                                    }
+                                                                                    d1_bap::matchmaking::MatchmakingCoreResponse::echoing(&req)
+                                                                                }
                                                                             }
-                                                                            d1_bap::matchmaking::MatchmakingCoreResponse::echoing(&req)
                                                                         }
                                                                         Err(e) => {
                                                                             warn!("      ** NAMED GATE ** msg 42 body did not decode ({}B): \
@@ -4219,7 +4339,8 @@ async fn main() -> Result<()> {
                                                                                 d1_bap::matchmaking::MM_KIND_MATCHMAKING_CONFIGURATION, 0)
                                                                         }
                                                                     };
-                                                                    let b = rsp.encode();
+                                                                    // MP(H): the shared session directory answers when D1_MP=1.
+                                                                    let b = mp::matchmaking_reply(conn_index, body).unwrap_or_else(|| rsp.encode());
                                                                     warn!("      -> msg 43 matchmaking_core_response: kind={:?} nonce={:?} \
                                                                            f4 present={} ({}B body: {})",
                                                                           rsp.kind, rsp.nonce, rsp.configuration.is_some(), b.len(),
@@ -4538,7 +4659,7 @@ async fn main() -> Result<()> {
                                                             // baseline by then, i.e. the descriptor is at state 3.
                                                             let f4mode = family4_invalidate_mode();
                                                             if f4mode != Family4Invalidate::Off
-                                                                && conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
+                                                                && players::is_primary(conn_index, PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst))
                                                                 && !family4_invalidated
                                                                 && inner_type == Some(d1_bap::TYPE_ECHO_REQUEST)
                                                             {
@@ -4596,7 +4717,7 @@ async fn main() -> Result<()> {
                                                             // reply went out before this echo), hand the claimed item over
                                                             // as a family-4 delta carrying its 4/3 inventory element.
                                                             if !loot_grants_due.is_empty()
-                                                                && conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
+                                                                && players::is_primary(conn_index, PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst))
                                                                 && inner_type == Some(d1_bap::TYPE_ECHO_REQUEST)
                                                             {
                                                                 if family4_version.is_none() {
@@ -4607,6 +4728,9 @@ async fn main() -> Result<()> {
                                                                             warn!("      ⛔ no D1_LOOT_GRANT entry for claimed nonce {nonce:#x}: nothing delivered");
                                                                             continue;
                                                                         };
+                                                                        // F43: with the store on, the pickup applied to the character's
+                                                                        // current profile, not the fixture's.
+                                                                        let profile = profile.as_deref().and_then(player_store::loot_grant_profile).or(profile);
                                                                         let version = family4_version.unwrap_or(0).wrapping_add(1);
                                                                         let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
                                                                         let prof_soid = env_soid("D1_PROFILE_SOID", 0xD100_0000_0000_0201);
@@ -4623,6 +4747,7 @@ async fn main() -> Result<()> {
                                                                                               profile.as_ref().map(|p| format!(" + {}B profile", p.len())).unwrap_or_default());
                                                                                         family4_version = Some(version);
                                                                                         server_seq += 1;
+                                                                                        player_store::note_loot_grant(soid, &element, profile.as_deref());
                                                                                     }
                                                                                 }
                                                                             }
@@ -4656,11 +4781,17 @@ async fn main() -> Result<()> {
                                                             // The activity completion is a profile change: the client
                                                             // announces it when profile +0x2c38 (the completed flag of field
                                                             // [6], struct 0x808017b9 at +0x2c20) goes from 0 to 1.
-                                                            if conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
-                                                                && inner_type == Some(d1_bap::TYPE_ECHO_REQUEST)
+                                                            // Run fg2j: a push the store holds for the client's 104 (the
+                                                            // `ffff` reset after a cinematic's 8) goes with that reply, as
+                                                            // the live host's did, not on the next echo.
+                                                            let investment_104 = inner_type == Some(d1_bap::TYPE_CLIENT_TO_WORLD_SERVER_REQUEST)
+                                                                && plain.len() >= 8 && u16::from_be_bytes([plain[6], plain[7]]) == 104
+                                                                && player_store::take_push_on_104();
+                                                            if players::is_primary(conn_index, PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst))
+                                                                && (inner_type == Some(d1_bap::TYPE_ECHO_REQUEST) || investment_104)
                                                                 && family4_version.is_some()
                                                             {
-                                                                if let Some(path) = std::env::var_os("D1_PROFILE_PUSH_FILE").map(std::path::PathBuf::from) {
+                                                                if let Some(path) = player_store::profile_push_file() { // stream O3: this player's own file
                                                                     if let Ok(payload) = std::fs::read(&path) {
                                                                         let _ = std::fs::rename(&path, path.with_extension("sent"));
                                                                         vendor::note_profile_pushed(payload.clone());
@@ -4693,6 +4824,8 @@ async fn main() -> Result<()> {
                                                                                               item.as_ref().map(|(s, e)| format!(" + item {s:#018x} {}B", e.len())).unwrap_or_default());
                                                                                         family4_version = Some(version);
                                                                                         server_seq += 1;
+                                                                                        player_store::note_profile_delivered(
+                                                                                            &payload, item.as_ref().map(|(s, e)| (*s, e.as_slice())));
                                                                                     }
                                                                                 }
                                                                             }
@@ -4702,7 +4835,7 @@ async fn main() -> Result<()> {
                                                                 }
                                                                 // `D1_ACCOUNT_PUSH_FILE=<path>`: the same for the ACCOUNT object
                                                                 // (a client-encoded 0x80801803 payload), e.g. changed currencies.
-                                                                if let Some(path) = std::env::var_os("D1_ACCOUNT_PUSH_FILE").map(std::path::PathBuf::from) {
+                                                                if let Some(path) = player_store::account_push_file() { // stream O3: this player's own file
                                                                     if let Ok(payload) = std::fs::read(&path) {
                                                                         let _ = std::fs::rename(&path, path.with_extension("sent"));
                                                                         let version = family4_version.unwrap_or(0).wrapping_add(1);
@@ -4718,6 +4851,7 @@ async fn main() -> Result<()> {
                                                                                               path.display(), payload.len());
                                                                                         family4_version = Some(version);
                                                                                         server_seq += 1;
+                                                                                        player_store::note_account_delivered(&payload);
                                                                                     }
                                                                                 }
                                                                             }
@@ -4728,7 +4862,7 @@ async fn main() -> Result<()> {
                                                             }
 
                                                             if want_push
-                                                                && conn_index == PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst)
+                                                                && players::is_primary(conn_index, PRIMARY_BAP_CONNECTION.load(Ordering::SeqCst))
                                                                 && !pushed_character
                                                                 && inner_type == trigger
                                                             {
@@ -4961,7 +5095,7 @@ async fn main() -> Result<()> {
                                             Ok(Err(e)) => { warn!("    BAP TCP read error: {e}"); return }
                                         }
                                     }
-                                });
+                                }));
                             }
                             Err(e) => { warn!("bap tcp accept: {e}"); return }
                         }
@@ -5361,7 +5495,16 @@ mod tests {
 ///
 /// SOIDs must be **stable across runs** - the client checks the object-header SOID against the one
 /// serialized inside the RSAT payload, and downstream state is keyed on them.
+///
+/// Stream O3: with `D1_MP=1` the identity knobs (`D1_ACCOUNT_SOID`, `D1_CHARACTER_SOID`,
+/// `D1_PROFILE_SOID`) answer for the connection's own player (`players::soid_for`), so each
+/// connection is served its own ids. [`env_soid_raw`] reads the knob itself.
 fn env_soid(var: &str, default: u64) -> u64 {
+    players::soid_for(var).unwrap_or_else(|| env_soid_raw(var, default))
+}
+
+/// [`env_soid`] without the connection's player: the knob, or `default`.
+fn env_soid_raw(var: &str, default: u64) -> u64 {
     std::env::var(var)
         .ok()
         .and_then(|v| {

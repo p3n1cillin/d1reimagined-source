@@ -18,12 +18,15 @@ u32 0}, not in content-index order: the content index comes from capture-rig/ite
 (`d1-oracle item-index`), joined on the item hash.
 """
 import argparse
+import hashlib
+import json
 import concurrent.futures
 import os
 import struct
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import d1paths  # sibling: local paths from D1_ROOT or paths.json
@@ -31,6 +34,21 @@ import d1paths  # sibling: local paths from D1_ROOT or paths.json
 ITEM_TABLE = '0x80a5ffbe'
 ROW, FIRST_ROW = 24, 0xF30
 ACTIONS = {0xB2084C93: 'shard'}
+
+
+def reward_table_status(root):
+    """56578: 26EEF4 -> 26E950 -> 2799E0 -> vfunc 1F0 (25EBB0).
+
+    That getter reads globals +3E8. FFFFFFFF is an absent tag, not zero rewards.
+    This is a target-build field, not the unrelated records table at globals +18.
+    """
+    if len(root) < 0x3EC or struct.unpack_from('<Q', root)[0] != len(root):
+        raise ValueError('invalid 56578 investment globals root')
+    tag = struct.unpack_from('<I', root, 0x3E8)[0]
+    return dict(build='56578.17.04.12.1251.evil', root_tag=0x80A58001,
+                root_sha256=hashlib.sha256(root).hexdigest(), field='0x3e8',
+                reward_table_tag=None if tag == 0xFFFFFFFF else tag,
+                status='absent' if tag == 0xFFFFFFFF else 'present; amounts not decoded')
 
 
 def fnv1(s):
@@ -76,11 +94,24 @@ def decode(d):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('out')
+    ap.add_argument('out', nargs='?')
+    ap.add_argument('--reward-table-status', action='store_true',
+                    help='report the optional 56578 reward table reference, without scanning item definitions')
     ap.add_argument('--items', help='content indices (comma-separated); default: every row')
     ap.add_argument('--index', default=str(d1paths.workspace() / 'capture-rig' / 'item-content-index.tsv'))
     ap.add_argument('--jobs', type=int, default=8)
     a = ap.parse_args()
+    if a.reward_table_status:
+        pinned = json.loads((Path(__file__).resolve().parents[2] / 'ps4/capture-rig/builds.json').read_text())
+        eboot = os.environ.get('D1_EBOOT')
+        if not eboot or hashlib.sha256(Path(eboot).read_bytes()).hexdigest() != pinned['builds']['later-56578']['eboot_sha256']:
+            ap.error('set D1_EBOOT to the pinned owned 56578 executable')
+        os.environ['D1_BUILD'] = 'later-56578'
+        with tempfile.TemporaryDirectory() as tmp:
+            print(json.dumps(reward_table_status(entry('0x80a58001', tmp)), sort_keys=True))
+        return
+    if not a.out:
+        ap.error('OUT.tsv is required unless --reward-table-status is used')
     content = {}
     with open(a.index, encoding='utf-8') as f:
         for line in f:

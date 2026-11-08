@@ -763,14 +763,17 @@ pub fn run() -> Vec<Control> {
     // ⭐ udt 37 - a harness limit with a named cause, kept apart from "unknown wire format".
     let df = d1_oracle::activity_host::dynamic_flags_udts().unwrap_or_default();
     let why37 = crate::codec::undecodable_reason(37).unwrap_or_default();
+    let typed_values = d1_oracle::codec::selected()
+        .is_ok_and(|c| c == &d1_oracle::codec::CODEC_56578);
     c.push(check(
-        "⭐ udt 37 send_client_heartbeat is NOT DECODED on purpose, with its cause, and udt 1 \
-         still decodes",
-        df == vec![33, 37]
-            && why37.contains("DYNAMIC FLAGS")
+        "udt 37 follows its build's typed-value support or named dynamic-flags refusal",
+        (if typed_values { df.is_empty() && why37.is_empty() } else {
+            df == vec![33, 37] && why37.contains("DYNAMIC FLAGS")
+        })
             && crate::codec::undecodable_reason(1).is_none()
             && crate::codec::undecodable_reason(3).is_none(),
-        "descriptor 0x80800D06 is one field of kind 0x22; its bitset is grown by 0x2C6BA0 out of \
+        "56578 kind 0x22 is a typed value at +0x10 (0x102A3D0/0x102D220). The retained 01.29 \
+         refusal is build-specific: its bitset is grown by 0x2C6BA0 out of \
          the game's dynamic-flags pool, which a statically mapped image does not have, so \
          0x1065850 (`mov edx,[rax+rcx*4]`) faults. Both ids are client→AH with no client handler",
     ));
@@ -2502,6 +2505,9 @@ mod tests {
     /// exits 2 on. Two instruments, one answer.
     #[test]
     fn every_control_passes() {
+        if !crate::eboot_or_skip("every_control_passes") {
+            return;
+        }
         let failed: Vec<&str> =
             super::run().into_iter().filter(|c| !c.passed).map(|c| c.name).collect();
         assert!(failed.is_empty(), "failed controls: {failed:?}");
@@ -2509,6 +2515,9 @@ mod tests {
 
     #[test]
     fn there_are_enough_controls_to_be_worth_running() {
+        if !crate::eboot_or_skip("there_are_enough_controls_to_be_worth_running") {
+            return;
+        }
         assert!(super::run().len() >= 20, "a controls suite this thin is decoration");
     }
 }

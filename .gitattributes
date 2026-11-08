@@ -34,3 +34,4 @@ ps4/** whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,cr-at-eol
 # Served fixtures are byte-exact server objects.
 ps4/fixtures/**/*.bin binary
 ps4/fixtures/**/*.obj binary
+ps4/fixtures/56578/worlds/*.tsv text eol=lf

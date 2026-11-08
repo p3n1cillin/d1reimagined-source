@@ -382,6 +382,15 @@ def main():
                     key('FIRE', True); time.sleep(0.6); key('FIRE', False); fired += 1
                     blocked[lock], blind = time.time() + 5, 0
                     print(k, f'lock {lock} out of sight; fired at the plate at ({cx}, {cy})', flush=True)
+                elif not ok and not in_view and (dd := damage_dir(fight.grab(img_path))) is not None:
+                    # The aim never settled on the lock and the Guardian is being hit: turn to the hit
+                    # (a fresh frame, since the failed aim turned part way) and fire. agr28 (7 Nov)
+                    # locked junction-west squad 74 at 19-30 m with aim() failing every pass (aimed
+                    # False, plates 0), fired nothing, and died nine times at (450, -714).
+                    hold('L' if dd > 0 else 'J', max(25, abs(dd) / YAW_RATE))
+                    key('FIRE', True); time.sleep(0.5); key('FIRE', False); fired += 1
+                    blocked[lock], blind = time.time() + 5, 0
+                    print(k, f'aim on lock {lock} failed; hit from {math.degrees(dd):.0f} deg: turned and fired', flush=True)
                 elif ok and not in_view and (dd := damage_dir(img)) is not None and abs(wrap(dd + ey0)) > 0.6:
                     # Hit from elsewhere while the lock is out of sight: the shooter isn't the lock.
                     # sense125 aimed at junction-west locks 37-54 m off (bursts 0) while something

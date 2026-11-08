@@ -140,6 +140,43 @@ pub enum EvictionReason {
     ClientLeft,
 }
 
+/// ⭐ `D1_AH_ACTIVITY_OPTIONS=INDEX:HASH=VALUE[,...]`: activity options served in the
+/// `global_activity_state` of activity INDEX (VALUE `true`, `false` or a decimal int). E.g.
+/// `164:0xb3c6f690=true`: the option the client's Ghost spawn gate (`0x741af0`) reads, F54
+/// (notes/ps4-56578-ghost-option-2026-11-08.md). Unparsable entries are skipped with a warning.
+pub fn parse_activity_options(text: &str) -> std::collections::HashMap<u16, Vec<(u32, crate::messages::OptionValue)>> {
+    use crate::messages::OptionValue;
+    let mut out: std::collections::HashMap<u16, Vec<(u32, OptionValue)>> = std::collections::HashMap::new();
+    for item in text.split(',').map(str::trim).filter(|t| !t.is_empty()) {
+        let parsed = (|| {
+            let (index, rest) = item.split_once(':')?;
+            let (name, value) = rest.split_once('=')?;
+            let index: u16 = index.trim().parse().ok()?;
+            let name = u32::from_str_radix(name.trim().trim_start_matches("0x"), 16).ok()?;
+            let value = match value.trim() {
+                "true" => OptionValue::Bool(true),
+                "false" => OptionValue::Bool(false),
+                v => OptionValue::Int(v.parse().ok()?),
+            };
+            Some((index, name, value))
+        })();
+        match parsed {
+            Some((index, name, value)) => out.entry(index).or_default().push((name, value)),
+            None => tracing::warn!("D1_AH_ACTIVITY_OPTIONS: skipped {item:?} (want INDEX:HASH=true|false|INT)"),
+        }
+    }
+    out
+}
+
+fn activity_options(index: u16) -> &'static [(u32, crate::messages::OptionValue)] {
+    static OPTIONS: std::sync::OnceLock<std::collections::HashMap<u16, Vec<(u32, crate::messages::OptionValue)>>> =
+        std::sync::OnceLock::new();
+    OPTIONS
+        .get_or_init(|| std::env::var("D1_AH_ACTIVITY_OPTIONS").map(|t| parse_activity_options(&t)).unwrap_or_default())
+        .get(&index)
+        .map_or(&[], Vec::as_slice)
+}
+
 /// ⭐ One timed mission step (`D1_AH_MISSION_STEPS`): from `at` after the first sensor frame, serve
 /// these object states (prebuilt for both spawn teams) and, if set, move the player to `region`
 /// (the host teleport, carried by the next global-state publish).
@@ -153,6 +190,54 @@ pub struct MissionStep {
     /// line): udt 18 is also AH → client. E.g. 1504, the world-loot drop that announces the
     /// starter rifle in The Breach (body = a `0x80800CB6` object).
     pub incident: Option<(u32, Vec<u8>)>,
+    /// ⭐ `complete=HASH:TYPE:TYPE2:PLACE[:gameplay]` on the steps line: the `activity_complete`
+    /// chain and its `0x80800595` body (`completion.rs`) go out when the step fires. The script
+    /// bridge sends it when its scripts complete; a cinematic served by a step schedule (bridge
+    /// off: The Awoken, the reveal, The Speaker) had no completion at all.
+    pub complete: Option<StepCompletion>,
+    /// The lifetime phase the step's list sets (`@phase`), if any. A cinematic's 8 ends it for the
+    /// client: then the store clears the current activity (`ended`), as the script bridge does.
+    pub lifetime: Option<i8>,
+}
+
+/// The activity a step completes: its manifest hashes (as the script bridge's activity table names
+/// them) and how it ends.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct StepCompletion {
+    pub hashes: crate::completion::ActivityHashes,
+    pub end: crate::row_encoders::EndKind,
+    /// ⭐ `next=INDEX:HASH` on the steps line: the activity the completed one hands off to, as its
+    /// row in the script bridge's activity table names it (cine_reveal 165 -> the Tower,
+    /// `0:0x8ae8da69`). The store records it (`activity_hand_off`, a `handoff` line) right after
+    /// the completion, as the script bridge's `reward` does for a scripted activity.
+    pub next: Option<(u16, u32)>,
+}
+
+impl StepCompletion {
+    /// `HASH:TYPE:TYPE2:PLACE` (hex, `0x` optional) and an optional `:gameplay` (else cinematic).
+    pub fn parse(v: &str) -> Option<Self> {
+        let f: Vec<&str> = v.split(':').collect();
+        let hex = |t: &str| u32::from_str_radix(t.trim_start_matches("0x"), 16).ok();
+        let end = match f.get(4).copied() {
+            None | Some("cinematic") => crate::row_encoders::EndKind::Cinematic,
+            Some("gameplay") => crate::row_encoders::EndKind::Gameplay,
+            Some(_) => return None,
+        };
+        if !(4..=5).contains(&f.len()) {
+            return None;
+        }
+        Some(Self {
+            hashes: crate::completion::ActivityHashes { activity: hex(f[0])?, kind: hex(f[1])?, kind2: hex(f[2])?, place: hex(f[3])? },
+            end,
+            next: None,
+        })
+    }
+
+    /// `INDEX:HASH` (decimal index, hex hash): the activity a completion hands off to.
+    pub fn parse_next(v: &str) -> Option<(u16, u32)> {
+        let (index, hash) = v.split_once(':')?;
+        Some((index.parse().ok()?, u32::from_str_radix(hash.trim_start_matches("0x"), 16).ok()?))
+    }
 }
 
 /// When a [`MissionStep`] fires. Steps fire in order, one after another.
@@ -267,6 +352,9 @@ pub struct ServedWorld {
     pub chosen: Vec<usize>,
     /// The slice-set id (`8 * bubble + n`) the mission starts in, or `None` for 0.
     pub start_region: Option<u32>,
+    /// The world's public slice sets (`GeneratedWorlds::public_slice_sets`); empty when unknown
+    /// (a `D1_AH_WORLD_TABLE` row).
+    pub public_regions: Vec<u32>,
     pub team0: Vec<u8>,
     pub team_minus1: Vec<u8>,
 }
@@ -336,6 +424,15 @@ pub struct ActivityInstance {
     /// *"we do not yet have valid host-tabulated data for it. Waiting."* forever.
     /// `Some((region_id, peer_index, token))`. ⇒ `historicaldocs/design/rung34-task7.md`.
     pah_region: Option<(u32, usize, u8)>,
+    /// The public sessions the client reported in its udt 21 slice-set records:
+    /// `(region, session (0x84 bytes), that session's activity-host id)`, advertised in the
+    /// region record when it names that region (see [`Self::track_public_session`]).
+    public_sessions: Vec<(u32, Vec<u8>, u64)>,
+    /// The served world's public slice sets (see [`ServedWorld::public_regions`]).
+    public_regions: Vec<u32>,
+    /// ⭐ The ambassador's matchmaking threshold for the PAH region record: (region, when the
+    /// record first named it, reached). See [`Self::update_public_threshold`].
+    public_threshold: Option<(u32, Instant, bool)>,
     /// ⭐ The client's own `join_request` struct image, kept because a state refresh has to
     /// re-publish the membership and a membership is an **echo** of exactly these bytes. Without it
     /// a refresh would have to fabricate an identity, which `state.rs` refuses to do anywhere else.
@@ -374,6 +471,10 @@ pub struct ActivityInstance {
     time_base_ms: Option<u64>,
     /// The world tick period in ms for udt 2 `world_globals_state` (`D1_AH_WORLD_PERIOD_MS`).
     world_period_ms: Option<f32>,
+    /// Answer the client's entity-slot abandon (udt 25) and purge request (26) as the live host
+    /// did (`D1_AH_SLOT_HANDOVER=1`), and the counter the live host's answers carried.
+    slot_handover: bool,
+    slot_handover_seq: u8,
     /// ⭐ Timed mission steps per activity index, the clock start, and the step in force.
     mission_steps: std::collections::HashMap<u16, Vec<MissionStep>>,
     mission_t0: Option<Instant>,
@@ -383,6 +484,8 @@ pub struct ActivityInstance {
     incidents: Vec<(u32, Instant)>,
     /// The slice set the client last reported as current (udt 21), for [`StepWhen::OnSlice`].
     current_slice: Option<u32>,
+    /// The last udt-21 slice records logged (diagnostic, see `track_current_slice`).
+    slice_records_seen: Option<(u32, u32, u32, u32, u8)>,
     /// Player-trigger reports (incident 3403) by name, and whether a step has used each.
     trigger_reports: Vec<((u32, u8, u16), bool)>,
     /// Connection/world-local observations. Decoder errors and backlog hold kill gates.
@@ -390,6 +493,8 @@ pub struct ActivityInstance {
     squad_hold_logged: Option<usize>,
     /// Host incidents waiting to be sent (see [`MissionStep::incident`]).
     pending_incidents: Vec<(u32, Vec<u8>)>,
+    /// Whole udt-18 images waiting to be sent: a step's completion envelope ([`MissionStep::complete`]).
+    pending_envelopes: Vec<Vec<u8>>,
     /// ⭐ `D1_AH_CONTROL_FILE`: lines `incident TYPE BODYHEX` queue host incidents on demand
     /// (the file is consumed: read, then deleted). A diagnostic lever, like the 01.24 control file.
     control_file: Option<std::path::PathBuf>,
@@ -412,6 +517,8 @@ pub struct ActivityInstance {
     /// only when this differs from the last one it processed (`sstm+0x3B0`), so every changed
     /// re-publish advances it. Join and udt-17 refresh re-send the same number.
     membership_update: u32,
+    /// MP(H): the shared instance this connection is in (`D1_AH_SHARED_INSTANCES=1`; None = solo).
+    group: Option<crate::group::GroupLink>,
     /// Set once the sensor frame has gone out, so it is sent exactly once per instance
     /// (send-once mode; see [`Self::set_sensor_repeat`] for the repeating mode).
     sensor_sent: bool,
@@ -433,6 +540,125 @@ pub struct ActivityInstance {
     /// the responder from the kind-4 matchmaking key) and the build's activity table
     /// (hash -> index). Re-read on every join, so one Activity Host serves whatever was launched.
     activity_follow: Option<(std::path::PathBuf, std::collections::HashMap<u32, u16>)>,
+    /// The launched hashes `D1_AH_ACTIVITY_REMAP` publishes as another activity (a lab stand-in).
+    activity_remaps: std::collections::HashSet<u32>,
+    /// This join's launched hash, when a remap served another activity in its place.
+    remapped_launch: Option<u32>,
+    /// ⭐ `D1_AH_SENSOR_STAMP=1`: frame udt 5 as the live hosts did (see [`SensorStamp`]).
+    /// `None` (default) keeps every frame as built: stamp 0, `init = 1`, no heartbeats.
+    sensor_stamp: Option<SensorStamp>,
+    /// ⭐ D1_AH_SCRIPTS=1 hook: the script bridge ([`crate::script_bridge`]). `None` (default)
+    /// leaves the host as it was; a scripted activity's udt 5 stream is the bridge's.
+    ///
+    /// Stream O3: a handle to the bridge, shared by every connection of a shared instance
+    /// ([`crate::shared_scripts`]); a connection of its own has a bridge of its own.
+    script_bridge: Option<crate::shared_scripts::ScriptHandle>,
+    /// Stream O3: the bridge's configuration, to join a shared instance's bridge at the join.
+    script_config: Option<std::sync::Arc<crate::script_bridge::ScriptConfig>>,
+    /// Stream O3: the listener's bridges by shared-instance host (`D1_AH_SHARED_INSTANCES=1`).
+    shared_scripts: Option<std::sync::Arc<crate::shared_scripts::SharedScripts>>,
+    /// ── stream G hook ── `D1_AH_PUBLIC_HOST=1`: the public-bubble host role
+    /// ([`crate::public_host`]). `None` (default) changes nothing.
+    public: Option<crate::public_host::PublicHost>,
+    /// ── stream O2 hook ── the activity framework's run of the activity this instance serves
+    /// ([`crate::activity_driver`]), when `D1_AH_ACTIVITY_FRAMEWORK` installed the framework and
+    /// a definition runs the launched hash. `None` otherwise: nothing changes.
+    run_driver: Option<crate::activity_driver::RunDriver>,
+    /// The identities that joined (the run's players).
+    framework_players: Vec<crate::rewards::CharacterRef>,
+    /// ── stream R hook ── `D1_AH_CRUCIBLE=1`: this connection's part in a Crucible match
+    /// ([`crate::pvp_wire`]). `None` (default) changes nothing; a connection whose activity is no
+    /// Crucible map stays inactive and is served as before.
+    crucible: Option<crate::pvp_wire::CrucibleConn>,
+}
+
+/// ⭐ The live hosts' udt 5 framing (The Speaker and The Awoken; notes/d1-live-speaker-timeline-
+/// 2026-11-05.md, notes/ps4-56578-udt5-stamp-init-2026-11-05.md).
+///
+/// * Every frame carries a tick at 10 Hz. The client anchors its host clock on it (two
+///   extrapolated, nondecreasing estimates) and does not reject old stamps. Ours counts from the
+///   first frame stamped, near the join as live, and runs on across world installs; the PS4
+///   runtime's own period is not yet verified, so this is not claimed to equal the live clock.
+/// * Every frame we send is a full snapshot (every entry `fresh`), so every one carries
+///   `init = 1`. The flag sets the client walker's one-shot latch that lets it consume entries;
+///   repeating it is harmless, and nothing the client sends proves which world's latch is set (a
+///   udt 6 can still arrive from the previous world), so it is never dropped. The live hosts' `init
+///   = 0` frames were true deltas, which we do not build.
+/// * After 3 s with no other udt 5, a 6-byte stamp-only heartbeat (gen, no authority table, stamp,
+///   `init = 0`, no entry), as the live idle frames.
+/// * A frame whose stamp bit is unknown is not sent (unstamped, it would re-anchor the client's
+///   clock to 0); sends then back off for 3 s.
+#[derive(Debug)]
+pub struct SensorStamp {
+    t0: Option<Instant>,
+    last_sent: Option<Instant>,
+    retry_after: Option<Instant>,
+}
+
+impl SensorStamp {
+    /// The live idle period: heartbeats at stamps 45, 75, 105, ... (3.0 s). Also the backoff after
+    /// a frame could not be stamped.
+    pub const HEARTBEAT: Duration = Duration::from_secs(3);
+
+    pub fn new() -> Self {
+        Self {
+            t0: None,
+            last_sent: None,
+            retry_after: None,
+        }
+    }
+
+    /// The 10 Hz tick at `now`, counted from the first call.
+    pub fn tick(&mut self, now: Instant) -> u32 {
+        let t0 = *self.t0.get_or_insert(now);
+        (now.saturating_duration_since(t0).as_millis() / 100) as u32
+    }
+
+    /// Whether a failed stamp is still backing sends off.
+    pub fn backing_off(&self, now: Instant) -> bool {
+        self.retry_after.is_some_and(|t| now < t)
+    }
+
+    /// Stamp `frame` for `now` (init set) with the stamp bit `measure` gives. On `Err` the frame is
+    /// unchanged, must not be sent, and sends back off for `HEARTBEAT`.
+    pub fn stamp(
+        &mut self,
+        frame: &mut [u8],
+        now: Instant,
+        measure: impl FnOnce(&[u8]) -> Result<usize, String>,
+    ) -> Result<(), String> {
+        let stamped = measure(frame).and_then(|bit| {
+            let tick = self.tick(now);
+            d1_oracle::sensor::set_frame_stamp(frame, bit, tick, true).map_err(|e| e.to_string())
+        });
+        match stamped {
+            Ok(()) => {
+                self.last_sent = Some(now);
+                self.retry_after = None;
+                Ok(())
+            }
+            Err(e) => {
+                self.retry_after = Some(now + Self::HEARTBEAT);
+                Err(e)
+            }
+        }
+    }
+
+    /// A heartbeat, if `HEARTBEAT` has passed since the last stamped frame.
+    pub fn heartbeat_due(&mut self, gen: u8, now: Instant) -> Option<Vec<u8>> {
+        let last = self.last_sent?;
+        if now.saturating_duration_since(last) < Self::HEARTBEAT {
+            return None;
+        }
+        self.last_sent = Some(now);
+        Some(d1_oracle::sensor::heartbeat_frame(gen, self.tick(now)))
+    }
+}
+
+impl Default for SensorStamp {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ActivityInstance {
@@ -519,6 +745,9 @@ impl ActivityInstance {
             bubble_count: 0,
             bubble_chosen: Vec::new(),
             pah_region: None,
+            public_sessions: Vec::new(),
+            public_regions: Vec::new(),
+            public_threshold: None,
             join_request_image: None,
             last_pushed: now,
             host_heartbeat: Duration::from_millis(Self::HOST_HEARTBEAT_MS),
@@ -532,16 +761,20 @@ impl ActivityInstance {
             start_region: None,
             time_base_ms: None,
             world_period_ms: None,
+            slot_handover: false,
+            slot_handover_seq: 0,
             mission_steps: std::collections::HashMap::new(),
             mission_t0: None,
             mission_step: None,
             mission_step_at: None,
             incidents: Vec::new(),
             current_slice: None,
+            slice_records_seen: None,
             trigger_reports: Vec::new(),
             squad_live: crate::sense::SquadObservations::default(),
             squad_hold_logged: None,
             pending_incidents: Vec::new(),
+            pending_envelopes: Vec::new(),
             control_file: None,
             control_builder: None,
             control_builds: Vec::new(),
@@ -549,17 +782,134 @@ impl ActivityInstance {
             slice_request: None,
             membership_dirty: false,
             membership_update: 1,
+            group: None, // MP(H)
             sensor_sent: false,
             sensors_sent: 0,
             sensor_repeat: None,
             sensor_phase_file: None,
             activity_follow: None,
+            activity_remaps: std::collections::HashSet::new(),
+            remapped_launch: None,
             sensor_last_sent: None,
+            sensor_stamp: None,
+            script_bridge: None,
+            script_config: None,
+            shared_scripts: None,
+            public: None,
+            run_driver: None,
+            framework_players: Vec::new(),
+            crucible: None, // stream R
         }
+    }
+
+    /// ── stream R hook ── `D1_AH_CRUCIBLE=1`: drive a Crucible match on this connection.
+    pub fn set_crucible(&mut self, config: std::sync::Arc<crate::pvp_wire::CrucibleConfig>) {
+        self.crucible = Some(crate::pvp_wire::CrucibleConn::new(config));
+    }
+
+    /// ── stream R ── this connection's Crucible part, for the run log and tests.
+    pub fn crucible(&self) -> Option<&crate::pvp_wire::CrucibleConn> {
+        self.crucible.as_ref()
+    }
+
+    /// MP(H): share instances with the other connections in `link` (see [`crate::group`]).
+    pub fn set_group(&mut self, link: crate::group::GroupLink) {
+        self.group = Some(link);
+    }
+
+    /// MP(H): the shared-instance link, for the run log and tests.
+    pub fn group(&self) -> Option<&crate::group::GroupLink> {
+        self.group.as_ref()
+    }
+
+    /// Frame udt 5 the live way (`D1_AH_SENSOR_STAMP`, see [`SensorStamp`]).
+    pub fn set_sensor_stamp(&mut self) {
+        self.sensor_stamp = Some(SensorStamp::new());
+    }
+
+    /// D1_AH_SCRIPTS=1 hook: let the activity's own mission scripts drive this instance.
+    pub fn set_script_bridge(&mut self, config: std::sync::Arc<crate::script_bridge::ScriptConfig>) {
+        self.script_bridge = Some(crate::shared_scripts::ScriptHandle::solo(crate::script_bridge::ScriptBridge::new(config.clone())));
+        self.script_config = Some(config);
+    }
+
+    /// Stream O3: [`Self::set_script_bridge`] with a bridge made by `make` (tests: a fake sidecar).
+    pub fn set_script_bridge_with(
+        &mut self,
+        config: std::sync::Arc<crate::script_bridge::ScriptConfig>,
+        bridge: crate::script_bridge::ScriptBridge,
+    ) {
+        self.script_bridge = Some(crate::shared_scripts::ScriptHandle::solo(bridge));
+        self.script_config = Some(config);
+    }
+
+    /// Stream O3 (integration review, finding 9): share one script bridge per shared instance.
+    /// The listener sets it beside the group link (`D1_AH_SHARED_INSTANCES=1`).
+    pub fn set_shared_scripts(&mut self, scripts: std::sync::Arc<crate::shared_scripts::SharedScripts>) {
+        self.shared_scripts = Some(scripts);
+    }
+
+    /// Stream O3: the bridge handle, for tests and logs.
+    pub fn script_handle(&self) -> Option<&crate::shared_scripts::ScriptHandle> {
+        self.script_bridge.as_ref()
+    }
+
+    /// Stream O3: which bridge a shared instance's member uses. `make` builds one for its first
+    /// member (tests pass a fake sidecar's).
+    pub fn join_shared_scripts(&mut self, host: u64, make: impl FnOnce(std::sync::Arc<crate::script_bridge::ScriptConfig>) -> crate::script_bridge::ScriptBridge) {
+        let (Some(reg), Some(cfg)) = (self.shared_scripts.clone(), self.script_config.clone()) else { return };
+        if self.script_bridge.is_none() {
+            return;
+        }
+        let h = reg.join(host, || make(cfg));
+        tracing::info!("⭐ shared instance {host:#018x}: one script bridge for {} member(s)", h.members());
+        self.script_bridge = Some(h);
+    }
+
+    /// D1_AH_SCRIPTS hook: the host teleport a script phase asks for (as a mission step's region).
+    fn script_teleport(&mut self, r: u32, now: Instant) {
+        // Run fg2 (6 November): a phase's teleport to the start slice set, sent while the client
+        // was still loading it, de-instantiated the CURRENT slice set and the initial load never
+        // finished. The client loads its start region at the join (and the region of each host
+        // teleport after it); until it reports a slice set of its own (udt 21), a request for the
+        // region the host serves now is no move.
+        if self.current_slice.is_none() && self.start_region.is_some_and(|(s, _)| s == r) {
+            tracing::info!("⭐ script phase: region {r} is the slice set the client was served and is loading; no teleport");
+            return;
+        }
+        tracing::info!("⭐ script phase: moving the client to region {r}");
+        self.set_start_region(r);
+        if let Some((region, peer, token)) = self.pah_region {
+            self.pah_region = Some((region, peer, if token == u8::MAX { 1 } else { token + 1 }));
+        }
+        self.slice_request = Some((1, r, now));
+        self.membership_dirty = true;
     }
 
     pub fn ah_id(&self) -> u64 {
         self.ah_id
+    }
+
+    /// ── stream G hook ── Serve this connection as a public bubble's own host when its join names
+    /// a mission host (see [`crate::public_host`]).
+    pub fn set_public_host(&mut self, public: crate::public_host::PublicHost) {
+        self.public = Some(public);
+    }
+
+    /// The public-host role, if one was set.
+    pub fn public_host(&self) -> Option<&crate::public_host::PublicHost> {
+        self.public.as_ref()
+    }
+
+    fn is_public_instance(&self) -> bool {
+        self.public.as_ref().is_some_and(|p| p.is_public_instance())
+    }
+
+    /// Present another activity-host id (and the session text derived from it, as the registry
+    /// derives it). Call before the connection starts; see [`crate::listener::serve`].
+    pub fn set_ah_id(&mut self, ah_id: u64) {
+        self.ah_id = ah_id;
+        self.session_id = format!("d1ah-{ah_id:016x}");
     }
 
     pub fn session_id(&self) -> &str {
@@ -606,6 +956,20 @@ impl ActivityInstance {
         if let ClientMessage::ClientAuthoritativeDataUpdate { struct_image } = msg {
             self.track_current_slice(struct_image);
             self.follow_slice_target(struct_image);
+            self.track_public_session(struct_image);
+            // ── stream G hook ── a public instance learns its region from this report.
+            let world = self.activity_name.clone();
+            match self.public.as_mut().and_then(|p| p.on_slice_report(&world, struct_image, self.ah_id, Some(self.bubble_count as usize).filter(|&n| n > 0), now)) {
+                Some(Ok((key, frame))) => {
+                    tracing::info!("⭐ public instance: serving {key:?}'s sensor list ({} bytes)", frame.len());
+                    self.sensor_payload = Some(frame);
+                    self.sensor_sent = false;
+                    self.sensor_last_sent = None;
+                    self.frames_installed += 1;
+                }
+                Some(Err(e)) => tracing::warn!("⚠ public instance: no sensor list served: {e}"),
+                None => {}
+            }
         }
         // ⭐ udt 18 incidents: {u32 count, u32 types[count], ...}. Kept for incident-driven steps.
         if let ClientMessage::Other { user_defined_type: 18, struct_image } = msg {
@@ -628,6 +992,33 @@ impl ActivityInstance {
             }
         }
         let mut out = self.reply_to(msg, now);
+        // D1_AH_SCRIPTS hook (script_bridge.rs): the bridge sees every message after the instance.
+        if let Some(b) = self.script_bridge.as_mut() {
+            if matches!(msg, ClientMessage::JoinRequest { .. }) {
+                // The start slice set this join serves: a script phase there needs no teleport.
+                b.set_served_start(self.start_region.map(|(r, _)| r));
+                // Run fg2i: the activity the client launched, when a remap served another.
+                b.set_remapped_launch(self.remapped_launch);
+                // F32: the join grant covers the world's bubbles.
+                b.set_world_bubbles(Some(self.bubble_count as usize).filter(|&n| n > 0));
+            }
+            b.on_client_message(msg, self.activity_index, self.ah_id, now);
+        }
+        // ── stream O2 hook ── the activity framework's run (activity_driver.rs).
+        self.drive_framework(msg);
+        // ── stream R hook ── a Crucible match (pvp_wire.rs): the join and the client's incidents.
+        if self.crucible.is_some() {
+            // The index matters only at the join (reading the follow file on every message would not).
+            let index = match msg {
+                ClientMessage::JoinRequest { .. } => self.followed_activity_index().map_or(self.activity_index, |(_, i)| i),
+                _ => self.activity_index,
+            };
+            let (slot, physics) = self.group.as_ref().map_or((None, true), |g| (g.slot(), g.is_physics_host()));
+            let host = self.ah_id;
+            if let Some(c) = self.crucible.as_mut() {
+                c.on_client_message(msg, host, index, slot, physics, now);
+            }
+        }
         // ⭐⭐ THE HOST HEARTBEAT. If this turn produced nothing to say, and we have been silent
         // longer than [`Self::HOST_HEARTBEAT_MS`], say something anyway - because the client's
         // liveness test is `now - (when we last transmitted)` and NOT the keepalive it is sending
@@ -726,6 +1117,11 @@ impl ActivityInstance {
         self.activity_follow = Some((path, table));
     }
 
+    /// The launched hashes `D1_AH_ACTIVITY_REMAP` serves as another activity (`main.rs`).
+    pub fn set_activity_remaps(&mut self, hashes: std::collections::HashSet<u32>) {
+        self.activity_remaps = hashes;
+    }
+
     /// The `(hash, index)` the followed file names, if the table knows it.
     fn followed_activity_index(&self) -> Option<(u32, u16)> {
         let (path, table) = self.activity_follow.as_ref()?;
@@ -769,29 +1165,73 @@ impl ActivityInstance {
     ///
     /// [`Live`]: InstanceState::Live
     pub fn sensor_due(&mut self, now: Instant) -> Option<AhPush> {
+        // ── stream G hook ── the instance's public events run on the host's clock.
+        if let Some(p) = self.public.as_mut() {
+            p.tick(now);
+        }
         if !matches!(self.state, InstanceState::Live) || self.heartbeats == 0 {
             return None;
         }
+        // ── stream R hook ── a Crucible map's udt 5 is its match's (pvp_wire.rs).
+        if let Some(c) = self.crucible.as_mut().filter(|c| c.active()) {
+            let payload = c.sensor_due(now)?;
+            self.sensors_sent += 1;
+            self.last_pushed = now;
+            return Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }));
+        }
+        // D1_AH_SCRIPTS hook (script_bridge.rs): a scripted activity's udt 5 is the bridge's.
+        if let Some(b) = self.script_bridge.as_mut().filter(|b| b.scripted()) {
+            let frame = b.sensor_due(now);
+            if let Some(r) = b.take_region_request() {
+                self.script_teleport(r, now);
+            }
+            let payload = frame?;
+            self.sensors_sent += 1;
+            self.last_pushed = now;
+            return Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }));
+        }
         if self.advance_mission(now) {
             self.sensor_last_sent = None;
+        }
+        // Stamp mode: after a frame could not be stamped, only heartbeats until the backoff ends.
+        if self
+            .sensor_stamp
+            .as_ref()
+            .is_some_and(|s| s.backing_off(now))
+        {
+            return self.sensor_heartbeat(now);
         }
         match self.sensor_repeat {
             // Send-once mode (default): silent forever after the first frame.
             None => {
                 if self.sensor_sent {
-                    return None;
+                    return self.sensor_heartbeat(now);
                 }
             }
             // Repeat mode: pace on the interval since the last send.
             Some(every) => {
                 if let Some(last) = self.sensor_last_sent {
                     if now.saturating_duration_since(last) < every {
-                        return None;
+                        return self.sensor_heartbeat(now);
                     }
                 }
             }
         }
-        let (payload, phase) = self.current_sensor_payload()?;
+        let (mut payload, phase) = self.current_sensor_payload()?;
+        if let Some(s) = self.sensor_stamp.as_mut() {
+            match s.stamp(
+                &mut payload,
+                now,
+                crate::codec::SchemaCodec::sensor_stamp_bit,
+            ) {
+                Ok(()) => tracing::info!("udt-5 stamped: tick {}", s.tick(now)),
+                Err(e) => {
+                    // Not sent: unstamped, it would re-anchor the client's clock to 0.
+                    tracing::warn!("udt-5 not sent, could not stamp it: {e}");
+                    return None;
+                }
+            }
+        }
         self.sensor_sent = true;
         self.sensor_last_sent = Some(now);
         self.sensors_sent += 1;
@@ -802,7 +1242,22 @@ impl ActivityInstance {
             Some(p) => tracing::info!("udt-5 sensor_auth_update send #{} (phase file: {p})", self.sensors_sent),
             None => tracing::info!("udt-5 sensor_auth_update send #{}", self.sensors_sent),
         }
+        crate::script_bridge::dump_host_frame(&payload);
         Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }))
+    }
+
+    /// In stamp mode, the 6-byte idle udt 5 when 3 s passed with no other (see [`SensorStamp`]).
+    fn sensor_heartbeat(&mut self, now: Instant) -> Option<AhPush> {
+        let gen = self
+            .sensor_payload
+            .as_ref()
+            .and_then(|p| p.first().copied())?;
+        let payload = self.sensor_stamp.as_mut()?.heartbeat_due(gen, now)?;
+        self.last_pushed = now;
+        Some(AhPush::new(
+            self.ah_id,
+            AhMessage::SensorAuthUpdate { payload },
+        ))
     }
 
     /// The heartbeat period. The listener polls at this rate.
@@ -848,6 +1303,13 @@ impl ActivityInstance {
         }
         if let Some((region, hash)) = self.start_region {
             s.set_start_region(region, hash);
+        }
+        // D1_AH_ACTIVITY_OPTIONS: this activity's option list (the client copies it at its world
+        // transition and builds the activity's option table from it at activity start).
+        for &(name, value) in activity_options(self.activity_index) {
+            if let Err(e) = s.set_option(name, value) {
+                tracing::warn!("activity option {name:#010x} for activity {}: {e}", self.activity_index);
+            }
         }
         AhPush::new(self.ah_id, AhMessage::GlobalActivityState(s))
     }
@@ -908,6 +1370,14 @@ impl ActivityInstance {
             );
         }
 
+        // MP(H): in a shared instance, every member's identity and properties, the occupancy masks
+        // and the elected physics host replace the solo echo (crate::group).
+        if let Some(link) = &self.group {
+            if !link.compose(&mut m.image) {
+                tracing::warn!("⚠ shared instance: membership not composed; publishing the solo echo");
+            }
+        }
+
         // ── field 2 of 2 that is OURS: the PAH-tabulated region record (rung 34 task 8) ────────
         //
         // Without it `FUN_007775B0` copies nothing into `sstm+0x490`, `FUN_0077F6B0` refuses to
@@ -941,7 +1411,7 @@ impl ActivityInstance {
                      yet have valid host-tabulated data'"
                 ),
             },
-            None if first => tracing::warn!(
+            None if first && !self.is_public_instance() => tracing::warn!(
                 "⚠ D1_AH_SLICE_TOKEN=0 - publishing a ZEROED PAH tabulated region array at \
                  replicate_membership+0x{:04X}. FUN_007775B0 will match nothing, sstm+0x490 stays \
                  -1, and rung 34 parks forever on 'Region … is ready for switch, but we do not yet \
@@ -950,6 +1420,32 @@ impl ActivityInstance {
                 ReplicateMembership::PAH_REGIONS
             ),
             None => {}
+        }
+        // The region's public flag from the served world's content, and the ambassador's
+        // matchmaking threshold (`update_public_threshold`), re-applied on every publish.
+        if let Some((region, _, _)) = self.pah_region {
+            if self.region_is_public(region) {
+                if let Err(e) = m.set_region_public() {
+                    tracing::warn!("⚠ region {region} not marked public: {e}");
+                }
+            }
+            if matches!(self.public_threshold, Some((r, _, true)) if r == region) {
+                if let Err(e) = m.set_region_threshold(true) {
+                    tracing::warn!("⚠ region {region}'s matchmaking threshold not written: {e}");
+                }
+            }
+        }
+        // The public session the client reported for this region (step 5), re-applied on every
+        // publish like the record itself.
+        if let Some((session, host)) = self.pah_region.and_then(|(region, _, _)| self.public_session(region)) {
+            if let Err(e) = m.set_region_advertisement(session, host) {
+                tracing::warn!("⚠ public session not advertised: {e}");
+            }
+        }
+
+        // ── stream G hook ── a public instance serves no region records: every slot 0xFFFFFFFF.
+        if self.is_public_instance() {
+            crate::public_host::clear_region_records(&mut m.image);
         }
 
         // ⚠ ANY FUTURE MEMBERSHIP FIELD GOES ABOVE THIS LINE. If you are about to add one to the
@@ -965,7 +1461,9 @@ impl ActivityInstance {
             // ── rung: wait 4 join_result ───────────────────────────────────────────────────────
             ClientMessage::JoinRequest { struct_image } => {
                 self.squad_live.reset();
-                if let Some((hash, index)) = self.followed_activity_index() {
+                let followed = self.followed_activity_index();
+                self.remapped_launch = followed.map(|(h, _)| h).filter(|h| self.activity_remaps.contains(h));
+                if let Some((hash, index)) = followed {
                     if index != self.activity_index {
                         tracing::info!(
                             "⭐ activity follow: the client launched activity hash {hash:#010x} = index \
@@ -989,6 +1487,7 @@ impl ActivityInstance {
                     self.activity_checksum = w.checksum;
                     self.bubble_count = w.bubble_count;
                     self.bubble_chosen = w.chosen;
+                    self.public_regions = w.public_regions;
                     // The PAH region record must name the same region the client will wait on.
                     self.start_region = w.start_region.map(|r| (r, 0x811C_9DC5));
                     let region = w.start_region.unwrap_or(0);
@@ -1011,6 +1510,57 @@ impl ActivityInstance {
                         self.activity_index
                     );
                 }
+                // MP(H): join the shared instance the request names, and present its host id.
+                // Stream O3 (integration review, finding 11): this runs before the public role
+                // below, so a social space or public instance registers under the shared
+                // instance's host id, not this connection's own.
+                let mut group_slot = None;
+                let mut group_host = None;
+                if let Some(link) = self.group.as_mut() {
+                    match link.join(self.ah_id, struct_image) {
+                        Ok((host, j)) => {
+                            tracing::info!("⭐ shared instance {host:#018x}: slot {}, physics host {:?}, peers {:?}",
+                                j.slot, j.physics_host, link.peers());
+                            if host != self.ah_id {
+                                self.ah_id = host;
+                            }
+                            group_host = Some(host);
+                            group_slot = Some(j.slot);
+                        }
+                        Err(e) => tracing::warn!("⚠ shared instance refused the join ({e}); serving it solo"),
+                    }
+                }
+                // Stream O3 (finding 9): the shared instance's members share one script bridge.
+                if let Some(host) = group_host {
+                    self.join_shared_scripts(host, crate::script_bridge::ScriptBridge::new);
+                }
+                // ── stream G hook ── a join naming a mission host is a public instance: no region
+                // records, no mission steps, no frame until the client names its region (udt 21),
+                // and the slot handover answered (crate::public_host).
+                if let Some(p) = self.public.as_mut() {
+                    if p.on_join(struct_image, &self.activity_name, self.ah_id, now).is_public_instance() {
+                        // Stream O3 (integration review, finding 10): a public instance runs no
+                        // mission script and grants nothing for the mission: the mission host
+                        // (the client's other connection) does both. Its bubble's own events
+                        // run in the open world (public_host.rs).
+                        if self.script_bridge.take().is_some() {
+                            tracing::info!("⭐ public instance: no mission script here (the mission host runs it)");
+                        }
+                        // stream O: the world's PUBLIC checksum (worlds.tsv), when it is known.
+                        if let Some(c) = p.public_checksum(&self.activity_name) {
+                            tracing::info!(
+                                "⭐ public instance: publishing {:?}'s PUBLIC checksum {c:#010x} (was {:#010x})",
+                                self.activity_name, self.activity_checksum
+                            );
+                            self.activity_checksum = c;
+                        }
+                        self.pah_region = None;
+                        self.sensor_payload = None;
+                        self.sensor_team_frames = None;
+                        self.mission_steps.clear();
+                        self.slot_handover = true;
+                    }
+                }
                 // ⭐ Echo the client's whole request struct: `join_result`'s descriptor field [0]
                 // IS `join_request` (tag 0x80800E98) embedded at +0x00, which is why the nonce and
                 // AH id live where they do. `accepted_echoing` takes the nonce from the image, so
@@ -1025,6 +1575,10 @@ impl ActivityInstance {
                     u128::from(u16::MAX),
                 ) as u16;
                 self.state = InstanceState::Joined;
+                if let Some(host) = group_host {
+                    result.ah_id = host;
+                }
+                let recipient = self.ah_id; // MP(H): the shared instance's host, if it changed
                 // Kept for `udt 17`: a membership is an echo of these bytes, so a refresh that did
                 // not have them would have to fabricate an identity.
                 self.join_request_image = Some(struct_image.clone());
@@ -1064,10 +1618,16 @@ impl ActivityInstance {
                     // way. ⚠ `activity-host-contract.md` §5's "offline seam" (`memset 0xFF`) is
                     // NOT an alternative - that branch writes `db+0x120B8`, never `ac+0x64AA`,
                     // and `ac+0x64AA` is written in exactly one place in the whole image: here.
-                    out.push(AhPush::new(
-                        recipient,
-                        AhMessage::EntitySlotsAllocated(self.entities.grant_all()),
-                    ));
+                    // MP(H): a shared instance grants by peer slot (500 each, as the live hosts did).
+                    let grant = match group_slot {
+                        Some(slot) => {
+                            self.entities.grant_all();
+                            self.entities.free(&crate::group::entity_mask(slot));
+                            self.entities.allocate(crate::group::ENTITY_INDICES_PER_PEER as u32)
+                        }
+                        None => self.entities.grant_all(),
+                    };
+                    out.push(AhPush::new(recipient, AhMessage::EntitySlotsAllocated(grant)));
 
                     // udt 1 - ⭐ NOT `empty()`. Load-bearing three times over: establish-client,
                     // the rung-31 activity NAME, and the rung-33 world transition. `FUN_01057B80`
@@ -1184,6 +1744,7 @@ impl ActivityInstance {
             }
 
             ClientMessage::ConnectivityFailure { .. } => {
+                if let Some(p) = self.public.as_mut() { p.on_leave(now); } // ── stream G hook ──
                 self.state =
                     InstanceState::Evicted { reason: EvictionReason::ConnectivityFailure };
                 Vec::new()
@@ -1195,8 +1756,15 @@ impl ActivityInstance {
             // instance to `error_host_crashed` - so it is downstream of the failure by a third of a
             // second. Recording it is worth doing; "handling" it would be treating the symptom.
             ClientMessage::PeerLeaveRequest { .. } => {
+                if let Some(p) = self.public.as_mut() { p.on_leave(now); } // ── stream G hook ──
                 self.state = InstanceState::Evicted { reason: EvictionReason::ClientLeft };
                 Vec::new()
+            }
+
+            // udt 25 abandon_entity_slots / 26 request_purge_entity_slots, answered with 23 / 24
+            // when D1_AH_SLOT_HANDOVER=1 (see [`Self::answer_slot_handover`]).
+            ClientMessage::Other { user_defined_type: udt @ (25 | 26), struct_image } if self.slot_handover => {
+                self.answer_slot_handover(*udt, struct_image).into_iter().collect()
             }
 
             // ⭐ `udt 21 client_authoritative_data_update` - the client telling us **its own**
@@ -1265,6 +1833,75 @@ impl ActivityInstance {
     /// The activity index this instance publishes at `global_activity_state+0x680`.
     pub fn activity_index(&self) -> u16 {
         self.activity_index
+    }
+
+    /// The activity framework's run, if one is going (stream O2).
+    pub fn run_driver(&self) -> Option<&crate::activity_driver::RunDriver> {
+        self.run_driver.as_ref()
+    }
+
+    /// ── stream O2 ── feed the activity framework's run: a join starts it (or adds a member), the
+    /// script bridge's phases and completion drive a scripted activity, the client's slice sets
+    /// and trigger reports drive the rest, and its deaths and respawns drive wipes.
+    fn drive_framework(&mut self, msg: &ClientMessage) {
+        use crate::activity_driver::{Framework, RunDriver};
+        let Some(fw) = Framework::get() else { return };
+        // Stream O3 (finding 10): a public instance's connection runs no mission framework and
+        // grants nothing; its mission host does.
+        if self.is_public_instance() {
+            return;
+        }
+        let scripted = self.script_bridge.as_ref().is_some_and(|b| b.scripted());
+        if let ClientMessage::JoinRequest { struct_image } = msg {
+            use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
+            if let Some(id) = struct_image.get(JOIN_REQUEST_IDENTITY..JOIN_REQUEST_IDENTITY + IDENTITY_SIZE) {
+                let c = crate::rewards::CharacterRef { identity: id.to_vec() };
+                if !self.framework_players.contains(&c) {
+                    self.framework_players.push(c.clone());
+                }
+                let hash = fw.activity_hash(self.followed_activity_index().map(|(h, _)| h), self.activity_index);
+                match (self.run_driver.as_mut(), hash) {
+                    (Some(d), Some(h)) if d.activity_hash() == h && !d.finished() => {
+                        d.join(&c);
+                    }
+                    (_, Some(h)) => {
+                        self.run_driver = RunDriver::start_installed(h, &self.framework_players, scripted).map(|(d, _)| d);
+                        if let Some(d) = &self.run_driver {
+                            tracing::info!(
+                                "⭐ activity framework: running {} for activity {h:#010x} ({})",
+                                d.run().definition().id,
+                                if scripted { "the scripts drive it" } else { "the client's reports drive it" }
+                            );
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        let events = self.script_bridge.as_mut().map(|b| b.take_framework_events()).unwrap_or_default();
+        let Some(d) = self.run_driver.as_mut() else { return };
+        for ev in events {
+            d.feed(ev);
+        }
+        match msg {
+            ClientMessage::ClientAuthoritativeDataUpdate { struct_image } => {
+                let u = |o: usize| struct_image.get(o..o + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()));
+                if let (Some(index), Some(hash)) = (u(0xB8), u(0xBC)) {
+                    if !matches!(hash, 0 | 0x811C_9DC5) {
+                        d.on_slice(index, scripted);
+                    }
+                }
+            }
+            ClientMessage::Other { user_defined_type: 18, struct_image } => {
+                let n = struct_image.get(0..4).map_or(0, |b| u32::from_le_bytes(b.try_into().unwrap()));
+                let types: Vec<u32> = (0..n.min(8) as usize)
+                    .filter_map(|k| struct_image.get(4 + 4 * k..8 + 4 * k).map(|b| u32::from_le_bytes(b.try_into().unwrap())))
+                    .collect();
+                d.on_incidents(&types, struct_image, scripted);
+            }
+            _ => {}
+        }
+        d.tick(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |t| t.as_secs()));
     }
 
     /// ⭐⭐ Override the activity index. Takes effect on the next `global_activity_state`.
@@ -1347,7 +1984,19 @@ impl ActivityInstance {
             } else if state == 3 && age >= Self::TELEPORT_DROP_AFTER {
                 self.slice_request = None;
                 self.membership_dirty = true;
+                // D1_AH_SCRIPTS hook (run fg2e): the teleport finished on these timers (the client
+                // sends nothing when it arrives); a scripted phase's held clock takes it as arrival.
+                if let Some(b) = self.script_bridge.as_mut() {
+                    b.teleport_finished(index, now);
+                }
             }
+        }
+        // MP(H): another member joined or left, or the physics host moved.
+        if self.group.as_mut().is_some_and(|g| g.take_changed()) {
+            self.membership_dirty = true;
+        }
+        if matches!(self.state, InstanceState::Live) {
+            self.update_public_threshold(now);
         }
         if !self.membership_dirty || !matches!(self.state, InstanceState::Live) {
             return None;
@@ -1369,8 +2018,77 @@ impl ActivityInstance {
     /// The next host incident to send, as udt 18 (`0x8080097D`, 716 bytes): `+0` the count (5 bits),
     /// `+4` the 12-bit types, `+0x68` an optional list (left empty), `+0xD4` the body length in bytes
     /// (9 bits) and `+0xD8` the body (up to 500 bytes).
+    /// The udt-18 image a step's completion sends: the chain for its end kind and one `0x80800595`
+    /// body built as the script bridge builds it (`completion::CompletionBody`, with its stand-ins),
+    /// for the joined player (the first qword of its identity) and this host.
+    fn completion_envelope(&self, c: StepCompletion) -> Result<Vec<u8>, String> {
+        let body = self.completion_body(c)?;
+        let e = d1_rsat::encode(crate::completion::BODY_TAG, &body.image()).map_err(|e| format!("the body did not encode: {e}"))?;
+        crate::completion::envelope(crate::completion::chain(c.end), &e.payload, e.bits as u32)
+    }
+
+    /// Run `f` on the rewards forwarder for the joined player (the identity of its join
+    /// request), as the script bridge does for each player. Nothing when the forwarder is off
+    /// (D1_REWARDS, D1_STORE, D1_STORE_CONTROL) or no player has joined.
+    fn with_joined_rewards(&self, what: &str, f: impl FnOnce(&mut (dyn crate::rewards::ActivityRewards + Send), &crate::rewards::CharacterRef) -> Result<(), String>) {
+        use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
+        let Some(rewards) = crate::activity_driver::Framework::get().and_then(|f| f.rewards.clone()) else { return };
+        let Some(id) = self.join_request_image.as_ref().and_then(|img| img.get(JOIN_REQUEST_IDENTITY..JOIN_REQUEST_IDENTITY + IDENTITY_SIZE)) else { return };
+        let c = crate::rewards::CharacterRef { identity: id.to_vec() };
+        let result = match rewards.lock() {
+            Ok(mut r) => f(&mut *r, &c),
+            Err(_) => return,
+        };
+        if let Err(e) = result {
+            tracing::warn!("{what} for {c:?}: {e}");
+        }
+    }
+
+    /// The store records a step's completion for the joined player, as the script bridge's
+    /// `activity_complete` does (rewards forwarder: a `completed` line in the store's command
+    /// file).
+    fn record_completion(&self, activity_hash: u32) {
+        self.with_joined_rewards(&format!("completion of {activity_hash:#010x}"), |r, c| r.activity_completed(c, activity_hash));
+    }
+
+    /// The store records the activity a step's completion hands off to (`next=`), as the script
+    /// bridge's `reward` does: the forwarder sends a `handoff` line, and the store records the next
+    /// activity.
+    fn record_hand_off(&self, from_hash: u32, (index, hash): (u16, u32)) {
+        self.with_joined_rewards(&format!("hand-off of {from_hash:#010x} to activity {index} ({hash:#010x})"),
+                                 |r, c| r.activity_hand_off(c, from_hash, index, hash));
+    }
+
+    fn completion_body(&self, c: StepCompletion) -> Result<crate::completion::CompletionBody, String> {
+        use d1_oracle::activity_host::replicate_membership::JOIN_REQUEST_IDENTITY;
+        let player = self.join_request_image.as_ref()
+            .and_then(|img| img.get(JOIN_REQUEST_IDENTITY..JOIN_REQUEST_IDENTITY + 8))
+            .map(|b| u64::from_le_bytes(b.try_into().unwrap()))
+            .ok_or("no joined player identity")?;
+        Ok(crate::completion::CompletionBody { instance_word: self.ah_id as u32, host: self.ah_id, player, hashes: c.hashes, end: c.end })
+    }
+
     pub fn incident_due(&mut self) -> Option<AhPush> {
         self.poll_control();
+        // D1_AH_SCRIPTS hook (script_bridge.rs): the completion envelope, a whole udt 18 image
+        // (a chain of incidents and one body), once Live.
+        if matches!(self.state, InstanceState::Live) {
+            if let Some(image) = self.script_bridge.as_mut().and_then(|b| b.take_incident()) {
+                return Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 18, bytes: image }));
+            }
+            if !self.pending_envelopes.is_empty() {
+                let image = self.pending_envelopes.remove(0);
+                return Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: 18, bytes: image }));
+            }
+        }
+        // Stream O3 (PR #328): a public event that ended in this instance: its completion incident
+        // set (the tier) for this client. ⚠ The live host sent the set in one udt 18; these go one
+        // incident a message, in the live order.
+        if let Some(p) = self.public.as_mut().filter(|p| p.is_public_instance()) {
+            for t in p.take_completion_incidents() {
+                self.pending_incidents.push((t, Vec::new()));
+            }
+        }
         if !matches!(self.state, InstanceState::Live) || self.pending_incidents.is_empty() {
             return None;
         }
@@ -1452,7 +2170,19 @@ impl ActivityInstance {
     /// Epoch changes invalidate both counts and queued native decoder results.
     pub fn squad_epoch(&self) -> u64 { self.squad_live.epoch() }
 
+    /// D1_AH_SCRIPTS hook (run fg2f): the client sent a udt 6 (`sensor_sense_update`), decoded or
+    /// not; the script bridge takes the first as its answer to the full list.
+    pub fn on_sense_payload(&mut self, now: Instant) {
+        if let Some(b) = self.script_bridge.as_mut() {
+            b.client_sensed(now);
+        }
+    }
+
     pub fn on_sense_update(&mut self, update: crate::sense::SenseUpdate) {
+        // D1_AH_SCRIPTS hook (script_bridge.rs): squad senses of the current epoch.
+        if let Some(b) = self.script_bridge.as_mut().filter(|_| update.epoch == self.squad_live.epoch()) {
+            b.on_sense(&update.counts, &update.squads);
+        }
         self.squad_live.apply(update);
     }
 
@@ -1472,6 +2202,8 @@ impl ActivityInstance {
         let t0 = *self.mission_t0.get_or_insert(now);
         let elapsed = now.saturating_duration_since(t0);
         let i = self.mission_step.map_or(0, |s| s + 1);
+        // The activity this schedule completes, if any step does (its started/ended below).
+        let completes = steps.iter().find_map(|s| s.complete);
         let Some(step) = steps.get(i).cloned() else {
             return false;
         };
@@ -1523,6 +2255,37 @@ impl ActivityInstance {
             tracing::info!("⭐ mission step {i}: host incident {t} ({} body bytes)", body.len());
             self.pending_incidents.push((t, body));
         }
+        if let Some(c) = step.complete {
+            match self.completion_envelope(c) {
+                Ok(image) => {
+                    tracing::info!(
+                        "⭐ mission step {i}: activity {:#010x} complete; host incidents {:?} with one 0x80800595 body",
+                        c.hashes.activity, crate::completion::chain(c.end)
+                    );
+                    self.pending_envelopes.push(image);
+                    self.record_completion(c.hashes.activity);
+                    if let Some(next) = c.next {
+                        tracing::info!("⭐ mission step {i}: activity {:#010x} hands off to activity {} ({:#010x})", c.hashes.activity, next.0, next.1);
+                        self.record_hand_off(c.hashes.activity, next);
+                    }
+                }
+                Err(e) => tracing::warn!("** NAMED GATE ** mission step {i}: the completion is not sent: {e}"),
+            }
+        }
+        // As the script bridge does for a scripted activity (runs fg2j, rev5-rev6b): the store's
+        // current activity names the one a completing schedule serves from its first step
+        // (`started`: field [6], completed 0, as the live push at the join), and a cinematic's 8
+        // clears it (`ended`: `ffff`, pushed with the reply to the client's next 104).
+        if let Some(c) = completes {
+            if i == 0 {
+                tracing::info!("⭐ mission step {i}: activity {:#010x} started (the store's current activity)", c.hashes.activity);
+                self.with_joined_rewards("start", |r, who| r.activity_started(who, c.hashes.activity));
+            }
+            if step.lifetime == Some(8) && c.end == crate::row_encoders::EndKind::Cinematic {
+                tracing::info!("⭐ mission step {i}: activity {:#010x} ends at the 8 (the store clears its current activity)", c.hashes.activity);
+                self.with_joined_rewards("end", |r, who| r.activity_ended(who, c.hashes.activity));
+            }
+        }
         self.sensor_payload = Some(if team0 { step.team0 } else { step.team_minus1 });
         self.frames_installed += 1;
         if let Some(r) = step.region {
@@ -1548,6 +2311,47 @@ impl ActivityInstance {
         true
     }
 
+    /// Answer udt 25 and 26 (`D1_AH_SLOT_HANDOVER=1`; see [`Self::answer_slot_handover`]).
+    pub fn set_slot_handover(&mut self, on: bool) {
+        self.slot_handover = on;
+    }
+
+    /// The entity-slot handover as the live host ran it (notes/d1-live-captures-2026-11-05.md,
+    /// "Entity-slot handover"): the client abandons slots as it leaves bubbles (udt 25
+    /// `abandon_entity_slots`, {u8, slot set at +0x04, u3 at +0x604}) and the host claims them
+    /// back (udt 23 `claim_authority_over_abandoned_entity_slots`, the same layout, with the
+    /// client's set and u3 = 4); then the client asks to purge (26 `request_purge_entity_slots`,
+    /// {u3 = 4, slot set}) and the host purges (24 `purge_abandoned_entity_slots`, {u3 = 4, u8,
+    /// slot set}). The live host's u8s were one counter across its 23s and 24s, from 1.
+    ///
+    /// Not reproduced: the live host merged 25s that arrived together into one 23, and sent a few
+    /// 23s unprompted. One answer per message here.
+    fn answer_slot_handover(&mut self, udt: u32, image: &[u8]) -> Option<AhPush> {
+        const SET: std::ops::Range<usize> = 4..0x604;
+        let set = image.get(SET)?;
+        self.slot_handover_seq = self.slot_handover_seq.wrapping_add(1);
+        let seq = self.slot_handover_seq;
+        let (answer, bytes) = match udt {
+            25 => {
+                let mut b = vec![0u8; 0x608];
+                b[0] = seq;
+                b[SET].copy_from_slice(set);
+                b[0x604] = 4;
+                (23, b)
+            }
+            26 => {
+                let mut b = vec![0u8; 0x604];
+                b[0] = 4;
+                b[1] = seq;
+                b[SET].copy_from_slice(set);
+                (24, b)
+            }
+            _ => return None,
+        };
+        tracing::info!("⭐ udt {udt} from the client: answering udt {answer} with its slot set, counter {seq}");
+        Some(AhPush::new(self.ah_id, AhMessage::Opaque { user_defined_type: answer, bytes }))
+    }
+
     /// Serve a world clock base in ms (see `GlobalActivityState::TIME_BASE_MS`).
     pub fn set_time_base_ms(&mut self, ms: u64) {
         self.time_base_ms = Some(ms);
@@ -1571,12 +2375,29 @@ impl ActivityInstance {
     }
 
     /// Record the client's current slice set from udt 21 (`+0xB8` = {10-bit index, name hash}).
-    /// The update is a delta: the record is present only when its hash is (not 0 / FNV basis).
+    /// The update is a delta: the record is absent when its hash is 0 (or it is index 0 with the
+    /// FNV basis, the unset record); a private slice set's record carries the FNV basis.
     fn track_current_slice(&mut self, image: &[u8]) {
         let u = |o: usize| image.get(o..o + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()));
         let (Some(index), Some(hash)) = (u(0xB8), u(0xBC)) else { return };
+        // Diagnostic (7 November 2026): in cinematic worlds this tracker never saw the slice set a
+        // host teleport moved the client to (cine_reveal 26, The Awoken 1), so their `%S` gates
+        // waited out their fallbacks. Log the raw current and target records whenever they change.
+        let seen = (index, hash, u(0x158).unwrap_or(0), u(0x15C).unwrap_or(0), image.get(0x1F8).copied().unwrap_or(0));
+        if self.slice_records_seen != Some(seen) {
+            tracing::info!(
+                "udt 21 slice records: current {:#x}/{:#010x}, target {:#x}/{:#010x}, token {} ({} B)",
+                seen.0, seen.1, seen.2, seen.3, seen.4, image.len()
+            );
+            self.slice_records_seen = Some(seen);
+        }
         let index = index & 0x3FF;
-        if matches!(hash, 0 | 0x811C_9DC5) || index == 0x3FF || self.current_slice == Some(index) {
+        // Absent: hash 0, the "none" index 0x3FF, or the FNV basis on index 0. A PRIVATE slice set
+        // has no name, so its record carries the FNV basis (run awk6: `0x11/0x811c9dc5` after the
+        // join, The Awoken's PRV17.17); rejecting every basis hash hid the private slice sets the
+        // host teleports to, and the `%S` mission gates waited out their fallbacks.
+        let absent = hash == 0 || index == 0x3FF || (hash == 0x811C_9DC5 && index == 0);
+        if absent || self.current_slice == Some(index) {
             return;
         }
         tracing::info!("⭐ client is now in slice set {index} (hash {hash:#010x}, was {:?})", self.current_slice);
@@ -1614,6 +2435,123 @@ impl ActivityInstance {
         }
     }
 
+    /// Record a public session the client reports for a region, to advertise it as the live PAH
+    /// did. Each of udt 21's two slice-set records (CURRENT `+0xB8`, TARGET `+0x158`, `0xA0`
+    /// bytes, `0x80800D9F`) carries, once the client has started or joined that region's public
+    /// instance, the session at record `+0x14` (`0x84` bytes) and the instance's host id at
+    /// `+0x98`. In the live Restoration capture the client reported them to its mission host
+    /// (the PAH) about a second after joining its new public host, and the PAH's next membership
+    /// carried both in the region record (`+0x4C`, `+0xD0`). A host never advertises itself: the
+    /// live public instances served no region records. Returns true when something changed.
+    fn track_public_session(&mut self, image: &[u8]) -> bool {
+        const RECORDS: [usize; 2] = [0xB8, 0x158];
+        const SESSION: usize = 0x14;
+        const HOST: usize = 0x98;
+        let mut changed = false;
+        for base in RECORDS {
+            let (Some(region), Some(host)) = (
+                image.get(base..base + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()) & 0x3FF),
+                image.get(base + HOST..base + HOST + 8).map(|b| u64::from_le_bytes(b.try_into().unwrap())),
+            ) else {
+                continue;
+            };
+            let Some(session) = image.get(base + SESSION..base + HOST) else { continue };
+            if host == 0 || host == self.ah_id || region == 0x3FF || session.iter().all(|&b| b == 0) {
+                continue;
+            }
+            match self.public_sessions.iter_mut().find(|(r, _, _)| *r == region) {
+                Some((_, s, h)) if s.as_slice() == session && *h == host => continue,
+                Some((_, s, h)) => {
+                    *s = session.to_vec();
+                    *h = host;
+                }
+                None => self.public_sessions.push((region, session.to_vec(), host)),
+            }
+            tracing::info!("⭐ client reports the public session for region {region} on host {host:#018x}: advertising it");
+            changed = true;
+        }
+        if changed {
+            self.membership_dirty = true;
+        }
+        changed
+    }
+
+    /// The public session advertised for a region, if the client reported one.
+    pub fn public_session(&self, region: u32) -> Option<(&[u8], u64)> {
+        self.public_sessions.iter().find(|(r, _, _)| *r == region).map(|(_, s, h)| (s.as_slice(), *h))
+    }
+
+    /// A region is public when the served world's content says so (`slice-sets.tsv`), or when
+    /// `D1_AH_PUBLIC_REGIONS` (comma-separated ids) names it.
+    pub fn region_is_public(&self, region: u32) -> bool {
+        self.public_regions.contains(&region)
+            || std::env::var("D1_AH_PUBLIC_REGIONS").is_ok_and(|v| {
+                v.split(',').any(|r| r.trim().parse::<u32>().is_ok_and(|r| r == region))
+            })
+    }
+
+    /// The default wait before a public region's ambassador is released (see
+    /// [`Self::update_public_threshold`]): the client's own minimum matchmaking time for an
+    /// initial public transition ("using initial transition minimum matchmaking time of: 10000
+    /// ms"), and the live PAH's 10.2 s in Restoration.
+    pub const PUBLIC_THRESHOLD: Duration = Duration::from_secs(10);
+
+    /// ⭐ Release a public region's ambassador to start the public session: region record
+    /// `+0x19` ([`ReplicateMembership::PAH_REGION_THRESHOLD`]). The ambassador (the client, with
+    /// `D1_AH_PUBLIC_AMBASSADOR=1`) searches for an existing session; finding none it keeps
+    /// searching until the PAH says a player has reached the region's matchmaking threshold, and
+    /// only then spins up its own public activity session (`FUN_0077C3D0`). The live PAH set it
+    /// 10.2 s after it first published Restoration's public region 56.
+    ///
+    /// ⚠ A stand-in for the live trigger, which the captures do not show (in a later region it
+    /// went to 1 as the player arrived): the threshold is reached `D1_AH_PUBLIC_THRESHOLD_MS`
+    /// (default 10 000; 0 = never) after the record first names a public region, if no session
+    /// has been reported for it by then.
+    fn update_public_threshold(&mut self, now: Instant) {
+        let Some((region, _, _)) = self.pah_region else { return };
+        let ambassador = std::env::var("D1_AH_PUBLIC_AMBASSADOR").is_ok_and(|v| v == "1");
+        if self.is_public_instance() || !ambassador || !self.region_is_public(region) {
+            self.public_threshold = None;
+            return;
+        }
+        let wait = match std::env::var("D1_AH_PUBLIC_THRESHOLD_MS").ok().and_then(|v| v.trim().parse::<u64>().ok()) {
+            Some(0) => return,
+            Some(ms) => Duration::from_millis(ms),
+            None => Self::PUBLIC_THRESHOLD,
+        };
+        let has_session = self.public_session(region).is_some();
+        let (next, released) = Self::next_threshold(self.public_threshold, region, has_session, now, wait);
+        self.public_threshold = Some(next);
+        if released {
+            self.membership_dirty = true;
+            tracing::info!(
+                "⭐ public region {region}: no public session after {} ms of ambassador matchmaking; \
+                 the region record's +0x19 releases the ambassador to start one (the live PAH: \
+                 10.2 s; ⚠ a stand-in trigger, D1_AH_PUBLIC_THRESHOLD_MS)",
+                wait.as_millis()
+            );
+        }
+    }
+
+    /// One step of the threshold: a new region starts its wait; the wait ends (`true`: release
+    /// now) once `wait` has passed with no session reported; a released region stays released.
+    fn next_threshold(
+        prev: Option<(u32, Instant, bool)>,
+        region: u32,
+        has_session: bool,
+        now: Instant,
+        wait: Duration,
+    ) -> ((u32, Instant, bool), bool) {
+        match prev {
+            Some((r, since, false)) if r == region => {
+                let due = !has_session && now.saturating_duration_since(since) >= wait;
+                ((r, since, due), due)
+            }
+            Some(p @ (r, _, true)) if r == region => (p, false),
+            _ => ((region, now, false), false),
+        }
+    }
+
     /// Serve a start region (see [`ServedWorld::start_region`]); also moves the PAH region record.
     pub fn set_start_region(&mut self, region: u32) {
         self.start_region = Some((region, 0x811C_9DC5));
@@ -1636,6 +2574,29 @@ impl ActivityInstance {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The ambassador's matchmaking threshold (region record `+0x19`): released after the wait
+    /// with no session, never while a session is reported, once per region, and a new target
+    /// region starts its own wait (run fg5b; the live PAH's 10.2 s).
+    #[test]
+    fn the_public_threshold_releases_a_lone_ambassador_after_the_wait() {
+        let t0 = Instant::now();
+        let wait = ActivityInstance::PUBLIC_THRESHOLD;
+        let step = ActivityInstance::next_threshold;
+        let (s, rel) = step(None, 56, false, t0, wait);
+        assert_eq!((s, rel), ((56, t0, false), false), "the record first names region 56: the wait starts");
+        let (s, rel) = step(Some(s), 56, false, t0 + Duration::from_secs(9), wait);
+        assert!(!rel && !s.2, "9 s: still matchmaking");
+        let (s2, rel) = step(Some(s), 56, true, t0 + Duration::from_secs(11), wait);
+        assert!(!rel && !s2.2, "a reported session: nothing to release");
+        let (s, rel) = step(Some(s), 56, false, t0 + Duration::from_secs(10), wait);
+        assert!(rel && s.2, "10 s with no session: released");
+        let (s, rel) = step(Some(s), 56, false, t0 + Duration::from_secs(20), wait);
+        assert!(!rel && s.2, "released once, and stays released");
+        let t1 = t0 + Duration::from_secs(30);
+        let (s, rel) = step(Some(s), 48, false, t1, wait);
+        assert_eq!((s, rel), ((48, t1, false), false), "a new target region waits again");
+    }
 
     fn instance() -> (ActivityInstance, Instant) {
         let now = Instant::now();
@@ -1826,6 +2787,29 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
     }
 
+    /// Run fg2i: a join whose launched hash a remap published as another activity names that hash
+    /// (for the bridge's lab completion); an unremapped launch names none.
+    #[test]
+    fn a_remapped_launch_is_known_at_the_join() {
+        let dir = std::env::temp_dir().join(format!("d1ah-remap-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let file = dir.join("launched.txt");
+        // D1_AH_ACTIVITY_REMAP=164:165 as main.rs applies it: 164's hash now names 165.
+        let table: std::collections::HashMap<u32, u16> = [(0x6E0D_AE89u32, 165u16), (0x6EAF_0959, 165)].into_iter().collect();
+        let remaps: std::collections::HashSet<u32> = [0x6E0D_AE89u32].into_iter().collect();
+        for (launched, want) in [(0x6E0D_AE89u32, Some(0x6E0D_AE89u32)), (0x6EAF_0959, None)] {
+            std::fs::write(&file, format!("{launched}
+")).unwrap();
+            let (mut i, now) = instance();
+            i.set_activity_follow(file.clone(), table.clone());
+            i.set_activity_remaps(remaps.clone());
+            i.on_client_message(&join_request([0; 4]), now);
+            assert_eq!(i.activity_index(), 165);
+            assert_eq!(i.remapped_launch, want, "{launched:#x}");
+        }
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
     /// ⭐ A world served with a start region publishes it at blob `+0x54` and moves the PAH region
     /// record with it; a world without one leaves region 0.
     #[test]
@@ -1851,6 +2835,7 @@ mod tests {
             team_minus1: vec![b],
             region,
             incident: None,
+            complete: None, lifetime: None,
         };
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![step(0, 1, None), step(70, 2, None), step(120, 3, Some(112))]);
@@ -1891,6 +2876,74 @@ mod tests {
         img[0x1F8] = 4;
         i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img.clone() }, now);
         assert_eq!(i.pah_region(), Some((24, 0, 4)), "a same-target retry follows the client's token");
+    }
+
+    /// ⭐ Plan step 5, as the live PAH did it in Restoration: the client's udt 21 TARGET record
+    /// for its public region names the session (record +0x14) and its new public host (+0x98);
+    /// the PAH's next membership carries both in the region record (+0x4C, +0xD0). The values
+    /// here are synthetic; the layout is the live one.
+    #[test]
+    fn the_pah_advertises_the_public_session_the_client_reports() {
+        let (mut i, now) = instance();
+        i.on_client_message(&join_request([1, 2, 3, 4]), now);
+        i.set_pah_region(56, 0, 1);
+        const TARGET: usize = 0x158;
+        let public_host = 0xD1A0_0000_0000_0002u64;
+        let mut session = vec![0u8; ReplicateMembership::PAH_ADVERTISED_SESSION_LEN];
+        session[0] = 0x4E;
+        session[4..0x44].fill(0xAB);
+        let mut img = vec![0u8; 0x220];
+        img[TARGET..TARGET + 4].copy_from_slice(&56u32.to_le_bytes());
+        img[TARGET + 4..TARGET + 8].copy_from_slice(&0x2EA8_FB98u32.to_le_bytes());
+        img[TARGET + 0x14..TARGET + 0x98].copy_from_slice(&session);
+        img[0x1F8] = 1;
+        // Its own id is not advertised: the live public instances served no region records.
+        img[TARGET + 0x98..TARGET + 0xA0].copy_from_slice(&i.ah_id().to_le_bytes());
+        i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img.clone() }, now);
+        assert_eq!(i.public_session(56), None);
+        img[TARGET + 0x98..TARGET + 0xA0].copy_from_slice(&public_host.to_le_bytes());
+        i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: img }, now);
+        let AhMessage::ReplicateMembership(m) = i.membership_due(now).expect("re-published").message else {
+            panic!("expected a membership")
+        };
+        let rec = &m.image[ReplicateMembership::PAH_REGIONS..][..ReplicateMembership::PAH_REGION_STRIDE];
+        assert_eq!(&rec[0..4], &56u32.to_le_bytes());
+        assert_eq!(&rec[0x4C..0xD0], &session[..]);
+        assert_eq!(&rec[0xD0..0xD8], &public_host.to_le_bytes());
+    }
+
+    /// The entity-slot handover, live layout and synthetic set: 25 is answered with 23 and 26
+    /// with 24, each with the client's set and the next counter value; off, neither is answered.
+    #[test]
+    fn the_slot_handover_answers_abandon_and_purge_with_the_clients_set() {
+        let (mut i, now) = instance();
+        let mut abandon = vec![0u8; 0x608];
+        abandon[0] = 3;
+        abandon[4..8].copy_from_slice(&0xFB6F_F000u32.to_le_bytes());
+        abandon[0x604] = 3;
+        let msg = ClientMessage::Other { user_defined_type: 25, struct_image: abandon.clone() };
+        let opaque = |out: Vec<AhPush>| -> Vec<(u32, Vec<u8>)> {
+            out.into_iter()
+                .filter_map(|p| match p.message {
+                    AhMessage::Opaque { user_defined_type, bytes } if matches!(user_defined_type, 23 | 24) => {
+                        Some((user_defined_type, bytes))
+                    }
+                    _ => None,
+                })
+                .collect()
+        };
+        assert!(opaque(i.on_client_message(&msg, now)).is_empty(), "off by default");
+        i.set_slot_handover(true);
+        let [(udt, claim)] = opaque(i.on_client_message(&msg, now)).try_into().unwrap();
+        assert_eq!((udt, claim.len(), claim[0], claim[0x604]), (23, 0x608, 1, 4));
+        assert_eq!(&claim[4..0x604], &abandon[4..0x604]);
+        let mut purge = vec![0u8; 0x604];
+        purge[0] = 4;
+        purge[4..0x604].copy_from_slice(&abandon[4..0x604]);
+        let msg = ClientMessage::Other { user_defined_type: 26, struct_image: purge };
+        let [(udt, purged)] = opaque(i.on_client_message(&msg, now)).try_into().unwrap();
+        assert_eq!((udt, purged.len(), purged[0], purged[1]), (24, 0x604, 4, 2));
+        assert_eq!(&purged[4..], &abandon[4..0x604]);
     }
 
     /// ⭐ A changed membership carries the next update number, or the client never re-reads the
@@ -1970,7 +3023,7 @@ mod tests {
         assert_eq!(StepWhen::parse("+5"), Some(StepWhen::AfterPrevious(Duration::from_secs(5))));
         assert_eq!(StepWhen::parse("120"), Some(StepWhen::At(Duration::from_secs(120))));
         let (mut i, now) = instance();
-        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None };
+        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None, complete: None, lifetime: None };
         let on891 = StepWhen::parse("@891|70").unwrap();
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1), step(on891.clone(), 2), step(on891, 3)]);
@@ -2007,7 +3060,7 @@ mod tests {
     fn kill_gate_holds_past_deadline_until_the_full_current_cohort_is_zero() {
         use crate::sense::{SquadCount, SenseUpdate};
         let (mut i, now) = instance();
-        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None };
+        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None, complete: None, lifetime: None };
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1),
             step(StepWhen::parse("!0x062dd95d:5,6|10").unwrap(), 2)]);
@@ -2015,7 +3068,7 @@ mod tests {
         assert!(i.advance_mission(now));
         let squad = |index, live| SquadCount { group: 0x062D_D95D, kind: 1, index, live };
         let report = |i: &mut ActivityInstance, counts: Vec<_>| {
-            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts });
+            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts, squads: vec![] });
             i.set_sense_ready(true);
         };
         report(&mut i, vec![squad(5,1)]);
@@ -2051,6 +3104,66 @@ mod tests {
         assert_ne!(epoch, i.squad_epoch());
     }
 
+    /// `complete=` parses the table's four hashes (cinematic unless `:gameplay`), and a step that
+    /// carries one queues a whole udt-18 envelope: the cinematic chain and a natively encoded body.
+    #[test]
+    fn a_completing_step_queues_the_activity_complete_envelope() {
+        let c = StepCompletion::parse("0x9a7acc78:0x648999f4:0x4d78882e:0x95c17d0f").unwrap();
+        assert_eq!(c.end, crate::row_encoders::EndKind::Cinematic);
+        assert_eq!(c.hashes.place, 0x95C1_7D0F);
+        assert_eq!(StepCompletion::parse("1:2:3:4:gameplay").unwrap().end, crate::row_encoders::EndKind::Gameplay);
+        assert!(StepCompletion::parse("1:2:3").is_none() && StepCompletion::parse("1:2:3:4:x").is_none());
+        assert_eq!(c.next, None);
+        assert_eq!(StepCompletion::parse_next("0:0x8ae8da69"), Some((0, 0x8AE8_DA69)), "cine_reveal's next: the Tower");
+        assert!(StepCompletion::parse_next("0").is_none() && StepCompletion::parse_next("70000:1").is_none());
+
+        let (mut i, now) = instance();
+        i.on_client_message(&join_request([1, 2, 3, 4]), now);
+        let mut steps = std::collections::HashMap::new();
+        steps.insert(i.activity_index(), vec![MissionStep {
+            when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: None, incident: None, complete: Some(c), lifetime: None,
+        }]);
+        i.set_mission_steps(steps);
+        let body = i.completion_body(c).expect("a joined player");
+        assert_eq!(body.hashes.activity, 0x9A7A_CC78);
+        assert_eq!(body.image()[0x10..0x18], i.ah_id.to_le_bytes(), "the host at +0x10");
+        // The native codec needs the build's schemas (D1_BUILDS/D1_BUILD), which the lab host has.
+        if d1_rsat::schemas().is_err() {
+            return;
+        }
+        assert!(i.advance_mission(now));
+        assert_eq!(i.pending_envelopes.len(), 1, "the envelope is queued");
+        let image = &i.pending_envelopes[0];
+        assert_eq!(image.len(), crate::completion::ENVELOPE_SIZE);
+        assert_eq!(u32::from_le_bytes(image[0..4].try_into().unwrap()), 4, "the cinematic chain: 965, 2937, 2009, 614");
+        assert_eq!(u32::from_le_bytes(image[4..8].try_into().unwrap()), 965);
+    }
+
+    /// A private slice set's current record carries the FNV basis as its hash (run awk6:
+    /// `0x11/0x811c9dc5`, The Awoken's PRV17.17) and still counts; hash 0 and the unset index-0
+    /// basis record do not.
+    #[test]
+    fn a_private_slice_set_with_the_fnv_basis_hash_is_tracked() {
+        let now = Instant::now();
+        let mut i = ActivityInstance::new(0xD1A0_0000_0000_0001, "d1ah-test", now);
+        let image = |index: u32, hash: u32| {
+            let mut b = vec![0u8; 0x220];
+            b[0xB8..0xBC].copy_from_slice(&index.to_le_bytes());
+            b[0xBC..0xC0].copy_from_slice(&hash.to_le_bytes());
+            b
+        };
+        i.track_current_slice(&image(0, 0));
+        assert_eq!(i.current_slice, None, "hash 0: absent");
+        i.track_current_slice(&image(0, 0x811C_9DC5));
+        assert_eq!(i.current_slice, None, "index 0 with the basis: the unset record");
+        i.track_current_slice(&image(0x11, 0x811C_9DC5));
+        assert_eq!(i.current_slice, Some(17), "a private slice set");
+        i.track_current_slice(&image(1, 0x811C_9DC5));
+        assert_eq!(i.current_slice, Some(1), "the teleport to slice set 1");
+        i.track_current_slice(&image(24, 0x6893_5472));
+        assert_eq!(i.current_slice, Some(24), "a named slice set, as before");
+    }
+
     /// ⭐ A teleport step asks (state 1), finishes (state 3) and drops the group slice-set request,
     /// re-publishing the membership each time.
     #[test]
@@ -2061,7 +3174,7 @@ mod tests {
         let mut steps = std::collections::HashMap::new();
         steps.insert(
             i.activity_index(),
-            vec![MissionStep { when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: Some(112), incident: None }],
+            vec![MissionStep { when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: Some(112), incident: None, complete: None, lifetime: None }],
         );
         i.set_mission_steps(steps);
         assert!(i.advance_mission(now));
@@ -2074,6 +3187,31 @@ mod tests {
         assert_eq!(req(i.membership_due(now + Duration::from_secs(21))), Some((3, 112)), "state 3 finishes");
         assert_eq!(req(i.membership_due(now + Duration::from_secs(31))), Some((0, 0)), "then the request is dropped");
         assert_eq!(i.pah_region(), Some((112, 0, 2)), "the teleport is the second transition");
+    }
+
+    /// Run fg2 (6 November): a script phase in the start slice set, while the client still loads
+    /// it, is no teleport (one de-instantiated the initial slice set and the load never ended);
+    /// another region is, and so is the start region once the client has reported a slice set.
+    #[test]
+    fn a_script_phase_in_the_loading_start_slice_set_sends_no_teleport() {
+        let (mut i, now) = instance();
+        i.set_pah_region(25, 0, 1);
+        i.set_start_region(25);
+        i.on_client_message(&join_request([0; 4]), now);
+        let _ = i.membership_due(now);
+        i.script_teleport(25, now);
+        assert_eq!(i.slice_request, None, "no request while the client loads 25");
+        assert_eq!(i.pah_region(), Some((25, 0, 1)), "the token does not move");
+        i.script_teleport(26, now);
+        assert_eq!(i.slice_request.map(|(s, r, _)| (s, r)), Some((1, 26)), "another region moves the client");
+        assert_eq!(i.pah_region(), Some((26, 0, 2)));
+        let mut image = vec![0; 0xC0];
+        image[0xB8..0xBC].copy_from_slice(&26u32.to_le_bytes());
+        image[0xBC..0xC0].copy_from_slice(&0x1AD5_E415u32.to_le_bytes());
+        i.track_current_slice(&image);
+        i.slice_request = None;
+        i.script_teleport(25, now);
+        assert_eq!(i.slice_request.map(|(s, r, _)| (s, r)), Some((1, 25)), "back to 25 once the client is in 26");
     }
 
     /// ⭐⭐ A state refresh must not re-grant indices the client already holds: its apply ORs the
@@ -2231,5 +3369,91 @@ mod tests {
         assert!(i.control_builds.is_empty());
         assert_eq!(i.sensor_payload.as_deref(), Some(&[7u8][..]), "the step's frame stays");
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// The live framing (D1_AH_SENSOR_STAMP): a 10 Hz tick from the first frame, init on every
+    /// snapshot, a stamp-only heartbeat after 3 s of silence, and a frame that cannot be stamped
+    /// left as built with a 3 s backoff. The stamp offset comes from a stub, so no eboot is needed.
+    #[test]
+    fn stamp_mode_frames_udt5_like_the_live_host() {
+        let read = |f: &[u8], off: usize, n: usize| -> u64 {
+            (0..n).fold(0, |v, i| {
+                (v << 1) | u64::from((f[(off + i) >> 3] >> (7 - ((off + i) & 7))) & 1)
+            })
+        };
+        let at9 = |_: &[u8]| Ok::<_, String>(9);
+        let ms = Duration::from_millis;
+        let t0 = Instant::now();
+        let mut s = SensorStamp::new();
+        let frame = d1_oracle::sensor::heartbeat_frame(0, 0);
+        assert!(
+            s.heartbeat_due(0, t0).is_none(),
+            "no heartbeat before the first frame"
+        );
+
+        let mut first = frame.clone();
+        s.stamp(&mut first, t0, at9).unwrap();
+        assert_eq!(
+            (read(&first, 9, 32), read(&first, 41, 1)),
+            (0, 1),
+            "tick 0, init"
+        );
+        let mut later = frame.clone();
+        s.stamp(&mut later, t0 + ms(4250), at9).unwrap();
+        assert_eq!(
+            (read(&later, 9, 32), read(&later, 41, 1)),
+            (42, 1),
+            "every snapshot: init"
+        );
+        assert_eq!(
+            read(&later, 0, 9),
+            0,
+            "gen and the authority flag untouched"
+        );
+
+        assert!(
+            s.heartbeat_due(0, t0 + ms(7000)).is_none(),
+            "2.75 s of silence"
+        );
+        let hb = s
+            .heartbeat_due(0, t0 + ms(7300))
+            .expect("3.05 s of silence");
+        assert_eq!(
+            hb,
+            d1_oracle::sensor::heartbeat_frame(0, 73),
+            "init 0, no entry"
+        );
+        assert!(
+            s.heartbeat_due(0, t0 + ms(8000)).is_none(),
+            "paced from the last"
+        );
+        let mut world = frame.clone();
+        s.stamp(&mut world, t0 + ms(20_000), at9).unwrap();
+        assert_eq!(
+            read(&world, 9, 32),
+            200,
+            "the clock runs on across world installs"
+        );
+
+        let mut broken = frame.clone();
+        let mut fresh = SensorStamp::new();
+        assert!(!fresh.backing_off(t0));
+        assert!(fresh
+            .stamp(&mut broken, t0, |_| Err("not measured".into()))
+            .is_err());
+        assert_eq!(broken, frame, "an unstampable frame is left as built");
+        assert!(
+            fresh.heartbeat_due(0, t0 + ms(5000)).is_none(),
+            "nothing was sent"
+        );
+        assert!(fresh.backing_off(t0 + ms(2900)) && !fresh.backing_off(t0 + ms(3000)));
+        let mut bad_bit = frame.clone();
+        assert!(
+            fresh
+                .stamp(&mut bad_bit, t0 + ms(3000), |_| Ok(40))
+                .is_err(),
+            "past the frame"
+        );
+        assert_eq!(bad_bit, frame);
     }
 }

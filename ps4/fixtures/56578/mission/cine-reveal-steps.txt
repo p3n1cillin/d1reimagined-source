@@ -1,0 +1,26 @@
+# Activity 165: supported portion of the reconstructed 56578 sequence, NOT retail-complete.
+# See notes/ps4-56578-fukugen-daihon-2026-11-05.md for the missing mission-phase fields and
+# activity_complete incident body. No unlicensed script text or captured incident bytes are included.
+# D1_AH_MISSION_STEPS; times start at the host's first sensor frame. The initial 60 s is an
+# operator cushion for the existing boot inputs, not a script wait or a retail loading rule.
+# index  when      group       list                     [region]
+165  0         0x4786c0e0  sensor-clients-cine_reveal-live.txt
+165  60        0x4786c0e0  cine_reveal-phase-1.txt
+165  +1        0x4786c0e0  cine_reveal-play-0.txt
+165  @891|900  0x4786c0e0  cine_reveal-move-26.txt  26
+# /6/0 finished: stop its row and request plaza state 2 (3 << 3 | 2 = 26).
+# This region request is the existing host's approximation of the mission-phase change.
+# Wait for CURRENT slice 26 before starting the reconstructed four-second sleep. The existing
+# % gate's 900 s fallback is diagnostic; it does not prove arrival if it expires.
+165  %26|900   0x4786c0e0  cine_reveal-move-26.txt
+# set_activity_complete belongs HERE, while lifetime stays at 4 and /6/1 remains idle: the 965
+# chain with one 0x80800595 body (complete=, completion.rs; the hashes from scripts/activities.txt),
+# and the store records it. Never paste a capture's wire bytes into incident=TYPE:BODYHEX.
+# next= is the Tower the client itself launches after the reveal's 8: index 1 (0xdf283afb), as in the live
+# AGR capture and run rev6b (scripts/activities.txt's 2014-table value is index 0, also a Tower). The
+# store records the hand-off right after the completion, as the script bridge's reward step does.
+165  +4        0x4786c0e0  cine_reveal-move-26.txt  complete=0x6eaf0959:0x648999f4:0x4d78882e:0xdf617463  next=1:0xdf283afb
+# The half-second separation is an explicit diagnostic scheduling choice, not part of sleep(4).
+165  +0.5      0x4786c0e0  cine_reveal-play-1.txt
+165  @891|900  0x4786c0e0  cine_reveal-done-1.txt
+165  +1        0x4786c0e0  cine_reveal-end-1.txt

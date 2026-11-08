@@ -56,6 +56,16 @@ enum Command {
     },
     /// Print the 49 `user_defined_type` ids with their direction.
     Ids,
+    /// Check the strike, raid, arena and Crucible data (`ps4/fixtures/56578/activities`) and
+    /// print its coverage. Exit 1 if it is invalid.
+    Activities {
+        /// The activities folder (default: `$D1_ACTIVITIES_DIR`, else this checkout's fixtures).
+        #[arg(long)]
+        dir: Option<std::path::PathBuf>,
+        /// Also list every definition with what it still needs evidence for.
+        #[arg(long)]
+        verbose: bool,
+    },
 }
 
 /// The Elimination index for the selected build. 01.29's activity table has it at 407
@@ -83,8 +93,94 @@ fn main() -> anyhow::Result<()> {
             }
             Ok(())
         }
+        Command::Activities { dir, verbose } => {
+            use d1_activity_host::encounter_framework::{self as ef, ActivityLibrary};
+            let dir = dir.unwrap_or_else(ActivityLibrary::default_dir);
+            let lib = ActivityLibrary::load(&dir)?;
+            println!("{}", ef::summary(&lib));
+            if verbose {
+                for a in &lib.activities {
+                    println!("{:40} {:?} {} encounters, {:?}", a.id, a.kind, a.encounters.len(), a.evidence.kind);
+                    for n in &a.needs_evidence {
+                        println!("    needs: {n}");
+                    }
+                }
+            }
+            let problems = lib.validate();
+            for p in &problems {
+                println!("INVALID: {p}");
+            }
+            if !problems.is_empty() {
+                std::process::exit(1);
+            }
+            Ok(())
+        }
         Command::Serve { bind, ah_id, raw_struct_codec, activity } => {
             tracing_subscriber::fmt().with_env_filter("info").init();
+            // ── HOOK (stream J, activity framework) ── `D1_AH_ACTIVITY_FRAMEWORK=1` (or a folder)
+            // loads the strike/raid/arena/Crucible data and logs its coverage. Off by default;
+            // nothing on the wire changes. The script bridge and the host's event paths drive
+            // `encounter_framework::ActivityRun` / `pvp::CrucibleMatch` from here on.
+            let mut framework: Option<(d1_activity_host::encounter_framework::ActivityLibrary, std::sync::Arc<dyn d1_activity_host::checkpoints::CheckpointStore>)> = None;
+            if let Some(v) = std::env::var_os(d1_activity_host::encounter_framework::KNOB).filter(|v| !v.is_empty() && v != "0") {
+                use d1_activity_host::encounter_framework::{self as ef, ActivityLibrary};
+                let dir = if v == "1" { ActivityLibrary::default_dir() } else { std::path::PathBuf::from(v) };
+                let lib = match ActivityLibrary::load(&dir) {
+                    Ok(lib) => {
+                        tracing::info!("activity framework: {}", ef::summary(&lib));
+                        for p in lib.validate() {
+                            tracing::warn!("activity framework: {p}");
+                        }
+                        Some(lib)
+                    }
+                    Err(e) => {
+                        tracing::warn!("activity framework: {} not loaded: {e}", dir.display());
+                        None
+                    }
+                };
+                // stream O: where the framework's checkpoints and lockouts go (the responder's store).
+                let store: std::sync::Arc<dyn d1_activity_host::checkpoints::CheckpointStore> =
+                    match d1_activity_host::checkpoints::ControlFileCheckpointStore::from_env() {
+                        Some(c) => {
+                            tracing::info!(
+                                "activity framework: checkpoints and lockouts go to the player store (character {:#018x}, read back from {})",
+                                c.character(),
+                                d1_activity_host::checkpoints::state_file_for(std::path::Path::new(&std::env::var("D1_STORE_CONTROL").unwrap_or_default())).display()
+                            );
+                            std::sync::Arc::new(c)
+                        }
+                        None => {
+                            tracing::info!("activity framework: checkpoints stay in memory (no D1_STORE=1 with D1_STORE_CONTROL)");
+                            std::sync::Arc::new(d1_activity_host::checkpoints::MemoryCheckpointStore::new())
+                        }
+                    };
+                framework = lib.map(|l| (l, store));
+            }
+            // ── end HOOK ──
+            // ── stream O ── rewards across the process boundary: with D1_REWARDS=1, D1_STORE=1 and
+            // D1_STORE_CONTROL, every reward call (the script bridge's, the open world's) becomes a
+            // `grant` line in the responder's store command file (reward_forward.rs).
+            let grant_forwarder = d1_activity_host::reward_forward::GrantForwarder::from_env();
+            match &grant_forwarder {
+                Some(f) => tracing::info!("⭐ rewards: grants go to the player store through {}", f.path().display()),
+                None => tracing::info!("rewards: no grant forwarding (needs D1_REWARDS=1, D1_STORE=1 and D1_STORE_CONTROL); grants are logged only"),
+            }
+            // ── stream O2 ── the framework's runs go on the wire (activity_driver.rs): each
+            // instance starts an `ActivityRun` at the join when a definition runs the activity.
+            if let Some((lib, store)) = framework {
+                let rewards: Option<std::sync::Arc<std::sync::Mutex<dyn d1_activity_host::rewards::ActivityRewards + Send>>> =
+                    grant_forwarder.clone().map(|f| std::sync::Arc::new(std::sync::Mutex::new(f)) as _);
+                let hash_of_index = d1_activity_host::activity_driver::activity_table_from_env();
+                let defs = lib.activities.len();
+                d1_activity_host::activity_driver::Framework::install(d1_activity_host::activity_driver::Framework {
+                    lib: std::sync::Arc::new(lib),
+                    store,
+                    rewards,
+                    hash_of_index,
+                });
+                tracing::info!("⭐ activity framework: {defs} definitions drive runs on the wire (outcomes {})",
+                               if grant_forwarder.is_some() { "go to the player store" } else { "are logged" });
+            }
             if ah_id == 0 {
                 anyhow::bail!(
                     "activity-host id 0 is the `no activity host` sentinel - FUN_00594320 issues \
@@ -155,7 +251,30 @@ fn main() -> anyhow::Result<()> {
                 for a in SchemaCodec::arena_stats() {
                     tracing::info!("oracle arena {}", a.line());
                 }
-                Arc::new(SchemaCodec)
+                if d1_activity_host::native::enabled() {
+                    // ⭐ D1_RSAT_NATIVE=1: native RSAT for every schema it covers, by capability.
+                    let coverage = d1_activity_host::native::coverage();
+                    if coverage.is_empty() {
+                        tracing::warn!(
+                            "native RSAT requested ({}=1) but no native schemas for this eboot:                              every message stays on the client's codec",
+                            d1_activity_host::native::KNOB
+                        );
+                    }
+                    for (udt, enc, dec, why) in &coverage {
+                        if *enc && *dec {
+                            tracing::info!("native RSAT: udt {udt} encode+decode native");
+                        } else {
+                            tracing::info!(
+                                "native RSAT: udt {udt} encode {} decode {} - {why}",
+                                if *enc { "native" } else { "oracle" },
+                                if *dec { "native" } else { "oracle" }
+                            );
+                        }
+                    }
+                    Arc::new(d1_activity_host::native::NativeCodec) as Arc<dyn AhWireCodec>
+                } else {
+                    Arc::new(SchemaCodec)
+                }
             };
             tracing::warn!(
                 "⛔ CEILING: a stub Activity Host yields a LOADED BUT EMPTY world - no spawns, no \
@@ -503,6 +622,8 @@ fn main() -> anyhow::Result<()> {
             let mut world_table: std::collections::HashMap<u16, d1_activity_host::state::ServedWorld> = std::collections::HashMap::new();
             let mut mission_steps: std::collections::HashMap<u16, Vec<d1_activity_host::state::MissionStep>> = std::collections::HashMap::new();
             let mut control_builder: Option<d1_activity_host::state::ControlBuilder> = None;
+            let mut script_config: Option<std::sync::Arc<d1_activity_host::script_bridge::ScriptConfig>> = None;
+            let mut crucible_config: Option<std::sync::Arc<d1_activity_host::pvp_wire::CrucibleConfig>> = None; // stream R
             let sensor_payload = match std::env::var("D1_AH_SENSOR_PHASE")
                 .ok()
                 .and_then(|s| s.trim().parse::<i8>().ok())
@@ -666,9 +787,74 @@ fn main() -> anyhow::Result<()> {
                                 bubble_count: known.bubble_count,
                                 chosen: known.chosen.to_vec(),
                                 start_region,
+                                public_regions: Vec::new(),
                                 team0,
                                 team_minus1,
                             });
+                        }
+                    }
+                    // ⭐ D1_AH_WORLDS=<folder>: the generated world tables (ps4/fixtures/56578/worlds,
+                    // tools/ps4_setup/d1-world-table.py), a world for every activity the content and
+                    // captures bind. Rows from D1_AH_WORLD_TABLE win. D1_AH_WORLDS_ACTIVITIES=164,165
+                    // limits the activities (each distinct world/start costs two frame builds at
+                    // startup; `all` or unset = every activity with a world, tests/all_worlds.rs
+                    // measures that cost); D1_AH_WORLDS_PRIVATE_START=1 serves a public start slice set's world
+                    // from its first private slice set (a public region needs a public session).
+                    if let Ok(dir) = std::env::var("D1_AH_WORLDS") {
+                        let generated = d1_activity_host::generated::GeneratedWorlds::load(std::path::Path::new(&dir))
+                            .map_err(|e| anyhow::anyhow!("D1_AH_WORLDS {dir}: {e:#}"))?;
+                        let only: Option<Vec<u16>> = std::env::var("D1_AH_WORLDS_ACTIVITIES")
+                            .ok()
+                            .and_then(|v| d1_activity_host::generated::parse_activities(&v));
+                        let private_start = std::env::var("D1_AH_WORLDS_PRIVATE_START").is_ok_and(|v| v == "1");
+                        let (plans, skipped) = generated.plans(only.as_deref(), private_start);
+                        let mut frames: std::collections::HashMap<(String, u32, u32), (Vec<u8>, Vec<u8>)> =
+                            std::collections::HashMap::new();
+                        let mut added = 0usize;
+                        for p in plans {
+                            if world_table.contains_key(&p.index) {
+                                continue;
+                            }
+                            if let Some(k) = d1_activity_host::worlds::lookup(&p.world.name) {
+                                if (k.checksum, k.bubble_count) != (p.world.checksum, p.world.bubble_count) {
+                                    tracing::warn!(
+                                        "⚠ D1_AH_WORLDS: {} generated checksum {:#010x}/{} bubbles, measured {:#010x}/{}",
+                                        p.world.name, p.world.checksum, p.world.bubble_count, k.checksum, k.bubble_count
+                                    );
+                                }
+                            }
+                            let key = (p.world.name.clone(), p.start_region, p.group);
+                            if !frames.contains_key(&key) {
+                                let build = |team: i32| {
+                                    let q = d1_activity_host::sensor_list::params_for_list(&params, p.group, team, &p.list)
+                                        .map_err(|e| anyhow::anyhow!("D1_AH_WORLDS activity {}: {e:#}", p.index))?;
+                                    Ok::<_, anyhow::Error>(d1_activity_host::codec::SchemaCodec::build_sensor(&q)?)
+                                };
+                                let built = (build(0)?, build(-1)?);
+                                frames.insert(key.clone(), built);
+                            }
+                            let (team0, team_minus1) = frames[&key].clone();
+                            world_table.insert(p.index, d1_activity_host::state::ServedWorld {
+                                name: p.world.name.clone(),
+                                checksum: p.world.checksum,
+                                bubble_count: p.world.bubble_count,
+                                chosen: p.world.chosen.clone(),
+                                start_region: Some(p.start_region),
+                                public_regions: generated.public_slice_sets(&p.world.name),
+                                team0,
+                                team_minus1,
+                            });
+                            added += 1;
+                        }
+                        tracing::info!(
+                            "⭐ D1_AH_WORLDS {dir}: {added} activities served from generated worlds ({} distinct frames), {} without one",
+                            frames.len(),
+                            skipped.len()
+                        );
+                        if only.is_some() {
+                            for (i, why) in &skipped {
+                                tracing::warn!("⚠ D1_AH_WORLDS: activity {i} not served: {why}");
+                            }
                         }
                     }
                     // ⭐ D1_AH_MISSION_STEPS=<file>: `activity_index when sensor_group sensor_file
@@ -680,14 +866,27 @@ fn main() -> anyhow::Result<()> {
                             .map_err(|e| anyhow::anyhow!("D1_AH_MISSION_STEPS {path}: {e}"))?;
                         for line in text.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()) {
                             let f: Vec<&str> = line.split_whitespace().collect();
-                            if !(4..=6).contains(&f.len()) {
-                                anyhow::bail!("D1_AH_MISSION_STEPS line {line:?}: want `index seconds sensor_group sensor_file [region] [incident=TYPE:BODYHEX]`");
+                            if !(4..=8).contains(&f.len()) {
+                                anyhow::bail!("D1_AH_MISSION_STEPS line {line:?}: want `index seconds sensor_group sensor_file [region] [incident=TYPE:BODYHEX] [complete=HASH:TYPE:TYPE2:PLACE[:gameplay] [next=INDEX:HASH]]`");
                             }
                             // ⭐ incident=TYPE:BODYHEX: a host incident sent when the step fires.
                             let mut incident = None;
+                            // ⭐ complete=HASH:TYPE:TYPE2:PLACE[:gameplay]: the activity_complete
+                            // chain and body (completion.rs) sent when the step fires, the hashes
+                            // as the script bridge's activity table gives them.
+                            let mut complete = None;
+                            // ⭐ next=INDEX:HASH: the activity the completion hands off to (the
+                            // store's `handoff`), as the activity table's next column names it.
+                            let mut next = None;
                             let mut rest: Vec<&str> = Vec::new();
                             for t in &f[4..] {
-                                if let Some(v) = t.strip_prefix("incident=") {
+                                if let Some(v) = t.strip_prefix("next=") {
+                                    next = Some(d1_activity_host::state::StepCompletion::parse_next(v)
+                                        .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad next {v:?} (want INDEX:HASH)"))?);
+                                } else if let Some(v) = t.strip_prefix("complete=") {
+                                    complete = Some(d1_activity_host::state::StepCompletion::parse(v)
+                                        .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad complete {v:?} (want HASH:TYPE:TYPE2:PLACE[:gameplay])"))?);
+                                } else if let Some(v) = t.strip_prefix("incident=") {
                                     let (ty, hex) = v.split_once(':')
                                         .ok_or_else(|| anyhow::anyhow!("D1_AH_MISSION_STEPS: bad incident {v:?} (want TYPE:BODYHEX)"))?;
                                     let body = (0..hex.len()).step_by(2)
@@ -698,6 +897,13 @@ fn main() -> anyhow::Result<()> {
                                 } else {
                                     rest.push(t);
                                 }
+                            }
+                            if next.is_some() && complete.is_none() {
+                                anyhow::bail!("D1_AH_MISSION_STEPS line {line:?}: next= hands off a completion; the step needs complete=");
+                            }
+                            if let (Some(c), Some(n)) = (complete.as_mut(), next) {
+                                let c: &mut d1_activity_host::state::StepCompletion = c;
+                                c.next = Some(n);
                             }
                             let index: u16 = f[0].parse()?;
                             let when = d1_activity_host::state::StepWhen::parse(f[1])
@@ -729,7 +935,44 @@ fn main() -> anyhow::Result<()> {
                                 team_minus1,
                                 region,
                                 incident,
+                                complete,
+                                lifetime: d1_activity_host::sensor_list::listed_phase(&list),
                             });
+                        }
+                    }
+                    // ⭐ D1_AH_SCRIPTS=1 (script_bridge.rs): the activities in D1_AH_SCRIPTS_ACTIVITIES
+                    // are driven by their own mission scripts through the sidecar. Off by default.
+                    script_config = d1_activity_host::script_bridge::ScriptConfig::from_env(&params)
+                        .map_err(|e| anyhow::anyhow!("{e}"))?
+                        .map(|mut c| {
+                            // stream O: the bridge's end-of-activity grants go to the store.
+                            if let Some(f) = grant_forwarder.clone() {
+                                c.rewards = std::sync::Arc::new(std::sync::Mutex::new(f));
+                            }
+                            std::sync::Arc::new(c)
+                        });
+                    if let Some(c) = &script_config {
+                        tracing::info!("⭐ D1_AH_SCRIPTS=1 - scripted activities {c:?}");
+                    }
+                    // ── stream R hook ── D1_AH_CRUCIBLE=1 (pvp_wire.rs): Crucible matches driven by
+                    // the clients' own reports, on each client's udt 5. Off by default.
+                    if d1_activity_host::pvp_driver::enabled() {
+                        let dir = match std::env::var_os(d1_activity_host::encounter_framework::KNOB) {
+                            Some(v) if !v.is_empty() && v != "0" && v != "1" => std::path::PathBuf::from(v),
+                            _ => d1_activity_host::encounter_framework::ActivityLibrary::default_dir(),
+                        };
+                        let path = dir.join("crucible.json");
+                        let data: d1_activity_host::pvp::CrucibleData = serde_json::from_str(
+                            &std::fs::read_to_string(&path).map_err(|e| anyhow::anyhow!("D1_AH_CRUCIBLE {}: {e}", path.display()))?,
+                        )
+                        .map_err(|e| anyhow::anyhow!("D1_AH_CRUCIBLE {}: {e}", path.display()))?;
+                        let rewards: Option<std::sync::Arc<std::sync::Mutex<dyn d1_activity_host::rewards::ActivityRewards + Send>>> =
+                            grant_forwarder.clone().map(|f| std::sync::Arc::new(std::sync::Mutex::new(f)) as _);
+                        crucible_config = d1_activity_host::pvp_wire::CrucibleConfig::from_env(&params, std::sync::Arc::new(data), rewards)
+                            .map_err(|e| anyhow::anyhow!("D1_AH_CRUCIBLE: {e}"))?
+                            .map(std::sync::Arc::new);
+                        if let Some(c) = &crucible_config {
+                            tracing::info!("⭐ D1_AH_CRUCIBLE=1 - Crucible matches on the wire {c:?}");
                         }
                     }
                     // `clients GROUP PATH` control lines (D1_AH_CONTROL_FILE) build a frame the way a
@@ -789,6 +1032,8 @@ fn main() -> anyhow::Result<()> {
             // ⭐ D1_AH_ACTIVITY_FOLLOW_FILE + D1_AH_ACTIVITY_TABLE: publish the activity the client
             // launched (the responder writes its hash from the kind-4 matchmaking key) instead of a
             // fixed index. The table is `index<TAB>hash` per row (`d1-activitytable.py`).
+            // The launched hashes D1_AH_ACTIVITY_REMAP publishes as another activity (run fg2i).
+            let mut remapped_hashes: std::collections::HashSet<u32> = std::collections::HashSet::new();
             let activity_follow: Option<(std::path::PathBuf, std::collections::HashMap<u32, u16>)> =
                 match (
                     std::env::var("D1_AH_ACTIVITY_FOLLOW_FILE").ok().filter(|s| !s.is_empty()),
@@ -819,8 +1064,9 @@ fn main() -> anyhow::Result<()> {
                                     anyhow::anyhow!("D1_AH_ACTIVITY_REMAP: '{pair}' is not from:to")
                                 })?;
                                 let (from, to) = (from.trim().parse::<u16>()?, to.trim().parse::<u16>()?);
-                                for index in map.values_mut().filter(|v| **v == from) {
+                                for (hash, index) in map.iter_mut().filter(|(_, v)| **v == from) {
                                     *index = to;
+                                    remapped_hashes.insert(*hash);
                                 }
                                 tracing::warn!("⭐ activity follow: launched index {from} is published as {to} (D1_AH_ACTIVITY_REMAP)");
                             }
@@ -835,6 +1081,78 @@ fn main() -> anyhow::Result<()> {
                     _ => anyhow::bail!("D1_AH_ACTIVITY_FOLLOW_FILE and D1_AH_ACTIVITY_TABLE go together"),
                 };
 
+            // ── stream G ── D1_AH_PUBLIC_HOST=1: serve a connection whose join names a mission host
+            // as that public region's own host (d1_activity_host::public_host), with the region
+            // lists in D1_AH_PUBLIC_TABLE (default ps4/fixtures/56578/public/public-table.txt).
+            // Off by default. Each connection must present its own id (D1_AH_DISTINCT_HOST_IDS=1).
+            let public_host = if std::env::var("D1_AH_PUBLIC_HOST").is_ok_and(|v| v.trim() == "1") {
+                let table = std::env::var("D1_AH_PUBLIC_TABLE")
+                    .unwrap_or_else(|_| "ps4/fixtures/56578/public/public-table.txt".to_string());
+                let lists = d1_activity_host::public_host::load_public_table(std::path::Path::new(&table))
+                    .map_err(|e| anyhow::anyhow!("D1_AH_PUBLIC_TABLE: {e}"))?;
+                // stream O: #319's entry-only frame (gen, no authority, init, the entries) through this
+                // host's wire codec (d1-rsat under D1_RSAT_NATIVE=1, the client's own otherwise).
+                let gen = std::env::var("D1_AH_SENSOR_GEN").ok().and_then(&parse_u32).unwrap_or(0) as u8;
+                let started = Instant::now();
+                let frames = d1_activity_host::public_host::PublicHost::build_frames(
+                    &lists,
+                    &d1_activity_host::public_host::entry_frame_encoder(codec.clone(), gen),
+                );
+                tracing::info!("public lists encoded as entry-only frames (gen {gen}) in {:?}", started.elapsed());
+                let built = frames.values().filter(|f| f.is_ok()).count();
+                tracing::info!("⭐ D1_AH_PUBLIC_HOST=1 - {} public lists from {table}, {built} frame(s) built", lists.len());
+                if let Some(Err(e)) = frames.values().find(|f| f.is_err()) {
+                    tracing::warn!("⚠ public lists not servable yet: {e}");
+                }
+                if !std::env::var("D1_AH_DISTINCT_HOST_IDS").is_ok_and(|v| v == "1") {
+                    tracing::warn!("⚠ D1_AH_PUBLIC_HOST=1 without D1_AH_DISTINCT_HOST_IDS=1: every connection presents the mission host's id");
+                }
+                // The open world (events, loot, patrol, social spaces). stream O: with D1_AH_SCRIPTS=1
+                // its bundles go to the script bridge (#319's BubbleScriptBridge), else the pending
+                // stand-in (refuses, so no event starts); its rewards go to the store when the
+                // forwarder is on, else they are logged.
+                let bridge: std::sync::Arc<std::sync::Mutex<dyn d1_activity_host::public_events::BubbleScriptBridge + Send>> =
+                    match script_config.clone() {
+                        Some(c) => {
+                            tracing::info!("⭐ public instances: bundles go to the script bridge (D1_AH_SCRIPTS=1)");
+                            std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::script_bridge::ScriptBridge::new(c)))
+                        }
+                        None => std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::public_events::PendingBridge)),
+                    };
+                let rewards: std::sync::Arc<std::sync::Mutex<dyn d1_activity_host::open_world::ActivityRewards + Send>> =
+                    match grant_forwarder.clone() {
+                        Some(f) => std::sync::Arc::new(std::sync::Mutex::new(f)),
+                        None => std::sync::Arc::new(std::sync::Mutex::new(d1_activity_host::open_world::LoggedRewards)),
+                    };
+                let services = d1_activity_host::public_host::OpenWorldServices { bridge, rewards };
+                // stream O: a public instance publishes its world's PUBLIC checksum (D1_AH_WORLDS).
+                let public_checksums = match std::env::var("D1_AH_WORLDS") {
+                    Ok(dir) => {
+                        let c = d1_activity_host::generated::read_public_checksums(std::path::Path::new(&dir))
+                            .map_err(|e| anyhow::anyhow!("D1_AH_WORLDS {dir}: {e:#}"))?;
+                        tracing::info!("⭐ public instances: {} worlds' PUBLIC checksums from {dir}", c.len());
+                        c
+                    }
+                    Err(_) => {
+                        tracing::info!("public instances: no D1_AH_WORLDS, so a public instance publishes the mission's checksum");
+                        std::collections::HashMap::new()
+                    }
+                };
+                Some(
+                    d1_activity_host::public_host::PublicHost::new(
+                        std::sync::Arc::new(frames),
+                        std::sync::Arc::new(std::sync::Mutex::new(
+                            d1_activity_host::public_registry::PublicRegistry::new(ah_id.wrapping_add(0x1000)),
+                        )),
+                    )
+                    .with_open_world(&lists, services)
+                    .with_public_checksums(public_checksums)
+                    // F32: each joining client's own frame (the join grant, its player record).
+                    .with_personal_frames(&lists, d1_activity_host::public_host::personal_frame_encoder(codec.clone(), gen)),
+                )
+            } else {
+                None
+            };
             let session_id = format!("d1ah-{ah_id:016x}");
             let rt = tokio::runtime::Builder::new_multi_thread().enable_all().build()?;
             rt.block_on(serve(
@@ -845,6 +1163,7 @@ fn main() -> anyhow::Result<()> {
                     i.set_activity_index(activity_index);
                     if let Some((file, map)) = activity_follow.clone() {
                         i.set_activity_follow(file, map);
+                        i.set_activity_remaps(remapped_hashes.clone());
                     }
                     i.set_activity_checksum(activity_checksum);
                     i.set_bubble_count(bubble_count);
@@ -887,11 +1206,32 @@ fn main() -> anyhow::Result<()> {
                         if let Some(s) = sensor_repeat_s {
                             i.set_sensor_repeat(std::time::Duration::from_secs(s));
                         }
+                        // ⭐ D1_AH_SENSOR_STAMP=1: the live hosts' udt 5 framing - a 10 Hz stamp
+                        // on every frame, init only on a world's full list, 3 s heartbeats
+                        // (state::SensorStamp; notes/d1-live-speaker-timeline-2026-11-05.md).
+                        if std::env::var("D1_AH_SENSOR_STAMP").is_ok_and(|v| v.trim() == "1") {
+                            tracing::info!("⭐ D1_AH_SENSOR_STAMP=1 - udt 5 stamped at 10 Hz, init on full lists, 3 s heartbeats");
+                            i.set_sensor_stamp();
+                        }
                         if let Some((path, frames)) = sensor_phase_file.clone() {
                             i.set_sensor_phase_file(path, frames);
                         }
+                        // D1_AH_SCRIPTS hook (script_bridge.rs).
+                        if let Some(c) = script_config.clone() {
+                            i.set_script_bridge(c);
+                        }
+                        // ── stream R hook ── D1_AH_CRUCIBLE (pvp_wire.rs).
+                        if let Some(c) = crucible_config.clone() {
+                            i.set_crucible(c);
+                        }
                     }
                     i.set_host_heartbeat(std::time::Duration::from_millis(heartbeat_ms));
+                    // D1_AH_SLOT_HANDOVER=1: answer the client's entity-slot abandon (udt 25)
+                    // and purge request (26) with 23 and 24, as the live host did.
+                    i.set_slot_handover(std::env::var("D1_AH_SLOT_HANDOVER").is_ok_and(|v| v == "1"));
+                    if let Some(p) = public_host.clone() {
+                        i.set_public_host(p); // ── stream G ──
+                    }
                     i
                 },
                 codec,
