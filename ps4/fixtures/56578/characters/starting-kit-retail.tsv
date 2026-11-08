@@ -1,0 +1,20 @@
+# The armour and Ghost a new Guardian was granted at creation, for D1_STARTING_KIT=<this file>
+# (d1-responder character_create::parse_kit; player_store::class_kit takes the helmet, gauntlets,
+# chest, legs, class item and Ghost buckets). class  bucket:content,...  (56578 content indices)
+#
+# Source, Warlock (class 2): the live A Guardian Rises capture (27 October 2026) is a brand-new
+# character. After its 501 create, the server's QueueZ push granted Voidwalker 713 and Sunsinger 712,
+# Born Spark 392 / 386 / 388 / 394 and Potential Bond 390, the Generalist Shell 862 and the emblem
+# 829, among 12 items (51539 content indices name the same items in 56578: these are content-table
+# rows, not build-specific). The content's first default-gear list (starting-kit.tsv, the preload
+# list) names the other variant of each armour piece (385 / 387 / 389 / 391 / 393, same names and
+# tier). Retail granted the even-numbered set.
+# Titan (0) and Hunter (1): the same pairing, inferred. Each class's list has the matching pairs
+# (Lightmail 197/198..205/206, Mark of the Risen 201/202; Prototype 0.9 9/10..17/18, Makeshift
+# Scarf 13/14); the even variant is taken as the Warlock capture shows. No capture of their creation.
+# Not here: the second subclass (Sunsinger for the Warlock: a new item, not a content swap), the
+# Default Shader 3440, and the capture's High Five 4470 and "Controversial Remains" 5981 (those two
+# read as account rewards).
+0	08:198,09:200,0b:202,07:204,0a:206,0e:862
+1	08:10,09:12,0b:14,07:16,0a:18,0e:862
+2	08:386,09:388,0b:390,07:392,0a:394,0e:862
