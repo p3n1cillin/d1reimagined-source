@@ -708,14 +708,15 @@ impl RowEncoders {
                     let revision = d.get("revision").and_then(Value::as_u64).unwrap_or(1) as u32;
                     if image.len() >= DEVICE_COMMAND_END {
                         put_u32(&mut image, 4, revision);
-                        put_u32(&mut image, 0x20, 1);
-                        put_u32(&mut image, 0x30, TAG_DEVICE_COMMAND);
-                        for c in 0..3 {
-                            let at = 0x40 + 0xC * c;
-                            put_u32(&mut image, at, revision);
-                            put_u32(&mut image, at + 4, position.round() as i32 as u32);
-                            image[at + 8..at + 12].copy_from_slice(&(position as f32).to_le_bytes());
-                        }
+                        // 8 November (F52's reading of the live 2017 capture with its own layout):
+                        // the live host's set_device_position(1) on o_breach_control and the gating
+                        // lights changed only channel 2 (the position), to (1, 0, 1.0); the others
+                        // stayed at rest (0, 0, 1.0), (0, 0, 0). The 01.24 reference's (1, 1, 1.0)
+                        // on every channel also set `b`, which makes the client snap the device
+                        // instead of animating it (0x5d33a0).
+                        let mut channels = DEVICE_AT_REST;
+                        channels[2] = (revision as i32, 0, position as f32);
+                        set_device_command(&mut image, channels);
                     }
                 } else if object_empty_command() && image.len() >= 0x34 && u32_at(&image, 0x20) == Some(0) {
                     // F52 (A/B, D1_AH_OBJECT_EMPTY_COMMAND=1): every Breach object the live host sent
@@ -1129,10 +1130,11 @@ mod tests {
 
         let ob = e.encode(RowKey { group: 1, kind: 4, index: 2 }, "object", &json!({"incarnation": 3, "present": true, "device": {"position": 1, "revision": 1}}), None, CTX, &no_map);
         assert_eq!(&image(&ob)[0..0x14], &hex("030000000100000001000000c59d1c81ff00ffff"), "the stamp at +4 (F41)");
-        // The step schedule's activation image (agr-b-activate-c.txt) from +0x20 to the third channel.
+        // The live 2017 host's command from +0x20 to the third channel: channels 0 and 1 at rest,
+        // channel 2 = (revision, 0, position).
         assert_eq!(
             &image(&ob)[0x20..0x64],
-            &hex("010000000000000000000000000000009a27808000000000000000000000000001000000010000000000803f01000000010000000000803f01000000010000000000803f")
+            &hex("010000000000000000000000000000009a27808000000000000000000000000000000000000000000000803f00000000000000000000000001000000000000000000803f")
         );
         let plain = e.encode(RowKey { group: 1, kind: 4, index: 3 }, "object", &json!({"incarnation": 1, "present": true}), None, CTX, &no_map);
         assert_eq!(&image(&plain)[0..0x0C], &hex("010000000000000001000000"), "no device, +4 stays 0");
