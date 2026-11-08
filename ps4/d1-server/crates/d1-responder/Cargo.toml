@@ -47,3 +47,6 @@ serde_json.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
+
+[dev-dependencies]
+d1-rsat = { path = "../d1-rsat" }
