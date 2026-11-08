@@ -158,6 +158,9 @@ pub struct MissionStep {
     /// bridge sends it when its scripts complete; a cinematic served by a step schedule (bridge
     /// off: The Awoken, the reveal, The Speaker) had no completion at all.
     pub complete: Option<StepCompletion>,
+    /// The lifetime phase the step's list sets (`@phase`), if any. A cinematic's 8 ends it for the
+    /// client: then the store clears the current activity (`ended`), as the script bridge does.
+    pub lifetime: Option<i8>,
 }
 
 /// The activity a step completes: its manifest hashes (as the script bridge's activity table names
@@ -166,6 +169,11 @@ pub struct MissionStep {
 pub struct StepCompletion {
     pub hashes: crate::completion::ActivityHashes,
     pub end: crate::row_encoders::EndKind,
+    /// ⭐ `next=INDEX:HASH` on the steps line: the activity the completed one hands off to, as its
+    /// row in the script bridge's activity table names it (cine_reveal 165 -> the Tower,
+    /// `0:0x8ae8da69`). The store records it (`activity_hand_off`, a `handoff` line) right after
+    /// the completion, as the script bridge's `reward` does for a scripted activity.
+    pub next: Option<(u16, u32)>,
 }
 
 impl StepCompletion {
@@ -184,7 +192,14 @@ impl StepCompletion {
         Some(Self {
             hashes: crate::completion::ActivityHashes { activity: hex(f[0])?, kind: hex(f[1])?, kind2: hex(f[2])?, place: hex(f[3])? },
             end,
+            next: None,
         })
+    }
+
+    /// `INDEX:HASH` (decimal index, hex hash): the activity a completion hands off to.
+    pub fn parse_next(v: &str) -> Option<(u16, u32)> {
+        let (index, hash) = v.split_once(':')?;
+        Some((index.parse().ok()?, u32::from_str_radix(hash.trim_start_matches("0x"), 16).ok()?))
     }
 }
 
@@ -1968,21 +1983,36 @@ impl ActivityInstance {
         crate::completion::envelope(crate::completion::chain(c.end), &e.payload, e.bits as u32)
     }
 
-    /// The store records a step's completion for the joined player, as the script bridge's
-    /// `activity_complete` does (rewards forwarder: a `completed` line in the store's command
-    /// file). Nothing when the forwarder is off (D1_REWARDS, D1_STORE, D1_STORE_CONTROL).
-    fn record_completion(&self, activity_hash: u32) {
+    /// Run `f` on the rewards forwarder for the joined player (the identity of its join
+    /// request), as the script bridge does for each player. Nothing when the forwarder is off
+    /// (D1_REWARDS, D1_STORE, D1_STORE_CONTROL) or no player has joined.
+    fn with_joined_rewards(&self, what: &str, f: impl FnOnce(&mut (dyn crate::rewards::ActivityRewards + Send), &crate::rewards::CharacterRef) -> Result<(), String>) {
         use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
         let Some(rewards) = crate::activity_driver::Framework::get().and_then(|f| f.rewards.clone()) else { return };
         let Some(id) = self.join_request_image.as_ref().and_then(|img| img.get(JOIN_REQUEST_IDENTITY..JOIN_REQUEST_IDENTITY + IDENTITY_SIZE)) else { return };
         let c = crate::rewards::CharacterRef { identity: id.to_vec() };
         let result = match rewards.lock() {
-            Ok(mut r) => r.activity_completed(&c, activity_hash),
+            Ok(mut r) => f(&mut *r, &c),
             Err(_) => return,
         };
         if let Err(e) = result {
-            tracing::warn!("completion of {activity_hash:#010x} for {c:?}: {e}");
+            tracing::warn!("{what} for {c:?}: {e}");
         }
+    }
+
+    /// The store records a step's completion for the joined player, as the script bridge's
+    /// `activity_complete` does (rewards forwarder: a `completed` line in the store's command
+    /// file).
+    fn record_completion(&self, activity_hash: u32) {
+        self.with_joined_rewards(&format!("completion of {activity_hash:#010x}"), |r, c| r.activity_completed(c, activity_hash));
+    }
+
+    /// The store records the activity a step's completion hands off to (`next=`), as the script
+    /// bridge's `reward` does: the forwarder sends a `handoff` line, and the store records the next
+    /// activity.
+    fn record_hand_off(&self, from_hash: u32, (index, hash): (u16, u32)) {
+        self.with_joined_rewards(&format!("hand-off of {from_hash:#010x} to activity {index} ({hash:#010x})"),
+                                 |r, c| r.activity_hand_off(c, from_hash, index, hash));
     }
 
     fn completion_body(&self, c: StepCompletion) -> Result<crate::completion::CompletionBody, String> {
@@ -2128,6 +2158,8 @@ impl ActivityInstance {
         let t0 = *self.mission_t0.get_or_insert(now);
         let elapsed = now.saturating_duration_since(t0);
         let i = self.mission_step.map_or(0, |s| s + 1);
+        // The activity this schedule completes, if any step does (its started/ended below).
+        let completes = steps.iter().find_map(|s| s.complete);
         let Some(step) = steps.get(i).cloned() else {
             return false;
         };
@@ -2188,8 +2220,26 @@ impl ActivityInstance {
                     );
                     self.pending_envelopes.push(image);
                     self.record_completion(c.hashes.activity);
+                    if let Some(next) = c.next {
+                        tracing::info!("⭐ mission step {i}: activity {:#010x} hands off to activity {} ({:#010x})", c.hashes.activity, next.0, next.1);
+                        self.record_hand_off(c.hashes.activity, next);
+                    }
                 }
                 Err(e) => tracing::warn!("** NAMED GATE ** mission step {i}: the completion is not sent: {e}"),
+            }
+        }
+        // As the script bridge does for a scripted activity (runs fg2j, rev5-rev6b): the store's
+        // current activity names the one a completing schedule serves from its first step
+        // (`started`: field [6], completed 0, as the live push at the join), and a cinematic's 8
+        // clears it (`ended`: `ffff`, pushed with the reply to the client's next 104).
+        if let Some(c) = completes {
+            if i == 0 {
+                tracing::info!("⭐ mission step {i}: activity {:#010x} started (the store's current activity)", c.hashes.activity);
+                self.with_joined_rewards("start", |r, who| r.activity_started(who, c.hashes.activity));
+            }
+            if step.lifetime == Some(8) && c.end == crate::row_encoders::EndKind::Cinematic {
+                tracing::info!("⭐ mission step {i}: activity {:#010x} ends at the 8 (the store clears its current activity)", c.hashes.activity);
+                self.with_joined_rewards("end", |r, who| r.activity_ended(who, c.hashes.activity));
             }
         }
         self.sensor_payload = Some(if team0 { step.team0 } else { step.team_minus1 });
@@ -2741,7 +2791,7 @@ mod tests {
             team_minus1: vec![b],
             region,
             incident: None,
-            complete: None,
+            complete: None, lifetime: None,
         };
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![step(0, 1, None), step(70, 2, None), step(120, 3, Some(112))]);
@@ -2929,7 +2979,7 @@ mod tests {
         assert_eq!(StepWhen::parse("+5"), Some(StepWhen::AfterPrevious(Duration::from_secs(5))));
         assert_eq!(StepWhen::parse("120"), Some(StepWhen::At(Duration::from_secs(120))));
         let (mut i, now) = instance();
-        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None, complete: None };
+        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None, complete: None, lifetime: None };
         let on891 = StepWhen::parse("@891|70").unwrap();
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1), step(on891.clone(), 2), step(on891, 3)]);
@@ -2966,7 +3016,7 @@ mod tests {
     fn kill_gate_holds_past_deadline_until_the_full_current_cohort_is_zero() {
         use crate::sense::{SquadCount, SenseUpdate};
         let (mut i, now) = instance();
-        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None, complete: None };
+        let step = |when, b: u8| MissionStep { when, team0: vec![b], team_minus1: vec![b], region: None, incident: None, complete: None, lifetime: None };
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![step(StepWhen::At(Duration::ZERO), 1),
             step(StepWhen::parse("!0x062dd95d:5,6|10").unwrap(), 2)]);
@@ -3019,12 +3069,15 @@ mod tests {
         assert_eq!(c.hashes.place, 0x95C1_7D0F);
         assert_eq!(StepCompletion::parse("1:2:3:4:gameplay").unwrap().end, crate::row_encoders::EndKind::Gameplay);
         assert!(StepCompletion::parse("1:2:3").is_none() && StepCompletion::parse("1:2:3:4:x").is_none());
+        assert_eq!(c.next, None);
+        assert_eq!(StepCompletion::parse_next("0:0x8ae8da69"), Some((0, 0x8AE8_DA69)), "cine_reveal's next: the Tower");
+        assert!(StepCompletion::parse_next("0").is_none() && StepCompletion::parse_next("70000:1").is_none());
 
         let (mut i, now) = instance();
         i.on_client_message(&join_request([1, 2, 3, 4]), now);
         let mut steps = std::collections::HashMap::new();
         steps.insert(i.activity_index(), vec![MissionStep {
-            when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: None, incident: None, complete: Some(c),
+            when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: None, incident: None, complete: Some(c), lifetime: None,
         }]);
         i.set_mission_steps(steps);
         let body = i.completion_body(c).expect("a joined player");
@@ -3077,7 +3130,7 @@ mod tests {
         let mut steps = std::collections::HashMap::new();
         steps.insert(
             i.activity_index(),
-            vec![MissionStep { when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: Some(112), incident: None, complete: None }],
+            vec![MissionStep { when: StepWhen::At(Duration::ZERO), team0: vec![1], team_minus1: vec![1], region: Some(112), incident: None, complete: None, lifetime: None }],
         );
         i.set_mission_steps(steps);
         assert!(i.advance_mission(now));

@@ -16,7 +16,10 @@
 # set_activity_complete belongs HERE, while lifetime stays at 4 and /6/1 remains idle: the 965
 # chain with one 0x80800595 body (complete=, completion.rs; the hashes from scripts/activities.txt),
 # and the store records it. Never paste a capture's wire bytes into incident=TYPE:BODYHEX.
-165  +4        0x4786c0e0  cine_reveal-move-26.txt  complete=0x6eaf0959:0x648999f4:0x4d78882e:0xdf617463
+# next= is the Tower the client itself launches after the reveal's 8: index 1 (0xdf283afb), as in the live
+# AGR capture and run rev6b (scripts/activities.txt's 2014-table value is index 0, also a Tower). The
+# store records the hand-off right after the completion, as the script bridge's reward step does.
+165  +4        0x4786c0e0  cine_reveal-move-26.txt  complete=0x6eaf0959:0x648999f4:0x4d78882e:0xdf617463  next=1:0xdf283afb
 # The half-second separation is an explicit diagnostic scheduling choice, not part of sleep(4).
 165  +0.5      0x4786c0e0  cine_reveal-play-1.txt
 165  @891|900  0x4786c0e0  cine_reveal-done-1.txt
