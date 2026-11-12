@@ -1271,6 +1271,7 @@ dependencies = [
  "base64",
  "clap",
  "d1-bap",
+ "d1-eboot",
  "d1-loadout",
  "d1-mp",
  "d1-rsat",
