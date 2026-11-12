@@ -440,6 +440,8 @@ pub struct RowEncoders {
     cinematics: HashMap<RowKey, (u32, bool)>,
     /// The scoreboard's player stat columns, by name hash, in column order.
     scoreboard_columns: Vec<u32>,
+    /// The wire mode an Incoming objective goes out as (`D1_AH_OBJECTIVE_INCOMING_MODE`).
+    objective_incoming_mode: u8,
     unencoded: HashSet<(String, String)>,
 }
 
@@ -451,7 +453,17 @@ impl Default for RowEncoders {
 
 impl RowEncoders {
     pub fn new() -> Self {
-        Self { cinematics: HashMap::new(), scoreboard_columns: Vec::new(), unencoded: HashSet::new() }
+        Self {
+            cinematics: HashMap::new(),
+            scoreboard_columns: Vec::new(),
+            objective_incoming_mode: objective_incoming_mode_from(std::env::var("D1_AH_OBJECTIVE_INCOMING_MODE").ok().as_deref()),
+            unencoded: HashSet::new(),
+        }
+    }
+
+    /// Override the Incoming objective mode (1 or 2); the env knob is read once in `new`.
+    pub fn set_objective_incoming_mode(&mut self, mode: Option<u8>) {
+        self.objective_incoming_mode = objective_incoming_mode_from(mode.map(|m| m.to_string()).as_deref());
     }
 
     /// The scoreboard's player stat columns, by name hash (`D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`).
@@ -650,10 +662,13 @@ impl RowEncoders {
                 // PlayerObjectiveStage: None 0, Incoming 1, Active 2, Complete 3, Failed 4.
                 // 56578 mode 1 shows the NEW MISSION banner with the title, 3 the title alone
                 // (native divide16). Incoming → 1 and Active → 3 is our reading of those; the
-                // finished stages clear the objective.
+                // finished stages clear the objective. With D1_AH_OBJECTIVE_INCOMING_MODE=2,
+                // Incoming goes out as mode 2 instead: what the live host sent on build 51539
+                // (an observation of another build, not a decoded 56578 fact): every objective
+                // went 0 → 2 → 3 → 0, 3 following 2 by 20 ticks, mode 1 never. Under test on 56578.
                 let stage = state.get("state").and_then(Value::as_u64).unwrap_or(0);
                 let mode = match stage {
-                    1 => 1u8,
+                    1 => self.objective_incoming_mode,
                     2 => 3,
                     _ => return with_a(TAG_PLAYER_OBJECTIVE, d1_oracle::sensor_objective::cleared()),
                 };
@@ -865,6 +880,19 @@ impl RowEncoders {
                 "{kind}: the 56578 layout is known (row_encoders::ROW_LAYOUTS) but not which field the script's state is"
             )),
             other => Encoded::Unsupported(format!("no 56578 field map for {other} rows yet")),
+        }
+    }
+}
+
+/// `D1_AH_OBJECTIVE_INCOMING_MODE`: unset or empty is 1 (today's behaviour), `2` is 2; any other
+/// value warns once (here, at read time) and counts as unset.
+fn objective_incoming_mode_from(v: Option<&str>) -> u8 {
+    match v.map(str::trim) {
+        None | Some("") | Some("1") => 1,
+        Some("2") => 2,
+        Some(other) => {
+            tracing::warn!("D1_AH_OBJECTIVE_INCOMING_MODE={other:?} is not 2; ignored");
+            1
         }
     }
 }
@@ -1087,6 +1115,7 @@ mod tests {
     #[test]
     fn triggers_squads_objects_and_objectives_write_only_their_mapped_fields() {
         let mut e = RowEncoders::new();
+        e.set_objective_incoming_mode(None);
         let t = e.encode(RowKey { group: 1, kind: 29, index: 34 }, "playerTrigger", &json!({"armedAt": 0x12345, "enabled": true}), None, CTX, &no_map);
         assert_eq!(image(&t), [1, 0, 0, 0, 0x45, 0x23, 0, 0]);
         let t = e.encode(RowKey { group: 1, kind: 29, index: 34 }, "playerTrigger", &json!({"armedAt": 0, "enabled": true}), None, CTX, &no_map);
@@ -1148,6 +1177,38 @@ mod tests {
         assert_eq!((image(&incoming)[0], image(&incoming)[0x40], u32_at(image(&incoming), 0x4C)), (1, 1, Some(14)));
         let done = e.encode(k, "playerObjective", &json!({"state": 3, "navPoints": []}), None, CTX, &map);
         assert_eq!(image(&done), d1_oracle::sensor_objective::cleared());
+    }
+
+    #[test]
+    fn the_incoming_objective_mode_knob_moves_only_incoming() {
+        let k = RowKey { group: 0x992B_B471, kind: 32, index: 7 };
+        let nav = json!({"state": 2, "navPoints": [{"ref": {"bundle": 0x992B, "typeId": 0x2C, "typeIndex": 52}, "x": 0, "y": 0, "z": 0}]});
+        let inc = json!({"state": 1, "navPoints": []});
+        let done = json!({"state": 3, "navPoints": []});
+        for (knob, want) in [(None, 1u8), (Some(2u8), 2), (Some(7), 1), (Some(0), 1)] {
+            let mut e = RowEncoders::new();
+            e.set_objective_incoming_mode(knob);
+            let i = e.encode(k, "playerObjective", &inc, None, CTX, &map);
+            assert_eq!(image(&i)[0], want, "knob {knob:?}");
+            let a = e.encode(k, "playerObjective", &nav, None, CTX, &map);
+            assert_eq!(image(&a)[0], 3, "knob {knob:?}: Active stays 3");
+            let d = e.encode(k, "playerObjective", &done, None, CTX, &map);
+            assert_eq!(image(&d), d1_oracle::sensor_objective::cleared());
+        }
+        // With a nav point the two images differ only in the mode byte.
+        let inc_nav = json!({"state": 1, "navPoints": [{"ref": {"bundle": 0x992B, "typeId": 0x2C, "typeIndex": 52}, "x": 0, "y": 0, "z": 0}]});
+        let mut one = RowEncoders::new();
+        one.set_objective_incoming_mode(None);
+        let mut two = RowEncoders::new();
+        two.set_objective_incoming_mode(Some(2));
+        let i1 = image(&one.encode(k, "playerObjective", &inc_nav, None, CTX, &map)).to_vec();
+        let i2 = image(&two.encode(k, "playerObjective", &inc_nav, None, CTX, &map)).to_vec();
+        assert_eq!((i1[0], i2[0]), (1, 2));
+        assert_eq!(i1[1..], i2[1..], "only byte 0 differs");
+        assert_eq!(objective_incoming_mode_from(Some("x")), 1);
+        assert_eq!(objective_incoming_mode_from(Some("7")), 1);
+        assert_eq!(objective_incoming_mode_from(Some("")), 1);
+        assert_eq!(objective_incoming_mode_from(Some(" 2 ")), 2);
     }
 
     #[test]
