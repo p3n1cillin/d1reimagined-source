@@ -174,6 +174,7 @@ fn run(index: u16, segments: &[Vec<SidecarMsg>], secs: u32) -> Run {
         arrival_cushion: Duration::ZERO,
         list_retry: None,
         world_loot: Vec::new(),
+        device_rules: Vec::new(),
     };
     let sent = Arc::new(Mutex::new(Vec::new()));
     let (s, segs) = (sent.clone(), segments.to_vec());

@@ -83,6 +83,7 @@ fn script_config() -> Arc<ScriptConfig> {
         arrival_cushion: std::time::Duration::ZERO,
         list_retry: None,
         world_loot: Vec::new(),
+        device_rules: Vec::new(),
     })
 }
 
