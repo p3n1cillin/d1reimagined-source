@@ -54,6 +54,7 @@ use clap::Parser;
 use serde_json::json;
 use tracing::{info, warn};
 
+mod account_user_data; // D1_ACCOUNT_USER_DATA: investment 701's account data, kept and served back
 mod player_store;
 mod progression;
 mod vendor;
@@ -1856,7 +1857,8 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                                 // file cannot follow.
                                                                                 let account = player_store::view(|s| s.record.account.payload.clone())
                                                                                     .unwrap_or_else(|| std::env::var("D1_ACCOUNT_FILE").ok().and_then(|p| std::fs::read(&p).ok()))
-                                                                                    .filter(|_| prof != 0);
+                                                                                    .filter(|_| prof != 0)
+                                                                                    .map(account_user_data::serve); // D1_ACCOUNT_USER_DATA
                                                                                 match account {
                                                                                     Some(a) => {
                                                                                         warn!("      ⭐ account from {} ({} B, oracle-encoded full object)",
@@ -2343,6 +2345,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_CHARACTER_FILE", "<unset>", "oracle-encoded character object"),
     ("D1_ACCOUNT_RSAT", "<unset>", "account payload override - profile NOT sent"),
     ("D1_ACCOUNT_FILE", "<unset>", "oracle-encoded account object, served with D1_PROFILE_FILE (e.g. currencies in field [6])"),
+    ("D1_ACCOUNT_USER_DATA", "<unset>", "1 = keep the account user data the client saves with investment 701 (the Settings choices; player store or session memory) and serve it back in the account's field [5] at sign-in and on account pushes. Needs D1_EBOOT. Unset/0 = off, as before"),
     ("D1_ORBIT_DESTINATION", "2468353467", "last_orbited_destination; 0 = unset"),
     ("D1_PUSH_CHARACTER", "1", "push the character family at the trigger"),
     ("D1_PUSH_AT", "relay", "push trigger: relay | investment | echo"),
@@ -3719,6 +3722,9 @@ async fn main() -> Result<()> {
                                                                               b.iter().map(|x| format!("{x:02x}")).collect::<String>());
                                                                         Some(b)
                                                                     } else if id == 701 {
+                                                                        // D1_ACCOUNT_USER_DATA: keep the account user data this
+                                                                        // request carries; the response below is unchanged.
+                                                                        account_user_data::note_701(plain.get(6..).unwrap_or(&[]));
                                                                         // 701's response schema 0x8080189B is the SAME
                                                                         // one-composite shape as 504's, so the client's own
                                                                         // encoder emits the same argument bitstream.
@@ -4855,6 +4861,7 @@ async fn main() -> Result<()> {
                                                                 if let Some(path) = player_store::account_push_file() { // stream O3: this player's own file
                                                                     if let Ok(payload) = std::fs::read(&path) {
                                                                         let _ = std::fs::rename(&path, path.with_extension("sent"));
+                                                                        let payload = account_user_data::serve(payload); // D1_ACCOUNT_USER_DATA
                                                                         let version = family4_version.unwrap_or(0).wrapping_add(1);
                                                                         let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
                                                                         let b = d1_bap::loot::account_delta(acct, version, &payload);

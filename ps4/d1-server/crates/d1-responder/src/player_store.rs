@@ -107,6 +107,14 @@ pub struct Account {
     pub grimoire: BTreeMap<u32, u32>,
     #[serde(default)]
     pub attributes: BTreeMap<String, Value>,
+    /// `D1_ACCOUNT_USER_DATA`: the client's account user data as it last saved it with investment
+    /// message 701 (the 1,088-byte image of `0x80801716`, account field [5]), served back at the next
+    /// sign-in. Opaque: the server reads none of it.
+    #[serde(default, with = "b64::opt")]
+    pub account_user_data: Option<Vec<u8>>,
+    /// When `account_user_data` last changed (unix seconds).
+    #[serde(default)]
+    pub account_user_data_at: u64,
 }
 
 /// A vendor refund record (account field [20]; vendor.rs builds the object from these).
@@ -1712,6 +1720,27 @@ pub fn push_account(what: &str) -> anyhow::Result<()> {
     s.save(&format!("{what}: account pushed"))
 }
 
+/// `D1_ACCOUNT_USER_DATA`: keep the client's account user data (investment 701) in the current
+/// player's record, replacing any earlier one, and save when it changed. False when the store is off.
+pub fn set_account_user_data(image: &[u8]) -> bool {
+    let mut kept = false;
+    with("account user data", |s| {
+        kept = true;
+        if s.record.account.account_user_data.as_deref() != Some(image) {
+            s.record.account.account_user_data = Some(image.to_vec());
+            s.record.account.account_user_data_at = unix_now();
+            s.save(&format!("account user data ({} B)", image.len()))?;
+        }
+        Ok(Vec::new())
+    });
+    kept
+}
+
+/// The account user data the current player's record keeps (None: the store is off, or none yet).
+pub fn account_user_data() -> Option<Vec<u8>> {
+    view(|s| s.record.account.account_user_data.clone()).flatten()
+}
+
 /// Read from the store: None when it is off (the caller serves the knobs as before).
 ///
 /// Stream O3: the current player's record (`players::current`; the responder's own otherwise).
@@ -3125,6 +3154,23 @@ mod tests {
         assert_eq!(s.chr().attributes["grimoire.score"], 4200);
         assert_eq!(s.chr().items[0].attributes["kills"], 12);
         assert_eq!(s.record.account.attributes["crucible.elo"], 1200);
+    }
+
+    #[test]
+    fn account_user_data_is_kept_replaced_and_reloaded() {
+        let d = tempdir("user-data");
+        let mut s = open(&d.0, &lab_sources());
+        assert_eq!(s.record.account.account_user_data, None, "nothing until a 701 brings it");
+        s.record.account.account_user_data = Some(vec![7; 1088]);
+        s.record.account.account_user_data_at = 5;
+        s.save("user data").unwrap();
+        s.record.account.account_user_data = Some(vec![9; 1088]);
+        s.save("user data again").unwrap();
+        drop(s);
+        let s = open(&d.0, &Sources::default());
+        assert_eq!(s.record.account.account_user_data, Some(vec![9; 1088]), "the later one replaced the first");
+        let text = std::fs::read_to_string(Store::file_for(&d.0, ACCT)).unwrap();
+        assert!(text.contains("account_user_data"), "stored under its own key");
     }
 
     fn profile_object() -> Vec<u8> {
