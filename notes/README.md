@@ -34,6 +34,7 @@ is the current summary. Titles below are the notes' own.
 - [PS4 56578: the reveal hands off to the Tower; the Guardian spawns in Tower North (rev3-rev11, 8 November 2026)](ps4-56578-reveal-tower-2026-11-08.md)
 - [PS4 56578: activity options from the server, and the Ghost in the palm (F54) (8 November 2026)](ps4-56578-ghost-option-2026-11-08.md)
 - [PS4 56578: lens flares and glare stop at walls, real occlusion queries (F51) (8 November 2026)](ps4-56578-occlusion-f51-2026-11-08.md)
+- [PS4 56578: the Khvostov's sight reticle draws, masked stencil clears (F53) (12 November 2026)](ps4-56578-sight-reticle-f53-2026-11-12.md)
 - [PS4 56578: character creation from our servers (new1-new3, 7 November 2026)](ps4-56578-character-creation-2026-11-07.md)
 - [PS4 56578: orbit and the Director, driven by pad (7 November 2026)](ps4-56578-director-2026-11-07.md)
 - [PS4 56578: cinematic binding registration (5 November 2026)](ps4-56578-cine-binding-2026-11-05.md)
