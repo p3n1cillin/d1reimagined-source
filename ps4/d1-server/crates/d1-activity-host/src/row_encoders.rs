@@ -1115,6 +1115,7 @@ mod tests {
     #[test]
     fn triggers_squads_objects_and_objectives_write_only_their_mapped_fields() {
         let mut e = RowEncoders::new();
+        e.set_objective_incoming_mode(None);
         let t = e.encode(RowKey { group: 1, kind: 29, index: 34 }, "playerTrigger", &json!({"armedAt": 0x12345, "enabled": true}), None, CTX, &no_map);
         assert_eq!(image(&t), [1, 0, 0, 0, 0x45, 0x23, 0, 0]);
         let t = e.encode(RowKey { group: 1, kind: 29, index: 34 }, "playerTrigger", &json!({"armedAt": 0, "enabled": true}), None, CTX, &no_map);
@@ -1194,6 +1195,16 @@ mod tests {
             let d = e.encode(k, "playerObjective", &done, None, CTX, &map);
             assert_eq!(image(&d), d1_oracle::sensor_objective::cleared());
         }
+        // With a nav point the two images differ only in the mode byte.
+        let inc_nav = json!({"state": 1, "navPoints": [{"ref": {"bundle": 0x992B, "typeId": 0x2C, "typeIndex": 52}, "x": 0, "y": 0, "z": 0}]});
+        let mut one = RowEncoders::new();
+        one.set_objective_incoming_mode(None);
+        let mut two = RowEncoders::new();
+        two.set_objective_incoming_mode(Some(2));
+        let i1 = image(&one.encode(k, "playerObjective", &inc_nav, None, CTX, &map)).to_vec();
+        let i2 = image(&two.encode(k, "playerObjective", &inc_nav, None, CTX, &map)).to_vec();
+        assert_eq!((i1[0], i2[0]), (1, 2));
+        assert_eq!(i1[1..], i2[1..], "only byte 0 differs");
         assert_eq!(objective_incoming_mode_from(Some("x")), 1);
         assert_eq!(objective_incoming_mode_from(Some("7")), 1);
         assert_eq!(objective_incoming_mode_from(Some("")), 1);
