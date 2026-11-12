@@ -353,6 +353,7 @@ Start-only stubs (no mission scripts; they compile and load, and the host decide
 | `D1_AH_SCRIPTS_ACTIVITIES` | The bridge's table; `ps4/fixtures/56578/scripts/activities.txt` is the generated one. Rows may now say `@generated` for LIST, `world=`, `start=` and `next=I:H`. |
 | `D1_AH_WORLDS` | The world tables (default `ps4/fixtures/56578/worlds`), for `@generated` lists and the slice tables. |
 | `D1_AH_SCRIPTS_SLICE_STATES` | The slice states (default `ps4/fixtures/56578/scripts/slice-states.tsv`). |
+| `D1_AH_SCRIPTS_START_PHASE=INDEX:PHASE[,...]` | Lab: starts that activity's scripts at a later phase (`hello.phase_index`; earlier phases never run) and serves the join the phase's `regions=` entry instead of `start=` (no entry: a warning, `start=` stands). `164:5`: A Guardian Rises at the hangar. Default off. |
 | `D1_AH_SCRIPTS_ACTIVE_BUNDLES=0` | Do not switch the active bundles on slice changes. |
 
 ## How to rebuild and test

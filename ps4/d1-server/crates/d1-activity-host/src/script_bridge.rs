@@ -175,6 +175,9 @@ pub enum HostMsg {
         #[serde(skip_serializing_if = "Option::is_none")]
         incidents_path: Option<String>,
         tick_hz: u32,
+        /// `D1_AH_SCRIPTS_START_PHASE` (lab): start at this phase ordinal; omitted by default.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        phase_index: Option<u32>,
     },
     Start,
     Tick { now: u64 },
@@ -1398,6 +1401,8 @@ impl Run {
 /// One instance's bridge. See the module doc.
 pub struct ScriptBridge {
     config: Arc<ScriptConfig>,
+    /// `D1_AH_SCRIPTS_START_PHASE` (lab): activity index -> the phase its scripts start at.
+    start_phase: HashMap<u16, u32>,
     launch: Launcher,
     rows: RowTable,
     encoders: RowEncoders,
@@ -1493,6 +1498,7 @@ impl ScriptBridge {
         encoders.set_scoreboard_columns(config.scoreboard_columns.clone());
         Self {
             config,
+            start_phase: start_phase_table(),
             launch,
             rows,
             encoders,
@@ -1537,6 +1543,11 @@ impl ScriptBridge {
     /// A region the scripts' phase wants the client in (the host teleport).
     pub fn take_region_request(&mut self) -> Option<u32> {
         self.region_out.take()
+    }
+
+    /// Lab/tests: replaces the knob's table (`D1_AH_SCRIPTS_START_PHASE`).
+    pub fn set_start_phase(&mut self, table: HashMap<u16, u32>) {
+        self.start_phase = table;
     }
 
     /// The start slice set the instance serves this join (the region its membership publishes):
@@ -2057,6 +2068,7 @@ impl ScriptBridge {
                         bundles_path: run.activity.bundles_path.clone(),
                         incidents_path: self.config.incidents_path.clone(),
                         tick_hz: TICK_HZ,
+                        phase_index: self.start_phase.get(&run.activity.index).copied(),
                     };
                     match link.send(&hello) {
                         Ok(()) => {
@@ -2818,6 +2830,72 @@ pub fn unarmed_until(activity: u16) -> Option<i32> {
         .copied()
 }
 
+/// ⭐ `D1_AH_SCRIPTS_START_PHASE=INDEX:PHASE[,...]` (lab): the activities whose mission scripts start
+/// at a later phase (the sidecar's `hello.phase_index`; earlier phases never run) and the phase's
+/// ordinal. `164:5`: A Guardian Rises at its phase 5 (the hangar). Malformed entries come back in
+/// the second list and are ignored. Nothing else is invented for the skipped phases.
+pub fn parse_start_phase(text: &str) -> (HashMap<u16, u32>, Vec<String>) {
+    let (mut table, mut bad) = (HashMap::new(), Vec::new());
+    for entry in text.split(',').map(str::trim).filter(|e| !e.is_empty()) {
+        match entry.split_once(':').and_then(|(a, p)| Some((a.trim().parse::<u16>().ok()?, p.trim().parse::<u32>().ok()?))) {
+            Some((a, p)) => {
+                table.insert(a, p);
+            }
+            None => bad.push(entry.to_string()),
+        }
+    }
+    (table, bad)
+}
+
+/// The knob, read once (a warning per malformed entry).
+pub fn start_phase_table() -> HashMap<u16, u32> {
+    static TABLE: std::sync::OnceLock<HashMap<u16, u32>> = std::sync::OnceLock::new();
+    TABLE
+        .get_or_init(|| {
+            let text = std::env::var("D1_AH_SCRIPTS_START_PHASE").unwrap_or_default();
+            let (table, bad) = parse_start_phase(&text);
+            for b in bad {
+                tracing::warn!("D1_AH_SCRIPTS_START_PHASE: ignoring {b:?} (want INDEX:PHASE, e.g. 164:5)");
+            }
+            table
+        })
+        .clone()
+}
+
+impl ScriptConfig {
+    /// Lab: for each activity the knob names that this table drives, `(index, start region)`: the
+    /// region of its start phase (`regions=` in the table, else content's, as at the phase's arrival),
+    /// which the join serves instead of `start=`. `None` (and one warning) when it cannot be
+    /// determined offline: `start=` stands. Logs the start line for each.
+    pub fn start_phase_regions(&self, table: &HashMap<u16, u32>) -> Vec<(u16, Option<u32>)> {
+        let mut out = Vec::new();
+        let mut indexes: Vec<_> = table.keys().copied().collect();
+        indexes.sort_unstable();
+        for i in indexes {
+            let Some(a) = self.activities.get(&i) else { continue };
+            let phase = table[&i];
+            // Only the table's regions= is known before the sidecar has loaded the scripts (their
+            // phase names are content); the phase's own report names the region otherwise.
+            match a.regions.get(&phase).copied() {
+                Some(r) => {
+                    tracing::info!(
+                        "⭐ script bridge: {} starts at phase {phase} in region {r} (D1_AH_SCRIPTS_START_PHASE, lab)",
+                        a.activity
+                    );
+                    out.push((i, Some(r)));
+                }
+                None => {
+                    tracing::warn!(
+                        "script bridge: D1_AH_SCRIPTS_START_PHASE {i}:{phase}: no `regions=` entry for phase {phase} in the                          activity table, so the region cannot be determined before the scripts load; the join keeps `start=`"
+                    );
+                    out.push((i, None));
+                }
+            }
+        }
+        out
+    }
+}
+
 pub fn parse_unarmed_until(text: &str) -> HashMap<u16, i32> {
     text.split(',')
         .filter_map(|p| {
@@ -2903,9 +2981,53 @@ mod tests {
         );
         let hello = host_line(&HostMsg::Hello {
             proto: 1, build: "56578".into(), activity: "cine_reveal".into(),
-            bundles_path: None, incidents_path: Some("i.tsv".into()), tick_hz: TICK_HZ,
+            bundles_path: None, incidents_path: Some("i.tsv".into()), tick_hz: TICK_HZ, phase_index: None,
         });
         assert_eq!(hello, r#"{"type":"hello","proto":1,"build":"56578","activity":"cine_reveal","incidents_path":"i.tsv","tick_hz":10}"#);
+    }
+
+    #[test]
+    fn start_phase_knob_parses_and_ignores_malformed() {
+        let (t, bad) = parse_start_phase("164:5, 165:0");
+        assert_eq!((t.get(&164), t.get(&165), bad.len()), (Some(&5), Some(&0), 0));
+        for m in ["164", "x:5", "164:-1", "164:"] {
+            let (t, bad) = parse_start_phase(m);
+            assert!(t.is_empty() && bad.len() == 1, "{m:?}");
+        }
+        let (t, bad) = parse_start_phase("");
+        assert!(t.is_empty() && bad.is_empty(), "unset is silent");
+    }
+
+    #[test]
+    fn start_phase_hello_json_and_region() {
+        let hello = |p| host_line(&HostMsg::Hello {
+            proto: 1, build: "56578".into(), activity: "a".into(),
+            bundles_path: None, incidents_path: None, tick_hz: TICK_HZ, phase_index: p,
+        });
+        assert_eq!(hello(None), r#"{"type":"hello","proto":1,"build":"56578","activity":"a","tick_hz":10}"#);
+        assert_eq!(hello(Some(5)), r#"{"type":"hello","proto":1,"build":"56578","activity":"a","tick_hz":10,"phase_index":5}"#);
+
+        // Through the bridge (activity 165 here): unset and another index send none; 165:1 sends 1.
+        for (table, want) in [(vec![], None), (vec![(164u16, 5u32)], None), (vec![(165, 1)], Some(1))] {
+            let shared = Arc::new(Mutex::new(Shared::default()));
+            let mut b = bridge(&shared, false);
+            b.set_start_phase(table.into_iter().collect());
+            let mut t = Instant::now();
+            let mut wire = Vec::new();
+            b.on_client_message(&join(7), 165, HOST, t);
+            run_for(&mut b, &mut t, 0.25, &mut wire);
+            let s = shared.lock().unwrap();
+            assert!(matches!(&s.sent[0], HostMsg::Hello { phase_index, .. } if *phase_index == want), "{:?}", s.sent[0]);
+        }
+
+        // The served region: the table's regions= (cine_reveal: 0:25, 1:26). The unset knob and
+        // another activity's entry change nothing; a phase with no entry keeps start=.
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let b = bridge(&shared, false);
+        assert!(b.config.start_phase_regions(&HashMap::new()).is_empty());
+        assert!(b.config.start_phase_regions(&HashMap::from([(164, 1)])).is_empty());
+        assert_eq!(b.config.start_phase_regions(&HashMap::from([(165, 1)])), vec![(165, Some(26))]);
+        assert_eq!(b.config.start_phase_regions(&HashMap::from([(165, 9)])), vec![(165, None)]);
     }
 
     #[test]
