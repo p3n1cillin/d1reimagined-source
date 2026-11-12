@@ -17,7 +17,7 @@ microphone, no other desktop sound). Each port file is named with the wall-clock
 first sample; the ports are delayed or trimmed against the first video frame and mixed to
 stereo. Recording ends after --seconds, or earlier when --stop-file appears.
 """
-import argparse, glob, json, os, re, shutil, subprocess, sys, time
+import argparse, glob, json, os, re, shutil, subprocess, sys, threading, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import d1paths  # sibling: local paths from D1_ROOT or paths.json
@@ -171,12 +171,75 @@ def main():
             pass
 
 
+def write_t0(video, t_first, frames):
+    """Sidecar with the wall time of frame 0, so a later manual mux can use the true audio offset."""
+    try:
+        with open(video + '.t0.json', 'w') as f:
+            json.dump({'t_first': t_first, 'frames': frames}, f)
+    except OSError as e:
+        print(f't0 sidecar not written: {e}', file=sys.stderr)
+
+
+def remove_stale_video(video):
+    """A video from a previous run with the same --out must not be mistaken for this run's."""
+    for f in (video, video + '.t0.json'):
+        try:
+            os.remove(f)
+        except FileNotFoundError:
+            pass
+
+
+def drain(stream):
+    """Discard a pipe until EOF so ffmpeg can never block writing progress to it."""
+    try:
+        for _ in stream:
+            pass
+    except (OSError, ValueError):
+        pass
+
+
+def stop_ffmpeg(p):
+    """Ask ffmpeg to finish and wait for it; never raises on a dead process. True if it was still running."""
+    was_running = p.poll() is None
+    reader = None
+    stream = getattr(p, 'stdout', None)
+    if stream is not None:  # keep reading progress after the loop stopped, or a full pipe can block `q`
+        reader = threading.Thread(target=drain, args=(stream,), daemon=True)
+        reader.start()
+    if was_running:
+        try:
+            p.stdin.write('q')
+            p.stdin.flush()
+        except (OSError, ValueError):  # BrokenPipeError is an OSError; ValueError: already closed
+            pass
+    try:
+        p.stdin.close()
+    except (OSError, ValueError):
+        pass
+    try:
+        p.wait(timeout=30)
+    except subprocess.TimeoutExpired:
+        for stop, grace in ((p.terminate, 10), (p.kill, 10)):
+            try:
+                stop()
+                p.wait(timeout=grace)
+                break
+            except subprocess.TimeoutExpired:
+                continue
+            except OSError:
+                break
+    if reader is not None:
+        reader.join(timeout=5)
+    return was_running
+
+
 def record(a, video, stale):
     cmd = [FFMPEG, '-hide_banner', '-loglevel', 'error', '-y', '-filter_complex',
            f'gfxcapture=window_exe=(?i)shadPS4\\.exe:capture_cursor=0:max_framerate={a.fps},'
            'hwdownload,format=bgra,format=yuv420p',
            '-c:v', 'h264_nvenc', '-preset', 'p5', '-cq', '18', '-g', '120',
            '-progress', 'pipe:1', '-stats_period', '0.05', video]
+    remove_stale_video(video)
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
     t_first = None
     frame = 0
@@ -189,17 +252,21 @@ def record(a, video, stale):
                     # Wall time of frame 0: the progress line's arrival minus the frames already
                     # encoded (one frame-time each at the requested rate).
                     t_first = time.time() - frame / float(a.fps)
+                    write_t0(video, t_first, frame)
             if time.time() > t_end or (a.stop_file and os.path.exists(a.stop_file)):
                 break
     finally:
-        p.stdin.write('q')
-        p.stdin.flush()
-        p.wait(timeout=30)
+        if not stop_ffmpeg(p):
+            print('ffmpeg had already exited before the stop (capture window closed?); muxing what was recorded',
+                  file=sys.stderr)
+        write_t0(video, t_first, frame)
         try:  # stop the tap before muxing; main() removes it again on any other exit path
             os.remove(os.path.join(a.tap, 'rec.flag'))
         except OSError:
             pass
         time.sleep(0.5)
+    if not os.path.exists(video) or os.path.getsize(video) == 0:
+        raise SystemExit(f'no video recorded ({video} missing or empty): nothing to mux')
     ports = [f for f in sorted(glob.glob(os.path.join(a.tap, 'port*.f32'))) if f not in stale]
     inputs, chains = ['-i', video], []
     for f in ports:
