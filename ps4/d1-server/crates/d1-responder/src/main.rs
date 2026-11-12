@@ -1866,12 +1866,18 @@ fn build_family_body_inner(family: u32, acct: u64, chr: u64, probe: &str) -> Vec
                                                                                         d1_bap::queuez_family4_baseline_body_raw_account_and_profile(
                                                                                             acct, prof, &a, &raw, unlocks.as_deref(), &extras)
                                                                                     }
-                                                                                    None => d1_bap::queuez_family4_baseline_body_raw_profile_with_unlocks(
-                                                                                        acct, chars, prof, &raw, unlocks.as_deref(), &extras),
+                                                                                    None => {
+                                                                                        account_user_data::note_unserved("the sign-in without a stored or D1_ACCOUNT_FILE account payload");
+                                                                                        d1_bap::queuez_family4_baseline_body_raw_profile_with_unlocks(
+                                                                                            acct, chars, prof, &raw, unlocks.as_deref(), &extras)
+                                                                                    }
                                                                                 }
                                                                             }
-                                                                            None => d1_bap::queuez_family4_baseline_body_with_unlocks(
-                                                                                acct, chars, prof, dest, unlocks.as_deref(), &extras),
+                                                                            None => {
+                                                                                account_user_data::note_unserved("the sign-in without a profile payload");
+                                                                                d1_bap::queuez_family4_baseline_body_with_unlocks(
+                                                                                    acct, chars, prof, dest, unlocks.as_deref(), &extras)
+                                                                            }
                                                                         }
                                                                     }
                                                                 } else if family == 2 {
@@ -2345,7 +2351,7 @@ const KNOBS: &[(&str, &str, &str)] = &[
     ("D1_CHARACTER_FILE", "<unset>", "oracle-encoded character object"),
     ("D1_ACCOUNT_RSAT", "<unset>", "account payload override - profile NOT sent"),
     ("D1_ACCOUNT_FILE", "<unset>", "oracle-encoded account object, served with D1_PROFILE_FILE (e.g. currencies in field [6])"),
-    ("D1_ACCOUNT_USER_DATA", "<unset>", "1 = keep the account user data the client saves with investment 701 (the Settings choices; player store or session memory) and serve it back in the account's field [5] at sign-in and on account pushes. Needs D1_EBOOT. Unset/0 = off, as before"),
+    ("D1_ACCOUNT_USER_DATA", "<unset>", "1 = keep the account user data the client saves with investment 701 (the Settings choices; player store, else session memory per account) and serve it back in the account's field [5] at sign-in and on account pushes. Needs D1_EBOOT. Unset/0 = off, as before"),
     ("D1_ORBIT_DESTINATION", "2468353467", "last_orbited_destination; 0 = unset"),
     ("D1_PUSH_CHARACTER", "1", "push the character family at the trigger"),
     ("D1_PUSH_AT", "relay", "push trigger: relay | investment | echo"),
@@ -4861,10 +4867,12 @@ async fn main() -> Result<()> {
                                                                 if let Some(path) = player_store::account_push_file() { // stream O3: this player's own file
                                                                     if let Ok(payload) = std::fs::read(&path) {
                                                                         let _ = std::fs::rename(&path, path.with_extension("sent"));
-                                                                        let payload = account_user_data::serve(payload); // D1_ACCOUNT_USER_DATA
                                                                         let version = family4_version.unwrap_or(0).wrapping_add(1);
                                                                         let acct = env_soid("D1_ACCOUNT_SOID", 0xD100_0000_0000_0001);
-                                                                        let b = d1_bap::loot::account_delta(acct, version, &payload);
+                                                                        // D1_ACCOUNT_USER_DATA: the wire copy carries the kept user data; the store
+                                                                        // is told the payload as it was (so a later run with the knob off serves it clean).
+                                                                        let wire = account_user_data::serve(payload.clone());
+                                                                        let b = d1_bap::loot::account_delta(acct, version, &wire);
                                                                         match conv.push_with_sequence(d1_bap::TYPE_QUEUEZ_OBJECT, server_seq, &b) {
                                                                             Ok(push) => {
                                                                                 let sn = nonces.peek(d1_bap::Direction::ServerToClient);

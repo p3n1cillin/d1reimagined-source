@@ -1721,19 +1721,26 @@ pub fn push_account(what: &str) -> anyhow::Result<()> {
 }
 
 /// `D1_ACCOUNT_USER_DATA`: keep the client's account user data (investment 701) in the current
-/// player's record, replacing any earlier one, and save when it changed. False when the store is off.
+/// player's record, replacing any earlier one, and save when it changed. True when the record holds
+/// it; false when the store is off or the save failed (the record is put back, the failure logged
+/// with the account id), and the caller keeps it in memory instead.
 pub fn set_account_user_data(image: &[u8]) -> bool {
-    let mut kept = false;
-    with("account user data", |s| {
-        kept = true;
-        if s.record.account.account_user_data.as_deref() != Some(image) {
-            s.record.account.account_user_data = Some(image.to_vec());
-            s.record.account.account_user_data_at = unix_now();
-            s.save(&format!("account user data ({} B)", image.len()))?;
+    let Some(m) = current_store() else { return false };
+    let Ok(mut s) = m.lock() else { return false };
+    if s.record.account.account_user_data.as_deref() == Some(image) {
+        return true;
+    }
+    let old = (s.record.account.account_user_data.take(), s.record.account.account_user_data_at);
+    s.record.account.account_user_data = Some(image.to_vec());
+    s.record.account.account_user_data_at = unix_now();
+    match s.save(&format!("account user data ({} B)", image.len())) {
+        Ok(()) => true,
+        Err(e) => {
+            tracing::warn!("      ⛔ player store: account user data of {:#x} not saved: {e:#}", s.record.account_soid);
+            (s.record.account.account_user_data, s.record.account.account_user_data_at) = old;
+            false
         }
-        Ok(Vec::new())
-    });
-    kept
+    }
 }
 
 /// The account user data the current player's record keeps (None: the store is off, or none yet).
