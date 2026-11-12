@@ -12,6 +12,8 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
 
 import bap_server as b
 import investment
@@ -61,18 +63,23 @@ class FakeClient:
         sealed = self.tx.seal(struct.pack(">HI", b.AH_NOT, self.msg_id) + payload)
         self.sock.sendall(struct.pack(">BBI", 1, 1, len(sealed)) + sealed)
 
+    def next_push(self, timeout=0.05):
+        """Read one host notification, with a real socket timeout as a watchdog."""
+        self.sock.settimeout(timeout)
+        while True:
+            kind, body = read_frame(self.sock)
+            plain = self.rx.open(body)
+            msg_type = struct.unpack_from(">H", plain)[0]
+            if msg_type == b.BC_NOT:
+                _, _, subtype, length = struct.unpack_from(">BQII", plain, 6)
+                return time.time(), subtype, plain[6 + 17:6 + 17 + length]
+
     def pushes(self, timeout=0.05):
         """Host notifications received so far: (arrival time, subtype, data)."""
         out = []
-        self.sock.settimeout(timeout)
         try:
             while True:
-                kind, body = read_frame(self.sock)
-                plain = self.rx.open(body)
-                msg_type = struct.unpack_from(">H", plain)[0]
-                if msg_type == b.BC_NOT:
-                    _, _, subtype, length = struct.unpack_from(">BQII", plain, 6)
-                    out.append((time.time(), subtype, plain[6 + 17:6 + 17 + length]))
+                out.append(self.next_push(timeout))
         except (socket.timeout, TimeoutError):
             pass
         return out
@@ -243,24 +250,52 @@ class ActivityHostSession(unittest.TestCase):
                              {"on": {"type": "any", "object": "trig"}, "set": {"next": {"0": 9}}}]}
         path = Path(self.tmp.name) / "mission.json"
         path.write_text(json.dumps(mission), encoding="utf-8")
+        clock = SimpleNamespace(now=1024.0)
+        host_clock = mock.patch.object(b, "time", SimpleNamespace(time=lambda: clock.now))
+        host_clock.start()
+        # start() registers socket/thread cleanup after this, so they finish before unpatching.
+        self.addCleanup(host_clock.stop)
         c = self.start("--ah-heartbeat", "0.1:-1", "--ah-baselines", "0x10/3/0,0x10/3/1,0x10/3/2",
-                       "--ah-sim-clock", "100", "--ah-mission", str(path))
-        # the client reports the trigger's id (at an odd bit offset) in a type-17 message at 0.7 s
+                       "--ah-sim-clock", "100", "--ah-mission", str(path),
+                       "--ah-not-push", f"{b.AH_ESTABLISH}:")
+
+        def simulation():
+            _, subtype, data = c.next_push(timeout=2)
+            self.assertEqual(subtype, b.AH_SIMULATION)
+            # This explicit push follows heartbeat_at's update. Receiving it before advancing
+            # the clock prevents the server from scheduling the next heartbeat at our next time.
+            self.assertEqual(c.next_push(timeout=2)[1:], (b.AH_ESTABLISH, b""))
+            return objects_in(self.schema, data), host_tick(self.schema, data)
+
+        self.assertEqual(c.next_push(timeout=2)[1], b.AH_JOIN_RESPONSE)
+        _, subtype, initial = c.next_push(timeout=2)
+        self.assertEqual(subtype, b.AH_SIMULATION)
+        self.assertEqual(host_tick(self.schema, initial), 0)
+        objects = objects_in(self.schema, initial)
+        self.assertTrue(all(state is None for state in objects.values()))
+        # Finish the join's processing with the clock still frozen before advancing it.
+        c.notify(15, b"\x00")
+        self.assertEqual(c.next_push(timeout=2)[1:], (b.AH_ESTABLISH, b""))
+
+        # Traffic drives the host, but these type-15 packets must not fire the trigger rule.
+        for elapsed, expected in ((0.25, None), (0.5, {0: 50}), (1.0, {0: 50})):
+            clock.now = 1024.0 + elapsed
+            c.notify(15, b"\x00")
+            objects, tick = simulation()
+            self.assertEqual(tick, int(elapsed * 100))
+            self.assertEqual(objects[(0x10, 3, 0)], expected)
+            self.assertIsNone(objects[(0x10, 3, 1)])
+
+        # Report the trigger's id at an odd bit offset in a type-17 message.
         w = investment.BitWriter()
         w.put(1, 3)
         investment.encode_into(w, self.schema, b.OBJECT_ID_TYPE, {0: 0x10, 4: 3, 6: 2})
-        start, pushes = self.run_client(c, 1.3)  # type 15 only: must not fire the rule
+        clock.now = 1025.5
         c.notify(17, w.data())
-        more = [p for p in self.run_client(c, 0.5)[1] if p[1] == b.AH_SIMULATION]  # the loop runs on traffic
-        sims = [(t - start, objects_in(self.schema, d), host_tick(self.schema, d))
-                for t, st, d in pushes if st == b.AH_SIMULATION]
-        ticks = [tick for _, _, tick in sims]
-        self.assertEqual(ticks, sorted(ticks))
-        self.assertGreater(ticks[-1], 60)  # about 100 ticks a second since the first packet
-        stamped = [o[(0x10, 3, 0)] for t, o, _ in sims if t > 0.5]
-        self.assertTrue(stamped and 15 <= stamped[-1][0] <= 60)  # "$now" at the 0.3 s step
-        self.assertTrue(all(o[(0x10, 3, 1)] is None for _, o, _ in sims))
-        self.assertTrue(more and objects_in(self.schema, more[-1][2])[(0x10, 3, 1)] == {0: 9})
+        objects, tick = simulation()
+        self.assertEqual(tick, 150)
+        self.assertEqual(objects[(0x10, 3, 0)], {0: 50})
+        self.assertEqual(objects[(0x10, 3, 1)], {0: 9})
 
 
 if __name__ == "__main__":
