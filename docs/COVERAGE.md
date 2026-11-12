@@ -17,11 +17,8 @@ Where a system was seen in a native run before the build-out, the Tested column 
 "baseline native" and names the run. That run used the older, step-driven servers, so the new
 code path for that system has still not run.
 
-**Pending merge:** #328 (live patrol, public events and Tower captures, `captures/patrol-tower`) and
-stream O3 (`integrate/multiplayer-fixes`, in progress, not pushed). Rows that depend on them say so.
-Fork PRs #7 (draw cost) and #8 (PC client) in
-[d1reimagined-shadps4](https://github.com/p3n1cillin/d1reimagined-shadps4) are drafts, and the
-deployed emulator (98542a7, fork #6) has neither.
+**Merged since:** #328 (live patrol, public events and Tower captures) and stream O3 (#330). The lab's
+emulator is the fork's `d1` branch at 73ef311, built locally as 1ac34e4 ([account settings note](../notes/ps4-56578-account-settings-2026-11-12.md)).
 
 ## How to read it
 
@@ -48,12 +45,12 @@ deployed emulator (98542a7, fork #6) has neither.
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Emulator boot and runtime (fork `d1`) | yes | n/a | – | fork #6 (deployed 98542a7) | baseline native | Load on the host machine freezes the client (6–24 s gaps, the game's block detector; [lab stalls](../notes/ps4-56578-lab-stalls-2026-11-05.md)). Nothing heavy may run beside a test. |
-| Fatal-path stability: exception handlers, clean exit, hitch halt | yes | verified (the game's handlers and its `ud2` halt, read from the executable) | `?D1_EXCEPTION_HANDLERS=1`, `?D1_CLEAN_EXIT=1`, `?D1_HITCH_HALT=0` | fork #8 (draft) | unit | Not in the deployed emulator, so the launcher drops these knobs. Needs the boot-log lines in [the full-game test](full-game-test.md#fork-8-the-pc-client). |
+| Emulator boot and runtime (fork `d1`) | yes | n/a | – | fork #6; lab emulator 1ac34e4 (tree of fork `d1` 73ef311) | baseline native | Load on the host machine freezes the client (6–24 s gaps, the game's block detector; [lab stalls](../notes/ps4-56578-lab-stalls-2026-11-05.md)). Nothing heavy may run beside a test. |
+| Fatal-path stability: exception handlers, clean exit, hitch halt | yes | verified (the game's handlers and its `ud2` halt, read from the executable) | `?D1_EXCEPTION_HANDLERS=1`, `?D1_CLEAN_EXIT=1`, `?D1_HITCH_HALT=0` | fork #8 | unit | Not in the deployed emulator, so the launcher drops these knobs. Needs the boot-log lines in [the full-game test](full-game-test.md#fork-8-the-pc-client). |
 | Renderer fidelity | partial | n/a | – | earlier (colour-LUT cache fix) | baseline native | Characters and wider scene coverage; combined stability. |
 | Sight reticle (F53) | yes | n/a | `D1_STENCIL_CLEAR_MASK=1` (full-game; baseline off) | fork 16, #379 | native: the reticle draws when aiming (gh40, gh41, 12 Nov, fork 81edaea; [notes](../notes/ps4-56578-sight-reticle-f53-2026-11-12.md)) | The glass overlays were not checked separately. |
 | The Ghost over the palm (F54) | no | n/a | – | #383 (note only) | native: the fault is seen in gh42 to gh47 (12 Nov); **open** ([notes](../notes/ps4-56578-ghost-palm-f54-2026-11-12.md)) | Outdoors the open hand and Ghost stay until the first weapon; in the Wall the player's Ghost is drawn. Cause unknown. |
-| Per-draw CPU cost and frame rate | partial | n/a (the saving is an estimate) | `?D1_DRAW_FAST=1`, `?D1_DRAW_STATS=1`, `?D1_GPU_WAIT_YIELD=1` | fork #7 (draft), #112 | baseline native: 34–38 fps in heavy scenes; #7 unit | Estimated 5–15% of the command processor's time. Needs the A/B in [the full-game test](full-game-test.md#fork-7-the-draw-path). |
+| Per-draw CPU cost and frame rate | partial | n/a (the saving is an estimate) | `?D1_DRAW_FAST=1`, `?D1_DRAW_STATS=1`, `?D1_GPU_WAIT_YIELD=1` | fork #7, #112 | baseline native: 34–38 fps in heavy scenes; #7 unit | Estimated 5–15% of the command processor's time. Needs the A/B in [the full-game test](full-game-test.md#fork-7-the-draw-path). |
 | Frame-rate targets and resolution (native Settings → Display) | yes | verified (the game's own settings screen) | lab-base | fork #6 | baseline native ([settings](../notes/ps4-56578-native-video-settings-2026-11-03.md), [rates](../notes/ps4-56578-frame-rate-2026-11-02.md)) | The added labels are English only. A no-jump ledge drop and other weapons' cadence are unchecked. |
 | One-command full-game launcher and profiles | yes | n/a | the profile | #320, #323, #327 | unit (profile tests, dry run) | Never launched for a full run. |
 | An installable release | no | – | – | – | none | Contributors supply their own build and inputs. |
@@ -78,7 +75,7 @@ deployed emulator (98542a7, fork #6) has neither.
 | Missions driven by step schedules (the earlier route) | partial (164, 165, 167 and 186) | capture and memory reads | lab-base (`D1_AH_MISSION_STEPS`) | earlier | baseline native (sense116: all of A Guardian Rises; cine-live13: 165); native (spk3, spk7: 167; awk5: 186, 7 Nov; [Speaker](../notes/ps4-56578-speaker-2026-11-07.md), [Awoken](../notes/ps4-56578-awoken-2026-11-07.md)) | Perching Fallen, the Ghost's performances and dialogue fidelity; some cutscenes skipped. |
 | Completion and post-game (965, lifetime 6 → 7/8, reward screens) | partial | verified (965 body decoded, #318); capture (lifetime order); placeholder (A Guardian Rises' 900 XP, the counters and session id) | `D1_REWARDS=1`, `D1_STORE=1` | #318, #324, #327 | baseline native (AGR post-game, [29 Oct](../notes/ps4-56578-postgame-2026-10-29.md)); scripted path unit | The scripted grant now runs the store's completion (review 6, fixed in #327), unseen. `D1_AH_SCRIPTS_MISSION_PHASE` stays off (meaning unknown). |
 | Enemies and squads | partial | verified (squad states, cells) | lab-base; script bridge | earlier, #324 | baseline native (the Breach's waves) | Combat runs on the clients. Squad task and roster fields have no map. |
-| Objective banners (NEW MISSION repeats) | yes | capture (build 51539 traffic) | `D1_AH_OBJECTIVE_INCOMING_MODE=2` (full-game; baseline off) | #384 | unit (305 host tests) | Not seen in game. |
+| Objective banners (NEW MISSION repeats) | yes | capture (build 51539 traffic) | `D1_AH_OBJECTIVE_INCOMING_MODE=2` (full-game; baseline off) | #384 | native: run gh51, build 56578, emulator 1ac34e4: across 80 sampled frames from spawn to after the rifle pickup no NEW MISSION banner appeared, and ENTER THE WALL, FIND A WEAPON, GRAB THE RIFLE and FIGHT THROUGH THE WALL all did (per #384's body); unit (305 host tests) | Sampled frames only. |
 | Every mission and cinematic | – | see below | – | – | – | – |
 
 The 78 story, cinematic and quest missions with a bound world (201 activities), from the generated
@@ -183,8 +180,8 @@ one unnamed cinematic (233). They play a video or launch another activity.
 | Patrol zones (a mission host beside public instances) | partial | capture (Patrol Venus, the Dreadnaught and the Cosmodrome cross-checked); verified (the client's activity table binds the Moon, Mars and the Plaguelands) | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_WORLDS_ACTIVITIES=all` | #316, #323, #327, #328, stream Q | unit | Patrol Cosmodrome (8), a 2014 row whose `cosmo_patrols_1` has no scenario, stays unbound (93 is the Taken King's). The Plaguelands patrol (424) starts in a stand-in. |
 | Public instances (region lists, joins, the bubble swap, the slot handover) | partial | capture (every region's groups and timings) | `D1_AH_PUBLIC_HOST=1`, `D1_AH_DISTINCT_HOST_IDS=1`, `D1_AH_PUBLIC_INSTANCES_FILE` | #316, #323, #327 | unit | The entry-only lists carry default values and have never been served. The PUBLIC checksum is the client's own index reading, not measured. The authority reset (udt 27–31, 42) and peer reservations (12, 13) are not served. The registry never enforces its cap and forgets no player on a TCP drop (review 23). [Public instances](../notes/ps4-56578-public-instances-2026-11-05.md). |
 | Restoration's public start | partial | capture | the live public region 56; every region's ambassadorship (`D1_AH_PUBLIC_AMBASSADOR=1`); `+0x19` releases a lone ambassador after 10 s (a stand-in trigger) | #314, #316 | native: fg4b the Director launch works; fg6 the `+0x19` release started the client's own public instance; fg7b it reached `in_world` and the Guardian spawned in the public bubble ([full-game test](../notes/ps4-56578-full-game-test-2026-11-06.md)) | The mission's completion has not been seen. The `+0x19` trigger is a stand-in. |
-| Patrol beacons | partial | capture: six live beacons by region, accept and `bounty_complete` incidents (#328, pending); placeholder: goals | `D1_AH_PUBLIC_HOST=1` | #316, #328 | unit | Beacon rewards past the Glimmer cap and their XP are unread. Accept incidents have no names. |
-| Public events | partial | capture: first event 485–494 s after the instance starts, tier incident sets (#328, pending); placeholder: later spells, time limits, event activity hashes | `D1_AH_PUBLIC_HOST=1`, `D1_AH_SCRIPTS=1` | #316, #324, #328 | unit | An event starts only once a scripted run exists in the bubble, and the open world's bridge has no join, so it may never start (review 20). Event rewards would pay as activity completions (review 21). |
+| Patrol beacons | partial | capture: six live beacons by region, accept and `bounty_complete` incidents (#328); placeholder: goals | `D1_AH_PUBLIC_HOST=1` | #316, #328 | unit | Beacon rewards past the Glimmer cap and their XP are unread. Accept incidents have no names. |
+| Public events | partial | capture: first event 485–494 s after the instance starts, tier incident sets (#328); placeholder: later spells, time limits, event activity hashes | `D1_AH_PUBLIC_HOST=1`, `D1_AH_SCRIPTS=1` | #316, #324, #328 | unit | An event starts only once a scripted run exists in the bubble, and the open world's bridge has no join, so it may never start (review 20). Event rewards would pay as activity completions (review 21). |
 | Taken spawn cycles and champions | no | capture (177-s cycles on the bubble's host, #328) | – | #328 (note only) | none | Not built. |
 | Chests and resource nodes | partial | placeholder (60 s per character) | `D1_AH_PUBLIC_HOST=1` | #316 | unit | Chest grants are refused (activity hash 0, review 21). |
 | Loot pickups (601) | yes | verified | lab-base | earlier | baseline native (the starter rifle) | Open-world drop tables are not modelled. |
@@ -242,7 +239,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Tower North | partial | memory read and capture (hand world table) | lab-base (`world-table-tower.txt`) | earlier, #328 (pending: the full 252-record list) | baseline native: populated, vendors open ([evening](../notes/ps4-56578-tower-evening-2026-10-29.md)) | The plaza and hangar regions. The generated table starts in slice set 24 (the plaza); the hand table uses 0 and wins. |
+| Tower North | partial | memory read and capture (hand world table) | lab-base (`world-table-tower.txt`) | earlier, #328 (the full 252-record list) | baseline native: populated, vendors open ([evening](../notes/ps4-56578-tower-evening-2026-10-29.md)) | The plaza and hangar regions. The generated table starts in slice set 24 (the plaza); the hand table uses 0 and wins. |
 | Other Guardians in the Tower (shared social space) | partial | capture | `D1_AH_SHARED_INSTANCES=1`, `D1_AH_PUBLIC_HOST=1` | #312, #316 | unit | A join registers under the wrong host id (review 11, still open after #327). The cap is a placeholder (16); the live Tower showed at most 5 peers. |
 | Tower set pieces (the Fan, the Jukebox) | no | capture (client incidents only, #328) | – | – | none | No services message is involved. |
 | The Reef (Vestian Outpost) | partial | capture (world cross-checked, a reference list) | `D1_AH_WORLDS_ACTIVITIES=all` | #314, #316 | none | Never served. |
@@ -275,7 +272,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 | Equip (403) | yes | verified (exotic and class rules) | lab-base; `D1_SOCIAL=1` | earlier, #309 | baseline native ([1 Nov](../notes/ps4-56578-equip-2026-11-01.md)) | – |
 | Unequip (404) | partial | placeholder (the next item takes the slot) | `D1_SOCIAL=1` | #309 | unit | No run has sent one. |
 | Transfer and the vault (405) | partial | verified (vault row 26, buckets and sizes); capture (405's bytes, #328) | `D1_SOCIAL=1` | #309, #323 | unit | The direction is inferred from where the item is. Never sent natively. |
-| Dismantle (402) | partial | capture: per-tier yields (#328, pending); placeholder: basic and exotic | `D1_DISMANTLE_PLACEHOLDER=1` | earlier, #309, #328 | baseline native: the item is removed (sense125); yields unit | Three yield tables disagree (review 27). |
+| Dismantle (402) | partial | capture: per-tier yields (#328); placeholder: basic and exotic | `D1_DISMANTLE_PLACEHOLDER=1` | earlier, #309, #328 | baseline native: the item is removed (sense125); yields unit | Three yield tables disagree (review 27). |
 | Item lock (406) | partial | verified (bit 0 is the lock; the word is the slot entry's `+0x18`) | `D1_SOCIAL=1`, `D1_STORE=1` | #318, stream P | unit | Served for character buckets; a vault item is refused (the store's account slots keep no flags). |
 | Buckets beyond weapons, armour, subclass, vehicle and Ghost | partial | verified (39 buckets, 29 named) | lab-base | earlier, #309 | baseline native (partial) | Emotes, emblems, shaders, horns, artifacts and consumables are not exercised. |
 | New item instances (element writer) | partial | verified (offsets); placeholder (node states, level for a Light) | `D1_REWARDS=1` | #311, #327 | unit | Level, grid, node states and stat positions are the template's. |
@@ -290,7 +287,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 | Drop Light | partial | verified (caps 400 and 385, at-or-above rule, Rare 365, Exotic 400); community (Legendary 390, the basis); placeholder (spread, slow zone) | `D1_REWARDS=1` | #311 | unit | – |
 | Character Light | partial | community (DIM's weights) | – | #311 | unit | Read the client's own sum (`0x265EF0`). The lab Guardian is Light 385 throughout. |
 | Infusion (804) | partial | verified (the client's refusal mask, formula and rates); placeholder (no cost, level rounding, talent quality taken as 0) | `D1_REWARDS=1`, `D1_STORE=1` | #311, #318, #322, stream P | unit | Served; no reply or push was ever seen, so the push is by analogy. The category bits are not exported. |
-| Personal loot per member | yes | community | `D1_REWARDS=1` | #311 | unit | With two players, grants pay player 1 (review 4; O3 in progress). |
+| Personal loot per member | yes | community | `D1_REWARDS=1` | #311 | unit | With two players, grants pay player 1 (review 4; O3 is #330). |
 | Post-game reward screens | yes | verified | lab-base | earlier | baseline native | – |
 
 ## 14. Talent grids and subclasses
@@ -325,8 +322,8 @@ one unnamed cinematic (233). They play a video or launch another activity.
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Per-player identity (BAP 23) | partial | placeholder (the own-id rule is a guess) | `D1_MP=1` | #312, #327, O3 (in progress) | unit | Every connection gets the same SOIDs until O3 lands (review 4). |
-| Several players on one responder | partial | – | `D1_MP=1` | O3 (in progress) | none | One player per store process; QueueZ goes only to the primary BAP connection. |
+| Per-player identity (BAP 23) | partial | placeholder (the own-id rule is a guess) | `D1_MP=1` | #312, #327, O3 (#330) | unit | Every connection gets the same SOIDs until O3 lands (review 4). |
+| Several players on one responder | partial | – | `D1_MP=1` | O3 (#330) | none | One player per store process; QueueZ goes only to the primary BAP connection. |
 | Fireteams (invite, join, leave, kick, leader) on the PSN Session WebAPI | partial | verified (party sizes); our design | `D1_MP=1` | #312 | unit (fake clients) | Never with two clients. The party invite blob is unknown. |
 | Matchmaking directory (42/43) and relaxation | partial | capture (51539 shapes and timings); placeholder (search scores; the 56578 fields in `f7`/`f8` are inferred) | `D1_MP=1`, `D1_MM_CONFIG_FILE` | #312, #327 | unit | The 43 answer lists the clients' own advertisements. Fullest-first against emptiest-first (review 8). |
 | Public placement across processes | partial | Bungie's stated design (emptiest first) | `D1_AH_PUBLIC_INSTANCES_FILE` | #323, #327 | unit | The live rule is not in the captures. |
@@ -372,7 +369,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Audio output pacing | partial | n/a | `?D1_AUDIO_SYNC=1` | fork #8 (draft) | baseline native (upstream pacing); #8 unit | Upstream allows up to 341 ms of lag. Needs the long-run check in fork #8's list. |
+| Audio output pacing | partial | n/a | `?D1_AUDIO_SYNC=1` | fork #8 | baseline native (upstream pacing); #8 unit | Upstream allows up to 341 ms of lag. Needs the long-run check in fork #8's list. |
 | In-engine cinematics | yes | verified (no Bink or AvPlayer) | – | earlier | baseline native (cine-live13) | 165's second cinematic showed a loading screen until the arrival (cine-live15). Dialogue sync is unchecked. |
 | Pad input | yes | n/a | – | earlier | baseline native | – |
 | PC keyboard and mouse | partial | n/a | `?D1_MOUSE_CURSOR`, `?D1_MOUSE_BUTTONS`, `?D1_MOUSE_LOOK` (deployed); `?D1_PC_LAYOUT=1` (fork #8) | #113, fork #8 | baseline native (cursor, buttons, look); the layout unit | No mouse aim assist (as Destiny 2 on PC). Raw look replaces cursor re-centring in #8. |
