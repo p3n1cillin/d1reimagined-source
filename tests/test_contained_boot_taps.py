@@ -35,6 +35,9 @@ class ContainedBootTaps(unittest.TestCase):
         m = re.search(r'^function Get-D1BootState\b.*?^}', cls.text, re.S | re.M)
         assert m, 'Get-D1BootState not found'
         cls.func = m.group(0)
+        m = re.search(r'^function Resolve-D1EnvInt\b.*?^}', cls.text, re.S | re.M)
+        assert m, 'Resolve-D1EnvInt not found'
+        cls.resolve_func = m.group(0)
 
     def test_parses(self):
         r = ps("$e = $null; [void][System.Management.Automation.Language.Parser]::ParseFile("
@@ -84,6 +87,34 @@ class ContainedBootTaps(unittest.TestCase):
 
     def test_left_wizard_flag(self):
         self.assertTrue(self.state(line('Leaving', 'bootflow:profile_setup'), Wizard=True)['LeftWizard'])
+
+    def resolve(self, default, passed, env):
+        cmd = (f"{self.resolve_func}\n$r = Resolve-D1EnvInt {default} ${str(passed).lower()} 'D1_X' '{env}'\n"
+               "[pscustomobject]@{ Value = $r.Value; Note = $r.Note } | ConvertTo-Json -Compress")
+        r = ps(cmd)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return json.loads(r.stdout)
+
+    def test_env_override(self):
+        self.assertEqual(self.resolve(3, False, '')['Value'], 3)
+        self.assertEqual(self.resolve(3, False, '0')['Value'], 0)
+        self.assertEqual(self.resolve(20, False, '45')['Value'], 45)
+        self.assertIsNone(self.resolve(3, False, '5')['Note'])
+
+    def test_env_override_loses_to_the_parameter(self):
+        self.assertEqual(self.resolve(3, True, '0')['Value'], 3)
+
+    def test_env_override_ignores_a_non_integer(self):
+        for bad in ('abc', '1.5', '-2'):
+            r = self.resolve(3, False, bad)
+            self.assertEqual(r['Value'], 3, bad)
+            self.assertIn('ignored D1_X', r['Note'], bad)
+
+    def test_script_wires_the_override_and_the_truncation_reset(self):
+        self.assertIn("$PSBoundParameters.ContainsKey('CharacterTaps')", self.text)
+        self.assertIn('D1_BOOT_CHARACTER_TAPS', self.text)
+        self.assertIn('D1_BOOT_CHARACTER_GRACE', self.text)
+        self.assertRegex(self.text, r'\$logPos = 0L; \$atTitle = \$false; \$inWizard = \$false; \$atCharacter = \$false')
 
     def test_parameters_and_receipt(self):
         self.assertRegex(self.text, r'\[int\]\$CharacterTaps = 3')

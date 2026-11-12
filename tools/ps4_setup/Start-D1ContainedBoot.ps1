@@ -20,8 +20,11 @@ param(
     # character:signin is the character screen. A boot that reaches it after the timed taps are spent
     # waits there until a key is pressed (runs gh40, gh41). Once the log has said the client is in
     # that state for $CharacterGraceSeconds without leaving it, tap $TitleKey every $TapIntervalSeconds,
-    # at most $CharacterTaps times (0 = never). The grace leaves flows that pass the screen themselves
-    # or with the timed taps alone. Ignored with -OperatorInput.
+    # at most $CharacterTaps times per run, not per visit (0 = never). The grace leaves flows that
+    # pass the screen themselves or with the timed taps alone. Ignored with -OperatorInput. When a
+    # parameter is not passed, $env:D1_BOOT_CHARACTER_TAPS / $env:D1_BOOT_CHARACTER_GRACE set its
+    # default (d1-full-game.ps1 forwards no tap parameters; a flow that drives the character screen
+    # sets D1_BOOT_CHARACTER_TAPS=0). A non-integer value is ignored and noted in input.log.
     [int]$CharacterTaps = 3,
     [int]$CharacterGraceSeconds = 20,
     [string]$Manifest = '',
@@ -65,6 +68,21 @@ if ($ServerEnvFile) {
     $fromFile = @(Get-Content -LiteralPath $ServerEnvFile | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') })
     $ExtraServerEnv = $fromFile + @($ExtraServerEnv)
 }
+# The default of a tap parameter from the environment: Value is $default when the parameter was
+# passed, the variable is unset, or it is not an integer (then Note says so, for input.log).
+function Resolve-D1EnvInt([int]$default, [bool]$passed, [string]$name, [string]$envValue) {
+    $r = @{ Value = $default; Note = $null }
+    if ($passed -or [string]::IsNullOrEmpty($envValue)) { return $r }
+    $n = 0
+    if ([int]::TryParse($envValue.Trim(), [Globalization.NumberStyles]::Integer, [Globalization.CultureInfo]::InvariantCulture, [ref]$n) -and $n -ge 0) { $r.Value = $n }
+    else { $r.Note = "ignored $name='$envValue' (not a non-negative integer); using $default" }
+    $r
+}
+$envNotes = @()
+$resolved = Resolve-D1EnvInt $CharacterTaps $PSBoundParameters.ContainsKey('CharacterTaps') 'D1_BOOT_CHARACTER_TAPS' $env:D1_BOOT_CHARACTER_TAPS
+$CharacterTaps = $resolved.Value; if ($resolved.Note) { $envNotes += $resolved.Note }
+$resolved = Resolve-D1EnvInt $CharacterGraceSeconds $PSBoundParameters.ContainsKey('CharacterGraceSeconds') 'D1_BOOT_CHARACTER_GRACE' $env:D1_BOOT_CHARACTER_GRACE
+$CharacterGraceSeconds = $resolved.Value; if ($resolved.Note) { $envNotes += $resolved.Note }
 # A contained Windows boot of the selected build: shadPS4 on Windows, the existing servers in WSL
 # bound to loopback. Containment is checked first and the run refuses on any failure: the exact
 # emulator has an enabled outbound block on every profile, all firewall profiles are on, and the
@@ -372,6 +390,7 @@ $atCharacter = $false; $characterSince = $null; $characterTapCount = 0; $nextCha
 $end = $started.AddMinutes($Minutes)
 # A stuck run can end early and cleanly: create OUT\stop (as with -ServersOnly); the evidence still runs.
 $stopFile = Join-Path $out 'stop'
+foreach ($note in $envNotes) { Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) $note" }
 while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -LiteralPath $stopFile)) {
     Start-Sleep -Milliseconds 500
     $emu.Refresh()
@@ -390,7 +409,10 @@ while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -Litera
         try {
             $fs = [IO.File]::Open($shadLog, 'Open', 'Read', 'ReadWrite, Delete')
             try {
-                if ($fs.Length -lt $logPos) { $logPos = 0L }
+                if ($fs.Length -lt $logPos) {
+                    # A new log: the states come from it, not from the old one.
+                    $logPos = 0L; $atTitle = $false; $inWizard = $false; $atCharacter = $false
+                }
                 [void]$fs.Seek($logPos, 'Begin')
                 $text = (New-Object IO.StreamReader($fs)).ReadToEnd()
                 $logPos = $fs.Length
