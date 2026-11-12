@@ -17,6 +17,13 @@ param(
     # $WizardTaps times. Ignored with -OperatorInput.
     [int]$WizardTaps = 15,
     [int]$WizardIntervalSeconds = 4,
+    # character:signin is the character screen. A boot that reaches it after the timed taps are spent
+    # waits there until a key is pressed (runs gh40, gh41). Once the log has said the client is in
+    # that state for $CharacterGraceSeconds without leaving it, tap $TitleKey every $TapIntervalSeconds,
+    # at most $CharacterTaps times (0 = never). The grace leaves flows that pass the screen themselves
+    # or with the timed taps alone. Ignored with -OperatorInput.
+    [int]$CharacterTaps = 3,
+    [int]$CharacterGraceSeconds = 20,
     [string]$Manifest = '',
     # Explicit, address-specific client patch (synthetic). Never applied by default.
     [string]$ClientPatch = '',
@@ -130,7 +137,7 @@ $receipt = [ordered]@{
     launch = $launch; autoPatchesDisabled = (-not $ClientPatch); autoPatchFolderEmpty = ($autoPatches.Count -eq 0)
     clientPatch = if ($ClientPatch) { [ordered]@{ path = (Get-Item -LiteralPath $ClientPatch).FullName
         sha256 = (Get-FileHash -LiteralPath $ClientPatch).Hash.ToLowerInvariant(); synthetic = $true } } else { $null }
-    input = if ($OperatorInput) { 'operator' } else { "virtual key $TitleKey x$TitleTaps after ${TitleDelaySeconds}s; up to $WizardTaps wizard taps every ${WizardIntervalSeconds}s while in profile_setup" }
+    input = if ($OperatorInput) { 'operator' } else { "virtual key $TitleKey x$TitleTaps after ${TitleDelaySeconds}s; up to $WizardTaps wizard taps every ${WizardIntervalSeconds}s while in profile_setup; up to $CharacterTaps character taps every ${TapIntervalSeconds}s once character:signin has lasted ${CharacterGraceSeconds}s" }
     checks = $checks
     mode = if ($NoEmulator) { 'servers only' } elseif ($NoServers) { 'emulator only' } else { 'servers and emulator' }
 }
@@ -332,6 +339,21 @@ function Tap([IntPtr]$h, [string]$key) {
     [void][D1.Win]::PostMessage($h, 0x101, [IntPtr]$vk, [IntPtr]((1 -bor ($scan -shl 16)) -bor 0xC0000000))
     'posted'
 }
+# Which boot states the client is in after a chunk of the emulator log. $state holds the booleans
+# Title, Wizard and Character from before the chunk. When a chunk has both the Entering and the
+# Leaving line of a state, the later one wins. Returns the new state; LeftWizard is true when the
+# chunk has the Leaving line of profile_setup.
+function Get-D1BootState([string]$text, [hashtable]$state) {
+    $new = @{ Title = [bool]$state.Title; Wizard = [bool]$state.Wizard; Character = [bool]$state.Character; LeftWizard = $false }
+    foreach ($s in @(@('Title', 'bootflow:intro_screen_display'), @('Wizard', 'bootflow:profile_setup'), @('Character', 'character:signin'))) {
+        $q = [regex]::Escape($s[1])
+        $last = $null
+        foreach ($m in [regex]::Matches($text, "(Entering|Leaving) state '$q'")) { $last = $m.Groups[1].Value }
+        if ($last) { $new[$s[0]] = ($last -eq 'Entering') }
+        if ($s[0] -eq 'Wizard' -and $text -match "Leaving state '$q'") { $new.LeftWizard = $true }
+    }
+    $new
+}
 Add-Type -AssemblyName System.Windows.Forms
 $userDir = Join-Path (Split-Path $exe) 'user'
 # The D1 shadPS4 build (shadps4-0.19.0-local-ip.patch) reports this as the guest's own address;
@@ -346,6 +368,7 @@ $taps = 0; $nextSnap = $started.AddSeconds(15); $shot = 0
 $shadLog = Join-Path $userDir 'log\shad_log.txt'
 $logPos = 0L; $inWizard = $false; $wizardTapCount = 0; $nextWizardTap = Get-Date; $nextLogRead = Get-Date
 $atTitle = $false; $titleStateTaps = 0; $nextTitleStateTap = Get-Date
+$atCharacter = $false; $characterSince = $null; $characterTapCount = 0; $nextCharacterTap = Get-Date
 $end = $started.AddMinutes($Minutes)
 # A stuck run can end early and cleanly: create OUT\stop (as with -ServersOnly); the evidence still runs.
 $stopFile = Join-Path $out 'stop'
@@ -374,11 +397,11 @@ while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -Litera
             } finally { $fs.Dispose() }
             # The timed taps can all land before the title: a boot that compiles shaders reached it
             # 4 minutes in (run base1, 6 Nov 2026). Tap again while the log says the title is up.
-            if ($text -match "Entering state 'bootflow:intro_screen_display'") { $atTitle = $true }
-            if ($text -match "Leaving state 'bootflow:intro_screen_display'") { $atTitle = $false }
-            if ($text -match "Entering state 'bootflow:profile_setup'") { $inWizard = $true }
-            if ($text -match "Leaving state 'bootflow:profile_setup'") {
-                $inWizard = $false
+            $bootState = Get-D1BootState $text @{ Title = $atTitle; Wizard = $inWizard; Character = $atCharacter }
+            $atTitle = $bootState.Title; $inWizard = $bootState.Wizard
+            if ($bootState.Character -and -not $atCharacter) { $characterSince = Get-Date }
+            $atCharacter = $bootState.Character
+            if ($bootState.LeftWizard) {
                 Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) left profile_setup after $wizardTapCount wizard tap(s)"
             }
         } catch { }
@@ -387,12 +410,18 @@ while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -Litera
         $how = Tap $h $TitleKey; $titleStateTaps++; $nextTitleStateTap = (Get-Date).AddSeconds($TapIntervalSeconds)
         Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) title tap $TitleKey ($titleStateTaps, $how; the log shows the title)"
     }
+    if (-not $OperatorInput -and $atCharacter -and $characterTapCount -lt $CharacterTaps -and
+        (Get-Date) -ge $characterSince.AddSeconds($CharacterGraceSeconds) -and (Get-Date) -ge $nextCharacterTap) {
+        $how = Tap $h $TitleKey; $characterTapCount++; $nextCharacterTap = (Get-Date).AddSeconds($TapIntervalSeconds)
+        Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) character tap $TitleKey ($characterTapCount, $how; the log shows character:signin)"
+    }
     if ($inWizard -and $wizardTapCount -lt $WizardTaps -and (Get-Date) -ge $nextWizardTap) {
         $how = Tap $h $TitleKey; $wizardTapCount++; $nextWizardTap = (Get-Date).AddSeconds($WizardIntervalSeconds)
         Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) wizard tap $TitleKey ($wizardTapCount, $how)"
     }
 }
 $receipt.wizardTaps = $wizardTapCount
+$receipt.characterTaps = $characterTapCount
 $receipt.emulatorExitedByItself = $emu.HasExited
 if (-not $emu.HasExited) { Stop-Process -Id $emu.Id; $emu.WaitForExit(15000) | Out-Null }
 $receipt.emulatorExitCode = if ($emu.HasExited) { $emu.ExitCode } else { $null }
