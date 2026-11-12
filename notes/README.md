@@ -22,6 +22,7 @@ is the current summary. Titles below are the notes' own.
 - [PS4 56578: rewards and character growth services (5 November 2026)](ps4-56578-rewards-and-growth-2026-11-05.md)
 - [PS4 56578 wire catalogue: RTTI, schemas and open meanings (5 November 2026)](ps4-56578-wire-catalog-2026-11-05.md)
 - [PS4 56578: the persistent player store and progression (5 November 2026)](ps4-56578-player-store-2026-11-05.md)
+- [Account settings survive sign-in (12 November 2026)](ps4-56578-account-settings-2026-11-12.md)
 - [Research record: resources for the full game (5 November 2026)](ps4-56578-research-record-2026-11-05.md)
 - [PS4 56578: the script bridge in the activity host (5 November 2026)](ps4-56578-script-bridge-2026-11-05.md)
 - [PS4 56578: Fukugen Daihon and the reveal sequence (5 November 2026)](ps4-56578-fukugen-daihon-2026-11-05.md)
