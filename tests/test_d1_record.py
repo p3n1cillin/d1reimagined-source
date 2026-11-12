@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """d1-record.py pure logic: stale tap cleanup, the wait-for-boot predicate, flag removal."""
 import importlib.util
+import json
 import os
 import sys
 import tempfile
@@ -128,6 +129,91 @@ class WaitForBoot(unittest.TestCase):
                 self.assertEqual(rec.count_lines('locked-log'), 0)
                 self.assertEqual(rec.count_lines('locked-log'), 0)
             self.assertEqual(pr.call_count, 1)
+
+
+class FakeStdin:
+    def __init__(self, write_exc=None, flush_exc=None, close_exc=None):
+        self.write_exc, self.flush_exc, self.close_exc = write_exc, flush_exc, close_exc
+        self.written = []
+
+    def write(self, s):
+        if self.write_exc:
+            raise self.write_exc
+        self.written.append(s)
+
+    def flush(self):
+        if self.flush_exc:
+            raise self.flush_exc
+
+    def close(self):
+        if self.close_exc:
+            raise self.close_exc
+
+
+class FakeProc:
+    def __init__(self, stdin, running=True, hang=False):
+        self.stdin, self.running, self.hang = stdin, running, hang
+        self.terminated = False
+        self.waits = 0
+
+    def poll(self):
+        return None if self.running else 0
+
+    def wait(self, timeout=None):
+        self.waits += 1
+        if self.hang and not self.terminated:
+            raise rec.subprocess.TimeoutExpired('ffmpeg', timeout)
+        return 0
+
+    def terminate(self):
+        self.terminated = True
+
+
+class StopFfmpeg(unittest.TestCase):
+    def test_running_process_gets_q(self):
+        p = FakeProc(FakeStdin())
+        self.assertTrue(rec.stop_ffmpeg(p))
+        self.assertEqual(p.stdin.written, ['q'])
+
+    def test_write_oserror_22_is_tolerated(self):
+        p = FakeProc(FakeStdin(write_exc=OSError(22, 'Invalid argument')))
+        self.assertTrue(rec.stop_ffmpeg(p))
+        self.assertEqual(p.waits, 1)
+
+    def test_flush_oserror_is_tolerated(self):
+        p = FakeProc(FakeStdin(flush_exc=OSError(22, 'Invalid argument')))
+        rec.stop_ffmpeg(p)
+        self.assertEqual(p.waits, 1)
+
+    def test_broken_pipe_and_closed_file(self):
+        rec.stop_ffmpeg(FakeProc(FakeStdin(write_exc=BrokenPipeError())))
+        rec.stop_ffmpeg(FakeProc(FakeStdin(flush_exc=ValueError('closed'))))
+
+    def test_close_error_is_tolerated(self):
+        rec.stop_ffmpeg(FakeProc(FakeStdin(close_exc=OSError(22, 'Invalid argument'))))
+
+    def test_already_exited_skips_write_and_reports_it(self):
+        p = FakeProc(FakeStdin(write_exc=OSError(22, 'x')), running=False)
+        self.assertFalse(rec.stop_ffmpeg(p))
+        self.assertEqual(p.stdin.written, [])
+
+    def test_wait_timeout_terminates_that_process(self):
+        p = FakeProc(FakeStdin(), hang=True)
+        rec.stop_ffmpeg(p)
+        self.assertTrue(p.terminated)
+        self.assertEqual(p.waits, 2)
+
+
+class T0Sidecar(unittest.TestCase):
+    def test_sidecar_content(self):
+        with tempfile.TemporaryDirectory() as d:
+            video = os.path.join(d, 'run.mp4.video.mp4')
+            rec.write_t0(video, 1234.5, 7)
+            with open(video + '.t0.json') as f:
+                self.assertEqual(json.load(f), {'t_first': 1234.5, 'frames': 7})
+            rec.write_t0(video, None, 0)
+            with open(video + '.t0.json') as f:
+                self.assertEqual(json.load(f), {'t_first': None, 'frames': 0})
 
 
 if __name__ == '__main__':
