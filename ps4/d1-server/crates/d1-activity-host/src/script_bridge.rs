@@ -1334,8 +1334,12 @@ struct Run {
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
     /// `D1_AH_SCRIPTS_START_PHASE` (lab): the lifetime's catch-up after a start at a later phase,
-    /// one value per frame as a normal run goes 1, 4, 3: 1 = the hold (4) is next, 2 = gameplay (3).
+    /// one value per frame as a normal run goes 1, 4, 3: 3 = armed, waiting for the scripts' first
+    /// lifetime value (or `ramp_armed_at` + 2 s), 1 = the hold (4) is next, 2 = gameplay (3).
     start_ramp: u8,
+    ramp_armed_at: Option<Instant>,
+    /// The ramp has finished: the scripts' initial lifetime (below 3) no longer applies.
+    ramp_done: bool,
     /// The last lifetime value a frame carried, and that frame's stamp.
     lifetime_sent: Option<(i8, u32)>,
     /// The sidecar's lifetime numbering disagreed with the host's (logged once).
@@ -1871,6 +1875,8 @@ impl ScriptBridge {
             unsupported: Default::default(),
             lifetime_unsent: false,
             start_ramp: 0,
+            ramp_armed_at: None,
+            ramp_done: false,
             lifetime_sent: None,
             wire_disagreed: false,
             held: VecDeque::new(),
@@ -2086,8 +2092,14 @@ impl ScriptBridge {
             }
         }
         // D1_AH_SCRIPTS_START_PHASE (lab): the catch-up goes one value per frame, each once the last went out.
-        if run.start_ramp > 0 && !run.lifetime_unsent {
+        // Armed at the phase message, which the real sidecar sends before the scripts' first
+        // lifetime value (run gh61: 3 -> 1 undid the ramp): wait for that value, or 2 s.
+        if run.start_ramp == 3 && run.ramp_armed_at.is_some_and(|t| now >= t + Duration::from_secs(2)) {
+            run.start_ramp = 1;
+        }
+        if matches!(run.start_ramp, 1 | 2) && !run.lifetime_unsent {
             run.lifetime_state = if run.start_ramp == 1 { 4 } else { 3 };
+            run.ramp_done = run.start_ramp == 2;
             run.start_ramp = if run.start_ramp == 1 { 2 } else { 0 };
             run.lifetime_unsent = true;
             self.set_lifetime();
@@ -2428,7 +2440,8 @@ impl ScriptBridge {
                         "⭐ script bridge: {} starts at phase {index}: lifetime brought to gameplay as the skipped phases would have (D1_AH_SCRIPTS_START_PHASE, lab)",
                         run.activity.activity
                     );
-                    run.start_ramp = 1;
+                    run.start_ramp = 3;
+                    run.ramp_armed_at = Some(now);
                 }
                 self.set_lifetime();
             }
@@ -2561,9 +2574,18 @@ impl ScriptBridge {
                 }
             }
             match ours {
+                Some(s) if run.ramp_done && s < 3 => {
+                    tracing::info!(
+                        "script bridge: lifetime {s} (script state {state}) is the scripts' initial state, skipped by the start phase; it stays {} (D1_AH_SCRIPTS_START_PHASE, lab)",
+                        run.lifetime_state
+                    );
+                }
                 Some(s) => {
                     if s != run.lifetime_state {
                         tracing::info!("⭐ script bridge: lifetime {} -> {s} (script state {state})", run.lifetime_state);
+                    }
+                    if run.start_ramp == 3 {
+                        run.start_ramp = 1; // the scripts' first value is in: the ramp follows it
                     }
                     if s != run.lifetime_state {
                         run.lifetime_unsent = true;
@@ -3061,6 +3083,7 @@ mod tests {
         // A later start skips phase 0's pregame cinematic hold and the F35 release; the first phase
         // of the start catches the lifetime up, one value per frame as a normal run: 1, 4, 3.
         let run = |table: Vec<(u16, u32)>| {
+            let mut seen = Vec::new();
             let shared = Arc::new(Mutex::new(Shared::default()));
             let activity = ScriptedActivity::parse_with(GAMEPLAY_LINE, &base(), &|_| Ok(LIST.to_string()), None).unwrap();
             // A start delay that never passes: the fake script stays silent; the test plays the sidecar.
@@ -3070,18 +3093,28 @@ mod tests {
             b.on_client_message(&join(9), 165, HOST, t);
             b.on_client_message(&slice(25), 165, HOST, t);
             run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+            // The real sidecar's order (run gh61): the phase message first, then the scripts' first lifetime value.
+            b.apply(phase(5, "hangar"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+            // The scripts' state 0 again does not drag it back; a real transition still applies.
             b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
             run_for(&mut b, &mut t, 1.0, &mut Vec::new());
-            b.apply(phase(5, "hangar"), t);
-            run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+            let held = shared.lock().unwrap().frames.iter().filter_map(lifetime_of).last();
+            seen.push(held);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(3)] }, t);
+            run_for(&mut b, &mut t, 1.0, &mut Vec::new());
             let s = shared.lock().unwrap();
             let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
             seq.dedup();
-            seq
+            (seq, seen)
         };
-        assert_eq!(run(vec![(165, 5)]), [0, 1, 4, 3], "the values a normal run reaches by phase 1");
-        assert_eq!(run(vec![]), [0, 1], "unset: unchanged, no catch-up");
-        assert_eq!(run(vec![(164, 5)]), [0, 1], "another activity's entry changes nothing");
+        // Script state 3 is the later genuine transition (wire 4); it still applies after the ramp.
+        let (seq, seen) = run(vec![(165, 5)]);
+        assert_eq!(seq, [0, 1, 4, 3, 4], "the values a normal run reaches by phase 1, held at 3 against the scripts' state 0");
+        assert_eq!(seen, [Some(3)], "the repeated state 0 does not drag it back");
+        assert_eq!(run(vec![]).0, [0, 1, 4], "unset: unchanged, no catch-up");
+        assert_eq!(run(vec![(164, 5)]).0, [0, 1, 4], "another activity's entry changes nothing");
     }
 
     #[test]
