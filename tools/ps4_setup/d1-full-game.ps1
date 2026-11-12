@@ -563,12 +563,14 @@ Show | Set-Content -LiteralPath (Join-Path $loc.RUN 'plan.txt')
 # -Record: the audio tap needs a clean folder (a killed recorder leaves rec.flag, and the next
 # emulator then holds a tap file open from boot) and the emulator needs D1_AUDIO_TAP to write it.
 if ($Record -and $Only -ne 'servers') {
-    $tapDir = if ($knobs.Contains('D1_AUDIO_TAP') -and $knobs['D1_AUDIO_TAP'].value) { $knobs['D1_AUDIO_TAP'].value }
+    $tapSet = $knobs.Contains('D1_AUDIO_TAP') -and $knobs['D1_AUDIO_TAP'].value  # an empty knob counts as unset
+    $tapDir = if ($tapSet) { $knobs['D1_AUDIO_TAP'].value }
               elseif ($env:D1_AUDIO_TAP) { $env:D1_AUDIO_TAP }
               else { Join-Path (Join-Path $loc.TOOLS 'shadPS4') 'audio-tap' }
     New-Item -ItemType Directory -Force $tapDir | Out-Null
     Remove-Item -LiteralPath (Join-Path $tapDir 'rec.flag') -Force -ErrorAction SilentlyContinue
-    if (-not $knobs.Contains('D1_AUDIO_TAP')) {
+    if (-not $tapSet) {
+        if ($knobs.Contains('D1_AUDIO_TAP')) { $knobs['D1_AUDIO_TAP'].value = $tapDir }
         Add-Content -LiteralPath (Join-Path $loc.RUN 'emulator.env') -Value "D1_AUDIO_TAP=$tapDir"
     }
     $env:D1_AUDIO_TAP = $tapDir
@@ -580,6 +582,7 @@ foreach ($k in @($knobs.Keys)) {
     if ($e.section -ne 'emulator' -or $e.state -eq 'dropped') { continue }
     if ($e.value -eq '') { Remove-Item "env:$k" -ErrorAction SilentlyContinue } else { Set-Item "env:$k" $e.value }
 }
+$recSince = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()  # before the emulator exists: its log must be newer
 $bootProc = Start-Process pwsh -WindowStyle Hidden -PassThru -ArgumentList (($bootArgs | ForEach-Object { Q $_ }) -join ' ') `
     -RedirectStandardOutput (Join-Path $loc.RUN 'boot.console') -RedirectStandardError (Join-Path $loc.RUN 'boot.err')
 Say "contained boot started (pid $($bootProc.Id)): $bootLine"
@@ -590,7 +593,8 @@ if ($Record) {
         New-Item -ItemType Directory -Force $rec | Out-Null
         $recArgs = @((Join-Path $PSScriptRoot 'd1-record.py'), '--out', (Join-Path $rec 'run.mp4'), '--fps', '30',
             '--seconds', "$($Minutes * 60)", '--stop-file', (Join-Path $loc.RUN 'boot\stop'),
-            '--wait-log', (Join-Path $loc.SHADPS4 'user\log\shad_log.txt'), '--wait-lines', '200')
+            '--wait-log', (Join-Path $loc.SHADPS4 'user\log\shad_log.txt'), '--wait-lines', '200',
+            '--wait-since', "$recSince")  # 200: a heuristic (booted passes it in seconds, a hung one stays under ~60; 12 Nov 2026), not a boot marker
         $null = Start-Process python -WindowStyle Hidden -PassThru -ArgumentList (($recArgs | ForEach-Object { Q $_ }) -join ' ') `
             -RedirectStandardOutput (Join-Path $rec 'record.log') -RedirectStandardError (Join-Path $rec 'record.err')
         Say "recording: $(Join-Path $rec 'run.mp4') (starts when the emulator log passes 200 lines; progress in rec\record.log, errors in rec\record.err)"

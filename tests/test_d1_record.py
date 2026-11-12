@@ -104,6 +104,31 @@ class WaitForBoot(unittest.TestCase):
                 fh.write(b'a\nb\nc\n')
             self.assertEqual(rec.count_lines(f), 3)
 
+    def test_old_log_is_not_ready_until_rewritten(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = os.path.join(d, 'log')
+            with open(f, 'wb') as fh:
+                fh.write(b'x\n' * 500)
+            os.utime(f, (1000, 1000))
+            self.assertEqual(rec.log_lines_since(f, 2000, 200), 0)
+            c = Clock()
+            r = rec.wait_for_boot(lambda: rec.log_lines_since(f, 2000, 200), lambda: True, 200, 5,
+                                  sleep=c.sleep, clock=c.now)
+            self.assertEqual(r, 'timeout')
+            os.utime(f, (3000, 3000))  # the new emulator rewrote it
+            self.assertGreaterEqual(rec.log_lines_since(f, 2000, 200), 200)
+
+    def test_count_lines_stops_early_and_warns_once(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = os.path.join(d, 'log')
+            with open(f, 'wb') as fh:
+                fh.write(b'x\n' * (3 << 20))
+            self.assertGreaterEqual(rec.count_lines(f, 10), 10)
+            with mock.patch('builtins.open', side_effect=PermissionError(13, 'denied')),                     mock.patch('builtins.print') as pr:
+                self.assertEqual(rec.count_lines('locked-log'), 0)
+                self.assertEqual(rec.count_lines('locked-log'), 0)
+            self.assertEqual(pr.call_count, 1)
+
 
 if __name__ == '__main__':
     unittest.main()

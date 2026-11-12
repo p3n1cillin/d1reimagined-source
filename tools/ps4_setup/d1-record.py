@@ -1,10 +1,10 @@
 """Record the shadPS4 game window with the game's own audio (56578 evidence clips).
 
     d1-record.py --out clip.mp4 [--seconds 60] [--stop-file PATH] [--tap DIR]
-                 [--wait-log shad_log.txt [--wait-lines 200] [--wait-timeout 600]]
+                 [--wait-log shad_log.txt [--wait-lines 200] [--wait-since EPOCH] [--wait-timeout 600]]
 
 With --wait-log the recorder first waits for the emulator to have booted (the log exists with
-at least --wait-lines lines and a shadPS4 window exists); it exits 3 if that does not happen
+at least --wait-lines lines, last written at or after --wait-since, and a shadPS4 window exists); it exits 3 if that does not happen
 within --wait-timeout seconds or if --stop-file appears first. A stale port*.f32 held open by
 a running emulator is skipped, not fatal, and left out of the mux; rec.flag is removed on
 every exit path.
@@ -41,13 +41,36 @@ def cleanup_stale_taps(tap):
     return removed, skipped
 
 
-def count_lines(path):
-    """Newline count of a file, 0 if it is missing or unreadable."""
+_warned = set()
+
+
+def count_lines(path, stop_at=None):
+    """Newline count of a file (stops reading once stop_at is reached); 0 if missing/unreadable."""
+    n = 0
     try:
         with open(path, 'rb') as fh:
-            return sum(chunk.count(b'\n') for chunk in iter(lambda: fh.read(1 << 20), b''))
+            for chunk in iter(lambda: fh.read(1 << 20), b''):
+                n += chunk.count(b'\n')
+                if stop_at is not None and n >= stop_at:
+                    break
+    except FileNotFoundError:
+        return 0
+    except OSError as e:
+        if path not in _warned:
+            _warned.add(path)
+            print(f'cannot read {path}: {e}')
+        return 0
+    return n
+
+
+def log_lines_since(path, since, stop_at=None):
+    """Lines of a log that belongs to this run: 0 while its mtime is older than `since`."""
+    try:
+        if os.path.getmtime(path) < since:
+            return 0
     except OSError:
         return 0
+    return count_lines(path, stop_at)
 
 
 def boot_ready(line_count, wanted, window_present=True):
@@ -115,11 +138,17 @@ def main():
                     help='audio tap folder (default: D1_AUDIO_TAP, else D1_TOOLS/shadPS4/audio-tap)')
     ap.add_argument('--fps', default='60')
     ap.add_argument('--wait-log', help='emulator log; wait for it before recording (exit 3 on give-up)')
+    # 200 is a heuristic, not a measured boot marker: a booted emulator passes it within seconds,
+    # a hung one stays under about 60 lines (seen 12 November 2026).
     ap.add_argument('--wait-lines', type=int, default=200, help='lines the log must have (default 200)')
+    ap.add_argument('--wait-since', type=float, default=None,
+                    help='epoch seconds; a log last written before this is a previous run (default: now)')
     ap.add_argument('--wait-timeout', type=float, default=600, help='seconds to wait (default 600)')
     a = ap.parse_args()
+    if a.wait_since is None:
+        a.wait_since = time.time()
     if a.wait_log:
-        why = wait_for_boot(lambda: count_lines(a.wait_log), shadps4_window_present, a.wait_lines,
+        why = wait_for_boot(lambda: log_lines_since(a.wait_log, a.wait_since, a.wait_lines), shadps4_window_present, a.wait_lines,
                             a.wait_timeout, a.stop_file)
         if why != 'ready':
             print(f'emulator not booted ({why}): {a.wait_log} needs {a.wait_lines} lines and a shadPS4 window')
