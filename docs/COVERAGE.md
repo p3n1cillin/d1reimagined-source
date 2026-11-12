@@ -1,13 +1,18 @@
-# Full-game coverage matrix (6 November 2026)
+# Full-game coverage matrix (12 November 2026)
 
 One row per player-facing system of Destiny 1 as it stood in Year 3 (Rise of Iron), against what
 this project serves for PS4 build 56578. It is the reference for the integrated native test and
 for the fixing phase after it. Every system D1 had is listed, built or not.
 
-**Nothing below is working in-game.** About twenty build streams merged on 5–6 November (#304–#327).
-Each was built and unit-tested on its own behind an off-by-default knob. None has run in the game,
-the emulator or the lab since. The integrated native test ([full-game test](full-game-test.md),
-[`full-game.env`](../ps4/profiles/full-game.env)) is the first time they run, and run together.
+**Most rows below are offline only.** About twenty build streams merged on 5–6 November (#304–#327).
+Each was built and unit-tested on its own behind an off-by-default knob. The integrated native test
+([full-game test](full-game-test.md), [`full-game.env`](../ps4/profiles/full-game.env)) ran them
+together on 6 November ([results](../notes/ps4-56578-full-game-test-2026-11-06.md)): the reveal played
+from the scripts, the Director launched Restoration, and the Guardian spawned in its public bubble and
+on A Guardian Rises' highway. Later runs added character creation, The Speaker, The Awoken, the
+reveal's hand-off to Tower North, the sight reticle and settings persistence. A row says "native" in
+its Tested column only where a note names the run. The rows were not all re-read after those runs:
+where a row says "unit" and a note below says otherwise, the note wins, and the row is marked.
 Where a system was seen in a native run before the build-out, the Tested column says
 "baseline native" and names the run. That run used the older, step-driven servers, so the new
 code path for that system has still not run.
@@ -34,7 +39,7 @@ deployed emulator (98542a7, fork #6) has neither.
 |---|---|---|---|---|---|---|
 | Platform sign-on (shadNet PSN, auth, content manifest, BAP sign-in) | yes | verified (the owned build's manifest and codecs) | lab-base | earlier | baseline native (every lab run) | Contained lab network only. |
 | Character select and the served Guardian | yes | verified (family 3/4 objects); the Guardian is a lab fixture (Titan, level 40, Light 385) | lab-base; `D1_STORE=1` serves it from the store after the first sign-on | earlier, #307 | baseline native (fixtures); store path unit | The store's first serve matches the fixtures byte for byte in a unit test only. The character screen shows a black silhouette, and Intellect, Discipline and Strength read 0. |
-| Character creation and deletion (501, 502, 504) | partial | verified: 501's layout, each class's preload lists; placeholder: the starting grant | `D1_SOCIAL=1`; `D1_STARTING_KIT` unset (empty) | #308, #309, #318, #322 | unit | No run has created a character. A preload list is not a proven server grant: a native create with the exported kit, or a capture of a creation, settles it. |
+| Character creation and deletion (501, 502, 504) | partial | verified: 501's layout, each class's preload lists; placeholder: the starting grant | `D1_SOCIAL=1`; `D1_STARTING_KIT` unset (empty) | #308, #309, #318, #322 | native: a Titan, a Hunter and a Warlock created in the lab (runs new1 to new6, cf2, 7–8 Nov; [notes](../notes/ps4-56578-character-creation-2026-11-07.md)); deletion unit | Each created Guardian went on to the prologue and A Guardian Rises. A preload list is not a proven server grant: a capture of a creation settles it. The creation preview is empty and the screen is a black silhouette (F47), so the chosen look is unconfirmed. Deletion has not been run. |
 | Three characters per account | partial | verified (record schema) | `D1_STORE=1` | #307 | unit | One character is served. Account-owned reward counters are kept per character (integration review 26). |
 | A new Guardian at level 1 in starter gear | partial | verified (level and item curves) | not in full-game (lab-base serves level 40) | earlier, #51 | baseline native (level1-run2, 3 Nov; [notes](../notes/ps4-56578-level1-2026-11-02.md)) | Not the default. Post-game pushes still carry Light 385. The full-game store seeds from the geared Guardian. |
 | Appearance (501 identity, 506 change) | partial | verified (layout); the selectors' meanings are unknown | – | #308, #318 | unit (codec only) | 506 is not served. Palette, face and marking selectors are unknown. |
@@ -46,6 +51,8 @@ deployed emulator (98542a7, fork #6) has neither.
 | Emulator boot and runtime (fork `d1`) | yes | n/a | – | fork #6 (deployed 98542a7) | baseline native | Load on the host machine freezes the client (6–24 s gaps, the game's block detector; [lab stalls](../notes/ps4-56578-lab-stalls-2026-11-05.md)). Nothing heavy may run beside a test. |
 | Fatal-path stability: exception handlers, clean exit, hitch halt | yes | verified (the game's handlers and its `ud2` halt, read from the executable) | `?D1_EXCEPTION_HANDLERS=1`, `?D1_CLEAN_EXIT=1`, `?D1_HITCH_HALT=0` | fork #8 (draft) | unit | Not in the deployed emulator, so the launcher drops these knobs. Needs the boot-log lines in [the full-game test](full-game-test.md#fork-8-the-pc-client). |
 | Renderer fidelity | partial | n/a | – | earlier (colour-LUT cache fix) | baseline native | Characters and wider scene coverage; combined stability. |
+| Sight reticle (F53) | yes | n/a | `D1_STENCIL_CLEAR_MASK=1` (full-game; baseline off) | fork 16, #379 | native: the reticle draws when aiming (gh40, gh41, 12 Nov, fork 81edaea; [notes](../notes/ps4-56578-sight-reticle-f53-2026-11-12.md)) | The glass overlays were not checked separately. |
+| The Ghost over the palm (F54) | no | n/a | – | #383 (note only) | native: the fault is seen in gh42 to gh47 (12 Nov); **open** ([notes](../notes/ps4-56578-ghost-palm-f54-2026-11-12.md)) | Outdoors the open hand and Ghost stay until the first weapon; in the Wall the player's Ghost is drawn. Cause unknown. |
 | Per-draw CPU cost and frame rate | partial | n/a (the saving is an estimate) | `?D1_DRAW_FAST=1`, `?D1_DRAW_STATS=1`, `?D1_GPU_WAIT_YIELD=1` | fork #7 (draft), #112 | baseline native: 34–38 fps in heavy scenes; #7 unit | Estimated 5–15% of the command processor's time. Needs the A/B in [the full-game test](full-game-test.md#fork-7-the-draw-path). |
 | Frame-rate targets and resolution (native Settings → Display) | yes | verified (the game's own settings screen) | lab-base | fork #6 | baseline native ([settings](../notes/ps4-56578-native-video-settings-2026-11-03.md), [rates](../notes/ps4-56578-frame-rate-2026-11-02.md)) | The added labels are English only. A no-jump ledge drop and other weapons' cadence are unchecked. |
 | One-command full-game launcher and profiles | yes | n/a | the profile | #320, #323, #327 | unit (profile tests, dry run) | Never launched for a full run. |
@@ -60,17 +67,18 @@ deployed emulator (98542a7, fork #6) has neither.
 | Activity → world binding | partial | verified (the client's own activity table names each activity's world: 477 generated); capture (57 cross-checked, all agreeing with the client's table) | `D1_AH_WORLDS`; `D1_AH_WORLDS_ACTIVITIES=all` | #314, stream Q | unit (`tests/all_worlds.rs`: every bound activity plans; 330 frames build natively in 0.2 s) | 534 of 653 activities have a world. The 119 without one name none: 82 playlists, 24 Private Match modes, 10 credits and cinematics, three rows naming 2014 bundles with no scenario. 235 starts are stand-ins (the first private slice set). Generated lists carry default values. None has been served in the lab; the hand rows (164, 165, 168, 0, 410, 416) win. [worlds note](../notes/ps4-56578-worlds-2026-11-05.md). |
 | Launch requirements (fireteam size) | partial | verified (`minParty`/`maxParty`) | `D1_MP=1` | #312 | unit | – |
 | Insertion points | partial | verified (`insertion-points.tsv`) | – | #314 | unit | The host sends no transition name, so the client always takes `default`. |
-| Story progression: CONTINUE and the next activity | partial | verified (profile field [6]); 2014 table (`next=`) | `D1_STORE=1`, `D1_REWARDS=1` | earlier, #324, #327 | baseline native: CONTINUE 164 → 165 ([29 Oct](../notes/ps4-56578-continue-tower-2026-10-29.md)); the 165 → Tower hand-off unit | After 165, ours went to orbit, where retail went to the Tower. The hand-off is wired but unseen. Only 165 has a `next=`. |
+| Story progression: CONTINUE and the next activity | partial | verified (profile field [6]); 2014 table (`next=`) | `D1_STORE=1`, `D1_REWARDS=1` | earlier, #324, #327 | baseline native: CONTINUE 164 → 165 ([29 Oct](../notes/ps4-56578-continue-tower-2026-10-29.md)); native: 165 → Tower North by the client's own launch (run rev11, 8 Nov, through the lab's step schedule; [notes](../notes/ps4-56578-reveal-tower-2026-11-08.md)) | The hand-off needed the Towers in `D1_AH_TEAM0_ACTIVITIES`. Only 165 has a `next=`. It has not been seen from the real mission scripts' completion. |
 | Ships and sparrows (vehicle bucket) | partial | verified | lab-base | earlier | baseline native (bucket equips) | Sparrow use in patrol has not been run. |
 
 ## 4. Story missions and cinematics
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Missions driven by Destiny's own scripts (sidecar and bridge) | partial | restored 56578 scripts (Fukugen Daihon; a local input, unlicensed) on verified content | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES`, `D1_SCRIPTS_DIR`, `D1_BUNDLES_DIR` | #310, #319, #324, #327 | unit (a deterministic replay of 164 and 165) | The bridge's table lists every bound PvE activity (473: story, cinematic, quest, strike, raid, arena); 250 name a world no restored script starts, which the sidecar serves as a start-only stub on its content bundles (stream Q). Timer, hard-wipe and object-filter rows are refused. One bridge per connection, so a fireteam runs N copies (review 9, 10). BullShcript answers natives with 01.29 semantics. [Story missions](../notes/ps4-56578-story-missions-2026-11-05.md). |
-| Missions driven by step schedules (the earlier route) | partial (164 and 165 only) | capture and memory reads | lab-base (`D1_AH_MISSION_STEPS`) | earlier | baseline native (sense116: all of A Guardian Rises; cine-live13: 165) | Perching Fallen, the Ghost's performances and dialogue fidelity; some cutscenes skipped. |
+| Missions driven by Destiny's own scripts (sidecar and bridge) | partial | restored 56578 scripts (Fukugen Daihon; a local input, unlicensed) on verified content | `D1_AH_SCRIPTS=1`, `D1_AH_SCRIPTS_SIDECAR`, `D1_AH_SCRIPTS_ACTIVITIES`, `D1_SCRIPTS_DIR`, `D1_BUNDLES_DIR` | #310, #319, #324, #327 | unit (a deterministic replay of 164 and 165); native: the reveal (fg2g) and A Guardian Rises to the rifle and the Divide (agr22, agr24) played from the scripts, 6–7 Nov ([full-game test](../notes/ps4-56578-full-game-test-2026-11-06.md)) | The bridge's table lists every bound PvE activity (473: story, cinematic, quest, strike, raid, arena); 250 name a world no restored script starts, which the sidecar serves as a start-only stub on its content bundles (stream Q). Timer, hard-wipe and object-filter rows are refused. One bridge per connection, so a fireteam runs N copies (review 9, 10). BullShcript answers natives with 01.29 semantics. [Story missions](../notes/ps4-56578-story-missions-2026-11-05.md). No run with the real scripts has reached A Guardian Rises' own completion: the hangar's Fallen never appeared (F46) and the scripted player dies before it. |
+| Missions driven by step schedules (the earlier route) | partial (164, 165, 167 and 186) | capture and memory reads | lab-base (`D1_AH_MISSION_STEPS`) | earlier | baseline native (sense116: all of A Guardian Rises; cine-live13: 165); native (spk3, spk7: 167; awk5: 186, 7 Nov; [Speaker](../notes/ps4-56578-speaker-2026-11-07.md), [Awoken](../notes/ps4-56578-awoken-2026-11-07.md)) | Perching Fallen, the Ghost's performances and dialogue fidelity; some cutscenes skipped. |
 | Completion and post-game (965, lifetime 6 → 7/8, reward screens) | partial | verified (965 body decoded, #318); capture (lifetime order); placeholder (A Guardian Rises' 900 XP, the counters and session id) | `D1_REWARDS=1`, `D1_STORE=1` | #318, #324, #327 | baseline native (AGR post-game, [29 Oct](../notes/ps4-56578-postgame-2026-10-29.md)); scripted path unit | The scripted grant now runs the store's completion (review 6, fixed in #327), unseen. `D1_AH_SCRIPTS_MISSION_PHASE` stays off (meaning unknown). |
 | Enemies and squads | partial | verified (squad states, cells) | lab-base; script bridge | earlier, #324 | baseline native (the Breach's waves) | Combat runs on the clients. Squad task and roster fields have no map. |
+| Objective banners (NEW MISSION repeats) | yes | capture (build 51539 traffic) | `D1_AH_OBJECTIVE_INCOMING_MODE=2` (full-game; baseline off) | #384 | unit (305 host tests) | Not seen in game. |
 | Every mission and cinematic | – | see below | – | – | – | – |
 
 The 78 story, cinematic and quest missions with a bound world (201 activities), from the generated
@@ -85,8 +93,8 @@ exists but stream K's replay did not cover the world.
 |---|---|---|---|---|---|---|---|
 | A Guardian Rises | 164 | story | `act_cosmo_m0_highway` | cross-checked | written | 5/7, no end | baseline (step-driven) |
 | A Guardian Rises (the reveal) | 165 | cinematic | `cine_reveal` | cross-checked | written | 2/2, ends | baseline (step-driven) |
-| Restoration | 166, 606 | story | `act_cosmo_m0_5_hangar` | cross-checked | written | 1/3, no end | black screen (sense125) |
-| The Speaker | 167 | cinematic | `cine_speaker` | cross-checked | stub | – | none |
+| Restoration | 166, 606 | story | `act_cosmo_m0_5_hangar` | cross-checked | written | 1/3, no end | launches and spawns in the public bubble (fg7b, 6 Nov); completion not seen |
+| The Speaker | 167 | cinematic | `cine_speaker` | cross-checked | stub (runs from a step schedule) | – | plays end to end (spk3, spk7, 7 Nov) |
 | The Dark Within | 168, 169, 607 | story | `act_cosmo_m1_dome_a` | cross-checked | written | 1/3, no end | none |
 | The Warmind | 170, 171, 608 | story | `act_cosmo_m2_dome_c` | cross-checked | written | 3/5, no end | none |
 | The Last Array | 172, 173, 520, 578 | story | `act_cosmo_m4_dome_c` | cross-checked | written | 1/4, no end | none |
@@ -96,7 +104,7 @@ exists but stream K's replay did not cover the world.
 | Chamber of Night | 180, 181, 522, 580 | story | `act_moon_m5_strength` | cross-checked | written | 7/8, no end | none |
 | Shrine of Oryx | 182, 183, 523, 581 | story | `act_moon_m6_reactor` | cross-checked | stub | – | none |
 | A Stranger's Call | 184, 185, 616 | story | `act_venus_m01_engineering` | cross-checked | written | 4/6, no end | none |
-| The Awoken | 186 | cinematic | `act_cinematic_queen_101` | cross-checked | stub | – | none |
+| The Awoken | 186 | cinematic | `act_cinematic_queen_101` | cross-checked | stub (runs from a step schedule) | – | plays end to end (awk5, 7 Nov) |
 | Ishtar Collective | 187, 188, 617 | story | `act_venus_m02_southern_tides` | cross-checked | stub | – | none |
 | The Archive | 189, 190, 524, 582 | story | `act_venus_m05_vault` | cross-checked | stub | – | none |
 | Scourge of Winter | 191, 192, 525, 583 | story | `act_venus_m06_ketch` | cross-checked | stub | – | none |
@@ -174,7 +182,7 @@ one unnamed cinematic (233). They play a video or launch another activity.
 |---|---|---|---|---|---|---|
 | Patrol zones (a mission host beside public instances) | partial | capture (Patrol Venus, the Dreadnaught and the Cosmodrome cross-checked); verified (the client's activity table binds the Moon, Mars and the Plaguelands) | `D1_AH_PUBLIC_HOST=1`, `D1_AH_PUBLIC_TABLE`, `D1_AH_WORLDS_ACTIVITIES=all` | #316, #323, #327, #328, stream Q | unit | Patrol Cosmodrome (8), a 2014 row whose `cosmo_patrols_1` has no scenario, stays unbound (93 is the Taken King's). The Plaguelands patrol (424) starts in a stand-in. |
 | Public instances (region lists, joins, the bubble swap, the slot handover) | partial | capture (every region's groups and timings) | `D1_AH_PUBLIC_HOST=1`, `D1_AH_DISTINCT_HOST_IDS=1`, `D1_AH_PUBLIC_INSTANCES_FILE` | #316, #323, #327 | unit | The entry-only lists carry default values and have never been served. The PUBLIC checksum is the client's own index reading, not measured. The authority reset (udt 27–31, 42) and peer reservations (12, 13) are not served. The registry never enforces its cap and forgets no player on a TCP drop (review 23). [Public instances](../notes/ps4-56578-public-instances-2026-11-05.md). |
-| Restoration's public start | partial | capture | the live public region 56; every region's ambassadorship (`D1_AH_PUBLIC_AMBASSADOR=1`); `+0x19` releases a lone ambassador after 10 s (a stand-in trigger) | #314, #316 | full-game fg4b: Director launch works, private stand-in stalls; fg5b: the client runs its public search (43 empty searches, no `+0x19`) | Run with the `+0x19` release: the client should start its public instance. |
+| Restoration's public start | partial | capture | the live public region 56; every region's ambassadorship (`D1_AH_PUBLIC_AMBASSADOR=1`); `+0x19` releases a lone ambassador after 10 s (a stand-in trigger) | #314, #316 | native: fg4b the Director launch works; fg6 the `+0x19` release started the client's own public instance; fg7b it reached `in_world` and the Guardian spawned in the public bubble ([full-game test](../notes/ps4-56578-full-game-test-2026-11-06.md)) | The mission's completion has not been seen. The `+0x19` trigger is a stand-in. |
 | Patrol beacons | partial | capture: six live beacons by region, accept and `bounty_complete` incidents (#328, pending); placeholder: goals | `D1_AH_PUBLIC_HOST=1` | #316, #328 | unit | Beacon rewards past the Glimmer cap and their XP are unread. Accept incidents have no names. |
 | Public events | partial | capture: first event 485–494 s after the instance starts, tier incident sets (#328, pending); placeholder: later spells, time limits, event activity hashes | `D1_AH_PUBLIC_HOST=1`, `D1_AH_SCRIPTS=1` | #316, #324, #328 | unit | An event starts only once a scripted run exists in the bubble, and the open world's bridge has no join, so it may never start (review 20). Event rewards would pay as activity completions (review 21). |
 | Taken spawn cycles and champions | no | capture (177-s cycles on the bubble's host, #328) | – | #328 (note only) | none | Not built. |
@@ -333,7 +341,8 @@ one unnamed cinematic (233). They play a video or launch another activity.
 
 | System | Built | Source of truth | Knob | PR(s) | Tested | Known gaps and evidence needed |
 |---|---|---|---|---|---|---|
-| Player store (account, characters, inventory, currencies, completions, flags) | yes | Bungie's GDC 2021 design (save on important events, else every 5 minutes) | `D1_STORE=1`, `D1_STORE_DIR` | #307, #326, #327 | unit (crash safety included) | Never across two native sign-ons. One process owns the store since #327 (review 2). A refused social op loses the side store (review 12). |
+| Player store (account, characters, inventory, currencies, completions, flags) | yes | Bungie's GDC 2021 design (save on important events, else every 5 minutes) | `D1_STORE=1`, `D1_STORE_DIR` | #307, #326, #327 | unit (crash safety included) | Character data has not been seen across a restart in game. One process owns the store since #327 (review 2). A refused social op loses the side store (review 12). |
+| Account user data (Settings choices, 701) | yes | verified (the schema layout of build 56578) | `D1_ACCOUNT_USER_DATA=1` (full-game; baseline off) | #387 | native: a Settings choice kept across a server and emulator restart on the same store (runs set2, set3, 12 Nov, emulator 1ac34e4; [notes](../notes/ps4-56578-account-settings-2026-11-12.md)) | Account user data only, and Subtitles is the one setting checked. With the store off it lasts the server process. |
 | Reward overlay (instances, grids, Grimoire, objectives, counters) | yes | – | `D1_REWARDS=1`, `D1_STORE=1` | #327 | unit | – |
 | Raid checkpoints and loot lockouts | yes | community | `D1_STORE_CONTROL` | #313, #323 | unit | – |
 | Vault instances, refund records, vendor resets | yes | verified | `D1_STORE=1` | #307, #323 | unit | – |
@@ -387,7 +396,13 @@ sources, so the source counts overlap.
 | Tested: a baseline native run (before the build-out; some of them failures) | 35 |
 | Tested: unit only | 87 |
 | Tested: none | 24 |
-| Tested natively since the build-out | **0** |
+| Tested natively since the build-out | not recounted (see below) |
+
+These counts are as of 6 November and were not recomputed for the rows added on 12 November. Seen natively since the
+build-out, from the notes: the reveal and A Guardian Rises to the rifle and the Divide from the scripts (6–7 Nov); the
+Director launch and Restoration's public start (fg4b to fg7b); character creation (7–8 Nov); The Speaker and The Awoken
+(7 Nov); the reveal's hand-off to Tower North (8 Nov); the sight reticle and account settings persistence (12 Nov).
+Everything else in the unit-only rows has still not run in the game.
 
 Missions: 78 story, cinematic and quest missions (201 activities) have a world, and 15 story-kind
 activities name none. Of 653 activities, 534 have a world (stream Q). Rewards rules alone ([rewards note](../notes/ps4-56578-rewards-and-growth-2026-11-05.md)):
@@ -416,11 +431,11 @@ emulator build.
 7. **The reveal, script-driven.** `D1_AH_ACTIVITY_REMAP=164:165`: the bridge sends lifetime
    0 → 1 → 4 → 6 → 8 and both cinematics play. The grant and the completion reach the store once
    (sub 41, no double XP).
-8. **The hand-off.** After 165 the client launches the Tower, not orbit.
+8. **The hand-off.** After 165 the client launches the Tower, not orbit. Seen in run rev11 (8 Nov) through the lab's step schedule ([notes](../notes/ps4-56578-reveal-tower-2026-11-08.md)).
 9. **Rewards into the wallet.** A grant changes Glimmer and Legendary Marks (slot 310) in the
    client. Two vendor ops inside one push round trip lose no XP (review 3).
 10. **A generated world.** Restoration (166) from the Director, with the private start: a world
-    loads, not the black screen of sense125. Then The Dark Within (168) and The Speaker (167); the
+    loads. Seen in run fg7b (6 Nov): the Guardian spawned in the public bubble. Then The Dark Within (168) and The Speaker (167); the
     sidecar answers every tick.
 11. **A Guardian Rises, script-driven, end to end:** 164 to its post-game, the CONTINUE gate (subs
     40/673) set by the scripted completion.
