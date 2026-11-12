@@ -43,7 +43,11 @@ Dock 13 to its outro and post-game screens, with the project's services driving
 its steps. The Breach's Fallen come on the mission script's own triggers and play their authored
 entrances ([Breach notes](notes/ps4-56578-breach-sequences-2026-10-31.md)). △ CONTINUE launches the
 next story activity and arrives in a populated Tower North, with its civilians, Patches and Xûr
-([29 October notes](notes/ps4-56578-continue-tower-2026-10-29.md)). Vendor screens open and a
+([29 October notes](notes/ps4-56578-continue-tower-2026-10-29.md)). Since 8 November the story cinematic
+after the mission hands over to Tower North by itself, and the Guardian spawns there with the HUD
+([reveal notes](notes/ps4-56578-reveal-tower-2026-11-08.md)); a new Guardian can be created and starts
+A Guardian Rises in its class's starter gear
+([character creation notes](notes/ps4-56578-character-creation-2026-11-07.md)). Vendor screens open and a
 purchase is applied end to end, and equipping gear works
 ([purchase notes](notes/ps4-56578-vendor-purchase-2026-10-30.md),
 [equip notes](notes/ps4-56578-equip-2026-11-01.md)). Dismantling, selling and marks prices are still
