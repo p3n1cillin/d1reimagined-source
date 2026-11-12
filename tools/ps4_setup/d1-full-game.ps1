@@ -24,6 +24,8 @@ script never changes firewall rules, adapters or hosts entries.
   d1-full-game.ps1 -Only servers -Name fg2         # servers only (stop: create RUN\boot\stop)
   d1-full-game.ps1 -Only emulator -Name fg2e       # the emulator against servers already up
   d1-full-game.ps1 -Set D1_DRAW_FAST=0,D1_FPS=60   # per-knob overrides (later wins)
+  d1-full-game.ps1 -Record -Name fg3               # also record the window with game audio to
+                                                   # RUN\rec\run.mp4 once the emulator has booted
 
 docs/full-game-test.md says what each subsystem should log to count as working.
 #>
@@ -47,6 +49,9 @@ param(
     [switch]$DryRun,
     # With -DryRun: print the manifest as JSON only.
     [switch]$Json,
+    # Record the emulator window and game audio (tools/ps4_setup/d1-record.py) to RUN\rec\run.mp4,
+    # starting by itself once the emulator log shows it has booted; MINUTES long, or until RUN\boot\stop.
+    [switch]$Record,
     # The cargo target folder (default: this checkout's ps4/d1-server/target; CARGO_TARGET_DIR is ignored).
     [string]$TargetDir = '',
     # Where run folders go (default STAGING\full-game). Every server and emulator log of the run is
@@ -555,6 +560,20 @@ $manifest.dryRun = $false
 $manifest | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $loc.RUN 'manifest.json') -Encoding utf8
 Show | Set-Content -LiteralPath (Join-Path $loc.RUN 'plan.txt')
 
+# -Record: the audio tap needs a clean folder (a killed recorder leaves rec.flag, and the next
+# emulator then holds a tap file open from boot) and the emulator needs D1_AUDIO_TAP to write it.
+if ($Record -and $Only -ne 'servers') {
+    $tapDir = if ($knobs.Contains('D1_AUDIO_TAP') -and $knobs['D1_AUDIO_TAP'].value) { $knobs['D1_AUDIO_TAP'].value }
+              elseif ($env:D1_AUDIO_TAP) { $env:D1_AUDIO_TAP }
+              else { Join-Path (Join-Path $loc.TOOLS 'shadPS4') 'audio-tap' }
+    New-Item -ItemType Directory -Force $tapDir | Out-Null
+    Remove-Item -LiteralPath (Join-Path $tapDir 'rec.flag') -Force -ErrorAction SilentlyContinue
+    if (-not $knobs.Contains('D1_AUDIO_TAP')) {
+        Add-Content -LiteralPath (Join-Path $loc.RUN 'emulator.env') -Value "D1_AUDIO_TAP=$tapDir"
+    }
+    $env:D1_AUDIO_TAP = $tapDir
+}
+
 # The emulator inherits this process's environment through the contained boot.
 foreach ($k in @($knobs.Keys)) {
     $e = $knobs[$k]
@@ -564,5 +583,18 @@ foreach ($k in @($knobs.Keys)) {
 $bootProc = Start-Process pwsh -WindowStyle Hidden -PassThru -ArgumentList (($bootArgs | ForEach-Object { Q $_ }) -join ' ') `
     -RedirectStandardOutput (Join-Path $loc.RUN 'boot.console') -RedirectStandardError (Join-Path $loc.RUN 'boot.err')
 Say "contained boot started (pid $($bootProc.Id)): $bootLine"
+if ($Record) {
+    if ($Only -eq 'servers') { Say 'recording: not started (-Only servers has no emulator window)' }
+    else {
+        $rec = Join-Path $loc.RUN 'rec'
+        New-Item -ItemType Directory -Force $rec | Out-Null
+        $recArgs = @((Join-Path $PSScriptRoot 'd1-record.py'), '--out', (Join-Path $rec 'run.mp4'), '--fps', '30',
+            '--seconds', "$($Minutes * 60)", '--stop-file', (Join-Path $loc.RUN 'boot\stop'),
+            '--wait-log', (Join-Path $loc.SHADPS4 'user\log\shad_log.txt'), '--wait-lines', '200')
+        $null = Start-Process python -WindowStyle Hidden -PassThru -ArgumentList (($recArgs | ForEach-Object { Q $_ }) -join ' ') `
+            -RedirectStandardOutput (Join-Path $rec 'record.log') -RedirectStandardError (Join-Path $rec 'record.err')
+        Say "recording: $(Join-Path $rec 'run.mp4') (starts when the emulator log passes 200 lines; progress in rec\record.log, errors in rec\record.err)"
+    }
+}
 Say "run folder: $($loc.RUN) (manifest.json, server.env, emulator.env, boot\ with every server and emulator log)"
 if ($Only -eq 'servers') { Say "servers only: create $($loc.RUN)\boot\stop to stop them (or wait $Minutes minutes)" }
