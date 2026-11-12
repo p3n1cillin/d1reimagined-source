@@ -49,4 +49,5 @@ tracing.workspace = true
 tracing-subscriber.workspace = true
 
 [dev-dependencies]
+d1-eboot = { path = "../d1-eboot" }
 d1-rsat = { path = "../d1-rsat" }

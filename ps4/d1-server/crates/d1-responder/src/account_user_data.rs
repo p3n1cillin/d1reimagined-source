@@ -43,8 +43,9 @@ pub const ACCOUNT_FIELD: usize = 5;
 /// Field [5]'s offset in the account image (same row).
 pub const ACCOUNT_FIELD_OFFSET: usize = 128;
 
-/// Kept for the session when the player store is off, per account (`players::current`, 0 = the
-/// knobs' player), so concurrent players do not share a slot.
+/// Latest data that could not be persisted, per account (`players::current`, 0 = the knobs'
+/// player). This lock also orders persistence and reads, so a failed update cannot land after
+/// a later successful one.
 static MEMORY: Mutex<BTreeMap<u64, Vec<u8>>> = Mutex::new(BTreeMap::new());
 
 fn memory_key() -> u64 {
@@ -84,6 +85,7 @@ fn check_schemas() -> anyhow::Result<&'static Schemas> {
     anyhow::ensure!(image.struct_size as usize == IMAGE_LEN, "{IMAGE_TAG:#010x} is {} bytes in this build, not the {IMAGE_LEN} of 56578", image.struct_size);
     let f = s.get(ACCOUNT_TAG)?.fields.get(ACCOUNT_FIELD).ok_or_else(|| anyhow::anyhow!("the account has no field [{ACCOUNT_FIELD}]"))?;
     anyhow::ensure!(f.child == IMAGE_TAG && f.offset as usize == ACCOUNT_FIELD_OFFSET, "account field [{ACCOUNT_FIELD}] is not {IMAGE_TAG:#010x} at +{ACCOUNT_FIELD_OFFSET} in this build");
+    anyhow::ensure!(f.kind == d1_rsat::schema::KIND_COMPOSITE && f.optional == 1, "account field [{ACCOUNT_FIELD}] is not a composite with one presence bit");
     let r = s.get(REQUEST_TAG)?.fields.first().ok_or_else(|| anyhow::anyhow!("the 701 request has no field 0"))?;
     anyhow::ensure!(r.child == IMAGE_TAG && r.offset == 0, "701 request field 0 is not {IMAGE_TAG:#010x} at +0 in this build");
     Ok(s)
@@ -110,16 +112,27 @@ pub fn note_701(body: &[u8]) {
 }
 
 fn keep(image: &[u8]) {
-    if !crate::player_store::set_account_user_data(image) {
-        if let Ok(mut m) = MEMORY.lock() {
-            m.insert(memory_key(), image.to_vec());
-        }
+    keep_with(image, crate::player_store::set_account_user_data);
+}
+
+fn keep_with(image: &[u8], persist: impl FnOnce(&[u8]) -> bool) {
+    let mut pending = MEMORY.lock().unwrap_or_else(|e| e.into_inner());
+    let key = memory_key();
+    if persist(image) {
+        pending.remove(&key);
+    } else {
+        pending.insert(key, image.to_vec());
     }
 }
 
-/// The kept image: the player store's, else the session's memory (store off or its save failed).
+/// Pending data is newer than the store's previous value after a failed save.
 pub fn stored() -> Option<Vec<u8>> {
-    crate::player_store::account_user_data().or_else(|| MEMORY.lock().ok().and_then(|m| m.get(&memory_key()).cloned()))
+    stored_with(crate::player_store::account_user_data)
+}
+
+fn stored_with(read_store: impl FnOnce() -> Option<Vec<u8>>) -> Option<Vec<u8>> {
+    let pending = MEMORY.lock().unwrap_or_else(|e| e.into_inner());
+    pending.get(&memory_key()).cloned().or_else(read_store)
 }
 
 /// The account is being built by a path that cannot carry field [5] (no account payload to splice
@@ -233,13 +246,13 @@ mod tests {
 
     /// The tests that need the owned eboot's schemas skip without it.
     fn schemas() -> bool {
-        match d1_rsat::schemas() {
-            Ok(_) => true,
-            Err(e) => {
-                eprintln!("SKIP: no schemas ({e}); set D1_EBOOT to an owned image");
-                false
-            }
+        let path = d1_eboot::image::default_eboot();
+        if std::env::var_os("D1_EBOOT").is_none() && !std::path::Path::new(&path).exists() {
+            eprintln!("SKIP: the selected executable is absent; set D1_EBOOT to an owned image");
+            return false;
         }
+        check_schemas().expect("the supplied or selected executable must provide compatible schemas");
+        true
     }
 
     /// A 1088-byte image with a recognisable pattern across the settings struct (+1056..+1076),
@@ -287,6 +300,62 @@ mod tests {
         let mut o = d1_rsat::decode(ACCOUNT_TAG, account).unwrap().object;
         o[ACCOUNT_FIELD_OFFSET..ACCOUNT_FIELD_OFFSET + IMAGE_LEN].fill(0);
         o
+    }
+
+    #[test]
+    fn a_failed_save_serves_the_latest_data_until_a_later_save_succeeds() {
+        if !schemas() {
+            return;
+        }
+        let _k = Knob::new(true);
+        let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
+        let dir = std::env::temp_dir().join(format!("d1-user-data-recovery-{}-{stamp}", std::process::id()));
+        let mut store = crate::player_store::Store::open(&dir, 1, 2, 3, &Default::default()).unwrap();
+        let a = image(0x10);
+        let b = image(0x20);
+        let c = image(0x30);
+        let account = account();
+
+        keep_with(&a, |im| crate::player_store::set_account_user_data_in(&mut store, im));
+        let kept = stored_with(|| store.record.account.account_user_data.clone()).unwrap();
+        assert_eq!(field5(&splice_checked(&account, &kept).unwrap()), a);
+
+        // A directory at the atomic-write file forces a real save error on every platform.
+        let blocked = crate::player_store::sidecar(store.path().unwrap(), "tmp");
+        std::fs::create_dir(&blocked).unwrap();
+        keep_with(&b, |im| crate::player_store::set_account_user_data_in(&mut store, im));
+        assert_eq!(store.record.account.account_user_data, Some(a.clone()), "the failed save rolled back");
+        assert_eq!(stored_with(|| store.record.account.account_user_data.clone()), Some(b.clone()));
+        assert_eq!(field5(&serve(account.clone())), b, "pending data overrides the store's older image");
+
+        std::fs::remove_dir(&blocked).unwrap();
+        keep_with(&c, |im| crate::player_store::set_account_user_data_in(&mut store, im));
+        assert!(!MEMORY.lock().unwrap().contains_key(&memory_key()), "successful persistence clears pending data");
+        let kept = stored_with(|| store.record.account.account_user_data.clone()).unwrap();
+        assert_eq!(field5(&splice_checked(&account, &kept).unwrap()), c);
+        drop(store);
+        let reopened = crate::player_store::Store::open(&dir, 1, 2, 3, &Default::default()).unwrap();
+        assert_eq!(reopened.record.account.account_user_data, Some(c));
+        drop(reopened);
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn persistence_and_fallback_reads_share_the_pending_update_lock() {
+        let _k = Knob::new(true);
+        keep_with(&[1], |_| {
+            assert!(MEMORY.try_lock().is_err(), "a concurrent update must wait until persistence finishes");
+            false
+        });
+        assert_eq!(stored_with(|| panic!("pending data must take precedence")), Some(vec![1]));
+        keep_with(&[2], |_| {
+            assert!(MEMORY.try_lock().is_err());
+            true
+        });
+        assert_eq!(stored_with(|| {
+            assert!(MEMORY.try_lock().is_err(), "a concurrent update must wait until the read finishes");
+            Some(vec![2])
+        }), Some(vec![2]));
     }
 
     #[test]

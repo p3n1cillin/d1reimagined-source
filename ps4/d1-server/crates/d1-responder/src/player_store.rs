@@ -1727,6 +1727,10 @@ pub fn push_account(what: &str) -> anyhow::Result<()> {
 pub fn set_account_user_data(image: &[u8]) -> bool {
     let Some(m) = current_store() else { return false };
     let Ok(mut s) = m.lock() else { return false };
+    set_account_user_data_in(&mut s, image)
+}
+
+pub(super) fn set_account_user_data_in(s: &mut Store, image: &[u8]) -> bool {
     if s.record.account.account_user_data.as_deref() == Some(image) {
         return true;
     }
