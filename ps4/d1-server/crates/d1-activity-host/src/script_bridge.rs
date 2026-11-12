@@ -1333,6 +1333,9 @@ struct Run {
     unsupported: std::collections::HashSet<String>,
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
+    /// `D1_AH_SCRIPTS_START_PHASE` (lab): the lifetime's catch-up after a start at a later phase,
+    /// one value per frame as a normal run goes 1, 4, 3: 1 = the hold (4) is next, 2 = gameplay (3).
+    start_ramp: u8,
     /// The last lifetime value a frame carried, and that frame's stamp.
     lifetime_sent: Option<(i8, u32)>,
     /// The sidecar's lifetime numbering disagreed with the host's (logged once).
@@ -1867,6 +1870,7 @@ impl ScriptBridge {
             devices_armed: Default::default(),
             unsupported: Default::default(),
             lifetime_unsent: false,
+            start_ramp: 0,
             lifetime_sent: None,
             wire_disagreed: false,
             held: VecDeque::new(),
@@ -2080,6 +2084,13 @@ impl ScriptBridge {
                 }
                 Err(e) => run.retry_at = Self::retry(run, now, e),
             }
+        }
+        // D1_AH_SCRIPTS_START_PHASE (lab): the catch-up goes one value per frame, each once the last went out.
+        if run.start_ramp > 0 && !run.lifetime_unsent {
+            run.lifetime_state = if run.start_ramp == 1 { 4 } else { 3 };
+            run.start_ramp = if run.start_ramp == 1 { 2 } else { 0 };
+            run.lifetime_unsent = true;
+            self.set_lifetime();
         }
         // Messages held for the lifetime, in order, once it has gone out.
         while let Some(run) = self.run.as_mut() {
@@ -2403,6 +2414,21 @@ impl ScriptBridge {
                     );
                     run.lifetime_state = 3;
                     run.lifetime_unsent = true;
+                }
+                // D1_AH_SCRIPTS_START_PHASE (lab): the skipped phases never set the lifetime to the
+                // hold or released it (F35), so the client sat in pregame with no spawn (run gh60).
+                // The first phase of a later start brings it there as a normal run does: 4, then 3.
+                if index > 0
+                    && self.start_phase.get(&run.activity.index) == Some(&index)
+                    && run.start_ramp == 0
+                    && run.lifetime_state < 3
+                    && run.activity.end == EndKind::Gameplay
+                {
+                    tracing::info!(
+                        "⭐ script bridge: {} starts at phase {index}: lifetime brought to gameplay as the skipped phases would have (D1_AH_SCRIPTS_START_PHASE, lab)",
+                        run.activity.activity
+                    );
+                    run.start_ramp = 1;
                 }
                 self.set_lifetime();
             }
@@ -3028,6 +3054,34 @@ mod tests {
         assert!(b.config.start_phase_regions(&HashMap::from([(164, 1)])).is_empty());
         assert_eq!(b.config.start_phase_regions(&HashMap::from([(165, 1)])), vec![(165, Some(26))]);
         assert_eq!(b.config.start_phase_regions(&HashMap::from([(165, 9)])), vec![(165, None)]);
+    }
+
+    #[test]
+    fn a_later_start_phase_brings_the_lifetime_to_gameplay() {
+        // A later start skips phase 0's pregame cinematic hold and the F35 release; the first phase
+        // of the start catches the lifetime up, one value per frame as a normal run: 1, 4, 3.
+        let run = |table: Vec<(u16, u32)>| {
+            let shared = Arc::new(Mutex::new(Shared::default()));
+            let activity = ScriptedActivity::parse_with(GAMEPLAY_LINE, &base(), &|_| Ok(LIST.to_string()), None).unwrap();
+            // A start delay that never passes: the fake script stays silent; the test plays the sidecar.
+            let mut b = bridge_delayed(&shared, false, false, activity, Duration::from_secs(3600));
+            b.set_start_phase(table.into_iter().collect());
+            let mut t = Instant::now();
+            b.on_client_message(&join(9), 165, HOST, t);
+            b.on_client_message(&slice(25), 165, HOST, t);
+            run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+            b.apply(phase(5, "hangar"), t);
+            run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+            let s = shared.lock().unwrap();
+            let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+            seq.dedup();
+            seq
+        };
+        assert_eq!(run(vec![(165, 5)]), [0, 1, 4, 3], "the values a normal run reaches by phase 1");
+        assert_eq!(run(vec![]), [0, 1], "unset: unchanged, no catch-up");
+        assert_eq!(run(vec![(164, 5)]), [0, 1], "another activity's entry changes nothing");
     }
 
     #[test]
