@@ -17,14 +17,22 @@ param(
     # $WizardTaps times. Ignored with -OperatorInput.
     [int]$WizardTaps = 15,
     [int]$WizardIntervalSeconds = 4,
-    # character:signin is the character screen. A boot that reaches it after the timed taps are spent
-    # waits there until a key is pressed (runs gh40, gh41). Once the log has said the client is in
-    # that state for $CharacterGraceSeconds without leaving it, tap $TitleKey every $TapIntervalSeconds,
-    # at most $CharacterTaps times per run, not per visit (0 = never). The grace leaves flows that
-    # pass the screen themselves or with the timed taps alone. Ignored with -OperatorInput. When a
-    # parameter is not passed, $env:D1_BOOT_CHARACTER_TAPS / $env:D1_BOOT_CHARACTER_GRACE set its
-    # default (d1-full-game.ps1 forwards no tap parameters; a flow that drives the character screen
-    # sets D1_BOOT_CHARACTER_TAPS=0). A non-integer value is ignored and noted in input.log.
+    # bootflow:start is where "PRESS X TO PLAY" waits for a press (run gh42: over 6 minutes there until a
+    # key was pressed, then bootflow:platform_signin). A slow first boot (shader compile) reaches it after
+    # the timed taps are spent. Once the log has said the client is in that state for $StartGraceSeconds
+    # without leaving it, tap $TitleKey every $TapIntervalSeconds, at most $StartTaps times per run
+    # (0 = never). Ignored with -OperatorInput. When a parameter is not passed, $env:D1_BOOT_START_TAPS /
+    # $env:D1_BOOT_START_GRACE set its default; a non-integer value is ignored and noted in input.log.
+    [int]$StartTaps = 6,
+    [int]$StartGraceSeconds = 5,
+    # character:signin is the character screen. The stall was not here (the game passed it by itself after
+    # the title press); these taps are a bounded guard for flows that wait at the character screen. Once
+    # the log has said the client is in that state for $CharacterGraceSeconds without leaving it, tap
+    # $TitleKey every $TapIntervalSeconds, at most $CharacterTaps times per run, not per visit (0 = never).
+    # Ignored with -OperatorInput. When a parameter is not passed, $env:D1_BOOT_CHARACTER_TAPS /
+    # $env:D1_BOOT_CHARACTER_GRACE set its default (d1-full-game.ps1 forwards no tap parameters; a flow
+    # that drives the character screen sets D1_BOOT_CHARACTER_TAPS=0). A non-integer value is ignored and
+    # noted in input.log.
     [int]$CharacterTaps = 3,
     [int]$CharacterGraceSeconds = 20,
     [string]$Manifest = '',
@@ -83,6 +91,10 @@ $resolved = Resolve-D1EnvInt $CharacterTaps $PSBoundParameters.ContainsKey('Char
 $CharacterTaps = $resolved.Value; if ($resolved.Note) { $envNotes += $resolved.Note }
 $resolved = Resolve-D1EnvInt $CharacterGraceSeconds $PSBoundParameters.ContainsKey('CharacterGraceSeconds') 'D1_BOOT_CHARACTER_GRACE' $env:D1_BOOT_CHARACTER_GRACE
 $CharacterGraceSeconds = $resolved.Value; if ($resolved.Note) { $envNotes += $resolved.Note }
+$resolved = Resolve-D1EnvInt $StartTaps $PSBoundParameters.ContainsKey('StartTaps') 'D1_BOOT_START_TAPS' $env:D1_BOOT_START_TAPS
+$StartTaps = $resolved.Value; if ($resolved.Note) { $envNotes += $resolved.Note }
+$resolved = Resolve-D1EnvInt $StartGraceSeconds $PSBoundParameters.ContainsKey('StartGraceSeconds') 'D1_BOOT_START_GRACE' $env:D1_BOOT_START_GRACE
+$StartGraceSeconds = $resolved.Value; if ($resolved.Note) { $envNotes += $resolved.Note }
 # A contained Windows boot of the selected build: shadPS4 on Windows, the existing servers in WSL
 # bound to loopback. Containment is checked first and the run refuses on any failure: the exact
 # emulator has an enabled outbound block on every profile, all firewall profiles are on, and the
@@ -155,7 +167,7 @@ $receipt = [ordered]@{
     launch = $launch; autoPatchesDisabled = (-not $ClientPatch); autoPatchFolderEmpty = ($autoPatches.Count -eq 0)
     clientPatch = if ($ClientPatch) { [ordered]@{ path = (Get-Item -LiteralPath $ClientPatch).FullName
         sha256 = (Get-FileHash -LiteralPath $ClientPatch).Hash.ToLowerInvariant(); synthetic = $true } } else { $null }
-    input = if ($OperatorInput) { 'operator' } else { "virtual key $TitleKey x$TitleTaps after ${TitleDelaySeconds}s; up to $WizardTaps wizard taps every ${WizardIntervalSeconds}s while in profile_setup; up to $CharacterTaps character taps every ${TapIntervalSeconds}s once character:signin has lasted ${CharacterGraceSeconds}s" }
+    input = if ($OperatorInput) { 'operator' } else { "virtual key $TitleKey x$TitleTaps after ${TitleDelaySeconds}s; up to $WizardTaps wizard taps every ${WizardIntervalSeconds}s while in profile_setup; up to $CharacterTaps character taps every ${TapIntervalSeconds}s once character:signin has lasted ${CharacterGraceSeconds}s; up to $StartTaps start taps every ${TapIntervalSeconds}s once bootflow:start has lasted ${StartGraceSeconds}s" }
     checks = $checks
     mode = if ($NoEmulator) { 'servers only' } elseif ($NoServers) { 'emulator only' } else { 'servers and emulator' }
 }
@@ -358,12 +370,12 @@ function Tap([IntPtr]$h, [string]$key) {
     'posted'
 }
 # Which boot states the client is in after a chunk of the emulator log. $state holds the booleans
-# Title, Wizard and Character from before the chunk. When a chunk has both the Entering and the
+# Title, Wizard, Character and Start from before the chunk. When a chunk has both the Entering and the
 # Leaving line of a state, the later one wins. Returns the new state; LeftWizard is true when the
 # chunk has the Leaving line of profile_setup.
 function Get-D1BootState([string]$text, [hashtable]$state) {
-    $new = @{ Title = [bool]$state.Title; Wizard = [bool]$state.Wizard; Character = [bool]$state.Character; LeftWizard = $false }
-    foreach ($s in @(@('Title', 'bootflow:intro_screen_display'), @('Wizard', 'bootflow:profile_setup'), @('Character', 'character:signin'))) {
+    $new = @{ Title = [bool]$state.Title; Wizard = [bool]$state.Wizard; Character = [bool]$state.Character; Start = [bool]$state.Start; LeftWizard = $false }
+    foreach ($s in @(@('Title', 'bootflow:intro_screen_display'), @('Wizard', 'bootflow:profile_setup'), @('Character', 'character:signin'), @('Start', 'bootflow:start'))) {
         $q = [regex]::Escape($s[1])
         $last = $null
         foreach ($m in [regex]::Matches($text, "(Entering|Leaving) state '$q'")) { $last = $m.Groups[1].Value }
@@ -386,6 +398,7 @@ $taps = 0; $nextSnap = $started.AddSeconds(15); $shot = 0
 $shadLog = Join-Path $userDir 'log\shad_log.txt'
 $logPos = 0L; $inWizard = $false; $wizardTapCount = 0; $nextWizardTap = Get-Date; $nextLogRead = Get-Date
 $atTitle = $false; $titleStateTaps = 0; $nextTitleStateTap = Get-Date
+$atStart = $false; $startSince = $null; $startTapCount = 0; $nextStartTap = Get-Date
 $atCharacter = $false; $characterSince = $null; $characterTapCount = 0; $nextCharacterTap = Get-Date
 $end = $started.AddMinutes($Minutes)
 # A stuck run can end early and cleanly: create OUT\stop (as with -ServersOnly); the evidence still runs.
@@ -411,7 +424,7 @@ while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -Litera
             try {
                 if ($fs.Length -lt $logPos) {
                     # A new log: the states come from it, not from the old one.
-                    $logPos = 0L; $atTitle = $false; $inWizard = $false; $atCharacter = $false
+                    $logPos = 0L; $atTitle = $false; $inWizard = $false; $atCharacter = $false; $atStart = $false
                 }
                 [void]$fs.Seek($logPos, 'Begin')
                 $text = (New-Object IO.StreamReader($fs)).ReadToEnd()
@@ -419,10 +432,12 @@ while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -Litera
             } finally { $fs.Dispose() }
             # The timed taps can all land before the title: a boot that compiles shaders reached it
             # 4 minutes in (run base1, 6 Nov 2026). Tap again while the log says the title is up.
-            $bootState = Get-D1BootState $text @{ Title = $atTitle; Wizard = $inWizard; Character = $atCharacter }
+            $bootState = Get-D1BootState $text @{ Title = $atTitle; Wizard = $inWizard; Character = $atCharacter; Start = $atStart }
             $atTitle = $bootState.Title; $inWizard = $bootState.Wizard
             if ($bootState.Character -and -not $atCharacter) { $characterSince = Get-Date }
             $atCharacter = $bootState.Character
+            if ($bootState.Start -and -not $atStart) { $startSince = Get-Date }
+            $atStart = $bootState.Start
             if ($bootState.LeftWizard) {
                 Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) left profile_setup after $wizardTapCount wizard tap(s)"
             }
@@ -431,6 +446,11 @@ while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -Litera
     if (-not $OperatorInput -and $atTitle -and $titleStateTaps -lt $TitleTaps -and (Get-Date) -ge $nextTitleStateTap) {
         $how = Tap $h $TitleKey; $titleStateTaps++; $nextTitleStateTap = (Get-Date).AddSeconds($TapIntervalSeconds)
         Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) title tap $TitleKey ($titleStateTaps, $how; the log shows the title)"
+    }
+    if (-not $OperatorInput -and $atStart -and $startTapCount -lt $StartTaps -and
+        (Get-Date) -ge $startSince.AddSeconds($StartGraceSeconds) -and (Get-Date) -ge $nextStartTap) {
+        $how = Tap $h $TitleKey; $startTapCount++; $nextStartTap = (Get-Date).AddSeconds($TapIntervalSeconds)
+        Add-Content -LiteralPath (Join-Path $out 'input.log') "$([DateTime]::UtcNow.ToString('o')) start tap $TitleKey ($startTapCount, $how; the log shows bootflow:start)"
     }
     if (-not $OperatorInput -and $atCharacter -and $characterTapCount -lt $CharacterTaps -and
         (Get-Date) -ge $characterSince.AddSeconds($CharacterGraceSeconds) -and (Get-Date) -ge $nextCharacterTap) {
@@ -444,6 +464,7 @@ while (-not $emu.HasExited -and (Get-Date) -lt $end -and -not (Test-Path -Litera
 }
 $receipt.wizardTaps = $wizardTapCount
 $receipt.characterTaps = $characterTapCount
+$receipt.startTaps = $startTapCount
 $receipt.emulatorExitedByItself = $emu.HasExited
 if (-not $emu.HasExited) { Stop-Process -Id $emu.Id; $emu.WaitForExit(15000) | Out-Null }
 $receipt.emulatorExitCode = if ($emu.HasExited) { $emu.ExitCode } else { $null }
