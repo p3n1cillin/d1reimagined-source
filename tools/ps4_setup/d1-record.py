@@ -17,7 +17,7 @@ microphone, no other desktop sound). Each port file is named with the wall-clock
 first sample; the ports are delayed or trimmed against the first video frame and mixed to
 stereo. Recording ends after --seconds, or earlier when --stop-file appears.
 """
-import argparse, glob, json, os, re, shutil, subprocess, sys, time
+import argparse, glob, json, os, re, shutil, subprocess, sys, threading, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import d1paths  # sibling: local paths from D1_ROOT or paths.json
@@ -180,9 +180,32 @@ def write_t0(video, t_first, frames):
         print(f't0 sidecar not written: {e}', file=sys.stderr)
 
 
+def remove_stale_video(video):
+    """A video from a previous run with the same --out must not be mistaken for this run's."""
+    for f in (video, video + '.t0.json'):
+        try:
+            os.remove(f)
+        except FileNotFoundError:
+            pass
+
+
+def drain(stream):
+    """Discard a pipe until EOF so ffmpeg can never block writing progress to it."""
+    try:
+        for _ in stream:
+            pass
+    except (OSError, ValueError):
+        pass
+
+
 def stop_ffmpeg(p):
     """Ask ffmpeg to finish and wait for it; never raises on a dead process. True if it was still running."""
     was_running = p.poll() is None
+    reader = None
+    stream = getattr(p, 'stdout', None)
+    if stream is not None:  # keep reading progress after the loop stopped, or a full pipe can block `q`
+        reader = threading.Thread(target=drain, args=(stream,), daemon=True)
+        reader.start()
     if was_running:
         try:
             p.stdin.write('q')
@@ -196,8 +219,17 @@ def stop_ffmpeg(p):
     try:
         p.wait(timeout=30)
     except subprocess.TimeoutExpired:
-        p.terminate()
-        p.wait()
+        for stop, grace in ((p.terminate, 10), (p.kill, 10)):
+            try:
+                stop()
+                p.wait(timeout=grace)
+                break
+            except subprocess.TimeoutExpired:
+                continue
+            except OSError:
+                break
+    if reader is not None:
+        reader.join(timeout=5)
     return was_running
 
 
@@ -207,6 +239,7 @@ def record(a, video, stale):
            'hwdownload,format=bgra,format=yuv420p',
            '-c:v', 'h264_nvenc', '-preset', 'p5', '-cq', '18', '-g', '120',
            '-progress', 'pipe:1', '-stats_period', '0.05', video]
+    remove_stale_video(video)
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
     t_first = None
     frame = 0
@@ -233,8 +266,7 @@ def record(a, video, stale):
             pass
         time.sleep(0.5)
     if not os.path.exists(video) or os.path.getsize(video) == 0:
-        print(f'no video recorded ({video} missing or empty): nothing to mux', file=sys.stderr)
-        return
+        raise SystemExit(f'no video recorded ({video} missing or empty): nothing to mux')
     ports = [f for f in sorted(glob.glob(os.path.join(a.tap, 'port*.f32'))) if f not in stale]
     inputs, chains = ['-i', video], []
     for f in ports:

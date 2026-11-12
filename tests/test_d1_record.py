@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -151,22 +152,27 @@ class FakeStdin:
 
 
 class FakeProc:
-    def __init__(self, stdin, running=True, hang=False):
-        self.stdin, self.running, self.hang = stdin, running, hang
+    def __init__(self, stdin, running=True, hang=False, stubborn=False):
+        self.stdin, self.running, self.hang, self.stubborn = stdin, running, hang, stubborn
         self.terminated = False
+        self.killed = False
         self.waits = 0
+        self.stdout = None
 
     def poll(self):
         return None if self.running else 0
 
     def wait(self, timeout=None):
         self.waits += 1
-        if self.hang and not self.terminated:
+        if self.hang and not (self.killed if self.stubborn else self.terminated):
             raise rec.subprocess.TimeoutExpired('ffmpeg', timeout)
         return 0
 
     def terminate(self):
         self.terminated = True
+
+    def kill(self):
+        self.killed = True
 
 
 class StopFfmpeg(unittest.TestCase):
@@ -202,6 +208,54 @@ class StopFfmpeg(unittest.TestCase):
         rec.stop_ffmpeg(p)
         self.assertTrue(p.terminated)
         self.assertEqual(p.waits, 2)
+
+
+class StopHardening(unittest.TestCase):
+    def test_stubborn_process_is_killed_and_wait_is_bounded(self):
+        p = FakeProc(FakeStdin(), hang=True, stubborn=True)
+        rec.stop_ffmpeg(p)
+        self.assertTrue(p.terminated and p.killed)
+        self.assertEqual(p.waits, 3)
+
+    def test_stdout_is_drained_to_eof_while_stopping(self):
+        class Lines:
+            def __init__(self):
+                self.read = 0
+
+            def __iter__(self):
+                for i in range(1000):
+                    self.read += 1
+                    yield 'progress=continue'
+        p = FakeProc(FakeStdin())
+        p.stdout = Lines()
+        rec.stop_ffmpeg(p)
+        deadline = time.time() + 5
+        while p.stdout.read < 1000 and time.time() < deadline:
+            time.sleep(0.01)
+        self.assertEqual(p.stdout.read, 1000)
+
+    def test_stale_video_and_sidecar_removed_exact_paths_only(self):
+        with tempfile.TemporaryDirectory() as d:
+            video = os.path.join(d, 'run.mp4.video.mp4')
+            other = os.path.join(d, 'other.mp4.video.mp4')
+            for f in (video, video + '.t0.json', other):
+                open(f, 'w').close()
+            rec.remove_stale_video(video)
+            rec.remove_stale_video(video)  # absent is fine
+            self.assertEqual(os.listdir(d), ['other.mp4.video.mp4'])
+
+    def test_no_video_exits_nonzero_and_flag_is_cleaned(self):
+        with tempfile.TemporaryDirectory() as d:
+            argv = ['d1-record.py', '--out', os.path.join(d, 'o.mp4'), '--tap', d, '--seconds', '0']
+
+            dead = FakeProc(FakeStdin(), running=False)
+            dead.stdout = iter(())
+
+            with mock.patch.object(sys, 'argv', argv),                     mock.patch.object(rec.subprocess, 'Popen', return_value=dead),                     mock.patch.object(rec.time, 'sleep'):
+                with self.assertRaises(SystemExit) as cm:
+                    rec.main()
+            self.assertIn('no video recorded', str(cm.exception))
+            self.assertFalse(os.path.exists(os.path.join(d, 'rec.flag')))
 
 
 class T0Sidecar(unittest.TestCase):
