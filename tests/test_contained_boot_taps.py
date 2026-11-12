@@ -45,15 +45,15 @@ class ContainedBootTaps(unittest.TestCase):
         self.assertEqual(r.stdout.strip(), '0', r.stdout + r.stderr)
 
     def state(self, chunk, **before):
-        start = {'Title': False, 'Wizard': False, 'Character': False}
+        start = {'Title': False, 'Wizard': False, 'Character': False, 'Start': False}
         start.update(before)
         pre = ';'.join(f'${k} = ${str(v).lower()}' for k, v in start.items())
         chunk_file = Path(__file__).with_suffix('.chunk.tmp')
         chunk_file.write_text(chunk, encoding='utf-8')
         try:
             cmd = (f"{self.func}\n{pre}\n$t = [IO.File]::ReadAllText('{chunk_file}')\n"
-                   "$r = Get-D1BootState $t @{ Title = $Title; Wizard = $Wizard; Character = $Character }\n"
-                   "[pscustomobject]@{ Title = $r.Title; Wizard = $r.Wizard; Character = $r.Character; "
+                   "$r = Get-D1BootState $t @{ Title = $Title; Wizard = $Wizard; Character = $Character; Start = $Start }\n"
+                   "[pscustomobject]@{ Title = $r.Title; Wizard = $r.Wizard; Character = $r.Character; Start = $r.Start; "
                    "LeftWizard = $r.LeftWizard } | ConvertTo-Json -Compress")
             r = ps(cmd)
         finally:
@@ -63,19 +63,19 @@ class ContainedBootTaps(unittest.TestCase):
 
     def test_entering_only(self):
         for key, name in (('Title', 'bootflow:intro_screen_display'), ('Wizard', 'bootflow:profile_setup'),
-                          ('Character', 'character:signin')):
+                          ('Character', 'character:signin'), ('Start', 'bootflow:start')):
             s = self.state(line('Entering', name))
             self.assertTrue(s[key], name)
-            self.assertEqual(sum(1 for k in ('Title', 'Wizard', 'Character') if s[k]), 1, name)
+            self.assertEqual(sum(1 for k in ('Title', 'Wizard', 'Character', 'Start') if s[k]), 1, name)
 
     def test_entering_then_leaving_in_one_chunk(self):
         for key, name in (('Title', 'bootflow:intro_screen_display'), ('Wizard', 'bootflow:profile_setup'),
-                          ('Character', 'character:signin')):
+                          ('Character', 'character:signin'), ('Start', 'bootflow:start')):
             self.assertFalse(self.state(line('Entering', name) + line('Leaving', name))[key], name)
 
     def test_leaving_then_entering_in_one_chunk(self):
         for key, name in (('Title', 'bootflow:intro_screen_display'), ('Wizard', 'bootflow:profile_setup'),
-                          ('Character', 'character:signin')):
+                          ('Character', 'character:signin'), ('Start', 'bootflow:start')):
             self.assertTrue(self.state(line('Leaving', name) + line('Entering', name))[key], name)
 
     def test_leaving_clears_and_unrelated_text_keeps(self):
@@ -84,6 +84,16 @@ class ContainedBootTaps(unittest.TestCase):
         s = self.state('Loaded 12 shaders\nnothing to see\n', Character=True, Wizard=True)
         self.assertTrue(s['Character'] and s['Wizard'])
         self.assertFalse(s['Title'] or s['LeftWizard'])
+
+    def test_intro_leaving_and_start_entering_in_one_chunk(self):
+        chunk = line('Leaving', 'bootflow:intro_screen_display') + line('Entering', 'bootflow:start')
+        s = self.state(chunk, Title=True)
+        self.assertTrue(s['Start'])
+        self.assertFalse(s['Title'])
+
+    def test_start_leaving_clears(self):
+        chunk = line('Leaving', 'bootflow:start') + line('Entering', 'bootflow:platform_signin')
+        self.assertFalse(self.state(chunk, Start=True)['Start'])
 
     def test_left_wizard_flag(self):
         self.assertTrue(self.state(line('Leaving', 'bootflow:profile_setup'), Wizard=True)['LeftWizard'])
@@ -114,12 +124,19 @@ class ContainedBootTaps(unittest.TestCase):
         self.assertIn("$PSBoundParameters.ContainsKey('CharacterTaps')", self.text)
         self.assertIn('D1_BOOT_CHARACTER_TAPS', self.text)
         self.assertIn('D1_BOOT_CHARACTER_GRACE', self.text)
-        self.assertRegex(self.text, r'\$logPos = 0L; \$atTitle = \$false; \$inWizard = \$false; \$atCharacter = \$false')
+        self.assertIn("$PSBoundParameters.ContainsKey('StartTaps')", self.text)
+        self.assertIn('D1_BOOT_START_TAPS', self.text)
+        self.assertIn('D1_BOOT_START_GRACE', self.text)
+        self.assertRegex(self.text, r'\$logPos = 0L; \$atTitle = \$false; \$inWizard = \$false; \$atCharacter = \$false; \$atStart = \$false')
 
     def test_parameters_and_receipt(self):
         self.assertRegex(self.text, r'\[int\]\$CharacterTaps = 3')
         self.assertRegex(self.text, r'\[int\]\$CharacterGraceSeconds = 20')
         self.assertIn('character taps every ${TapIntervalSeconds}s', self.text)
+        self.assertRegex(self.text, r'\[int\]\$StartTaps = 6')
+        self.assertRegex(self.text, r'\[int\]\$StartGraceSeconds = 5')
+        self.assertIn('start taps every ${TapIntervalSeconds}s once bootflow:start', self.text)
+        self.assertIn('$receipt.startTaps = $startTapCount', self.text)
 
 
 if __name__ == '__main__':
