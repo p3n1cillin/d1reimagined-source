@@ -470,6 +470,8 @@ pub struct PublicRows {
     /// Current routed values (and the client's player row once seeded).
     values: BTreeMap<RowKey, Row>,
     dirty: BTreeSet<RowKey>,
+    /// The keys the bridge actually routed (a re-send repeats these, not the seeded player row).
+    routed: BTreeSet<RowKey>,
     flags: Vec<u32>,
     flags_pending: bool,
     /// The client's own player row: the players group's record at its membership peer slot.
@@ -520,6 +522,7 @@ impl PublicRows {
             }
             self.values.insert(key, row);
             self.dirty.insert(key);
+            self.routed.insert(key);
         }
         if let Some(f) = flags {
             self.flags = f;
@@ -579,6 +582,22 @@ impl PublicRows {
 
     fn requeue(&mut self, clients: &[SensorClientRef]) {
         self.dirty.extend(clients.iter().map(key_of));
+    }
+
+    /// The client's replica was just reset to the list's defaults by a full re-send: every routed
+    /// value (and the player row, when it carries flags) is due again. Returns how many rows are
+    /// due; with nothing routed and no flags it is a no-op.
+    fn mark_resend(&mut self) -> usize {
+        let flagged = !self.flags.is_empty() && self.player.is_some_and(|k| self.values.contains_key(&k));
+        if self.routed.is_empty() && !flagged {
+            return 0;
+        }
+        self.dirty.extend(self.routed.iter().filter(|k| self.values.contains_key(k)).copied());
+        if flagged {
+            self.flags_pending = true;
+            self.dirty.extend(self.player);
+        }
+        self.dirty.len()
     }
 }
 
@@ -746,6 +765,16 @@ impl PublicHost {
         self.publish_own();
         out.extend(self.take_records_delta());
         out
+    }
+
+    /// A full udt 5 list just went out, which put the client's copy of every row back to the
+    /// list's defaults: the mission's rows and the player row's flags are due again as the next
+    /// routed delta. Returns how many rows are due (0: nothing routed, nothing to send).
+    pub fn mark_routed_resend(&mut self) -> usize {
+        if !self.routed.registered() {
+            return 0;
+        }
+        self.routed.mark_resend()
     }
 
     /// A delta's entries that could not be built or sent: due again.
@@ -1535,5 +1564,47 @@ mod tests {
         let _ = a.take_routed_delta();
         b.on_leave(Instant::now());
         assert_eq!(a.take_routed_delta()[0].a_value.as_ref().unwrap().1, want);
+    }
+
+    /// A full re-send resets the client's copy to the list's defaults, so the routed values and
+    /// the player row's flags go out again as the next delta; with nothing routed, nothing does.
+    #[test]
+    fn a_full_resend_makes_the_routed_rows_due_again() {
+        let (template, log) = records_template(true);
+        let host = 0xD1A0_0000_0000_0A50;
+        let mission = 0xD1A0_0000_0000_7E50;
+        let mut a = template.clone();
+        enter(&mut a, &log, mission, 1, host, 0);
+        // Nothing routed yet: the resend is a no-op and no delta follows.
+        let _ = a.take_routed_delta();
+        assert_eq!(a.mark_routed_resend(), 0, "the seeded player row alone is not re-sent");
+        assert!(a.take_routed_delta().is_empty());
+        let _ = a.take_routed_delta();
+        crate::script_bridge::public_row_links().route_flags(mission, 1, &[0x1234_0050]);
+        let first = a.take_routed_delta();
+        assert_eq!(first.len(), 1, "the player row with its flag");
+        assert!(a.take_routed_delta().is_empty(), "once");
+        // The full list went out again: the same rows (and the flag) are due on the next poll.
+        assert_eq!(a.mark_routed_resend(), 1, "the player row with its flag");
+        let again = a.take_routed_delta();
+        assert_eq!(again, first, "the same entries, flags included");
+        assert!(a.take_routed_delta().is_empty(), "once more");
+        // Another resend repeats it.
+        a.mark_routed_resend();
+        assert_eq!(a.take_routed_delta(), first);
+    }
+
+    /// An instance that holds no routed rows (and one with the knob off) has nothing to re-send.
+    #[test]
+    fn a_full_resend_with_nothing_routed_sends_nothing() {
+        let (template, _log) = records_template(true);
+        let mut fresh = template.clone();
+        assert_eq!(fresh.mark_routed_resend(), 0, "not registered, no values");
+        assert!(fresh.take_routed_delta().is_empty());
+        let (off, log) = records_template(false);
+        let mut b = off.clone();
+        enter(&mut b, &log, 0xD1A0_0000_0000_7E51, 2, 0xD1A0_0000_0000_0A51, 0);
+        assert_eq!(b.mark_routed_resend(), 0, "knob off");
+        assert!(b.take_routed_delta().is_empty());
     }
 }

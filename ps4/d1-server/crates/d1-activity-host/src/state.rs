@@ -513,6 +513,8 @@ pub struct ActivityInstance {
     ready_drop_logged: bool,
     /// The mission's routed rows could not be sent (logged once; then debug).
     routed_warn_logged: bool,
+    /// The first re-send of the mission's rows after a full list was logged (the rest are debug).
+    routed_resend_logged: bool,
     /// `D1_AH_SCRIPTS_INTERACTABLE=1` (read once; tests set it with [`Self::set_interactable`]).
     interactable: bool,
     /// Connection/world-local observations. Decoder errors and backlog hold kill gates.
@@ -814,6 +816,7 @@ impl ActivityInstance {
             public_row_sense: Default::default(),
             ready_drop_logged: false,
             routed_warn_logged: false,
+            routed_resend_logged: false,
             interactable: crate::script_bridge::interactable_knob(),
             squad_live: crate::sense::SquadObservations::default(),
             squad_hold_logged: None,
@@ -1318,6 +1321,18 @@ impl ActivityInstance {
             None => tracing::info!("udt-5 sensor_auth_update send #{}", self.sensors_sent),
         }
         crate::script_bridge::dump_host_frame(&payload);
+        // The full list put the client's copy of the mission's rows back to the list's defaults:
+        // they go out again as the routed delta on the next poll (run rst24).
+        if let Some(public) = self.public.as_mut().filter(|p| p.is_public_instance()) {
+            let n = public.mark_routed_resend();
+            if n > 0 {
+                if std::mem::replace(&mut self.routed_resend_logged, true) {
+                    tracing::debug!("public instance {:#x}: re-sends the mission's {n} rows after its full list", self.ah_id);
+                } else {
+                    tracing::info!("public instance {:#x}: re-sends the mission's {n} rows after each full list (logged once)", self.ah_id);
+                }
+            }
+        }
         Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }))
     }
 
@@ -3714,5 +3729,79 @@ mod tests {
         assert_eq!(init_of(&delta), 0, "a delta");
         assert_ne!(delta, full);
         assert!(i.sensor_due(t2 + Duration::from_millis(300)).is_none(), "nothing more is due");
+    }
+
+    /// ⭐ D1_AH_SENSOR_REPEAT_S on a public instance (run rst24): the full list re-sent every
+    /// period puts the client's rows back to the defaults, so the mission's rows and the flag go
+    /// out again as a delta on the poll after each full list. Needs the eboot. Synthetic ids.
+    #[test]
+    fn a_public_instance_re_sends_the_missions_rows_after_each_full_list() {
+        if !crate::eboot_or_skip("a_public_instance_re_sends_the_missions_rows_after_each_full_list") {
+            return;
+        }
+        use crate::public_host::*;
+        use crate::public_registry::{InstanceKey, PublicRegistry};
+        use crate::rows::{Row, RowKey};
+        use std::sync::{Arc, Mutex};
+        const MISSION: u64 = 0xD1A0_0000_0000_7F21;
+        const GROUP: u32 = 0xD7F6_8DA0;
+        let mut text = String::new();
+        for n in 0..16 {
+            text.push_str(&format!("0xeaaf16e2 0xc {n} 1 0\n"));
+        }
+        text.push_str("0xd7f68da0 0x3 1 1 0\n");
+        let key = InstanceKey::Bubble { destination: crate::open_world::Destination::Earth, region: 56 };
+        let list = PublicRegionList::parse(key, "t", &text);
+        let codec: Arc<dyn crate::codec::AhWireCodec> = Arc::new(crate::codec::SchemaCodec);
+        let frames = PublicHost::build_frames(&[list.clone()], &entry_frame_encoder(codec.clone(), 0));
+        let mut p = PublicHost::new(Arc::new(frames), Arc::new(Mutex::new(PublicRegistry::new(1))))
+            .with_personal_frames(&[list], personal_frame_encoder(codec, 0));
+        p.set_interactable(true);
+        let (mut i, now) = instance();
+        i.set_public_host(p);
+        i.set_sensor_stamp();
+        i.set_sensor_repeat(Duration::from_secs(10));
+        i.set_activity_name("act_cosmo_m1_dome_a");
+        let mut img = vec![0u8; 0x100];
+        img[JOIN_SESSION_TYPE] = 3;
+        img[JOIN_MISSION_HOST..JOIN_MISSION_HOST + 8].copy_from_slice(&MISSION.to_le_bytes());
+        img[JOIN_IDENTITY + 0x18..JOIN_IDENTITY + 0x20].copy_from_slice(&0xD100_0000_0000_0201u64.to_le_bytes());
+        i.on_client_message(&ClientMessage::from_struct_image(3, &img).unwrap(), now);
+        let mut udt21 = vec![0u8; 0x220];
+        udt21[0x158..0x15C].copy_from_slice(&56u32.to_le_bytes());
+        udt21[0x15C..0x160].copy_from_slice(&0x811C_9DC5u32.to_le_bytes());
+        i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: udt21 }, now);
+        let init_of = |f: &[u8]| {
+            let bit = crate::codec::SchemaCodec::sensor_stamp_bit(f).unwrap();
+            (f[(bit + 32) / 8] >> (7 - (bit + 32) % 8)) & 1
+        };
+        let mut next = |i: &mut ActivityInstance, t: Instant| match i.sensor_due(t).map(|p| p.message) {
+            Some(AhMessage::SensorAuthUpdate { payload }) => Some(payload),
+            _ => None,
+        };
+        let t1 = now + Duration::from_secs(6);
+        i.heartbeat_due(t1).expect("heartbeat");
+        let full = next(&mut i, t1).expect("the full list");
+        assert_eq!(init_of(&full), 1);
+        // Nothing routed: the poll after the first full list sends nothing (an empty delta never goes).
+        assert!(next(&mut i, t1 + Duration::from_millis(100)).is_none());
+        let objective = Row { has_a: true, has_b: false, a: Some((crate::row_encoders::TAG_OBJECTIVE, vec![0; crate::row_encoders::OBJECTIVE_SIZE])), b: None };
+        let owner = 0x7F21;
+        crate::script_bridge::public_row_links().route_row(MISSION, owner, RowKey { group: GROUP, kind: 3, index: 1 }, &objective);
+        crate::script_bridge::public_row_links().route_flags(MISSION, owner, &[0x1234_ABCD]);
+        let t2 = t1 + Duration::from_millis(300);
+        let delta = next(&mut i, t2).expect("the routed delta");
+        assert_eq!(init_of(&delta), 0);
+        assert!(next(&mut i, t2 + Duration::from_millis(300)).is_none(), "nothing more is due");
+        // The repeat: a full list, then the same rows again as a delta on the next poll, each time.
+        for round in 1..=2u64 {
+            let t = t1 + Duration::from_secs(10 * round);
+            let full = next(&mut i, t).expect("the repeated full list");
+            assert_eq!(init_of(&full), 1);
+            let again = next(&mut i, t + Duration::from_millis(300)).expect("the rows again");
+            assert_eq!(init_of(&again), 0);
+            assert_eq!(again.len(), delta.len(), "the same rows ({} bytes)", delta.len());
+            assert!(next(&mut i, t + Duration::from_millis(600)).is_none(), "once");
+        }
     }
 }
