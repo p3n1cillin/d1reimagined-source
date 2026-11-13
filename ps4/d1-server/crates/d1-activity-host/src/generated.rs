@@ -748,7 +748,7 @@ mod tests {
         let unique: std::collections::HashSet<_> = k.iter().collect();
         assert_eq!(k.len(), unique.len(), "no duplicates");
         eprintln!("mission host join list: {} unique rows", k.len());
-        assert_eq!(k.len(), 67, "the analyst's count: globals 63 + 4 shared (-1) rows");
+        assert_eq!(k.len(), 67, "globals of slice set 8 (63) + 4 shared -1 rows of the private slice sets");
         for want in [(0x51f6_65ba, 0x21, 30), (0x6071_a5f0, 0x11, 17), (0xbdf3_e29c, 0x11, 26), (0xbdf3_e29c, 0x11, 30)] {
             assert!(k.contains(&want), "{want:x?}");
         }
@@ -773,6 +773,6 @@ mod tests {
         let unique: std::collections::HashSet<_> = k.iter().collect();
         assert_eq!(k.len(), unique.len());
         eprintln!("mission host relist into 104: {} unique rows", k.len());
-        assert_eq!(k.len(), 100, "the live relist at 396 s: generated(104) + the shared rows");
+        assert_eq!(k.len(), 100, "generated(104) + the shared -1 rows of the private slice sets");
     }
 }

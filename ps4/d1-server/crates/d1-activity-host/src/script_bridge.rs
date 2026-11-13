@@ -656,7 +656,9 @@ impl ScriptedActivity {
         let Some(start) = self.start else { return Ok(None) };
         let Some(set) = w.slices.get(&(self.world.clone(), start)).filter(|s| s.public) else { return Ok(None) };
         let _ = set;
-        let Some(private_start) = w.activities.get(&self.index).and_then(|a| a.private_start) else { return Ok(None) };
+        let Some(private_start) = w.activities.get(&self.index).and_then(|a| a.private_start) else {
+            return Err("has no private start slice set".into());
+        };
         let rows_of = |this: &Self, clients: &[(u32, crate::generated::Client)], title: &str| -> Result<Vec<(RowKey, Row)>, String> {
             let text = crate::generated::GeneratedWorlds::clients_text(title, clients);
             let p = crate::sensor_list::params_for_list(base, this.group, this.team, &text).map_err(|e| format!("{e:#}"))?;
@@ -1099,6 +1101,38 @@ pub fn start_delay_from(value: Option<&str>) -> Result<Duration, String> {
     seconds_knob("D1_AH_SCRIPTS_START_DELAY", value, DEFAULT_START_DELAY_S)
 }
 
+/// `D1_AH_SCRIPTS_PUBLIC_START_LIST`: give every activity that starts in a public slice set the
+/// mission host's list. An activity that cannot (no private start, no lifetime record, a list that
+/// does not parse) logs a warning and keeps today's list; the config still loads. Returns
+/// `(activities given the mission host list, activities that fell back)`.
+pub fn apply_public_start_list(
+    activities: &mut HashMap<u16, ScriptedActivity>,
+    w: &crate::generated::GeneratedWorlds,
+    base: &d1_oracle::sensor::SensorPhaseUpdate,
+) -> (usize, usize) {
+    let mut indexes: Vec<u16> = activities.keys().copied().collect();
+    indexes.sort_unstable();
+    let (mut given, mut fell_back) = (0, 0);
+    for i in indexes {
+        let Some(a) = activities.get_mut(&i) else { continue };
+        match a.use_public_start_list(w, base) {
+            Ok(Some(n)) => {
+                given += 1;
+                tracing::info!("script bridge: activity {i} ({}) joins with the mission host list, {n} rows", a.activity);
+            }
+            Ok(None) => {}
+            Err(e) => {
+                fell_back += 1;
+                tracing::warn!(
+                    "script bridge: activity {i} ({}): {e}; today's list stands (D1_AH_SCRIPTS_PUBLIC_START_LIST)",
+                    a.activity
+                );
+            }
+        }
+    }
+    (given, fell_back)
+}
+
 /// The step schedule's lists as the bridge's served values (`D1_AH_SCRIPTS_SLICE_LISTS`, a
 /// `D1_AH_MISSION_STEPS` file: `index when group list [region] [incident=...]`). Of each scripted
 /// activity's steps, the first (the start's list) and every step that names a region (the list
@@ -1304,16 +1338,7 @@ impl ScriptConfig {
         // served the live mission host's list (after the values above are in, which it keeps).
         if std::env::var("D1_AH_SCRIPTS_PUBLIC_START_LIST").is_ok_and(|v| v.trim() == "1") {
             if let Some(w) = worlds.as_ref() {
-                let mut indexes: Vec<u16> = activities.keys().copied().collect();
-                indexes.sort_unstable();
-                for i in indexes {
-                    if let Some(a) = activities.get_mut(&i) {
-                        let n = a.use_public_start_list(w, base).map_err(|e| format!("D1_AH_SCRIPTS_PUBLIC_START_LIST: {e}"))?;
-                        if let Some(n) = n {
-                            tracing::info!("script bridge: activity {i} ({}) joins with the mission host list, {n} rows", a.activity);
-                        }
-                    }
-                }
+                apply_public_start_list(&mut activities, w, base);
             } else {
                 tracing::warn!("script bridge: D1_AH_SCRIPTS_PUBLIC_START_LIST needs the generated world tables; ignored");
             }
@@ -2562,8 +2587,9 @@ impl ScriptBridge {
                 if run.activity.mission_list.is_some() {
                     // The mission host's rule: the phase names the slice set; the list goes out
                     // when the client is in it (now, or at its move: `activate_slice`).
+                    // A phase that names no slice set clears it: no relist until one does.
+                    run.phase_slice = region;
                     if let Some(r) = region {
-                        run.phase_slice = Some(r);
                         if run.current_slice == Some(r) && run.list_slice.is_some() && run.list_slice != Some(r) {
                             if let Some(list) = run.activity.slice_list(r) {
                                 tracing::info!(
@@ -4198,6 +4224,52 @@ mod tests {
         assert_eq!(b.run.as_ref().unwrap().list_slice, Some(104));
         b.on_client_message(&slice(104), 165, HOST, t);
         assert_eq!(b.run.as_ref().unwrap().list_slice, Some(104), "once");
+    }
+
+    #[test]
+    fn a_phase_that_names_no_slice_set_clears_the_phase_slice() {
+        let (mut b, t) = mission_host_bridge();
+        b.apply(phase_in(Some(104)), t);
+        assert_eq!(b.run.as_ref().unwrap().phase_slice, Some(104));
+        b.apply(phase_in(None), t);
+        assert_eq!(b.run.as_ref().unwrap().phase_slice, None);
+        b.on_client_message(&slice(104), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(56), "the current phase names no slice set: no relist");
+    }
+
+    /// Every activity of the profile's table, the knob on: the config loads, and an activity that
+    /// cannot take the mission host's list keeps today's.
+    #[test]
+    fn every_public_start_activity_loads_with_the_knob_on() {
+        let f = fixtures();
+        let mut worlds = crate::generated::GeneratedWorlds::load(&f.join("worlds")).expect("the generated worlds");
+        worlds.load_slice_states(&std::fs::read_to_string(f.join("scripts/slice-states.tsv")).unwrap()).unwrap();
+        let table = std::fs::read_to_string(f.join("scripts/activities.txt")).unwrap();
+        let mut cache = SliceRowsCache::new();
+        let mut activities = HashMap::new();
+        for line in table.lines().map(|l| l.split('#').next().unwrap_or("").trim()).filter(|l| !l.is_empty()) {
+            let a = ScriptedActivity::parse_cached(line, &lab_base(), &|_| Err("no file".into()), Some(&worlds), &mut cache)
+                .unwrap_or_else(|e| panic!("{e}"));
+            activities.insert(a.index, a);
+        }
+        let before: HashMap<u16, usize> = activities.iter().map(|(i, a)| (*i, a.rows.len())).collect();
+        let public: Vec<u16> = activities
+            .values()
+            .filter(|a| a.start.is_some_and(|s| worlds.slices.get(&(a.world.clone(), s)).is_some_and(|x| x.public)))
+            .map(|a| a.index)
+            .collect();
+        let (given, fell_back) = apply_public_start_list(&mut activities, &worlds, &lab_base());
+        eprintln!("{} activities, {} start public: {given} take the mission host list, {fell_back} fall back", activities.len(), public.len());
+        assert_eq!(given + fell_back, public.len(), "every public-start activity is either given the list or falls back");
+        assert!(given >= 2, "Restoration and The Dark Within at least ({given})");
+        for (i, a) in &activities {
+            if a.mission_list.is_none() {
+                assert_eq!(a.rows.len(), before[i], "activity {i} keeps today's list");
+            }
+        }
+        let smaller = activities.iter().filter(|(i, a)| a.mission_list.is_some() && a.rows.len() < before[*i]).count();
+        eprintln!("{smaller} of the {given} mission host lists are smaller than the public start's whole list");
+        assert!(activities[&166].rows.len() < before[&166]);
     }
 
     #[test]
