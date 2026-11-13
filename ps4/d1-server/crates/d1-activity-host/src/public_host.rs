@@ -542,6 +542,14 @@ impl PublicHost {
         self.role
     }
 
+    /// The mission host this public instance's join named.
+    pub fn mission_host(&self) -> Option<u64> {
+        match self.role {
+            Some(HostRole::PublicInstance { mission_host, .. }) => Some(mission_host),
+            _ => None,
+        }
+    }
+
     pub fn is_public_instance(&self) -> bool {
         self.role.is_some_and(HostRole::is_public_instance)
     }

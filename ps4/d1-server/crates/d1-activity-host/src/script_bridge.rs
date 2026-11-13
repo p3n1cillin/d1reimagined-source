@@ -188,6 +188,8 @@ pub enum HostMsg {
     CinematicFinished { bundle: u32, type_index: i16 },
     CinematicSkipped { bundle: u32, type_index: i16, key: String },
     Incident { id: u32, name_hash: u32 },
+    /// `D1_AH_SCRIPTS_INTERACTABLE`: the client used interactable objects, by identifier hash.
+    Interaction { names: Vec<u32> },
     SquadAlive { bundle: u32, type_index: i16, count: i32 },
     /// The bundles whose threads run (a public bubble's, from stream G; a slice set's, as the
     /// client enters it).
@@ -197,6 +199,64 @@ pub enum HostMsg {
     /// One public event stops: the bundle leaves the active set.
     EventStop { bundle: u32, event_id: u32 },
     End,
+}
+
+/// Interaction hashes waiting for one mission bridge (see [`interaction_links`]).
+pub type InteractionQueue = Arc<Mutex<VecDeque<u32>>>;
+
+/// `D1_AH_SCRIPTS_INTERACTABLE` (only `1` is on), read as the row encoders read it.
+pub fn interactable_knob() -> bool {
+    std::env::var("D1_AH_SCRIPTS_INTERACTABLE").is_ok_and(|v| v.trim() == "1")
+}
+
+/// The process-wide link from a mission host's id to its bridge: the live client sends the
+/// `interaction` incident to the public host it stands in, and the join of that public instance
+/// names the mission host. Entries are weak: a bridge that stops is gone from the link.
+#[derive(Default)]
+pub struct InteractionLinks {
+    queues: Mutex<HashMap<u64, std::sync::Weak<Mutex<VecDeque<u32>>>>>,
+}
+
+impl InteractionLinks {
+    pub fn insert(&self, mission_host: u64, queue: &InteractionQueue) {
+        let mut m = self.queues.lock().unwrap_or_else(|e| e.into_inner());
+        m.retain(|_, w| w.strong_count() > 0);
+        m.insert(mission_host, Arc::downgrade(queue));
+    }
+
+    pub fn remove(&self, mission_host: u64) {
+        self.queues.lock().unwrap_or_else(|e| e.into_inner()).remove(&mission_host);
+    }
+
+    /// Queue `hash` for `mission_host`'s bridge; false if no live bridge is registered under it.
+    pub fn deliver(&self, mission_host: u64, hash: u32) -> bool {
+        let mut m = self.queues.lock().unwrap_or_else(|e| e.into_inner());
+        match m.get(&mission_host).and_then(std::sync::Weak::upgrade) {
+            Some(q) => {
+                q.lock().unwrap_or_else(|e| e.into_inner()).push_back(hash);
+                true
+            }
+            None => {
+                m.remove(&mission_host);
+                false
+            }
+        }
+    }
+}
+
+static INTERACTION_LINKS: std::sync::OnceLock<InteractionLinks> = std::sync::OnceLock::new();
+
+/// The process's one [`InteractionLinks`].
+pub fn interaction_links() -> &'static InteractionLinks {
+    INTERACTION_LINKS.get_or_init(InteractionLinks::default)
+}
+
+impl Drop for ScriptBridge {
+    fn drop(&mut self) {
+        if let Some((id, _)) = self.interaction_link.take() {
+            interaction_links().remove(id);
+        }
+    }
 }
 
 /// Sidecar → host (tools/script-host/PROTOCOL.md). Fields the bridge does not use are ignored.
@@ -1572,6 +1632,9 @@ pub struct ScriptBridge {
     /// ([`Self::set_world_bubbles`]): the join grant gives the client blocks `0..bubbles` and 64.
     world_bubbles: Option<usize>,
     host_id: u64,
+    /// `D1_AH_SCRIPTS_INTERACTABLE`: this bridge's place in the process-wide interaction link
+    /// (the host id it is registered under, and its queue of hashes public instances deliver).
+    interaction_link: Option<(u64, InteractionQueue)>,
     pub frames_sent: u64,
     /// Stream O2: the scripts' phases, wipes and completion as activity-framework events, for the
     /// instance's `activity_driver::RunDriver` ([`Self::take_framework_events`]).
@@ -1662,6 +1725,7 @@ impl ScriptBridge {
             remapped_launch: None,
             world_bubbles: None,
             host_id: 0,
+            interaction_link: None,
             frames_sent: 0,
             framework_events: Vec::new(),
             scoreboard: scoreboard_knob(),
@@ -1845,6 +1909,7 @@ impl ScriptBridge {
     /// then serves, `host_id` this activity host's id).
     pub fn on_client_message(&mut self, msg: &ClientMessage, activity_index: u16, host_id: u64, now: Instant) {
         self.host_id = host_id;
+        self.link_interactions();
         match msg {
             ClientMessage::JoinRequest { struct_image } => {
                 use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
@@ -2124,10 +2189,39 @@ impl ScriptBridge {
                     self.devices_triggered(RowKey { group, kind, index: index as i16 });
                 }
             }
+            if t == crate::state::INCIDENT_INTERACTION && self.encoders.interactable() {
+                if let Some(hash) = crate::state::interaction_identifier(image) {
+                    tracing::info!("⭐ script bridge: interaction {hash:#010x} (incident {t}) → scripts");
+                    self.send(HostMsg::Interaction { names: vec![hash] });
+                }
+            }
             let msg = self.translate_incident(t, image);
             if let Some(m) = msg {
                 self.send(m);
             }
+        }
+    }
+
+    /// `D1_AH_SCRIPTS_INTERACTABLE`: register this bridge under its host id in the process-wide
+    /// link (re-registering if the id changed) and pass on what public instances delivered.
+    fn link_interactions(&mut self) {
+        if !self.encoders.interactable() || self.host_id == 0 {
+            return;
+        }
+        if self.interaction_link.as_ref().is_none_or(|(id, _)| *id != self.host_id) {
+            let queue = InteractionQueue::default();
+            if let Some((old, _)) = self.interaction_link.take() {
+                interaction_links().remove(old);
+            }
+            interaction_links().insert(self.host_id, &queue);
+            self.interaction_link = Some((self.host_id, queue));
+        }
+        let hashes: Vec<u32> = match self.interaction_link.as_ref() {
+            Some((_, q)) => q.lock().unwrap_or_else(|e| e.into_inner()).drain(..).collect(),
+            None => return,
+        };
+        for hash in hashes {
+            self.send(HostMsg::Interaction { names: vec![hash] });
         }
     }
 
@@ -3078,6 +3172,7 @@ impl ScriptBridge {
     /// heartbeat. Also runs the sidecar (events in, the clock). Call it on every poll.
     pub fn sensor_due(&mut self, now: Instant) -> Option<Vec<u8>> {
         self.run.as_ref()?;
+        self.link_interactions();
         self.devices_due(now);
         self.list_retry_due(now);
         self.drive(now);
@@ -5571,5 +5666,83 @@ mod tests {
         assert_eq!(rows[1].1.a, Some(set), "a served value stays");
         assert_eq!(rows[2].1.a, None, "a record with no A value has none");
         assert_eq!(rows[3].1.a, None, "only triggers");
+    }
+
+    // ── D1_AH_SCRIPTS_INTERACTABLE: the client's interaction incident (3569) ──
+
+    /// A synthetic udt 18 message of incident 3569 whose body has `id` at bit 330 (MSB first), the
+    /// place the identifier was measured at. The value is the test's own.
+    fn interaction(id: u32) -> ClientMessage {
+        let mut body = vec![0u8; 64];
+        for i in 0..32 {
+            if (id >> (31 - i)) & 1 == 1 {
+                body[(330 + i) / 8] |= 0x80 >> ((330 + i) % 8);
+            }
+        }
+        ClientMessage::Other { user_defined_type: 18, struct_image: crate::state::incident_image(3569, &body) }
+    }
+
+    fn interactions(shared: &Arc<Mutex<Shared>>) -> Vec<Vec<u32>> {
+        shared.lock().unwrap().sent.iter().filter_map(|m| match m {
+            HostMsg::Interaction { names } => Some(names.clone()),
+            _ => None,
+        }).collect()
+    }
+
+    #[test]
+    fn the_identifier_is_read_at_message_bit_330() {
+        let ClientMessage::Other { struct_image, .. } = interaction(0x1357_9BDF) else { unreachable!() };
+        assert_eq!(crate::state::interaction_identifier(&struct_image), Some(0x1357_9BDF));
+        let ClientMessage::Other { struct_image, .. } = interaction(0x811C_9DC5) else { unreachable!() };
+        assert_eq!(crate::state::interaction_identifier(&struct_image), None, "the empty name");
+        let ClientMessage::Other { struct_image, .. } = interaction(0) else { unreachable!() };
+        assert_eq!(crate::state::interaction_identifier(&struct_image), None);
+        assert_eq!(crate::state::interaction_identifier(&[0u8; 0xD8 + 4]), None, "a body too short");
+    }
+
+    #[test]
+    fn a_host_message_interaction_serialises_as_the_protocol_names_it() {
+        let json = serde_json::to_string(&HostMsg::Interaction { names: vec![7, 9] }).unwrap();
+        assert_eq!(json, r#"{"type":"interaction","names":[7,9]}"#);
+    }
+
+    #[test]
+    fn an_interaction_incident_reaches_the_scripts_when_the_knob_is_on() {
+        for (on, id, want) in [
+            (true, 0x1357_9BDFu32, vec![vec![0x1357_9BDFu32]]),
+            (true, 0x811C_9DC5, vec![]),
+            (false, 0x1357_9BDF, vec![]),
+        ] {
+            let shared = Arc::new(Mutex::new(Shared::default()));
+            let mut b = bridge(&shared, false);
+            b.set_interactable(on);
+            let mut t = Instant::now();
+            b.on_client_message(&join(1), 165, HOST, t);
+            run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+            shared.lock().unwrap().sent.clear();
+            b.on_client_message(&interaction(id), 165, HOST, t);
+            assert_eq!(interactions(&shared), want, "knob {on}, identifier {id:#x}");
+        }
+    }
+
+    /// A public instance's delivery through the process-wide link: the mission bridge registers
+    /// under its host id (a value of this test's own, as other tests' bridges use `HOST`), and the
+    /// queued hash reaches its sidecar on the next poll; a stopped bridge leaves the link.
+    #[test]
+    fn a_delivery_through_the_link_reaches_the_mission_bridge_and_a_stopped_one_is_gone() {
+        const MISSION: u64 = 0xD1A0_0000_0000_7E57;
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge(&shared, false);
+        b.set_interactable(true);
+        let mut t = Instant::now();
+        b.on_client_message(&join(1), 165, MISSION, t);
+        run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+        shared.lock().unwrap().sent.clear();
+        assert!(interaction_links().deliver(MISSION, 0x2468_ACE0));
+        run_for(&mut b, &mut t, 0.5, &mut Vec::new());
+        assert_eq!(interactions(&shared), vec![vec![0x2468_ACE0]]);
+        drop(b);
+        assert!(!interaction_links().deliver(MISSION, 0x2468_ACE0), "the bridge stopped");
+        assert!(!interaction_links().deliver(0xD1A0_0000_0000_7E58, 1), "an unknown mission host");
     }
 }
