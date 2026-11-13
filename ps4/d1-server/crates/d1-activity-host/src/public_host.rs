@@ -267,7 +267,6 @@ struct SlotRecord {
 
 #[derive(Debug, Default)]
 struct HostRecords {
-    next_version: u64,
     slots: BTreeMap<usize, SlotRecord>,
 }
 
@@ -278,6 +277,9 @@ struct HostRecords {
 #[derive(Debug, Default)]
 pub struct PublicRecords {
     hosts: HashMap<u64, HostRecords>,
+    /// One counter for every host, never reset: a cursor left over from a host entry that was
+    /// removed (every member left) can never shadow a newer record of a re-created entry.
+    next_version: u64,
 }
 
 pub type SharedRecords = Arc<Mutex<PublicRecords>>;
@@ -289,22 +291,25 @@ impl PublicRecords {
         if h.slots.get(&slot).is_some_and(|r| r.present && r.image == image) {
             return false;
         }
-        h.next_version += 1;
-        let version = h.next_version;
-        h.slots.insert(slot, SlotRecord { image, version, present: true });
+        self.next_version += 1;
+        let version = self.next_version;
+        self.hosts.entry(host).or_default().slots.insert(slot, SlotRecord { image, version, present: true });
         true
     }
 
     /// The member in `slot` left: its record goes back to the default image (identity zero).
     /// Only if the record still names `key`: a later member that already took the slot keeps it.
     fn leave(&mut self, host: u64, slot: usize, key: Option<[u8; 8]>) -> bool {
-        let Some(h) = self.hosts.get_mut(&host) else { return false };
-        let names_key = |r: &SlotRecord| key.is_none_or(|k| r.image.get(0x40..0x48) == Some(&k[..]));
-        if !h.slots.get(&slot).is_some_and(|r| r.present && names_key(r)) {
+        // A member with no player key named no record, so it never resets one (it could be a
+        // later member's that took the freed slot).
+        let Some(key) = key else { return false };
+        let Some(h) = self.hosts.get(&host) else { return false };
+        if !h.slots.get(&slot).is_some_and(|r| r.present && r.image.get(0x40..0x48) == Some(&key[..])) {
             return false;
         }
-        h.next_version += 1;
-        let version = h.next_version;
+        self.next_version += 1;
+        let version = self.next_version;
+        let Some(h) = self.hosts.get_mut(&host) else { return false };
         let image = crate::row_encoders::player_bundle_image([0; 8], false);
         h.slots.insert(slot, SlotRecord { image, version, present: false });
         if h.slots.values().all(|r| !r.present) {
@@ -1347,8 +1352,7 @@ mod tests {
     /// listener's per-connection clones do.
     fn records_template(interactable: bool) -> (PublicHost, Frames) {
         let key = InstanceKey::Bubble { destination: Destination::Earth, region: 56 };
-        let text: String = (0..16).map(|i| format!("0xeaaf16e2 0xc {i} 1 1
-")).collect();
+        let text: String = (0..16).map(|i| format!("0xeaaf16e2 0xc {i} 1 1\n")).collect();
         let list = PublicRegionList::parse(key, "t", &text);
         let log: Frames = Arc::default();
         let l = log.clone();
