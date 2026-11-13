@@ -470,6 +470,8 @@ pub struct PublicRows {
     /// Current routed values (and the client's player row once seeded).
     values: BTreeMap<RowKey, Row>,
     dirty: BTreeSet<RowKey>,
+    /// The keys the bridge actually routed (a re-send repeats these, not the seeded player row).
+    routed: BTreeSet<RowKey>,
     flags: Vec<u32>,
     flags_pending: bool,
     /// The client's own player row: the players group's record at its membership peer slot.
@@ -520,6 +522,7 @@ impl PublicRows {
             }
             self.values.insert(key, row);
             self.dirty.insert(key);
+            self.routed.insert(key);
         }
         if let Some(f) = flags {
             self.flags = f;
@@ -581,17 +584,19 @@ impl PublicRows {
         self.dirty.extend(clients.iter().map(key_of));
     }
 
-    /// The client's replica was just reset to the list's defaults by a full re-send: every held
-    /// value (and the player row's flags) is due again. Returns how many rows are due; an empty
-    /// `values` is a no-op.
+    /// The client's replica was just reset to the list's defaults by a full re-send: every routed
+    /// value (and the player row, when it carries flags) is due again. Returns how many rows are
+    /// due; with nothing routed and no flags it is a no-op.
     fn mark_resend(&mut self) -> usize {
-        if self.values.is_empty() {
+        let flagged = !self.flags.is_empty() && self.player.is_some_and(|k| self.values.contains_key(&k));
+        if self.routed.is_empty() && !flagged {
             return 0;
         }
-        if !self.flags.is_empty() && self.player.is_some() {
+        self.dirty.extend(self.routed.iter().filter(|k| self.values.contains_key(k)).copied());
+        if flagged {
             self.flags_pending = true;
+            self.dirty.extend(self.player);
         }
-        self.dirty.extend(self.values.keys().copied());
         self.dirty.len()
     }
 }
@@ -1572,15 +1577,15 @@ mod tests {
         enter(&mut a, &log, mission, 1, host, 0);
         // Nothing routed yet: the resend is a no-op and no delta follows.
         let _ = a.take_routed_delta();
-        assert_eq!(a.mark_routed_resend(), a.routed.values.len());
-        let seeded = a.routed.values.len();
+        assert_eq!(a.mark_routed_resend(), 0, "the seeded player row alone is not re-sent");
+        assert!(a.take_routed_delta().is_empty());
         let _ = a.take_routed_delta();
         crate::script_bridge::public_row_links().route_flags(mission, 1, &[0x1234_0050]);
         let first = a.take_routed_delta();
         assert_eq!(first.len(), 1, "the player row with its flag");
         assert!(a.take_routed_delta().is_empty(), "once");
         // The full list went out again: the same rows (and the flag) are due on the next poll.
-        assert_eq!(a.mark_routed_resend(), seeded.max(1));
+        assert_eq!(a.mark_routed_resend(), 1, "the player row with its flag");
         let again = a.take_routed_delta();
         assert_eq!(again, first, "the same entries, flags included");
         assert!(a.take_routed_delta().is_empty(), "once more");
