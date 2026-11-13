@@ -453,6 +453,15 @@ impl GeneratedWorlds {
         Ok(out)
     }
 
+    /// The mission host's full relist when the client reports it is in the activity's public START
+    /// slice set: that set's globals (its own bubble's rows, and its player-bundle variant), then
+    /// [`Self::negative_union`].
+    pub fn mission_host_start_clients(&self, world: &str, start: u32) -> Vec<(u32, Client)> {
+        let mut out = self.globals_only(world, start);
+        self.add_clients_from(&mut out, self.negative_union(world));
+        out
+    }
+
     /// The mission host's list after the client moves into the PRIVATE slice set `slice_set`:
     /// its own list, then [`Self::negative_union`].
     pub fn mission_host_relist_clients(&self, world: &str, slice_set: u32) -> Vec<(u32, Client)> {

@@ -468,6 +468,9 @@ pub struct MissionHostList {
     pub public_slices: Vec<u32>,
     /// Private slice set -> the list the client holds there (its own list and the shared rows).
     pub relists: HashMap<u32, Vec<(RowKey, Row)>>,
+    /// The public start slice set and the full relist the client gets when it first reports being
+    /// there: the start's globals and the shared rows (the live host's first udt 6 followed it).
+    pub start_relist: (u32, Vec<(RowKey, Row)>),
 }
 
 /// Every slice set's rows of one world, shared by the table's rows on that world (stream Q: the
@@ -691,7 +694,9 @@ impl ScriptedActivity {
                 relists.insert(id, rows_of(self, &c, &format!("{} slice set {id}: mission host relist", self.world))?);
             }
         }
-        self.mission_list = Some(MissionHostList { public_slices: w.public_slice_sets(&self.world), relists });
+        let c = w.mission_host_start_clients(&self.world, start);
+        let start_relist = (start, rows_of(self, &c, &format!("{} slice set {start}: mission host start relist", self.world))?);
+        self.mission_list = Some(MissionHostList { public_slices: w.public_slice_sets(&self.world), relists, start_relist });
         self.rows = rows;
         Ok(Some(n))
     }
@@ -1480,6 +1485,8 @@ struct Run {
     public_slice_logged: Vec<u32>,
     /// The slice set the latest mission phase resolved to (`D1_AH_SCRIPTS_PUBLIC_START_LIST`).
     phase_slice: Option<u32>,
+    /// The public start slice set's relist went out (`D1_AH_SCRIPTS_PUBLIC_START_LIST`).
+    start_relisted: bool,
     /// When the first full list went out: the start cushion counts from here without the udt 6
     /// gate ([`ScriptConfig::list_retry`] `None`).
     full_at: Option<Instant>,
@@ -1878,6 +1885,23 @@ impl ScriptBridge {
         // The new slice set's own list (generated tables): the live host sent its full list after
         // the move, with the rows' current values.
         if let Some(run) = self.run.as_mut() {
+            // The client is in the public start slice set: the live mission host's full relist, once.
+            let start_list = run
+                .activity
+                .mission_list
+                .as_ref()
+                .filter(|m| m.start_relist.0 == region && !run.start_relisted)
+                .map(|m| m.start_relist.1.clone());
+            if let Some(mut list) = start_list {
+                run.start_relisted = true;
+                live_trigger_defaults(&mut list);
+                tracing::info!(
+                    "⭐ script bridge: slice set {region} (the public start): mission host relist = the start's globals + private shared rows ({} rows) (D1_AH_SCRIPTS_PUBLIC_START_LIST)",
+                    list.len() + 1
+                );
+                let lifetime = run.activity.lifetime;
+                self.rows.relist(list, &[lifetime]);
+            }
             if run.list_slice.is_some() && run.list_slice != Some(region) {
                 // The live mission host relisted only for a private slice set a mission phase names.
                 let phase_named = run.phase_slice == Some(region);
@@ -2043,6 +2067,7 @@ impl ScriptBridge {
             list_slice: start,
             public_slice_logged: Vec::new(),
             phase_slice: None,
+            start_relisted: false,
             full_at: None,
             last_full_at: None,
             sensed_at: None,
@@ -4196,6 +4221,49 @@ mod tests {
 
     fn phase_in(region: Option<u32>) -> SidecarMsg {
         SidecarMsg::Phase { index: 1, name: Some("hangar".into()), name_hash: None, slice_hash: None, region }
+    }
+
+    #[test]
+    fn the_mission_host_relists_the_public_start_once_when_the_client_is_there() {
+        let (a, worlds) = profile_activity(166);
+        let mut a = a;
+        a.use_public_start_list(&worlds, &lab_base()).unwrap();
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_of(&shared, false, false, a);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(7), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.25, &mut wire);
+        let fulls = |s: &Shared| s.frames.iter().filter(|p| p.full).count();
+        let (n0, last_len) = {
+            let s = shared.lock().unwrap();
+            (fulls(&s), s.frames.iter().rev().find(|p| p.full).unwrap().entries.len())
+        };
+        assert_eq!(last_len, 67, "the join list");
+        // (b) a public slice set that is not the start: nothing.
+        b.on_client_message(&slice(48), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert_eq!(fulls(&shared.lock().unwrap()), n0, "no relist into 48");
+        // (a) the client reports the start slice set: its globals and the shared rows, once.
+        b.on_client_message(&slice(56), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        {
+            let s = shared.lock().unwrap();
+            assert_eq!(fulls(&s), n0 + 1, "one full relist");
+            let full = s.frames.iter().rev().find(|p| p.full).unwrap();
+            assert!(full.init, "an init frame");
+            eprintln!("start relist: {} rows", full.entries.len());
+            assert_eq!(full.entries.len(), 70, "67 + the start's player-bundle variant rows");
+            let keys: Vec<RowKey> = full.entries.iter().map(|(k, _)| *k).collect();
+            for (kind, index) in [(0x4, 0), (0x1d, 22), (0x1c, 23)] {
+                assert!(keys.contains(&RowKey { group: 0x1200_a031, kind, index }), "{kind:#x}/{index}");
+            }
+            assert!(keys.iter().all(|k| ![0xd7f6_8da0, 0xed3c_5b0a, 0xeaaf_16e2].contains(&k.group)));
+        }
+        b.on_client_message(&slice(56), 165, HOST, t);
+        b.on_client_message(&slice(48), 165, HOST, t);
+        b.on_client_message(&slice(56), 165, HOST, t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert_eq!(fulls(&shared.lock().unwrap()), n0 + 1, "a later return to the start does not relist again");
     }
 
     #[test]
