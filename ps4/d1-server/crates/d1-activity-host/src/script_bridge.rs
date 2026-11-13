@@ -1340,6 +1340,7 @@ struct Run {
     ramp_armed_at: Option<Instant>,
     /// The ramp has finished: the scripts' initial lifetime (below 3) no longer applies.
     ramp_done: bool,
+    ramp_swallow_logged: bool,
     /// The last lifetime value a frame carried, and that frame's stamp.
     lifetime_sent: Option<(i8, u32)>,
     /// The sidecar's lifetime numbering disagreed with the host's (logged once).
@@ -1877,6 +1878,7 @@ impl ScriptBridge {
             start_ramp: 0,
             ramp_armed_at: None,
             ramp_done: false,
+            ramp_swallow_logged: false,
             lifetime_sent: None,
             wire_disagreed: false,
             held: VecDeque::new(),
@@ -2427,6 +2429,12 @@ impl ScriptBridge {
                     run.lifetime_state = 3;
                     run.lifetime_unsent = true;
                 }
+                if index == 0 {
+                    // A script restart (a wipe, a new pass through phase 0): the initial state applies again.
+                    run.ramp_done = false;
+                    run.ramp_swallow_logged = false;
+                    run.start_ramp = 0;
+                }
                 // D1_AH_SCRIPTS_START_PHASE (lab): the skipped phases never set the lifetime to the
                 // hold or released it (F35), so the client sat in pregame with no spawn (run gh60).
                 // The first phase of a later start brings it there as a normal run does: 4, then 3.
@@ -2574,13 +2582,25 @@ impl ScriptBridge {
                 }
             }
             match ours {
-                Some(s) if run.ramp_done && s < 3 => {
-                    tracing::info!(
-                        "script bridge: lifetime {s} (script state {state}) is the scripts' initial state, skipped by the start phase; it stays {} (D1_AH_SCRIPTS_START_PHASE, lab)",
-                        run.lifetime_state
-                    );
+                // After the ramp, and while it steps, the scripts' initial state (below 3) does not
+                // drag the lifetime back; the next phase 0 (a restart) clears this.
+                Some(s) if (run.ramp_done || matches!(run.start_ramp, 1 | 2)) && s < 3 => {
+                    if run.ramp_swallow_logged {
+                        tracing::debug!("script bridge: lifetime {s} (script state {state}) skipped by the start phase; it stays {}", run.lifetime_state);
+                    } else {
+                        run.ramp_swallow_logged = true;
+                        tracing::info!(
+                            "script bridge: lifetime {s} (script state {state}) is the scripts' initial state, skipped by the start phase; it stays {} (D1_AH_SCRIPTS_START_PHASE, lab)",
+                            run.lifetime_state
+                        );
+                    }
                 }
                 Some(s) => {
+                    if matches!(run.start_ramp, 1 | 2) {
+                        // A genuine scripted value (3 or more) mid-ramp ends the ramp and applies.
+                        run.start_ramp = 0;
+                        run.ramp_done = true;
+                    }
                     if s != run.lifetime_state {
                         tracing::info!("⭐ script bridge: lifetime {} -> {s} (script state {state})", run.lifetime_state);
                     }
@@ -2878,9 +2898,10 @@ pub fn unarmed_until(activity: u16) -> Option<i32> {
         .copied()
 }
 
-/// ⭐ `D1_AH_SCRIPTS_START_PHASE=INDEX:PHASE[,...]` (lab): the activities whose mission scripts start
+/// ⭐ `D1_AH_SCRIPTS_START_PHASE=INDEX:PHASE[,...]` (lab; process-wide: the world-table region override
+/// in main.rs applies to every join of that activity, later players and public instances too): the activities whose mission scripts start
 /// at a later phase (the sidecar's `hello.phase_index`; earlier phases never run) and the phase's
-/// ordinal. `164:5`: A Guardian Rises at its phase 5 (the hangar). Malformed entries come back in
+/// ordinal, for example `164:5` (A Guardian Rises at its phase 5, the hangar; an example, not a profile setting). Malformed entries come back in
 /// the second list and are ignored. Nothing else is invented for the skipped phases.
 pub fn parse_start_phase(text: &str) -> (HashMap<u16, u32>, Vec<String>) {
     let (mut table, mut bad) = (HashMap::new(), Vec::new());
@@ -2934,7 +2955,7 @@ impl ScriptConfig {
                 }
                 None => {
                     tracing::warn!(
-                        "script bridge: D1_AH_SCRIPTS_START_PHASE {i}:{phase}: no `regions=` entry for phase {phase} in the                          activity table, so the region cannot be determined before the scripts load; the join keeps `start=`"
+                        "script bridge: D1_AH_SCRIPTS_START_PHASE {i}:{phase}: no `regions=` entry for phase {phase} in the \n                         activity table, so the region cannot be determined before the scripts load; the join keeps `start=`"
                     );
                     out.push((i, None));
                 }
@@ -3115,6 +3136,88 @@ mod tests {
         assert_eq!(seen, [Some(3)], "the repeated state 0 does not drag it back");
         assert_eq!(run(vec![]).0, [0, 1, 4], "unset: unchanged, no catch-up");
         assert_eq!(run(vec![(164, 5)]).0, [0, 1, 4], "another activity's entry changes nothing");
+    }
+
+    /// Plays the sidecar's side for the start-phase tests: `steps` run in order, then 4 s pass.
+    /// Returns the deduplicated wire lifetime sequence.
+    fn start_phase_run(table: Vec<(u16, u32)>, steps: &dyn Fn(&mut ScriptBridge, Instant, &mut dyn FnMut(&mut ScriptBridge, f32))) -> Vec<i8> {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let activity = ScriptedActivity::parse_with(GAMEPLAY_LINE, &base(), &|_| Ok(LIST.to_string()), None).unwrap();
+        let mut b = bridge_delayed(&shared, false, false, activity, Duration::from_secs(3600));
+        b.set_start_phase(table.into_iter().collect());
+        let t = std::cell::Cell::new(Instant::now());
+        b.on_client_message(&join(9), 165, HOST, t.get());
+        b.on_client_message(&slice(25), 165, HOST, t.get());
+        let mut wait = |b: &mut ScriptBridge, secs: f32| {
+            let mut now = t.get();
+            run_for(b, &mut now, secs, &mut Vec::new());
+            t.set(now);
+        };
+        wait(&mut b, 1.0);
+        steps(&mut b, t.get(), &mut wait);
+        let s = shared.lock().unwrap();
+        let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+        seq.dedup();
+        seq
+    }
+
+    #[test]
+    fn start_phase_ramp_without_a_scripted_value_starts_after_two_seconds() {
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            wait(b, 1.0);
+        });
+        assert_eq!(seq, [0], "no scripted value and under 2 s: the ramp waits");
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            wait(b, 4.0);
+        });
+        assert_eq!(seq, [0, 4, 3], "no scripted value: the ramp starts anyway after 2 s");
+    }
+
+    #[test]
+    fn start_phase_ramp_arms_at_phase_1_and_a_restart_clears_the_skip() {
+        let seq = start_phase_run(vec![(165, 1)], &|b, t, wait| {
+            b.apply(phase(1, "p1"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 3.0);
+        });
+        assert_eq!(seq, [0, 1, 4, 3], "a ramp that arms at phase 1");
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 3.0);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 1.0);
+            // The scripts restart at phase 0: their initial state applies again.
+            b.apply(phase(0, "p0"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 1.0);
+        });
+        assert_eq!(seq, [0, 1, 4, 3, 1], "swallowed at 3 until phase 0, then state 0 applies");
+    }
+
+    #[test]
+    fn start_phase_mid_ramp_values() {
+        // A scripted value below 3 mid-ramp is swallowed; the ramp still ends at 3.
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 0.3); // 1 is out, the hold 4 is next or out
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 3.0);
+        });
+        assert_eq!(seq.last(), Some(&3), "{seq:?}");
+        assert!(!seq.windows(2).any(|w| w == [4, 1] || w == [3, 1]), "no drag back: {seq:?}");
+        // A scripted state 3 (wire 4) mid-ramp ends the ramp and applies; the ramp's 3 does not overwrite it.
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 0.3);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(3)] }, t);
+            wait(b, 3.0);
+        });
+        assert_eq!(seq.last(), Some(&4), "{seq:?}");
     }
 
     #[test]
