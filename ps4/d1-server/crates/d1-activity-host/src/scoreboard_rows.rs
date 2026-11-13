@@ -21,7 +21,7 @@
 //! |---|---|---|
 //! | `+0` | player count (i32, 5 bits) | the players, at most 16 |
 //! | `+0x10 + 0x4A0 * i` | player row `i` (`0x808006E0`) | |
-//! | row `+0` | the native player identity (kind `0x123`, 8 bytes) | the 40-byte identity's player field (`+0x08`) ⚠ our reading |
+//! | row `+0` | the native player identity (kind `0x123`, 8 bytes) | the player key: the 40-byte identity's `+0x18`, byte-reversed, as the player bundle's `+0x40` |
 //! | row `+8` | a bool, meaning open | 0, as the post-game run served it |
 //! | row `+0xC` | stat count (i32, 7 bits) | the column table's length |
 //! | row `+0x10 + 4 * c` | stat column `c` (f32) | the stat the column table names |
@@ -255,11 +255,14 @@ pub fn image(state: &ScoreboardState, columns: &Columns, identity_of: &dyn Fn(&s
     b
 }
 
-/// The 8 bytes a player row names a player by: the 40-byte identity's player field (`+0x08`).
-/// ⚠ Our reading: the post-game run's row carried the same kind-`0x123` native player identity as
-/// the cinematic and bundle rows, not the account SOID.
+/// The 8 bytes a player row names a player by: the same kind-`0x123` player key the player bundle
+/// carries at A `+0x40` and the cinematic row at A `+0xA0` ([`crate::row_encoders::player_key_of_identity`]:
+/// the 40-byte identity's `+0x18`, byte-reversed). The post-game run served codec image
+/// `d100000000000201` for native `01020000000000d1` (sense49-51,
+/// `ps4/fixtures/56578/postgame/agr-postgame-scoreboard-arcadia-ratio30.draft.txt`). Until run sb1
+/// this read `+0x08`, a different field: the screen stayed empty.
 pub fn native_identity(identity40: &[u8]) -> Option<[u8; 8]> {
-    identity40.get(0x08..0x10).and_then(|s| s.try_into().ok())
+    crate::row_encoders::player_key_of_identity(identity40)
 }
 
 /// One named int value: `{u32 name hash; typed value {u32 type tag; i32 value}}`, 24 bytes.
@@ -468,5 +471,20 @@ mod tests {
         let e = d1_rsat::encode(crate::row_encoders::TAG_LIFETIME, &life).expect("the lifetime with a named int encodes natively");
         let d = d1_rsat::decode(crate::row_encoders::TAG_LIFETIME, &e.payload).expect("and decodes");
         assert_eq!(read_option(&d.object, SCORE_TO_WIN, 0x8080_0007), Some(15000));
+    }
+
+    /// The row names the player as the player bundle does: identity `+0x18` byte-reversed. The
+    /// post-game fixture's pair: native `01020000000000d1` → codec image `d100000000000201`.
+    #[test]
+    fn a_player_row_names_the_player_by_the_bundle_key() {
+        let mut identity = [0u8; 40];
+        for (i, b) in identity.iter_mut().enumerate() {
+            *b = 0x80 | i as u8; // every field distinct
+        }
+        identity[0x18..0x20].copy_from_slice(&[0x01, 0x02, 0, 0, 0, 0, 0, 0xD1]);
+        let id = native_identity(&identity).expect("40 bytes");
+        assert_eq!(id, [0xD1, 0, 0, 0, 0, 0, 0x02, 0x01]);
+        assert_eq!(Some(id), crate::row_encoders::player_key_of_identity(&identity));
+        assert_eq!(native_identity(&identity[..0x1F]), None, "a short identity names nobody");
     }
 }
