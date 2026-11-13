@@ -44,6 +44,8 @@ pub struct WorldFacts {
 pub struct SliceSet {
     pub public: bool,
     pub bundles: Vec<u32>,
+    /// How many of `bundles` (the first ones) are the `global` column's.
+    pub global_count: usize,
     /// The bubble's region name hash (FNV-1 of the slice the scripts name, `plaza`), when the
     /// table has the column.
     pub region_hash: Option<u32>,
@@ -228,6 +230,7 @@ impl GeneratedWorlds {
         .context("slice-sets.tsv")?
         {
             let mut tags = list(r["global"])?;
+            let global_count = tags.len();
             tags.extend(list(r["authoritative"])?);
             tags.extend(list(r["private"])?);
             g.slices.insert(
@@ -235,6 +238,7 @@ impl GeneratedWorlds {
                 SliceSet {
                     public: r["public"] == "1",
                     bundles: tags,
+                    global_count,
                     region_hash: r.get("region_hash").map(|v| num(v)).transpose()?,
                     valid: r.get("valid").is_none_or(|v| *v == "1"),
                     state_hash: None,
@@ -392,8 +396,13 @@ impl GeneratedWorlds {
 
     /// The list file text for `slice_set`, as `sensor_list::params_for_list` reads it.
     pub fn sensor_list(&self, world: &str, slice_set: u32) -> String {
-        let mut text = format!("# {world} slice set {slice_set}: generated (D1_AH_WORLDS)\n");
-        for (g, c) in self.sensor_clients(world, slice_set) {
+        Self::clients_text(&format!("{world} slice set {slice_set}: generated (D1_AH_WORLDS)"), &self.sensor_clients(world, slice_set))
+    }
+
+    /// A list file text for `clients` under the comment `title`.
+    pub fn clients_text(title: &str, clients: &[(u32, Client)]) -> String {
+        let mut text = format!("# {title}\n");
+        for (g, c) in clients {
             text += &format!(
                 "{g:#010x} {:#x} {} {} {}\n",
                 c.kind,
@@ -403,6 +412,85 @@ impl GeneratedWorlds {
             );
         }
         text
+    }
+
+    /// `D1_AH_SCRIPTS_PUBLIC_START_LIST`: the sensor clients of `slice_set`'s GLOBAL bundle tags
+    /// only (none of its authoritative or private bundles), with the usual `lookup_bubble` filter
+    /// for that slice set's bubble.
+    pub fn globals_only(&self, world: &str, slice_set: u32) -> Vec<(u32, Client)> {
+        let Some(s) = self.slices.get(&(world.to_string(), slice_set)) else {
+            return Vec::new();
+        };
+        let mut out = Vec::new();
+        self.add_clients(&mut out, &s.bundles[..s.global_count.min(s.bundles.len())], Some((slice_set / 8) as i32));
+        out
+    }
+
+    /// The private bubbles' shared rows: for every NON-public slice set of `world`, in slice-set
+    /// order, the clients of its authoritative and private bundle tags whose `lookup_bubble` is -1.
+    pub fn negative_union(&self, world: &str) -> Vec<(u32, Client)> {
+        let mut out = Vec::new();
+        for id in self.slice_sets(world) {
+            let s = &self.slices[&(world.to_string(), id)];
+            if !s.public {
+                self.add_clients(&mut out, &s.bundles[s.global_count.min(s.bundles.len())..], None);
+            }
+        }
+        out
+    }
+
+    /// What the live mission host of a story mission that starts in a public slice set served at
+    /// the join: [`Self::globals_only`] of the activity's `private_start` slice set, then
+    /// [`Self::negative_union`]. Fails when the lifetime record is not among the rows.
+    pub fn mission_host_clients(&self, world: &str, private_start: u32) -> Result<Vec<(u32, Client)>> {
+        let mut out = self.globals_only(world, private_start);
+        self.add_clients_from(&mut out, self.negative_union(world));
+        if !out.iter().any(|(_, c)| c.kind == LIFETIME_TYPE) {
+            bail!("{world}: the mission host's list has no lifetime record (slice set {private_start}'s globals)");
+        }
+        Ok(out)
+    }
+
+    /// The mission host's full relist when the client reports it is in the activity's public START
+    /// slice set: that set's globals (its own bubble's rows, and its player-bundle variant), then
+    /// [`Self::negative_union`].
+    pub fn mission_host_start_clients(&self, world: &str, start: u32) -> Vec<(u32, Client)> {
+        let mut out = self.globals_only(world, start);
+        self.add_clients_from(&mut out, self.negative_union(world));
+        out
+    }
+
+    /// The mission host's list after the client moves into the PRIVATE slice set `slice_set`:
+    /// its own list, then [`Self::negative_union`].
+    pub fn mission_host_relist_clients(&self, world: &str, slice_set: u32) -> Vec<(u32, Client)> {
+        let mut out = self.sensor_clients(world, slice_set);
+        self.add_clients_from(&mut out, self.negative_union(world));
+        out
+    }
+
+    /// Append the clients of `tags` not yet in `out` (by group, kind, index). With `Some(bubble)`
+    /// the usual filter applies (`lookup_bubble` -1 or `bubble`); with `None` only -1 rows.
+    fn add_clients(&self, out: &mut Vec<(u32, Client)>, tags: &[u32], bubble: Option<i32>) {
+        for tag in tags {
+            for (group, lb, clients) in self.bundles.get(tag).map(Vec::as_slice).unwrap_or_default() {
+                let keep = match bubble {
+                    Some(b) => *lb == -1 || *lb == b,
+                    None => *lb == -1,
+                };
+                if !keep {
+                    continue;
+                }
+                self.add_clients_from(out, clients.iter().map(|c| (*group, *c)));
+            }
+        }
+    }
+
+    fn add_clients_from(&self, out: &mut Vec<(u32, Client)>, more: impl IntoIterator<Item = (u32, Client)>) {
+        for (group, c) in more {
+            if !out.iter().any(|(g, o)| *g == group && o.kind == c.kind && o.index == c.index) {
+                out.push((group, c));
+            }
+        }
     }
 
     /// What to serve for activity `index`, or why not. With `private_start`, a public start slice set
@@ -647,5 +735,51 @@ mod tests {
             params = crate::sensor_list::params_for_list(&params, p.group, -1, &p.list).unwrap();
             assert!(!params.clients.is_empty(), "activity {}", p.index);
         }
+    }
+    fn keys(v: &[(u32, Client)]) -> Vec<(u32, u8, i16)> {
+        v.iter().map(|(g, c)| (*g, c.kind, c.index)).collect()
+    }
+
+    /// `D1_AH_SCRIPTS_PUBLIC_START_LIST` (offline, the committed tables): Restoration starts in
+    /// public slice set 56; the live mission host served the globals of its private start (8) and
+    /// the private bubbles' shared rows, not the 285 public rows of slice set 56.
+    #[test]
+    fn a_public_start_mission_host_lists_globals_and_shared_private_rows() {
+        let g = committed();
+        let world = "act_cosmo_m0_5_hangar";
+        let a = &g.activities[&166];
+        assert!(a.start_public && a.private_start == Some(8));
+        assert_eq!(g.sensor_clients(world, 56).len(), 351, "today's list: the public start's whole list");
+        let list = g.mission_host_clients(world, 8).unwrap();
+        let k = keys(&list);
+        let unique: std::collections::HashSet<_> = k.iter().collect();
+        assert_eq!(k.len(), unique.len(), "no duplicates");
+        eprintln!("mission host join list: {} unique rows", k.len());
+        assert_eq!(k.len(), 67, "globals of slice set 8 (63) + 4 shared -1 rows of the private slice sets");
+        for want in [(0x51f6_65ba, 0x21, 30), (0x6071_a5f0, 0x11, 17), (0xbdf3_e29c, 0x11, 26), (0xbdf3_e29c, 0x11, 30)] {
+            assert!(k.contains(&want), "{want:x?}");
+        }
+        assert!(k.iter().any(|(g, t, _)| *g == 0x4786_c0e0 && *t == LIFETIME_TYPE), "the lifetime record");
+        assert!(k.iter().all(|(g, _, _)| ![0xd7f6_8da0, 0xed3c_5b0a, 0xeaaf_16e2].contains(g)), "no public slice 56 group");
+        // The player bundle's rows are slice set 8's (0x80cb8041), not slice set 56's variant (0x80cb92c9).
+        assert!(g.slices[&(world.to_string(), 8)].bundles[..g.slices[&(world.to_string(), 8)].global_count].contains(&0x80cb_8041));
+        let player: Vec<_> = list.iter().filter(|(g, _)| *g == 0x1200_a031).map(|(_, c)| (c.kind, c.index)).collect();
+        let from = |tag: u32| -> Vec<(u8, i16)> {
+            g.bundles[&tag].iter().filter(|(grp, lb, _)| *grp == 0x1200_a031 && *lb == -1).flat_map(|(_, _, c)| c.iter().map(|c| (c.kind, c.index))).collect()
+        };
+        assert_eq!(player, from(0x80cb_8041));
+        // 0x80cb92c9 adds bubble 7's rows (4:0, 29:22, 28:23) for group 0x1200a031; the mission host never carried them.
+        assert!(!player.contains(&(4, 0)) && !player.contains(&(29, 22)) && !player.contains(&(28, 23)));
+    }
+
+    #[test]
+    fn a_mission_hosts_relist_into_a_private_slice_set_adds_the_shared_rows() {
+        let g = committed();
+        let list = g.mission_host_relist_clients("act_cosmo_m0_5_hangar", 104);
+        let k = keys(&list);
+        let unique: std::collections::HashSet<_> = k.iter().collect();
+        assert_eq!(k.len(), unique.len());
+        eprintln!("mission host relist into 104: {} unique rows", k.len());
+        assert_eq!(k.len(), 100, "generated(104) + the shared -1 rows of the private slice sets");
     }
 }
