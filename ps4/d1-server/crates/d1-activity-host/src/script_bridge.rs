@@ -76,7 +76,7 @@
 //!   (traced statically from the squad record's flags; meaning open) are decoded and logged only:
 //!   protocol 1 has no message for them.
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -256,9 +256,127 @@ pub fn interaction_links() -> &'static InteractionLinks {
     INTERACTION_LINKS.get_or_init(InteractionLinks::default)
 }
 
+/// What a mission bridge routes to one public instance (see [`PublicRowLinks`]): the row values for
+/// keys the bridge's own list does not name, and the activity flag list, both replacing what is
+/// waiting. The receiver drains it on its own poll and keeps only the keys its list names.
+#[derive(Debug, Default)]
+pub struct PublicInbox {
+    pub rows: Vec<(RowKey, Row)>,
+    /// `Some(list)` when the flag list changed since the last drain (an empty list is a clear).
+    pub flags: Option<Vec<u32>>,
+}
+
+pub type PublicInboxRef = Arc<Mutex<PublicInbox>>;
+
+#[derive(Default)]
+struct MissionRouted {
+    /// The bridge that routes here (its interaction queue's address; 0 until one does).
+    owner: usize,
+    /// The current value of every row routed, for a public instance that registers later.
+    rows: BTreeMap<RowKey, Row>,
+    flags: Option<Vec<u32>>,
+    inboxes: Vec<std::sync::Weak<Mutex<PublicInbox>>>,
+}
+
+/// `D1_AH_SCRIPTS_INTERACTABLE`: the process-wide route from a mission bridge to the public
+/// instances beside it. The live mission host did not name the public bubble's rows; its public
+/// host served them, so the mission script's writes to those rows (placements, filters) and its
+/// activity flags reach the client through the public instance. Same pattern as
+/// [`InteractionLinks`]: the bridge pushes into the receivers' inboxes, each receiver drains its own
+/// inbox on its poll, and no lock is held beyond one push.
+#[derive(Default)]
+pub struct PublicRowLinks {
+    missions: Mutex<HashMap<u64, MissionRouted>>,
+}
+
+impl PublicRowLinks {
+    fn lock(&self) -> std::sync::MutexGuard<'_, HashMap<u64, MissionRouted>> {
+        self.missions.lock().unwrap_or_else(|e| e.into_inner())
+    }
+
+    /// A public instance beside `mission_host` registers its inbox and at once receives the
+    /// values routed so far (a public instance created later still sees the current state).
+    pub fn register(&self, mission_host: u64, inbox: &PublicInboxRef) {
+        let mut m = self.lock();
+        let e = m.entry(mission_host).or_default();
+        e.inboxes.retain(|w| w.strong_count() > 0);
+        {
+            let mut i = inbox.lock().unwrap_or_else(|e| e.into_inner());
+            i.rows = e.rows.iter().map(|(k, r)| (*k, r.clone())).collect();
+            i.flags = e.flags.clone();
+        }
+        e.inboxes.push(Arc::downgrade(inbox));
+    }
+
+    /// Claim `mission_host`'s route for `owner`: a different bridge (a new run under the same id)
+    /// starts from nothing.
+    fn claim(e: &mut MissionRouted, owner: usize) {
+        if e.owner != 0 && e.owner != owner {
+            e.rows.clear();
+            e.flags = None;
+        }
+        e.owner = owner;
+    }
+
+    /// The bridge produced `row` for `key`, a key its own list does not name.
+    pub fn route_row(&self, mission_host: u64, owner: usize, key: RowKey, row: &Row) {
+        let mut m = self.lock();
+        let e = m.entry(mission_host).or_default();
+        Self::claim(e, owner);
+        e.rows.insert(key, row.clone());
+        e.inboxes.retain(|w| match w.upgrade() {
+            Some(inbox) => {
+                let mut i = inbox.lock().unwrap_or_else(|e| e.into_inner());
+                i.rows.retain(|(k, _)| *k != key);
+                i.rows.push((key, row.clone()));
+                true
+            }
+            None => false,
+        });
+    }
+
+    /// The bridge's activity flag list changed.
+    pub fn route_flags(&self, mission_host: u64, owner: usize, flags: &[u32]) {
+        let mut m = self.lock();
+        let e = m.entry(mission_host).or_default();
+        Self::claim(e, owner);
+        e.flags = Some(flags.to_vec());
+        e.inboxes.retain(|w| match w.upgrade() {
+            Some(inbox) => {
+                inbox.lock().unwrap_or_else(|e| e.into_inner()).flags = Some(flags.to_vec());
+                true
+            }
+            None => false,
+        });
+    }
+
+    /// The bridge `owner` stopped: its values go (a newer bridge's stay).
+    pub fn forget_if(&self, mission_host: u64, owner: usize) {
+        let mut m = self.lock();
+        if let Some(e) = m.get_mut(&mission_host) {
+            if e.owner == owner {
+                e.rows.clear();
+                e.flags = None;
+                e.owner = 0;
+            }
+            if e.inboxes.iter().all(|w| w.strong_count() == 0) && e.owner == 0 {
+                m.remove(&mission_host);
+            }
+        }
+    }
+}
+
+static PUBLIC_ROW_LINKS: std::sync::OnceLock<PublicRowLinks> = std::sync::OnceLock::new();
+
+/// The process's one [`PublicRowLinks`].
+pub fn public_row_links() -> &'static PublicRowLinks {
+    PUBLIC_ROW_LINKS.get_or_init(PublicRowLinks::default)
+}
+
 impl Drop for ScriptBridge {
     fn drop(&mut self) {
         if let Some((id, q)) = self.interaction_link.take() {
+            public_row_links().forget_if(id, Arc::as_ptr(&q) as usize);
             interaction_links().remove_if_same(id, &q);
         }
     }
@@ -2843,6 +2961,9 @@ impl ScriptBridge {
                         self.rows.set(key, row);
                     }
                 }
+                if let Some((mh, q)) = self.interaction_link.as_ref() {
+                    public_row_links().route_flags(*mh, Arc::as_ptr(q) as usize, &run.activity_flags);
+                }
                 tracing::info!(
                     "⭐ script bridge: activity flag {hash:#010x} {}: {} in the player rows (D1_AH_SCRIPTS_INTERACTABLE)",
                     if active { "set" } else { "cleared" },
@@ -3118,7 +3239,13 @@ impl ScriptBridge {
                 let created = key.kind == crate::row_encoders::KIND_OBJECT
                     && row.a.as_ref().is_some_and(|(_, image)| image.get(8) == Some(&1));
                 let objective = (key.kind == crate::row_encoders::KIND_SQUAD).then(|| squad_objective(&row)).flatten();
-                self.rows.set(key, row);
+                // D1_AH_SCRIPTS_INTERACTABLE: a row this bridge's list does not name goes on to the
+                // public instances beside it, which may list it (the live public host served it).
+                let route = (self.encoders.interactable() && !self.rows.is_listed(&key)).then(|| row.clone());
+                let changed = self.rows.set(key, row);
+                if let (Some(row), true, Some((mh, q))) = (route, changed, self.interaction_link.as_ref()) {
+                    public_row_links().route_row(*mh, Arc::as_ptr(q) as usize, key, &row);
+                }
                 if let Some(o) = objective {
                     self.objective_due(o);
                 }
@@ -5777,5 +5904,169 @@ mod tests {
         drop(b);
         assert!(!interaction_links().deliver(MISSION, 0x2468_ACE0), "the bridge stopped");
         assert!(!interaction_links().deliver(0xD1A0_0000_0000_7E58, 1), "an unknown mission host");
+    }
+
+    // ── D1_AH_SCRIPTS_INTERACTABLE: the mission's rows and flags on the public instance ──
+
+    type SeenFrames = Arc<Mutex<Vec<Vec<d1_oracle::sensor::SensorClientRef>>>>;
+
+    /// A mission bridge (knob `on`) whose own list names no placement and no filter of `PLACED`,
+    /// joined as `mission` and polled once (its link is registered then).
+    fn routing_bridge(shared: &Arc<Mutex<Shared>>, mission: u64, on: bool) -> (ScriptBridge, Instant) {
+        let mut list = String::from("@authority 13\n@phase 0\n0x2fe7dbe6 0x6 0 1 0\n0x4786c0e0 0xf 0 1 0\n");
+        for i in 5..21 {
+            list.push_str(&format!("0x4786c0e0 0xc {i} 1 0\n"));
+        }
+        let activity = ScriptedActivity::parse_with(GAMEPLAY_LINE, &base(), &|_| Ok(list.clone()), None).unwrap();
+        let mut b = bridge_delayed(shared, false, false, activity, Duration::from_secs(3600));
+        b.set_interactable(on);
+        let mut t = Instant::now();
+        b.on_client_message(&join(7), 165, mission, t);
+        run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+        (b, t)
+    }
+
+    /// A public instance of `mission` (knob `on`) for region 56 of Earth, whose list is the 16
+    /// player records and the placement and filter of `group`. Returns it with the frames its
+    /// encoder was asked for (the first is the full list the client gets).
+    fn routed_public(mission: u64, group: u32, on: bool) -> (crate::public_host::PublicHost, SeenFrames) {
+        use crate::public_host::*;
+        use crate::public_registry::{InstanceKey, PublicRegistry};
+        let mut text = String::new();
+        for i in 0..16 {
+            text.push_str(&format!("0xeaaf16e2 0xc {i} 1 0\n"));
+        }
+        text.push_str(&format!("{group:#x} 0x4 51 1 0\n{group:#x} 0x4 52 1 0\n{group:#x} 0x21 71 1 0\n"));
+        let key = InstanceKey::Bubble { destination: crate::open_world::Destination::Earth, region: 56 };
+        let list = PublicRegionList::parse(key, "t", &text);
+        let seen: SeenFrames = Arc::default();
+        let log = seen.clone();
+        let encode: PersonalEncoder = Arc::new(move |_, clients| {
+            log.lock().unwrap().push(clients.to_vec());
+            Ok(vec![0x56])
+        });
+        let frames = HashMap::from([(key, Ok(vec![0x56]))]);
+        let mut p = PublicHost::new(Arc::new(frames), Arc::new(Mutex::new(PublicRegistry::new(1))))
+            .with_personal_frames(&[list], encode);
+        p.set_interactable(on);
+        let mut img = vec![0u8; 0x100];
+        img[JOIN_SESSION_TYPE] = 3;
+        img[JOIN_MISSION_HOST..JOIN_MISSION_HOST + 8].copy_from_slice(&mission.to_le_bytes());
+        img[JOIN_IDENTITY + 0x18..JOIN_IDENTITY + 0x20].copy_from_slice(&0xD100_0000_0000_0201u64.to_le_bytes());
+        let now = Instant::now();
+        let id = 0xD1A0_0000_0000_0900 + (mission & 0xFF);
+        p.on_join(&img, "act_cosmo_m1_dome_a", id, now);
+        let mut udt21 = vec![0u8; 0x220];
+        udt21[0x158..0x15C].copy_from_slice(&56u32.to_le_bytes());
+        udt21[0x15C..0x160].copy_from_slice(&0x811C_9DC5u32.to_le_bytes());
+        let frame = p.on_slice_report("act_cosmo_m1_dome_a", &udt21, id, None, now);
+        assert!(matches!(frame, Some(Ok(_))), "{frame:?}");
+        (p, seen)
+    }
+
+    fn entry<'a>(clients: &'a [d1_oracle::sensor::SensorClientRef], hash: u32, kind: u8, sub: i16) -> &'a d1_oracle::sensor::SensorClientRef {
+        clients.iter().find(|c| (c.name_hash, c.name_i8, c.name_sub) == (hash, kind, sub)).expect("listed")
+    }
+
+    fn placement_and_filter() -> SidecarMsg {
+        let mut created = placement_change();
+        created.state = serde_json::json!({"incarnation": 1, "present": true});
+        SidecarMsg::Rows { changes: vec![created, filter_change(), placement_change()] }
+    }
+
+    #[test]
+    fn a_row_the_mission_list_lacks_reaches_the_public_instance_that_lists_it() {
+        const MISSION: u64 = 0xD1A0_0000_0000_7F01;
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let (mut b, t) = routing_bridge(&shared, MISSION, true);
+        let group = b.run.as_ref().expect("run").activity.group_of(PLACED);
+        let (mut p, seen) = routed_public(MISSION, group, true);
+        // Another public instance whose join names a mission host with no bridge: nothing for it.
+        let (mut stray, _) = routed_public(MISSION + 1, group, true);
+        assert!(entry(&seen.lock().unwrap()[0], group, 4, 52).a_value.is_none(), "the list starts with no value");
+        assert!(p.take_routed_delta().is_empty());
+
+        b.apply(placement_and_filter(), t);
+        let key = RowKey { group, kind: 4, index: 52 };
+        let held = b.rows().get(&key).cloned().expect("the bridge keeps its own held-back copy");
+        assert!(!b.rows().is_listed(&key), "the mission's own list does not name it");
+
+        let delta = p.take_routed_delta();
+        let names: Vec<_> = delta.iter().map(|c| (c.name_i8, c.name_sub)).collect();
+        assert_eq!(names, vec![(4, 52), (0x21, 71)], "the placement and its filter, as one delta");
+        assert_eq!(entry(&delta, group, 4, 52).a_value, held.a, "the bridge's value, unchanged");
+        assert!(entry(&delta, group, 0x21, 71).a_value.is_some());
+        assert!(p.take_routed_delta().is_empty(), "once");
+        assert!(stray.take_routed_delta().is_empty(), "not linked: stays held back");
+        // A key neither lists (placement 53 is not in the public list) stays held back.
+        let mut other = placement_change();
+        other.item.type_index = 53;
+        b.apply(SidecarMsg::Rows { changes: vec![other] }, t);
+        assert!(p.take_routed_delta().is_empty());
+    }
+
+    #[test]
+    fn a_public_instance_created_later_gets_the_current_values() {
+        const MISSION: u64 = 0xD1A0_0000_0000_7F02;
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let (mut b, t) = routing_bridge(&shared, MISSION, true);
+        let group = b.run.as_ref().expect("run").activity.group_of(PLACED);
+        b.apply(placement_and_filter(), t);
+        b.apply(flag(TEST_FLAG, true), t);
+        let held = b.rows().get(&RowKey { group, kind: 4, index: 52 }).cloned().unwrap();
+        let (mut p, seen) = routed_public(MISSION, group, true);
+        let first = seen.lock().unwrap()[0].clone();
+        assert_eq!(entry(&first, group, 4, 52).a_value, held.a, "the first full list already carries it");
+        assert!(entry(&first, group, 0x21, 71).a_value.is_some());
+        let player = entry(&first, 0xeaaf16e2, 0xc, 0).a_value.clone().expect("the client's own player row");
+        assert_eq!((u32_at(&player.1, 0x4C), u32_at(&player.1, 0x50)), (1, TEST_FLAG), "and the flag");
+        assert!(p.take_routed_delta().is_empty(), "nothing more is due");
+    }
+
+    #[test]
+    fn the_mission_flags_are_mirrored_into_the_public_player_row() {
+        const MISSION: u64 = 0xD1A0_0000_0000_7F03;
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let (mut b, t) = routing_bridge(&shared, MISSION, true);
+        let group = b.run.as_ref().expect("run").activity.group_of(PLACED);
+        let (mut p, seen) = routed_public(MISSION, group, true);
+        let before = entry(&seen.lock().unwrap()[0], 0xeaaf16e2, 0xc, 0).a_value.clone().unwrap();
+        assert_eq!(u32_at(&before.1, 0x4C), 0);
+        let flags_of = |d: &[d1_oracle::sensor::SensorClientRef]| {
+            let c = entry(d, 0xeaaf16e2, 0xc, 0);
+            let (tag, image) = c.a_value.clone().unwrap();
+            assert_eq!(tag, crate::row_encoders::TAG_PLAYER_BUNDLE);
+            (u32_at(&image, 0x4C), u32_at(&image, 0x50), u32_at(&image, 0x54), image)
+        };
+        b.apply(flag(TEST_FLAG, true), t);
+        let d = p.take_routed_delta();
+        assert_eq!(d.len(), 1, "only the player row");
+        let (n, first, _, image) = flags_of(&d);
+        assert_eq!((n, first), (1, TEST_FLAG));
+        let mut want = before.1.clone();
+        crate::row_encoders::set_player_flags(&mut want, &[TEST_FLAG]);
+        assert_eq!(image, want, "only the flag list changed (the client's key stays)");
+        b.apply(flag(7, true), t);
+        assert_eq!(flags_of(&p.take_routed_delta()).0, 2);
+        b.apply(flag(TEST_FLAG, false), t);
+        b.apply(flag(7, false), t);
+        let (n, first, second, image) = flags_of(&p.take_routed_delta());
+        assert_eq!((n, first, second), (0, 0, 0), "cleared with the objective");
+        assert_eq!(image, before.1);
+    }
+
+    #[test]
+    fn with_the_knob_off_nothing_is_routed() {
+        const MISSION: u64 = 0xD1A0_0000_0000_7F04;
+        for (bridge_on, public_on) in [(false, true), (true, false)] {
+            let shared = Arc::new(Mutex::new(Shared::default()));
+            let (mut b, t) = routing_bridge(&shared, MISSION + u64::from(bridge_on), bridge_on);
+            let group = b.run.as_ref().expect("run").activity.group_of(PLACED);
+            let (mut p, seen) = routed_public(MISSION + u64::from(bridge_on), group, public_on);
+            b.apply(placement_and_filter(), t);
+            b.apply(flag(TEST_FLAG, true), t);
+            assert!(p.take_routed_delta().is_empty(), "bridge {bridge_on}, public {public_on}");
+            assert!(entry(&seen.lock().unwrap()[0], group, 4, 52).a_value.is_none());
+        }
     }
 }
