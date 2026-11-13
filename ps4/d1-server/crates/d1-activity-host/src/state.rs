@@ -3747,11 +3747,9 @@ mod tests {
         const GROUP: u32 = 0xD7F6_8DA0;
         let mut text = String::new();
         for n in 0..16 {
-            text.push_str(&format!("0xeaaf16e2 0xc {n} 1 0
-"));
+            text.push_str(&format!("0xeaaf16e2 0xc {n} 1 0\n"));
         }
-        text.push_str("0xd7f68da0 0x3 1 1 0
-");
+        text.push_str("0xd7f68da0 0x3 1 1 0\n");
         let key = InstanceKey::Bubble { destination: crate::open_world::Destination::Earth, region: 56 };
         let list = PublicRegionList::parse(key, "t", &text);
         let codec: Arc<dyn crate::codec::AhWireCodec> = Arc::new(crate::codec::SchemaCodec);
