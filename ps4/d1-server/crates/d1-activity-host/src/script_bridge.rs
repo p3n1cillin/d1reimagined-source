@@ -464,7 +464,7 @@ pub struct ScriptedActivity {
 /// captures (51539), decoded against the 56578 tables.
 #[derive(Clone, Debug)]
 pub struct MissionHostList {
-    /// The public slice sets of the world: the client's move into one sends no relist.
+    /// The public slice sets of the world (no relist for them).
     pub public_slices: Vec<u32>,
     /// Private slice set -> the list the client holds there (its own list and the shared rows).
     pub relists: HashMap<u32, Vec<(RowKey, Row)>>,
@@ -644,8 +644,8 @@ impl ScriptedActivity {
 
     /// `D1_AH_SCRIPTS_PUBLIC_START_LIST`: when the activity's start slice set is public, the join
     /// list becomes [`GeneratedWorlds::mission_host_clients`] (the activity's `private_start`
-    /// slice set's globals and the private bubbles' shared rows), and a move into a private slice
-    /// set relists [`GeneratedWorlds::mission_host_relist_clients`]; a move into a public one
+    /// slice set's globals and the private bubbles' shared rows), and the client's move into a private slice set a phase names
+    /// relists [`GeneratedWorlds::mission_host_relist_clients`]; any other move
     /// relists nothing. Served values already on a row are kept. Returns the join list's row count
     /// (the lifetime record included), or `None` when the start is not public (nothing changes).
     pub fn use_public_start_list(
@@ -1453,6 +1453,8 @@ struct Run {
     list_slice: Option<u32>,
     /// Public slice sets already logged as listed by the public host (`D1_AH_SCRIPTS_PUBLIC_START_LIST`).
     public_slice_logged: Vec<u32>,
+    /// The slice set the latest mission phase resolved to (`D1_AH_SCRIPTS_PUBLIC_START_LIST`).
+    phase_slice: Option<u32>,
     /// When the first full list went out: the start cushion counts from here without the udt 6
     /// gate ([`ScriptConfig::list_retry`] `None`).
     full_at: Option<Instant>,
@@ -1852,13 +1854,16 @@ impl ScriptBridge {
         // the move, with the rows' current values.
         if let Some(run) = self.run.as_mut() {
             if run.list_slice.is_some() && run.list_slice != Some(region) {
-                if run.activity.mission_list.as_ref().is_some_and(|m| m.public_slices.contains(&region)) && !run.public_slice_logged.contains(&region) {
+                // The live mission host relisted only for a private slice set a mission phase names.
+                let phase_named = run.phase_slice == Some(region);
+                if run.activity.mission_list.is_some() && !phase_named && !run.public_slice_logged.contains(&region) {
                     run.public_slice_logged.push(region);
                     tracing::info!(
-                        "script bridge: slice set {region} is public: the public host lists it (D1_AH_SCRIPTS_PUBLIC_START_LIST)"
+                        "script bridge: slice set {region}: no relist (public or not a phase's slice) (D1_AH_SCRIPTS_PUBLIC_START_LIST)"
                     );
                 }
-                if let Some(list) = run.activity.slice_list(region) {
+                let list = if run.activity.mission_list.is_some() && !phase_named { None } else { run.activity.slice_list(region) };
+                if let Some(list) = list {
                     tracing::info!("script bridge: slice set {region}: its list ({} rows) goes out in full", list.len() + 1);
                     run.list_slice = Some(region);
                     let lifetime = run.activity.lifetime;
@@ -2012,6 +2017,7 @@ impl ScriptBridge {
             active_slice: None,
             list_slice: start,
             public_slice_logged: Vec::new(),
+            phase_slice: None,
             full_at: None,
             last_full_at: None,
             sensed_at: None,
@@ -2553,7 +2559,24 @@ impl ScriptBridge {
                 // list (the world's records and the set's own, current values) with the teleport,
                 // as the step schedule's move list does, so a row the scripts set there (fg2c: the
                 // Tower cinematic /6/1) is one the client holds, not one held back.
-                if let Some(r) = region.filter(|r| walked.is_none() && run.list_slice.is_some() && run.list_slice != Some(*r)) {
+                if run.activity.mission_list.is_some() {
+                    // The mission host's rule: the phase names the slice set; the list goes out
+                    // when the client is in it (now, or at its move: `activate_slice`).
+                    if let Some(r) = region {
+                        run.phase_slice = Some(r);
+                        if run.current_slice == Some(r) && run.list_slice.is_some() && run.list_slice != Some(r) {
+                            if let Some(list) = run.activity.slice_list(r) {
+                                tracing::info!(
+                                    "script bridge: phase {index} resolves to slice set {r}, where the client is: its list ({} rows) goes out in full",
+                                    list.len() + 1
+                                );
+                                run.list_slice = Some(r);
+                                let lifetime = run.activity.lifetime;
+                                self.rows.relist(list, &[lifetime]);
+                            }
+                        }
+                    }
+                } else if let Some(r) = region.filter(|r| walked.is_none() && run.list_slice.is_some() && run.list_slice != Some(*r)) {
                     if let Some(list) = run.activity.slice_list(r) {
                         tracing::info!(
                             "script bridge: phase {index} moves the list to slice set {r} ({} rows, in full)",
@@ -4131,6 +4154,50 @@ mod tests {
         // A public slice set: no relist.
         assert_eq!(a.slice_list(48), None);
         assert_eq!(a.slice_list(56), None);
+    }
+
+    /// A bridge on Restoration's mission host list (the table's 166 under the test's key 165), joined.
+    fn mission_host_bridge() -> (ScriptBridge, Instant) {
+        let (mut a, worlds) = profile_activity(166);
+        a.use_public_start_list(&worlds, &lab_base()).unwrap();
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge_of(&shared, false, false, a);
+        let t = Instant::now();
+        b.on_client_message(&join(7), 165, HOST, t);
+        assert_eq!(b.run.as_ref().map(|r| r.list_slice), Some(Some(56)), "the join list is the public start's slot");
+        (b, t)
+    }
+
+    fn phase_in(region: Option<u32>) -> SidecarMsg {
+        SidecarMsg::Phase { index: 1, name: Some("hangar".into()), name_hash: None, slice_hash: None, region }
+    }
+
+    #[test]
+    fn the_mission_host_relists_only_for_a_slice_set_a_phase_names() {
+        // (a) a private slice set no phase names: no relist.
+        let (mut b, t) = mission_host_bridge();
+        b.on_client_message(&slice(64), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(56), "private, not a phase's: no relist");
+        // A public slice set: none either.
+        b.on_client_message(&slice(48), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(56));
+        // (b) the phase names 104 first, then the client moves in: the relist.
+        let (mut b, t) = mission_host_bridge();
+        b.apply(phase_in(Some(104)), t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(56), "the client is not in 104 yet");
+        b.on_client_message(&slice(64), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(56));
+        b.on_client_message(&slice(104), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(104));
+        assert_eq!(b.run.as_ref().unwrap().activity.slice_list(104).map(|l| l.len() + 1), Some(100));
+        // (c) the client moves in first, then the phase resolves to 104: relisted once.
+        let (mut b, t) = mission_host_bridge();
+        b.on_client_message(&slice(104), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(56), "no phase names 104 yet");
+        b.apply(phase_in(Some(104)), t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(104));
+        b.on_client_message(&slice(104), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(104), "once");
     }
 
     #[test]
