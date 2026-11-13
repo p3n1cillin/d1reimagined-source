@@ -2718,9 +2718,9 @@ impl ScriptBridge {
             }
             SidecarMsg::ActivityFlag { hash, active } if self.encoders.interactable() => {
                 // The flag is a list of raw u32 name hashes in the player bundle (+0x4C count,
-                // +0x50 hashes, capacity 8). The live host wrote it into every slot row in one frame,
-                // one frame after the objective began and cleared it when the objective completed:
-                // the scripts' own order, with no delay here.
+                // +0x50 hashes, capacity 8). In one live capture the host set it in every slot row at
+                // once, around the objective's start, and cleared it at its completion: here it follows
+                // the scripts' own order, with no delay added.
                 if active {
                     if !run.activity_flags.contains(&hash) {
                         run.activity_flags.push(hash);
