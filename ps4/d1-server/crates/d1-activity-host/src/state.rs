@@ -278,18 +278,34 @@ pub fn incident_image(incident: u32, body: &[u8]) -> Vec<u8> {
     img
 }
 
+/// `n` bits (at most 64) of an incident image's body (the bit buffer at `+0xD8`), from bit `at`, MSB first.
+fn body_bits(image: &[u8], at: usize, n: usize) -> Option<u64> {
+    let body = image.get(0xD8..)?;
+    let mut v = 0u64;
+    for k in at..at + n {
+        v = (v << 1) | u64::from((body.get(k / 8)? >> (7 - k % 8)) & 1);
+    }
+    Some(v)
+}
+
+/// The client's `interaction` incident (56578 index 3569, name hash `0xE882D22F`).
+pub const INCIDENT_INTERACTION: u32 = 3569;
+
+/// The identifier hash of the object an incident-3569 image reports used: the u32 at body bit
+/// 303, MSB first, the same place incident 3403 names its trigger. Measured as message bit 330 on
+/// the raw wire message; the decoded body (`+0xD8`) starts after the wire's 27-bit header (count
+/// 5 bits, type 12, list flag 1, length 9), so message bit 330 = body bit 303. Two gh41 incidents
+/// read the empty-name hash there. `None` for 0 and the empty-name hash (an unnamed object).
+pub fn interaction_identifier(image: &[u8]) -> Option<u32> {
+    let hash = body_bits(image, 303, 32)? as u32;
+    (!matches!(hash, 0 | 0x811C_9DC5)).then_some(hash)
+}
+
 /// The player trigger an incident-3403 struct image names: its body (a bit buffer at `+0xD8`,
 /// read MSB first) holds the trigger's name at bit 303: u32 group hash, the kind in 7 bits biased
 /// by one, then the i16 index in offset binary (+0x8000) (run agr-breach13: `0x992BB471/0x1D/34`).
 pub fn trigger_report(image: &[u8]) -> Option<(u32, u8, u16)> {
-    let body = image.get(0xD8..)?;
-    let bits = |at: usize, n: usize| -> Option<u64> {
-        let mut v = 0u64;
-        for k in at..at + n {
-            v = (v << 1) | u64::from((body.get(k / 8)? >> (7 - k % 8)) & 1);
-        }
-        Some(v)
-    };
+    let bits = |at: usize, n: usize| body_bits(image, at, n);
     let hash = bits(303, 32)? as u32;
     let kind = (bits(335, 7)? as u8).checked_sub(1)?;
     let index = u16::try_from(bits(342, 16)?.checked_sub(0x8000)?).ok()?;
@@ -488,6 +504,10 @@ pub struct ActivityInstance {
     slice_records_seen: Option<(u32, u32, u32, u32, u8)>,
     /// Player-trigger reports (incident 3403) by name, and whether a step has used each.
     trigger_reports: Vec<((u32, u8, u16), bool)>,
+    /// A dropped interaction (no mission bridge for the join's mission host) was logged.
+    interaction_drop_logged: bool,
+    /// `D1_AH_SCRIPTS_INTERACTABLE=1` (read once; tests set it with [`Self::set_interactable`]).
+    interactable: bool,
     /// Connection/world-local observations. Decoder errors and backlog hold kill gates.
     squad_live: crate::sense::SquadObservations,
     squad_hold_logged: Option<usize>,
@@ -771,6 +791,8 @@ impl ActivityInstance {
             current_slice: None,
             slice_records_seen: None,
             trigger_reports: Vec::new(),
+            interaction_drop_logged: false,
+            interactable: crate::script_bridge::interactable_knob(),
             squad_live: crate::sense::SquadObservations::default(),
             squad_hold_logged: None,
             pending_incidents: Vec::new(),
@@ -890,6 +912,28 @@ impl ActivityInstance {
         self.ah_id
     }
 
+    /// Tests: replaces the knob for the interaction forwarding.
+    pub fn set_interactable(&mut self, on: bool) {
+        self.interactable = on;
+    }
+
+    /// `D1_AH_SCRIPTS_INTERACTABLE`: an incident-3569 report on a public instance's connection goes
+    /// to the mission bridge of the mission host its join named (process-wide link). A mission
+    /// host's own connection is the bridge's business (`ScriptBridge::on_incidents`).
+    fn forward_interaction(&mut self, image: &[u8]) {
+        let Some(mh) = self.public.as_ref().and_then(|p| p.mission_host()) else { return };
+        let Some(hash) = interaction_identifier(image) else { return };
+        if crate::script_bridge::interaction_links().deliver(mh, hash) {
+            tracing::info!("⭐ public instance {:#x}: interaction {hash:#010x} → mission host {mh:#x}", self.ah_id);
+        } else if !self.interaction_drop_logged {
+            self.interaction_drop_logged = true;
+            tracing::warn!(
+                "public instance {:#x}: interaction {hash:#010x} dropped: no mission bridge is registered for mission host {mh:#x}",
+                self.ah_id
+            );
+        }
+    }
+
     /// ── stream G hook ── Serve this connection as a public bubble's own host when its join names
     /// a mission host (see [`crate::public_host`]).
     pub fn set_public_host(&mut self, public: crate::public_host::PublicHost) {
@@ -979,6 +1023,9 @@ impl ActivityInstance {
                         let t = u32::from_le_bytes(b.try_into().unwrap());
                         tracing::info!("incident {t} reported by the client");
                         self.incidents.push((t, now));
+                        if t == INCIDENT_INTERACTION && self.interactable {
+                            self.forward_interaction(struct_image);
+                        }
                         if t == 3403 {
                             if let Some(name) = trigger_report(struct_image) {
                                 if !self.trigger_reports.iter().any(|(n, used)| *n == name && !used) {
@@ -3455,5 +3502,54 @@ mod tests {
             "past the frame"
         );
         assert_eq!(bad_bit, frame);
+    }
+
+    /// ⭐ D1_AH_SCRIPTS_INTERACTABLE: an incident-3569 report on a public instance goes to the
+    /// mission bridge its join named (through the process-wide link); an unknown mission host's is
+    /// dropped. Synthetic ids.
+    #[test]
+    fn a_public_instances_interaction_is_delivered_to_the_mission_bridge() {
+        use crate::public_registry::PublicRegistry;
+        use std::collections::HashMap;
+        use std::sync::{Arc, Mutex};
+        const MISSION: u64 = 0xD1A0_0000_0000_7E91;
+        let report = |hash: u32| {
+            let mut body = vec![0u8; 64];
+            for i in 0..32 {
+                if (hash >> (31 - i)) & 1 == 1 {
+                    body[(303 + i) / 8] |= 0x80 >> ((303 + i) % 8);
+                }
+            }
+            ClientMessage::Other { user_defined_type: 18, struct_image: incident_image(INCIDENT_INTERACTION, &body) }
+        };
+        let public_instance = |mission_host: u64| {
+            let (mut i, now) = instance();
+            i.set_public_host(crate::public_host::PublicHost::new(
+                Arc::new(HashMap::new()),
+                Arc::new(Mutex::new(PublicRegistry::new(1))),
+            ));
+            i.set_interactable(true);
+            let mut img = vec![0u8; 0x100];
+            img[0x38] = 3;
+            img[crate::public_host::JOIN_MISSION_HOST..crate::public_host::JOIN_MISSION_HOST + 8].copy_from_slice(&mission_host.to_le_bytes());
+            i.on_client_message(&ClientMessage::from_struct_image(3, &img).unwrap(), now);
+            (i, now)
+        };
+        // A mission bridge registered under MISSION: a queue stands for it.
+        let queue = crate::script_bridge::InteractionQueue::default();
+        crate::script_bridge::interaction_links().insert(MISSION, &queue);
+        let (mut i, now) = public_instance(MISSION);
+        i.on_client_message(&report(0x1357_9BDF), now);
+        i.on_client_message(&report(0x811C_9DC5), now);
+        assert_eq!(queue.lock().unwrap().drain(..).collect::<Vec<_>>(), vec![0x1357_9BDF]);
+        // Knob off here: nothing is delivered.
+        i.set_interactable(false);
+        i.on_client_message(&report(0x2468_ACE0), now);
+        assert!(queue.lock().unwrap().is_empty());
+        // An unknown mission host: dropped, and logged once.
+        let (mut j, now) = public_instance(MISSION + 1);
+        j.on_client_message(&report(0x1357_9BDF), now);
+        assert!(j.interaction_drop_logged);
+        assert!(queue.lock().unwrap().is_empty());
     }
 }
