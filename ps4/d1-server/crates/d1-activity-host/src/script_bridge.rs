@@ -2955,7 +2955,7 @@ impl ScriptConfig {
                 }
                 None => {
                     tracing::warn!(
-                        "script bridge: D1_AH_SCRIPTS_START_PHASE {i}:{phase}: no `regions=` entry for phase {phase} in the \n                         activity table, so the region cannot be determined before the scripts load; the join keeps `start=`"
+                        "script bridge: D1_AH_SCRIPTS_START_PHASE {i}:{phase}: no `regions=` entry for phase {phase} in the activity table, so the region cannot be determined before the scripts load; the join keeps `start=`"
                     );
                     out.push((i, None));
                 }
