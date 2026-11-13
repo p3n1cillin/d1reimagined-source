@@ -296,9 +296,11 @@ impl PublicRecords {
     }
 
     /// The member in `slot` left: its record goes back to the default image (identity zero).
-    fn leave(&mut self, host: u64, slot: usize) -> bool {
+    /// Only if the record still names `key`: a later member that already took the slot keeps it.
+    fn leave(&mut self, host: u64, slot: usize, key: Option<[u8; 8]>) -> bool {
         let Some(h) = self.hosts.get_mut(&host) else { return false };
-        if !h.slots.get(&slot).is_some_and(|r| r.present) {
+        let names_key = |r: &SlotRecord| key.is_none_or(|k| r.image.get(0x40..0x48) == Some(&k[..]));
+        if !h.slots.get(&slot).is_some_and(|r| r.present && names_key(r)) {
             return false;
         }
         h.next_version += 1;
@@ -663,6 +665,22 @@ impl PublicHost {
     /// (`group::GroupLink::slot`). Without shared instances it stays unset and the slot is 0.
     pub fn set_peer_slot(&mut self, slot: Option<usize>) {
         self.peer_slot = slot;
+    }
+
+    /// Put this connection's record back to the default and tell the shared list, once: a leave
+    /// message, a connectivity failure or the connection ending ([`Drop`]), whichever comes first.
+    fn release_record(&mut self) {
+        if !std::mem::take(&mut self.record_held) {
+            return;
+        }
+        let slot = self.peer_slot.unwrap_or(0);
+        let key = crate::row_encoders::player_key_of_identity(&self.identity.identity);
+        if let Ok(mut r) = self.records.lock() {
+            if r.leave(self.host_id, slot, key) {
+                tracing::info!("⭐ public instance {:#018x}: player record {slot} back to the default (the member left)", self.host_id);
+            }
+        }
+        self.seen.clear();
     }
 
     /// This connection's own record changed here (the mission's flags): tell the shared list.
@@ -1061,15 +1079,7 @@ impl PublicHost {
     /// The client left this instance (peer leave or lost connection).
     pub fn on_leave(&mut self, now: Instant) {
         if self.selected.take().is_some() {
-            if std::mem::take(&mut self.record_held) {
-                let slot = self.peer_slot.unwrap_or(0);
-                if let Ok(mut r) = self.records.lock() {
-                    if r.leave(self.host_id, slot) {
-                        tracing::info!("⭐ public instance {:#018x}: player record {slot} back to the default (the member left)", self.host_id);
-                    }
-                }
-                self.seen.clear();
-            }
+            self.release_record();
             if let Ok(mut r) = self.registry.lock() {
                 r.leave(self.identity.clone(), now);
                 crate::public_registry::sync_with_responder(&mut r);
@@ -1081,6 +1091,14 @@ impl PublicHost {
                 Ok(())
             });
         }
+    }
+}
+
+/// A connection that ends without a leave message (socket closed, timeout) frees its record the
+/// same way. The template the listener clones never joins, so its clones only release their own.
+impl Drop for PublicHost {
+    fn drop(&mut self) {
+        self.release_record();
     }
 }
 
@@ -1456,5 +1474,62 @@ mod tests {
         assert_eq!((d.len(), d[0].name_sub, flags_in(&d[0])), (1, 0, (1, 0x1234_0002)));
         let d = b.take_routed_delta();
         assert_eq!((d.len(), d[0].name_sub, flags_in(&d[0])), (1, 0, (1, 0x1234_0002)));
+    }
+
+    /// A connection that ends with no leave message frees its record like a leave: the first
+    /// member gets the reset delta, once, and a third takes the slot.
+    #[test]
+    fn a_dropped_connection_resets_its_record_once() {
+        let (template, log) = records_template(false);
+        let host = 0xD1A0_0000_0000_0A30;
+        let (mut a, mut b, mut c) = (template.clone(), template.clone(), template.clone());
+        enter(&mut a, &log, 0xD1A0_0000_0000_0A31, 1, host, 0);
+        let (kb, _) = enter(&mut b, &log, 0xD1A0_0000_0000_0A32, 2, host, 1);
+        assert_eq!(named(&a.take_routed_delta()[0]), kb);
+        drop(b);
+        let d = a.take_routed_delta();
+        assert_eq!((d.len(), d[0].name_sub, named(&d[0])), (1, 1, [0; 8]));
+        assert!(a.take_routed_delta().is_empty(), "once");
+        let (kc, fc) = enter(&mut c, &log, 0xD1A0_0000_0000_0A33, 3, host, 1);
+        assert_eq!(named(record(&fc, 1)), kc);
+        assert_eq!(named(&a.take_routed_delta()[0]), kc);
+        // A leave message and then the drop: no second reset, and the third's record is kept.
+        c.on_leave(Instant::now());
+        assert_eq!(named(&a.take_routed_delta()[0]), [0; 8]);
+        let mut d4 = template.clone();
+        let (kd, _) = enter(&mut d4, &log, 0xD1A0_0000_0000_0A34, 4, host, 1);
+        let _ = a.take_routed_delta();
+        drop(c);
+        assert!(a.take_routed_delta().is_empty(), "the leave already reset it; the drop does nothing");
+        let held = template.records.lock().unwrap().image(host, 1).expect("the fourth still holds slot 1");
+        assert_eq!(&held[0x40..0x48], &kd[..]);
+    }
+
+    /// The reset image is the client's default for an unoccupied record: the fixtures' players
+    /// records carry no A value (the client's default applies), and the default image is the one
+    /// the join-instance notes give (`+0 = -1`, `+4 = 0x811C9DC5`, `+0x38 = -1`, `+0x72 = 0xBC00`,
+    /// `+0x74 = -1`, the rest 0), with no player named.
+    #[test]
+    fn the_reset_image_is_the_served_default() {
+        let lists = load_public_table(&fixtures().join("public-table.txt")).unwrap();
+        for l in &lists {
+            for c in l.clients.iter().filter(|c| c.name_hash == PUBLIC_PLAYERS_GROUP && c.name_sub > 0) {
+                assert!(c.a_value.is_none(), "{}: record {} serves no explicit A, so the client's default applies", l.file, c.name_sub);
+            }
+        }
+        let mut want = vec![0u8; crate::row_encoders::PLAYER_BUNDLE_LEN];
+        want[0..4].copy_from_slice(&(-1i32).to_le_bytes());
+        want[4..8].copy_from_slice(&0x811C_9DC5u32.to_le_bytes());
+        want[0x38..0x3C].copy_from_slice(&(-1i32).to_le_bytes());
+        want[0x72..0x74].copy_from_slice(&0xBC00u16.to_le_bytes());
+        want[0x74..0x78].copy_from_slice(&(-1i32).to_le_bytes());
+        assert_eq!(crate::row_encoders::player_bundle_image([0; 8], false), want);
+        let (template, log) = records_template(false);
+        let (mut a, mut b) = (template.clone(), template.clone());
+        enter(&mut a, &log, 0xD1A0_0000_0000_0A41, 1, 0xD1A0_0000_0000_0A40, 0);
+        enter(&mut b, &log, 0xD1A0_0000_0000_0A42, 2, 0xD1A0_0000_0000_0A40, 1);
+        let _ = a.take_routed_delta();
+        b.on_leave(Instant::now());
+        assert_eq!(a.take_routed_delta()[0].a_value.as_ref().unwrap().1, want);
     }
 }
