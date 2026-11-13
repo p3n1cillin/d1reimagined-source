@@ -46,14 +46,14 @@ lab run, as the cited note says.
 | Create a Guardian | Verified (lab, by pad) | Runs new1 to new6 ([creation notes](../notes/ps4-56578-character-creation-2026-11-07.md)). |
 | The prologue and A Guardian Rises to the rifle, from the real mission scripts | Verified | Runs agr19 to agr22 (full-game test). Objective banners no longer repeat NEW MISSION (run gh51, #384). |
 | Through the Wall to Dock 13 and the hangar | Partial | Run agr24 reached the hangar and phase 5 began (full-game test, F44). |
-| The hangar fight and A Guardian Rises' own completion, from the real scripts | **Not yet** | The hangar's Fallen never appeared (F46, full-game test) and the scripted player dies before it. |
-| The whole mission, post-game, CONTINUE | Verified through the step schedule only | Run sense116 (see the table above). |
-| The reveal (165), then Tower North | Verified, through the lab's step schedule | Run rev11 ([reveal notes](../notes/ps4-56578-reveal-tower-2026-11-08.md), lines 50-53 for the stand-in schedule). |
-| Restoration from the Director | Partial | Launches and spawns in the public bubble (run fg7b); completion not seen. |
+| The hangar fight | **Needs a person** | Started at the hangar phase (`D1_AH_SCRIPTS_START_PHASE=164:5`, lab), the Guardian spawns there with the Fallen placed (run gh62); the scripted player cannot reach them (gh65). |
+| A Guardian Rises' own completion, outro, rewards screen, CONTINUE | Verified from the real scripts, started at the last phase | Run gh64 (`164:6`): the mission's own completion, the outro, ACTIVITY REWARDS, CONTINUE (#389). The rewards screen lists the player with their kills and deaths (run sb2, #390). |
+| The reveal (165), then Tower North | Verified from the real scripts | Run gh64, after CONTINUE; earlier through the lab's step schedule (rev11, [reveal notes](../notes/ps4-56578-reveal-tower-2026-11-08.md)). |
+| Restoration (166) | Partial | Loads; the Guardian spawns in the Steppes; the mission host runs phase 0 of the real scripts (run rst3, lab remap 164:166). No objective appears yet. Completion not seen. |
 
-The break: no run with the real mission scripts has reached A Guardian Rises' own completion. The reveal
-and Tower North are reached through the lab's step schedule, which completes the mission 60 s after the
-spawn wait and is not retail timing.
+The break: no single run has played A Guardian Rises from its start through its completion. Each
+half is seen with the real scripts (to the hangar; from the hangar or the last phase onwards), joined by
+the lab's start-phase knob. The hangar fight needs a person, and Restoration stops after its spawn.
 
 PS3: local sign-in, revival, waypoints, rifle grant and Dreg attacks have bounded native evidence. Still
 open: activity disconnects, objective handover, ammo, kills, completion, and the renderer (flicker,
