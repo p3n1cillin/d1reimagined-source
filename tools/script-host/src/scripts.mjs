@@ -21,7 +21,19 @@ import {
 const ARRAY_TYPE = /^(static|dynamic)_array<\s*([A-Za-z_]\w*)\s*(?:,\s*(\d+)\s*)?>$/;
 const MAX_DEPTH = 8;
 
-export function scriptsDirFromEnv(env = process.env) {
+// D1_SCRIPTS_DIR, or for one activity the folder D1_SCRIPTS_DIR_FOR names (lab): `activity=folder`
+// entries separated by `;`. It lets one activity run another restored revision of its scripts, for
+// example the one whose waits match a live capture, while the rest keep D1_SCRIPTS_DIR.
+export function scriptsDirFromEnv(env = process.env, activity = undefined) {
+  if (activity !== undefined && env.D1_SCRIPTS_DIR_FOR) {
+    for (const entry of env.D1_SCRIPTS_DIR_FOR.split(";")) {
+      const at = entry.indexOf("=");
+      if (at > 0 && entry.slice(0, at).trim() === activity) {
+        const dir = entry.slice(at + 1).trim();
+        if (dir) return dir;
+      }
+    }
+  }
   return env.D1_SCRIPTS_DIR || undefined;
 }
 
