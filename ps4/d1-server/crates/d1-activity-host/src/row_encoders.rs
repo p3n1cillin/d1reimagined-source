@@ -489,6 +489,26 @@ pub struct MappedRef {
     pub index: i16,
 }
 
+/// The hard-wipe row's image size (`0x808004A4`: bool +0, bool +1, i8 +2, a timer struct at +4).
+const HARD_WIPE_SIZE: usize = 32;
+
+/// The live mission host's `hardWipeGlobals` image (private live captures of two sessions of one
+/// mission, identical in every frame): +0 `enabled` follows the running phase's `@hard_wipe`; +1 a
+/// second flag whose meaning is open, sent 0; +2 i8 0; the timer struct (`0x80800AB3`) at +4 is
+/// bool 0, i32 `i32::MIN`, `i32::MAX`, 0, 0, 0 and f32 1.0.
+pub fn set_hard_wipe(image: &mut [u8], enabled: bool) {
+    image[0] = u8::from(enabled);
+    image[1] = 0;
+    image[2] = 0;
+    image[3] = 0;
+    image[4] = 0;
+    image[5..8].fill(0);
+    image[8..12].copy_from_slice(&i32::MIN.to_le_bytes());
+    image[12..16].copy_from_slice(&i32::MAX.to_le_bytes());
+    image[16..28].fill(0);
+    image[28..32].copy_from_slice(&1.0f32.to_le_bytes());
+}
+
 fn put_u32(b: &mut [u8], at: usize, v: u32) {
     b[at..at + 4].copy_from_slice(&v.to_le_bytes());
 }
@@ -1047,7 +1067,18 @@ impl RowEncoders {
                 }
                 with_a(TAG_OBJECT_FILTER, image)
             }
-            "timer" | "hardWipeGlobals" | "objectFilter" => Encoded::Unsupported(format!(
+            "hardWipeGlobals" => {
+                if let Some(e) = expect(KIND_HARD_WIPE) {
+                    return e;
+                }
+                self.note_fields(kind, state, &["enabled"]);
+                let enabled = state.get("enabled").and_then(Value::as_bool).unwrap_or(false);
+                let mut image = base_a(TAG_HARD_WIPE).unwrap_or_else(|| vec![0; HARD_WIPE_SIZE]);
+                image.resize(HARD_WIPE_SIZE, 0);
+                set_hard_wipe(&mut image, enabled);
+                with_a(TAG_HARD_WIPE, image)
+            }
+            "timer" | "objectFilter" => Encoded::Unsupported(format!(
                 "{kind}: the 56578 layout is known (row_encoders::ROW_LAYOUTS) but not which field the script's state is"
             )),
             other => Encoded::Unsupported(format!("no 56578 field map for {other} rows yet")),
@@ -1403,7 +1434,7 @@ mod tests {
     #[test]
     fn kinds_without_a_known_meaning_are_refused_not_guessed() {
         let mut e = RowEncoders::new();
-        for (kind, id) in [("timer", 17), ("objectFilter", 33), ("hardWipeGlobals", 34), ("health", 19)] {
+        for (kind, id) in [("timer", 17), ("objectFilter", 33), ("health", 19)] {
             let got = e.encode(RowKey { group: 1, kind: id, index: 0 }, kind, &json!({}), None, CTX, &no_map);
             assert!(matches!(got, Encoded::Unsupported(_)), "{kind}");
         }
@@ -1681,6 +1712,57 @@ mod tests {
         let (ssize, sfields, ..) = layout(TAG_FLAG_PREDICATE);
         assert_eq!(ssize, 8);
         assert_eq!(sfields.iter().map(|f| (f.0, f.1 & 0xFF)).collect::<Vec<_>>(), vec![(0, 3), (4, 9)]);
+        // The hard-wipe row: bool, bool, i8 (2 bits, bias 1), then the timer struct at +4 whose
+        // five i32 and f32 sit at +4..+0x18 of it (image +8..+0x1C).
+        let (hsize, hfields, ..) = layout(TAG_HARD_WIPE);
+        assert_eq!(hsize, HARD_WIPE_SIZE);
+        assert_eq!(hfields.iter().map(|f| (f.0, f.1 & 0xFF)).collect::<Vec<_>>(), vec![(0, 2), (1, 2), (2, 3), (4, 1)]);
+        let (_, tfields, ..) = layout(hfields[3].2);
+        assert_eq!(
+            tfields.iter().map(|f| (4 + f.0, f.1 & 0xFF)).collect::<Vec<_>>(),
+            vec![(4, 2), (8, 5), (12, 5), (16, 5), (20, 5), (24, 5), (28, 11)]
+        );
+    }
+
+    #[test]
+    fn hard_wipe_globals_is_the_live_image_with_enabled_following_the_state() {
+        let mut e = RowEncoders::new();
+        let key = RowKey { group: 0x4786_C0E0, kind: KIND_HARD_WIPE, index: 1 };
+        let mut want = vec![0u8; 32];
+        want[8..12].copy_from_slice(&[0x00, 0x00, 0x00, 0x80]);
+        want[12..16].copy_from_slice(&[0xFF, 0xFF, 0xFF, 0x7F]);
+        want[28..32].copy_from_slice(&[0x00, 0x00, 0x80, 0x3F]);
+        let off = e.encode(key, "hardWipeGlobals", &json!({"enabled": false}), None, CTX, &no_map);
+        assert_eq!(image(&off), want.as_slice());
+        let on = e.encode(key, "hardWipeGlobals", &json!({"enabled": true}), None, CTX, &no_map);
+        want[0] = 1;
+        assert_eq!(image(&on), want.as_slice());
+        let Encoded::Row(Row { a: Some((tag, _)), .. }) = on else { panic!() };
+        assert_eq!(tag, TAG_HARD_WIPE);
+        // A served image with other bytes is overwritten in every field the live row fixes.
+        let served = Row { has_a: true, has_b: false, a: Some((TAG_HARD_WIPE, vec![0xAA; 32])), b: None };
+        let again = e.encode(key, "hardWipeGlobals", &json!({"enabled": true}), Some(&served), CTX, &no_map);
+        assert_eq!(&image(&again)[..4], [1, 0, 0, 0]);
+        assert_eq!(&image(&again)[4..], &want[4..]);
+        // The wrong row type is refused.
+        let bad = e.encode(RowKey { group: 1, kind: 17, index: 1 }, "hardWipeGlobals", &json!({"enabled": true}), None, CTX, &no_map);
+        assert!(matches!(bad, Encoded::Unsupported(_)));
+    }
+
+    #[test]
+    fn hard_wipe_image_survives_the_native_codec() {
+        if std::env::var("D1_EBOOT").map_or(true, |p| !std::path::Path::new(&p).is_file()) {
+            eprintln!("SKIP: set D1_EBOOT to the owned 56578 executable");
+            return;
+        }
+        for enabled in [true, false] {
+            let mut img = vec![0u8; HARD_WIPE_SIZE];
+            set_hard_wipe(&mut img, enabled);
+            let enc = d1_rsat::encode(TAG_HARD_WIPE, &img).expect("encode");
+            let dec = d1_rsat::decode(TAG_HARD_WIPE, &enc.payload).expect("decode");
+            assert_eq!(&dec.object[..HARD_WIPE_SIZE], img.as_slice(), "enabled={enabled}");
+            assert_eq!(enc.bits + 2, 199, "the live body is 199 bits with the two fresh/presence bits");
+        }
     }
 
     /// The new images go through the native encoder (d1-rsat) and come back as built (needs the eboot).
