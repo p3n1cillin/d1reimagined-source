@@ -175,6 +175,9 @@ pub enum HostMsg {
         #[serde(skip_serializing_if = "Option::is_none")]
         incidents_path: Option<String>,
         tick_hz: u32,
+        /// `D1_AH_SCRIPTS_START_PHASE` (lab): start at this phase ordinal; omitted by default.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        phase_index: Option<u32>,
     },
     Start,
     Tick { now: u64 },
@@ -1330,6 +1333,14 @@ struct Run {
     unsupported: std::collections::HashSet<String>,
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
+    /// `D1_AH_SCRIPTS_START_PHASE` (lab): the lifetime's catch-up after a start at a later phase,
+    /// one value per frame as a normal run goes 1, 4, 3: 3 = armed, waiting for the scripts' first
+    /// lifetime value (or `ramp_armed_at` + 2 s), 1 = the hold (4) is next, 2 = gameplay (3).
+    start_ramp: u8,
+    ramp_armed_at: Option<Instant>,
+    /// The ramp has finished: the scripts' initial lifetime (below 3) no longer applies.
+    ramp_done: bool,
+    ramp_swallow_logged: bool,
     /// The last lifetime value a frame carried, and that frame's stamp.
     lifetime_sent: Option<(i8, u32)>,
     /// The sidecar's lifetime numbering disagreed with the host's (logged once).
@@ -1398,6 +1409,8 @@ impl Run {
 /// One instance's bridge. See the module doc.
 pub struct ScriptBridge {
     config: Arc<ScriptConfig>,
+    /// `D1_AH_SCRIPTS_START_PHASE` (lab): activity index -> the phase its scripts start at.
+    start_phase: HashMap<u16, u32>,
     launch: Launcher,
     rows: RowTable,
     encoders: RowEncoders,
@@ -1493,6 +1506,7 @@ impl ScriptBridge {
         encoders.set_scoreboard_columns(config.scoreboard_columns.clone());
         Self {
             config,
+            start_phase: start_phase_table(),
             launch,
             rows,
             encoders,
@@ -1537,6 +1551,11 @@ impl ScriptBridge {
     /// A region the scripts' phase wants the client in (the host teleport).
     pub fn take_region_request(&mut self) -> Option<u32> {
         self.region_out.take()
+    }
+
+    /// Lab/tests: replaces the knob's table (`D1_AH_SCRIPTS_START_PHASE`).
+    pub fn set_start_phase(&mut self, table: HashMap<u16, u32>) {
+        self.start_phase = table;
     }
 
     /// The start slice set the instance serves this join (the region its membership publishes):
@@ -1856,6 +1875,10 @@ impl ScriptBridge {
             devices_armed: Default::default(),
             unsupported: Default::default(),
             lifetime_unsent: false,
+            start_ramp: 0,
+            ramp_armed_at: None,
+            ramp_done: false,
+            ramp_swallow_logged: false,
             lifetime_sent: None,
             wire_disagreed: false,
             held: VecDeque::new(),
@@ -2057,6 +2080,7 @@ impl ScriptBridge {
                         bundles_path: run.activity.bundles_path.clone(),
                         incidents_path: self.config.incidents_path.clone(),
                         tick_hz: TICK_HZ,
+                        phase_index: self.start_phase.get(&run.activity.index).copied(),
                     };
                     match link.send(&hello) {
                         Ok(()) => {
@@ -2068,6 +2092,19 @@ impl ScriptBridge {
                 }
                 Err(e) => run.retry_at = Self::retry(run, now, e),
             }
+        }
+        // D1_AH_SCRIPTS_START_PHASE (lab): the catch-up goes one value per frame, each once the last went out.
+        // Armed at the phase message, which the real sidecar sends before the scripts' first
+        // lifetime value (run gh61: 3 -> 1 undid the ramp): wait for that value, or 2 s.
+        if run.start_ramp == 3 && run.ramp_armed_at.is_some_and(|t| now >= t + Duration::from_secs(2)) {
+            run.start_ramp = 1;
+        }
+        if matches!(run.start_ramp, 1 | 2) && !run.lifetime_unsent {
+            run.lifetime_state = if run.start_ramp == 1 { 4 } else { 3 };
+            run.ramp_done = run.start_ramp == 2;
+            run.start_ramp = if run.start_ramp == 1 { 2 } else { 0 };
+            run.lifetime_unsent = true;
+            self.set_lifetime();
         }
         // Messages held for the lifetime, in order, once it has gone out.
         while let Some(run) = self.run.as_mut() {
@@ -2392,6 +2429,28 @@ impl ScriptBridge {
                     run.lifetime_state = 3;
                     run.lifetime_unsent = true;
                 }
+                if index == 0 {
+                    // A script restart (a wipe, a new pass through phase 0): the initial state applies again.
+                    run.ramp_done = false;
+                    run.ramp_swallow_logged = false;
+                    run.start_ramp = 0;
+                }
+                // D1_AH_SCRIPTS_START_PHASE (lab): the skipped phases never set the lifetime to the
+                // hold or released it (F35), so the client sat in pregame with no spawn (run gh60).
+                // The first phase of a later start brings it there as a normal run does: 4, then 3.
+                if index > 0
+                    && self.start_phase.get(&run.activity.index) == Some(&index)
+                    && run.start_ramp == 0
+                    && run.lifetime_state < 3
+                    && run.activity.end == EndKind::Gameplay
+                {
+                    tracing::info!(
+                        "⭐ script bridge: {} starts at phase {index}: lifetime brought to gameplay as the skipped phases would have (D1_AH_SCRIPTS_START_PHASE, lab)",
+                        run.activity.activity
+                    );
+                    run.start_ramp = 3;
+                    run.ramp_armed_at = Some(now);
+                }
                 self.set_lifetime();
             }
             SidecarMsg::Event { bundle, event_id, state, reason } => {
@@ -2523,9 +2582,30 @@ impl ScriptBridge {
                 }
             }
             match ours {
+                // After the ramp, and while it steps, the scripts' initial state (below 3) does not
+                // drag the lifetime back; the next phase 0 (a restart) clears this.
+                Some(s) if (run.ramp_done || matches!(run.start_ramp, 1 | 2)) && s < 3 => {
+                    if run.ramp_swallow_logged {
+                        tracing::debug!("script bridge: lifetime {s} (script state {state}) skipped by the start phase; it stays {}", run.lifetime_state);
+                    } else {
+                        run.ramp_swallow_logged = true;
+                        tracing::info!(
+                            "script bridge: lifetime {s} (script state {state}) is the scripts' initial state, skipped by the start phase; it stays {} (D1_AH_SCRIPTS_START_PHASE, lab)",
+                            run.lifetime_state
+                        );
+                    }
+                }
                 Some(s) => {
+                    if matches!(run.start_ramp, 1 | 2) {
+                        // A genuine scripted value (3 or more) mid-ramp ends the ramp and applies.
+                        run.start_ramp = 0;
+                        run.ramp_done = true;
+                    }
                     if s != run.lifetime_state {
                         tracing::info!("⭐ script bridge: lifetime {} -> {s} (script state {state})", run.lifetime_state);
+                    }
+                    if run.start_ramp == 3 {
+                        run.start_ramp = 1; // the scripts' first value is in: the ramp follows it
                     }
                     if s != run.lifetime_state {
                         run.lifetime_unsent = true;
@@ -2818,6 +2898,73 @@ pub fn unarmed_until(activity: u16) -> Option<i32> {
         .copied()
 }
 
+/// ⭐ `D1_AH_SCRIPTS_START_PHASE=INDEX:PHASE[,...]` (lab; process-wide: the world-table region override
+/// in main.rs applies to every join of that activity, later players and public instances too): the activities whose mission scripts start
+/// at a later phase (the sidecar's `hello.phase_index`; earlier phases never run) and the phase's
+/// ordinal, for example `164:5` (A Guardian Rises at its phase 5, the hangar; an example, not a profile setting). Malformed entries come back in
+/// the second list and are ignored. Nothing else is invented for the skipped phases.
+pub fn parse_start_phase(text: &str) -> (HashMap<u16, u32>, Vec<String>) {
+    let (mut table, mut bad) = (HashMap::new(), Vec::new());
+    for entry in text.split(',').map(str::trim).filter(|e| !e.is_empty()) {
+        match entry.split_once(':').and_then(|(a, p)| Some((a.trim().parse::<u16>().ok()?, p.trim().parse::<u32>().ok()?))) {
+            Some((a, p)) => {
+                table.insert(a, p);
+            }
+            None => bad.push(entry.to_string()),
+        }
+    }
+    (table, bad)
+}
+
+/// The knob, read once (a warning per malformed entry).
+pub fn start_phase_table() -> HashMap<u16, u32> {
+    static TABLE: std::sync::OnceLock<HashMap<u16, u32>> = std::sync::OnceLock::new();
+    TABLE
+        .get_or_init(|| {
+            let text = std::env::var("D1_AH_SCRIPTS_START_PHASE").unwrap_or_default();
+            let (table, bad) = parse_start_phase(&text);
+            for b in bad {
+                tracing::warn!("D1_AH_SCRIPTS_START_PHASE: ignoring {b:?} (want INDEX:PHASE, e.g. 164:5)");
+            }
+            table
+        })
+        .clone()
+}
+
+impl ScriptConfig {
+    /// Lab: for each activity the knob names that this table drives, `(index, start region)`: the
+    /// region of its start phase (`regions=` in the table, else content's, as at the phase's arrival),
+    /// which the join serves instead of `start=`. `None` (and one warning) when it cannot be
+    /// determined offline: `start=` stands. Logs the start line for each.
+    pub fn start_phase_regions(&self, table: &HashMap<u16, u32>) -> Vec<(u16, Option<u32>)> {
+        let mut out = Vec::new();
+        let mut indexes: Vec<_> = table.keys().copied().collect();
+        indexes.sort_unstable();
+        for i in indexes {
+            let Some(a) = self.activities.get(&i) else { continue };
+            let phase = table[&i];
+            // Only the table's regions= is known before the sidecar has loaded the scripts (their
+            // phase names are content); the phase's own report names the region otherwise.
+            match a.regions.get(&phase).copied() {
+                Some(r) => {
+                    tracing::info!(
+                        "⭐ script bridge: {} starts at phase {phase} in region {r} (D1_AH_SCRIPTS_START_PHASE, lab)",
+                        a.activity
+                    );
+                    out.push((i, Some(r)));
+                }
+                None => {
+                    tracing::warn!(
+                        "script bridge: D1_AH_SCRIPTS_START_PHASE {i}:{phase}: no `regions=` entry for phase {phase} in the activity table, so the region cannot be determined before the scripts load; the join keeps `start=`"
+                    );
+                    out.push((i, None));
+                }
+            }
+        }
+        out
+    }
+}
+
 pub fn parse_unarmed_until(text: &str) -> HashMap<u16, i32> {
     text.split(',')
         .filter_map(|p| {
@@ -2903,9 +3050,174 @@ mod tests {
         );
         let hello = host_line(&HostMsg::Hello {
             proto: 1, build: "56578".into(), activity: "cine_reveal".into(),
-            bundles_path: None, incidents_path: Some("i.tsv".into()), tick_hz: TICK_HZ,
+            bundles_path: None, incidents_path: Some("i.tsv".into()), tick_hz: TICK_HZ, phase_index: None,
         });
         assert_eq!(hello, r#"{"type":"hello","proto":1,"build":"56578","activity":"cine_reveal","incidents_path":"i.tsv","tick_hz":10}"#);
+    }
+
+    #[test]
+    fn start_phase_knob_parses_and_ignores_malformed() {
+        let (t, bad) = parse_start_phase("164:5, 165:0");
+        assert_eq!((t.get(&164), t.get(&165), bad.len()), (Some(&5), Some(&0), 0));
+        for m in ["164", "x:5", "164:-1", "164:"] {
+            let (t, bad) = parse_start_phase(m);
+            assert!(t.is_empty() && bad.len() == 1, "{m:?}");
+        }
+        let (t, bad) = parse_start_phase("");
+        assert!(t.is_empty() && bad.is_empty(), "unset is silent");
+    }
+
+    #[test]
+    fn start_phase_hello_json_and_region() {
+        let hello = |p| host_line(&HostMsg::Hello {
+            proto: 1, build: "56578".into(), activity: "a".into(),
+            bundles_path: None, incidents_path: None, tick_hz: TICK_HZ, phase_index: p,
+        });
+        assert_eq!(hello(None), r#"{"type":"hello","proto":1,"build":"56578","activity":"a","tick_hz":10}"#);
+        assert_eq!(hello(Some(5)), r#"{"type":"hello","proto":1,"build":"56578","activity":"a","tick_hz":10,"phase_index":5}"#);
+
+        // Through the bridge (activity 165 here): unset and another index send none; 165:1 sends 1.
+        for (table, want) in [(vec![], None), (vec![(164u16, 5u32)], None), (vec![(165, 1)], Some(1))] {
+            let shared = Arc::new(Mutex::new(Shared::default()));
+            let mut b = bridge(&shared, false);
+            b.set_start_phase(table.into_iter().collect());
+            let mut t = Instant::now();
+            let mut wire = Vec::new();
+            b.on_client_message(&join(7), 165, HOST, t);
+            run_for(&mut b, &mut t, 0.25, &mut wire);
+            let s = shared.lock().unwrap();
+            assert!(matches!(&s.sent[0], HostMsg::Hello { phase_index, .. } if *phase_index == want), "{:?}", s.sent[0]);
+        }
+
+        // The served region: the table's regions= (cine_reveal: 0:25, 1:26). The unset knob and
+        // another activity's entry change nothing; a phase with no entry keeps start=.
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let b = bridge(&shared, false);
+        assert!(b.config.start_phase_regions(&HashMap::new()).is_empty());
+        assert!(b.config.start_phase_regions(&HashMap::from([(164, 1)])).is_empty());
+        assert_eq!(b.config.start_phase_regions(&HashMap::from([(165, 1)])), vec![(165, Some(26))]);
+        assert_eq!(b.config.start_phase_regions(&HashMap::from([(165, 9)])), vec![(165, None)]);
+    }
+
+    #[test]
+    fn a_later_start_phase_brings_the_lifetime_to_gameplay() {
+        // A later start skips phase 0's pregame cinematic hold and the F35 release; the first phase
+        // of the start catches the lifetime up, one value per frame as a normal run: 1, 4, 3.
+        let run = |table: Vec<(u16, u32)>| {
+            let mut seen = Vec::new();
+            let shared = Arc::new(Mutex::new(Shared::default()));
+            let activity = ScriptedActivity::parse_with(GAMEPLAY_LINE, &base(), &|_| Ok(LIST.to_string()), None).unwrap();
+            // A start delay that never passes: the fake script stays silent; the test plays the sidecar.
+            let mut b = bridge_delayed(&shared, false, false, activity, Duration::from_secs(3600));
+            b.set_start_phase(table.into_iter().collect());
+            let mut t = Instant::now();
+            b.on_client_message(&join(9), 165, HOST, t);
+            b.on_client_message(&slice(25), 165, HOST, t);
+            run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+            // The real sidecar's order (run gh61): the phase message first, then the scripts' first lifetime value.
+            b.apply(phase(5, "hangar"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            run_for(&mut b, &mut t, 3.0, &mut Vec::new());
+            // The scripts' state 0 again does not drag it back; a real transition still applies.
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+            let held = shared.lock().unwrap().frames.iter().filter_map(lifetime_of).last();
+            seen.push(held);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(3)] }, t);
+            run_for(&mut b, &mut t, 1.0, &mut Vec::new());
+            let s = shared.lock().unwrap();
+            let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+            seq.dedup();
+            (seq, seen)
+        };
+        // Script state 3 is the later genuine transition (wire 4); it still applies after the ramp.
+        let (seq, seen) = run(vec![(165, 5)]);
+        assert_eq!(seq, [0, 1, 4, 3, 4], "the values a normal run reaches by phase 1, held at 3 against the scripts' state 0");
+        assert_eq!(seen, [Some(3)], "the repeated state 0 does not drag it back");
+        assert_eq!(run(vec![]).0, [0, 1, 4], "unset: unchanged, no catch-up");
+        assert_eq!(run(vec![(164, 5)]).0, [0, 1, 4], "another activity's entry changes nothing");
+    }
+
+    /// Plays the sidecar's side for the start-phase tests: `steps` run in order, then 4 s pass.
+    /// Returns the deduplicated wire lifetime sequence.
+    fn start_phase_run(table: Vec<(u16, u32)>, steps: &dyn Fn(&mut ScriptBridge, Instant, &mut dyn FnMut(&mut ScriptBridge, f32))) -> Vec<i8> {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let activity = ScriptedActivity::parse_with(GAMEPLAY_LINE, &base(), &|_| Ok(LIST.to_string()), None).unwrap();
+        let mut b = bridge_delayed(&shared, false, false, activity, Duration::from_secs(3600));
+        b.set_start_phase(table.into_iter().collect());
+        let t = std::cell::Cell::new(Instant::now());
+        b.on_client_message(&join(9), 165, HOST, t.get());
+        b.on_client_message(&slice(25), 165, HOST, t.get());
+        let mut wait = |b: &mut ScriptBridge, secs: f32| {
+            let mut now = t.get();
+            run_for(b, &mut now, secs, &mut Vec::new());
+            t.set(now);
+        };
+        wait(&mut b, 1.0);
+        steps(&mut b, t.get(), &mut wait);
+        let s = shared.lock().unwrap();
+        let mut seq: Vec<i8> = s.frames.iter().filter_map(lifetime_of).collect();
+        seq.dedup();
+        seq
+    }
+
+    #[test]
+    fn start_phase_ramp_without_a_scripted_value_starts_after_two_seconds() {
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            wait(b, 1.0);
+        });
+        assert_eq!(seq, [0], "no scripted value and under 2 s: the ramp waits");
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            wait(b, 4.0);
+        });
+        assert_eq!(seq, [0, 4, 3], "no scripted value: the ramp starts anyway after 2 s");
+    }
+
+    #[test]
+    fn start_phase_ramp_arms_at_phase_1_and_a_restart_clears_the_skip() {
+        let seq = start_phase_run(vec![(165, 1)], &|b, t, wait| {
+            b.apply(phase(1, "p1"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 3.0);
+        });
+        assert_eq!(seq, [0, 1, 4, 3], "a ramp that arms at phase 1");
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 3.0);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 1.0);
+            // The scripts restart at phase 0: their initial state applies again.
+            b.apply(phase(0, "p0"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 1.0);
+        });
+        assert_eq!(seq, [0, 1, 4, 3, 1], "swallowed at 3 until phase 0, then state 0 applies");
+    }
+
+    #[test]
+    fn start_phase_mid_ramp_values() {
+        // A scripted value below 3 mid-ramp is swallowed; the ramp still ends at 3.
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 0.3); // 1 is out, the hold 4 is next or out
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 3.0);
+        });
+        assert_eq!(seq.last(), Some(&3), "{seq:?}");
+        assert!(!seq.windows(2).any(|w| w == [4, 1] || w == [3, 1]), "no drag back: {seq:?}");
+        // A scripted state 3 (wire 4) mid-ramp ends the ramp and applies; the ramp's 3 does not overwrite it.
+        let seq = start_phase_run(vec![(165, 5)], &|b, t, wait| {
+            b.apply(phase(5, "hangar"), t);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(0)] }, t);
+            wait(b, 0.3);
+            b.apply(SidecarMsg::Rows { changes: vec![lifetime(3)] }, t);
+            wait(b, 3.0);
+        });
+        assert_eq!(seq.last(), Some(&4), "{seq:?}");
     }
 
     #[test]

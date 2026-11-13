@@ -953,6 +953,13 @@ fn main() -> anyhow::Result<()> {
                         });
                     if let Some(c) = &script_config {
                         tracing::info!("⭐ D1_AH_SCRIPTS=1 - scripted activities {c:?}");
+                        // ⭐ D1_AH_SCRIPTS_START_PHASE (lab): the join serves the start phase's region.
+                        let start_phase = d1_activity_host::script_bridge::start_phase_table();
+                        for (i, region) in c.start_phase_regions(&start_phase) {
+                            if let (Some(r), Some(w)) = (region, world_table.get_mut(&i)) {
+                                w.start_region = Some(r);
+                            }
+                        }
                     }
                     // ── stream R hook ── D1_AH_CRUCIBLE=1 (pvp_wire.rs): Crucible matches driven by
                     // the clients' own reports, on each client's udt 5. Off by default.
