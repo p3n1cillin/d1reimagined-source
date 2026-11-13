@@ -1646,6 +1646,8 @@ impl ActivityInstance {
                 // records, no mission steps, no frame until the client names its region (udt 21),
                 // and the slot handover answered (crate::public_host).
                 if let Some(p) = self.public.as_mut() {
+                    // The membership peer slot is the players group's record index.
+                    p.set_peer_slot(group_slot);
                     if p.on_join(struct_image, &self.activity_name, self.ah_id, now).is_public_instance() {
                         // Stream O3 (integration review, finding 10): a public instance runs no
                         // mission script and grants nothing for the mission: the mission host

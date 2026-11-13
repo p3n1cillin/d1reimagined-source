@@ -170,6 +170,20 @@ The default A/B image (56578): `+0x00 = âˆ’1`, `+0x04 = 0x811C9DC5`, `+0x38 = âˆ
 - `SensorAuthority::all_to_with` writes only byte `+1`, and to all 65 blocks. It needs the 8-byte machine id and a block set.
 - `decode-batch`'s `peer` and `d1-srcp.py sensors`' label should say "machine id byte 1", or print whether the id equals the join's.
 
+## Per-player records of a shared public instance (offline only)
+
+Live (private captures of two-member public instances; the Xbox 51539 layout is a test target, the rule is what is used): the players group `0xEAAF16E2` kind `0xC` has 16 records, and record N is the member in membership peer slot N. A record names its player at `A+0x40`. Slots are the lowest free at join, freed on leave and reused by a later joiner. When a member joined, the others got an A-only delta for its record naming it; when one left, its record's A went back to the default (identity zero) the same second. The joiner's own full list carried every record's current value.
+
+What the host does now (`public_host.rs`, `PublicRecords`):
+- Each connection's record is its membership peer slot from `group::GroupLink::slot` (set by `state.rs` before the public join). With `D1_AH_SHARED_INSTANCES` off, or no group, the slot is 0, as before: a single client is served exactly as it was.
+- The records are shared by every connection to one instance host id; each connection keeps its own cursor.
+- A joiner's full list has its own key in its record and the other members' records as they stand (B stays the list's).
+- The others get one A-only delta on their next poll; a leave sends one reset to the default image (identity zero) and frees the slot.
+- #398's flag mirror writes `+0x4C` and `+0x50` into the record of the player whose mission host routed the flags, and the other members receive that record's change as a delta. A mission with several players in the instance writes each of their records.
+- A slot of 16 or more has no record (logged once) but its member still gets the other records.
+
+Not proven in game: that two clients really share one instance host id here (the second join must name the first's host, `D1_AH_SHARED_INSTANCES=1`), the live timing (2.1-3.1 s after the membership update; ours is the next poll), and B for other players' records (not invented).
+
 ## Open
 
 - Whether the identity in only one host's record links the player. The linker walks the world content's type-12 table, and whether that table holds both hosts' groups is `[U]`. Serve both, as live did.

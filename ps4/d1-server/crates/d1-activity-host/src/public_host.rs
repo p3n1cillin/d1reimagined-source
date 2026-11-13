@@ -253,6 +253,131 @@ pub fn personal_clients(list: &[SensorClientRef], identity: &[u8], slot: i16) ->
         .collect()
 }
 
+/// How many player records a public instance's players group has (`0xEAAF16E2` kind `0xC`, 0..15).
+pub const PUBLIC_PLAYER_RECORDS: usize = 16;
+
+/// One player record of a shared public instance: its current A image, and when it last changed.
+#[derive(Debug, Clone)]
+struct SlotRecord {
+    image: Vec<u8>,
+    version: u64,
+    /// A member holds the slot (false: the record went back to its default when it left).
+    present: bool,
+}
+
+#[derive(Debug, Default)]
+struct HostRecords {
+    slots: BTreeMap<usize, SlotRecord>,
+}
+
+/// The players group's records of every shared public instance, by host id, shared by every
+/// connection. The live host kept one list per instance: record N is the member in peer slot N,
+/// naming it at `A+0x40`, and a leave put the record's A back to the default. Each connection
+/// keeps its own cursor (`PublicHost::seen`) and sends the others' changes as A-only deltas.
+#[derive(Debug, Default)]
+pub struct PublicRecords {
+    hosts: HashMap<u64, HostRecords>,
+    /// One counter for every host, never reset: a cursor left over from a host entry that was
+    /// removed (every member left) can never shadow a newer record of a re-created entry.
+    next_version: u64,
+}
+
+pub type SharedRecords = Arc<Mutex<PublicRecords>>;
+
+impl PublicRecords {
+    /// Put `image` into record `slot` of `host`'s list. True when it changed.
+    fn set(&mut self, host: u64, slot: usize, image: Vec<u8>) -> bool {
+        let h = self.hosts.entry(host).or_default();
+        if h.slots.get(&slot).is_some_and(|r| r.present && r.image == image) {
+            return false;
+        }
+        self.next_version += 1;
+        let version = self.next_version;
+        self.hosts.entry(host).or_default().slots.insert(slot, SlotRecord { image, version, present: true });
+        true
+    }
+
+    /// The member in `slot` left: its record goes back to the default image (identity zero).
+    /// Only if the record still names `key`: a later member that already took the slot keeps it.
+    fn leave(&mut self, host: u64, slot: usize, key: Option<[u8; 8]>) -> bool {
+        // A member with no player key named no record, so it never resets one (it could be a
+        // later member's that took the freed slot).
+        let Some(key) = key else { return false };
+        let Some(h) = self.hosts.get(&host) else { return false };
+        if !h.slots.get(&slot).is_some_and(|r| r.present && r.image.get(0x40..0x48) == Some(&key[..])) {
+            return false;
+        }
+        self.next_version += 1;
+        let version = self.next_version;
+        let Some(h) = self.hosts.get_mut(&host) else { return false };
+        let image = crate::row_encoders::player_bundle_image([0; 8], false);
+        h.slots.insert(slot, SlotRecord { image, version, present: false });
+        if h.slots.values().all(|r| !r.present) {
+            self.hosts.remove(&host);
+        }
+        true
+    }
+
+    /// Every record a member holds except `own`'s: what a joiner's full list carries. Marks every
+    /// record (the defaults too) as seen.
+    fn snapshot(&self, host: u64, own: Option<usize>, seen: &mut BTreeMap<usize, u64>) -> Vec<(usize, Vec<u8>)> {
+        let Some(h) = self.hosts.get(&host) else { return Vec::new() };
+        let mut out = Vec::new();
+        for (&slot, r) in &h.slots {
+            seen.insert(slot, r.version);
+            if r.present && Some(slot) != own {
+                out.push((slot, r.image.clone()));
+            }
+        }
+        out
+    }
+
+    /// The records other than `own`'s that changed since `seen`, marked seen.
+    fn changed(&self, host: u64, own: Option<usize>, seen: &mut BTreeMap<usize, u64>) -> Vec<(usize, Vec<u8>)> {
+        let Some(h) = self.hosts.get(&host) else { return Vec::new() };
+        let mut out = Vec::new();
+        for (&slot, r) in &h.slots {
+            if Some(slot) != own && seen.get(&slot).is_none_or(|&v| v < r.version) {
+                seen.insert(slot, r.version);
+                out.push((slot, r.image.clone()));
+            }
+        }
+        out
+    }
+
+    /// Record `slot`'s current image, if a member holds it.
+    pub fn image(&self, host: u64, slot: usize) -> Option<Vec<u8>> {
+        self.hosts.get(&host)?.slots.get(&slot).filter(|r| r.present).map(|r| r.image.clone())
+    }
+}
+
+/// The players group record a peer slot is (record N for slot N). None for a slot beyond the 16
+/// records (logged once through `logged`).
+fn record_slot_of(peer_slot: Option<usize>, host: u64, logged: &mut bool) -> Option<usize> {
+    let slot = peer_slot.unwrap_or(0);
+    if slot < PUBLIC_PLAYER_RECORDS {
+        return Some(slot);
+    }
+    if !std::mem::replace(logged, true) {
+        tracing::warn!("⚠ public instance {host:#018x}: peer slot {slot} has no player record (the players group has {PUBLIC_PLAYER_RECORDS})");
+    }
+    None
+}
+
+fn is_player_record(c: &SensorClientRef, slot: usize) -> bool {
+    use crate::row_encoders as re;
+    c.name_hash == re::PUBLIC_PLAYERS_GROUP && c.name_i8 == re::KIND_PLAYER_BUNDLE && c.name_sub as usize == slot && c.has_a
+}
+
+/// Lay other members' player records over a joiner's list (their current A; B stays the list's).
+pub fn overlay_member_records(clients: &mut [SensorClientRef], others: &[(usize, Vec<u8>)]) {
+    for (slot, image) in others {
+        if let Some(c) = clients.iter_mut().find(|c| is_player_record(c, *slot)) {
+            c.a_value = Some((crate::row_encoders::TAG_PLAYER_BUNDLE, image.clone()));
+        }
+    }
+}
+
 /// ⚠ **PLACEHOLDER**: how long after an instance starts its chests and resource nodes show. The
 /// restored scripts' notes put the Cosmodrome's at about a minute; nothing here was measured by us.
 pub const PLACEHOLDER_LOOT_DELAY: std::time::Duration = std::time::Duration::from_secs(60);
@@ -347,8 +472,7 @@ pub struct PublicRows {
     dirty: BTreeSet<RowKey>,
     flags: Vec<u32>,
     flags_pending: bool,
-    /// The client's own player row: the players group's record 0 (its peer slot; a second
-    /// member's slot is not tracked, as in [`PublicHost::on_slice_report`]).
+    /// The client's own player row: the players group's record at its membership peer slot.
     player: Option<RowKey>,
     logged: BTreeSet<RowKey>,
 }
@@ -364,10 +488,10 @@ fn key_of(c: &SensorClientRef) -> RowKey {
 }
 
 impl PublicRows {
-    fn register(&mut self, mission_host: u64, list: &[SensorClientRef]) {
+    fn register(&mut self, mission_host: u64, list: &[SensorClientRef], slot: i16) {
         self.mission_host = mission_host;
         self.shape = list.iter().map(|c| (key_of(c), (c.has_a, c.has_b))).collect();
-        self.player = Some(RowKey { group: PUBLIC_PLAYERS_GROUP, kind: crate::row_encoders::KIND_PLAYER_BUNDLE, index: 0 })
+        self.player = Some(RowKey { group: PUBLIC_PLAYERS_GROUP, kind: crate::row_encoders::KIND_PLAYER_BUNDLE, index: slot })
             .filter(|k| self.shape.contains_key(k));
         public_row_links().register(mission_host, &self.inbox);
     }
@@ -440,6 +564,12 @@ impl PublicRows {
         self.dirty.clear();
     }
 
+    /// The client's own player record's A image as this connection holds it (flags applied).
+    fn own_image(&self) -> Option<Vec<u8>> {
+        let row = self.values.get(&self.player?)?;
+        row.a.as_ref().map(|(_, image)| image.clone())
+    }
+
     /// The rows that changed since the last frame, as list entries.
     fn take_delta(&mut self, host_id: u64) -> Vec<SensorClientRef> {
         self.drain(host_id);
@@ -483,6 +613,15 @@ pub struct PublicHost {
     personal: Option<PersonalEncoder>,
     /// `D1_AH_SCRIPTS_INTERACTABLE`: the mission bridge's rows and flags served here.
     routed: PublicRows,
+    /// Every shared instance's player records, shared by every connection.
+    records: SharedRecords,
+    /// This connection's membership peer slot in the shared instance (None: not shared, slot 0).
+    peer_slot: Option<usize>,
+    /// The record versions this connection has sent or been given, by slot.
+    seen: BTreeMap<usize, u64>,
+    /// Whether this connection has joined the shared records (it sends and takes record deltas).
+    record_held: bool,
+    slot_overflow_logged: bool,
 }
 
 impl std::fmt::Debug for PublicHost {
@@ -519,7 +658,73 @@ impl PublicHost {
             lists: Arc::new(HashMap::new()),
             personal: None,
             routed: PublicRows { on: crate::script_bridge::interactable_knob(), ..PublicRows::default() },
+            records: Arc::new(Mutex::new(PublicRecords::default())),
+            peer_slot: None,
+            seen: BTreeMap::new(),
+            record_held: false,
+            slot_overflow_logged: false,
         }
+    }
+
+    /// The membership peer slot the shared instance gave this connection at its join
+    /// (`group::GroupLink::slot`). Without shared instances it stays unset and the slot is 0.
+    pub fn set_peer_slot(&mut self, slot: Option<usize>) {
+        self.peer_slot = slot;
+    }
+
+    /// Put this connection's record back to the default and tell the shared list, once: a leave
+    /// message, a connectivity failure or the connection ending ([`Drop`]), whichever comes first.
+    fn release_record(&mut self) {
+        if !std::mem::take(&mut self.record_held) {
+            return;
+        }
+        let slot = self.peer_slot.unwrap_or(0);
+        let key = crate::row_encoders::player_key_of_identity(&self.identity.identity);
+        if let Ok(mut r) = self.records.lock() {
+            if r.leave(self.host_id, slot, key) {
+                tracing::info!("⭐ public instance {:#018x}: player record {slot} back to the default (the member left)", self.host_id);
+            }
+        }
+        self.seen.clear();
+    }
+
+    /// This connection's own record changed here (the mission's flags): tell the shared list.
+    fn publish_own(&mut self) {
+        let slot = self.peer_slot.unwrap_or(0);
+        if !self.record_held || slot >= PUBLIC_PLAYER_RECORDS {
+            return;
+        }
+        if let Some(image) = self.routed.own_image() {
+            if let Ok(mut r) = self.records.lock() {
+                r.set(self.host_id, slot, image);
+            }
+        }
+    }
+
+    /// Other members' record changes since this connection last sent them, as A-only entries.
+    fn take_records_delta(&mut self) -> Vec<SensorClientRef> {
+        let (Some(key), true) = (self.selected, self.record_held) else { return Vec::new() };
+        let Some(list) = self.lists.get(&key) else { return Vec::new() };
+        let own = self.peer_slot.unwrap_or(0);
+        let changed = match self.records.lock() {
+            Ok(r) => r.changed(self.host_id, Some(own), &mut self.seen),
+            Err(_) => return Vec::new(),
+        };
+        let mut out = Vec::new();
+        for (slot, image) in changed {
+            let Some(template) = list.iter().find(|c| is_player_record(c, slot)) else { continue };
+            let named = image.get(0x40..0x48).is_some_and(|k| k.iter().any(|b| *b != 0));
+            let mut c = template.clone();
+            c.a_value = Some((crate::row_encoders::TAG_PLAYER_BUNDLE, image));
+            c.b_value = None;
+            tracing::info!(
+                "⭐ public instance {:#018x}: player record {slot} {} (A-only delta to the member at peer slot {own})",
+                self.host_id,
+                if named { "names a joined member" } else { "reset to the default (the member left)" }
+            );
+            out.push(c);
+        }
+        out
     }
 
     /// Tests: replaces the knob (`D1_AH_SCRIPTS_INTERACTABLE`) for the mission rows served here.
@@ -530,16 +735,25 @@ impl PublicHost {
     /// `D1_AH_SCRIPTS_INTERACTABLE`: the changed mission rows (and the player row's flags), as
     /// entries for one udt 5 delta; empty until this is a registered public instance.
     pub fn take_routed_delta(&mut self) -> Vec<SensorClientRef> {
-        if !self.routed.registered() {
-            return Vec::new();
-        }
-        let host = self.host_id;
-        self.routed.take_delta(host)
+        let mut out = if self.routed.registered() {
+            let host = self.host_id;
+            self.routed.take_delta(host)
+        } else {
+            Vec::new()
+        };
+        // The player record's flags (applied by the drain above) reach the other members too, and
+        // the other members' record changes reach this client.
+        self.publish_own();
+        out.extend(self.take_records_delta());
+        out
     }
 
     /// A delta's entries that could not be built or sent: due again.
     pub fn requeue_routed(&mut self, clients: &[SensorClientRef]) {
         self.routed.requeue(clients);
+        for c in clients.iter().filter(|c| c.name_hash == PUBLIC_PLAYERS_GROUP && c.name_i8 == crate::row_encoders::KIND_PLAYER_BUNDLE) {
+            self.seen.remove(&(c.name_sub as usize));
+        }
     }
 
     /// The entries as one frame (no authority table), through the personal encoder; the caller
@@ -813,17 +1027,40 @@ impl PublicHost {
         if let (true, Some(mh), Some(list), true) =
             (self.routed.on, self.mission_host(), self.lists.get(&key), self.personal.is_some())
         {
-            self.routed.register(mh, list);
+            self.routed.register(mh, list, self.peer_slot.unwrap_or(0).min(i16::MAX as usize) as i16);
         }
         // F32: the joining client's own frame, as the live instance served it: the join grant
         // (blocks 0..bubbles and 64 to its machine, seq 1) and its key in the players group's
-        // record 0 (its peer slot; ⚠ a second member's slot is not tracked here yet).
+        // record at its membership peer slot (record 0 for the first or only member), with the
+        // other members' records as they stand.
         if let (Some(encode), Some(list)) = (self.personal.as_ref(), self.lists.get(&key)) {
             let identity = self.identity.identity.clone();
             let authority = crate::row_encoders::machine_of_identity(&identity)
                 .zip(bubbles)
                 .map(|(m, n)| d1_oracle::sensor::SensorAuthority::join_grant(m, n));
-            let mut clients = personal_clients(list, &identity, 0);
+            let record = record_slot_of(self.peer_slot, host_id, &mut self.slot_overflow_logged);
+            let slot = self.peer_slot.unwrap_or(0).min(i16::MAX as usize) as i16;
+            let mut clients = personal_clients(list, &identity, slot);
+            let own_image = record.and_then(|own| {
+                clients
+                    .iter()
+                    .find(|c| is_player_record(c, own))
+                    .and_then(|c| c.a_value.as_ref().map(|(_, i)| i.clone()))
+                    .filter(|_| crate::row_encoders::player_key_of_identity(&identity).is_some())
+            });
+            if let Ok(mut r) = self.records.lock() {
+                // The other members' records as they stand, also for a member with no record of its own.
+                let others = r.snapshot(host_id, record, &mut self.seen);
+                overlay_member_records(&mut clients, &others);
+                if let (Some(own), Some(image)) = (record, own_image) {
+                    r.set(host_id, own, image);
+                    tracing::info!(
+                        "⭐ public instance {host_id:#018x}: player record {own} names the client (peer slot {own}); {} other member record(s) in its list",
+                        others.len()
+                    );
+                }
+                self.record_held = true;
+            }
             if self.routed.registered() {
                 self.routed.overlay(host_id, &mut clients);
             }
@@ -847,6 +1084,7 @@ impl PublicHost {
     /// The client left this instance (peer leave or lost connection).
     pub fn on_leave(&mut self, now: Instant) {
         if self.selected.take().is_some() {
+            self.release_record();
             if let Ok(mut r) = self.registry.lock() {
                 r.leave(self.identity.clone(), now);
                 crate::public_registry::sync_with_responder(&mut r);
@@ -858,6 +1096,14 @@ impl PublicHost {
                 Ok(())
             });
         }
+    }
+}
+
+/// A connection that ends without a leave message (socket closed, timeout) frees its record the
+/// same way. The template the listener clones never joins, so its clones only release their own.
+impl Drop for PublicHost {
+    fn drop(&mut self) {
+        self.release_record();
     }
 }
 
@@ -1095,5 +1341,199 @@ mod tests {
         q.on_join(&join(3, 0xD1A0_0000_0000_0001, 0, 8), "act_cosmo_m1_dome_a", host + 1, now);
         assert!(q.on_slice_report("act_mars_m01_valley", &udt21(None, Some(0)), host + 1, None, now).is_none());
         assert!(q.on_slice_report("act_cosmo_m1_dome_a", &udt21(None, Some(0)), host + 1, None, now).unwrap().is_err());
+    }
+
+    // ---- per-player records of a shared public instance (offline: unit tests, no client) ----
+
+    type Frames = Arc<Mutex<Vec<Vec<SensorClientRef>>>>;
+
+    /// A template host for region 56 of Earth whose list is the 16 player records (with a B part)
+    /// and whose encoder logs the entries it is asked for. Clones share the records, as the
+    /// listener's per-connection clones do.
+    fn records_template(interactable: bool) -> (PublicHost, Frames) {
+        let key = InstanceKey::Bubble { destination: Destination::Earth, region: 56 };
+        let text: String = (0..16).map(|i| format!("0xeaaf16e2 0xc {i} 1 1\n")).collect();
+        let list = PublicRegionList::parse(key, "t", &text);
+        let log: Frames = Arc::default();
+        let l = log.clone();
+        let encode: PersonalEncoder = Arc::new(move |_, clients| {
+            l.lock().unwrap().push(clients.to_vec());
+            Ok(vec![0x56])
+        });
+        let mut p = host_with(&[(key, Ok(vec![0x56]))]).with_personal_frames(&[list], encode);
+        p.set_interactable(interactable);
+        (p, log)
+    }
+
+    fn key_join(mission_host: u64, last: u8) -> (Vec<u8>, [u8; 8]) {
+        let mut img = join(3, mission_host, 0, 1);
+        img[JOIN_IDENTITY + 0x18..JOIN_IDENTITY + 0x20].copy_from_slice(&[0x11, 0, 0, 0, 0, 0, 0, last]);
+        let key = crate::row_encoders::player_key_of_identity(&img[JOIN_IDENTITY..JOIN_IDENTITY + 40]).unwrap();
+        (img, key)
+    }
+
+    /// Join `p` to `host` at `slot` and take its first frame's entries.
+    fn enter(p: &mut PublicHost, log: &Frames, mission_host: u64, last: u8, host: u64, slot: usize) -> ([u8; 8], Vec<SensorClientRef>) {
+        let (img, key) = key_join(mission_host, last);
+        let now = Instant::now();
+        p.set_peer_slot(Some(slot));
+        p.on_join(&img, "act_cosmo_m1_dome_a", host, now);
+        let mut udt21 = vec![0u8; 0x220];
+        udt21[0x158..0x15C].copy_from_slice(&56u32.to_le_bytes());
+        udt21[0x15C..0x160].copy_from_slice(&0x811C_9DC5u32.to_le_bytes());
+        assert!(matches!(p.on_slice_report("act_cosmo_m1_dome_a", &udt21, host, None, now), Some(Ok(_))));
+        let frame = log.lock().unwrap().last().unwrap().clone();
+        (key, frame)
+    }
+
+    fn record(entries: &[SensorClientRef], slot: i16) -> &SensorClientRef {
+        entries.iter().find(|c| c.name_hash == PUBLIC_PLAYERS_GROUP && c.name_sub == slot).expect("listed")
+    }
+
+    fn named(c: &SensorClientRef) -> [u8; 8] {
+        c.a_value.as_ref().expect("an A value").1[0x40..0x48].try_into().unwrap()
+    }
+
+    #[test]
+    fn each_member_gets_its_own_record_and_the_others_see_it_come_and_go() {
+        let (template, log) = records_template(false);
+        let host = 0xD1A0_0000_0000_0A00;
+        let (mut a, mut b, mut c) = (template.clone(), template.clone(), template.clone());
+
+        // The first member: slot 0, record 0, as a single client has always been served.
+        let (ka, fa) = enter(&mut a, &log, 0xD1A0_0000_0000_0A01, 1, host, 0);
+        assert_eq!(named(record(&fa, 0)), ka);
+        assert!(fa.iter().filter(|c| c.name_sub != 0).all(|c| c.a_value.is_none()), "no other record named");
+        assert!(a.take_routed_delta().is_empty());
+
+        // The second: slot 1, record 1; its full list carries record 0 as it stands.
+        let (kb, fb) = enter(&mut b, &log, 0xD1A0_0000_0000_0A02, 2, host, 1);
+        assert_eq!((named(record(&fb, 0)), named(record(&fb, 1))), (ka, kb));
+        assert!(fb.iter().filter(|c| c.name_sub > 1).all(|c| c.a_value.is_none()));
+        assert!(b.take_routed_delta().is_empty(), "the joiner has been told everything");
+
+        // The first is told once, A only, naming the joiner.
+        let d = a.take_routed_delta();
+        assert_eq!(d.len(), 1);
+        assert_eq!((d[0].name_sub, named(&d[0])), (1, kb));
+        assert!(d[0].b_value.is_none(), "A only");
+        assert!(a.take_routed_delta().is_empty(), "once");
+
+        // The second leaves: the first gets record 1 back at the default, and the slot is free.
+        b.on_leave(Instant::now());
+        let d = a.take_routed_delta();
+        assert_eq!(d.len(), 1);
+        assert_eq!((d[0].name_sub, named(&d[0])), (1, [0; 8]));
+        assert_eq!(d[0].a_value.as_ref().unwrap().1, crate::row_encoders::player_bundle_image([0; 8], false));
+        assert!(template.records.lock().unwrap().image(host, 1).is_none());
+        assert!(a.take_routed_delta().is_empty());
+
+        // A third takes the freed slot 1 and record 1; the first is told.
+        let (kc, fc) = enter(&mut c, &log, 0xD1A0_0000_0000_0A03, 3, host, 1);
+        assert_eq!((named(record(&fc, 0)), named(record(&fc, 1))), (ka, kc));
+        let d = a.take_routed_delta();
+        assert_eq!((d.len(), d[0].name_sub, named(&d[0])), (1, 1, kc));
+    }
+
+    #[test]
+    fn a_slot_beyond_the_sixteen_records_has_none() {
+        let (template, log) = records_template(false);
+        let host = 0xD1A0_0000_0000_0A10;
+        let (mut a, mut z) = (template.clone(), template.clone());
+        let (ka, _) = enter(&mut a, &log, 0xD1A0_0000_0000_0A11, 1, host, 0);
+        let (_, fz) = enter(&mut z, &log, 0xD1A0_0000_0000_0A12, 2, host, 16);
+        assert_eq!(named(record(&fz, 0)), ka, "record 0 is the first member's");
+        assert!(fz.iter().all(|c| c.name_sub != 16));
+        assert!(a.take_routed_delta().is_empty(), "no record to tell the first about");
+        z.on_leave(Instant::now());
+        assert!(a.take_routed_delta().is_empty());
+    }
+
+    #[test]
+    fn the_flag_mirror_lands_in_the_records_of_the_missions_players() {
+        let (template, log) = records_template(true);
+        let host = 0xD1A0_0000_0000_0A20;
+        let (ma, mb) = (0xD1A0_0000_0000_7E01, 0xD1A0_0000_0000_7E02);
+        let (mut a, mut b) = (template.clone(), template.clone());
+        enter(&mut a, &log, ma, 1, host, 0);
+        enter(&mut b, &log, mb, 2, host, 1);
+        let _ = a.take_routed_delta();
+        let flags_in = |c: &SensorClientRef| {
+            let image = &c.a_value.as_ref().unwrap().1;
+            (u32::from_le_bytes(image[0x4C..0x50].try_into().unwrap()), u32::from_le_bytes(image[0x50..0x54].try_into().unwrap()))
+        };
+        // B's mission sets a flag: B's own frame gets it in record 1 (not record 0, not the rest) ...
+        crate::script_bridge::public_row_links().route_flags(mb, 1, &[0x1234_0001]);
+        let d = b.take_routed_delta();
+        assert_eq!(d.len(), 1);
+        assert_eq!((d[0].name_sub, flags_in(&d[0])), (1, (1, 0x1234_0001)));
+        // ... and A, in the same instance, sees record 1 carry it and record 0 untouched.
+        let d = a.take_routed_delta();
+        assert_eq!(d.len(), 1);
+        assert_eq!((d[0].name_sub, flags_in(&d[0])), (1, (1, 0x1234_0001)));
+        assert!(d[0].b_value.is_none());
+        // A's mission sets one: A's record 0 gets it, and B is told.
+        crate::script_bridge::public_row_links().route_flags(ma, 2, &[0x1234_0002]);
+        let d = a.take_routed_delta();
+        assert_eq!((d.len(), d[0].name_sub, flags_in(&d[0])), (1, 0, (1, 0x1234_0002)));
+        let d = b.take_routed_delta();
+        assert_eq!((d.len(), d[0].name_sub, flags_in(&d[0])), (1, 0, (1, 0x1234_0002)));
+    }
+
+    /// A connection that ends with no leave message frees its record like a leave: the first
+    /// member gets the reset delta, once, and a third takes the slot.
+    #[test]
+    fn a_dropped_connection_resets_its_record_once() {
+        let (template, log) = records_template(false);
+        let host = 0xD1A0_0000_0000_0A30;
+        let (mut a, mut b, mut c) = (template.clone(), template.clone(), template.clone());
+        enter(&mut a, &log, 0xD1A0_0000_0000_0A31, 1, host, 0);
+        let (kb, _) = enter(&mut b, &log, 0xD1A0_0000_0000_0A32, 2, host, 1);
+        assert_eq!(named(&a.take_routed_delta()[0]), kb);
+        drop(b);
+        let d = a.take_routed_delta();
+        assert_eq!((d.len(), d[0].name_sub, named(&d[0])), (1, 1, [0; 8]));
+        assert!(a.take_routed_delta().is_empty(), "once");
+        let (kc, fc) = enter(&mut c, &log, 0xD1A0_0000_0000_0A33, 3, host, 1);
+        assert_eq!(named(record(&fc, 1)), kc);
+        assert_eq!(named(&a.take_routed_delta()[0]), kc);
+        // A leave message and then the drop: no second reset, and the third's record is kept.
+        c.on_leave(Instant::now());
+        assert_eq!(named(&a.take_routed_delta()[0]), [0; 8]);
+        let mut d4 = template.clone();
+        let (kd, _) = enter(&mut d4, &log, 0xD1A0_0000_0000_0A34, 4, host, 1);
+        let _ = a.take_routed_delta();
+        drop(c);
+        assert!(a.take_routed_delta().is_empty(), "the leave already reset it; the drop does nothing");
+        let held = template.records.lock().unwrap().image(host, 1).expect("the fourth still holds slot 1");
+        assert_eq!(&held[0x40..0x48], &kd[..]);
+    }
+
+    /// The reset image is the client's default for an unoccupied record: the fixtures' players
+    /// records carry no A value (the client's default applies), and the default image is the one
+    /// the join-instance notes give (`+0 = -1`, `+4 = 0x811C9DC5`, `+0x38 = -1`, `+0x72 = 0xBC00`,
+    /// `+0x74 = -1`, the rest 0), with no player named.
+    #[test]
+    fn the_reset_image_is_the_served_default() {
+        let lists = load_public_table(&fixtures().join("public-table.txt")).unwrap();
+        for l in &lists {
+            for c in l.clients.iter().filter(|c| c.name_hash == PUBLIC_PLAYERS_GROUP && c.name_sub > 0) {
+                assert!(c.a_value.is_none(), "{}: record {} serves no explicit A, so the client's default applies", l.file, c.name_sub);
+            }
+        }
+        let mut want = vec![0u8; crate::row_encoders::PLAYER_BUNDLE_LEN];
+        want[0..4].copy_from_slice(&(-1i32).to_le_bytes());
+        want[4..8].copy_from_slice(&0x811C_9DC5u32.to_le_bytes());
+        want[0x38..0x3C].copy_from_slice(&(-1i32).to_le_bytes());
+        want[0x72..0x74].copy_from_slice(&0xBC00u16.to_le_bytes());
+        want[0x74..0x78].copy_from_slice(&(-1i32).to_le_bytes());
+        assert_eq!(crate::row_encoders::player_bundle_image([0; 8], false), want);
+        let (template, log) = records_template(false);
+        let (mut a, mut b) = (template.clone(), template.clone());
+        enter(&mut a, &log, 0xD1A0_0000_0000_0A41, 1, 0xD1A0_0000_0000_0A40, 0);
+        enter(&mut b, &log, 0xD1A0_0000_0000_0A42, 2, 0xD1A0_0000_0000_0A40, 1);
+        let _ = a.take_routed_delta();
+        b.on_leave(Instant::now());
+        assert_eq!(a.take_routed_delta()[0].a_value.as_ref().unwrap().1, want);
     }
 }
