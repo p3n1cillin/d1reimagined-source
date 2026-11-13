@@ -453,6 +453,21 @@ pub struct ScriptedActivity {
     /// set one. Run fg2d: /6/1 from the encoder's default (no cast) never started; the step
     /// schedule's move-26 value (a one-element cast) did.
     pub values: HashMap<RowKey, Row>,
+    /// `D1_AH_SCRIPTS_PUBLIC_START_LIST`: set for a story mission that starts in a public slice set
+    /// ([`Self::use_public_start_list`]).
+    pub mission_list: Option<MissionHostList>,
+}
+
+/// What the live mission host served for a story mission that starts in a public slice set: the
+/// world's global rows and the private bubbles' shared rows, not the public start's whole list
+/// (its public-bubble rows belong to the public hosts). Three live Restoration / Dark Within
+/// captures (51539), decoded against the 56578 tables.
+#[derive(Clone, Debug)]
+pub struct MissionHostList {
+    /// The public slice sets of the world: the client's move into one sends no relist.
+    pub public_slices: Vec<u32>,
+    /// Private slice set -> the list the client holds there (its own list and the shared rows).
+    pub relists: HashMap<u32, Vec<(RowKey, Row)>>,
 }
 
 /// Every slice set's rows of one world, shared by the table's rows on that world (stream Q: the
@@ -623,7 +638,60 @@ impl ScriptedActivity {
             phase_slices,
             bubble_slices,
             values: HashMap::new(),
+            mission_list: None,
         })
+    }
+
+    /// `D1_AH_SCRIPTS_PUBLIC_START_LIST`: when the activity's start slice set is public, the join
+    /// list becomes [`GeneratedWorlds::mission_host_clients`] (the activity's `private_start`
+    /// slice set's globals and the private bubbles' shared rows), and a move into a private slice
+    /// set relists [`GeneratedWorlds::mission_host_relist_clients`]; a move into a public one
+    /// relists nothing. Served values already on a row are kept. Returns the join list's row count
+    /// (the lifetime record included), or `None` when the start is not public (nothing changes).
+    pub fn use_public_start_list(
+        &mut self,
+        w: &crate::generated::GeneratedWorlds,
+        base: &d1_oracle::sensor::SensorPhaseUpdate,
+    ) -> Result<Option<usize>, String> {
+        let Some(start) = self.start else { return Ok(None) };
+        let Some(set) = w.slices.get(&(self.world.clone(), start)).filter(|s| s.public) else { return Ok(None) };
+        let _ = set;
+        let Some(private_start) = w.activities.get(&self.index).and_then(|a| a.private_start) else { return Ok(None) };
+        let rows_of = |this: &Self, clients: &[(u32, crate::generated::Client)], title: &str| -> Result<Vec<(RowKey, Row)>, String> {
+            let text = crate::generated::GeneratedWorlds::clients_text(title, clients);
+            let p = crate::sensor_list::params_for_list(base, this.group, this.team, &text).map_err(|e| format!("{e:#}"))?;
+            Ok(p.clients
+                .iter()
+                .map(Row::from_client)
+                .map(|(k, mut r)| {
+                    // A value the activity already serves for the record (the hand world table, the step schedule) stays.
+                    if let Some((_, old)) = this.rows.iter().find(|(m, _)| *m == k) {
+                        r.a = r.a.or_else(|| old.a.clone());
+                        r.b = r.b.or_else(|| old.b.clone());
+                    } else if let Some(v) = this.served_value(&k) {
+                        r = v;
+                    }
+                    (k, r)
+                })
+                .collect())
+        };
+        let clients = w.mission_host_clients(&self.world, private_start).map_err(|e| format!("{e:#}"))?;
+        let lifetime = clients.iter().any(|(g, c)| *g == self.lifetime.group && c.kind == self.lifetime.kind && c.index == self.lifetime.index);
+        if !lifetime {
+            return Err(format!("{}: the mission host's list lacks the lifetime record {}", self.activity, self.lifetime));
+        }
+        let rows = rows_of(self, &clients, &format!("{} mission host list (D1_AH_SCRIPTS_PUBLIC_START_LIST)", self.world))?;
+        let n = rows.len() + 1;
+        let mut relists = HashMap::new();
+        for id in w.slice_sets(&self.world) {
+            if w.slices.get(&(self.world.clone(), id)).is_some_and(|s| !s.public) {
+                let c = w.mission_host_relist_clients(&self.world, id);
+                relists.insert(id, rows_of(self, &c, &format!("{} slice set {id}: mission host relist", self.world))?);
+            }
+        }
+        self.mission_list = Some(MissionHostList { public_slices: w.public_slice_sets(&self.world), relists });
+        self.rows = rows;
+        Ok(Some(n))
     }
 
     /// The lifetime value the bridge's first full list carries: the list's own `@phase`, else 0,
@@ -696,6 +764,12 @@ impl ScriptedActivity {
     /// start's list does not name; the step schedule that plays serves `cine_reveal-move-26.txt`,
     /// these 22 records, at the move. `None` when the generated tables have no list for `region`.
     pub fn slice_list(&self, region: u32) -> Option<Vec<(RowKey, Row)>> {
+        if let Some(m) = &self.mission_list {
+            // The mission host's own lists: a public slice set's rows belong to the public hosts.
+            let mut rows = m.relists.get(&region)?.clone();
+            live_trigger_defaults(&mut rows);
+            return Some(rows);
+        }
         let own = self.slice_rows.get(&region)?;
         let mut rows = self.rows.clone();
         for (k, r) in own {
@@ -1226,6 +1300,24 @@ impl ScriptConfig {
                 }
             }
         }
+        // `D1_AH_SCRIPTS_PUBLIC_START_LIST=1`: a story mission that starts in a public slice set is
+        // served the live mission host's list (after the values above are in, which it keeps).
+        if std::env::var("D1_AH_SCRIPTS_PUBLIC_START_LIST").is_ok_and(|v| v.trim() == "1") {
+            if let Some(w) = worlds.as_ref() {
+                let mut indexes: Vec<u16> = activities.keys().copied().collect();
+                indexes.sort_unstable();
+                for i in indexes {
+                    if let Some(a) = activities.get_mut(&i) {
+                        let n = a.use_public_start_list(w, base).map_err(|e| format!("D1_AH_SCRIPTS_PUBLIC_START_LIST: {e}"))?;
+                        if let Some(n) = n {
+                            tracing::info!("script bridge: activity {i} ({}) joins with the mission host list, {n} rows", a.activity);
+                        }
+                    }
+                }
+            } else {
+                tracing::warn!("script bridge: D1_AH_SCRIPTS_PUBLIC_START_LIST needs the generated world tables; ignored");
+            }
+        }
         let world_loot = match std::env::var("D1_AH_SCRIPTS_WORLD_LOOT").ok().filter(|p| !p.trim().is_empty()) {
             Some(path) => {
                 let text = std::fs::read_to_string(&path).map_err(|e| format!("D1_AH_SCRIPTS_WORLD_LOOT {path}: {e}"))?;
@@ -1359,6 +1451,8 @@ struct Run {
     active_slice: Option<u32>,
     /// The slice set whose sensor list the row table serves (the start's at the join).
     list_slice: Option<u32>,
+    /// Public slice sets already logged as listed by the public host (`D1_AH_SCRIPTS_PUBLIC_START_LIST`).
+    public_slice_logged: Vec<u32>,
     /// When the first full list went out: the start cushion counts from here without the udt 6
     /// gate ([`ScriptConfig::list_retry`] `None`).
     full_at: Option<Instant>,
@@ -1758,6 +1852,12 @@ impl ScriptBridge {
         // the move, with the rows' current values.
         if let Some(run) = self.run.as_mut() {
             if run.list_slice.is_some() && run.list_slice != Some(region) {
+                if run.activity.mission_list.as_ref().is_some_and(|m| m.public_slices.contains(&region)) && !run.public_slice_logged.contains(&region) {
+                    run.public_slice_logged.push(region);
+                    tracing::info!(
+                        "script bridge: slice set {region} is public: the public host lists it (D1_AH_SCRIPTS_PUBLIC_START_LIST)"
+                    );
+                }
                 if let Some(list) = run.activity.slice_list(region) {
                     tracing::info!("script bridge: slice set {region}: its list ({} rows) goes out in full", list.len() + 1);
                     run.list_slice = Some(region);
@@ -1868,6 +1968,13 @@ impl ScriptBridge {
             activity.rows.iter().filter(|(_, r)| r.a.is_some() || r.b.is_some()).count() + 1,
             start.map(|s| format!(", start slice set {s}")).unwrap_or_default()
         );
+        if activity.mission_list.is_some() {
+            tracing::info!(
+                "⭐ script bridge: {} starts public: mission host list = globals + private shared rows ({} rows) (D1_AH_SCRIPTS_PUBLIC_START_LIST)",
+                activity.activity,
+                activity.rows.len() + 1
+            );
+        }
         self.run = Some(Run {
             lifetime_state: first,
             activity,
@@ -1904,6 +2011,7 @@ impl ScriptBridge {
             held: VecDeque::new(),
             active_slice: None,
             list_slice: start,
+            public_slice_logged: Vec::new(),
             full_at: None,
             last_full_at: None,
             sensed_at: None,
@@ -3996,6 +4104,42 @@ mod tests {
             assert!(lines[0].contains("1 served values from cine_reveal-move-26.txt (slice set 26)"), "{}", lines[0]);
         }
         activities.remove(&165).unwrap()
+    }
+
+    /// The profile's `@generated` row for `index`, with the committed tables.
+    fn profile_activity(index: u16) -> (ScriptedActivity, crate::generated::GeneratedWorlds) {
+        let f = fixtures();
+        let mut worlds = crate::generated::GeneratedWorlds::load(&f.join("worlds")).expect("the generated worlds");
+        worlds.load_slice_states(&std::fs::read_to_string(f.join("scripts/slice-states.tsv")).unwrap()).unwrap();
+        let table = std::fs::read_to_string(f.join("scripts/activities.txt")).unwrap();
+        let line = table.lines().find(|l| l.starts_with(&format!("{index} "))).expect("the table's row");
+        let a = ScriptedActivity::parse_with(line, &lab_base(), &|_| Err("no file".into()), Some(&worlds)).unwrap();
+        (a, worlds)
+    }
+
+    /// D1_AH_SCRIPTS_PUBLIC_START_LIST (offline): Restoration's join list and relists.
+    #[test]
+    fn a_public_start_story_mission_serves_the_mission_hosts_list() {
+        let (mut a, worlds) = profile_activity(166);
+        assert_eq!(a.rows.len() + 1, 351, "knob off: the public start's whole list");
+        let n = a.use_public_start_list(&worlds, &lab_base()).unwrap();
+        assert_eq!(n, Some(67));
+        assert_eq!(a.rows.len(), 66, "the lifetime record is not among the rows");
+        assert!(a.rows.iter().all(|(k, _)| ![0xd7f6_8da0, 0xed3c_5b0a, 0xeaaf_16e2].contains(&k.group)));
+        // A private slice set's relist: its list and the shared rows (100 with the lifetime).
+        assert_eq!(a.slice_list(104).map(|l| l.len() + 1), Some(100));
+        // A public slice set: no relist.
+        assert_eq!(a.slice_list(48), None);
+        assert_eq!(a.slice_list(56), None);
+    }
+
+    #[test]
+    fn a_private_start_activity_is_unaffected_by_the_public_start_list() {
+        let (mut a, worlds) = profile_activity(164);
+        let before = (a.rows.clone().len(), a.slice_list(113).map(|l| l.len()));
+        assert_eq!(a.use_public_start_list(&worlds, &lab_base()).unwrap(), None);
+        assert!(a.mission_list.is_none());
+        assert_eq!((a.rows.len(), a.slice_list(113).map(|l| l.len())), before);
     }
 
     #[test]
