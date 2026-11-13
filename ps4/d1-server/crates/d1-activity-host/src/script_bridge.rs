@@ -1327,6 +1327,14 @@ struct Run {
     loot_announced: std::collections::BTreeSet<RowKey>,
     /// F49: the loot cache's special weapon was granted in this run.
     special_weapon_granted: bool,
+    /// `D1_AH_SCRIPTS_SCOREBOARD`: kills and deaths the client reported this run (precision kills
+    /// are not counted: no client incident for them is known).
+    score_kills: u32,
+    score_deaths: u32,
+    /// The reports were not attributable to one player (logged once).
+    score_unattributed_logged: bool,
+    /// The scoreboard row was set at this time (the lifetime-7 spacing warning reads it).
+    score_sent_at: Option<Instant>,
     /// F52: device armings due (when, object), and the props already armed.
     device_arming: Vec<(Instant, RowKey)>,
     devices_armed: std::collections::HashSet<RowKey>,
@@ -1438,6 +1446,8 @@ pub struct ScriptBridge {
     /// Stream O2: the scripts' phases, wipes and completion as activity-framework events, for the
     /// instance's `activity_driver::RunDriver` ([`Self::take_framework_events`]).
     framework_events: Vec<crate::encounter_framework::Event>,
+    /// `D1_AH_SCRIPTS_SCOREBOARD=1`: the kind-15 scoreboard row goes out at the completion.
+    scoreboard: bool,
 }
 
 impl std::fmt::Debug for ScriptBridge {
@@ -1524,7 +1534,13 @@ impl ScriptBridge {
             host_id: 0,
             frames_sent: 0,
             framework_events: Vec::new(),
+            scoreboard: scoreboard_knob(),
         }
+    }
+
+    /// Lab/tests: replaces the knob (`D1_AH_SCRIPTS_SCOREBOARD`).
+    pub fn set_scoreboard(&mut self, on: bool) {
+        self.scoreboard = on;
     }
 
     /// The activity-framework events since the last call (stream O2): `phase` →
@@ -1871,6 +1887,10 @@ impl ScriptBridge {
             current_slice: None,
             loot_announced: Default::default(),
             special_weapon_granted: false,
+            score_kills: 0,
+            score_deaths: 0,
+            score_unattributed_logged: false,
+            score_sent_at: None,
             device_arming: Vec::new(),
             devices_armed: Default::default(),
             unsupported: Default::default(),
@@ -1909,6 +1929,9 @@ impl ScriptBridge {
             return;
         }
         let Some(n) = image.get(0..4).map(|b| u32::from_le_bytes(b.try_into().unwrap())) else { return };
+        if self.scoreboard {
+            self.count_reports(image, n);
+        }
         for k in 0..n.min(8) as usize {
             let Some(t) = image.get(4 + 4 * k..8 + 4 * k).map(|b| u32::from_le_bytes(b.try_into().unwrap())) else { break };
             if t == known::TUTORIAL_WEAPON_SPECIAL.index {
@@ -1924,6 +1947,40 @@ impl ScriptBridge {
                 self.send(m);
             }
         }
+    }
+
+    /// `D1_AH_SCRIPTS_SCOREBOARD`: one udt 18 chain's kills and deaths, by the Crucible driver's
+    /// classification. The bridge cannot tell which player sent a report, so it is counted only
+    /// with exactly one player joined. Precision kills are not counted (no client incident found).
+    fn count_reports(&mut self, image: &[u8], n: u32) {
+        use crate::pvp_driver::{classify, Report};
+        let names: Vec<u32> = (0..n.min(8) as usize)
+            .filter_map(|k| image.get(4 + 4 * k..8 + 4 * k))
+            .filter_map(|b| self.config.incidents.name_hash(u32::from_le_bytes(b.try_into().unwrap())))
+            .collect();
+        let (mut kills, mut deaths) = (0, 0);
+        for r in classify(&names) {
+            match r {
+                Report::Kill => kills += 1,
+                Report::Died | Report::Suicide => deaths += 1,
+                _ => {}
+            }
+        }
+        if kills == 0 && deaths == 0 {
+            return;
+        }
+        let joined = self.players.len();
+        let Some(run) = self.run.as_mut() else { return };
+        if joined != 1 {
+            if !std::mem::replace(&mut run.score_unattributed_logged, true) {
+                tracing::info!(
+                    "script bridge: scoreboard: a kill/death report with {joined} players joined cannot be attributed; not counted (D1_AH_SCRIPTS_SCOREBOARD)"
+                );
+            }
+            return;
+        }
+        run.score_kills += kills;
+        run.score_deaths += deaths;
     }
 
     /// F49: the client opened the loot cache. Each player's class special weapon is granted once a
@@ -2464,6 +2521,9 @@ impl ScriptBridge {
             }
             SidecarMsg::ActivityComplete {} => {
                 run.complete = true;
+                if self.scoreboard {
+                    Self::send_scoreboard(&mut self.rows, run, &self.players, now);
+                }
                 self.framework_events.push(crate::encounter_framework::Event::ActivityCompleted);
                 // Run fg2h: the profile's completion goes now, in the 965 chain's tick, as the
                 // live host's did; the grant waits for the results.
@@ -2566,6 +2626,59 @@ impl ScriptBridge {
         }
     }
 
+    /// `D1_AH_SCRIPTS_SCOREBOARD`: the world's kind-15 scoreboard row (A), one player row per joined
+    /// player with this run's kills and deaths. Set once at the completion, before the completion
+    /// incidents and the lifetime-7 change (sense49: it must reach the client at least one sensor
+    /// resend, ~10 s, before the 7); kept set afterwards so a later full list carries it.
+    fn send_scoreboard(rows: &mut RowTable, run: &mut Run, players: &[CharacterRef], now: Instant) {
+        use crate::pvp::{fnv1, PlayerStatsEntry, ScoreboardState, StatEntry};
+        if run.lifetime_state >= 7 {
+            tracing::warn!("script bridge: scoreboard not sent: the lifetime is already {} (D1_AH_SCRIPTS_SCOREBOARD)", run.lifetime_state);
+            return;
+        }
+        // The activity's own sensor group (its lifetime row's): 0x4786C0E0 for most activities,
+        // not all of them (worlds/activities.tsv).
+        let key = RowKey { group: run.activity.lifetime.group, kind: crate::row_encoders::KIND_SCOREBOARD, index: 0 };
+        let Some(held) = rows.get(&key).cloned() else {
+            tracing::warn!("script bridge: scoreboard not sent: the world's list has no row {key} (D1_AH_SCRIPTS_SCOREBOARD)");
+            return;
+        };
+        let (kills, deaths) = (fnv1("kills"), fnv1("deaths"));
+        let state = ScoreboardState {
+            global: Vec::new(),
+            notifications: Vec::new(),
+            players: players
+                .iter()
+                .map(|c| PlayerStatsEntry {
+                    character_key: player_key(c),
+                    stats: vec![
+                        StatEntry { name_hash: kills, value: f64::from(run.score_kills) },
+                        StatEntry { name_hash: deaths, value: f64::from(run.score_deaths) },
+                    ],
+                    team: None,
+                })
+                .collect(),
+            teams: Vec::new(),
+        };
+        let by_key: HashMap<String, [u8; 8]> =
+            players.iter().filter_map(|c| Some((player_key(c), crate::scoreboard_rows::native_identity(&c.identity)?))).collect();
+        let image = crate::scoreboard_rows::image(&state, &crate::scoreboard_rows::Columns::default(), &|k| by_key.get(k).copied());
+        rows.set(key, Row { has_a: true, has_b: held.has_b, a: Some((crate::scoreboard_rows::TAG, image)), b: held.b });
+        // The table keeps the held row's shape: a list that names the row without an A value
+        // would drop the image, so say so instead of claiming a send.
+        if rows.get(&key).is_none_or(|r| r.a.is_none()) {
+            tracing::warn!("script bridge: scoreboard not sent: the world's list names row {key} without an A value (D1_AH_SCRIPTS_SCOREBOARD)");
+            return;
+        }
+        run.score_sent_at = Some(now);
+        tracing::info!(
+            "⭐ script bridge: scoreboard: {} player(s), kills {}, deaths {} (D1_AH_SCRIPTS_SCOREBOARD; precision kills not counted)",
+            players.len(),
+            run.score_kills,
+            run.score_deaths
+        );
+    }
+
     fn apply_change(&mut self, c: ItemChange, now: Instant) {
         let Some(run) = self.run.as_mut() else { return };
         if c.kind == "lifetime" {
@@ -2611,6 +2724,12 @@ impl ScriptBridge {
                         run.lifetime_unsent = true;
                     }
                     run.lifetime_state = s;
+                    if let Some(at) = run.score_sent_at.filter(|_| s == 7) {
+                        let secs = now.saturating_duration_since(at).as_secs_f32();
+                        if secs < 10.0 {
+                            tracing::warn!("script bridge: scoreboard sent {secs:.1} s before lifetime 7 (needs >= ~10 s, sense49)");
+                        }
+                    }
                     self.set_lifetime();
                     if s == 6 {
                         // Rewards at the results: the post-game (7) shows what the profile holds.
@@ -2896,6 +3015,11 @@ pub fn unarmed_until(activity: u16) -> Option<i32> {
         .get_or_init(|| std::env::var("D1_AH_UNARMED_UNTIL_PHASE").map(|t| parse_unarmed_until(&t)).unwrap_or_default())
         .get(&activity)
         .copied()
+}
+
+/// `D1_AH_SCRIPTS_SCOREBOARD=1` (lab; anything else is off).
+fn scoreboard_knob() -> bool {
+    std::env::var("D1_AH_SCRIPTS_SCOREBOARD").is_ok_and(|v| v.trim() == "1")
 }
 
 /// ⭐ `D1_AH_SCRIPTS_START_PHASE=INDEX:PHASE[,...]` (lab; process-wide: the world-table region override
@@ -3564,6 +3688,156 @@ mod tests {
                 frames.push(f);
             }
         }
+    }
+
+    // ── D1_AH_SCRIPTS_SCOREBOARD: the kind-15 scoreboard at the completion ──
+
+    /// The synthetic catalogue with the kill chain's two incidents at their real indices
+    /// (734 `any_kill`, 1825 `kill`) and the real name hashes.
+    fn kill_catalogue() -> crate::incident_catalog::IncidentCatalog {
+        use crate::pvp_driver::incidents;
+        let mut text = String::from("index\tname_hash\tname\tpayload_selector\taux\n");
+        for i in 0..=3403u32 {
+            let hash = match i {
+                734 => incidents::ANY_KILL,
+                1825 => incidents::KILL,
+                _ => match crate::incident_catalog::known::ALL.iter().find(|k| k.index == i) {
+                    Some(k) => k.hash,
+                    None => 0x1000_0000 + i,
+                },
+            };
+            text.push_str(&format!("{i}\t{hash:#010x}\t\t17\t65535,65535,65535,65535\n"));
+        }
+        crate::incident_catalog::IncidentCatalog::parse(&text).expect("catalogue")
+    }
+
+    /// A udt 18 reporting a whole chain of incidents.
+    fn chain(indices: &[u32]) -> ClientMessage {
+        let mut image = crate::state::incident_image(indices[0], &[0u8; 8]);
+        image[0..4].copy_from_slice(&(indices.len() as u32).to_le_bytes());
+        for (k, t) in indices.iter().enumerate() {
+            image[4 + 4 * k..8 + 4 * k].copy_from_slice(&t.to_le_bytes());
+        }
+        ClientMessage::Other { user_defined_type: 18, struct_image: image }
+    }
+
+    fn scoreboard_bridge(shared: &Arc<Mutex<Shared>>, on: bool) -> ScriptBridge {
+        let mut b = bridge(shared, false);
+        Arc::get_mut(&mut b.config).expect("one owner").incidents = kill_catalogue();
+        b.set_scoreboard(on);
+        b
+    }
+
+    /// The scripted reveal from a join to its end, `reports` arriving while it plays.
+    fn play_reveal(b: &mut ScriptBridge, t: &mut Instant, wire: &mut Vec<Vec<u8>>, reports: &[ClientMessage]) {
+        run_for(b, t, 0.75, wire);
+        b.on_client_message(&slice(25), 165, HOST, *t);
+        run_for(b, t, 3.0, wire);
+        for r in reports {
+            b.on_client_message(r, 165, HOST, *t);
+        }
+        run_for(b, t, 6.5, wire);
+        b.on_client_message(&incident(891, Some((CINE, 6, 0))), 165, HOST, *t);
+        run_for(b, t, 0.5, wire);
+        b.on_client_message(&slice(26), 165, HOST, *t);
+        run_for(b, t, 4.5, wire);
+        b.on_client_message(&incident(891, None), 165, HOST, *t);
+        run_for(b, t, 1.0, wire);
+    }
+
+    /// The frames that carried the kind-15 row's value: (frame index, A image).
+    fn scoreboard_frames(shared: &Arc<Mutex<Shared>>) -> Vec<(usize, Vec<u8>)> {
+        let s = shared.lock().unwrap();
+        s.frames
+            .iter()
+            .enumerate()
+            .filter_map(|(i, p)| {
+                let (_, r) = p.entries.iter().find(|(k, _)| k.kind == 0xF && k.group == GROUP)?;
+                let (tag, image) = r.a.as_ref()?;
+                (*tag == crate::scoreboard_rows::TAG).then(|| (i, image.clone()))
+            })
+            .collect()
+    }
+
+    fn f32_at(b: &[u8], at: usize) -> f32 {
+        f32::from_le_bytes(b[at..at + 4].try_into().unwrap())
+    }
+
+    fn stat_at(col: usize) -> usize {
+        crate::scoreboard_rows::PLAYER_ROWS + crate::scoreboard_rows::ROW_STATS + 4 * col
+    }
+
+    #[test]
+    fn the_scoreboard_knob_off_sends_no_scoreboard_row() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = scoreboard_bridge(&shared, false);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(7), 165, HOST, t);
+        play_reveal(&mut b, &mut t, &mut wire, &[chain(&[734, 1825]), chain(&[2079])]);
+        assert!(scoreboard_frames(&shared).is_empty(), "off: no 0xF row value");
+        assert!(b.take_incident().is_some(), "the completion still goes");
+        assert!(b.rows().get(&RowKey { group: GROUP, kind: 0xF, index: 0 }).is_some_and(|r| r.a.is_none()));
+    }
+
+    #[test]
+    fn the_scoreboard_row_carries_the_players_kills_and_deaths_at_the_completion() {
+        use crate::scoreboard_rows as sr;
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = scoreboard_bridge(&shared, true);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(7), 165, HOST, t);
+        let kill = chain(&[734, 1825]);
+        play_reveal(&mut b, &mut t, &mut wire, &[kill.clone(), kill, chain(&[2079])]);
+        let sent = scoreboard_frames(&shared);
+        assert!(!sent.is_empty(), "the row went out");
+        let image = &sent[0].1;
+        let row = sr::PLAYER_ROWS;
+        assert_eq!(image.len(), sr::SIZE);
+        assert_eq!(u32_at(image, sr::PLAYER_COUNT), 1);
+        assert_eq!(&image[row..row + 8], [7u8; 8], "the player key (uniform here; scoreboard_rows pins the field and byte order)");
+        assert_eq!(u32_at(image, row + sr::ROW_STAT_COUNT), 23);
+        assert_eq!(f32_at(image, stat_at(0)), 2.0, "kills");
+        assert_eq!(f32_at(image, stat_at(22)), 1.0, "deaths");
+        assert_eq!(f32_at(image, stat_at(18)), 0.0, "precision kills are not counted");
+        assert_eq!(u32_at(image, sr::CATEGORY), 0x811C_9DC5);
+        assert_eq!(u32_at(image, sr::TEAM_COUNT), 0);
+        assert_eq!(u32_at(image, row + sr::ROW_REWARD_COUNT), 0, "no rewards array");
+        // Kept set: the table still holds it after the end.
+        assert!(b.rows().get(&RowKey { group: GROUP, kind: 0xF, index: 0 }).is_some_and(|r| r.a.is_some()));
+    }
+
+    #[test]
+    fn the_scoreboard_row_goes_before_the_results_lifetime() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = scoreboard_bridge(&shared, true);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(7), 165, HOST, t);
+        play_reveal(&mut b, &mut t, &mut wire, &[]);
+        let first = scoreboard_frames(&shared)[0].0;
+        let s = shared.lock().unwrap();
+        let late = s.frames.iter().position(|p| matches!(lifetime_of(p), Some(l) if l >= 6)).expect("results frame");
+        assert!(first < late, "the row (frame {first}) precedes the lifetime's results (frame {late})");
+        // The completion body is submitted after the row was set (same apply).
+        assert_eq!(s.bodies.len(), 1);
+        drop(s);
+        assert!(b.take_incident().is_some());
+    }
+
+    #[test]
+    fn the_scoreboard_counts_start_again_with_a_new_run() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = scoreboard_bridge(&shared, true);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(7), 165, HOST, t);
+        play_reveal(&mut b, &mut t, &mut wire, &[chain(&[734, 1825])]);
+        assert_eq!(f32_at(&scoreboard_frames(&shared)[0].1, stat_at(0)), 1.0);
+        // The run ended; the same activity joined again is a new run with zero counts.
+        b.on_client_message(&join(7), 165, HOST, t);
+        assert_eq!(b.run.as_ref().map(|r| (r.score_kills, r.score_deaths)), Some((0, 0)));
+        // Two players joined: a report cannot be attributed and is not counted.
+        b.on_client_message(&join(8), 165, HOST, t);
+        b.on_client_message(&chain(&[734, 1825]), 165, HOST, t);
+        assert_eq!(b.run.as_ref().map(|r| (r.score_kills, r.score_deaths)), Some((0, 0)));
     }
 
     #[test]
