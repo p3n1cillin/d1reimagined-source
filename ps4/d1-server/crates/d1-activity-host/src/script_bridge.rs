@@ -3794,7 +3794,7 @@ mod tests {
         let row = sr::PLAYER_ROWS;
         assert_eq!(image.len(), sr::SIZE);
         assert_eq!(u32_at(image, sr::PLAYER_COUNT), 1);
-        assert_eq!(&image[row..row + 8], [7u8; 8], "the join identity's +0x08..+0x10");
+        assert_eq!(&image[row..row + 8], [7u8; 8], "the player key (uniform here; scoreboard_rows pins the field and byte order)");
         assert_eq!(u32_at(image, row + sr::ROW_STAT_COUNT), 23);
         assert_eq!(f32_at(image, stat_at(0)), 2.0, "kills");
         assert_eq!(f32_at(image, stat_at(22)), 1.0, "deaths");
