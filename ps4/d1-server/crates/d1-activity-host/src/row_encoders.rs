@@ -26,7 +26,7 @@
 //! | player trigger (29) | `0x80800463` | enabled (+0), arming (+4, 16 bits) | our armed images; live +4 changes |
 //! | squad (1) | `0x8080071E` | objective ref (+0), count (+0x2C/+0x30), generation (+0x44) | d1-squad-states.py layout; live objective ref |
 //! | player objective (32) | `0x80802A1B` | mode (+0), nav point (+0x60..), machine (+0x4C) | sensor_objective.rs (native divide16) |
-//! | object (4) | `0x808007D9` | incarnation (+0), created (+8) | blockers-2026-10-15 layout |
+//! | object (4) | `0x808007D9` | incarnation (+0), created (+8); with `D1_AH_SCRIPTS_INTERACTABLE` also the placement's interactable command (slot 0) and device command (slot 1) | blockers-2026-10-15 layout |
 //! | scoreboard (15) | `0x808008D0` | player row 0 stats, f32 at +0x20 + 4·column | the post-game scoreboard (kills 0, precision 18, deaths 22) |
 //! | sequence (5) | `0x808029A1` | start (+0, i32), step (+4, u8), target ref (+0x18) | 56578 apply `0x40CE50`/evaluator `0x40D000` (native, breach-sequences 31 Oct); the reference's move to +0x18 (final-build note); TU0 SequenceAuth [3] is the target |
 //! | actor (2) | `0x80800868` | generation (+0), +4 = -1, +6 set, binding absent (+0x50/+0x58), command script (+0xB0: cookie, pc, count, 64-byte atoms at +0xC0) | d1-member-states.py's image, native-tested (the Breach entrances play, 1 Nov); `scripted_sequence` atoms only |
@@ -240,12 +240,7 @@ pub fn set_device_command(image: &mut [u8], channels: [(i32, i32, f32); 3]) -> b
     }
     put_u32(image, 0x20, 1);
     put_u32(image, 0x30, TAG_DEVICE_COMMAND);
-    for (c, (a, b, v)) in channels.into_iter().enumerate() {
-        let at = 0x40 + 0xC * c;
-        put_u32(image, at, a as u32);
-        put_u32(image, at + 4, b as u32);
-        image[at + 8..at + 12].copy_from_slice(&v.to_le_bytes());
-    }
+    put_device_payload(image, 0x40, channels);
     true
 }
 
@@ -253,6 +248,91 @@ pub fn set_device_command(image: &mut [u8], channels: [(i32, i32, f32); 3]) -> b
 pub const DEVICE_AT_REST: [(i32, i32, f32); 3] = [(0, 0, 1.0), (0, 0, 0.0), (0, 0, 0.0)];
 /// ... and once armed: channel 2 (the position) set to 1, counter 1, animated (`b` 0).
 pub const DEVICE_ARMED: [(i32, i32, f32); 3] = [(0, 0, 1.0), (0, 0, 0.0), (1, 0, 1.0)];
+
+/// ⭐ The mission-interactable command (`D1_AH_SCRIPTS_INTERACTABLE`): the typed value
+/// `0x80802140` of an object's command list, 20 bytes: `+0` i8 mode (1 = enabled for the filter's
+/// players, 2 = disabled), `+4` the filter row's reference, `+0xC` i32, `+0x10` bool.
+pub const TAG_INTERACTABLE_COMMAND: u32 = 0x8080_2140;
+/// A predicate of an object filter: the players holding an activity flag. 8 bytes: `+0` i8 value,
+/// `+4` the flag's raw u32 name hash.
+pub const TAG_FLAG_PREDICATE: u32 = 0x8080_0952;
+/// An object image's command list (`0x80804117`): the count at `+0x20`, then up to three typed
+/// values of 0x40 bytes from `+0x30` (tag at `+0`, payload at `+0x10`).
+const COMMAND_COUNT: usize = 0x20;
+const COMMAND_FIRST: usize = 0x30;
+const COMMAND_STRIDE: usize = 0x40;
+/// An object filter image's predicate list (`0x808042E0`): the count at `+0`, then up to eight
+/// typed values of 0x30 bytes from `+0x10` (tag at `+0`, payload at `+0x10`).
+const FILTER_FIRST: usize = 0x10;
+const FILTER_STRIDE: usize = 0x30;
+pub const FILTER_CAPACITY: usize = 8;
+/// A player bundle image's activity-flag list (`0x8080419A`, in the player struct at `+0x40`): the
+/// count at `+0x4C`, then up to eight raw u32 flag hashes from `+0x50`.
+pub const PLAYER_FLAG_COUNT: usize = 0x4C;
+pub const PLAYER_FLAGS: usize = 0x50;
+pub const PLAYER_FLAG_CAPACITY: usize = 8;
+
+/// A device command's three channels as the 36-byte `0x8080279A` payload at `at`.
+fn put_device_payload(image: &mut [u8], at: usize, channels: [(i32, i32, f32); 3]) {
+    for (c, (a, b, v)) in channels.into_iter().enumerate() {
+        let at = at + 0xC * c;
+        put_u32(image, at, a as u32);
+        put_u32(image, at + 4, b as u32);
+        image[at + 8..at + 12].copy_from_slice(&v.to_le_bytes());
+    }
+}
+
+/// ⭐ Make an object image (`0x808007D9`) an interactable placement: two commands. Slot 0 is the
+/// mission-interactable command (`mode`, the filter's reference, `+0xC` 0, `+0x10` false), slot 1
+/// the device command `device`. The image's other fields stay. False when it is too short.
+pub fn set_interactable_commands(image: &mut [u8], mode: i8, filter: MappedRef, device: [(i32, i32, f32); 3]) -> bool {
+    let second = COMMAND_FIRST + COMMAND_STRIDE;
+    if image.len() < second + 0x10 + 36 {
+        return false;
+    }
+    put_u32(image, COMMAND_COUNT, 2);
+    for b in &mut image[COMMAND_FIRST..second + COMMAND_STRIDE] {
+        *b = 0;
+    }
+    put_u32(image, COMMAND_FIRST, TAG_INTERACTABLE_COMMAND);
+    image[COMMAND_FIRST + 0x10] = mode as u8;
+    put_ref(image, COMMAND_FIRST + 0x14, Some(filter));
+    put_u32(image, second, TAG_DEVICE_COMMAND);
+    put_device_payload(image, second + 0x10, device);
+    true
+}
+
+/// ⭐ An object filter image (`0x80800750`, 400 bytes) of "players holding one of these activity
+/// flags" predicates: the count at `+0`, and for each `0x80800952` at `+0x10 + 0x30 i`, value 0 at
+/// `+0x20 + 0x30 i` and the raw flag hash after it. `None` past the list's capacity.
+pub fn filter_image(flags: &[u32]) -> Option<Vec<u8>> {
+    if flags.len() > FILTER_CAPACITY {
+        return None;
+    }
+    let mut image = vec![0u8; 400];
+    put_u32(&mut image, 0, flags.len() as u32);
+    for (i, hash) in flags.iter().enumerate() {
+        let at = FILTER_FIRST + FILTER_STRIDE * i;
+        put_u32(&mut image, at, TAG_FLAG_PREDICATE);
+        put_u32(&mut image, at + 0x14, *hash);
+    }
+    Some(image)
+}
+
+/// ⭐ Put the activity flags a player holds into a player bundle image (`0x808022A5`): the count at
+/// `+0x4C`, the hashes from `+0x50`, the rest of the list's eight slots cleared. Flags past the
+/// capacity are dropped; the number written is returned (`None` for a short image).
+pub fn set_player_flags(image: &mut [u8], flags: &[u32]) -> Option<usize> {
+    if image.len() < PLAYER_FLAGS + 4 * PLAYER_FLAG_CAPACITY {
+        return None;
+    }
+    let n = flags.len().min(PLAYER_FLAG_CAPACITY);
+    put_u32(image, PLAYER_FLAG_COUNT, n as u32);
+    for i in 0..PLAYER_FLAG_CAPACITY {
+        put_u32(image, PLAYER_FLAGS + 4 * i, flags.get(i).copied().filter(|_| i < n).unwrap_or(0));
+    }
+    Some(n)
+}
 
 /// A player bundle's A image naming `key`. `mission` is the mission host's form, as A Guardian
 /// Rises' working lists serve it (`+8`, `+9` = 1; `+0x72`, `+0x74` = 0); otherwise the public
@@ -442,6 +522,12 @@ pub struct RowEncoders {
     scoreboard_columns: Vec<u32>,
     /// The wire mode an Incoming objective goes out as (`D1_AH_OBJECTIVE_INCOMING_MODE`).
     objective_incoming_mode: u8,
+    /// `D1_AH_SCRIPTS_INTERACTABLE=1`: interactable placements and their filters are encoded.
+    interactable: bool,
+    /// The flag hashes each object filter row last held, and the filter each placement reads.
+    filter_flags: HashMap<RowKey, Vec<u32>>,
+    placements: HashMap<RowKey, RowKey>,
+    placements_logged: HashSet<(RowKey, RowKey)>,
     unencoded: HashSet<(String, String)>,
 }
 
@@ -457,6 +543,10 @@ impl RowEncoders {
             cinematics: HashMap::new(),
             scoreboard_columns: Vec::new(),
             objective_incoming_mode: objective_incoming_mode_from(std::env::var("D1_AH_OBJECTIVE_INCOMING_MODE").ok().as_deref()),
+            interactable: std::env::var("D1_AH_SCRIPTS_INTERACTABLE").is_ok_and(|v| v.trim() == "1"),
+            filter_flags: HashMap::new(),
+            placements: HashMap::new(),
+            placements_logged: HashSet::new(),
             unencoded: HashSet::new(),
         }
     }
@@ -464,6 +554,25 @@ impl RowEncoders {
     /// Override the Incoming objective mode (1 or 2); the env knob is read once in `new`.
     pub fn set_objective_incoming_mode(&mut self, mode: Option<u8>) {
         self.objective_incoming_mode = objective_incoming_mode_from(mode.map(|m| m.to_string()).as_deref());
+    }
+
+    /// `D1_AH_SCRIPTS_INTERACTABLE`: the env knob is read once in `new`; this replaces it.
+    pub fn set_interactable(&mut self, on: bool) {
+        self.interactable = on;
+    }
+
+    pub fn interactable(&self) -> bool {
+        self.interactable
+    }
+
+    /// Log a placement once its filter's flag is known (either row may be encoded first).
+    fn note_placement(&mut self, object: RowKey, filter: RowKey) {
+        let Some(flag) = self.filter_flags.get(&filter).and_then(|f| f.first().copied()) else { return };
+        if self.placements_logged.insert((object, filter)) {
+            tracing::info!(
+                "⭐ script bridge: placement {object} interactable for filter {filter} (flag {flag:#010x})"
+            );
+        }
     }
 
     /// The scoreboard's player stat columns, by name hash (`D1_AH_SCRIPTS_SCOREBOARD_COLUMNS`).
@@ -474,6 +583,9 @@ impl RowEncoders {
     /// A world loaded: forget the per-row history.
     pub fn reset(&mut self) {
         self.cinematics.clear();
+        self.filter_flags.clear();
+        self.placements.clear();
+        self.placements_logged.clear();
     }
 
     /// The cinematic rows last encoded as playing.
@@ -705,7 +817,24 @@ impl RowEncoders {
                 if let Some(e) = expect(KIND_OBJECT) {
                     return e;
                 }
-                self.note_fields(kind, state, &["incarnation", "present", "device"]);
+                let known: &[&str] = if self.interactable { &["incarnation", "present", "device", "interactable"] } else { &["incarnation", "present", "device"] };
+                self.note_fields(kind, state, known);
+                // D1_AH_SCRIPTS_INTERACTABLE: the placement's mission-interactable command, from
+                // the script's own set_enabled_player_filter / set_disabled_player_filter.
+                let mut placement: Option<(i8, MappedRef)> = None;
+                if self.interactable {
+                    if let Some(i) = state.get("interactable").filter(|i| !i.is_null()) {
+                        match i.get("filter").and_then(map) {
+                            Some(f) => {
+                                // BullShcript's `enabled` with a filter is the exclude form: false =
+                                // enabled for the filter's players (mode 1), true = disabled (mode 2).
+                                let mode = if i.get("enabled").and_then(Value::as_bool).unwrap_or(false) { 2 } else { 1 };
+                                placement = Some((mode, f));
+                            }
+                            None => self.not_encoded(kind, "interactable (no filter)"),
+                        }
+                    }
+                }
                 let mut image = base_a(TAG_OBJECT).unwrap_or_else(object_default);
                 let incarnation = state.get("incarnation").and_then(Value::as_u64).unwrap_or(1) as u32;
                 put_u32(&mut image, 0, incarnation.max(1));
@@ -718,7 +847,22 @@ impl RowEncoders {
                 // o_breach_gating_lights to position 1 with BullShcript's stamp (`revision`) 1.
                 // ⚠ Inferred beyond those values: `+4` and each channel's first i32 carry the stamp,
                 // the second the position as an integer, the float the position.
-                if let Some(d) = state.get("device") {
+                if let Some((mode, filter)) = placement {
+                    // Slot 0 the interactable, slot 1 the device command (at rest unless the script
+                    // moved it).
+                    let mut channels = DEVICE_AT_REST;
+                    if let Some(d) = state.get("device") {
+                        let revision = d.get("revision").and_then(Value::as_u64).unwrap_or(1) as u32;
+                        put_u32(&mut image, 4, revision);
+                        channels[2] = (revision as i32, 0, d.get("position").and_then(Value::as_f64).unwrap_or(0.0) as f32);
+                    }
+                    if !set_interactable_commands(&mut image, mode, filter, channels) {
+                        return Encoded::Unsupported("the object image is too short for its command list".into());
+                    }
+                    let filter_key = RowKey { group: filter.group, kind: filter.kind, index: filter.index };
+                    self.placements.insert(key, filter_key);
+                    self.note_placement(key, filter_key);
+                } else if let Some(d) = state.get("device") {
                     let position = d.get("position").and_then(Value::as_f64).unwrap_or(0.0);
                     let revision = d.get("revision").and_then(Value::as_u64).unwrap_or(1) as u32;
                     if image.len() >= DEVICE_COMMAND_END {
@@ -875,6 +1019,33 @@ impl RowEncoders {
                 });
                 image[8] = v as i8 as u8;
                 with_a(TAG_TRIGGER_GROUP, image)
+            }
+            "objectFilter" if self.interactable => {
+                if let Some(e) = expect(KIND_OBJECT_FILTER) {
+                    return e;
+                }
+                self.note_fields(kind, state, &["predicates"]);
+                let predicates = state.get("predicates").and_then(Value::as_array).map(Vec::as_slice).unwrap_or(&[]);
+                let mut flags = Vec::new();
+                for p in predicates {
+                    match (p.get("kind").and_then(Value::as_str), p.get("flagNameHash").and_then(Value::as_u64)) {
+                        (Some("playersWithActivityFlag"), Some(h)) => flags.push(h as u32),
+                        (other, _) => {
+                            return Encoded::Unsupported(format!(
+                                "object filter predicate {other:?} has no 56578 encoding (only playersWithActivityFlag)"
+                            ))
+                        }
+                    }
+                }
+                let Some(image) = filter_image(&flags) else {
+                    return Encoded::Unsupported(format!("{} predicates; the filter holds {FILTER_CAPACITY}", flags.len()));
+                };
+                self.filter_flags.insert(key, flags);
+                let placed: Vec<RowKey> = self.placements.iter().filter(|(_, f)| **f == key).map(|(o, _)| *o).collect();
+                for o in placed {
+                    self.note_placement(o, key);
+                }
+                with_a(TAG_OBJECT_FILTER, image)
             }
             "timer" | "hardWipeGlobals" | "objectFilter" => Encoded::Unsupported(format!(
                 "{kind}: the 56578 layout is known (row_encoders::ROW_LAYOUTS) but not which field the script's state is"
@@ -1342,6 +1513,209 @@ mod tests {
                 assert_eq!(dec.object[at], img[at], "{kind} {tag:#x}: +{at:#x} after the client's codec");
             }
             eprintln!("{kind}: {} bits through the client's codec", enc.bits);
+        }
+    }
+
+    // ── D1_AH_SCRIPTS_INTERACTABLE: the activity flag, the placement's command, the filter ──
+
+    /// The placement's filter, mapped as the bridge maps a script reference (a synthetic group).
+    const FILTER_GROUP: u32 = 0xD7F6_8DA0;
+
+    fn interactable_state(enabled: bool) -> Value {
+        json!({"incarnation": 1, "present": true, "interactable": {
+            "enabled": enabled,
+            "filter": {"bundle": 7, "typeId": 33, "typeIndex": 71},
+            "used": {"stamp": 0, "value": false}}})
+    }
+
+    fn map_filter(v: &Value) -> Option<MappedRef> {
+        Some(MappedRef { group: FILTER_GROUP, kind: v.get("typeId")?.as_u64()? as u8, index: v.get("typeIndex")?.as_i64()? as i16 })
+    }
+
+    fn u32le(b: &[u8], at: usize) -> u32 {
+        u32::from_le_bytes(b[at..at + 4].try_into().unwrap())
+    }
+
+    const PLACEMENT: RowKey = RowKey { group: FILTER_GROUP, kind: 4, index: 52 };
+    const FILTER: RowKey = RowKey { group: FILTER_GROUP, kind: 33, index: 71 };
+    /// A synthetic flag hash (the tests' own, not a game value).
+    const FLAG: u32 = 0x1234_ABCD;
+
+    #[test]
+    fn a_placement_with_a_filter_has_the_interactable_and_the_device_command() {
+        let mut e = RowEncoders::new();
+        e.set_interactable(true);
+        let img = image(&e.encode(PLACEMENT, "object", &interactable_state(false), None, CTX, &map_filter)).to_vec();
+        assert_eq!(img.len(), 240);
+        assert_eq!((u32le(&img, 0), img[8]), (1, 1), "the default object's incarnation and created flag stay");
+        assert_eq!(&img[0xC..0x14], &[0xC5, 0x9D, 0x1C, 0x81, 0xFF, 0x00, 0xFF, 0xFF], "the none ref at +0xC stays");
+        assert_eq!(u32le(&img, 0x20), 2, "two commands");
+        assert_eq!(u32le(&img, 0x30), 0x8080_2140, "slot 0: the interactable");
+        assert_eq!(img[0x40] as i8, 1, "mode 1: enabled for the filter's players");
+        assert_eq!(u32le(&img, 0x44), FILTER_GROUP);
+        assert_eq!(img[0x48], 0x21);
+        assert_eq!(i16::from_le_bytes([img[0x4A], img[0x4B]]), 71);
+        assert_eq!((u32le(&img, 0x4C), img[0x50]), (0, 0));
+        assert_eq!(u32le(&img, 0x70), 0x8080_279A, "slot 1: the device command");
+        let mut at_rest = vec![0u8; 240];
+        assert!(set_device_command(&mut at_rest, DEVICE_AT_REST));
+        assert_eq!(&img[0x80..0xA4], &at_rest[0x40..0x64], "at rest, as the F41 command writes the channels");
+        // The disabled form is mode 2.
+        let off = image(&e.encode(PLACEMENT, "object", &interactable_state(true), None, CTX, &map_filter)).to_vec();
+        assert_eq!(off[0x40] as i8, 2);
+        // A device change on the same object keeps slot 0 and moves slot 1's channel 2.
+        let mut state = interactable_state(false);
+        state["device"] = json!({"position": 1, "revision": 3});
+        let dev = image(&e.encode(PLACEMENT, "object", &state, None, CTX, &map_filter)).to_vec();
+        assert_eq!((u32le(&dev, 0x30), dev[0x40]), (0x8080_2140, 1));
+        assert_eq!(u32le(&dev, 0x70), 0x8080_279A);
+        assert_eq!(u32le(&dev, 0x80 + 0x18), 3, "channel 2's counter");
+        assert_eq!(f32::from_le_bytes(dev[0x80 + 0x20..0x80 + 0x24].try_into().unwrap()), 1.0);
+    }
+
+    #[test]
+    fn a_filter_holds_the_flag_predicate() {
+        let mut e = RowEncoders::new();
+        e.set_interactable(true);
+        let state = json!({"predicates": [{"kind": "playersWithActivityFlag", "flagNameHash": FLAG}]});
+        let img = image(&e.encode(FILTER, "objectFilter", &state, None, CTX, &map_filter)).to_vec();
+        assert_eq!(img.len(), 400);
+        assert_eq!(u32le(&img, 0), 1);
+        assert_eq!(u32le(&img, 0x10), 0x8080_0952, "the predicate's tag");
+        assert_eq!(img[0x20], 0, "value 0");
+        assert_eq!(u32le(&img, 0x24), FLAG);
+        assert!(img[0x28..].iter().all(|b| *b == 0));
+        // Cleared: no predicates.
+        assert_eq!(u32le(image(&e.encode(FILTER, "objectFilter", &json!({"predicates": []}), None, CTX, &map_filter)), 0), 0);
+        // Another predicate kind has no encoding: the row stays as served.
+        let other = json!({"predicates": [{"kind": "playersOnTeam", "teamIndex": 1}]});
+        assert!(matches!(e.encode(FILTER, "objectFilter", &other, None, CTX, &map_filter), Encoded::Unsupported(_)));
+        let wrong = e.encode(PLACEMENT, "objectFilter", &state, None, CTX, &map_filter);
+        assert!(matches!(wrong, Encoded::Unsupported(_)), "not a type id 33 row");
+    }
+
+    #[test]
+    fn the_knob_off_keeps_the_objects_and_filters_as_they_were() {
+        let mut e = RowEncoders::new();
+        e.set_interactable(false);
+        let img = image(&e.encode(PLACEMENT, "object", &interactable_state(false), None, CTX, &map_filter)).to_vec();
+        assert_eq!(img, object_default(), "no command slots: count 0, as before");
+        let state = json!({"predicates": [{"kind": "playersWithActivityFlag", "flagNameHash": FLAG}]});
+        assert!(matches!(e.encode(FILTER, "objectFilter", &state, None, CTX, &map_filter), Encoded::Unsupported(_)));
+    }
+
+    #[test]
+    fn the_flag_list_goes_into_the_player_bundle_and_is_cleared() {
+        let mut image = player_bundle_image([7; 8], true);
+        let before = image.clone();
+        assert_eq!(set_player_flags(&mut image, &[FLAG]), Some(1));
+        assert_eq!((u32le(&image, 0x4C), u32le(&image, 0x50)), (1, FLAG));
+        assert_eq!(&image[..0x4C], &before[..0x4C], "everything before the list stays");
+        assert_eq!(&image[0x70..], &before[0x70..], "and everything after");
+        assert_eq!(set_player_flags(&mut image, &[FLAG, 5]), Some(2));
+        assert_eq!((u32le(&image, 0x54), u32le(&image, 0x4C)), (5, 2));
+        assert_eq!(set_player_flags(&mut image, &[]), Some(0));
+        assert_eq!(image, before, "cleared: back to the served image");
+        assert_eq!(set_player_flags(&mut image, &[1; 9]), Some(8), "capacity 8");
+        assert_eq!(set_player_flags(&mut [0u8; 0x60], &[1]), None);
+    }
+
+    /// Every offset the new images use is the 56578 descriptor's (fields.tsv, schemas.tsv).
+    #[test]
+    fn the_interactable_offsets_are_the_56578_descriptors() {
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../fixtures/56578/rtti");
+        let schemas = std::fs::read_to_string(dir.join("schemas.tsv")).expect("schemas.tsv");
+        let fields = std::fs::read_to_string(dir.join("fields.tsv")).expect("fields.tsv");
+        let t = |s: &str| u32::from_str_radix(s.trim_start_matches("0x"), 16).unwrap();
+        let split = |l: &str| l.trim_end_matches('\r').split('\t').map(str::to_string).collect::<Vec<_>>();
+        // (size, [(offset, kind, child tag)]) of a struct tag, and its array capacity and strides.
+        let layout = |tag: u32| -> (usize, Vec<(usize, u32, u32)>, String, String) {
+            let row = schemas.lines().skip(1).map(split).find(|f| t(&f[0]) == tag).unwrap_or_else(|| panic!("{tag:#x} not in schemas.tsv"));
+            let fs = fields
+                .lines()
+                .skip(1)
+                .map(split)
+                .filter(|f| t(&f[0]) == tag)
+                .map(|f| (f[4].parse().unwrap(), f[5].parse().unwrap(), f[6].parse::<u64>().unwrap() as u32))
+                .collect();
+            (row[2].parse().unwrap(), fs, row.get(5).cloned().unwrap_or_default(), row.get(6).cloned().unwrap_or_default())
+        };
+        // The player bundle: the player struct at +0x40 (0x80800646), whose +0x0C is the flag list.
+        let (size, root, ..) = layout(TAG_PLAYER_BUNDLE);
+        assert_eq!(size, PLAYER_BUNDLE_LEN);
+        let player = root.iter().find(|f| f.0 == 0x40).expect("the player struct at +0x40");
+        let (_, player_fields, ..) = layout(player.2);
+        let list = player_fields.iter().find(|f| f.0 == 0xC).expect("the flag list at player +0x0C");
+        assert_eq!(0x40 + 0xC, PLAYER_FLAG_COUNT, "the list's count");
+        let (lsize, lfields, ..) = layout(list.2);
+        assert_eq!(lfields.iter().map(|f| f.0).collect::<Vec<_>>(), vec![0, 4]);
+        assert_eq!(lfields[0].1 & 0xFF, 5, "count: i32");
+        assert_eq!(0x40 + 0xC + lfields[1].0, PLAYER_FLAGS, "the hashes follow the count");
+        assert_eq!(0x40 + 0xC + lsize, 0x70, "the list ends where the next struct begins");
+        let (esize, efields, cap, strides) = layout(lfields[1].2);
+        assert_eq!((esize, efields.iter().map(|f| (f.0, f.1 & 0xFF)).collect::<Vec<_>>()), (32, vec![(4, 9)]));
+        assert_eq!((cap.as_str(), strides.as_str()), ("8", "4,4,0"), "eight raw u32s, stride 4");
+        assert_eq!(PLAYER_FLAG_CAPACITY, 8);
+        assert!(root.iter().any(|f| f.0 == 0x70), "the next struct at +0x70");
+        // The object: command list at +0x20 (count at +0x20, typed values from +0x30).
+        let (_, object, ..) = layout(TAG_OBJECT);
+        let cmds = object.iter().find(|f| f.0 == COMMAND_COUNT).expect("the command list at +0x20");
+        let (csize, cfields, ..) = layout(cmds.2);
+        assert_eq!(cfields.iter().map(|f| f.0).collect::<Vec<_>>(), vec![0, COMMAND_FIRST - COMMAND_COUNT]);
+        assert_eq!(csize, (COMMAND_FIRST - COMMAND_COUNT) + 3 * COMMAND_STRIDE, "three commands of 0x40 bytes");
+        // The interactable payload: i8 mode, ref at +4 (hash, i8 kind, i16 index), i32 +0xC, bool +0x10.
+        let (isize, ifields, ..) = layout(TAG_INTERACTABLE_COMMAND);
+        assert_eq!(isize, 20);
+        assert_eq!(ifields.iter().map(|f| (f.0, f.1 & 0xFF)).collect::<Vec<_>>(), vec![(0, 3), (4, 1), (12, 5), (16, 2)]);
+        let (_, rf, ..) = layout(ifields[1].2);
+        assert_eq!(rf.iter().map(|f| (f.0, f.1 & 0xFF)).collect::<Vec<_>>(), vec![(0, 9), (4, 3), (6, 4)], "hash, kind i8 (+0x48), index i16 (+0x4A)");
+        // The device command: 36 bytes, three (i32, i32, f32) channels.
+        assert_eq!(layout(TAG_DEVICE_COMMAND).0, 36);
+        assert!(COMMAND_FIRST + COMMAND_STRIDE + 0x10 + 36 <= 240, "slot 1's payload fits the 240-byte object");
+        // The filter: predicate list at +0 (count at +0, typed values from +0x10, stride 0x30).
+        let (fsize, ffields, ..) = layout(TAG_OBJECT_FILTER);
+        assert_eq!((fsize, ffields.len()), (400, 1));
+        let (psize, pfields, ..) = layout(ffields[0].2);
+        assert_eq!((psize, pfields.iter().map(|f| f.0).collect::<Vec<_>>()), (FILTER_FIRST + FILTER_CAPACITY * FILTER_STRIDE, vec![0, FILTER_FIRST]));
+        // The flag predicate: i8 value (2 bits, bias 1) at +0 and the raw u32 hash at +4.
+        let (ssize, sfields, ..) = layout(TAG_FLAG_PREDICATE);
+        assert_eq!(ssize, 8);
+        assert_eq!(sfields.iter().map(|f| (f.0, f.1 & 0xFF)).collect::<Vec<_>>(), vec![(0, 3), (4, 9)]);
+    }
+
+    /// The new images go through the native encoder (d1-rsat) and come back as built (needs the eboot).
+    #[test]
+    fn the_interactable_images_survive_the_native_codec() {
+        if std::env::var("D1_EBOOT").map_or(true, |p| !std::path::Path::new(&p).is_file()) {
+            eprintln!("SKIP: set D1_EBOOT to the owned 56578 executable");
+            return;
+        }
+        let mut e = RowEncoders::new();
+        e.set_interactable(true);
+        let object = image(&e.encode(PLACEMENT, "object", &interactable_state(false), None, CTX, &map_filter)).to_vec();
+        let filter = image(&e.encode(
+            FILTER,
+            "objectFilter",
+            &json!({"predicates": [{"kind": "playersWithActivityFlag", "flagNameHash": FLAG}]}),
+            None,
+            CTX,
+            &map_filter,
+        ))
+        .to_vec();
+        let mut player = player_bundle_image([7; 8], true);
+        set_player_flags(&mut player, &[FLAG]);
+        let cases: Vec<(u32, Vec<u8>, Vec<(usize, usize)>)> = vec![
+            (TAG_OBJECT, object, vec![(0x20, 4), (0x30, 4), (0x40, 1), (0x44, 4), (0x48, 1), (0x4A, 2), (0x4C, 4), (0x50, 1), (0x70, 4), (0x80, 36)]),
+            (TAG_OBJECT_FILTER, filter, vec![(0, 4), (0x10, 4), (0x20, 1), (0x24, 4)]),
+            (TAG_PLAYER_BUNDLE, player, vec![(0x40, 8), (0x4C, 4), (0x50, 4), (0x54, 4), (0x70, 4)]),
+        ];
+        for (tag, img, spans) in cases {
+            let enc = d1_rsat::encode(tag, &img).expect("encode");
+            let dec = d1_rsat::decode(tag, &enc.payload).expect("decode");
+            for (at, n) in spans {
+                assert_eq!(&dec.object[at..at + n], &img[at..at + n], "{tag:#x}: +{at:#x}..+{:#x} after the native codec", at + n);
+            }
+            eprintln!("{tag:#x}: {} bits through the client's codec", enc.bits);
         }
     }
 
