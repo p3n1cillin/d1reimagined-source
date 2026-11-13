@@ -2636,7 +2636,9 @@ impl ScriptBridge {
             tracing::warn!("script bridge: scoreboard not sent: the lifetime is already {} (D1_AH_SCRIPTS_SCOREBOARD)", run.lifetime_state);
             return;
         }
-        let key = RowKey { group: SCOREBOARD_GROUP, kind: crate::row_encoders::KIND_SCOREBOARD, index: 0 };
+        // The activity's own sensor group (its lifetime row's): 0x4786C0E0 for most activities,
+        // not all of them (worlds/activities.tsv).
+        let key = RowKey { group: run.activity.lifetime.group, kind: crate::row_encoders::KIND_SCOREBOARD, index: 0 };
         let Some(held) = rows.get(&key).cloned() else {
             tracing::warn!("script bridge: scoreboard not sent: the world's list has no row {key} (D1_AH_SCRIPTS_SCOREBOARD)");
             return;
@@ -2662,6 +2664,12 @@ impl ScriptBridge {
             players.iter().filter_map(|c| Some((player_key(c), crate::scoreboard_rows::native_identity(&c.identity)?))).collect();
         let image = crate::scoreboard_rows::image(&state, &crate::scoreboard_rows::Columns::default(), &|k| by_key.get(k).copied());
         rows.set(key, Row { has_a: true, has_b: held.has_b, a: Some((crate::scoreboard_rows::TAG, image)), b: held.b });
+        // The table keeps the held row's shape: a list that names the row without an A value
+        // would drop the image, so say so instead of claiming a send.
+        if rows.get(&key).is_none_or(|r| r.a.is_none()) {
+            tracing::warn!("script bridge: scoreboard not sent: the world's list names row {key} without an A value (D1_AH_SCRIPTS_SCOREBOARD)");
+            return;
+        }
         run.score_sent_at = Some(now);
         tracing::info!(
             "⭐ script bridge: scoreboard: {} player(s), kills {}, deaths {} (D1_AH_SCRIPTS_SCOREBOARD; precision kills not counted)",
@@ -3008,9 +3016,6 @@ pub fn unarmed_until(activity: u16) -> Option<i32> {
         .get(&activity)
         .copied()
 }
-
-/// The activity world's group the kind-15 scoreboard row lives in (the row the world list serves).
-const SCOREBOARD_GROUP: u32 = 0x4786_C0E0;
 
 /// `D1_AH_SCRIPTS_SCOREBOARD=1` (lab; anything else is off).
 fn scoreboard_knob() -> bool {
