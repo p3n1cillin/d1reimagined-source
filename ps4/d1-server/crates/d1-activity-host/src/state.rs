@@ -647,9 +647,20 @@ impl SensorStamp {
         now: Instant,
         measure: impl FnOnce(&[u8]) -> Result<usize, String>,
     ) -> Result<(), String> {
+        self.stamp_init(frame, now, true, measure)
+    }
+
+    /// [`Self::stamp`] with the frame's `init` bit given (a delta is `init = 0`).
+    pub fn stamp_init(
+        &mut self,
+        frame: &mut [u8],
+        now: Instant,
+        init: bool,
+        measure: impl FnOnce(&[u8]) -> Result<usize, String>,
+    ) -> Result<(), String> {
         let stamped = measure(frame).and_then(|bit| {
             let tick = self.tick(now);
-            d1_oracle::sensor::set_frame_stamp(frame, bit, tick, true).map_err(|e| e.to_string())
+            d1_oracle::sensor::set_frame_stamp(frame, bit, tick, init).map_err(|e| e.to_string())
         });
         match stamped {
             Ok(()) => {
@@ -1219,6 +1230,12 @@ impl ActivityInstance {
         if !matches!(self.state, InstanceState::Live) || self.heartbeats == 0 {
             return None;
         }
+        // D1_AH_SCRIPTS_INTERACTABLE: the mission bridge's rows for this public instance's list.
+        if self.sensor_sent {
+            if let Some(push) = self.public_rows_due(now) {
+                return Some(push);
+            }
+        }
         // ── stream R hook ── a Crucible map's udt 5 is its match's (pvp_wire.rs).
         if let Some(c) = self.crucible.as_mut().filter(|c| c.active()) {
             let payload = c.sensor_due(now)?;
@@ -1291,6 +1308,35 @@ impl ActivityInstance {
         }
         crate::script_bridge::dump_host_frame(&payload);
         Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }))
+    }
+
+    /// `D1_AH_SCRIPTS_INTERACTABLE`: the rows the mission bridge routed to this public instance
+    /// (and its player row's flags) as one udt 5 delta, `init = 0`, after its full list went out.
+    /// Stamped like every frame (stamp mode, `D1_AH_SENSOR_STAMP`); without it nothing is sent.
+    fn public_rows_due(&mut self, now: Instant) -> Option<AhPush> {
+        let public = self.public.as_mut().filter(|p| p.is_public_instance())?;
+        let clients = public.take_routed_delta();
+        if clients.is_empty() {
+            return None;
+        }
+        let built = public.encode_routed_delta(&clients).and_then(|mut payload| {
+            let stamp = self.sensor_stamp.as_mut().ok_or("no stamp mode (D1_AH_SENSOR_STAMP)")?;
+            stamp.stamp_init(&mut payload, now, false, crate::codec::SchemaCodec::sensor_stamp_bit)?;
+            Ok(payload)
+        });
+        match built {
+            Ok(payload) => {
+                tracing::info!("udt 5 delta ({} rows, the mission's, public instance {:#x})", clients.len(), self.ah_id);
+                self.sensors_sent += 1;
+                self.last_pushed = now;
+                Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }))
+            }
+            Err(e) => {
+                tracing::warn!("public instance {:#x}: the mission's rows not sent: {e}", self.ah_id);
+                public.requeue_routed(&clients);
+                None
+            }
+        }
     }
 
     /// In stamp mode, the 6-byte idle udt 5 when 3 s passed with no other (see [`SensorStamp`]).
@@ -3551,5 +3597,74 @@ mod tests {
         j.on_client_message(&report(0x1357_9BDF), now);
         assert!(j.interaction_drop_logged);
         assert!(queue.lock().unwrap().is_empty());
+    }
+
+    /// ⭐ D1_AH_SCRIPTS_INTERACTABLE, through the client's own codec (needs the eboot): a public
+    /// instance sends its full list, then what the mission bridge routed to it as an `init = 0`
+    /// delta, stamped after the list's stamp. The routes are made directly (the bridge's side is
+    /// tested in script_bridge.rs). Synthetic ids and values.
+    #[test]
+    fn a_public_instance_sends_the_missions_rows_as_a_stamped_delta() {
+        if !crate::eboot_or_skip("a_public_instance_sends_the_missions_rows_as_a_stamped_delta") {
+            return;
+        }
+        use crate::public_host::*;
+        use crate::public_registry::{InstanceKey, PublicRegistry};
+        use crate::rows::{Row, RowKey};
+        use std::sync::{Arc, Mutex};
+        const MISSION: u64 = 0xD1A0_0000_0000_7F20;
+        const GROUP: u32 = 0xD7F6_8DA0;
+        let mut text = String::new();
+        for n in 0..16 {
+            text.push_str(&format!("0xeaaf16e2 0xc {n} 1 0
+"));
+        }
+        text.push_str("0xd7f68da0 0x3 1 1 0
+");
+        let key = InstanceKey::Bubble { destination: crate::open_world::Destination::Earth, region: 56 };
+        let list = PublicRegionList::parse(key, "t", &text);
+        let codec: Arc<dyn crate::codec::AhWireCodec> = Arc::new(crate::codec::SchemaCodec);
+        let frames = PublicHost::build_frames(&[list.clone()], &entry_frame_encoder(codec.clone(), 0));
+        let mut p = PublicHost::new(Arc::new(frames), Arc::new(Mutex::new(PublicRegistry::new(1))))
+            .with_personal_frames(&[list], personal_frame_encoder(codec, 0));
+        p.set_interactable(true);
+        let (mut i, now) = instance();
+        i.set_public_host(p);
+        i.set_sensor_stamp();
+        i.set_activity_name("act_cosmo_m1_dome_a");
+        let mut img = vec![0u8; 0x100];
+        img[JOIN_SESSION_TYPE] = 3;
+        img[JOIN_MISSION_HOST..JOIN_MISSION_HOST + 8].copy_from_slice(&MISSION.to_le_bytes());
+        img[JOIN_IDENTITY + 0x18..JOIN_IDENTITY + 0x20].copy_from_slice(&0xD100_0000_0000_0201u64.to_le_bytes());
+        i.on_client_message(&ClientMessage::from_struct_image(3, &img).unwrap(), now);
+        let mut udt21 = vec![0u8; 0x220];
+        udt21[0x158..0x15C].copy_from_slice(&56u32.to_le_bytes());
+        udt21[0x15C..0x160].copy_from_slice(&0x811C_9DC5u32.to_le_bytes());
+        i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: udt21 }, now);
+        // The first heartbeat (the full list waits for it), then the full list.
+        let t1 = now + Duration::from_secs(6);
+        i.heartbeat_due(t1).expect("heartbeat");
+        let full = match i.sensor_due(t1).map(|p| p.message) {
+            Some(AhMessage::SensorAuthUpdate { payload }) => payload,
+            other => panic!("the full list: {other:?}"),
+        };
+        let init_of = |f: &[u8]| {
+            let bit = crate::codec::SchemaCodec::sensor_stamp_bit(f).unwrap();
+            (f[(bit + 32) / 8] >> (7 - (bit + 32) % 8)) & 1
+        };
+        assert_eq!(init_of(&full), 1);
+        // The bridge's routes: a row the list names, and the flag.
+        let owner = 0x7F20;
+        let objective = Row { has_a: true, has_b: false, a: Some((crate::row_encoders::TAG_OBJECTIVE, vec![0; crate::row_encoders::OBJECTIVE_SIZE])), b: None };
+        crate::script_bridge::public_row_links().route_row(MISSION, owner, RowKey { group: GROUP, kind: 3, index: 1 }, &objective);
+        crate::script_bridge::public_row_links().route_flags(MISSION, owner, &[0x1234_ABCD]);
+        let t2 = t1 + Duration::from_millis(300);
+        let delta = match i.sensor_due(t2).map(|p| p.message) {
+            Some(AhMessage::SensorAuthUpdate { payload }) => payload,
+            other => panic!("the delta: {other:?}"),
+        };
+        assert_eq!(init_of(&delta), 0, "a delta");
+        assert_ne!(delta, full);
+        assert!(i.sensor_due(t2 + Duration::from_millis(300)).is_none(), "nothing more is due");
     }
 }

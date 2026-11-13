@@ -36,7 +36,7 @@
 //! The hooks in `state.rs` are marked `stream G` and do nothing unless the instance was given a
 //! [`PublicHost`] (`D1_AH_PUBLIC_HOST=1` in `main.rs`).
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
@@ -49,6 +49,8 @@ use crate::open_world::{
 };
 use crate::public_events::{schedule_for, BubbleScriptBridge, EventNotice, EventResult, PublicEventRunner};
 use crate::public_registry::{InstanceKey, JoinKind, PublicRegistry};
+use crate::rows::{reshape, Row, RowKey};
+use crate::script_bridge::{public_row_links, PublicInbox, PublicInboxRef};
 
 /// `join_request +0x38`: the session type (3 starts an instance, 2 joins one).
 pub const JOIN_SESSION_TYPE: usize = 0x38;
@@ -321,6 +323,135 @@ fn completions_of(notices: &[EventNotice]) -> impl Iterator<Item = &'static [u32
     })
 }
 
+/// `D1_AH_SCRIPTS_INTERACTABLE`: what the mission bridge routes to this public instance, and what
+/// the instance holds of it. The live mission host did not name the public bubble's rows: the
+/// region's public host served them (the placements already configured, the filters with their flag
+/// predicates) and carried the activity flag in its own player row. Our mission script writes those
+/// rows on the mission host, where the list does not name them; the bridge routes them here
+/// ([`crate::script_bridge::PublicRowLinks`]) and this instance serves them as its own udt 5 deltas.
+///
+/// Our mechanism, not the live one: the live public host set the flag about 0.6 s after the client
+/// echoed its mission player row to it (udt 6), which we do not decode; the flag here follows the
+/// mission bridge's own flag state, so the timing differs by about that much.
+///
+/// One per connection: a clone starts empty.
+#[derive(Debug, Default)]
+pub struct PublicRows {
+    on: bool,
+    inbox: PublicInboxRef,
+    mission_host: u64,
+    /// The list's shape (has A, has B) for each key it names: only these are served.
+    shape: HashMap<RowKey, (bool, bool)>,
+    /// Current routed values (and the client's player row once seeded).
+    values: BTreeMap<RowKey, Row>,
+    dirty: BTreeSet<RowKey>,
+    flags: Vec<u32>,
+    flags_pending: bool,
+    /// The client's own player row: the players group's record 0 (its peer slot; a second
+    /// member's slot is not tracked, as in [`PublicHost::on_slice_report`]).
+    player: Option<RowKey>,
+    logged: BTreeSet<RowKey>,
+}
+
+impl Clone for PublicRows {
+    fn clone(&self) -> Self {
+        Self { on: self.on, ..Self::default() }
+    }
+}
+
+fn key_of(c: &SensorClientRef) -> RowKey {
+    RowKey { group: c.name_hash, kind: c.name_i8, index: c.name_sub }
+}
+
+impl PublicRows {
+    fn register(&mut self, mission_host: u64, list: &[SensorClientRef]) {
+        self.mission_host = mission_host;
+        self.shape = list.iter().map(|c| (key_of(c), (c.has_a, c.has_b))).collect();
+        self.player = Some(RowKey { group: PUBLIC_PLAYERS_GROUP, kind: crate::row_encoders::KIND_PLAYER_BUNDLE, index: 0 })
+            .filter(|k| self.shape.contains_key(k));
+        public_row_links().register(mission_host, &self.inbox);
+    }
+
+    fn registered(&self) -> bool {
+        self.on && self.mission_host != 0
+    }
+
+    /// Take what the bridge routed since the last call.
+    fn drain(&mut self, host_id: u64) {
+        let (rows, flags) = {
+            let mut i = self.inbox.lock().unwrap_or_else(|e| e.into_inner());
+            let PublicInbox { rows, flags } = &mut *i;
+            (std::mem::take(rows), flags.take())
+        };
+        for (key, mut row) in rows {
+            let Some(&(has_a, has_b)) = self.shape.get(&key) else { continue };
+            reshape(&mut row, has_a, has_b);
+            if self.values.get(&key) == Some(&row) {
+                continue;
+            }
+            if self.logged.insert(key) {
+                tracing::info!("⭐ public instance {host_id:#x}: serves the mission's {key} (D1_AH_SCRIPTS_INTERACTABLE)");
+            } else {
+                tracing::debug!("public instance {host_id:#x}: serves the mission's {key} (D1_AH_SCRIPTS_INTERACTABLE)");
+            }
+            self.values.insert(key, row);
+            self.dirty.insert(key);
+        }
+        if let Some(f) = flags {
+            self.flags = f;
+            self.flags_pending = true;
+        }
+        self.apply_flags(host_id);
+    }
+
+    /// Put the flag list into the player row (`+0x4C` count, `+0x50` hashes, capacity 8).
+    fn apply_flags(&mut self, host_id: u64) {
+        if !self.flags_pending {
+            return;
+        }
+        let Some(key) = self.player else { return };
+        let Some(mut row) = self.values.get(&key).cloned() else { return };
+        self.flags_pending = false;
+        let Some((_, image)) = row.a.as_mut() else { return };
+        let Some(n) = crate::row_encoders::set_player_flags(image, &self.flags) else { return };
+        if self.values.get(&key) == Some(&row) {
+            return;
+        }
+        tracing::info!("⭐ public instance {host_id:#x}: player row flags {n} (mission host {:#x})", self.mission_host);
+        self.values.insert(key, row);
+        self.dirty.insert(key);
+    }
+
+    /// The first full list: seed the player row from the client's own record, then lay every
+    /// routed value over `clients` (the instance's list for this client).
+    fn overlay(&mut self, host_id: u64, clients: &mut [SensorClientRef]) {
+        if let Some(c) = self.player.and_then(|k| clients.iter().find(|c| key_of(c) == k)) {
+            if c.a_value.is_some() {
+                self.values.entry(key_of(c)).or_insert_with(|| Row::from_client(c).1);
+            }
+        }
+        self.drain(host_id);
+        for c in clients.iter_mut() {
+            if let Some(r) = self.values.get(&key_of(c)) {
+                c.a_value = r.a.clone();
+                c.b_value = r.b.clone();
+            }
+        }
+        self.dirty.clear();
+    }
+
+    /// The rows that changed since the last frame, as list entries.
+    fn take_delta(&mut self, host_id: u64) -> Vec<SensorClientRef> {
+        self.drain(host_id);
+        let dirty = std::mem::take(&mut self.dirty);
+        dirty.into_iter().filter_map(|k| Some(self.values.get(&k)?.to_client(k))).collect()
+    }
+
+    fn requeue(&mut self, clients: &[SensorClientRef]) {
+        self.dirty.extend(clients.iter().map(key_of));
+    }
+}
+
 /// The public-host state one activity-host connection carries.
 #[derive(Clone)]
 pub struct PublicHost {
@@ -350,6 +481,8 @@ pub struct PublicHost {
     /// them the prebuilt entry-only frame is served.
     lists: Arc<HashMap<InstanceKey, Vec<SensorClientRef>>>,
     personal: Option<PersonalEncoder>,
+    /// `D1_AH_SCRIPTS_INTERACTABLE`: the mission bridge's rows and flags served here.
+    routed: PublicRows,
 }
 
 impl std::fmt::Debug for PublicHost {
@@ -385,7 +518,35 @@ impl PublicHost {
             completions_seen: 0,
             lists: Arc::new(HashMap::new()),
             personal: None,
+            routed: PublicRows { on: crate::script_bridge::interactable_knob(), ..PublicRows::default() },
         }
+    }
+
+    /// Tests: replaces the knob (`D1_AH_SCRIPTS_INTERACTABLE`) for the mission rows served here.
+    pub fn set_interactable(&mut self, on: bool) {
+        self.routed.on = on;
+    }
+
+    /// `D1_AH_SCRIPTS_INTERACTABLE`: the changed mission rows (and the player row's flags), as
+    /// entries for one udt 5 delta; empty until this is a registered public instance.
+    pub fn take_routed_delta(&mut self) -> Vec<SensorClientRef> {
+        if !self.routed.registered() {
+            return Vec::new();
+        }
+        let host = self.host_id;
+        self.routed.take_delta(host)
+    }
+
+    /// A delta's entries that could not be built or sent: due again.
+    pub fn requeue_routed(&mut self, clients: &[SensorClientRef]) {
+        self.routed.requeue(clients);
+    }
+
+    /// The entries as one frame (no authority table), through the personal encoder; the caller
+    /// stamps it (`init = 0`).
+    pub fn encode_routed_delta(&self, clients: &[SensorClientRef]) -> Result<Vec<u8>, String> {
+        let encode = self.personal.as_ref().ok_or("no encoder on this public host")?;
+        encode(None, clients)
     }
 
     /// Serve each joining client its own frame (F32): the join grant and its player record, from
@@ -648,6 +809,12 @@ impl PublicHost {
         });
         tracing::info!("⭐ public instance {host_id:#018x} is {key:?} ({joined:?})");
         self.start_world(key, host_id, now);
+        // D1_AH_SCRIPTS_INTERACTABLE: the mission bridge's rows and flags for this instance's list.
+        if let (true, Some(mh), Some(list), true) =
+            (self.routed.on, self.mission_host(), self.lists.get(&key), self.personal.is_some())
+        {
+            self.routed.register(mh, list);
+        }
         // F32: the joining client's own frame, as the live instance served it: the join grant
         // (blocks 0..bubbles and 64 to its machine, seq 1) and its key in the players group's
         // record 0 (its peer slot; ⚠ a second member's slot is not tracked here yet).
@@ -656,7 +823,10 @@ impl PublicHost {
             let authority = crate::row_encoders::machine_of_identity(&identity)
                 .zip(bubbles)
                 .map(|(m, n)| d1_oracle::sensor::SensorAuthority::join_grant(m, n));
-            let clients = personal_clients(list, &identity, 0);
+            let mut clients = personal_clients(list, &identity, 0);
+            if self.routed.registered() {
+                self.routed.overlay(host_id, &mut clients);
+            }
             match encode(authority.clone(), &clients) {
                 Ok(frame) => {
                     tracing::info!(
