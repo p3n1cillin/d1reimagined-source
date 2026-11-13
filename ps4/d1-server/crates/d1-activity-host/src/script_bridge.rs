@@ -479,7 +479,10 @@ pub enum SidecarMsg {
     },
     ActivityComplete {},
     Ended {},
-    HardWipeArmed {},
+    HardWipeArmed {
+        #[serde(default)]
+        armed: bool,
+    },
     AllDead {},
     TickDone { now: u64 },
     Log { text: String },
@@ -3303,8 +3306,13 @@ impl ScriptBridge {
                 }
                 self.run = Some(run);
             }
-            SidecarMsg::HardWipeArmed {} => {
-                tracing::warn!("script bridge: the scripts asked for a hard wipe, which has no 56578 handshake yet");
+            SidecarMsg::HardWipeArmed { armed } => {
+                // The arming is the `hardWipeGlobals` row (sent with the rows); the wipe itself is
+                // `all_dead` / the sidecar's `hard_wipe`.
+                tracing::info!(
+                    "script bridge: hard wipe {} for this phase (hardWipeGlobals row)",
+                    if armed { "armed" } else { "disarmed" }
+                );
             }
             SidecarMsg::AllDead {} => {
                 tracing::warn!("script bridge: the scripts report every player dead (the activity framework decides the wipe; no 56578 handshake yet)");
@@ -4062,6 +4070,7 @@ mod tests {
         let loaded = parse_sidecar_line(r#"{"type":"loaded","activity":"cine_reveal","proto":1,"stand_in":true,"stub":false,"drives_lifetime":true,"compile_errors":[],"phases":[{"index":0}]}"#).unwrap();
         assert!(matches!(loaded, Some(SidecarMsg::Loaded { stand_in: true, drives_lifetime: true, .. })));
         assert_eq!(parse_sidecar_line(r#"{"type":"activity_complete","id":965,"name":"activity_complete","name_hash":1113982608}"#).unwrap(), Some(SidecarMsg::ActivityComplete {}));
+        assert_eq!(parse_sidecar_line(r#"{"type":"hard_wipe_armed","armed":true}"#).unwrap(), Some(SidecarMsg::HardWipeArmed { armed: true }));
         assert_eq!(parse_sidecar_line(r#"{"type":"ended"}"#).unwrap(), Some(SidecarMsg::Ended {}));
         let phase = parse_sidecar_line(r#"{"type":"phase","index":1,"name":"cine_107_twr_phase","name_hash":3615303679,"decl":"x","slice":"plaza","slice_hash":"0x1ad5e415"}"#).unwrap().unwrap();
         let SidecarMsg::Phase { index: 1, name_hash: Some(h), slice_hash: Some(sh), region: None, .. } = phase else { panic!("{phase:?}") };
@@ -4689,6 +4698,28 @@ mod tests {
                 assert!(filter.is_none(), "off: the filter row keeps its served (empty) value");
             }
         }
+    }
+
+    #[test]
+    fn a_phase_with_hard_wipe_sends_the_row_enabled_and_a_later_disarm_clears_it() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = bridge(&shared, false);
+        let t = Instant::now();
+        b.on_client_message(&join(7), 165, HOST, t);
+        let row_change = |enabled: bool| change("hardWipeGlobals", 1, 34, serde_json::json!({"enabled": enabled}));
+        let held = |b: &ScriptBridge| {
+            let group = b.run.as_ref().expect("run").activity.group_of(CINE);
+            b.rows().get(&RowKey { group, kind: 34, index: 1 }).and_then(|r| r.a.clone())
+        };
+        b.apply(SidecarMsg::Rows { changes: vec![row_change(true)] }, t);
+        b.apply(SidecarMsg::HardWipeArmed { armed: true }, t);
+        let (tag, image) = held(&b).expect("the row is sent");
+        assert_eq!((tag, image.len(), image[0], image[1], image[2]), (crate::row_encoders::TAG_HARD_WIPE, 32, 1, 0, 0));
+        b.apply(SidecarMsg::Rows { changes: vec![row_change(false)] }, t);
+        b.apply(SidecarMsg::HardWipeArmed { armed: false }, t);
+        let (_, image) = held(&b).expect("the row stays");
+        assert_eq!(image[0], 0, "disarmed");
+        assert_eq!(f32::from_le_bytes(image[28..32].try_into().unwrap()), 1.0);
     }
 
     #[test]
