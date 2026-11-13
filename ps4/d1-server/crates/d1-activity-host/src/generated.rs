@@ -401,12 +401,10 @@ impl GeneratedWorlds {
 
     /// A list file text for `clients` under the comment `title`.
     pub fn clients_text(title: &str, clients: &[(u32, Client)]) -> String {
-        let mut text = format!("# {title}
-");
+        let mut text = format!("# {title}\n");
         for (g, c) in clients {
             text += &format!(
-                "{g:#010x} {:#x} {} {} {}
-",
+                "{g:#010x} {:#x} {} {} {}\n",
                 c.kind,
                 c.index,
                 u8::from(c.has_a),
