@@ -51,7 +51,7 @@ if (self && import.meta.url.endsWith(self.slice(self.lastIndexOf("/")))) {
   };
   const activity = argv[0];
   const bundlesDir = opt("--bundles", process.env.D1_BUNDLES_DIR);
-  const scriptsDir = scriptsDirFromEnv();
+  const scriptsDir = scriptsDirFromEnv(process.env, activity);
   if (!activity || !bundlesDir || !scriptsDir) {
     console.error("usage: D1_SCRIPTS_DIR=<scripts> replay.mjs ACTIVITY --bundles DIR [--seconds N] [--out FILE]");
     process.exit(2);

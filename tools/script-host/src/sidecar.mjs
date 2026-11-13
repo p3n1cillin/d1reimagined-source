@@ -66,7 +66,7 @@ export class Sidecar {
     if (msg.tiger_dir) env.D1_TIGER_DIR = msg.tiger_dir;
     if (msg.bullshcript_dir) env.D1_BULLSHCRIPT_DIR = msg.bullshcript_dir;
     const bs = await loadBullshcript(env);
-    const dir = msg.scripts_dir ?? scriptsDirFromEnv(env);
+    const dir = msg.scripts_dir ?? scriptsDirFromEnv(env, msg.activity);
     if (!dir) {
       return this.error("no script folder: set D1_SCRIPTS_DIR or send scripts_dir", true);
     }

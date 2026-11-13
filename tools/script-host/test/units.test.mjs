@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { IncidentTable, KNOWN_56578 } from "../src/incidents.mjs";
 import { missingNativeOf } from "../src/natives56578.mjs";
+import { scriptsDirFromEnv } from "../src/scripts.mjs";
 import { LIFETIME_WIRE_PHASE, lifetimeWirePhase, types56578 } from "../src/types56578.mjs";
 import { SYNTHETIC_TSV } from "./synthetic.mjs";
 
@@ -66,5 +67,18 @@ describe("unanswered natives in the runtime log", () => {
     assert.equal(missingNativeOf("lua a.b:is_x() (unknown, false)").method, "is_x");
     assert.equal(missingNativeOf("lua lifetime_timer:get_y() (unbound, 0)").method, "get_y");
     assert.equal(missingNativeOf("lua thread main start"), undefined);
+  });
+});
+
+describe("script folder per activity", () => {
+  const env = { D1_SCRIPTS_DIR: "base", D1_SCRIPTS_DIR_FOR: " act_a = other/a ;act_b=;bad" };
+  it("names another folder for one activity (D1_SCRIPTS_DIR_FOR)", () => {
+    assert.equal(scriptsDirFromEnv(env, "act_a"), "other/a");
+  });
+  it("keeps D1_SCRIPTS_DIR for the others, an empty entry and no activity", () => {
+    assert.equal(scriptsDirFromEnv(env, "act_c"), "base");
+    assert.equal(scriptsDirFromEnv(env, "act_b"), "base");
+    assert.equal(scriptsDirFromEnv(env), "base");
+    assert.equal(scriptsDirFromEnv({}, "act_a"), undefined);
   });
 });
