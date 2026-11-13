@@ -506,6 +506,11 @@ pub struct ActivityInstance {
     trigger_reports: Vec<((u32, u8, u16), bool)>,
     /// A dropped interaction (no mission bridge for the join's mission host) was logged.
     interaction_drop_logged: bool,
+    /// `D1_AH_SCRIPTS_READY_ON_SENSE`: the client's player-row senses on a public instance's
+    /// connection (the mission bridge's own are tracked in the bridge).
+    ready_on_sense: bool,
+    public_row_sense: crate::script_bridge::PlayerRowTracker,
+    ready_drop_logged: bool,
     /// The mission's routed rows could not be sent (logged once; then debug).
     routed_warn_logged: bool,
     /// `D1_AH_SCRIPTS_INTERACTABLE=1` (read once; tests set it with [`Self::set_interactable`]).
@@ -805,6 +810,9 @@ impl ActivityInstance {
             slice_records_seen: None,
             trigger_reports: Vec::new(),
             interaction_drop_logged: false,
+            ready_on_sense: crate::script_bridge::ready_on_sense_knob(),
+            public_row_sense: Default::default(),
+            ready_drop_logged: false,
             routed_warn_logged: false,
             interactable: crate::script_bridge::interactable_knob(),
             squad_live: crate::sense::SquadObservations::default(),
@@ -2278,7 +2286,40 @@ impl ActivityInstance {
         }
     }
 
+    /// Tests: replaces the knob `D1_AH_SCRIPTS_READY_ON_SENSE`.
+    pub fn set_ready_on_sense(&mut self, on: bool) {
+        self.ready_on_sense = on;
+    }
+
+    /// `D1_AH_SCRIPTS_READY_ON_SENSE`: the client's player-row senses of the current epoch. On the
+    /// mission host's connection the bridge follows them; on a public instance's, the second,
+    /// changed one goes to the mission bridge its join named (process-wide link).
+    fn player_rows_sensed(&mut self, rows: &[crate::script_bridge::PlayerRowSense]) {
+        use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
+        if !self.ready_on_sense || rows.is_empty() {
+            return;
+        }
+        let Some(id) = self.join_request_image.as_ref().and_then(|img| img.get(JOIN_REQUEST_IDENTITY..JOIN_REQUEST_IDENTITY + IDENTITY_SIZE)) else { return };
+        let key = crate::script_bridge::player_key(&crate::rewards::CharacterRef { identity: id.to_vec() });
+        if let Some(mh) = self.public.as_ref().and_then(|p| p.mission_host()) {
+            if self.public_row_sense.observe(rows, None) == crate::script_bridge::RowSense::Changed {
+                if !crate::script_bridge::interaction_links().deliver_ready(mh, &key, self.ah_id) && !self.ready_drop_logged {
+                    self.ready_drop_logged = true;
+                    tracing::warn!(
+                        "public instance {:#x}: player-row sense #2 not passed on: no mission bridge is registered for mission host {mh:#x}",
+                        self.ah_id
+                    );
+                }
+            }
+        } else if let Some(b) = self.script_bridge.as_ref() {
+            b.player_row_sense(&key, rows, Instant::now());
+        }
+    }
+
     pub fn on_sense_update(&mut self, update: crate::sense::SenseUpdate) {
+        if update.epoch == self.squad_live.epoch() {
+            self.player_rows_sensed(&update.player_rows);
+        }
         // D1_AH_SCRIPTS hook (script_bridge.rs): squad senses of the current epoch.
         if let Some(b) = self.script_bridge.as_mut().filter(|_| update.epoch == self.squad_live.epoch()) {
             b.on_sense(&update.counts, &update.squads);
@@ -3168,7 +3209,7 @@ mod tests {
         assert!(i.advance_mission(now));
         let squad = |index, live| SquadCount { group: 0x062D_D95D, kind: 1, index, live };
         let report = |i: &mut ActivityInstance, counts: Vec<_>| {
-            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts, squads: vec![] });
+            i.on_sense_update(SenseUpdate { epoch: i.squad_epoch(), generation: 1, counts, squads: vec![], player_rows: vec![] });
             i.set_sense_ready(true);
         };
         report(&mut i, vec![squad(5,1)]);

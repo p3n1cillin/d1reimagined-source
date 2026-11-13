@@ -140,6 +140,11 @@ impl ScriptHandle {
         self.with(|s| s.bridge.client_sensed(now));
     }
 
+    /// See [`ScriptBridge::player_row_sense`]: each member reports its own player's senses.
+    pub fn player_row_sense(&self, key: &str, rows: &[crate::script_bridge::PlayerRowSense], now: Instant) {
+        self.with(|s| s.bridge.player_row_sense(key, rows, now));
+    }
+
     /// See [`ScriptBridge::set_remapped_launch`].
     pub fn set_remapped_launch(&self, hash: Option<u32>) {
         self.with(|s| s.bridge.set_remapped_launch(hash));
