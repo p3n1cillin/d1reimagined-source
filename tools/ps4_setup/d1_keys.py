@@ -88,8 +88,25 @@ def _focus(h):
     return user32.GetForegroundWindow() == h
 
 
-def press(*keys, gap=150):
-    """Press the keys in order; raises RuntimeError when there is no shadPS4 window."""
+def post_lparam(code, scan, down):
+    """The WM_KEYDOWN/WM_KEYUP lParam d1-pad.ps1 -Post builds: repeat 1, scan code, the extended
+    flag (bit 24) for the arrow cluster, and the previous-state and transition bits on key-up."""
+    lparam = 1 | (scan << 16) | (0x01000000 if key_flags(code) else 0)
+    return lparam if down else lparam | 0xC0000000
+
+
+def post_mode(post=None):
+    """Explicit post wins; None reads D1_KEYS_POST ("1" = posted)."""
+    return os.environ.get('D1_KEYS_POST') == '1' if post is None else bool(post)
+
+
+def press(*keys, gap=150, post=None):
+    """Press the keys in order; raises RuntimeError when there is no shadPS4 window.
+
+    Posted mode (post=True, or D1_KEYS_POST=1) sends WM_KEYDOWN/WM_KEYUP with PostMessage: no focus,
+    no Alt tap, no keybd_event, so it works with the desktop locked (the emulator reads the
+    messages from its own queue)."""
+    posted = post_mode(post)
     plan = parse(keys)
     user32 = ctypes.windll.user32
     h = _window()
@@ -100,13 +117,18 @@ def press(*keys, gap=150):
     # keys after 300 s without a stamp).
     tools = os.path.dirname(os.path.abspath(__file__))
     for name, code, hold in plan:
-        if not _focus(h):
+        if not posted and not _focus(h):
             continue
         scan = user32.MapVirtualKeyW(code, 0)
-        flags = key_flags(code)
-        user32.keybd_event(code, scan, flags, 0)
-        time.sleep(hold / 1000)
-        user32.keybd_event(code, scan, flags | 2, 0)
+        if posted:
+            user32.PostMessageW(h, 0x100, code, post_lparam(code, scan, True))
+            time.sleep(hold / 1000)
+            user32.PostMessageW(h, 0x101, code, post_lparam(code, scan, False))
+        else:
+            flags = key_flags(code)
+            user32.keybd_event(code, scan, flags, 0)
+            time.sleep(hold / 1000)
+            user32.keybd_event(code, scan, flags | 2, 0)
         stamp = int(time.time())
         time.sleep(gap / 1000)
     if stamp and tools:

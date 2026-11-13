@@ -36,6 +36,35 @@ class Keys(unittest.TestCase):
                          [(0x28, 0x50, 1, 0), (0x28, 0x50, 3, 0),
                           (0x62, 0x50, 0, 0), (0x62, 0x50, 2, 0)])
 
+    def test_post_lparam_matches_the_script(self):
+        self.assertEqual(M.post_lparam(0x57, 0x11, True), 0x00110001)
+        self.assertEqual(M.post_lparam(0x57, 0x11, False), 0xC0110001)
+        self.assertEqual(M.post_lparam(0x28, 0x50, True), 0x01500001)
+        self.assertEqual(M.post_lparam(0x28, 0x50, False), 0xC1500001)
+        self.assertEqual(M.post_lparam(0x62, 0x50, True), 0x00500001)
+
+    def test_post_mode_selection(self):
+        with patch.dict(M.os.environ, {}, clear=False):
+            M.os.environ.pop('D1_KEYS_POST', None)
+            self.assertFalse(M.post_mode())
+            M.os.environ['D1_KEYS_POST'] = '1'
+            self.assertTrue(M.post_mode())
+            self.assertFalse(M.post_mode(False))
+            M.os.environ['D1_KEYS_POST'] = '0'
+            self.assertFalse(M.post_mode())
+            self.assertTrue(M.post_mode(True))
+
+    def test_posted_press_never_focuses_or_sends_real_input(self):
+        user = Mock()
+        user.MapVirtualKeyW.return_value = 0x50
+        with patch.object(M.ctypes, 'windll', SimpleNamespace(user32=user), create=True),              patch.object(M, '_window', return_value=7),              patch.object(M, '_focus', side_effect=AssertionError('focused')),              patch.object(M.time, 'sleep'), patch('builtins.open', mock_open()) as op:
+            M.press('Down', 'NumPad2', gap=0, post=True)
+        self.assertEqual([c.args for c in user.PostMessageW.call_args_list],
+                         [(7, 0x100, 0x28, 0x01500001), (7, 0x101, 0x28, 0xC1500001),
+                          (7, 0x100, 0x62, 0x00500001), (7, 0x101, 0x62, 0xC0500001)])
+        user.keybd_event.assert_not_called()
+        op.assert_called()   # the idle-guard stamp is still written
+
 
 if __name__ == '__main__':
     unittest.main()
