@@ -292,10 +292,12 @@ fn body_bits(image: &[u8], at: usize, n: usize) -> Option<u64> {
 pub const INCIDENT_INTERACTION: u32 = 3569;
 
 /// The identifier hash of the object an incident-3569 image reports used: the u32 at body bit
-/// 330, MSB first (two gh41 incidents read the empty-name hash there; the live capture's flare
-/// uses read real names at the same bit). `None` for 0 and the empty-name hash (an unnamed object).
+/// 303, MSB first, the same place incident 3403 names its trigger. Measured as message bit 330 on
+/// the raw wire message; the decoded body (`+0xD8`) starts after the wire's 27-bit header (count
+/// 5 bits, type 12, list flag 1, length 9), so message bit 330 = body bit 303. Two gh41 incidents
+/// read the empty-name hash there. `None` for 0 and the empty-name hash (an unnamed object).
 pub fn interaction_identifier(image: &[u8]) -> Option<u32> {
-    let hash = body_bits(image, 330, 32)? as u32;
+    let hash = body_bits(image, 303, 32)? as u32;
     (!matches!(hash, 0 | 0x811C_9DC5)).then_some(hash)
 }
 
@@ -3515,7 +3517,7 @@ mod tests {
             let mut body = vec![0u8; 64];
             for i in 0..32 {
                 if (hash >> (31 - i)) & 1 == 1 {
-                    body[(330 + i) / 8] |= 0x80 >> ((330 + i) % 8);
+                    body[(303 + i) / 8] |= 0x80 >> ((303 + i) % 8);
                 }
             }
             ClientMessage::Other { user_defined_type: 18, struct_image: incident_image(INCIDENT_INTERACTION, &body) }

@@ -224,8 +224,13 @@ impl InteractionLinks {
         m.insert(mission_host, Arc::downgrade(queue));
     }
 
-    pub fn remove(&self, mission_host: u64) {
-        self.queues.lock().unwrap_or_else(|e| e.into_inner()).remove(&mission_host);
+    /// Remove `mission_host`'s entry only if it is still `queue`'s (a newer bridge registered
+    /// under the same id keeps its own).
+    pub fn remove_if_same(&self, mission_host: u64, queue: &InteractionQueue) {
+        let mut m = self.queues.lock().unwrap_or_else(|e| e.into_inner());
+        if m.get(&mission_host).is_some_and(|w| std::ptr::eq(w.as_ptr(), Arc::as_ptr(queue))) {
+            m.remove(&mission_host);
+        }
     }
 
     /// Queue `hash` for `mission_host`'s bridge; false if no live bridge is registered under it.
@@ -253,8 +258,8 @@ pub fn interaction_links() -> &'static InteractionLinks {
 
 impl Drop for ScriptBridge {
     fn drop(&mut self) {
-        if let Some((id, _)) = self.interaction_link.take() {
-            interaction_links().remove(id);
+        if let Some((id, q)) = self.interaction_link.take() {
+            interaction_links().remove_if_same(id, &q);
         }
     }
 }
@@ -2210,8 +2215,8 @@ impl ScriptBridge {
         }
         if self.interaction_link.as_ref().is_none_or(|(id, _)| *id != self.host_id) {
             let queue = InteractionQueue::default();
-            if let Some((old, _)) = self.interaction_link.take() {
-                interaction_links().remove(old);
+            if let Some((old, q)) = self.interaction_link.take() {
+                interaction_links().remove_if_same(old, &q);
             }
             interaction_links().insert(self.host_id, &queue);
             self.interaction_link = Some((self.host_id, queue));
@@ -5670,13 +5675,13 @@ mod tests {
 
     // ── D1_AH_SCRIPTS_INTERACTABLE: the client's interaction incident (3569) ──
 
-    /// A synthetic udt 18 message of incident 3569 whose body has `id` at bit 330 (MSB first), the
-    /// place the identifier was measured at. The value is the test's own.
+    /// A synthetic udt 18 message of incident 3569 whose body has `id` at body bit 303 (MSB first;
+    /// message bit 330 less the 27-bit wire header). The value is the test's own.
     fn interaction(id: u32) -> ClientMessage {
         let mut body = vec![0u8; 64];
         for i in 0..32 {
             if (id >> (31 - i)) & 1 == 1 {
-                body[(330 + i) / 8] |= 0x80 >> ((330 + i) % 8);
+                body[(303 + i) / 8] |= 0x80 >> ((303 + i) % 8);
             }
         }
         ClientMessage::Other { user_defined_type: 18, struct_image: crate::state::incident_image(3569, &body) }
@@ -5690,7 +5695,7 @@ mod tests {
     }
 
     #[test]
-    fn the_identifier_is_read_at_message_bit_330() {
+    fn the_identifier_is_read_at_body_bit_303_like_a_triggers_name() {
         let ClientMessage::Other { struct_image, .. } = interaction(0x1357_9BDF) else { unreachable!() };
         assert_eq!(crate::state::interaction_identifier(&struct_image), Some(0x1357_9BDF));
         let ClientMessage::Other { struct_image, .. } = interaction(0x811C_9DC5) else { unreachable!() };
@@ -5698,6 +5703,17 @@ mod tests {
         let ClientMessage::Other { struct_image, .. } = interaction(0) else { unreachable!() };
         assert_eq!(crate::state::interaction_identifier(&struct_image), None);
         assert_eq!(crate::state::interaction_identifier(&[0u8; 0xD8 + 4]), None, "a body too short");
+        // 3403's trigger name and 3569's identifier are read at the same body bit, one path.
+        let ClientMessage::Other { struct_image, .. } = incident(3403, Some((0x1357_9BDF, 0x1D, 34))) else { unreachable!() };
+        assert_eq!(crate::state::interaction_identifier(&struct_image), Some(0x1357_9BDF));
+        assert_eq!(crate::state::trigger_report(&struct_image).map(|n| n.0), Some(0x1357_9BDF));
+        // A value at the old (raw-message) offset 330 is not the identifier.
+        let mut body = vec![0u8; 64];
+        for i in 0..32 {
+            body[(330 + i) / 8] |= 0x80 >> ((330 + i) % 8);
+        }
+        let img = crate::state::incident_image(3569, &body);
+        assert_ne!(crate::state::interaction_identifier(&img), Some(u32::MAX));
     }
 
     #[test]
@@ -5723,6 +5739,23 @@ mod tests {
             b.on_client_message(&interaction(id), 165, HOST, t);
             assert_eq!(interactions(&shared), want, "knob {on}, identifier {id:#x}");
         }
+    }
+
+    /// A bridge that stops does not take a newer bridge's registration under the same id with it.
+    #[test]
+    fn a_stopped_bridge_does_not_remove_a_newer_ones_link() {
+        const MISSION: u64 = 0xD1A0_0000_0000_7E60;
+        let (shared_a, shared_b) = (Arc::new(Mutex::new(Shared::default())), Arc::new(Mutex::new(Shared::default())));
+        let (mut a, mut b) = (bridge(&shared_a, false), bridge(&shared_b, false));
+        a.set_interactable(true);
+        b.set_interactable(true);
+        let t = Instant::now();
+        a.on_client_message(&join(1), 165, MISSION, t);
+        b.on_client_message(&join(2), 165, MISSION, t);
+        drop(a);
+        assert!(interaction_links().deliver(MISSION, 5), "the newer bridge is still linked");
+        drop(b);
+        assert!(!interaction_links().deliver(MISSION, 5));
     }
 
     /// A public instance's delivery through the process-wide link: the mission bridge registers
