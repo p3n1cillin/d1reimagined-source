@@ -49,11 +49,11 @@ lab run, as the cited note says.
 | The hangar fight | **Needs a person** | Started at the hangar phase (`D1_AH_SCRIPTS_START_PHASE=164:5`, lab), the Guardian spawns there with the Fallen placed (run gh62); the scripted player cannot reach them (gh65). |
 | A Guardian Rises' own completion, outro, rewards screen, CONTINUE | Verified from the real scripts, started at the last phase | Run gh64 (`164:6`): the mission's own completion, the outro, ACTIVITY REWARDS, CONTINUE (#389). The rewards screen lists the player with their kills and deaths (run sb2, #390). |
 | The reveal (165), then Tower North | Verified from the real scripts | Run gh64, after CONTINUE; earlier through the lab's step schedule (rev11, [reveal notes](../notes/ps4-56578-reveal-tower-2026-11-08.md)). |
-| Restoration (166) | Partial | Loads; the Guardian spawns in the Steppes; the mission host runs phase 0 of the real scripts (run rst3, lab remap 164:166). No objective appears yet. Completion not seen. |
+| Restoration (166) | Partial | Loads with the live mission host's list, the Guardian spawns in the Steppes, and the first objective RECON THE CRASH SITE shows with the Ghost's line (runs rst8, rst11, rst13; lab remap 164:166; #392, #394, #395, on in the full-game profile). Using the flare (the objective's completion) and the rest of the mission are not seen: the scripted player cannot reach it, and the public areas' hosts run no script yet. |
 
 The break: no single run has played A Guardian Rises from its start through its completion. Each
 half is seen with the real scripts (to the hangar; from the hangar or the last phase onwards), joined by
-the lab's start-phase knob. The hangar fight needs a person, and Restoration stops after its spawn.
+the lab's start-phase knob. The hangar fight needs a person, and Restoration stops at its first objective.
 
 PS3: local sign-in, revival, waypoints, rifle grant and Dreg attacks have bounded native evidence. Still
 open: activity disconnects, objective handover, ammo, kills, completion, and the renderer (flicker,
