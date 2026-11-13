@@ -28,6 +28,7 @@ _unit_spec.loader.exec_module(_unit_tracking)
 src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'd1-winguest.py')).read()
 wg = {'__name__': 'lib'}
 exec(compile(src, 'd1-winguest.py', 'exec'), wg)
+POST = False    # --post: keys are posted to the emulator window (works with the desktop locked)
 PAD = os.environ.get('D1_PAD')   # else D1_TOOLS/d1-pad.ps1 (d1paths.py), resolved on first use
 
 
@@ -39,7 +40,7 @@ def pad(*keys, gap=150):
         try:
             sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
             import d1_keys
-            d1_keys.press(*keys, gap=gap)
+            d1_keys.press(*keys, gap=gap, post=True if POST else None)
             return
         except Exception as e:                  # no window, odd key name: the script reports those
             print(f'pad in process failed ({e}); using d1-pad.ps1', flush=True)
@@ -47,7 +48,7 @@ def pad(*keys, gap=150):
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         import d1paths
         PAD = str(d1paths.tools() / 'd1-pad.ps1')
-    subprocess.run(['powershell', '-NoProfile', '-File', PAD, '-Keys', ','.join(keys), '-GapMilliseconds', str(gap)],
+    subprocess.run(['powershell', '-NoProfile', '-File', PAD, '-Keys', ','.join(keys), '-GapMilliseconds', str(gap)] + (['-Post'] if POST else []),
                    capture_output=True)
 
 
@@ -296,12 +297,19 @@ def main():
     ap.add_argument('--keepalive', type=float, help='only keep the Guardian active for this many seconds')
     ap.add_argument('--hurt-stop', type=float,
                     help='stop ("hurt: ...") when the screen shows health below this fraction, so the caller fights')
+    ap.add_argument('--post', action='store_true',
+                    help='post the keys to the emulator window (no focus, no real input), so the walk works with '
+                         'the desktop locked; cannot be combined with --hurt-stop, which reads the screen')
     ap.add_argument('--retrack', action='store_true', help='only drop stale copies from --tracked (after a death) and rewrite it')
     ap.add_argument('--respawns', default='',
                     help='with --retrack: "x,y,z;x,y,z" respawn points to scan when the retrack keeps too few copies')
     ap.add_argument('--min-copies', type=int, default=30,
                     help='with --respawns: a retrack keeping fewer copies than this is treated as stale')
     a = ap.parse_args()
+    if a.post and a.hurt_stop:
+        ap.error('--post cannot be combined with --hurt-stop: a locked desktop gives lock-screen pixels')
+    global POST
+    POST = a.post
     if a.native_unit and (a.scan or a.retrack):
         ap.error('--native-unit cannot be combined with scanning or retracking')
     if a.turn_rate is not None and (not math.isfinite(a.turn_rate) or a.turn_rate <= 0):
