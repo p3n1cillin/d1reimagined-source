@@ -506,6 +506,8 @@ pub struct ActivityInstance {
     trigger_reports: Vec<((u32, u8, u16), bool)>,
     /// A dropped interaction (no mission bridge for the join's mission host) was logged.
     interaction_drop_logged: bool,
+    /// The mission's routed rows could not be sent (logged once; then debug).
+    routed_warn_logged: bool,
     /// `D1_AH_SCRIPTS_INTERACTABLE=1` (read once; tests set it with [`Self::set_interactable`]).
     interactable: bool,
     /// Connection/world-local observations. Decoder errors and backlog hold kill gates.
@@ -803,6 +805,7 @@ impl ActivityInstance {
             slice_records_seen: None,
             trigger_reports: Vec::new(),
             interaction_drop_logged: false,
+            routed_warn_logged: false,
             interactable: crate::script_bridge::interactable_knob(),
             squad_live: crate::sense::SquadObservations::default(),
             squad_hold_logged: None,
@@ -1332,7 +1335,11 @@ impl ActivityInstance {
                 Some(AhPush::new(self.ah_id, AhMessage::SensorAuthUpdate { payload }))
             }
             Err(e) => {
-                tracing::warn!("public instance {:#x}: the mission's rows not sent: {e}", self.ah_id);
+                if std::mem::replace(&mut self.routed_warn_logged, true) {
+                    tracing::debug!("public instance {:#x}: the mission's rows not sent: {e}", self.ah_id);
+                } else {
+                    tracing::warn!("public instance {:#x}: the mission's rows not sent: {e} (retried each poll; logged once)", self.ah_id);
+                }
                 public.requeue_routed(&clients);
                 None
             }
@@ -3616,11 +3623,9 @@ mod tests {
         const GROUP: u32 = 0xD7F6_8DA0;
         let mut text = String::new();
         for n in 0..16 {
-            text.push_str(&format!("0xeaaf16e2 0xc {n} 1 0
-"));
+            text.push_str(&format!("0xeaaf16e2 0xc {n} 1 0\n"));
         }
-        text.push_str("0xd7f68da0 0x3 1 1 0
-");
+        text.push_str("0xd7f68da0 0x3 1 1 0\n");
         let key = InstanceKey::Bubble { destination: crate::open_world::Destination::Earth, region: 56 };
         let list = PublicRegionList::parse(key, "t", &text);
         let codec: Arc<dyn crate::codec::AhWireCodec> = Arc::new(crate::codec::SchemaCodec);
