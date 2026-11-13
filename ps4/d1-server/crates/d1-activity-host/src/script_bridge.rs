@@ -1460,6 +1460,8 @@ struct Run {
     /// F52: device armings due (when, object), and the props already armed.
     device_arming: Vec<(Instant, RowKey)>,
     devices_armed: std::collections::HashSet<RowKey>,
+    /// `D1_AH_SCRIPTS_INTERACTABLE`: the activity flags the scripts hold raised, in raise order.
+    activity_flags: Vec<u32>,
     unsupported: std::collections::HashSet<String>,
     /// The lifetime changed and no frame has carried it yet.
     lifetime_unsent: bool,
@@ -1669,6 +1671,11 @@ impl ScriptBridge {
     /// Lab/tests: replaces the knob (`D1_AH_SCRIPTS_SCOREBOARD`).
     pub fn set_scoreboard(&mut self, on: bool) {
         self.scoreboard = on;
+    }
+
+    /// Lab/tests: replaces the knob (`D1_AH_SCRIPTS_INTERACTABLE`).
+    pub fn set_interactable(&mut self, on: bool) {
+        self.encoders.set_interactable(on);
     }
 
     /// The activity-framework events since the last call (stream O2): `phase` →
@@ -2064,6 +2071,7 @@ impl ScriptBridge {
             score_sent_at: None,
             device_arming: Vec::new(),
             devices_armed: Default::default(),
+            activity_flags: Vec::new(),
             unsupported: Default::default(),
             lifetime_unsent: false,
             start_ramp: 0,
@@ -2706,6 +2714,40 @@ impl ScriptBridge {
                 tracing::info!(
                     "script bridge: public event {event_id:?} of bundle {bundle:#010x}: {state}{}",
                     reason.map(|r| format!(" ({r})")).unwrap_or_default()
+                );
+            }
+            SidecarMsg::ActivityFlag { hash, active } if self.encoders.interactable() => {
+                // The flag is a list of raw u32 name hashes in the player bundle (+0x4C count,
+                // +0x50 hashes, capacity 8). In one live capture the host set it in every slot row at
+                // once, around the objective's start, and cleared it at its completion: here it follows
+                // the scripts' own order, with no delay added.
+                if active {
+                    if !run.activity_flags.contains(&hash) {
+                        run.activity_flags.push(hash);
+                    }
+                } else {
+                    run.activity_flags.retain(|h| *h != hash);
+                }
+                use crate::row_encoders as re;
+                let group = run.activity.lifetime.group;
+                for index in re::MISSION_PLAYER_SUB..re::MISSION_PLAYER_SUB + 16 {
+                    let key = RowKey { group, kind: re::KIND_PLAYER_BUNDLE, index };
+                    let Some(mut row) = self.rows.get(&key).cloned() else { continue };
+                    let Some((tag, image)) = row.a.as_mut() else { continue };
+                    if *tag != re::TAG_PLAYER_BUNDLE {
+                        continue;
+                    }
+                    if let Some(n) = re::set_player_flags(image, &run.activity_flags) {
+                        if n < run.activity_flags.len() {
+                            tracing::warn!("script bridge: {} activity flags held; the player rows hold {n}", run.activity_flags.len());
+                        }
+                        self.rows.set(key, row);
+                    }
+                }
+                tracing::info!(
+                    "⭐ script bridge: activity flag {hash:#010x} {}: {} in the player rows (D1_AH_SCRIPTS_INTERACTABLE)",
+                    if active { "set" } else { "cleared" },
+                    run.activity_flags.len(),
                 );
             }
             SidecarMsg::ActivityFlag { hash, active } => {
@@ -4038,6 +4080,144 @@ mod tests {
         b.on_client_message(&join(8), 165, HOST, t);
         b.on_client_message(&chain(&[734, 1825]), 165, HOST, t);
         assert_eq!(b.run.as_ref().map(|r| (r.score_kills, r.score_deaths)), Some((0, 0)));
+    }
+
+    // ── D1_AH_SCRIPTS_INTERACTABLE: the activity flag and the placement ──
+
+    /// Synthetic values: a placement bundle, and a flag hash that is the test's own.
+    const PLACED: u32 = 0xD7F6_8DA0;
+    const TEST_FLAG: u32 = 0x1234_ABCD;
+
+    fn interactable_bridge(shared: &Arc<Mutex<Shared>>, on: bool) -> ScriptBridge {
+        let mut list = String::from("@authority 13\n@phase 0\n0x2fe7dbe6 0x6 0 1 0\n0x4786c0e0 0xf 0 1 0\n");
+        for i in 5..21 {
+            list.push_str(&format!("0x4786c0e0 0xc {i} 1 0\n"));
+        }
+        list.push_str("0xd7f68da0 0x4 52 1 0\n0xd7f68da0 0x21 71 1 0\n");
+        let activity = ScriptedActivity::parse_with(GAMEPLAY_LINE, &base(), &|_| Ok(list.clone()), None).unwrap();
+        let mut b = bridge_delayed(shared, false, false, activity, Duration::from_secs(3600));
+        b.set_interactable(on);
+        b
+    }
+
+    /// The A images of the player slot rows now in the table: (index, image).
+    fn player_rows(b: &ScriptBridge) -> Vec<(i16, Vec<u8>)> {
+        (5..21)
+            .filter_map(|index| {
+                let r = b.rows().get(&RowKey { group: GROUP, kind: 0xC, index })?;
+                r.a.as_ref().map(|(_, i)| (index, i.clone()))
+            })
+            .collect()
+    }
+
+    fn flag(hash: u32, active: bool) -> SidecarMsg {
+        SidecarMsg::ActivityFlag { hash, active }
+    }
+
+    #[test]
+    fn an_activity_flag_is_set_and_cleared_in_every_player_row() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = interactable_bridge(&shared, true);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(7), 165, HOST, t);
+        // The bridge serves one image per slot here: the joiner's, and the others' as the test gives them.
+        for index in 6..21 {
+            let key = RowKey { group: GROUP, kind: 0xC, index };
+            let mut row = b.rows().get(&key).cloned().expect("listed");
+            row.a = Some((crate::row_encoders::TAG_PLAYER_BUNDLE, crate::row_encoders::player_bundle_image([index as u8; 8], true)));
+            b.rows.set(key, row);
+        }
+        run_for(&mut b, &mut t, 2.0, &mut wire);
+        assert_eq!(player_rows(&b).len(), 16, "all 16 slot rows hold an image");
+        let list = |b: &ScriptBridge| player_rows(b).into_iter().map(|(_, i)| (u32_at(&i, 0x4C), u32_at(&i, 0x50))).collect::<Vec<_>>();
+        assert!(list(&b).iter().all(|l| *l == (0, 0)));
+
+        b.apply(flag(TEST_FLAG, true), t);
+        assert!(list(&b).iter().all(|l| *l == (1, TEST_FLAG)), "set: count 1 with the hash at +0x50, in every row");
+        // A delta carries it: one frame holds the 16 rows.
+        let before = shared.lock().unwrap().frames.len();
+        run_for(&mut b, &mut t, 1.0, &mut wire);
+        let sent: Vec<usize> = shared.lock().unwrap().frames[before..]
+            .iter()
+            .map(|p| p.entries.iter().filter(|(k, r)| k.kind == 0xC && r.a.as_ref().is_some_and(|(_, i)| u32_at(i, 0x4C) == 1)).count())
+            .collect();
+        assert_eq!(sent.iter().sum::<usize>(), 16, "sent as a delta, once per row: {sent:?}");
+        // The same flag again changes nothing; a second flag appends.
+        b.apply(flag(TEST_FLAG, true), t);
+        assert!(list(&b).iter().all(|l| l.0 == 1));
+        b.apply(flag(7, true), t);
+        assert!(player_rows(&b).iter().all(|(_, i)| (u32_at(i, 0x4C), u32_at(i, 0x54)) == (2, 7)));
+        b.apply(flag(TEST_FLAG, false), t);
+        assert!(player_rows(&b).iter().all(|(_, i)| (u32_at(i, 0x4C), u32_at(i, 0x50), u32_at(i, 0x54)) == (1, 7, 0)), "removed and compacted");
+        b.apply(flag(7, false), t);
+        assert!(list(&b).iter().all(|l| *l == (0, 0)), "cleared: count 0");
+        // Nothing but the list changed.
+        let want = crate::row_encoders::player_bundle_image([6; 8], true);
+        assert_eq!(player_rows(&b)[1].1, want);
+    }
+
+    #[test]
+    fn the_flag_knob_off_leaves_the_player_rows_alone() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = interactable_bridge(&shared, false);
+        let t = Instant::now();
+        b.on_client_message(&join(7), 165, HOST, t);
+        let before = player_rows(&b);
+        b.apply(flag(TEST_FLAG, true), t);
+        assert_eq!(player_rows(&b), before, "off: the warning only, no change");
+        assert!(b.run.as_ref().is_some_and(|r| r.activity_flags.is_empty()));
+    }
+
+    fn placement_change() -> ItemChange {
+        ItemChange {
+            item: ItemRef { bundle: PLACED, type_id: 4, type_index: 52 },
+            kind: "object".into(),
+            state: serde_json::json!({"incarnation": 1, "present": true, "interactable": {
+                "enabled": false,
+                "filter": {"bundle": PLACED, "typeId": 33, "typeIndex": 71},
+                "used": {"stamp": 0, "value": false}}}),
+            initial: false,
+            wire: None,
+        }
+    }
+
+    fn filter_change() -> ItemChange {
+        ItemChange {
+            item: ItemRef { bundle: PLACED, type_id: 33, type_index: 71 },
+            kind: "objectFilter".into(),
+            state: serde_json::json!({"predicates": [{"kind": "playersWithActivityFlag", "flagNameHash": TEST_FLAG}]}),
+            initial: false,
+            wire: None,
+        }
+    }
+
+    #[test]
+    fn a_placement_and_its_filter_reach_the_table_with_the_knob_and_not_without() {
+        for on in [true, false] {
+            let shared = Arc::new(Mutex::new(Shared::default()));
+            let mut b = interactable_bridge(&shared, on);
+            let t = Instant::now();
+            b.on_client_message(&join(7), 165, HOST, t);
+            // The sidecar's order: the object created, then the filter filled, then enabled for it.
+            let mut created = placement_change();
+            created.state = serde_json::json!({"incarnation": 1, "present": true});
+            b.apply(SidecarMsg::Rows { changes: vec![created, filter_change(), placement_change()] }, t);
+            let group = b.run.as_ref().expect("run").activity.group_of(PLACED);
+            let object = b.rows().get(&RowKey { group, kind: 4, index: 52 }).and_then(|r| r.a.clone());
+            let filter = b.rows().get(&RowKey { group, kind: 33, index: 71 }).and_then(|r| r.a.clone());
+            if on {
+                let (tag, image) = object.expect("the object has an image");
+                assert_eq!(tag, crate::row_encoders::TAG_OBJECT);
+                assert_eq!((u32_at(&image, 0x20), u32_at(&image, 0x30), image[0x40] as i8), (2, 0x8080_2140, 1), "the later push kept the command: never count 0");
+                assert_eq!((u32_at(&image, 0x44), image[0x48], image[0x4A]), (group, 0x21, 71));
+                let (tag, image) = filter.expect("the filter has an image");
+                assert_eq!((tag, u32_at(&image, 0), u32_at(&image, 0x10), u32_at(&image, 0x24)), (crate::row_encoders::TAG_OBJECT_FILTER, 1, 0x8080_0952, TEST_FLAG));
+            } else {
+                let (_, image) = object.expect("the object is still created");
+                assert_eq!(u32_at(&image, 0x20), 0, "off: no command, as before");
+                assert!(filter.is_none(), "off: the filter row keeps its served (empty) value");
+            }
+        }
     }
 
     #[test]
