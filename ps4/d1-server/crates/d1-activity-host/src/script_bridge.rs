@@ -204,6 +204,15 @@ pub enum HostMsg {
 /// Interaction hashes waiting for one mission bridge (see [`interaction_links`]).
 pub type InteractionQueue = Arc<Mutex<VecDeque<u32>>>;
 
+/// Players a public instance saw ready (`D1_AH_SCRIPTS_READY_ON_SENSE`), waiting for one mission
+/// bridge: the player key and the id of the public instance that saw it.
+pub type ReadyQueue = Arc<Mutex<VecDeque<(String, u64)>>>;
+
+/// `D1_AH_SCRIPTS_READY_ON_SENSE` (only `1` is on).
+pub fn ready_on_sense_knob() -> bool {
+    std::env::var("D1_AH_SCRIPTS_READY_ON_SENSE").is_ok_and(|v| v.trim() == "1")
+}
+
 /// `D1_AH_SCRIPTS_INTERACTABLE` (only `1` is on), read as the row encoders read it.
 pub fn interactable_knob() -> bool {
     std::env::var("D1_AH_SCRIPTS_INTERACTABLE").is_ok_and(|v| v.trim() == "1")
@@ -215,6 +224,8 @@ pub fn interactable_knob() -> bool {
 #[derive(Default)]
 pub struct InteractionLinks {
     queues: Mutex<HashMap<u64, std::sync::Weak<Mutex<VecDeque<u32>>>>>,
+    /// `D1_AH_SCRIPTS_READY_ON_SENSE`: the same link for "this player is ready".
+    ready: Mutex<HashMap<u64, std::sync::Weak<Mutex<VecDeque<(String, u64)>>>>>,
 }
 
 impl InteractionLinks {
@@ -230,6 +241,36 @@ impl InteractionLinks {
         let mut m = self.queues.lock().unwrap_or_else(|e| e.into_inner());
         if m.get(&mission_host).is_some_and(|w| std::ptr::eq(w.as_ptr(), Arc::as_ptr(queue))) {
             m.remove(&mission_host);
+        }
+    }
+
+    pub fn insert_ready(&self, mission_host: u64, queue: &ReadyQueue) {
+        let mut m = self.ready.lock().unwrap_or_else(|e| e.into_inner());
+        m.retain(|_, w| w.strong_count() > 0);
+        m.insert(mission_host, Arc::downgrade(queue));
+    }
+
+    /// As [`Self::remove_if_same`], for the ready queue.
+    pub fn remove_ready_if_same(&self, mission_host: u64, queue: &ReadyQueue) {
+        let mut m = self.ready.lock().unwrap_or_else(|e| e.into_inner());
+        if m.get(&mission_host).is_some_and(|w| std::ptr::eq(w.as_ptr(), Arc::as_ptr(queue))) {
+            m.remove(&mission_host);
+        }
+    }
+
+    /// Tell `mission_host`'s bridge that player `key` is ready, as seen by public instance `via`;
+    /// false if no live bridge is registered under it.
+    pub fn deliver_ready(&self, mission_host: u64, key: &str, via: u64) -> bool {
+        let mut m = self.ready.lock().unwrap_or_else(|e| e.into_inner());
+        match m.get(&mission_host).and_then(std::sync::Weak::upgrade) {
+            Some(q) => {
+                q.lock().unwrap_or_else(|e| e.into_inner()).push_back((key.to_string(), via));
+                true
+            }
+            None => {
+                m.remove(&mission_host);
+                false
+            }
         }
     }
 
@@ -375,6 +416,9 @@ pub fn public_row_links() -> &'static PublicRowLinks {
 
 impl Drop for ScriptBridge {
     fn drop(&mut self) {
+        if let Some((id, q)) = self.ready_link.take() {
+            interaction_links().remove_ready_if_same(id, &q);
+        }
         if let Some((id, q)) = self.interaction_link.take() {
             public_row_links().forget_if(id, Arc::as_ptr(&q) as usize);
             interaction_links().remove_if_same(id, &q);
@@ -1682,6 +1726,15 @@ struct Run {
     sensed_at: Option<Instant>,
     /// How many times the unanswered first full list went out again.
     list_retries: u32,
+    /// `D1_AH_SCRIPTS_READY_ON_SENSE`: each player's player-row tracker and when its first sense came.
+    row_trackers: HashMap<String, PlayerRowTracker>,
+    row_first_at: HashMap<String, Instant>,
+    /// When the first player-row sense of any player came (the scripts start from it).
+    row_sense_at: Option<Instant>,
+    /// Players ready by a player-row sense or the fallback timer.
+    ready_keys: Vec<String>,
+    /// The scripts started on a player-row sense, so `ready` follows `ready_keys`.
+    ready_by_sense: bool,
     /// The start is waiting for the cushion (logged once).
     start_held_logged: bool,
     /// Where the client is, or is going: its own last udt 21 report, else the last region the
@@ -1758,6 +1811,11 @@ pub struct ScriptBridge {
     /// `D1_AH_SCRIPTS_INTERACTABLE`: this bridge's place in the process-wide interaction link
     /// (the host id it is registered under, and its queue of hashes public instances deliver).
     interaction_link: Option<(u64, InteractionQueue)>,
+    /// `D1_AH_SCRIPTS_READY_ON_SENSE`: the scripts start at the client's first player-row sense,
+    /// and a player is ready at its second, changed one.
+    ready_on_sense: bool,
+    /// This bridge's registration for public instances' "player ready" (see [`interaction_links`]).
+    ready_link: Option<(u64, ReadyQueue)>,
     pub frames_sent: u64,
     /// Stream O2: the scripts' phases, wipes and completion as activity-framework events, for the
     /// instance's `activity_driver::RunDriver` ([`Self::take_framework_events`]).
@@ -1810,6 +1868,74 @@ pub fn squad_sense(frame: &d1_oracle::sensor_sense::SenseFrame) -> Vec<SquadSens
         .collect()
 }
 
+/// One udt 6 entry for a player row (kind `0xC`): its name and the decoder's image of its B body.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PlayerRowSense {
+    pub group: u32,
+    pub index: i16,
+    pub image: Vec<u8>,
+}
+
+/// The kind-`0xC` (player row) entries of a decoded udt 6 frame. The frame's initial flag is not
+/// part of an entry and is not kept.
+pub fn player_row_senses(frame: &d1_oracle::sensor_sense::SenseFrame) -> Vec<PlayerRowSense> {
+    frame
+        .entries
+        .iter()
+        .filter(|e| e.name.kind == crate::row_encoders::KIND_PLAYER_BUNDLE && e.name.index >= 0)
+        .map(|e| PlayerRowSense { group: e.name.group, index: e.name.index, image: e.image.clone() })
+        .collect()
+}
+
+/// What one frame was, to a [`PlayerRowTracker`].
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RowSense {
+    /// No entry of the client's player row in the frame (or it was already ready).
+    None,
+    /// The first sense of the row.
+    First,
+    /// A later sense whose row image equals the first's.
+    Same,
+    /// The first later sense whose row image differs from the first's: the client has loaded.
+    Changed,
+}
+
+/// Follows one client's player row across its udt 6 senses (`D1_AH_SCRIPTS_READY_ON_SENSE`). The
+/// row is the first kind-`0xC` entry seen (in `group`, when one is given); the senses after it are
+/// compared by the decoder's image of that entry (the whole row body; the frame's initial flag is
+/// not in it), and the first difference is the "changed" sense.
+#[derive(Debug, Default)]
+pub struct PlayerRowTracker {
+    first: Option<PlayerRowSense>,
+    changed: bool,
+}
+
+impl PlayerRowTracker {
+    pub fn observe(&mut self, rows: &[PlayerRowSense], group: Option<u32>) -> RowSense {
+        if self.changed {
+            return RowSense::None;
+        }
+        let mut rows = rows.iter().filter(|r| group.is_none_or(|g| r.group == g));
+        match &self.first {
+            None => match rows.next() {
+                Some(r) => {
+                    self.first = Some(r.clone());
+                    RowSense::First
+                }
+                None => RowSense::None,
+            },
+            Some(first) => match rows.find(|r| r.group == first.group && r.index == first.index) {
+                Some(r) if r.image != first.image => {
+                    self.changed = true;
+                    RowSense::Changed
+                }
+                Some(_) => RowSense::Same,
+                None => RowSense::None,
+            },
+        }
+    }
+}
+
 impl ScriptBridge {
     /// A bridge whose sidecars are `config.sidecar` processes.
     pub fn new(config: Arc<ScriptConfig>) -> Self {
@@ -1849,6 +1975,8 @@ impl ScriptBridge {
             world_bubbles: None,
             host_id: 0,
             interaction_link: None,
+            ready_on_sense: ready_on_sense_knob(),
+            ready_link: None,
             frames_sent: 0,
             framework_events: Vec::new(),
             scoreboard: scoreboard_knob(),
@@ -1858,6 +1986,118 @@ impl ScriptBridge {
     /// Lab/tests: replaces the knob (`D1_AH_SCRIPTS_SCOREBOARD`).
     pub fn set_scoreboard(&mut self, on: bool) {
         self.scoreboard = on;
+    }
+
+    /// Lab/tests: replaces the knob (`D1_AH_SCRIPTS_READY_ON_SENSE`).
+    pub fn set_ready_on_sense(&mut self, on: bool) {
+        self.ready_on_sense = on;
+    }
+
+    /// `D1_AH_SCRIPTS_READY_ON_SENSE`: a decoded udt 6 frame from player `key`'s connection to
+    /// this (mission) host. Its first sense of its own player row (kind `0xC` in the activity's
+    /// lifetime group) starts the scripts, not ready; its second, whose row image differs from the
+    /// first's, makes the player ready.
+    pub fn player_row_sense(&mut self, key: &str, rows: &[PlayerRowSense], now: Instant) {
+        if !self.ready_on_sense {
+            return;
+        }
+        let Some(run) = self.run.as_mut() else { return };
+        let group = run.activity.lifetime.group;
+        match run.row_trackers.entry(key.to_string()).or_default().observe(rows, Some(group)) {
+            RowSense::First => {
+                run.row_first_at.entry(key.to_string()).or_insert(now);
+                if run.row_sense_at.is_none() {
+                    run.row_sense_at = Some(now);
+                    tracing::info!("⭐ script bridge: the client's player-row sense #1 (scripts start; not ready)");
+                } else {
+                    tracing::info!("script bridge: player {key}: the client's player-row sense #1");
+                }
+            }
+            RowSense::Changed => self.player_ready(key, None),
+            RowSense::Same | RowSense::None => {}
+        }
+    }
+
+    /// Player `key` is ready (the second sense, here or on public instance `via`); the second
+    /// report of a player is a no-op.
+    fn player_ready(&mut self, key: &str, via: Option<u64>) {
+        let Some(run) = self.run.as_mut() else { return };
+        if run.ready_keys.iter().any(|k| k == key) {
+            return;
+        }
+        run.ready_keys.push(key.to_string());
+        let started = run.started && run.ready_by_sense;
+        tracing::info!(
+            "⭐ script bridge: the client's player-row sense #2 changed: ready (D1_AH_SCRIPTS_READY_ON_SENSE{})",
+            via.map_or(String::new(), |v| format!(", via public instance {v:#x}"))
+        );
+        if started {
+            self.send_players();
+        }
+    }
+
+    /// The `players` message with each joined player's readiness.
+    fn send_players(&mut self) {
+        let Some(run) = self.run.as_ref() else { return };
+        let players = self
+            .players
+            .iter()
+            .enumerate()
+            .map(|(slot, c)| {
+                let key = player_key(c);
+                let ready = if run.ready_by_sense { run.ready_keys.contains(&key) } else { run.sensed_at.is_some() };
+                PlayerInfo { key, slot: slot as u32, ready }
+            })
+            .collect();
+        self.send(HostMsg::Players { players });
+    }
+
+    /// Register this bridge for public instances' "player ready" and pass on what they delivered.
+    fn link_ready(&mut self) {
+        if !self.ready_on_sense || self.host_id == 0 {
+            return;
+        }
+        if self.ready_link.as_ref().is_none_or(|(id, _)| *id != self.host_id) {
+            let queue = ReadyQueue::default();
+            if let Some((old, q)) = self.ready_link.take() {
+                interaction_links().remove_ready_if_same(old, &q);
+            }
+            interaction_links().insert_ready(self.host_id, &queue);
+            self.ready_link = Some((self.host_id, queue));
+        }
+        let ready: Vec<(String, u64)> = match self.ready_link.as_ref() {
+            Some((_, q)) => q.lock().unwrap_or_else(|e| e.into_inner()).drain(..).collect(),
+            None => return,
+        };
+        for (key, via) in ready {
+            self.player_ready(&key, Some(via));
+        }
+    }
+
+    /// The safety net: a player with no second sense one cushion after its first (or, with none of
+    /// its own, after the first of any player) is ready anyway.
+    fn ready_fallback(&mut self, now: Instant) {
+        let delay = self.config.start_delay;
+        let Some(run) = self.run.as_mut() else { return };
+        let Some(any_at) = run.row_sense_at.filter(|_| run.started && run.ready_by_sense) else { return };
+        let late: Vec<String> = self
+            .players
+            .iter()
+            .map(player_key)
+            .filter(|k| !run.ready_keys.contains(k))
+            .filter(|k| now >= run.row_first_at.get(k).copied().unwrap_or(any_at) + delay)
+            .collect();
+        if late.is_empty() {
+            return;
+        }
+        for k in late {
+            tracing::warn!(
+                "script bridge: no ready sense from the client after {:.0} s; ready by the stand-in timer (D1_AH_SCRIPTS_READY_ON_SENSE)",
+                delay.as_secs_f64()
+            );
+            run.ready_keys.push(k);
+        }
+        self.send_players();
     }
 
     /// Lab/tests: replaces the knob (`D1_AH_SCRIPTS_INTERACTABLE`).
@@ -2033,6 +2273,7 @@ impl ScriptBridge {
     pub fn on_client_message(&mut self, msg: &ClientMessage, activity_index: u16, host_id: u64, now: Instant) {
         self.host_id = host_id;
         self.link_interactions();
+        self.link_ready();
         match msg {
             ClientMessage::JoinRequest { struct_image } => {
                 use d1_oracle::activity_host::replicate_membership::{IDENTITY_SIZE, JOIN_REQUEST_IDENTITY};
@@ -2278,6 +2519,11 @@ impl ScriptBridge {
             last_full_at: None,
             sensed_at: None,
             list_retries: 0,
+            row_trackers: HashMap::new(),
+            row_first_at: HashMap::new(),
+            row_sense_at: None,
+            ready_keys: Vec::new(),
+            ready_by_sense: false,
             start_held_logged: false,
             believed_slice: self.served_start.or(start),
             before_start: VecDeque::new(),
@@ -2617,7 +2863,7 @@ impl ScriptBridge {
         // never left it). Until then the world's own list stands, lifetime 0, and heartbeats run.
         let delay = self.config.start_delay;
         let anchor = if self.config.list_retry.is_some() { run.sensed_at } else { run.full_at };
-        let cushion_over = anchor.is_some_and(|t| now >= t + delay);
+        let cushion_over = anchor.is_some_and(|t| now >= t + delay) || (self.ready_on_sense && run.row_sense_at.is_some());
         if !run.started && run.loaded && self.rows.full_delivered() && !cushion_over && !run.start_held_logged {
             run.start_held_logged = true;
             tracing::info!(
@@ -2637,14 +2883,10 @@ impl ScriptBridge {
                 run.full_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64()),
                 run.sensed_at.map_or(0.0, |t| now.duration_since(t).as_secs_f64())
             );
-            let ready = run.sensed_at.is_some();
-            let players = self
-                .players
-                .iter()
-                .enumerate()
-                .map(|(slot, c)| PlayerInfo { key: player_key(c), slot: slot as u32, ready })
-                .collect();
-            self.send(HostMsg::Players { players });
+            // D1_AH_SCRIPTS_READY_ON_SENSE: started on a player-row sense, `ready` follows the
+            // second sense; started by the cushion (no sense was identified), the stand-in as ever.
+            run.ready_by_sense = self.ready_on_sense && run.row_sense_at.is_some();
+            self.send_players();
             // F44: the start slice set's bundles are the active set before the scripts start.
             if let Some(region) = self.run.as_ref().and_then(|r| r.current_slice.or(r.believed_slice)) {
                 self.send_active_bundles(region);
@@ -2659,6 +2901,7 @@ impl ScriptBridge {
             }
             return;
         }
+        self.ready_fallback(now);
         // The script clock: one `tick` per udt 5 stamp step (10 Hz), carrying the stamp, so a row's
         // recorded time is the stamp its frame goes out near. Polls are coarser than 100 ms, so each
         // sends the steps since the last; a sidecar 20 s behind holds the clock rather than flooding.
@@ -3305,6 +3548,7 @@ impl ScriptBridge {
     pub fn sensor_due(&mut self, now: Instant) -> Option<Vec<u8>> {
         self.run.as_ref()?;
         self.link_interactions();
+        self.link_ready();
         self.devices_due(now);
         self.list_retry_due(now);
         self.drive(now);
@@ -5904,6 +6148,167 @@ mod tests {
         drop(b);
         assert!(!interaction_links().deliver(MISSION, 0x2468_ACE0), "the bridge stopped");
         assert!(!interaction_links().deliver(0xD1A0_0000_0000_7E58, 1), "an unknown mission host");
+    }
+
+    // ── D1_AH_SCRIPTS_READY_ON_SENSE: ready on the client's second, changed sense of its player row ──
+
+    fn ready_bridge(shared: &Arc<Mutex<Shared>>, on: bool) -> ScriptBridge {
+        let mut b = bridge_delayed(shared, false, false, profile_reveal(true), Duration::from_secs(60));
+        b.set_ready_on_sense(on);
+        b
+    }
+
+    fn start_sent(shared: &Arc<Mutex<Shared>>) -> bool {
+        shared.lock().unwrap().sent.iter().any(|m| matches!(m, HostMsg::Start))
+    }
+
+    /// The decoded entry of the client's player row (the lifetime's group, kind 0xC, slot 5).
+    fn row_sense(b: &ScriptBridge, tail: u8) -> Vec<PlayerRowSense> {
+        let group = b.run.as_ref().expect("joined").activity.lifetime.group;
+        vec![PlayerRowSense { group, index: 5, image: vec![0x64, 0x54, tail] }]
+    }
+
+    /// Every `players` message sent, as (key, ready) lists.
+    fn players_sent(shared: &Arc<Mutex<Shared>>) -> Vec<Vec<(String, bool)>> {
+        shared
+            .lock()
+            .unwrap()
+            .sent
+            .iter()
+            .filter_map(|m| match m {
+                HostMsg::Players { players } => Some(players.iter().map(|p| (p.key.clone(), p.ready)).collect()),
+                _ => None,
+            })
+            .collect()
+    }
+
+    const KEY1: &str = "0101010101010101";
+    const KEY2: &str = "0202020202020202";
+
+    #[test]
+    fn ready_on_sense_off_keeps_the_start_cushion_and_ready_at_the_start() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = ready_bridge(&shared, false);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(1), 165, HOST, t);
+        run_for(&mut b, &mut t, 1.0, &mut wire);
+        b.client_sensed(t);
+        let rows = row_sense(&b, 0);
+        b.player_row_sense(KEY1, &rows, t);
+        run_for(&mut b, &mut t, 30.0, &mut wire);
+        assert!(!start_sent(&shared), "the sense changes nothing: the cushion still counts");
+        run_for(&mut b, &mut t, 31.0, &mut wire);
+        assert!(start_sent(&shared));
+        assert_eq!(players_sent(&shared), vec![vec![(KEY1.to_string(), true)]], "ready at the start, as ever");
+    }
+
+    #[test]
+    fn the_first_player_row_sense_starts_the_scripts_and_only_a_changed_second_makes_ready() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = ready_bridge(&shared, true);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(1), 165, HOST, t);
+        run_for(&mut b, &mut t, 1.0, &mut wire);
+        assert!(!start_sent(&shared), "no cushion elapsed and no sense yet");
+        // A frame with no player row (other kinds) is no sense of it.
+        b.player_row_sense(KEY1, &[], t);
+        run_for(&mut b, &mut t, 1.0, &mut wire);
+        assert!(!start_sent(&shared));
+        let first = row_sense(&b, 0);
+        b.player_row_sense(KEY1, &first, t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert!(start_sent(&shared), "started at the first sense, no cushion");
+        assert_eq!(players_sent(&shared), vec![vec![(KEY1.to_string(), false)]]);
+        // The same image again (a later sense that did not change): still not ready.
+        b.player_row_sense(KEY1, &first, t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert_eq!(players_sent(&shared).len(), 1);
+        // Other rows of the kind are not the client's row.
+        let other = vec![PlayerRowSense { index: 6, image: vec![9], ..first[0].clone() }, PlayerRowSense { group: 1, image: vec![9], ..first[0].clone() }];
+        b.player_row_sense(KEY1, &other, t);
+        assert_eq!(players_sent(&shared).len(), 1);
+        // A changed image: ready, once.
+        let second = row_sense(&b, 8);
+        b.player_row_sense(KEY1, &second, t);
+        b.player_row_sense(KEY1, &row_sense(&b, 9), t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert_eq!(players_sent(&shared), vec![vec![(KEY1.to_string(), false)], vec![(KEY1.to_string(), true)]]);
+    }
+
+    #[test]
+    fn a_second_sense_on_a_linked_public_instance_makes_the_mission_bridge_ready_once() {
+        const MISSION: u64 = 0xD1A0_0000_0000_7E70;
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = ready_bridge(&shared, true);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(1), 165, MISSION, t);
+        run_for(&mut b, &mut t, 1.0, &mut wire);
+        let first = row_sense(&b, 0);
+        b.player_row_sense(KEY1, &first, t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert!(interaction_links().deliver_ready(MISSION, KEY1, 0xA11C));
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert_eq!(players_sent(&shared).last(), Some(&vec![(KEY1.to_string(), true)]));
+        let n = players_sent(&shared).len();
+        // The mission connection's own second sense comes after: a no-op.
+        let second = row_sense(&b, 8);
+        b.player_row_sense(KEY1, &second, t);
+        assert!(interaction_links().deliver_ready(MISSION, KEY1, 0xA11C));
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        assert_eq!(players_sent(&shared).len(), n, "the second report is a no-op");
+        drop(b);
+        assert!(!interaction_links().deliver_ready(MISSION, KEY1, 0xA11C), "the bridge stopped");
+    }
+
+    #[test]
+    fn the_public_instances_tracker_sees_the_second_changed_sense_in_any_group() {
+        let mut tr = PlayerRowTracker::default();
+        let row = |tail: u8| vec![PlayerRowSense { group: 0xEAAF_16E2, index: 0, image: vec![1, 2, tail] }];
+        assert_eq!(tr.observe(&[], None), RowSense::None);
+        assert_eq!(tr.observe(&row(0), None), RowSense::First);
+        assert_eq!(tr.observe(&row(0), None), RowSense::Same);
+        assert_eq!(tr.observe(&row(8), None), RowSense::Changed);
+        assert_eq!(tr.observe(&row(9), None), RowSense::None, "reported once");
+    }
+
+    #[test]
+    fn with_no_second_sense_the_player_is_ready_one_cushion_after_the_first() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = ready_bridge(&shared, true);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(1), 165, HOST, t);
+        run_for(&mut b, &mut t, 1.0, &mut wire);
+        let first = row_sense(&b, 0);
+        b.player_row_sense(KEY1, &first, t);
+        let at = t;
+        while t < at + Duration::from_secs(59) {
+            run_for(&mut b, &mut t, 1.0, &mut wire);
+        }
+        assert_eq!(players_sent(&shared), vec![vec![(KEY1.to_string(), false)]]);
+        run_for(&mut b, &mut t, 7.0, &mut wire);
+        assert_eq!(players_sent(&shared), vec![vec![(KEY1.to_string(), false)], vec![(KEY1.to_string(), true)]]);
+    }
+
+    #[test]
+    fn two_players_are_ready_only_when_both_are() {
+        let shared = Arc::new(Mutex::new(Shared::default()));
+        let mut b = ready_bridge(&shared, true);
+        let (mut t, mut wire) = (Instant::now(), Vec::new());
+        b.on_client_message(&join(1), 165, HOST, t);
+        b.on_client_message(&join(2), 165, HOST, t);
+        run_for(&mut b, &mut t, 1.0, &mut wire);
+        let first = row_sense(&b, 0);
+        b.player_row_sense(KEY1, &first, t);
+        run_for(&mut b, &mut t, 0.5, &mut wire);
+        let both = |a: bool, c: bool| vec![(KEY1.to_string(), a), (KEY2.to_string(), c)];
+        assert_eq!(players_sent(&shared), vec![both(false, false)]);
+        let second = row_sense(&b, 8);
+        b.player_row_sense(KEY1, &second, t);
+        assert_eq!(players_sent(&shared).last(), Some(&both(true, false)), "one of two is not all ready");
+        b.player_row_sense(KEY2, &first, t);
+        assert_eq!(players_sent(&shared).last(), Some(&both(true, false)));
+        b.player_row_sense(KEY2, &second, t);
+        assert_eq!(players_sent(&shared).last(), Some(&both(true, true)));
     }
 
     // ── D1_AH_SCRIPTS_INTERACTABLE: the mission's rows and flags on the public instance ──
