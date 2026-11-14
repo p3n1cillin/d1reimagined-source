@@ -112,7 +112,9 @@ def _posted_grab(path):
     except Exception as e:
         im, why = None, 'screenshot error: %s' % e
     if im is not None:
-        _last_good[0], _last_good[1], _reuse[0] = im, time.time(), 0
+        # The capture time, not now: _emulator_shot hands back its cached shot inside SHOT_GAP, and
+        # stamping that copy as new would let MAX_FRAME_AGE count from the copy.
+        _last_good[0], _last_good[1], _reuse[0] = im, (_last_shot[0] or time.time()), 0
     else:
         age = time.time() - _last_good[1]
         if _last_good[0] is None or age > MAX_FRAME_AGE:
