@@ -21,7 +21,7 @@ import time
 
 _SPECIAL = {'Return': 0x0D, 'Escape': 0x1B, 'Space': 0x20, 'Up': 0x26, 'Down': 0x28, 'Left': 0x25,
             'Right': 0x27, 'Tab': 0x09, 'Back': 0x08}
-_HOLD = re.compile(r'^Hold:(\w+):(\d+)$')
+_HOLD = re.compile(r'^Hold:(\w+(?:\+\w+)*):(\d+)$')
 
 
 def vk(name):
@@ -40,13 +40,15 @@ def vk(name):
 
 
 def parse(keys):
-    """[(name, vk, hold_ms)] for keys given as d1-pad.ps1 takes them (comma-joined is fine too)."""
+    """[(names, vks, hold_ms)] for keys given as d1-pad.ps1 takes them (comma-joined is fine too).
+    A chord is keys joined by '+' ('W+NumPad2', 'Hold:W+NumPad2:900'); names and vks are tuples."""
     out = []
     for item in keys:
         for k in (x for x in str(item).split(',') if x):
             m = _HOLD.match(k)
-            name, hold = (m.group(1), int(m.group(2))) if m else (k, 120)
-            out.append((name, vk(name), hold))
+            spec, hold = (m.group(1), int(m.group(2))) if m else (k, 120)
+            names = tuple(spec.split('+'))
+            out.append((names, tuple(vk(n) for n in names), hold))
     return out
 
 
@@ -116,19 +118,22 @@ def press(*keys, gap=150, post=None):
     # Beside this file, where d1-pad.ps1 stamps it and d1-idle-guard.sh reads it (the guard presses
     # keys after 300 s without a stamp).
     tools = os.path.dirname(os.path.abspath(__file__))
-    for name, code, hold in plan:
+    for names, codes, hold in plan:
         if not posted and not _focus(h):
             continue
-        scan = user32.MapVirtualKeyW(code, 0)
+        scans = [user32.MapVirtualKeyW(code, 0) for code in codes]
         if posted:
-            user32.PostMessageW(h, 0x100, code, post_lparam(code, scan, True))
+            for code, scan in zip(codes, scans):
+                user32.PostMessageW(h, 0x100, code, post_lparam(code, scan, True))
             time.sleep(hold / 1000)
-            user32.PostMessageW(h, 0x101, code, post_lparam(code, scan, False))
+            for code, scan in reversed(list(zip(codes, scans))):
+                user32.PostMessageW(h, 0x101, code, post_lparam(code, scan, False))
         else:
-            flags = key_flags(code)
-            user32.keybd_event(code, scan, flags, 0)
+            for code, scan in zip(codes, scans):
+                user32.keybd_event(code, scan, key_flags(code), 0)
             time.sleep(hold / 1000)
-            user32.keybd_event(code, scan, flags | 2, 0)
+            for code, scan in reversed(list(zip(codes, scans))):
+                user32.keybd_event(code, scan, key_flags(code) | 2, 0)
         stamp = int(time.time())
         time.sleep(gap / 1000)
     if stamp and tools:
