@@ -452,7 +452,10 @@ pub struct ActivityInstance {
     /// The client's latest TARGET slice record state (udt 21 image `+0x158`, state byte at record
     /// `+0x11`): `(target index, state, when this pair was first seen)`. With
     /// `D1_AH_PUBLIC_RELEASE_ON_SEARCH=1` the ambassador wait starts at the first state-1
-    /// ("searching") sighting. See [`Self::track_target_search`].
+    /// ("searching") sighting. See [`Self::track_target_search`]. Source of "state 1 =
+    /// searching": the live captures (Xbox 51539, test targets; private analysis of 56 captures,
+    /// 14 Nov): the mission host never raised +0x19 for a region before the client's TARGET record
+    /// showed state 1 for it, and every release followed one.
     target_search: Option<(u32, u8, Instant)>,
     /// ⭐ The client's own `join_request` struct image, kept because a state refresh has to
     /// re-publish the membership and a membership is an **echo** of exactly these bytes. Without it
@@ -2612,7 +2615,11 @@ impl ActivityInstance {
             return false;
         };
         let hash = image.get(TARGET + 4..TARGET + 8).map(|b| u32::from_le_bytes(b.try_into().unwrap()));
-        if matches!(hash, None | Some(0) | Some(0x811C_9DC5)) || index == 0x3FF {
+        // Absent as for the CURRENT record (`on_slice_records`): hash 0, index 0x3FF, or the empty
+        // name on index 0. The empty-name hash on a real index is a real target: the initial public
+        // start reports `target 0x38/0x811c9dc5` (run rst25), and rejecting it would never start
+        // that region's wait.
+        if matches!(hash, None | Some(0)) || index == 0x3FF || (hash == Some(0x811C_9DC5) && index == 0) {
             return false;
         }
         if matches!(self.target_search, Some((i, s, _)) if (i, s) == (index, state)) {
@@ -2717,7 +2724,7 @@ impl ActivityInstance {
             };
             if prev.is_none() {
                 tracing::info!(
-                    "public region {region}: the client is searching (udt 21 target state 1);                      the ambassador wait starts (D1_AH_PUBLIC_RELEASE_ON_SEARCH)"
+                    "public region {region}: the client is searching (udt 21 target state 1); the ambassador wait starts (D1_AH_PUBLIC_RELEASE_ON_SEARCH)"
                 );
                 prev = Some((region, since, false));
             }
@@ -2828,6 +2835,26 @@ mod tests {
         img[0x158 + 0x11] = state;
         img[0x1F8] = 1;
         img
+    }
+
+    /// The initial public start's TARGET carries the empty-name hash on a real index (run rst25:
+    /// `target 0x38/0x811c9dc5`): tracked, so its wait can start. Index 0 with that hash, hash 0
+    /// and index 0x3FF stay absent, as for the CURRENT record.
+    #[test]
+    fn the_target_search_tracks_an_unnamed_public_target() {
+        let (mut i, now) = instance();
+        let with_hash = |index: u32, hash: u32| {
+            let mut img = target_image(index, 1);
+            img[0x15C..0x160].copy_from_slice(&hash.to_le_bytes());
+            img
+        };
+        assert!(i.track_target_search(&with_hash(56, 0x811C_9DC5), now));
+        assert_eq!(i.target_search.map(|(r, s, _)| (r, s)), Some((56, 1)));
+        let (mut j, now) = instance();
+        assert!(!j.track_target_search(&with_hash(0, 0x811C_9DC5), now));
+        assert!(!j.track_target_search(&with_hash(56, 0), now));
+        assert!(!j.track_target_search(&with_hash(0x3FF, 0x1234_5678), now));
+        assert!(j.target_search.is_none());
     }
 
     /// `D1_AH_PUBLIC_RELEASE_ON_SEARCH`: off, today's wait from the first naming of the region; on,
