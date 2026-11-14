@@ -91,7 +91,7 @@ exists but stream K's replay did not cover the world.
 |---|---|---|---|---|---|---|---|
 | A Guardian Rises | 164 | story | `act_cosmo_m0_highway` | cross-checked | written | 5/7, no end | baseline (step-driven) |
 | A Guardian Rises (the reveal) | 165 | cinematic | `cine_reveal` | cross-checked | written | 2/2, ends | baseline (step-driven) |
-| Restoration | 166, 606 | story | `act_cosmo_m0_5_hangar` | cross-checked | written | 1/3, no end | loads with the live mission host's list (rst8), first objective RECON THE CRASH SITE shows (rst11, rst13; #392, #394, #395; with the 56578 scripts and readiness on the loaded sense: rst17); its interaction ("Deploy Ghost" at the crash site) reaches the mission script and the Ghost scans the wreck (rst25, #407); later phases not seen |
+| Restoration | 166, 606 | story | `act_cosmo_m0_5_hangar` | cross-checked | written | 1/3, no end | loads with the live mission host's list (rst8), first objective RECON THE CRASH SITE shows (rst11, rst13; #392, #394, #395; with the 56578 scripts and readiness on the loaded sense: rst17); its interaction ("Deploy Ghost" at the crash site) reaches the mission script and the Ghost scans the wreck (rst25, #407); its last phase from the hangar completes, the rewards screen shows and CONTINUE goes to orbit (rst29, #409, started at that phase); the middle phases not played through |
 | The Speaker | 167 | cinematic | `cine_speaker` | cross-checked | stub (runs from a step schedule) | – | plays end to end (spk3, spk7, 7 Nov) |
 | The Dark Within | 168, 169, 607 | story | `act_cosmo_m1_dome_a` | cross-checked | written | 1/3, no end | none |
 | The Warmind | 170, 171, 608 | story | `act_cosmo_m2_dome_c` | cross-checked | written | 3/5, no end | none |
