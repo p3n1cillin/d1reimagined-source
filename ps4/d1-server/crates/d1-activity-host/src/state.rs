@@ -2836,6 +2836,9 @@ mod tests {
         };
         assert!(i.track_target_search(&with_hash(56, 0x811C_9DC5), now));
         assert_eq!(i.target_search.map(|(r, s, _)| (r, s)), Some((56, 1)));
+        // The client then clears its target (it arrived, or gave up): no longer searching.
+        assert!(i.track_target_search(&with_hash(0x3FF, 0x811C_9DC5), now));
+        assert!(i.target_search.is_none());
         let (mut j, now) = instance();
         assert!(!j.track_target_search(&with_hash(0, 0x811C_9DC5), now));
         assert!(!j.track_target_search(&with_hash(56, 0), now));
