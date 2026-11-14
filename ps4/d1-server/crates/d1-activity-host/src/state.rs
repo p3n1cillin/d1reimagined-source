@@ -449,6 +449,11 @@ pub struct ActivityInstance {
     /// ⭐ The ambassador's matchmaking threshold for the PAH region record: (region, when the
     /// record first named it, reached). See [`Self::update_public_threshold`].
     public_threshold: Option<(u32, Instant, bool)>,
+    /// The client's latest TARGET slice record state (udt 21 image `+0x158`, state byte at record
+    /// `+0x11`): `(target index, state, when this pair was first seen)`. With
+    /// `D1_AH_PUBLIC_RELEASE_ON_SEARCH=1` the ambassador wait starts at the first state-1
+    /// ("searching") sighting. See [`Self::track_target_search`].
+    target_search: Option<(u32, u8, Instant)>,
     /// ⭐ The client's own `join_request` struct image, kept because a state refresh has to
     /// re-publish the membership and a membership is an **echo** of exactly these bytes. Without it
     /// a refresh would have to fabricate an identity, which `state.rs` refuses to do anywhere else.
@@ -788,6 +793,7 @@ impl ActivityInstance {
             public_sessions: Vec::new(),
             public_regions: Vec::new(),
             public_threshold: None,
+            target_search: None,
             join_request_image: None,
             last_pushed: now,
             host_heartbeat: Duration::from_millis(Self::HOST_HEARTBEAT_MS),
@@ -1025,6 +1031,7 @@ impl ActivityInstance {
         if let ClientMessage::ClientAuthoritativeDataUpdate { struct_image } = msg {
             self.track_current_slice(struct_image);
             self.follow_slice_target(struct_image);
+            self.track_target_search(struct_image, now);
             self.track_public_session(struct_image);
             // ── stream G hook ── a public instance learns its region from this report.
             let world = self.activity_name.clone();
@@ -2593,6 +2600,28 @@ impl ActivityInstance {
         }
     }
 
+    /// Keep the client's latest TARGET record state (see [`Self::target_search`]), under the same
+    /// validity checks as [`Self::follow_slice_target`]. Returns true when the pair changed.
+    fn track_target_search(&mut self, image: &[u8], now: Instant) -> bool {
+        const TARGET: usize = 0x158;
+        const STATE: usize = TARGET + 0x11;
+        let (Some(index), Some(&state)) = (
+            image.get(TARGET..TARGET + 4).map(|b| u32::from_le_bytes(b.try_into().unwrap()) & 0x3FF),
+            image.get(STATE),
+        ) else {
+            return false;
+        };
+        let hash = image.get(TARGET + 4..TARGET + 8).map(|b| u32::from_le_bytes(b.try_into().unwrap()));
+        if matches!(hash, None | Some(0) | Some(0x811C_9DC5)) || index == 0x3FF {
+            return false;
+        }
+        if matches!(self.target_search, Some((i, s, _)) if (i, s) == (index, state)) {
+            return false;
+        }
+        self.target_search = Some((index, state, now));
+        true
+    }
+
     /// Record a public session the client reports for a region, to advertise it as the live PAH
     /// did. Each of udt 21's two slice-set records (CURRENT `+0xB8`, TARGET `+0x158`, `0xA0`
     /// bytes, `0x80800D9F`) carries, once the client has started or joined that region's public
@@ -2678,7 +2707,22 @@ impl ActivityInstance {
             None => Self::PUBLIC_THRESHOLD,
         };
         let has_session = self.public_session(region).is_some();
-        let (next, released) = Self::next_threshold(self.public_threshold, region, has_session, now, wait);
+        let mut prev = self.public_threshold;
+        if std::env::var("D1_AH_PUBLIC_RELEASE_ON_SEARCH").is_ok_and(|v| v == "1") {
+            let searching = Self::search_start(self.target_search, region);
+            prev = Self::gate_on_search(prev, region, searching);
+            let Some(since) = searching.filter(|_| !matches!(prev, Some((r, _, true)) if r == region)) else {
+                self.public_threshold = prev;
+                return;
+            };
+            if prev.is_none() {
+                tracing::info!(
+                    "public region {region}: the client is searching (udt 21 target state 1);                      the ambassador wait starts (D1_AH_PUBLIC_RELEASE_ON_SEARCH)"
+                );
+                prev = Some((region, since, false));
+            }
+        }
+        let (next, released) = Self::next_threshold(prev, region, has_session, now, wait);
         self.public_threshold = Some(next);
         if released {
             self.membership_dirty = true;
@@ -2688,6 +2732,26 @@ impl ActivityInstance {
                  10.2 s; ⚠ a stand-in trigger, D1_AH_PUBLIC_THRESHOLD_MS)",
                 wait.as_millis()
             );
+        }
+    }
+
+    /// When the client's target record first showed region `region` searching (state 1), if it
+    /// still does.
+    fn search_start(target: Option<(u32, u8, Instant)>, region: u32) -> Option<Instant> {
+        target.filter(|&(i, st, _)| i == region && st == 1).map(|(_, _, t)| t)
+    }
+
+    /// With the search gate on: a wait that has not been released is cancelled while the client is
+    /// not searching for `region`; a released region stays released; another region's entry is dropped.
+    fn gate_on_search(
+        prev: Option<(u32, Instant, bool)>,
+        region: u32,
+        searching: Option<Instant>,
+    ) -> Option<(u32, Instant, bool)> {
+        match prev {
+            Some(p @ (r, _, true)) if r == region => Some(p),
+            Some((r, _, false)) if r == region && searching.is_some() => prev,
+            _ => None,
         }
     }
 
@@ -2754,6 +2818,89 @@ mod tests {
         let t1 = t0 + Duration::from_secs(30);
         let (s, rel) = step(Some(s), 48, false, t1, wait);
         assert_eq!((s, rel), ((48, t1, false), false), "a new target region waits again");
+    }
+
+    /// Image with a valid TARGET record (`0x158`): region `index`, a real hash, `state` at `+0x11`.
+    fn target_image(index: u32, state: u8) -> Vec<u8> {
+        let mut img = vec![0u8; 0x200];
+        img[0x158..0x15C].copy_from_slice(&index.to_le_bytes());
+        img[0x15C..0x160].copy_from_slice(&0x1234_5678u32.to_le_bytes());
+        img[0x158 + 0x11] = state;
+        img[0x1F8] = 1;
+        img
+    }
+
+    /// `D1_AH_PUBLIC_RELEASE_ON_SEARCH`: off, today's wait from the first naming of the region; on,
+    /// no wait while the target state is 0, the wait counts from the first state-1 sighting, and the
+    /// state falling back to 0 cancels it. (One test: it owns the process environment.)
+    #[test]
+    fn the_public_threshold_release_on_search_waits_for_the_clients_search_state() {
+        static ENV: std::sync::Mutex<()> = std::sync::Mutex::new(());
+        let _g = ENV.lock().unwrap_or_else(|e| e.into_inner());
+        std::env::set_var("D1_AH_PUBLIC_AMBASSADOR", "1");
+        std::env::set_var("D1_AH_PUBLIC_REGIONS", "48");
+        std::env::set_var("D1_AH_PUBLIC_THRESHOLD_MS", "10000");
+        let sec = Duration::from_secs;
+        let msg = |state| ClientMessage::ClientAuthoritativeDataUpdate { struct_image: target_image(48, state) };
+        let fresh = || {
+            let (mut i, now) = instance();
+            i.set_pah_region(48, 0, 1);
+            (i, now)
+        };
+
+        // Knob off: the wait starts when the record names the region, whatever the client reports.
+        std::env::remove_var("D1_AH_PUBLIC_RELEASE_ON_SEARCH");
+        let (mut i, t0) = fresh();
+        i.on_client_message(&msg(0), t0);
+        i.update_public_threshold(t0);
+        i.update_public_threshold(t0 + sec(9));
+        assert!(matches!(i.public_threshold, Some((48, _, false))));
+        i.update_public_threshold(t0 + sec(10));
+        assert!(matches!(i.public_threshold, Some((48, _, true))), "knob off: released after 10 s regardless");
+
+        // Knob on.
+        std::env::set_var("D1_AH_PUBLIC_RELEASE_ON_SEARCH", "1");
+        let (mut i, t0) = fresh();
+        i.on_client_message(&msg(0), t0);
+        i.update_public_threshold(t0);
+        i.update_public_threshold(t0 + sec(30));
+        assert!(i.public_threshold.is_none(), "state 0: no wait, no release");
+        let t1 = t0 + sec(40);
+        i.on_client_message(&msg(1), t1);
+        i.update_public_threshold(t1);
+        i.update_public_threshold(t1 + sec(9));
+        assert!(matches!(i.public_threshold, Some((48, s, false)) if s == t1), "counts from the first state 1");
+        i.update_public_threshold(t1 + sec(10));
+        assert!(matches!(i.public_threshold, Some((48, _, true))), "released W after state 1");
+        i.on_client_message(&msg(0), t1 + sec(11));
+        i.update_public_threshold(t1 + sec(12));
+        assert!(matches!(i.public_threshold, Some((48, _, true))), "a released region stays released");
+
+        // State back to 0 before the release cancels the wait; a later state 1 restarts it.
+        let (mut i, t0) = fresh();
+        i.on_client_message(&msg(1), t0);
+        i.update_public_threshold(t0 + sec(5));
+        i.on_client_message(&msg(0), t0 + sec(6));
+        i.update_public_threshold(t0 + sec(7));
+        assert!(i.public_threshold.is_none(), "cancelled");
+        i.update_public_threshold(t0 + sec(20));
+        assert!(i.public_threshold.is_none(), "still no release");
+        i.on_client_message(&msg(1), t0 + sec(21));
+        i.update_public_threshold(t0 + sec(21));
+        i.update_public_threshold(t0 + sec(30));
+        assert!(matches!(i.public_threshold, Some((48, _, false))), "the wait restarted at 21 s");
+        i.update_public_threshold(t0 + sec(31));
+        assert!(matches!(i.public_threshold, Some((48, _, true))));
+
+        // A target on another region does not start region 48's wait.
+        let (mut i, t0) = fresh();
+        i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: target_image(56, 1) }, t0);
+        i.update_public_threshold(t0 + sec(30));
+        assert!(i.public_threshold.is_none());
+        std::env::remove_var("D1_AH_PUBLIC_RELEASE_ON_SEARCH");
+        for k in ["D1_AH_PUBLIC_AMBASSADOR", "D1_AH_PUBLIC_REGIONS", "D1_AH_PUBLIC_THRESHOLD_MS"] {
+            std::env::remove_var(k);
+        }
     }
 
     fn instance() -> (ActivityInstance, Instant) {
