@@ -1675,6 +1675,11 @@ struct Run {
     ended: bool,
     rewarded: bool,
     current_slice: Option<u32>,
+    /// The slice set of the client's latest udt 21 report, whatever its name hash. The client
+    /// reports the empty-name hash for the slice sets it walks into (runs gh62, rst28: 104, 105,
+    /// 56), so `current_slice` (named reports only) is rarely set; the mission host's relist for a
+    /// phase's slice set keys on this (`D1_AH_SCRIPTS_PUBLIC_START_LIST`).
+    reported_slice: Option<u32>,
     /// F42: world-loot rows already announced in this run.
     loot_announced: std::collections::BTreeSet<RowKey>,
     /// F49: the loot cache's special weapon was granted in this run.
@@ -2308,6 +2313,7 @@ impl ScriptBridge {
                     if !matches!(hash, 0 | 0x811C_9DC5) && region != 0x3FF {
                         if let Some(run) = self.run.as_mut() {
                             run.current_slice = Some(region);
+                            run.reported_slice = Some(region);
                             run.believed_slice = Some(region);
                         }
                         self.activate_slice(region, now);
@@ -2315,6 +2321,14 @@ impl ScriptBridge {
                         // A public start slice set reports the empty-name hash (run rst7): the knob's
                         // start relist still goes out; nothing else about the report changes.
                         self.relist_public_start(region);
+                        // So does a private one (runs gh62, rst28: 104): the report is where the
+                        // client is, and the mission host's relist for a phase's slice set waits for it.
+                        if hash == 0x811C_9DC5 {
+                            if let Some(run) = self.run.as_mut() {
+                                run.reported_slice = Some(region);
+                            }
+                            self.relist_phase_slice(region);
+                        }
                     }
                 }
             }
@@ -2339,6 +2353,25 @@ impl ScriptBridge {
                 "⭐ script bridge: slice set {region} (the public start): mission host relist = the start's globals + private shared rows ({} rows) (D1_AH_SCRIPTS_PUBLIC_START_LIST)",
                 list.len() + 1
             );
+            let lifetime = run.activity.lifetime;
+            self.rows.relist(list, &[lifetime]);
+        }
+    }
+
+    /// `D1_AH_SCRIPTS_PUBLIC_START_LIST`: the client reports `region`, the slice set the latest
+    /// mission phase named: the mission host's full relist for it, once. Reports that carry the
+    /// empty-name hash never reach `activate_slice`, so this is their path.
+    fn relist_phase_slice(&mut self, region: u32) {
+        let Some(run) = self.run.as_mut() else { return };
+        if run.activity.mission_list.is_none() || run.phase_slice != Some(region) || run.list_slice.is_none() || run.list_slice == Some(region) {
+            return;
+        }
+        if let Some(list) = run.activity.slice_list(region) {
+            tracing::info!(
+                "script bridge: the client reports slice set {region}, the phase's: its list ({} rows) goes out in full (D1_AH_SCRIPTS_PUBLIC_START_LIST)",
+                list.len() + 1
+            );
+            run.list_slice = Some(region);
             let lifetime = run.activity.lifetime;
             self.rows.relist(list, &[lifetime]);
         }
@@ -2495,6 +2528,7 @@ impl ScriptBridge {
             ended: false,
             rewarded: false,
             current_slice: None,
+            reported_slice: None,
             loot_announced: Default::default(),
             special_weapon_granted: false,
             score_kills: 0,
@@ -3096,7 +3130,7 @@ impl ScriptBridge {
                     // A phase that names no slice set clears it: no relist until one does.
                     run.phase_slice = region;
                     if let Some(r) = region {
-                        if run.current_slice == Some(r) && run.list_slice.is_some() && run.list_slice != Some(r) {
+                        if run.reported_slice == Some(r) && run.list_slice.is_some() && run.list_slice != Some(r) {
                             if let Some(list) = run.activity.slice_list(r) {
                                 tracing::info!(
                                     "script bridge: phase {index} resolves to slice set {r}, where the client is: its list ({} rows) goes out in full",
@@ -5023,6 +5057,26 @@ mod tests {
         assert_eq!(b.run.as_ref().unwrap().list_slice, Some(104));
         b.on_client_message(&slice(104), 165, HOST, t);
         assert_eq!(b.run.as_ref().unwrap().list_slice, Some(104), "once");
+    }
+
+    /// Runs gh62 and rst28: the client reports 104 with the empty-name hash, so the relist cannot wait
+    /// for a named report (`current_slice` stays unset).
+    #[test]
+    fn the_mission_host_relists_a_phases_slice_set_the_client_reports_unnamed() {
+        // (a) the phase names 104, then the client reports it unnamed.
+        let (mut b, t) = mission_host_bridge();
+        b.apply(phase_in(Some(104)), t);
+        b.on_client_message(&slice_unnamed(64), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(56), "64 is not the phase's");
+        b.on_client_message(&slice_unnamed(104), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(104));
+        assert_eq!(b.run.as_ref().unwrap().current_slice, None, "the hash guard still keeps the report out of current_slice");
+        // (b) the client is in 104 (unnamed) when the phase starts (rst28): relisted at the phase.
+        let (mut b, t) = mission_host_bridge();
+        b.on_client_message(&slice_unnamed(104), 165, HOST, t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(56), "no phase names 104 yet");
+        b.apply(phase_in(Some(104)), t);
+        assert_eq!(b.run.as_ref().unwrap().list_slice, Some(104));
     }
 
     #[test]
