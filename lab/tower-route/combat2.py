@@ -23,6 +23,9 @@ VK = {'W': 0x57, 'A': 0x41, 'S': 0x53, 'D': 0x44, 'I': 0x49, 'J': 0x4A, 'K': 0x4
       'FIRE': 0x4F, 'ADS': 0x45, 'GREN': 0x51, 'MELEE': 0x55, 'RELOAD': 0x64, 'JUMP': 0x62}
 _stamped = 0
 _post_hwnd = None
+def _d1_keys():
+    import d1_keys
+    return d1_keys
 def _posted_key(k, down):
     """Posted mode (D1_KEYS_POST=1): WM_KEYDOWN/WM_KEYUP to the emulator window, so keys reach it with
     the desktop locked. No focus, no keybd_event. The window is found once; re-found if a post fails."""
@@ -36,6 +39,7 @@ def _posted_key(k, down):
         if _post_hwnd and u32.PostMessageW(_post_hwnd, 0x100 if down else 0x101, vk, lp):
             return
         _post_hwnd = None
+    raise RuntimeError('posted key %s (%s) did not reach the emulator window' % (k, 'down' if down else 'up'))
 def key(k, down):
     global _stamped
     import d1_keys
@@ -59,7 +63,12 @@ def key(k, down):
 def tap(k, ms=60): key(k, True); time.sleep(ms / 1000); key(k, False)
 def hold(k, ms): key(k, True); time.sleep(max(0, ms) / 1000); key(k, False)
 def release_all():
-    for k in VK: key(k, False)
+    failed = []
+    for k in VK:
+        try: key(k, False)
+        except RuntimeError as e: failed.append(str(e))
+    if failed:
+        raise RuntimeError('; '.join(failed))
 
 YAW_RATE, PITCH_RATE = 2.76e-3, 1.2e-3          # rad per ms of right-stick hold
 HFOV, VFOV = math.radians(78), math.radians(48)   # hip view, 1936x1119 capture
@@ -218,7 +227,7 @@ def main():
     # Focus the window without a key: NumPad4 is Square (reload), and every fight began with a
     # reload under fire.
     W = World()
-    if not os.environ.get('D1_KEYS_POST') == '1':
+    if not _d1_keys().post_mode():
         L('gamefocus').ensure()
     log = open(a.log, 'a') if a.log else None
     t_end, k, lock, lock_seen, strafe, last_gren, bursts = time.time() + a.seconds, 0, None, 0, 1, 0, 0

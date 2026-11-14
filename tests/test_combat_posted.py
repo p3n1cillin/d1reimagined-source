@@ -3,6 +3,7 @@
 import importlib.util
 import os
 import sys
+import time
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -104,18 +105,69 @@ class Posted(unittest.TestCase):
         os.environ['D1_KEYS_POST'] = '1'
         from PIL import Image
         out = os.path.join(os.environ.get('TEMP', '.'), 'combat_posted_fail.png')
-        fight._last_good[0] = None
+        fight._last_good[:] = [None, 0.0]
         with mock.patch.object(d1_keys, '_window', return_value=1),                 mock.patch.object(fight.subprocess, 'run') as run,                 mock.patch.object(fight, '_emulator_shot', side_effect=[Image.new('RGB', (4, 3), (1, 2, 3)), None]):
             first = fight.grab(out)
             again = fight.grab(out)          # shot fails: the last good frame
             self.assertEqual(tuple(again[0, 0]), (1, 2, 3))
             self.assertTrue((first == again).all())
-        fight._last_good[0] = None
+        fight._last_good[:] = [None, 0.0]
         with mock.patch.object(d1_keys, '_window', return_value=1),                 mock.patch.object(fight.subprocess, 'run') as run,                 mock.patch.object(fight, '_emulator_shot', return_value=None):
             with self.assertRaises(FileNotFoundError):
                 fight.grab(out)
         run.assert_not_called()
         os.remove(out)
+
+    def _posted_grab_no_subprocess(self, **shot_kw):
+        os.environ['D1_KEYS_POST'] = '1'
+        out = os.path.join(os.environ.get('TEMP', '.'), 'combat_posted_x.png')
+        with mock.patch.object(fight.subprocess, 'run') as run, \
+                mock.patch.object(fight, '_emulator_shot', **shot_kw):
+            with self.assertRaises(FileNotFoundError):
+                fight.grab(out)
+        run.assert_not_called()
+
+    def test_posted_grab_without_window_never_runs_script(self):
+        fight._last_good[:] = [None, 0.0]
+        with mock.patch.object(d1_keys, '_window', return_value=None):
+            self._posted_grab_no_subprocess(return_value=None)
+
+    def test_posted_grab_shot_error_never_runs_script(self):
+        fight._last_good[:] = [None, 0.0]
+        with mock.patch.object(d1_keys, '_window', return_value=1):
+            self._posted_grab_no_subprocess(side_effect=RuntimeError('No shadPS4 window'))
+
+    def test_posted_grab_stale_frame_raises(self):
+        from PIL import Image
+        fight._last_good[:] = [Image.new('RGB', (4, 3)), time.time() - fight.MAX_FRAME_AGE - 1]
+        with mock.patch.object(d1_keys, '_window', return_value=1):
+            self._posted_grab_no_subprocess(return_value=None)
+        fight._last_good[:] = [None, 0.0]
+
+    def test_pad_posted_fallback_passes_post(self):
+        os.environ['D1_KEYS_POST'] = '1'
+        with mock.patch.object(d1_keys, 'press', side_effect=RuntimeError('No shadPS4 window')), \
+                mock.patch.object(fight.subprocess, 'run') as run:
+            fight.pad('Hold:O:100')
+        self.assertIn('-Post', run.call_args.args[0])
+        os.environ.pop('D1_KEYS_POST')
+        with mock.patch.object(d1_keys, 'press', side_effect=RuntimeError('x')), \
+                mock.patch.object(fight.subprocess, 'run') as run:
+            fight.pad('Hold:O:100')
+        self.assertNotIn('-Post', run.call_args.args[0])
+
+    def test_posted_key_failure_raises(self):
+        os.environ['D1_KEYS_POST'] = '1'
+        u = self.fake_u32(post_ok=False)
+        with mock.patch.object(combat2, 'u32', u), mock.patch.object(d1_keys, '_window', return_value=3):
+            with self.assertRaises(RuntimeError):
+                combat2.key('W', False)
+            with self.assertRaises(RuntimeError):
+                combat2.release_all()
+        self.assertGreater(u.PostMessageW.call_count, len(combat2.VK))
+        with mock.patch.object(combat2, 'u32', u), mock.patch.object(d1_keys, '_window', return_value=None):
+            with self.assertRaises(RuntimeError):
+                combat2.key('W', False)
 
     def test_default_grab_still_focuses_and_grabs(self):
         from PIL import Image

@@ -82,26 +82,47 @@ def _emulator_shot(h, rect, timeout=3.0):
     return None
 
 
-_last_good = [None]                # the last emulator frame, reused when a posted-mode shot fails
+_last_good = [None, 0.0]           # the last emulator frame and when it was taken
+_reuse = [0]                       # frames reused in a row
 _warned = [False]
+MAX_FRAME_AGE = 5.0                # s: an older frame is not reused
 
 
-def d1_keys_posted():
-    try:
-        import d1_keys
-        return d1_keys.post_mode()
-    except Exception:
-        return False
-
-
-def _no_posted_frame():
+def _no_posted_frame(why):
     """Posted mode has no desktop fallback (a locked desktop gives lock-screen pixels the readers
-    would misread). With no frame at all, fail as a grab does today when the script leaves no
+    would misread). With no usable frame, fail as a grab does today when the script leaves no
     file: Image.open raises FileNotFoundError."""
     if not _warned[0]:
         _warned[0] = True
         print('grab: no emulator frame (posted mode); no desktop fallback', flush=True)
-    raise FileNotFoundError('no emulator frame (posted mode)')
+    raise FileNotFoundError('no emulator frame (posted mode): ' + why)
+
+
+def _posted_grab(path):
+    import ctypes, ctypes.wintypes as wt
+    import d1_keys
+    im, why = None, 'no window'
+    try:
+        h = d1_keys._window()
+        if h:
+            r = wt.RECT()
+            ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
+            im = _emulator_shot(h, r)
+            why = 'screenshot failed'
+    except Exception as e:
+        im, why = None, 'screenshot error: %s' % e
+    if im is not None:
+        _last_good[0], _last_good[1], _reuse[0] = im, time.time(), 0
+    else:
+        age = time.time() - _last_good[1]
+        if _last_good[0] is None or age > MAX_FRAME_AGE:
+            _no_posted_frame(why)
+        if _reuse[0] == 0:
+            print('grab: reusing a frame %.1f s old' % age, flush=True)
+        _reuse[0] += 1
+        im = _last_good[0]
+    im.save(path, compress_level=1)
+    return np.asarray(im).astype(int)
 
 
 def grab(path):
@@ -110,26 +131,19 @@ def grab(path):
     In-process (0.02 s, plus the PNG): d1-shot.ps1 took 1.0 s a frame (a PowerShell start, an
     Add-Type compile and a 400 ms wait for focus), so every combat pass saw the fight a second late.
     When the desktop grab is black (the monitor off, see _emulator_shot) the emulator's own
-    screenshot stands in; the script is the fallback when both fail."""
+    screenshot stands in; the script is the fallback when both fail.
+
+    Posted mode (D1_KEYS_POST=1, a locked desktop) never touches the desktop or the script: see
+    _posted_grab."""
+    import d1_keys
+    if d1_keys.post_mode():
+        return _posted_grab(path)
     try:
         import ctypes, ctypes.wintypes as wt
         from PIL import ImageGrab
         import d1_keys
         h = d1_keys._window()
-        if h and d1_keys.post_mode():
-            # Locked desktop: no focus and no desktop grab (it would hold lock-screen pixels).
-            r = wt.RECT()
-            ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
-            im = _emulator_shot(h, r)
-            if im is None:
-                im = _last_good[0]
-            else:
-                _last_good[0] = im
-            if im is None:
-                _no_posted_frame()
-            im.save(path, compress_level=1)
-            return np.asarray(im).astype(int)
-        elif h and d1_keys._focus(h):
+        if h and d1_keys._focus(h):
             r = wt.RECT()
             ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
             im = ImageGrab.grab((r.left, r.top, r.right, r.bottom), all_screens=True).convert('RGB')
@@ -137,9 +151,6 @@ def grab(path):
                 im = _emulator_shot(h, r) or im
             im.save(path, compress_level=1)
             return np.asarray(im).astype(int)
-    except FileNotFoundError:
-        if d1_keys_posted():
-            raise
     except Exception:
         pass
     subprocess.run(['powershell', '-NoProfile', '-File', SHOT, '-Out', path], capture_output=True)
@@ -171,7 +182,14 @@ def pad(keys):
         return
     except Exception:
         pass
-    subprocess.run(['powershell', '-NoProfile', '-File', PAD, '-Keys', keys], capture_output=True)
+    cmd = ['powershell', '-NoProfile', '-File', PAD, '-Keys', keys]
+    try:
+        import d1_keys
+        if d1_keys.post_mode():
+            cmd.append('-Post')         # never real input with the desktop locked
+    except Exception:
+        pass
+    subprocess.run(cmd, capture_output=True)
 
 
 def burst(ms):
