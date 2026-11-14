@@ -79,3 +79,10 @@ class ShouldJump(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def test_a_wide_tolerance_widens_the_jump_reach():
+    route = M.load_route([[0, 0, 0], [10, 0, 0, 1], [20, 0, 0]])
+    here = (7.0, 0.0, 0.0)          # 3 m out: beyond JUMP_AT, inside a 3.5 m tolerance
+    assert not M.should_jump(1, route, here, set())
+    assert M.should_jump(1, route, here, set(), max(M.JUMP_AT, 3.5))

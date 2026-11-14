@@ -208,10 +208,12 @@ def thin_route(points, step):
     return keep
 
 
-def should_jump(i, route, here, jumped):
-    # True when waypoint i is jump-flagged, not yet jumped, and here is within JUMP_AT of it.
+def should_jump(i, route, here, jumped, reach=JUMP_AT):
+    # True when waypoint i is jump-flagged, not yet jumped, and here is within `reach` of it. The
+    # caller passes max(JUMP_AT, the arrival tolerance) so a wide --tolerance cannot arrive (and
+    # move on) before the jump distance is reached.
     return (0 <= i < len(route) and len(route[i]) > 3 and bool(route[i][3]) and i not in jumped
-            and math.dist(here[:2], route[i][:2]) < JUMP_AT)
+            and math.dist(here[:2], route[i][:2]) < reach)
 _last_active = 0.0
 
 
@@ -477,7 +479,7 @@ def main():
         # Sharp corners need the waypoint itself: overshooting the north-to-west turn at the
         # Wall's stairs (waypoint 43) drops the Guardian into a pit (runs agr-breach5 and 9).
         sharp = corner(i) > 0.6
-        if not out and should_jump(i, route, here, jumped):
+        if not out and should_jump(i, route, here, jumped, max(JUMP_AT, a.tolerance)):
             jumped.add(i)
             print(f'jump at wp {i}', flush=True)
             # The pair that cleared the low wall in Restoration by hand (runs rst19/rst20, 13 Nov):
