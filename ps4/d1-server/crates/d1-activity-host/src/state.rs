@@ -451,8 +451,8 @@ pub struct ActivityInstance {
     public_threshold: Option<(u32, Instant, bool)>,
     /// The client's latest TARGET slice record state (udt 21 image `+0x158`, state byte at record
     /// `+0x11`): `(target index, state, when this pair was first seen)`. With
-    /// `D1_AH_PUBLIC_RELEASE_ON_SEARCH=1` the ambassador wait starts at the first state-1
-    /// ("searching") sighting. See [`Self::track_target_search`]. Source of "state 1 =
+    /// `D1_AH_PUBLIC_RELEASE_ON_SEARCH=1` the ambassador wait still counts from the region's first
+    /// naming, but the release is held until this shows the region with state 1 ("searching"). See [`Self::track_target_search`]. Source of "state 1 =
     /// searching": the live captures (Xbox 51539, test targets; private analysis of 56 captures,
     /// 14 Nov): the mission host never raised +0x19 for a region before the client's TARGET record
     /// showed state 1 for it, and every release followed one.
@@ -2620,7 +2620,9 @@ impl ActivityInstance {
         // start reports `target 0x38/0x811c9dc5` (run rst25), and rejecting it would never start
         // that region's wait.
         if matches!(hash, None | Some(0)) || index == 0x3FF || (hash == Some(0x811C_9DC5) && index == 0) {
-            return false;
+            // The client has no target (it arrived or gave up): it is not searching any more, so a
+            // held release must not go ahead on its last searching record.
+            return self.target_search.take().is_some();
         }
         if matches!(self.target_search, Some((i, s, _)) if (i, s) == (index, state)) {
             return false;
