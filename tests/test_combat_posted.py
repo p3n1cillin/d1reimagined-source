@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """combat2.key and fight.grab in posted mode (D1_KEYS_POST=1): offline, no emulator."""
 import importlib.util
 import os
