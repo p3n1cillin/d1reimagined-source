@@ -54,8 +54,17 @@ def write_routes(out, samples, min_step, gap):
     runs = [thin(r, min_step) for r in segments(samples, gap)]
     paths = output_paths(out, len(runs))
     for path, run in zip(paths, runs):
-        with open(path, 'w') as f:
+        # Temp file, then replace: a stop or kill mid-write never leaves a truncated route.
+        tmp = path + '.tmp'
+        with open(tmp, 'w') as f:
             json.dump([[round(v, 3) for v in p] for p in run], f)
+        os.replace(tmp, path)
+    # A segment file left by an earlier, longer recording is not this run's.
+    stem, ext = os.path.splitext(out)
+    i = len(runs) + 1
+    while os.path.exists(f'{stem}-{i}{ext}'):
+        os.remove(f'{stem}-{i}{ext}')
+        i += 1
     return list(zip(paths, runs))
 
 
@@ -94,11 +103,11 @@ def main():
 
     def flush():
         if a.raw and raw_buf:
+            chunk = ''.join(raw_buf)
+            raw_buf.clear()             # cleared first: an interrupted append is not written twice
             with open(a.raw, 'a') as f:
-                f.write(''.join(raw_buf))
-            raw_buf.clear()
-        if samples:
-            write_routes(a.out, samples, a.min_step, a.split_on_gap)
+                f.write(chunk)
+        return write_routes(a.out, samples, a.min_step, a.split_on_gap) if samples else []
 
     print('recording; Ctrl+C, --seconds or --stop-file to stop')
     try:
@@ -123,8 +132,7 @@ def main():
     except KeyboardInterrupt:
         print('interrupted')
     finally:
-        flush()
-    written = write_routes(a.out, samples, a.min_step, a.split_on_gap) if samples else []
+        written = flush()
     for path, run in written:
         print(f'wrote {path}: {len(run)} waypoints')
     if not written:
