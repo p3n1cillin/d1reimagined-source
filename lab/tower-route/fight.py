@@ -94,7 +94,15 @@ def grab(path):
         from PIL import ImageGrab
         import d1_keys
         h = d1_keys._window()
-        if h and d1_keys._focus(h):
+        if h and d1_keys.post_mode():
+            # Locked desktop: no focus and no desktop grab (it would hold lock-screen pixels).
+            r = wt.RECT()
+            ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
+            im = _emulator_shot(h, r)
+            if im is not None:
+                im.save(path, compress_level=1)
+                return np.asarray(im).astype(int)
+        elif h and d1_keys._focus(h):
             r = wt.RECT()
             ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
             im = ImageGrab.grab((r.left, r.top, r.right, r.bottom), all_screens=True).convert('RGB')

@@ -22,10 +22,27 @@ _s = importlib.util.spec_from_file_location('gamefocus', os.path.join(os.path.di
 VK = {'W': 0x57, 'A': 0x41, 'S': 0x53, 'D': 0x44, 'I': 0x49, 'J': 0x4A, 'K': 0x4B, 'L': 0x4C,
       'FIRE': 0x4F, 'ADS': 0x45, 'GREN': 0x51, 'MELEE': 0x55, 'RELOAD': 0x64, 'JUMP': 0x62}
 _stamped = 0
+_post_hwnd = None
+def _posted_key(k, down):
+    """Posted mode (D1_KEYS_POST=1): WM_KEYDOWN/WM_KEYUP to the emulator window, so keys reach it with
+    the desktop locked. No focus, no keybd_event. The window is found once; re-found if a post fails."""
+    global _post_hwnd
+    import d1_keys
+    vk = VK[k]
+    lp = d1_keys.post_lparam(vk, u32.MapVirtualKeyW(vk, 0), down)
+    for _ in range(2):
+        if not _post_hwnd:
+            _post_hwnd = d1_keys._window()
+        if _post_hwnd and u32.PostMessageW(_post_hwnd, 0x100 if down else 0x101, vk, lp):
+            return
+        _post_hwnd = None
 def key(k, down):
     global _stamped
+    import d1_keys
+    posted = d1_keys.post_mode()
     if down:
-        _gf.ensure()
+        if not posted:
+            _gf.ensure()
         if time.time() - _stamped > 30:
             # The idle guard (d1-idle-guard.sh) presses keys after 300 s without this stamp, which
             # d1-pad.ps1 and d1_keys write; a long fight pressing keys directly never did.
@@ -35,6 +52,9 @@ def key(k, down):
                     f.write(str(int(_stamped)))
             except OSError:
                 pass
+    if posted:
+        _posted_key(k, down)
+        return
     u32.keybd_event(VK[k], u32.MapVirtualKeyW(VK[k], 0), 0 if down else 2, None)
 def tap(k, ms=60): key(k, True); time.sleep(ms / 1000); key(k, False)
 def hold(k, ms): key(k, True); time.sleep(max(0, ms) / 1000); key(k, False)
@@ -188,12 +208,18 @@ def main():
     ap.add_argument('--cover', help='x,y to retreat to: the route behind the Guardian (the replay passes it)')
     ap.add_argument('--idle-passes', type=int, default=8,
                     help='end the fight after this many passes in a row with nothing to shoot at (0: never)')
+    ap.add_argument('--post', action='store_true',
+                    help='post keys and read emulator frames, so it works with the desktop locked (D1_KEYS_POST=1)')
     a = ap.parse_args()
+    if a.post:
+        os.environ['D1_KEYS_POST'] = '1'
     cover = tuple(float(v) for v in a.cover.split(',')) if a.cover else None
     only = {int(x) for x in a.squads.split(',')} if a.squads else None
     # Focus the window without a key: NumPad4 is Square (reload), and every fight began with a
     # reload under fire.
-    W = World(); L('gamefocus').ensure()
+    W = World()
+    if not os.environ.get('D1_KEYS_POST') == '1':
+        L('gamefocus').ensure()
     log = open(a.log, 'a') if a.log else None
     t_end, k, lock, lock_seen, strafe, last_gren, bursts = time.time() + a.seconds, 0, None, 0, 1, 0, 0
     sight = time.time()                                   # last time a plate sat near the reticle
