@@ -172,7 +172,7 @@ def position(client, tracked, near=None):
 # (0xB1B0E0, slot 0x2803340 + user*0x140: +0x1A0 buttons, +0x1B0 sticks, +0x1B8 the result). Sticks
 # alone never count, so press square (reload; harmless with a full magazine) and nudge the stick.
 KEEPALIVE_S = 45
-JUMP_AT = 2.5      # metres: a jump-flagged waypoint is jumped from this close
+JUMP_AT = 2.5      # metres: a jump-flagged waypoint is jumped from this close (tuning, not game data)
 
 
 def load_route(points, step=None):
@@ -480,6 +480,8 @@ def main():
         if not out and should_jump(i, route, here, jumped):
             jumped.add(i)
             print(f'jump at wp {i}', flush=True)
+            # The pair that cleared the low wall in Restoration by hand (runs rst19/rst20, 13 Nov):
+            # tuning from those runs, not game data.
             pad('Hold:W+NumPad2:900')
             pad('Hold:W:1500')
             here = position(c, tracked, here) or here
