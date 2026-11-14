@@ -2714,23 +2714,21 @@ impl ActivityInstance {
             None => Self::PUBLIC_THRESHOLD,
         };
         let has_session = self.public_session(region).is_some();
-        let mut prev = self.public_threshold;
-        if std::env::var("D1_AH_PUBLIC_RELEASE_ON_SEARCH").is_ok_and(|v| v == "1") {
-            let searching = Self::search_start(self.target_search, region);
-            prev = Self::gate_on_search(prev, region, searching);
-            let Some(since) = searching.filter(|_| !matches!(prev, Some((r, _, true)) if r == region)) else {
-                self.public_threshold = prev;
-                return;
-            };
-            if prev.is_none() {
-                tracing::info!(
-                    "public region {region}: the client is searching (udt 21 target state 1); the ambassador wait starts (D1_AH_PUBLIC_RELEASE_ON_SEARCH)"
-                );
-                prev = Some((region, since, false));
-            }
+        let on_search = std::env::var("D1_AH_PUBLIC_RELEASE_ON_SEARCH").is_ok_and(|v| v == "1");
+        let searching = Self::search_start(self.target_search, region).is_some();
+        let (mut next, mut released) = Self::next_threshold(self.public_threshold, region, has_session, now, wait);
+        if on_search && released && !searching {
+            // The wait is up but the client is not searching for this region: hold it unreleased
+            // (keeping the start time) until a poll finds the client searching.
+            next.2 = false;
+            released = false;
         }
-        let (next, released) = Self::next_threshold(prev, region, has_session, now, wait);
         self.public_threshold = Some(next);
+        if on_search && released {
+            tracing::info!(
+                "public region {region}: the client is searching (udt 21 target state 1); the ambassador release is allowed (D1_AH_PUBLIC_RELEASE_ON_SEARCH)"
+            );
+        }
         if released {
             self.membership_dirty = true;
             tracing::info!(
@@ -2743,23 +2741,9 @@ impl ActivityInstance {
     }
 
     /// When the client's target record first showed region `region` searching (state 1), if it
-    /// still does.
+    /// currently does.
     fn search_start(target: Option<(u32, u8, Instant)>, region: u32) -> Option<Instant> {
         target.filter(|&(i, st, _)| i == region && st == 1).map(|(_, _, t)| t)
-    }
-
-    /// With the search gate on: a wait that has not been released is cancelled while the client is
-    /// not searching for `region`; a released region stays released; another region's entry is dropped.
-    fn gate_on_search(
-        prev: Option<(u32, Instant, bool)>,
-        region: u32,
-        searching: Option<Instant>,
-    ) -> Option<(u32, Instant, bool)> {
-        match prev {
-            Some(p @ (r, _, true)) if r == region => Some(p),
-            Some((r, _, false)) if r == region && searching.is_some() => prev,
-            _ => None,
-        }
     }
 
     /// One step of the threshold: a new region starts its wait; the wait ends (`true`: release
@@ -2857,9 +2841,9 @@ mod tests {
         assert!(j.target_search.is_none());
     }
 
-    /// `D1_AH_PUBLIC_RELEASE_ON_SEARCH`: off, today's wait from the first naming of the region; on,
-    /// no wait while the target state is 0, the wait counts from the first state-1 sighting, and the
-    /// state falling back to 0 cancels it. (One test: it owns the process environment.)
+    /// `D1_AH_PUBLIC_RELEASE_ON_SEARCH`: off, today's release 10 s after the region is first named;
+    /// on, the same wait, but the release is held (timer kept) until the client is searching for
+    /// the region (udt 21 target state 1). (One test: it owns the process environment.)
     #[test]
     fn the_public_threshold_release_on_search_waits_for_the_clients_search_state() {
         static ENV: std::sync::Mutex<()> = std::sync::Mutex::new(());
@@ -2885,45 +2869,49 @@ mod tests {
         i.update_public_threshold(t0 + sec(10));
         assert!(matches!(i.public_threshold, Some((48, _, true))), "knob off: released after 10 s regardless");
 
-        // Knob on.
+        // Knob on, state 0 throughout: held, still waiting, never released.
         std::env::set_var("D1_AH_PUBLIC_RELEASE_ON_SEARCH", "1");
         let (mut i, t0) = fresh();
         i.on_client_message(&msg(0), t0);
         i.update_public_threshold(t0);
         i.update_public_threshold(t0 + sec(30));
-        assert!(i.public_threshold.is_none(), "state 0: no wait, no release");
-        let t1 = t0 + sec(40);
-        i.on_client_message(&msg(1), t1);
-        i.update_public_threshold(t1);
-        i.update_public_threshold(t1 + sec(9));
-        assert!(matches!(i.public_threshold, Some((48, s, false)) if s == t1), "counts from the first state 1");
-        i.update_public_threshold(t1 + sec(10));
-        assert!(matches!(i.public_threshold, Some((48, _, true))), "released W after state 1");
-        i.on_client_message(&msg(0), t1 + sec(11));
-        i.update_public_threshold(t1 + sec(12));
+        assert!(matches!(i.public_threshold, Some((48, s, false)) if s == t0), "state 0: held, timer kept");
+
+        // State 1 seen at 3 s: released at 10 s (not 13).
+        let (mut i, t0) = fresh();
+        i.update_public_threshold(t0);
+        i.on_client_message(&msg(1), t0 + sec(3));
+        i.update_public_threshold(t0 + sec(9));
+        assert!(matches!(i.public_threshold, Some((48, _, false))));
+        i.update_public_threshold(t0 + sec(10));
+        assert!(matches!(i.public_threshold, Some((48, _, true))), "released at 10 s");
+        i.on_client_message(&msg(0), t0 + sec(11));
+        i.update_public_threshold(t0 + sec(12));
         assert!(matches!(i.public_threshold, Some((48, _, true))), "a released region stays released");
 
-        // State back to 0 before the release cancels the wait; a later state 1 restarts it.
+        // State 1 seen only at 25 s: released at 25 s.
         let (mut i, t0) = fresh();
-        i.on_client_message(&msg(1), t0);
-        i.update_public_threshold(t0 + sec(5));
-        i.on_client_message(&msg(0), t0 + sec(6));
-        i.update_public_threshold(t0 + sec(7));
-        assert!(i.public_threshold.is_none(), "cancelled");
-        i.update_public_threshold(t0 + sec(20));
-        assert!(i.public_threshold.is_none(), "still no release");
-        i.on_client_message(&msg(1), t0 + sec(21));
-        i.update_public_threshold(t0 + sec(21));
-        i.update_public_threshold(t0 + sec(30));
-        assert!(matches!(i.public_threshold, Some((48, _, false))), "the wait restarted at 21 s");
-        i.update_public_threshold(t0 + sec(31));
-        assert!(matches!(i.public_threshold, Some((48, _, true))));
+        i.update_public_threshold(t0);
+        i.update_public_threshold(t0 + sec(24));
+        assert!(matches!(i.public_threshold, Some((48, _, false))));
+        i.on_client_message(&msg(1), t0 + sec(25));
+        i.update_public_threshold(t0 + sec(25));
+        assert!(matches!(i.public_threshold, Some((48, _, true))), "released at the first search poll");
 
-        // A target on another region does not start region 48's wait.
+        // State 1 then 0 before the wait is up: no release, timer kept.
         let (mut i, t0) = fresh();
-        i.on_client_message(&ClientMessage::ClientAuthoritativeDataUpdate { struct_image: target_image(56, 1) }, t0);
+        i.update_public_threshold(t0);
+        i.on_client_message(&msg(1), t0 + sec(3));
+        i.on_client_message(&msg(0), t0 + sec(4));
+        i.update_public_threshold(t0 + sec(12));
+        assert!(matches!(i.public_threshold, Some((48, s, false)) if s == t0));
+
+        // Another region's state 1 does not release 48.
+        let (mut i, t0) = fresh();
+        i.update_public_threshold(t0);
+        i.target_search = Some((56, 1, t0));
         i.update_public_threshold(t0 + sec(30));
-        assert!(i.public_threshold.is_none());
+        assert!(matches!(i.public_threshold, Some((48, _, false))));
         std::env::remove_var("D1_AH_PUBLIC_RELEASE_ON_SEARCH");
         for k in ["D1_AH_PUBLIC_AMBASSADOR", "D1_AH_PUBLIC_REGIONS", "D1_AH_PUBLIC_THRESHOLD_MS"] {
             std::env::remove_var(k);
