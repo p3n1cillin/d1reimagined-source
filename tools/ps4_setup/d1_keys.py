@@ -122,18 +122,29 @@ def press(*keys, gap=150, post=None):
         if not posted and not _focus(h):
             continue
         scans = [user32.MapVirtualKeyW(code, 0) for code in codes]
-        if posted:
-            for code, scan in zip(codes, scans):
+
+        def down(code, scan):
+            if posted:
                 user32.PostMessageW(h, 0x100, code, post_lparam(code, scan, True))
-            time.sleep(hold / 1000)
-            for code, scan in reversed(list(zip(codes, scans))):
-                user32.PostMessageW(h, 0x101, code, post_lparam(code, scan, False))
-        else:
-            for code, scan in zip(codes, scans):
+            else:
                 user32.keybd_event(code, scan, key_flags(code), 0)
-            time.sleep(hold / 1000)
-            for code, scan in reversed(list(zip(codes, scans))):
+
+        def up(code, scan):
+            if posted:
+                user32.PostMessageW(h, 0x101, code, post_lparam(code, scan, False))
+            else:
                 user32.keybd_event(code, scan, key_flags(code) | 2, 0)
+
+        pressed = []
+        try:
+            for code, scan in zip(codes, scans):
+                down(code, scan)
+                pressed.append((code, scan))
+            time.sleep(hold / 1000)
+        finally:
+            # Release in reverse whatever went down, even if a later key of the chord failed.
+            for code, scan in reversed(pressed):
+                up(code, scan)
         stamp = int(time.time())
         time.sleep(gap / 1000)
     if stamp and tools:
