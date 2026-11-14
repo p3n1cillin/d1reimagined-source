@@ -99,6 +99,23 @@ class Posted(unittest.TestCase):
         self.assertEqual(tuple(a[0, 0]), (9, 8, 7))
         os.remove(out)
 
+    def test_posted_grab_failed_shot_reuses_last_then_fails(self):
+        os.environ['D1_KEYS_POST'] = '1'
+        from PIL import Image
+        out = os.path.join(os.environ.get('TEMP', '.'), 'combat_posted_fail.png')
+        fight._last_good[0] = None
+        with mock.patch.object(d1_keys, '_window', return_value=1),                 mock.patch.object(fight.subprocess, 'run') as run,                 mock.patch.object(fight, '_emulator_shot', side_effect=[Image.new('RGB', (4, 3), (1, 2, 3)), None]):
+            first = fight.grab(out)
+            again = fight.grab(out)          # shot fails: the last good frame
+            self.assertEqual(tuple(again[0, 0]), (1, 2, 3))
+            self.assertTrue((first == again).all())
+        fight._last_good[0] = None
+        with mock.patch.object(d1_keys, '_window', return_value=1),                 mock.patch.object(fight.subprocess, 'run') as run,                 mock.patch.object(fight, '_emulator_shot', return_value=None):
+            with self.assertRaises(FileNotFoundError):
+                fight.grab(out)
+        run.assert_not_called()
+        os.remove(out)
+
     def test_default_grab_still_focuses_and_grabs(self):
         from PIL import Image
         out = os.path.join(os.environ.get('TEMP', '.'), 'combat_default_grab.png')

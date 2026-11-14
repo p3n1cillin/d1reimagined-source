@@ -82,6 +82,28 @@ def _emulator_shot(h, rect, timeout=3.0):
     return None
 
 
+_last_good = [None]                # the last emulator frame, reused when a posted-mode shot fails
+_warned = [False]
+
+
+def d1_keys_posted():
+    try:
+        import d1_keys
+        return d1_keys.post_mode()
+    except Exception:
+        return False
+
+
+def _no_posted_frame():
+    """Posted mode has no desktop fallback (a locked desktop gives lock-screen pixels the readers
+    would misread). With no frame at all, fail as a grab does today when the script leaves no
+    file: Image.open raises FileNotFoundError."""
+    if not _warned[0]:
+        _warned[0] = True
+        print('grab: no emulator frame (posted mode); no desktop fallback', flush=True)
+    raise FileNotFoundError('no emulator frame (posted mode)')
+
+
 def grab(path):
     """The shadPS4 window as an RGB int array, also saved to `path`.
 
@@ -99,9 +121,14 @@ def grab(path):
             r = wt.RECT()
             ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
             im = _emulator_shot(h, r)
-            if im is not None:
-                im.save(path, compress_level=1)
-                return np.asarray(im).astype(int)
+            if im is None:
+                im = _last_good[0]
+            else:
+                _last_good[0] = im
+            if im is None:
+                _no_posted_frame()
+            im.save(path, compress_level=1)
+            return np.asarray(im).astype(int)
         elif h and d1_keys._focus(h):
             r = wt.RECT()
             ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
@@ -110,6 +137,9 @@ def grab(path):
                 im = _emulator_shot(h, r) or im
             im.save(path, compress_level=1)
             return np.asarray(im).astype(int)
+    except FileNotFoundError:
+        if d1_keys_posted():
+            raise
     except Exception:
         pass
     subprocess.run(['powershell', '-NoProfile', '-File', SHOT, '-Out', path], capture_output=True)
