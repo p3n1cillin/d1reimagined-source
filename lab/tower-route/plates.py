@@ -42,9 +42,9 @@ def plates(img):
         box = solid[y0:y1 + 1, x0:x1 + 1]
         if box.mean() < (0.75 if y1 - y0 < 14 else 0.45):
             continue
-        # A nameplate has the enemy's name in white just above its bar.
+        # A nameplate has the enemy's name in white just above its bar (not a bright muzzle flash).
         above = img[max(0, y0 - 30):y0 - 3, x0:min(x0 + 120, W)]
-        if (above.min(axis=2) > 200).sum() < 25:
+        if (above.min(axis=2) > 200).sum() < 25 or np.median(above[:, :, 0]) > 180:
             continue
         out.append(((x0 + x1) // 2, (y0 + y1) // 2, x1 - x0 + 1, y1 - y0 + 1))
     return out

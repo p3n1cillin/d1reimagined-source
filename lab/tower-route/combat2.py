@@ -83,6 +83,9 @@ def damage_dir(img):
     a = img[CY - 260:CY + 260, CX - 260:CX + 260].astype(int)
     yy, xx = np.mgrid[-260:260, -260:260]
     r = np.hypot(xx, yy)
+    # A weapon muzzle flash blooms across the damage-marker ring; ignore frames with a bright flash core.
+    if ((a[:, :, 0] > 230) & (a[:, :, 1] > 200) & (a[:, :, 2] > 150) & (r < 160)).sum() > 2000:
+        return None
     m = (a[:, :, 0] > 200) & (a[:, :, 1] < 120) & (a[:, :, 2] < 70) & (a[:, :, 0] - a[:, :, 1] > 120) & (r > 140) & (r < 230)
     if m.sum() < 150:
         return None
@@ -399,7 +402,7 @@ def main():
                     rp = -(cy + 40 - CY) / HALF_H * VFOV / 2 - ep0
                     if abs(ry) > 0.02: hold('L' if ry < 0 else 'J', max(25, abs(ry) / YAW_RATE))
                     if abs(rp) > 0.03: hold('I' if rp > 0 else 'K', max(25, abs(rp) / PITCH_RATE))
-                    key('FIRE', True); time.sleep(0.6); key('FIRE', False); fired += 1
+                    key('FIRE', True); time.sleep(0.6); key('FIRE', False); time.sleep(0.12); fired += 1
                     blocked[lock], blind = time.time() + 5, 0
                     print(k, f'lock {lock} out of sight; fired at the plate at ({cx}, {cy})', flush=True)
                 elif not ok and not in_view and (dd := damage_dir(fight.grab(img_path))) is not None:
@@ -408,7 +411,7 @@ def main():
                     # locked junction-west squad 74 at 19-30 m with aim() failing every pass (aimed
                     # False, plates 0), fired nothing, and died nine times at (450, -714).
                     hold('L' if dd > 0 else 'J', max(25, abs(dd) / YAW_RATE))
-                    key('FIRE', True); time.sleep(0.5); key('FIRE', False); fired += 1
+                    key('FIRE', True); time.sleep(0.5); key('FIRE', False); time.sleep(0.12); fired += 1
                     blocked[lock], blind = time.time() + 5, 0
                     print(k, f'aim on lock {lock} failed; hit from {math.degrees(dd):.0f} deg: turned and fired', flush=True)
                 elif ok and not in_view and (dd := damage_dir(img)) is not None and abs(wrap(dd + ey0)) > 0.6:
@@ -418,7 +421,7 @@ def main():
                     # as a player would, and leave the lock for a few seconds.
                     turn = wrap(dd + ey0)                  # from the lock's heading to the marker, clockwise
                     hold('L' if turn > 0 else 'J', max(25, abs(turn) / YAW_RATE))
-                    key('FIRE', True); time.sleep(0.5); key('FIRE', False); fired += 1
+                    key('FIRE', True); time.sleep(0.5); key('FIRE', False); time.sleep(0.12); fired += 1
                     blocked[lock], blind = time.time() + 5, 0
                     print(k, f'hit from {math.degrees(dd):.0f} deg, not from lock {lock}: turned and fired', flush=True)
                 elif ok and not in_view:
@@ -428,7 +431,7 @@ def main():
                         # One short probe burst: a hit brings up the enemy's plate and health bar, so a
                         # real target shows itself next frame. Plates are missed in some light (sense108's
                         # corridor: 40 skips and almost no return fire), so never firing at all killed us.
-                        key('FIRE', True); time.sleep(0.3); key('FIRE', False)
+                        key('FIRE', True); time.sleep(0.3); key('FIRE', False); time.sleep(0.12)
                     elif blind == 2:
                         hold('A' if strafe > 0 else 'D', 450)    # peek round the corner once
                     elif blind >= 3:
@@ -442,7 +445,7 @@ def main():
                     if ads: key('ADS', True); time.sleep(0.25)
                     fired += 1
                     key('FIRE', True); key('A' if strafe > 0 else 'D', True); time.sleep(0.7)
-                    key('FIRE', False); key('A', False); key('D', False); key('ADS', False)
+                    key('FIRE', False); key('A', False); key('D', False); key('ADS', False); time.sleep(0.12)
                     v1 = W.vital(lock) if v0 is not None else None
                     if v0 is not None and v1 is not None:
                         misses = 0 if v1 < v0 - 1e-4 else misses + 1
@@ -466,7 +469,7 @@ def main():
                 if dd is not None:
                     # Hit by something unseen: turn to it and fire, as a player would.
                     hold('L' if dd > 0 else 'J', max(25, abs(dd) / YAW_RATE))
-                    key('FIRE', True); time.sleep(0.5); key('FIRE', False); fired += 1
+                    key('FIRE', True); time.sleep(0.5); key('FIRE', False); time.sleep(0.12); fired += 1
                     msg = f'{k}: hit from {math.degrees(dd):.0f} deg; turned and fired'
                 else:
                     hold('L', 250); hold('W', 200); msg = f'{k}: no live enemy within 35 m; level and sweep'

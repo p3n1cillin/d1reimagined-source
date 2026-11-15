@@ -10,6 +10,7 @@ import argparse, heapq, importlib.util, math, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); import routepaths  # noqa: E402
+import d1_keys  # noqa: E402
 
 # name: (x, y). Edges below are undirected and were walked in sense40-sense42. The NUX doorway is
 # crossed heading WSW (nux -> gap); (102.4, -539.3) is the room's corner and traps the walker.
@@ -81,9 +82,11 @@ def escape_pocket(w, c):
     import threading
     stop = threading.Event()
     def jumps():
+        cmd = ['powershell', '-NoProfile', '-File', str(routepaths.PAD), '-Keys', 'Hold:NumPad2:300']
+        if d1_keys.post_mode():
+            cmd.append('-Post')
         while not stop.wait(1.2):
-            subprocess.run(['powershell', '-NoProfile', '-File', str(routepaths.PAD), '-Keys', 'Hold:NumPad2:300'],
-                           capture_output=True)
+            subprocess.run(cmd, capture_output=True)
     t = threading.Thread(target=jumps, daemon=True); t.start()
     try:
         subprocess.run([sys.executable, '-u', os.path.join(HERE, 'run.py'), f'{OVER[0]},{OVER[1]}', '--max-s', '20',
@@ -99,7 +102,11 @@ def escape_pocket(w, c):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('target'); ap.add_argument('--sprint', action='store_true')
-    ap.add_argument('--max-s', type=float, default=180); a = ap.parse_args()
+    ap.add_argument('--max-s', type=float, default=180)
+    ap.add_argument('--post', action='store_true', help='post keys to the emulator window, so it works with the desktop locked (D1_KEYS_POST=1)')
+    a = ap.parse_args()
+    if a.post:
+        os.environ['D1_KEYS_POST'] = '1'
     s = importlib.util.spec_from_file_location('w', routepaths.WALK); w = importlib.util.module_from_spec(s); s.loader.exec_module(w)
     c = w.Client(); c.native_unit = True
     here = w.position(c, None)[:2]
@@ -117,7 +124,7 @@ def main():
         pts.insert(0, NODES[start])
     print(f'from {here[0]:.1f},{here[1]:.1f} via {" > ".join(path)}', flush=True)
     cmd = [sys.executable, '-u', os.path.join(HERE, 'run.py'), ';'.join(f'{x},{y}' for x, y in pts),
-           '--max-s', str(a.max_s), '--tol', '1.5'] + ([] if a.sprint else ['--walk'])
+           '--max-s', str(a.max_s), '--tol', '1.5'] + ([] if a.sprint else ['--walk']) + (['--post'] if d1_keys.post_mode() else [])
     # The walker honours --max-s; the margin only covers its startup. Never outlive our own caller.
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=a.max_s + 30)

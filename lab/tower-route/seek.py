@@ -28,10 +28,16 @@ def face(W, yaw_goal):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('target'); ap.add_argument('--max-s', type=float, default=120)
-    ap.add_argument('--tol', type=float, default=2.5); ap.add_argument('--trail'); ap.add_argument('--no-nav', action='store_true'); a = ap.parse_args()
+    ap.add_argument('--tol', type=float, default=2.5); ap.add_argument('--trail'); ap.add_argument('--no-nav', action='store_true')
+    ap.add_argument('--post', action='store_true', help='post keys to the emulator window, so it works with the desktop locked (D1_KEYS_POST=1)')
+    a = ap.parse_args()
+    if a.post:
+        os.environ['D1_KEYS_POST'] = '1'
     tx, ty = map(float, a.target.split(','))
     start = time.time()
-    W = c.World(); c.L('gamefocus').ensure()   # focus without a key (NumPad4 is Square, reload)
+    W = c.World()
+    if not c._d1_keys().post_mode():
+        c.L('gamefocus').ensure()   # focus without a key (NumPad4 is Square, reload)
     # Walk the known graph to the node nearest the target first; free (bug) walking only covers the rest.
     # The whole run stays within --max-s: nav gets 60% of it and is stopped (keys released) if it
     # overruns, so no walker outlives this process and drives alongside the next tool.
@@ -39,7 +45,7 @@ def main():
     nav_s = min(150, a.max_s * 0.6)
     try:
         r = subprocess.CompletedProcess([], 0) if a.no_nav else subprocess.run(
-            [sys.executable, '-u', os.path.join(HERE, 'nav.py'), a.target, '--max-s', str(nav_s)],
+            [sys.executable, '-u', os.path.join(HERE, 'nav.py'), a.target, '--max-s', str(nav_s)] + (['--post'] if c._d1_keys().post_mode() else []),
             capture_output=True, text=True, timeout=nav_s + 45)
     except subprocess.TimeoutExpired:
         c.release_all(); r = subprocess.CompletedProcess([], 1)
