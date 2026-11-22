@@ -18,6 +18,7 @@ SOURCE is a folder of dated working folders; each lands at DEST/<name> with the 
 """
 import argparse
 import fnmatch
+import importlib.util
 import os
 import re
 import shutil
@@ -63,6 +64,10 @@ def load_local_patterns(path):
     return rules
 
 
+_spec = importlib.util.spec_from_file_location(
+    'check_pr', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '.github', 'scripts', 'check_pr.py'))
+CHECK_PR = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(CHECK_PR)
 SCRUB = list(GENERIC_SCRUB)
 PERSONAL = list(GENERIC_PERSONAL)
 MAX_BYTES = 5 * 1024 * 1024
@@ -107,7 +112,9 @@ def verdict(path, rel):
 def scrub(data):
     for pattern, replacement in SCRUB:
         data = pattern.sub(replacement, data)
-    return data
+    # Then this project's lab roots (the d1 folder and the like), with the placeholders check_pr.py asks for.
+    text, n = CHECK_PR.LAB_PATH.subn(CHECK_PR.lab_placeholder, data.decode('utf-8', 'surrogateescape'))
+    return text.encode('utf-8', 'surrogateescape') if n else data
 
 
 def unlink_missing(dest):
