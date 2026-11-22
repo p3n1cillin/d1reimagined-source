@@ -5,7 +5,7 @@ emulator's own screenshot when the desktop reads black: the monitor off, 7 Novem
     python frames-every.py --out DIR [--every 10] [--minutes 80] [--stop RUN/boot/stop]
 
 Writes DIR/f0000.png, f0001.png, ... and DIR/frames.tsv (index, UTC time, mean brightness, source
-size). Frames hold game pictures: keep DIR outside the repository (F:/d1/private).
+size). Frames hold game pictures: keep DIR outside the repository (e.g. under <D1_ROOT>/private).
 """
 import argparse
 import os

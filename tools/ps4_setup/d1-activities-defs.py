@@ -25,13 +25,17 @@ notes/ps4-56578-strikes-raids-crucible-2026-11-05.md explains the sources.
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-SCRIPTS = Path('F:/d1/third-party/Blam-Network_tiger/packages/fukugen-daihon/destiny1/v56578_17_04_12_1251_evil')
-COMMUNITY = Path('F:/d1/third-party/nruble_cryptarch-guide/public/data/activityPageData.json')
-CFG = {'scripts': SCRIPTS}
+sys.path.insert(0, str(HERE))
+import d1paths  # noqa: E402  sibling: local paths from D1_ROOT or paths.json
+# Local inputs resolve when used (D1_ROOT / paths.json), so importing this file never needs them.
+SCRIPTS_BELOW = 'Blam-Network_tiger/packages/fukugen-daihon/destiny1/v56578_17_04_12_1251_evil'
+COMMUNITY_BELOW = 'nruble_cryptarch-guide/public/data/activityPageData.json'
+CFG = {'scripts': None}
 
 
 def fnv1(s):
@@ -551,9 +555,11 @@ def write(path, doc):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('--dir', type=Path, default=ROOT / 'ps4' / 'fixtures' / '56578' / 'activities')
-    ap.add_argument('--scripts', type=Path, default=SCRIPTS)
-    ap.add_argument('--community', type=Path, default=COMMUNITY)
+    ap.add_argument('--scripts', type=Path, default=None, help='default: D1_THIRD_PARTY/' + SCRIPTS_BELOW)
+    ap.add_argument('--community', type=Path, default=None, help='default: D1_THIRD_PARTY/' + COMMUNITY_BELOW)
     a = ap.parse_args()
+    a.scripts = a.scripts or d1paths.third_party().joinpath(*SCRIPTS_BELOW.split('/'))
+    a.community = a.community or d1paths.third_party().joinpath(*COMMUNITY_BELOW.split('/'))
     CFG['scripts'] = a.scripts
     scripts_ok = a.scripts.exists()
     catalog = json.loads((a.dir / 'catalog.json').read_text(encoding='utf-8'))

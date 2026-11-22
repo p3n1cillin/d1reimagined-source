@@ -8,12 +8,16 @@
 //
 // Reads packages with gibbon, from Blam Network's tiger libraries
 // (https://github.com/Blam-Network/tiger, MIT). Build that repository (npm ci && npm run build)
-// and point D1_TIGER at its folder (default F:/d1/third-party/Blam-Network_tiger). Output is CSV:
+// and point D1_TIGER at its folder (default third-party/Blam-Network_tiger below D1_ROOT). Output is CSV:
 // group,bundle_tag,world_hash,slotted_rows,index,type,name. It is game data: keep it outside the repo.
 import { createRequire } from "node:module";
 import path from "node:path";
 
-const tiger = process.env.D1_TIGER ?? "F:/d1/third-party/Blam-Network_tiger";
+const tiger = process.env.D1_TIGER ?? (process.env.D1_ROOT ? path.join(process.env.D1_ROOT, "third-party", "Blam-Network_tiger") : undefined);
+if (!tiger) {
+  console.error("set D1_TIGER (a built Blam-Network tiger checkout) or D1_ROOT (then third-party/Blam-Network_tiger below it)");
+  process.exit(2);
+}
 // The CommonJS build: the ES-module one imports cstruct without file extensions, which Node 22 refuses.
 const g = createRequire(import.meta.url)(
   path.join(tiger, "packages/gibbon/dist-cjs/versions/destiny1/v56578_17_04_12_1251_evil.js")

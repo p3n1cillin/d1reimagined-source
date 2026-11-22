@@ -20,8 +20,12 @@ import json
 import re
 import struct
 import subprocess
+import sys
 import time
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools' / 'ps4_setup'))
+import d1paths  # noqa: E402  local paths from D1_ROOT or paths.json
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--out', default='')
@@ -34,7 +38,7 @@ listing = subprocess.run(['tasklist', '/FI', 'IMAGENAME eq shadPS4.exe', '/FO', 
                          capture_output=True, text=True).stdout
 ids = [int(line.split('","')[1]) for line in listing.splitlines() if line.startswith('"shadPS4')]
 assert len(ids) == 1, 'want exactly one shadPS4.exe'
-log = Path(r'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt').read_bytes()[:2_000_000].decode('utf8', 'replace')
+log = (d1paths.shadps4() / 'user' / 'log' / 'shad_log.txt').read_bytes()[:2_000_000].decode('utf8', 'replace')
 bases = re.findall(r'Loading module eboot\.bin to (0x[0-9a-f]+)', log)
 assert len(bases) == 1, 'eboot base not found once in the log'
 base = int(bases[0], 16)
