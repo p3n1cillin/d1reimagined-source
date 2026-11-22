@@ -4,14 +4,14 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 1	0xdf283afb	Tower	ACTIVITY_TYPE_SOCIAL	city_tower_default1	24	2014 start bubble	0	0	0x40aebf90	generated	client's activity definition names it; 2014 table, same name and description
 2	0x5abb3f0a	Tower	ACTIVITY_TYPE_SOCIAL	city_tower_queen	24	2014 start bubble	0	0	0x40aebf90	generated	client's activity definition names it; 2014 table, same hash
 3	0x85c9212f	Tower	ACTIVITY_TYPE_SOCIAL	city_tower_harvest	0	stand-in: first private slice set	0	0	0x40aebf90	generated	client's activity definition names it; 2014 table, same name and description said city_tower_default1/city_tower_queen
-4	0x803bf7e1	Tower	ACTIVITY_TYPE_SOCIAL	city_tower_srl	0	stand-in: first private slice set	0	0	0x40aebf90	generated	client's activity definition names it; 2014 table, same name and description said city_tower_default1/city_tower_queen
+4	0x803bf7e1	Tower	ACTIVITY_TYPE_SOCIAL	city_tower_srl	24	capture	0	0	0x40aebf90	cross-checked	live capture batch 2026-11 (51539); 2014 table, same name and description said city_tower_default1/city_tower_queen; client's activity definition agrees
 5	0x8308208f	Tower	ACTIVITY_TYPE_SOCIAL	city_tower_fol	0	stand-in: first private slice set	0	0	0x40aebf90	generated	client's activity definition names it; 2014 table, same name and description said city_tower_default1/city_tower_queen
 6	0xf20c5ae3	Tower	ACTIVITY_TYPE_SOCIAL	city_tower_crimson	0	stand-in: first private slice set	0	0	0x40aebf90	generated	client's activity definition names it; 2014 table, same name and description said city_tower_default1/city_tower_queen
 7	0x352ee663	Tower	ACTIVITY_TYPE_SOCIAL	city_tower_chalice	0	stand-in: first private slice set	0	0	0x40aebf90	generated	client's activity definition names it; 2014 table, same name and description said city_tower_default1/city_tower_queen
 8	0xd950510d	Patrol Cosmodrome	ACTIVITY_TYPE_EXPLORE	-	-	-	-	-	-	missing evidence	client's activity definition names cosmo_patrols_1, which has no scenario in this build
 9	0x08e75fe9	Patrol the Moon	ACTIVITY_TYPE_EXPLORE	patrol_accel_com01	24	stand-in: first private slice set	0	24	0x349cdad1	generated	same name and destination as 96 (generated); client's activity definition names moon_patrols_1, which has no scenario in this build
 10	0x937f5faf	Patrol Venus	ACTIVITY_TYPE_EXPLORE	patrol_shat_com01	24	capture of 97	0	0	0x7cf2807b	generated	same name and destination as 97 (cross-checked); client's activity definition names venus_patrols_1, which has no scenario in this build
-11	0x198732a1	Patrol Mars	ACTIVITY_TYPE_EXPLORE	patrol_plains_com01	0	stand-in: first private slice set	0	0	0xed129a7d	generated	same name and destination as 95 (generated); client's activity definition names mars_patrols_1, which has no scenario in this build
+11	0x198732a1	Patrol Mars	ACTIVITY_TYPE_EXPLORE	patrol_plains_com01	144	capture of 95	1	0	0xed129a7d	generated	same name and destination as 95 (cross-checked); client's activity definition names mars_patrols_1, which has no scenario in this build
 12	0x9e80e7c7	Vault of Glass	ACTIVITY_TYPE_RAID	venus_raid_1	120	2014 start bubble	1	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same hash
 13	0x9e80e7c4	Vault of Glass	ACTIVITY_TYPE_RAID	venus_raid_1	120	2014 start bubble	1	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same hash
 14	0x9e80e7c5	Vault of Glass	ACTIVITY_TYPE_RAID	venus_raid_1	120	2014 start bubble	1	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same hash
@@ -72,9 +72,9 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 69	0x2a1be881	Weekly Heroic Strike	STRIKE_WEEKLY	venus_portal_2	24	capture of 310 (same world)	0	0	0x4786c0e0	generated	client's activity definition names it
 70	0x2a1be882	Weekly Heroic Strike	STRIKE_WEEKLY	venus_portal_2	24	capture of 310 (same world)	0	0	0x4786c0e0	generated	client's activity definition names it
 71	0x6841edf8	Vanguard Nightfall	Strike	-	-	-	-	-	-	missing evidence	playlist: launches another activity
-72	0xb70aca6c	Fallen S.A.B.E.R.	Strike	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-73	0xab4b382b	The Sunless Cell	Strike	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-74	0x152bedd1	Shield Brothers	Strike	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
+72	0xb70aca6c	Fallen S.A.B.E.R.	Strike	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+73	0xab4b382b	The Sunless Cell	Strike	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+74	0x152bedd1	Shield Brothers	Strike	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
 75	0x494032b9	Dust Palace	Strike	mars_portal_1_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said mars_portal_1
 76	0x6e03eeee	Cerberus Vae III	Strike	mars_portal_2_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name and description said mars_portal_2
 77	0xb2367e7f	The Undying Mind	Strike	mars_portal_3_com01	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
@@ -87,15 +87,15 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 84	0x81b74818	The Shadow Thief	Strike	strike_vampire	24	capture of 308	0	24	0xf29221f5	generated	client's activity definition names it
 85	0xaca2e82a	The Nexus	Strike	venus_portal_1	120	capture of 309	1	0	0xf29221f5	generated	client's activity definition names it; 2014 table, same name and description
 86	0xaca2e829	Winter's Run	Strike	venus_portal_2	24	capture of 310	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name
-87	0x75aaf5c8	Blighted Chalice	Strike	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
+87	0x75aaf5c8	Blighted Chalice	Strike	strike_kingpin	112	capture of 340	0	24	0x4786c0e0	generated	client's activity definition names it
 88	0xaa934392	Winter's Run	Strike	venus_portal_2_redux	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said venus_portal_2
-89	0xbc7afc7a	Echo Chamber	Strike	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+89	0xbc7afc7a	Echo Chamber	Strike	strike_tracker	224	capture of 297	1	0	0x4786c0e0	generated	client's activity definition names it
 90	0x3148876e	The Wretched Eye	Strike	strike_oath	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 91	0xe61f08e8	Sepiks Perfected	Strike	strike_starfish	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
 92	0xf648fc81	The Abomination Heist	Strike	strike_turtle_dlc03	24	stand-in: first private slice set	0	24	0xf29221f5	generated	client's activity definition names it
 93	0x09fa9d74	Patrol the Cosmodrome	ACTIVITY_TYPE_EXPLORE	patrol_deltas_com01	56	capture	1	8	0x0ec11855	cross-checked	live capture Patrol-Cosmodrome; client's activity definition agrees
 94	0xbf5654df	Patrol the Dreadnaught	ACTIVITY_TYPE_EXPLORE	hiveship_patrols_1	8	capture	1	0	0x78708b21	cross-checked	live capture Patrol.Silent-Scream; client's activity definition agrees
-95	0x8ef59712	Patrol Mars	ACTIVITY_TYPE_EXPLORE	patrol_plains_com01	0	stand-in: first private slice set	0	0	0xed129a7d	generated	client's activity definition names it
+95	0x8ef59712	Patrol Mars	ACTIVITY_TYPE_EXPLORE	patrol_plains_com01	144	capture	1	0	0xed129a7d	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
 96	0x4990ddce	Patrol the Moon	ACTIVITY_TYPE_EXPLORE	patrol_accel_com01	24	stand-in: first private slice set	0	24	0x349cdad1	generated	client's activity definition names it
 97	0x79ea1946	Patrol Venus	ACTIVITY_TYPE_EXPLORE	patrol_shat_com01	24	capture	0	0	0x7cf2807b	cross-checked	live capture Patrol.Scattered-Pack; client's activity definition agrees
 98	0x3e5612af	Clash	ACTIVITY_TYPE_PVP_TEAM	-	-	-	-	-	-	missing evidence	playlist: launches another activity
@@ -225,10 +225,10 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 222	0xb4541f42	The Archon-Slayer	QUEST	quest_nightcrawler	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
 223	0xd5230014	Wolves' Gambit	ACTIVITY_TYPE_STORY	quest_safari	80	capture	1	0	0x4786c0e0	cross-checked	live capture Wolves-Gambit; client's activity definition agrees
 224	0x4e0d9a1e	Wolves' Gambit	ACTIVITY_TYPE_STORY	quest_safari	80	capture of 223	1	0	0x4786c0e0	generated	client's activity definition names it
-225	0x69ab63e9	Tenebrous Tunnels	QUEST	quest_apollo	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+225	0x69ab63e9	Tenebrous Tunnels	QUEST	quest_apollo	192	capture	1	0	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
 226	0x076413cb	Shadows at Twilight	QUEST_SOLO	pvp_city_defense_carbon	0	only slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-227	0xdd0fe691	Entropy's Pinnacle	QUEST	quest_catalyst	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-228	0x8ea9471d	Entropy's Pinnacle	QUEST	quest_catalyst	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+227	0xdd0fe691	Entropy's Pinnacle	QUEST	quest_catalyst	24	capture	0	0	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+228	0x8ea9471d	Entropy's Pinnacle	QUEST	quest_catalyst	24	capture of 227	0	0	0x4786c0e0	generated	client's activity definition names it
 229	0x0f0a84cb	Hangar Stakes	CREDITS	cine_hangar	17	capture	0	0	0x4786c0e0	cross-checked	live capture Caydes-Stash; client's activity definition agrees
 230	0x05a9e8e1	Lost to Light	STORY_CINEMATIC	mission_deja	40	capture of 238	0	24	0x4786c0e0	generated	same name and destination as 238 (cross-checked); client's activity definition names no world
 231	0xdc8a12dd	Oryx Triumphant	STORY_CINEMATIC	-	-	-	-	-	-	missing evidence	client's activity definition names no world
@@ -240,7 +240,7 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 237	0x7c3c011b	Dread Patrol	QUEST	quest_deadflower	8	capture	0	0	0x4786c0e0	cross-checked	live capture Dread-Patrol; client's activity definition agrees
 238	0x4f2ca5ee	Lost to Light	ACTIVITY_TYPE_STORY	mission_deja	40	capture	0	24	0x4786c0e0	cross-checked	live capture Lost-to-Light; client's activity definition agrees
 239	0x9b45060c	Lost to Light	ACTIVITY_TYPE_STORY	mission_deja	40	capture of 238	0	24	0x4786c0e0	generated	client's activity definition names it
-240	0xadfb06fb	Summoner's Circle	ACTIVITY_TYPE_STORY	mission_destroyer	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+240	0xadfb06fb	Summoner's Circle	ACTIVITY_TYPE_STORY	mission_destroyer	8	capture	1	0	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
 241	0xf3a68342	Cayde's Stash	ACTIVITY_TYPE_STORY	mission_elevator	16	capture	0	8	0x4786c0e0	cross-checked	live capture Caydes-Stash; client's activity definition agrees
 242	0x49205c00	Cayde's Stash	ACTIVITY_TYPE_STORY	mission_elevator	16	capture of 241	0	8	0x4786c0e0	generated	client's activity definition names it
 243	0xdd6fb356	Shadow Call	QUEST_SOLO	quest_helium	8	stand-in: first private slice set	0	8	0x4786c0e0	generated	client's activity definition names it
@@ -250,29 +250,29 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 247	0xdcdb0713	A Ranger Found	QUEST_SOLO	mission_marathon_hunter	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 248	0x3a82b685	Bound by Fire	QUEST_SOLO	mission_marathon_titan	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 249	0x9eb5b770	Bottle the Arc	QUEST_SOLO	mission_marathon_warlock	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-250	0x8b1a7813	Fear's Embrace	QUEST	mission_microwave	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-251	0x9bf38b3d	Fear's Embrace	QUEST	mission_microwave	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-252	0xf12e5790	Fear's Embrace	QUEST	mission_microwave	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+250	0x8b1a7813	Fear's Embrace	QUEST	mission_microwave	8	capture	0	0	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+251	0x9bf38b3d	Fear's Embrace	QUEST	mission_microwave	8	capture of 250	0	0	0x4786c0e0	generated	client's activity definition names it
+252	0xf12e5790	Fear's Embrace	QUEST	mission_microwave	8	capture of 250	0	0	0x4786c0e0	generated	client's activity definition names it
 253	0x3fac5eaa	Blood in the Garden	QUEST	quest_nitrogen	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 254	0xece80ead	Enemy of My Enemy	ACTIVITY_TYPE_STORY	mission_omen	8	capture	0	0	0x4786c0e0	cross-checked	live capture Enemy-of-My-Enemy; client's activity definition agrees
 255	0xbec09a19	Enemy of My Enemy	ACTIVITY_TYPE_STORY	mission_omen	8	capture of 254	0	0	0x4786c0e0	generated	client's activity definition names it
 256	0x64834dbc	A New Den	QUEST	quest_oxygen	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 257	0x224a73f6	A New Den	QUEST	quest_oxygen	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 258	0xc5994c42	A Spark in Shadow	QUEST_SOLO	quest_paper	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-259	0x999ad287	Paradox	ACTIVITY_TYPE_STORY	mission_paradox	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-260	0x884b2e37	Paradox	ACTIVITY_TYPE_STORY	mission_paradox	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+259	0x999ad287	Paradox	ACTIVITY_TYPE_STORY	mission_paradox	224	capture	0	0	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+260	0x884b2e37	Paradox	ACTIVITY_TYPE_STORY	mission_paradox	224	capture of 259	0	0	0x4786c0e0	generated	client's activity definition names it
 261	0xcc05aeb6	Blighted Coven	QUEST	quest_peekaboo	8	stand-in: first private slice set	0	8	0x4786c0e0	generated	client's activity definition names it
 262	0x9c71a784	Blighted Coven	QUEST	quest_peekaboo	8	stand-in: first private slice set	0	8	0x4786c0e0	generated	client's activity definition names it
 263	0x3bf1dac0	The First Firewall	QUEST	quest_radium	8	stand-in: first private slice set	0	8	0x4786c0e0	generated	client's activity definition names it
 264	0xa17126d7	A March of Fire	QUEST_SOLO	quest_rock	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 265	0x549b33c5	A Ranger Lost	QUEST_SOLO	quest_scissors	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-266	0x77b7b95d	Kings of Decay	QUEST	quest_sightline	8	stand-in: first private slice set	0	8	0x4786c0e0	generated	client's activity definition names it
-267	0x82fdf349	Kings of Decay	QUEST	quest_sightline	8	stand-in: first private slice set	0	8	0x4786c0e0	generated	client's activity definition names it
+266	0x77b7b95d	Kings of Decay	QUEST	quest_sightline	160	capture	1	8	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+267	0x82fdf349	Kings of Decay	QUEST	quest_sightline	160	capture of 266	1	8	0x4786c0e0	generated	client's activity definition names it
 268	0x953d15fb	Last Rites	ACTIVITY_TYPE_STORY	mission_souvenir	32	capture	0	0	0x4786c0e0	cross-checked	live capture Last-Rites; client's activity definition agrees
 269	0x3ca9164b	Last Rites	ACTIVITY_TYPE_STORY	mission_souvenir	32	capture of 268	0	0	0x4786c0e0	generated	client's activity definition names it
-270	0xc74679d0	Outbound Signal	ACTIVITY_TYPE_STORY	mission_toaster	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-271	0x9c8cdca0	Outbound Signal	ACTIVITY_TYPE_STORY	mission_toaster	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-272	0x957806ba	Outbound Signal	ACTIVITY_TYPE_STORY	mission_toaster	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+270	0xc74679d0	Outbound Signal	ACTIVITY_TYPE_STORY	mission_toaster	8	capture	1	0	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+271	0x9c8cdca0	Outbound Signal	ACTIVITY_TYPE_STORY	mission_toaster	8	capture of 270	1	0	0x4786c0e0	generated	client's activity definition names it
+272	0x957806ba	Outbound Signal	ACTIVITY_TYPE_STORY	mission_toaster	8	capture of 270	1	0	0x4786c0e0	generated	client's activity definition names it
 273	0xc280b997	Regicide	ACTIVITY_TYPE_STORY	mission_topknot	8	capture	0	0	0x4786c0e0	cross-checked	live capture Regicide; client's activity definition agrees
 274	0xdb0a4c07	Regicide	ACTIVITY_TYPE_STORY	mission_topknot	8	capture of 273	0	0	0x4786c0e0	generated	client's activity definition names it
 275	0xbe2a2b4d	The Dreadnaught	ACTIVITY_TYPE_STORY	mission_touchdown	129	capture	0	0	0x4786c0e0	cross-checked	live capture The-Dreadnaught; client's activity definition agrees
@@ -283,21 +283,21 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 280	0xa80c8b92	Vanguard Legacy	ACTIVITY_TYPE_STRIKE_PLAYLIST	-	-	-	-	-	-	missing evidence	playlist: launches another activity; client's activity definition names strike_kingpin
 281	0x8f271d8f	Taken War	ACTIVITY_TYPE_STRIKE_PLAYLIST	-	-	-	-	-	-	missing evidence	playlist: launches another activity
 282	0xb8a7dd09	The Will of Crota	ACTIVITY_TYPE_STRIKE_PLAYLIST	cosmo_portal_2	88	capture of 303	1	8	0x4786c0e0	generated	client's activity definition names it
-283	0xcc45a218	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-284	0x7c3a7eb1	The Sunless Cell	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-285	0xf012232b	Shield Brothers	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-286	0x8bc019da	Echo Chamber	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+283	0xcc45a218	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+284	0x7c3a7eb1	The Sunless Cell	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+285	0xf012232b	Shield Brothers	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
+286	0x8bc019da	Echo Chamber	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_tracker	224	capture of 297	1	0	0x4786c0e0	generated	client's activity definition names it
 287	0x06f291fc	The Shadow Thief	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_vampire	24	capture of 308	0	24	0xf29221f5	generated	client's activity definition names it
-288	0x020bca3c	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-289	0x31a01db8	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-290	0x2d231990	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-291	0x920d685b	The Sunless Cell	ACTIVITY_TYPE_STRIKE	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-292	0x8529c59a	The Sunless Cell	ACTIVITY_TYPE_STRIKE	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-293	0x40a5ff3e	The Sunless Cell	ACTIVITY_TYPE_STRIKE	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-294	0xbdbb8a41	Shield Brothers	ACTIVITY_TYPE_STRIKE	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-295	0xd51e1dca	Shield Brothers	ACTIVITY_TYPE_STRIKE	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-296	0x60dabc09	Shield Brothers	ACTIVITY_TYPE_STRIKE	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-297	0x4328fcca	Echo Chamber	ACTIVITY_TYPE_STRIKE	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+288	0x020bca3c	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE	strike_reliquary	88	capture	1	8	0xf29221f5	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+289	0x31a01db8	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+290	0x2d231990	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+291	0x920d685b	The Sunless Cell	ACTIVITY_TYPE_STRIKE	strike_pandora	152	capture	1	0	0xf29221f5	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+292	0x8529c59a	The Sunless Cell	ACTIVITY_TYPE_STRIKE	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+293	0x40a5ff3e	The Sunless Cell	ACTIVITY_TYPE_STRIKE	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+294	0xbdbb8a41	Shield Brothers	ACTIVITY_TYPE_STRIKE	strike_overlord	152	capture	1	0	0xf29221f5	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+295	0xd51e1dca	Shield Brothers	ACTIVITY_TYPE_STRIKE	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
+296	0x60dabc09	Shield Brothers	ACTIVITY_TYPE_STRIKE	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
+297	0x4328fcca	Echo Chamber	ACTIVITY_TYPE_STRIKE	strike_tracker	224	capture	1	0	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
 298	0xa218af73	Dust Palace	ACTIVITY_TYPE_STRIKE_PLAYLIST	mars_portal_1_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said mars_portal_1
 299	0xdadaa926	Cerberus Vae III	ACTIVITY_TYPE_STRIKE_PLAYLIST	mars_portal_2_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name and description said mars_portal_2
 300	0xf9988d64	The Undying Mind	ACTIVITY_TYPE_STRIKE	mars_portal_3_com01	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
@@ -322,15 +322,15 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 319	0xfd87e5fd	Winter's Run	ACTIVITY_TYPE_STRIKE_PLAYLIST	venus_portal_2	24	capture of 310	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name
 320	0xcf3577bb	Taken War Heroic	ACTIVITY_TYPE_STRIKE_PLAYLIST	-	-	-	-	-	-	missing evidence	playlist: launches another activity
 321	0x440b2150	The Will of Crota	ACTIVITY_TYPE_STRIKE_PLAYLIST	cosmo_portal_2	88	capture of 303	1	8	0x4786c0e0	generated	client's activity definition names it
-322	0x96f423a5	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-323	0xa9a7de7a	The Sunless Cell	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-324	0xb47b3ff6	Shield Brothers	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-325	0x9ce51d2b	Echo Chamber	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+322	0x96f423a5	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+323	0xa9a7de7a	The Sunless Cell	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+324	0xb47b3ff6	Shield Brothers	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
+325	0x9ce51d2b	Echo Chamber	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_tracker	224	capture of 297	1	0	0x4786c0e0	generated	client's activity definition names it
 326	0x0961959c	Dust Palace	ACTIVITY_TYPE_STRIKE_PLAYLIST	mars_portal_1_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said mars_portal_1
 327	0x823334e3	Cerberus Vae III	ACTIVITY_TYPE_STRIKE_PLAYLIST	mars_portal_2_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name and description said mars_portal_2
 328	0x13c299a2	The Undying Mind	ACTIVITY_TYPE_STRIKE_PLAYLIST	mars_portal_3_com01	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
 329	0x8df84c41	The Shadow Thief	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_vampire	24	capture of 308	0	24	0xf29221f5	generated	client's activity definition names it
-330	0x7b8b5941	Blighted Chalice	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
+330	0x7b8b5941	Blighted Chalice	ACTIVITY_TYPE_STRIKE_PLAYLIST	strike_kingpin	112	capture of 340	0	24	0x4786c0e0	generated	client's activity definition names it
 331	0x8258ae75	Winter's Run	ACTIVITY_TYPE_STRIKE_PLAYLIST	venus_portal_2_redux	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said venus_portal_2
 332	0x53b8cf38	Prison of Elders	ARENA	-	-	-	-	-	-	missing evidence	playlist: launches another activity
 333	0xf79034a8	Challenge of the Elders	ARENA_CHALLENGE	-	-	-	-	-	-	missing evidence	playlist: launches another activity
@@ -339,9 +339,9 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 336	0x2400935f	Prison of Elders: Taken	ARENA	arena_goldfish	8	stand-in: first private slice set	0	8	0x24c67333	generated	client's activity definition names it
 337	0x8d99aeef	Challenge of the Elders	ARENA_CHALLENGE	arena_angelfish	8	stand-in: first private slice set	0	8	0x24c67333	generated	client's activity definition names it
 338	0x833a166f	Challenge of the Elders	ARENA_CHALLENGE	arena_angelfish	8	stand-in: first private slice set	0	8	0x24c67333	generated	client's activity definition names it
-339	0x25b75587	Pretender to the Throne	QUEST	mission_rook	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-340	0x78882a7c	Blighted Chalice	ACTIVITY_TYPE_STRIKE	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
-341	0xacb681d8	Blighted Chalice	ACTIVITY_TYPE_STRIKE	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
+339	0x25b75587	Pretender to the Throne	QUEST	mission_rook	152	capture	1	0	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+340	0x78882a7c	Blighted Chalice	ACTIVITY_TYPE_STRIKE	strike_kingpin	112	capture	0	24	0x4786c0e0	cross-checked	live capture batch 2026-11 (51539); client's activity definition agrees
+341	0xacb681d8	Blighted Chalice	ACTIVITY_TYPE_STRIKE	strike_kingpin	112	capture of 340	0	24	0x4786c0e0	generated	client's activity definition names it
 342	0xb9fa7e3e	Winter's Run	ACTIVITY_TYPE_STRIKE_PLAYLIST	venus_portal_2_redux	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said venus_portal_2
 343	0x40cb1b93	Clash	ACTIVITY_TYPE_PVP_TEAM	-	-	-	-	-	-	missing evidence	playlist: launches another activity
 344	0x8431e527	Control	ACTIVITY_TYPE_PVP_DOM	-	-	-	-	-	-	missing evidence	playlist: launches another activity
@@ -437,14 +437,14 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 434	0xca38a541	The Abomination Heist	ACTIVITY_TYPE_STRIKE	strike_turtle_dlc03	24	stand-in: first private slice set	0	24	0xf29221f5	generated	client's activity definition names it
 435	0x7ce8254d	The Will of Crota	Strike	cosmo_portal_2	88	capture of 303	1	8	0x4786c0e0	generated	client's activity definition names it
 436	0x64773cdf	The Will of Crota	ACTIVITY_TYPE_STRIKE	cosmo_portal_2	88	capture of 303	1	8	0x4786c0e0	generated	client's activity definition names it
-437	0x5b011a54	Fallen S.A.B.E.R.	Strike	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-438	0x1122fdca	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-439	0x97cf8f2d	The Sunless Cell	Strike	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-440	0x14f2dbbf	The Sunless Cell	ACTIVITY_TYPE_STRIKE	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-441	0x637eeb07	Shield Brothers	Strike	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-442	0xa9545781	Shield Brothers	ACTIVITY_TYPE_STRIKE	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-443	0x224b8c3e	Echo Chamber	Strike	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-444	0x075eca24	Echo Chamber	ACTIVITY_TYPE_STRIKE	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+437	0x5b011a54	Fallen S.A.B.E.R.	Strike	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+438	0x1122fdca	Fallen S.A.B.E.R.	ACTIVITY_TYPE_STRIKE	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+439	0x97cf8f2d	The Sunless Cell	Strike	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+440	0x14f2dbbf	The Sunless Cell	ACTIVITY_TYPE_STRIKE	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+441	0x637eeb07	Shield Brothers	Strike	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
+442	0xa9545781	Shield Brothers	ACTIVITY_TYPE_STRIKE	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
+443	0x224b8c3e	Echo Chamber	Strike	strike_tracker	224	capture of 297	1	0	0x4786c0e0	generated	client's activity definition names it
+444	0x075eca24	Echo Chamber	ACTIVITY_TYPE_STRIKE	strike_tracker	224	capture of 297	1	0	0x4786c0e0	generated	client's activity definition names it
 445	0x06f66688	The Shadow Thief	Strike	strike_vampire	24	capture of 308	0	24	0xf29221f5	generated	client's activity definition names it
 446	0x8d8e1806	The Shadow Thief	ACTIVITY_TYPE_STRIKE	strike_vampire	24	capture of 308	0	24	0xf29221f5	generated	client's activity definition names it
 447	0x0b9487ff	Dust Palace	Strike	mars_portal_1_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said mars_portal_1
@@ -453,8 +453,8 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 450	0xeaf62110	Cerberus Vae III	ACTIVITY_TYPE_STRIKE	mars_portal_2_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name and description said mars_portal_2
 451	0x725eed89	The Undying Mind	Strike	mars_portal_3_com01	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
 452	0x09e2abb3	The Undying Mind	ACTIVITY_TYPE_STRIKE	mars_portal_3_com01	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-453	0xc749d1a8	Blighted Chalice	Strike	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
-454	0x85d13126	Blighted Chalice	ACTIVITY_TYPE_STRIKE	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
+453	0xc749d1a8	Blighted Chalice	Strike	strike_kingpin	112	capture of 340	0	24	0x4786c0e0	generated	client's activity definition names it
+454	0x85d13126	Blighted Chalice	ACTIVITY_TYPE_STRIKE	strike_kingpin	112	capture of 340	0	24	0x4786c0e0	generated	client's activity definition names it
 455	0xe842eb0e	Winter's Run	Strike	venus_portal_2_redux	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said venus_portal_2
 456	0xca94d794	Winter's Run	ACTIVITY_TYPE_STRIKE	venus_portal_2_redux	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said venus_portal_2
 457	0x1e5d00f1	Bad Blood	QUEST	mission_word	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
@@ -462,9 +462,9 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 459	0xa350e5b6	A Symbol of Honor	QUEST	mission_research	0	only slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 460	0xa32ec731	Beauty in Delivery	QUEST	mission_fireworks	0	only slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 461	0xdc066134	Vanguard Nightfall	Strike	-	-	-	-	-	-	missing evidence	playlist: launches another activity
-462	0x22287890	Fallen S.A.B.E.R.	Strike	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-463	0x643a5a4f	The Sunless Cell	Strike	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-464	0x17044d35	Shield Brothers	Strike	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
+462	0x22287890	Fallen S.A.B.E.R.	Strike	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+463	0x643a5a4f	The Sunless Cell	Strike	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+464	0x17044d35	Shield Brothers	Strike	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
 465	0x9f1899ed	Dust Palace	Strike	mars_portal_1_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said mars_portal_1
 466	0xb544b582	Cerberus Vae III	Strike	mars_portal_2_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name and description said mars_portal_2
 467	0x3d0205c3	The Undying Mind	Strike	mars_portal_3_com01	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
@@ -477,16 +477,16 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 474	0xb371b47c	The Shadow Thief	Strike	strike_vampire	24	capture of 308	0	24	0xf29221f5	generated	client's activity definition names it
 475	0x26f1ccbe	The Nexus	Strike	venus_portal_1	120	capture of 309	1	0	0xf29221f5	generated	client's activity definition names it; 2014 table, same name and description
 476	0x26f1ccbd	Winter's Run	Strike	venus_portal_2	24	capture of 310	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name
-477	0xa0a761dc	Blighted Chalice	Strike	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
+477	0xa0a761dc	Blighted Chalice	Strike	strike_kingpin	112	capture of 340	0	24	0x4786c0e0	generated	client's activity definition names it
 478	0xdf091676	Winter's Run	Strike	venus_portal_2_redux	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said venus_portal_2
-479	0x267ff846	Echo Chamber	Strike	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+479	0x267ff846	Echo Chamber	Strike	strike_tracker	224	capture of 297	1	0	0x4786c0e0	generated	client's activity definition names it
 480	0xd3e6bb02	The Wretched Eye	Strike	strike_oath	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 481	0x3e47a9fc	Sepiks Perfected	Strike	strike_starfish	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
 482	0x62efe275	The Abomination Heist	Strike	strike_turtle_dlc03	24	stand-in: first private slice set	0	24	0xf29221f5	generated	client's activity definition names it
 483	0x4d11b2e4	Vanguard Nightfall	ACTIVITY_TYPE_NIGHTFALL	-	-	-	-	-	-	missing evidence	playlist: launches another activity
-484	0x0f7d7140	Fallen S.A.B.E.R.	ACTIVITY_TYPE_NIGHTFALL	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-485	0x5b6aea9f	The Sunless Cell	ACTIVITY_TYPE_NIGHTFALL	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-486	0x5d5c5b85	Shield Brothers	ACTIVITY_TYPE_NIGHTFALL	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
+484	0x0f7d7140	Fallen S.A.B.E.R.	ACTIVITY_TYPE_NIGHTFALL	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+485	0x5b6aea9f	The Sunless Cell	ACTIVITY_TYPE_NIGHTFALL	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+486	0x5d5c5b85	Shield Brothers	ACTIVITY_TYPE_NIGHTFALL	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
 487	0x0c0cd45d	Dust Palace	ACTIVITY_TYPE_NIGHTFALL	mars_portal_1_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said mars_portal_1
 488	0x9c750d32	Cerberus Vae III	ACTIVITY_TYPE_NIGHTFALL	mars_portal_2_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name and description said mars_portal_2
 489	0x91475c73	The Undying Mind	ACTIVITY_TYPE_NIGHTFALL	mars_portal_3_com01	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
@@ -499,23 +499,23 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 496	0x58ea8b2c	The Shadow Thief	ACTIVITY_TYPE_NIGHTFALL	strike_vampire	24	capture of 308	0	24	0xf29221f5	generated	client's activity definition names it
 497	0x6184a42e	The Nexus	ACTIVITY_TYPE_NIGHTFALL	venus_portal_1	120	capture of 309	1	0	0xf29221f5	generated	client's activity definition names it; 2014 table, same name and description
 498	0x6184a42d	Winter's Run	ACTIVITY_TYPE_NIGHTFALL	venus_portal_2	24	capture of 310	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name
-499	0xbab6abcc	Blighted Chalice	ACTIVITY_TYPE_NIGHTFALL	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
+499	0xbab6abcc	Blighted Chalice	ACTIVITY_TYPE_NIGHTFALL	strike_kingpin	112	capture of 340	0	24	0x4786c0e0	generated	client's activity definition names it
 500	0x0c7a54e6	Winter's Run	ACTIVITY_TYPE_NIGHTFALL	venus_portal_2_redux	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said venus_portal_2
-501	0xcadc5836	Echo Chamber	ACTIVITY_TYPE_NIGHTFALL	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+501	0xcadc5836	Echo Chamber	ACTIVITY_TYPE_NIGHTFALL	strike_tracker	224	capture of 297	1	0	0x4786c0e0	generated	client's activity definition names it
 502	0x4f43c012	The Wretched Eye	ACTIVITY_TYPE_NIGHTFALL	strike_oath	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 503	0x846759ec	Sepiks Perfected	ACTIVITY_TYPE_NIGHTFALL	strike_starfish	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
 504	0x3ab23c85	The Abomination Heist	ACTIVITY_TYPE_NIGHTFALL	strike_turtle_dlc03	24	stand-in: first private slice set	0	24	0xf29221f5	generated	client's activity definition names it
 505	0x33e4854f	SIVA Crisis Heroic	Strike	-	-	-	-	-	-	missing evidence	playlist: launches another activity
 506	0xf45afe84	The Will of Crota	Strike	cosmo_portal_2	88	capture of 303	1	8	0x4786c0e0	generated	client's activity definition names it
-507	0x59860e81	Fallen S.A.B.E.R.	Strike	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-508	0xe50f2b06	The Sunless Cell	Strike	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-509	0x14706342	Shield Brothers	Strike	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-510	0x62205d5f	Echo Chamber	Strike	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+507	0x59860e81	Fallen S.A.B.E.R.	Strike	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+508	0xe50f2b06	The Sunless Cell	Strike	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+509	0x14706342	Shield Brothers	Strike	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
+510	0x62205d5f	Echo Chamber	Strike	strike_tracker	224	capture of 297	1	0	0x4786c0e0	generated	client's activity definition names it
 511	0xfd7bdb98	Dust Palace	Strike	mars_portal_1_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said mars_portal_1
 512	0x8edb60df	Cerberus Vae III	Strike	mars_portal_2_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name and description said mars_portal_2
 513	0x3c90b5ce	The Undying Mind	Strike	mars_portal_3_com01	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
 514	0xd587e05d	The Shadow Thief	Strike	strike_vampire	24	capture of 308	0	24	0xf29221f5	generated	client's activity definition names it
-515	0xc90c912d	Blighted Chalice	Strike	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
+515	0xc90c912d	Blighted Chalice	Strike	strike_kingpin	112	capture of 340	0	24	0x4786c0e0	generated	client's activity definition names it
 516	0xdb245fb1	Winter's Run	Strike	venus_portal_2_redux	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said venus_portal_2
 517	0x81e06b41	The Wretched Eye	Strike	strike_oath	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 518	0x87331a7f	Sepiks Perfected	Strike	strike_starfish	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
@@ -535,18 +535,18 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 532	0x424800b7	The Wakening	ACTIVITY_TYPE_STORY	act_moon_m7_selection	8	capture of 211	1	24	0x4786c0e0	generated	client's activity definition names it
 533	0x1a726e8f	The Ruling House	ACTIVITY_TYPE_STORY	mission_pact	120	capture of 216	0	8	0x4786c0e0	generated	client's activity definition names it
 534	0x4924bd0c	Queen's Ransom	ACTIVITY_TYPE_STORY	mission_traitor	224	capture of 218	1	0	0x4786c0e0	generated	client's activity definition names it
-535	0x09384a28	Entropy's Pinnacle	QUEST	quest_catalyst	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+535	0x09384a28	Entropy's Pinnacle	QUEST	quest_catalyst	24	capture of 227	0	0	0x4786c0e0	generated	client's activity definition names it
 536	0xd7516884	The Coming War	ACTIVITY_TYPE_STORY	mission_darksnow	25	capture of 235	0	0	0x4786c0e0	generated	client's activity definition names it
 537	0xa4c7dd65	Lost to Light	ACTIVITY_TYPE_STORY	mission_deja	40	capture of 238	0	24	0x4786c0e0	generated	client's activity definition names it
 538	0x228d88e9	Cayde's Stash	ACTIVITY_TYPE_STORY	mission_elevator	16	capture of 241	0	8	0x4786c0e0	generated	client's activity definition names it
 539	0x45fff2f7	The Prime's Path	QUEST	quest_hydrogen	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 540	0x1c473528	Enemy of My Enemy	ACTIVITY_TYPE_STORY	mission_omen	8	capture of 254	0	0	0x4786c0e0	generated	client's activity definition names it
 541	0x3ab6180b	A New Den	QUEST	quest_oxygen	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
-542	0xa4c5cd3c	Paradox	ACTIVITY_TYPE_STORY	mission_paradox	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+542	0xa4c5cd3c	Paradox	ACTIVITY_TYPE_STORY	mission_paradox	224	capture of 259	0	0	0x4786c0e0	generated	client's activity definition names it
 543	0x9e704fa5	Blighted Coven	QUEST	quest_peekaboo	8	stand-in: first private slice set	0	8	0x4786c0e0	generated	client's activity definition names it
-544	0x90695286	Kings of Decay	QUEST	quest_sightline	8	stand-in: first private slice set	0	8	0x4786c0e0	generated	client's activity definition names it
+544	0x90695286	Kings of Decay	QUEST	quest_sightline	160	capture of 266	1	8	0x4786c0e0	generated	client's activity definition names it
 545	0xf955e946	Last Rites	ACTIVITY_TYPE_STORY	mission_souvenir	32	capture of 268	0	0	0x4786c0e0	generated	client's activity definition names it
-546	0x55cc8db9	Outbound Signal	ACTIVITY_TYPE_STORY	mission_toaster	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+546	0x55cc8db9	Outbound Signal	ACTIVITY_TYPE_STORY	mission_toaster	8	capture of 270	1	0	0x4786c0e0	generated	client's activity definition names it
 547	0xd4ab968c	Regicide	ACTIVITY_TYPE_STORY	mission_topknot	8	capture of 273	0	0	0x4786c0e0	generated	client's activity definition names it
 548	0x91fc4c36	The Dreadnaught	ACTIVITY_TYPE_STORY	mission_touchdown	129	capture of 275	0	0	0x4786c0e0	generated	client's activity definition names it
 549	0xb1b4ef12	The Promethean Code	ACTIVITY_TYPE_STORY	mission_turing	88	capture of 277	1	8	0x4786c0e0	generated	client's activity definition names it
@@ -628,9 +628,9 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 625	0xed28f628	King's Fall	ACTIVITY_TYPE_RAID	raid_epiphany	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 626	0xc80c4bbf	Wrath of the Machine	ACTIVITY_TYPE_RAID	raid_promise	0	stand-in: first private slice set	0	0	0x24c67333	generated	client's activity definition names it
 627	0xa08518f5	Vanguard Nightfall	ACTIVITY_TYPE_NIGHTFALL	-	-	-	-	-	-	missing evidence	playlist: launches another activity
-628	0xf9392a87	Fallen S.A.B.E.R.	ACTIVITY_TYPE_NIGHTFALL	strike_reliquary	8	stand-in: first private slice set	0	8	0xf29221f5	generated	client's activity definition names it
-629	0xb5e29f18	The Sunless Cell	ACTIVITY_TYPE_NIGHTFALL	strike_pandora	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
-630	0xc3613d78	Shield Brothers	ACTIVITY_TYPE_NIGHTFALL	strike_overlord	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
+628	0xf9392a87	Fallen S.A.B.E.R.	ACTIVITY_TYPE_NIGHTFALL	strike_reliquary	88	capture of 288	1	8	0xf29221f5	generated	client's activity definition names it
+629	0xb5e29f18	The Sunless Cell	ACTIVITY_TYPE_NIGHTFALL	strike_pandora	152	capture of 291	1	0	0xf29221f5	generated	client's activity definition names it
+630	0xc3613d78	Shield Brothers	ACTIVITY_TYPE_NIGHTFALL	strike_overlord	152	capture of 294	1	0	0xf29221f5	generated	client's activity definition names it
 631	0x109d97c6	Dust Palace	ACTIVITY_TYPE_NIGHTFALL	mars_portal_1_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said mars_portal_1
 632	0x23ffd531	Cerberus Vae III	ACTIVITY_TYPE_NIGHTFALL	mars_portal_2_com01	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name and description said mars_portal_2
 633	0xbdff06b0	The Undying Mind	ACTIVITY_TYPE_NIGHTFALL	mars_portal_3_com01	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
@@ -643,9 +643,9 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 640	0xf6d39d23	The Shadow Thief	ACTIVITY_TYPE_NIGHTFALL	strike_vampire	24	capture of 308	0	24	0xf29221f5	generated	client's activity definition names it
 641	0x2ade06cb	The Nexus	ACTIVITY_TYPE_NIGHTFALL	venus_portal_1	120	capture of 309	1	0	0xf29221f5	generated	client's activity definition names it; 2014 table, same name and description
 642	0x2ade06c8	Winter's Run	ACTIVITY_TYPE_NIGHTFALL	venus_portal_2	24	capture of 310	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name
-643	0xc9b5f003	Blighted Chalice	ACTIVITY_TYPE_NIGHTFALL	strike_kingpin	24	stand-in: first private slice set	0	24	0x4786c0e0	generated	client's activity definition names it
+643	0xc9b5f003	Blighted Chalice	ACTIVITY_TYPE_NIGHTFALL	strike_kingpin	112	capture of 340	0	24	0x4786c0e0	generated	client's activity definition names it
 644	0x724e51b3	Winter's Run	ACTIVITY_TYPE_NIGHTFALL	venus_portal_2_redux	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same name said venus_portal_2
-645	0x7d782e65	Echo Chamber	ACTIVITY_TYPE_NIGHTFALL	strike_tracker	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
+645	0x7d782e65	Echo Chamber	ACTIVITY_TYPE_NIGHTFALL	strike_tracker	224	capture of 297	1	0	0x4786c0e0	generated	client's activity definition names it
 646	0xb4a78e87	The Wretched Eye	ACTIVITY_TYPE_NIGHTFALL	strike_oath	0	stand-in: first private slice set	0	0	0x4786c0e0	generated	client's activity definition names it
 647	0x30eab551	Sepiks Perfected	ACTIVITY_TYPE_NIGHTFALL	strike_starfish	0	stand-in: first private slice set	0	0	0xf29221f5	generated	client's activity definition names it
 648	0xbe8d466c	The Abomination Heist	ACTIVITY_TYPE_NIGHTFALL	strike_turtle_dlc03	24	stand-in: first private slice set	0	24	0xf29221f5	generated	client's activity definition names it
