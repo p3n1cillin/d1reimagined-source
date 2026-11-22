@@ -11,7 +11,7 @@ index	hash	name	type	world	start_region	start_source	start_public	private_start	
 8	0xd950510d	Patrol Cosmodrome	ACTIVITY_TYPE_EXPLORE	-	-	-	-	-	-	missing evidence	client's activity definition names cosmo_patrols_1, which has no scenario in this build
 9	0x08e75fe9	Patrol the Moon	ACTIVITY_TYPE_EXPLORE	patrol_accel_com01	24	stand-in: first private slice set	0	24	0x349cdad1	generated	same name and destination as 96 (generated); client's activity definition names moon_patrols_1, which has no scenario in this build
 10	0x937f5faf	Patrol Venus	ACTIVITY_TYPE_EXPLORE	patrol_shat_com01	24	capture of 97	0	0	0x7cf2807b	generated	same name and destination as 97 (cross-checked); client's activity definition names venus_patrols_1, which has no scenario in this build
-11	0x198732a1	Patrol Mars	ACTIVITY_TYPE_EXPLORE	patrol_plains_com01	144	capture of 95	1	0	0xed129a7d	generated	same name and destination as 95 (generated); client's activity definition names mars_patrols_1, which has no scenario in this build
+11	0x198732a1	Patrol Mars	ACTIVITY_TYPE_EXPLORE	patrol_plains_com01	144	capture of 95	1	0	0xed129a7d	generated	same name and destination as 95 (cross-checked); client's activity definition names mars_patrols_1, which has no scenario in this build
 12	0x9e80e7c7	Vault of Glass	ACTIVITY_TYPE_RAID	venus_raid_1	120	2014 start bubble	1	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same hash
 13	0x9e80e7c4	Vault of Glass	ACTIVITY_TYPE_RAID	venus_raid_1	120	2014 start bubble	1	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same hash
 14	0x9e80e7c5	Vault of Glass	ACTIVITY_TYPE_RAID	venus_raid_1	120	2014 start bubble	1	0	0x4786c0e0	generated	client's activity definition names it; 2014 table, same hash
