@@ -172,6 +172,48 @@ def position(client, tracked, near=None):
 # (0xB1B0E0, slot 0x2803340 + user*0x140: +0x1A0 buttons, +0x1B0 sticks, +0x1B8 the result). Sticks
 # alone never count, so press square (reload; harmless with a full magazine) and nudge the stick.
 KEEPALIVE_S = 45
+JUMP_AT = 2.5      # metres: a jump-flagged waypoint is jumped from this close (tuning, not game data)
+
+
+def load_route(points, step=None):
+    # Normalise a route: points are [x, y, z] or [x, y, z, jump]; returns [x, y, z, jump] lists
+    # (jump is a bool). With step, thin the route (thin_route).
+    out = []
+    for n, p in enumerate(points):
+        if not isinstance(p, (list, tuple)) or len(p) not in (3, 4):
+            raise ValueError(f'route point {n} must have 3 or 4 numbers: {p!r}')
+        try:
+            xyz = [float(v) for v in p[:3]]
+        except (TypeError, ValueError):
+            raise ValueError(f'route point {n} has a non-numeric coordinate: {p!r}')
+        if not all(math.isfinite(v) for v in xyz):
+            raise ValueError(f'route point {n} has a non-finite coordinate: {p!r}')
+        out.append(xyz + [bool(p[3]) if len(p) == 4 else False])
+    return thin_route(out, step) if step else out
+
+
+def thin_route(points, step):
+    # Keep a point only when it is at least step metres (planar) from the last kept point. The
+    # first and last points, every jump-flagged point and the point before each are always kept.
+    if step is None or step <= 0 or len(points) < 3:
+        return list(points)
+    jump = [len(p) > 3 and bool(p[3]) for p in points]
+    last = len(points) - 1
+    keep, kept = [], None
+    for k, p in enumerate(points):
+        force = k in (0, last) or jump[k] or (k < last and jump[k + 1])
+        if force or math.dist(p[:2], kept[:2]) >= step:
+            keep.append(p)
+            kept = p
+    return keep
+
+
+def should_jump(i, route, here, jumped, reach=JUMP_AT):
+    # True when waypoint i is jump-flagged, not yet jumped, and here is within `reach` of it. The
+    # caller passes max(JUMP_AT, the arrival tolerance) so a wide --tolerance cannot arrive (and
+    # move on) before the jump distance is reached.
+    return (0 <= i < len(route) and len(route[i]) > 3 and bool(route[i][3]) and i not in jumped
+            and math.dist(here[:2], route[i][:2]) < reach)
 _last_active = 0.0
 
 
@@ -281,6 +323,9 @@ def main():
     ap.add_argument('--native-unit', action='store_true',
                     help='56578: read the current player unit instead of scanned copies; stop on unit loss/change')
     ap.add_argument('--route')
+    ap.add_argument('--route-step', type=float, metavar='METRES',
+                    help='thin a dense recorded route: keep points at least this far apart (planar); '
+                         'first, last, jump-flagged points and the point before each are kept')
     ap.add_argument("--tolerance", type=float, default=2.5)
     ap.add_argument("--radius", type=float, default=25)
     ap.add_argument('--max-seconds', type=float, default=600)
@@ -337,7 +382,11 @@ def main():
         print(len(tracked), 'tracked; position', position(c, tracked))
         return
     with open(a.route) as route_file:
-        route = json.load(route_file)
+        try:
+            route = load_route(json.load(route_file), a.route_step)
+        except ValueError as e:
+            ap.error(str(e))
+    jumped = set()
     here = position(c, tracked)
     print('start', here)
     rate, sign = (a.turn_rate or 3.5) / 1000, float(a.turn_sign or 1)  # rad/ms and camera direction
@@ -430,6 +479,15 @@ def main():
         # Sharp corners need the waypoint itself: overshooting the north-to-west turn at the
         # Wall's stairs (waypoint 43) drops the Guardian into a pit (runs agr-breach5 and 9).
         sharp = corner(i) > 0.6
+        if not out and should_jump(i, route, here, jumped, max(JUMP_AT, a.tolerance)):
+            jumped.add(i)
+            print(f'jump at wp {i}', flush=True)
+            # The pair that cleared the low wall in Restoration by hand (runs rst19/rst20, 13 Nov):
+            # tuning from those runs, not game data.
+            pad('Hold:W+NumPad2:900')
+            pad('Hold:W:1500')
+            here = position(c, tracked, here) or here
+            d = math.dist(here[:2], target[:2])
         # While stepping out of a hazard the target is the escape point, not a waypoint: do not
         # count it as an arrival (rifle4 walked the whole route index off in place that way).
         if not out and d < (min(a.tolerance, 1.5) if sharp else a.tolerance):
