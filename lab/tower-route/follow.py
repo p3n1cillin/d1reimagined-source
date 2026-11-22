@@ -8,6 +8,7 @@ import argparse, ctypes, importlib.util, json, math, os, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 import sys; sys.path.insert(0, HERE); import routepaths  # noqa: E402
+import d1_keys  # noqa: E402
 
 
 def load(name, path=None):
@@ -26,13 +27,33 @@ AIM_Y = 652                        # the reticle sits below the frame centre (me
 HFOV, VFOV = math.radians(78), math.radians(48)
 
 
+_post_hwnd = None
+
+
+def _posted_key(vk, down):
+    """Posted mode (D1_KEYS_POST=1): WM_KEYDOWN/WM_KEYUP to the emulator window without focus."""
+    global _post_hwnd
+    lp = d1_keys.post_lparam(vk, u32.MapVirtualKeyW(vk, 0), down)
+    for _ in range(2):
+        if not _post_hwnd:
+            _post_hwnd = d1_keys._window()
+        if _post_hwnd and u32.PostMessageW(_post_hwnd, 0x100 if down else 0x101, vk, lp):
+            return
+        _post_hwnd = None
+    raise RuntimeError('posted key %#x (%s) did not reach the emulator window' % (vk, 'down' if down else 'up'))
+
+
 def key(vk, down):
+    if d1_keys.post_mode():
+        _posted_key(vk, down)
+        return
     if down: _gf.ensure()
     u32.keybd_event(vk, u32.MapVirtualKeyW(vk, 0), 0 if down else 2, None)
 
 
 def sprint(ms, jump=False):
-    fight.pad('NumPad4')                      # focus the emulator (and counts as activity)
+    if not d1_keys.post_mode():
+        fight.pad('NumPad4')                      # focus the emulator (and counts as activity)
     key(0x57, True); time.sleep(0.12); key(0x58, True); time.sleep(0.09); key(0x58, False)
     if jump:                                  # cross (NumPad2) twice: jump, then the second jump in the air
         time.sleep(0.25); key(0x62, True); time.sleep(0.09); key(0x62, False)
@@ -42,7 +63,8 @@ def sprint(ms, jump=False):
 
 def ads_burst(ms=600):
     """Aim down sights (L2 = E), fire (R2 = O) for ms, release."""
-    fight.pad('NumPad4')
+    if not d1_keys.post_mode():
+        fight.pad('NumPad4')
     key(0x45, True); time.sleep(0.3); key(0x4F, True); time.sleep(ms / 1000); key(0x4F, False); key(0x45, False)
 
 

@@ -3,6 +3,7 @@
 import argparse, importlib.util, math, os, sys, time
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); import routepaths  # noqa: E402
+import d1_keys  # noqa: E402
 def L(n, p=None):
     s = importlib.util.spec_from_file_location(n, p or os.path.join(HERE, n + '.py')); m = importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
 w = L('w', routepaths.WALK); fo = L('follow')
@@ -10,10 +11,14 @@ RATE = 2.76e-3
 VK_W, VK_X, VK_J, VK_L = 0x57, 0x58, 0x4A, 0x4C
 ap = argparse.ArgumentParser(); ap.add_argument('points'); ap.add_argument('--tol', type=float, default=2.5); ap.add_argument('--max-s', type=float, default=60); ap.add_argument('--walk', action='store_true', help='no sprint (L3) taps')
 ap.add_argument('--give-up', type=float, default=30, help='stop after this many seconds without a point reached or 0.5 m gained (0: never)')
+ap.add_argument('--post', action='store_true', help='post keys to the emulator window, so it works with the desktop locked (D1_KEYS_POST=1)')
 a = ap.parse_args()
+if a.post:
+    os.environ['D1_KEYS_POST'] = '1'
 pts = [tuple(map(float, p.split(','))) for p in a.points.split(';')]
 c = w.Client(); c.native_unit = True
-fo.fight.pad('NumPad4')                      # focus the emulator
+if not d1_keys.post_mode():
+    fo.fight.pad('NumPad4')                      # focus the emulator
 t0 = time.time(); last_sprint = 0; i = 0; stuck = 0; prev = None
 # sense107's chain spent 200 s per attempt against the hangar bay's walls: give up early instead.
 progress_at, progress_i, progress_d = t0, 0, None

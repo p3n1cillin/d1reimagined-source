@@ -27,6 +27,8 @@ try:
     import d1_keys
     fight = load('fight')
     combat2 = load('combat2')
+    follow = load('follow')
+    release = load('release')
     ERR = None
 except Exception as e:  # lab dependencies missing (not Windows, no game tooling)
     ERR = e
@@ -39,6 +41,7 @@ class Posted(unittest.TestCase):
         self.env.start()
         os.environ.pop('D1_KEYS_POST', None)
         combat2._post_hwnd = None
+        follow._post_hwnd = None
         combat2._stamped = 1e12   # skip the idle-guard stamp file write
 
     def tearDown(self):
@@ -183,6 +186,69 @@ class Posted(unittest.TestCase):
         self.assertEqual(a.shape, (3, 4, 3))
         os.remove(out)
 
+    def test_follow_posted_key_down_and_up(self):
+        os.environ['D1_KEYS_POST'] = '1'
+        u = self.fake_u32()
+        with mock.patch.object(follow, 'u32', u), mock.patch.object(follow, '_gf') as gf, \
+                mock.patch.object(d1_keys, '_window', return_value=88) as win:
+            follow.key(0x57, True)
+            follow.key(0x57, False)
+        gf.ensure.assert_not_called()
+        u.keybd_event.assert_not_called()
+        down, up = u.PostMessageW.call_args_list
+        self.assertEqual(down.args, (88, 0x100, 0x57, d1_keys.post_lparam(0x57, 0x11, True)))
+        self.assertEqual(up.args, (88, 0x101, 0x57, d1_keys.post_lparam(0x57, 0x11, False)))
+        win.assert_called_once()
+
+    def test_follow_default_key_unchanged(self):
+        u = self.fake_u32()
+        with mock.patch.object(follow, 'u32', u), mock.patch.object(follow, '_gf') as gf:
+            follow.key(0x57, True)
+            follow.key(0x57, False)
+        gf.ensure.assert_called_once()
+        self.assertEqual([c.args[1:3] for c in u.keybd_event.call_args_list], [(0x11, 0), (0x11, 2)])
+        u.PostMessageW.assert_not_called()
+
+    def test_release_posted_releases_all_keys_and_raises_on_failure(self):
+        os.environ['D1_KEYS_POST'] = '1'
+        u = self.fake_u32()
+        with mock.patch.object(release, 'u32', u), mock.patch.object(d1_keys, '_window', return_value=77):
+            release.release_all()
+        u.keybd_event.assert_not_called()
+        self.assertEqual(len(u.PostMessageW.call_args_list), len(release.KEYS))
+        self.assertEqual([c.args[1] for c in u.PostMessageW.call_args_list], [0x101] * len(release.KEYS))
+        self.assertEqual([c.args[2] for c in u.PostMessageW.call_args_list], release.KEYS)
+        u_fail = self.fake_u32(post_ok=False)
+        with mock.patch.object(release, 'u32', u_fail), mock.patch.object(d1_keys, '_window', return_value=77):
+            with self.assertRaises(RuntimeError):
+                release.release_all()
+        with mock.patch.object(release, 'u32', u), mock.patch.object(d1_keys, '_window', return_value=None):
+            with self.assertRaises(RuntimeError):
+                release.release_all()
+        os.environ.pop('D1_KEYS_POST')
+        u_def = self.fake_u32()
+        with mock.patch.object(release, 'u32', u_def):
+            release.release_all()
+        self.assertEqual(len(u_def.keybd_event.call_args_list), len(release.KEYS))
+        u_def.PostMessageW.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def test_settle_follows_the_posted_env_at_call_time(monkeypatch):
+    # `combat2.py --post` sets D1_KEYS_POST in main(), after import: the settle must follow it.
+    import importlib.util, os
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'lab', 'tower-route', 'combat2.py')
+    spec = importlib.util.spec_from_file_location('combat2_settle', here)
+    try:
+        c = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(c)
+    except Exception as e:  # the module needs Windows; skip elsewhere
+        import pytest
+        pytest.skip(f'combat2 not importable here: {e}')
+    monkeypatch.delenv('D1_KEYS_POST', raising=False)
+    assert c.settle() == 0.0
+    monkeypatch.setenv('D1_KEYS_POST', '1')
+    assert c.settle() == 0.12
