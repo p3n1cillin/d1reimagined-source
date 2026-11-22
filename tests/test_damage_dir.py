@@ -2,7 +2,9 @@ import importlib.util
 import math
 from pathlib import Path
 import sys
+import os
 import unittest
+from unittest import mock
 
 import numpy as np
 
@@ -44,7 +46,10 @@ class DamageDir(unittest.TestCase):
         yy, xx = np.mgrid[:1119, :1936]
         r = np.hypot(xx - M.CX, yy - M.CY)
         img[r < 90] = (245, 220, 180)
-        self.assertIsNone(M.damage_dir(img))
+        with mock.patch.dict(os.environ, {'D1_KEYS_POST': '1'}):
+            self.assertIsNone(M.damage_dir(img))
+        with mock.patch.dict(os.environ, {'D1_KEYS_POST': ''}):    # desktop grabs: unchanged
+            self.assertIsNotNone(M.damage_dir(img))
 
 
 class Plates(unittest.TestCase):
@@ -59,7 +64,10 @@ class Plates(unittest.TestCase):
         img[680:692, 1000:1120] = (190, 54, 42)
         img[650:677, 1000:1120] = (255, 120, 60)
         img[655:665, 1005:1015] = (255, 230, 210)
-        self.assertEqual(PLATES.plates(img), [])
+        with mock.patch.dict(os.environ, {'D1_KEYS_POST': '1'}):
+            self.assertEqual(PLATES.plates(img), [])
+        with mock.patch.dict(os.environ, {'D1_KEYS_POST': ''}):    # desktop grabs: unchanged
+            self.assertEqual(len(PLATES.plates(img)), 1)
 
 
 if __name__ == '__main__':

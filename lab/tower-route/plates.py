@@ -1,4 +1,6 @@
 """Find enemy nameplate health bars (thin red horizontal bars) in a window capture."""
+import os
+
 import numpy as np
 
 
@@ -42,9 +44,13 @@ def plates(img):
         box = solid[y0:y1 + 1, x0:x1 + 1]
         if box.mean() < (0.75 if y1 - y0 < 14 else 0.45):
             continue
-        # A nameplate has the enemy's name in white just above its bar (not a bright muzzle flash).
+        # A nameplate has the enemy's name in white just above its bar.
         above = img[max(0, y0 - 30):y0 - 3, x0:min(x0 + 120, W)]
-        if (above.min(axis=2) > 200).sum() < 25 or np.median(above[:, :, 0]) > 180:
+        # Emulator frames (posted mode) also show a bright muzzle flash here, whose backdrop is pale
+        # red: the median-R > 180 rejection was measured on build 56578 emulator frames from one lab run
+        # (tuning, not game data) and applies in posted mode only.
+        flash = os.environ.get('D1_KEYS_POST') == '1' and np.median(above[:, :, 0]) > 180
+        if (above.min(axis=2) > 200).sum() < 25 or flash:
             continue
         out.append(((x0 + x1) // 2, (y0 + y1) // 2, x1 - x0 + 1, y1 - y0 + 1))
     return out

@@ -1,47 +1,60 @@
 """The player's health from the top-centre bar: None when no bar is shown (full health), else 0..1.
 
 Images are RGB arrays (fight.grab), the bar's fill white or, when critical, red."""
+import os
+
 import numpy as np
 
 X0, X1 = 752, 1184          # bar extent in the 1936x1119 window capture (centred on the reticle, x 968)
 
 # The emulator's own frame (F12, what fight.grab returns in posted mode) puts the 1920x1080 game image
 # at (8, 31) in the 1936x1119 capture (a 31 px black band above it, 8 px borders), and this build
-# draws the health bar bottom-left, slanted, in yellow (measured on gh67's frames: full bar from
-# x 101 to 568, its 16 px band at y 883-899 at the left end and 863-878 at the right).
+# draws the health bar bottom-left, slanted, in yellow. All BL_* geometry and the colour ranges below
+# were measured on build 56578 emulator frames from one lab run (tuning, not game data): full bar
+# from x 101 to 568, its 16 px band at y 883-899 at the left end and 863-878 at the right.
+# They apply to those frames only, so they are used in posted mode (D1_KEYS_POST=1), whose frames
+# these are; desktop grabs keep the original top-centre reader.
 BL_X0, BL_X1 = 101, 569     # the bar's left end and one past its full right end
 BL_Y_LEFT, BL_Y_RIGHT = 891.0, 870.5   # the bar's centre row at x 110 and at x 568
 BL_HALF = 5                 # rows sampled either side of the centre line
 
 
+def emulator_frames():
+    """Whether frames are the emulator's own (posted mode), as opposed to desktop grabs."""
+    return os.environ.get('D1_KEYS_POST') == '1'
+
+
+def _fill(px):
+    r, g, b = px[..., 0], px[..., 1], px[..., 2]
+    # the flat yellow (243-247, 220-230, 56-134: the cap, the body, a hit flash): a tight match, so a
+    # bright wall behind a translucent bar (fire, sand) is not read as fill
+    yellow = (r > 225) & (g > 205) & (g < 245) & (b > 40) & (b < 150) & (r - g < 40)
+    red = (r > 150) & (r - np.maximum(g, b) > 80)
+    return yellow, red
+
+
 def bottom_left(a):
     """The health fraction 0..1 from the bottom-left bar of the emulator's frame, or None if no bar.
 
-    The fill is yellow (white or red are accepted too, as the top bar's fill is) and runs from the
-    left end along the slanted bar; the empty track is the dark panel."""
+    The fill is yellow (red is accepted too, as the top bar's fill is) and runs from the
+    left end along the slanted bar. A bar has ends: the columns just left of it and just past the
+    fill are not fill, so a uniformly yellow scene is not a bar. An empty bar (no fill, the
+    ability icons under it drawn, the band dark) reads 0.0."""
     h, w = a.shape[:2]
-    if h < 900 or w < BL_X1:
+    if h < 900 or w < BL_X1 + 12:
         return None
     xs = np.arange(BL_X0, BL_X1)
     yc = np.rint(BL_Y_LEFT + (BL_Y_RIGHT - BL_Y_LEFT) * (xs - 110) / (568 - 110)).astype(int)
     rows = yc[:, None] + np.arange(-BL_HALF, BL_HALF + 1)[None, :]
     px = a[rows, xs[:, None]]                         # (columns, rows, rgb)
-    r, g, b = px[..., 0], px[..., 1], px[..., 2]
-    # the fill's own flat yellow (243-247, 220-230, 56-134: the cap, the body, a hit flash): a tight match, so
-    # a bright wall behind a translucent bar (fire, sand) is not read as fill
-    yellow = (r > 225) & (g > 205) & (g < 245) & (b > 40) & (b < 150) & (r - g < 40)
-    red = (r > 150) & (r - np.maximum(g, b) > 80)
-    white = (px.min(axis=2) > 200)
-    fill_other = red | white
-    # A red or white fill is a stripe: the rows above and below it (12-14 px off the centre line) are the dark
-    # panel, so a red wall or a uniformly red screen is not a bar (white is ignored there: a glove can
-    # sit under the bar).
+    yellow, red = _fill(px)
+    # A red fill is a stripe: the rows above and below it (12-14 px off the centre line) are
+    # not red or yellow, so a red wall or a uniformly red screen is not a bar.
     off = np.concatenate([yc[:, None] - np.arange(12, 15)[None, :], yc[:, None] + np.arange(12, 15)[None, :]], axis=1)
-    opx = a[np.clip(off, 0, h - 1), xs[:, None]]
-    ofill = ((opx[..., 0] > 180) & (opx[..., 1] > 150) & (opx[..., 2] < 150)) |         ((opx[..., 0] > 150) & (opx[..., 0] - np.maximum(opx[..., 1], opx[..., 2]) > 80))
-    lit = (yellow.mean(axis=1) >= 0.6) | ((fill_other.mean(axis=1) >= 0.6) & (ofill.mean(axis=1) < 0.3))
+    oy, orr = _fill(a[np.clip(off, 0, h - 1), xs[:, None]])
+    lit = (yellow.mean(axis=1) >= 0.6) | ((red.mean(axis=1) >= 0.6) & ((oy | orr).mean(axis=1) < 0.3))
     if lit[:3].mean() < 0.6:
-        return None
+        return _empty(a, lit)
     # the longest run from the left end, tolerating a gap of up to 3 px (the bar's glow and text)
     n, gap = 0, 0
     for i, v in enumerate(lit):
@@ -51,14 +64,36 @@ def bottom_left(a):
             gap += 1
             if gap > 3:
                 break
+    # the ends: 3-10 px left of the bar and 4-10 px past the fill must not be yellow
+    def margin(x_from, x_to):
+        mx = np.arange(x_from, x_to)
+        my = np.rint(BL_Y_LEFT + (BL_Y_RIGHT - BL_Y_LEFT) * (mx - 110) / (568 - 110)).astype(int)
+        mp = a[my[:, None] + np.arange(-BL_HALF, BL_HALF + 1)[None, :], mx[:, None]]
+        return float((_fill(mp)[0].mean(axis=1) >= 0.6).mean())   # yellow only: a bright wall may be red or white
+    if margin(BL_X0 - 10, BL_X0 - 3) > 0.5 or margin(BL_X0 + n + 4, BL_X0 + n + 11) > 0.5:
+        return None
     return min(1.0, n / (BL_X1 - BL_X0 - 1))
+
+
+def _empty(a, lit):
+    """0.0 for a bar with no fill at all: the ability icons below it are drawn (blue squares) and the
+    band is dark. None otherwise (no HUD, or a fading bar)."""
+    icons = a[895:985, 95:260]
+    blue = (icons[..., 2] > 130) & (icons[..., 0] < 110) & (icons[..., 2] - icons[..., 0] > 50)
+    if blue.sum() < 3000 or lit.any():
+        return None
+    xs = np.arange(BL_X0, BL_X1)
+    yc = np.rint(BL_Y_LEFT + (BL_Y_RIGHT - BL_Y_LEFT) * (xs - 110) / (568 - 110)).astype(int)
+    band = a[yc[:, None] + np.arange(-BL_HALF, BL_HALF + 1)[None, :], xs[:, None]]
+    return 0.0 if band.mean() < 90 else None
 
 
 def health(img):
     a = img.astype(int)
-    bl = bottom_left(a)
-    if bl is not None:
-        return bl
+    if emulator_frames():
+        bl = bottom_left(a)
+        if bl is not None:
+            return bl
     mid = a[176:188, X0:X1].mean(axis=(0, 2))
     out = (a[164:170, X0:X1].mean(axis=(0, 2)) + a[194:200, X0:X1].mean(axis=(0, 2))) / 2
     band = a[177:187, X0:X1]
@@ -119,7 +154,13 @@ def critical(img):
     # Only with the bar on screen: at critical health it always shows (a red sliver), and red light
     # alone is not enough. The tripmine corridor's red lasers read as critical with the bar hidden,
     # and every walk there stopped "hurt" at full health (sense124).
-    if not drawn(a) and bottom_left(a) is None:
+    # Emulator frames: the bar is always drawn, so it says nothing; critical health needs a bar
+    # below full (a red-lit screen at full health, sense124's lasers, is not critical).
+    if emulator_frames():
+        bl = bottom_left(a)
+        if not drawn(a) and (bl is None or bl >= 0.99):
+            return False
+    elif not drawn(a):
         return False
     h, w = a.shape[:2]
     edge = np.ones((h, w), bool)

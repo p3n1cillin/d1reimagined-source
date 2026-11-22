@@ -1,10 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """The combat readers on the geometry of the emulator's own frame (fight._emulator_shot): the
 1920x1080 game image at (8, 31) inside a 1936x1119 capture, black band above, bar bottom-left.
-Synthetic images only; the numbers come from measuring real frames."""
+Synthetic images only. The numbers were measured on build 56578 emulator frames from one lab run:
+tuning values, not game data. The emulator readers apply in posted mode (D1_KEYS_POST=1)."""
 import importlib.util
+import os
 import sys
 import unittest
+from unittest import mock
 from pathlib import Path
 
 import numpy as np
@@ -35,6 +38,11 @@ def frame(fill_px=468, color=(243, 220, 86)):
 
 
 class EmulatorFrameHealth(unittest.TestCase):
+    def setUp(self):
+        p = mock.patch.dict(os.environ, {'D1_KEYS_POST': '1'})
+        p.start()
+        self.addCleanup(p.stop)
+
     def test_full_bar(self):
         self.assertAlmostEqual(HP.health(frame()), 1.0, delta=0.01)
 
@@ -47,6 +55,30 @@ class EmulatorFrameHealth(unittest.TestCase):
 
     def test_no_bar_is_none(self):
         self.assertIsNone(HP.health(frame(0)))
+
+    def test_empty_bar_with_the_hud_up_is_zero(self):
+        img = frame(0)
+        img[905:975, 101:250] = (60, 120, 170)             # the ability icons
+        self.assertEqual(HP.health(img), 0.0)
+
+    def test_uniform_scenes_are_not_a_bar(self):
+        for colour in ((245, 225, 100), (255, 255, 255), (200, 40, 30)):
+            img = np.zeros((1119, 1936, 3), np.uint8)
+            img[:] = colour
+            self.assertIsNone(HP.bottom_left(img.astype(int)), colour)
+
+    def test_a_full_bar_in_a_red_lit_scene_is_not_critical(self):
+        img = frame()
+        keep = img[830:935, 60:610].copy()
+        img[:, :200] = img[:, -200:] = (200, 20, 20)
+        img[:200] = img[-200:] = (200, 20, 20)
+        img[830:935, 60:610] = keep
+        self.assertAlmostEqual(HP.health(img), 1.0, delta=0.01)
+        self.assertFalse(HP.critical(img))
+
+    def test_desktop_mode_ignores_the_bottom_left_bar(self):
+        with mock.patch.dict(os.environ, {'D1_KEYS_POST': ''}):
+            self.assertIsNone(HP.health(frame()))
 
     def test_scenery_yellow_beside_the_bar_is_not_a_bar(self):
         img = frame(0)
