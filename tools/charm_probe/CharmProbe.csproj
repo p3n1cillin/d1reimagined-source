@@ -2,7 +2,7 @@
   <!-- Point CharmDir at a checkout of https://github.com/MontagueM/Charm with
        patches/charm-d1-strategy-null-guard.patch applied. -->
   <PropertyGroup>
-    <CharmDir Condition="'$(CharmDir)' == ''">F:\d1\third-party\MontagueM_Charm</CharmDir>
+    <CharmDir Condition="'$(CharmDir)' == '' And '$(D1_ROOT)' != ''">$(D1_ROOT)\third-party\MontagueM_Charm</CharmDir>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <Platforms>x64</Platforms>
@@ -12,6 +12,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>$(NoWarn);CS8632</NoWarn>
   </PropertyGroup>
+  <Target Name="RequireCharmDir" BeforeTargets="PrepareForBuild;ResolveProjectReferences" Condition="'$(CharmDir)' == ''">
+    <Error Text="Set CharmDir (msbuild -p:CharmDir=...) or D1_ROOT (then third-party/MontagueM_Charm below it) to a patched Charm checkout." />
+  </Target>
   <ItemGroup>
     <ProjectReference Include="$(CharmDir)\Tiger\Tiger.csproj" />
     <ProjectReference Include="$(CharmDir)\Arithmic\Arithmic.csproj" />

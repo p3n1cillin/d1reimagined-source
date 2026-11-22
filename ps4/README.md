@@ -91,7 +91,7 @@ hash-guarded patch installers are unnecessary in this public checkout.
 The `tools/ps4_setup` scripts find private files through one contract
 (`d1paths.py` for Python, `D1Paths.ps1` for PowerShell; nothing is hardcoded).
 Set `D1_ROOT` to the folder that holds `tools/`, `d1preservation-main/` and
-`01.29/`, or put `{"root": "D:/d1"}` in the per-user config file
+`01.29/`, or put `{"root": "D:/Games/D1"}` in the per-user config file
 `%APPDATA%\d1reimagined\paths.json` (Windows) or
 `${XDG_CONFIG_HOME:-~/.config}/d1reimagined/paths.json`; see
 [paths.example.json](../tools/ps4_setup/paths.example.json). An environment

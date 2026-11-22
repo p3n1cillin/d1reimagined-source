@@ -283,8 +283,12 @@ class RegenerateTest(unittest.TestCase):
         # stream Q), Bungie's manifest and the 2014 table (local inputs). The captures are not needed:
         # the committed cross-checked rows stand in for them.
         data = json.loads(Path(os.environ['D1_WORLDS_JSON']).read_text(encoding='utf-8'))
-        manifest = Path(os.environ.get('D1_MANIFEST_SQLITE', 'F:/d1/d1preservation-main/manifest/data/world_en.sqlite'))
-        legacy = Path(os.environ.get('D1_TIGER', 'F:/d1/third-party/Blam-Network_tiger')) / M.LEGACY_TABLE
+        try:
+            manifest = Path(os.environ.get('D1_MANIFEST_SQLITE') or
+                            M.d1paths.workspace() / 'manifest' / 'data' / 'world_en.sqlite')
+            legacy = Path(os.environ.get('D1_TIGER') or M.d1paths.third_party() / 'Blam-Network_tiger') / M.LEGACY_TABLE
+        except SystemExit:   # D1_ROOT unset: the same skip as a missing folder
+            self.skipTest('private: set D1_MANIFEST_SQLITE and D1_TIGER, or D1_ROOT')
         if not data.get('activities') or not manifest.exists() or not legacy.exists():
             self.skipTest('private: a worlds JSON with the activity table, the manifest and the 2014 table')
         content = M.Content(data)

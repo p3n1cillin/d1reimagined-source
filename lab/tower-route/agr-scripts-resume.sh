@@ -13,7 +13,7 @@
 # death, then Dock 13 and the hangar (phase 5).
 NAME=${1:?run name}
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
-ST=${D1_STAGING:-/f/d1/d1preservation-main/cfw-staging}; FG=$ST/full-game
+ST=${D1_STAGING:?set D1_STAGING to the cfw-staging folder, as a path this shell can use}; FG=$ST/full-game
 R=$(ls -d $FG/*-$NAME | tail -1); H=$R/boot/activity-host.log
 until grep -q "mission phase 3 " $H; do sleep 3; done; sleep 5
 junction() { [ -e "$1" ] || pwsh -NoProfile -Command "New-Item -ItemType Junction -Path '$(cygpath -w $1)' -Target '$(cygpath -w $2)' | Out-Null"; }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Bridge the separately built Linux tools to paths used by the supplied generators.
 set -euo pipefail
-repo=/mnt/f/d1/d1preservation-main
+repo=${D1_REPO_LINUX:?set D1_REPO_LINUX to the WSL path of the workspace folder}
 for tree in d1-server d1-trace d1-observe; do
     target="$repo/$tree/target/release"
     mkdir -p "$target"

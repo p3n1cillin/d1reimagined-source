@@ -5,7 +5,12 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const tiger = process.env.D1_TIGER || "F:/d1/third-party/Blam-Network_tiger";
+const tiger = process.env.D1_TIGER ||
+  (process.env.D1_ROOT ? path.join(process.env.D1_ROOT, "third-party", "Blam-Network_tiger") : undefined);
+if (!tiger) {
+  console.error("set D1_TIGER (a built Blam-Network tiger checkout) or D1_ROOT (then third-party/Blam-Network_tiger below it)");
+  process.exit(2);
+}
 const { rsat, BitReader, BitWriter } = require(
   path.join(tiger, "packages/rsat/dist-cjs/index.js")
 );

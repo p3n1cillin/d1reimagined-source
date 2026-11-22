@@ -13,6 +13,7 @@ Every location resolves lazily, so importing this module never fails. Sources, f
   tools        D1_TOOLS        root/tools
   shadps4      D1_SHADPS4      tools/shadPS4/0.19.0
   liborbispkg  D1_LIBORBISPKG  tools/liborbispkg/0.2.245
+  third_party  D1_THIRD_PARTY  root/third-party (other people's code and data, read-only inputs)
   workspace    D1_WORKSPACE    root/d1preservation-main
   staging      D1_STAGING      workspace/cfw-staging
   pkg_dir      D1_PKG_DIR      root/01.29/d1shad
@@ -37,6 +38,7 @@ LOCATIONS = {
     'tools': ('root', 'tools'),
     'shadps4': ('tools', 'shadPS4/0.19.0'),
     'liborbispkg': ('tools', 'liborbispkg/0.2.245'),
+    'third_party': ('root', 'third-party'),
     'workspace': ('root', 'd1preservation-main'),
     'staging': ('workspace', 'cfw-staging'),
     'pkg_dir': ('root', '01.29/d1shad'),
@@ -75,7 +77,7 @@ def _config():
     except (OSError, ValueError) as e:
         raise D1PathError(f'd1paths: cannot read {path}: {e}')
     if not isinstance(data, dict):
-        raise D1PathError(f'd1paths: {path} must hold a JSON object, e.g. {{"root": "D:/d1"}}')
+        raise D1PathError(f'd1paths: {path} must hold a JSON object, e.g. {{"root": "D:/Games/D1"}}')
     return data
 
 
@@ -99,8 +101,8 @@ def resolve(name):
     if parent is None:
         raise D1PathError(
             'd1paths: the D1 root folder is not set. Either set the environment variable D1_ROOT\n'
-            '(e.g. D1_ROOT=D:/d1), or create ' + str(config_file()) + ' containing\n'
-            '{"root": "D:/d1"} (see tools/ps4_setup/paths.example.json). Individual locations\n'
+            '(e.g. D1_ROOT=D:/Games/D1), or create ' + str(config_file()) + ' containing\n'
+            '{"root": "D:/Games/D1"} (see tools/ps4_setup/paths.example.json). Individual locations\n'
             'can be set the same way: ' + ', '.join(env_name(n) for n in LOCATIONS if LOCATIONS[n][0]) + '.')
     return resolve(parent)[0].joinpath(*below.split('/')), 'default'
 
@@ -113,6 +115,7 @@ def root(): return get('root')
 def tools(): return get('tools')
 def shadps4(): return get('shadps4')
 def liborbispkg(): return get('liborbispkg')
+def third_party(): return get('third_party')
 def workspace(): return get('workspace')
 def staging(): return get('staging')
 def pkg_dir(): return get('pkg_dir')
