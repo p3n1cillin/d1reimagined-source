@@ -1,11 +1,11 @@
 """Documented source-only adaptations; never edit the private PS4 runtime."""
 from pathlib import Path
 import shutil
-root = Path(r'F:\d1\public-work\d1reimagined-source')
+root = Path(r'<D1_ROOT>\public-work\d1reimagined-source')
 p = root / 'ps4'
 for name in ['d1-byte-scan.rs','d1-synthetic-gate.rs','Export-D1RepackSlack.ps1']:
-    shutil.copyfile(Path(r'F:\d1\d1xenia\tools\ps4_setup')/name, root/'tools/ps4_setup'/name)
-shutil.copyfile(Path(r'F:\d1\tools\synthetic-gate.rs'),
+    shutil.copyfile(Path(r'<D1_ROOT>\d1xenia\tools\ps4_setup')/name, root/'tools/ps4_setup'/name)
+shutil.copyfile(Path(r'<D1_ROOT>\tools\synthetic-gate.rs'),
                 p/'d1-server/crates/d1-run/src/gate_synthetic.rs')
 gate = p/'d1-server/crates/d1-run/src/gate.rs'
 s = gate.read_text(encoding='utf-8')

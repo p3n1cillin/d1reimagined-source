@@ -1,11 +1,11 @@
 """Bounded, read-only lookup of candidate component bindings, not a health claim."""
 from pathlib import Path
 import importlib.util,json,struct,sys,time
-sys.path.insert(0,r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup')
+sys.path.insert(0,r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup')
 from d1_squad_tracking import SquadReader
 sys.path.insert(0,r'lab/history\2026-10-28-static-combat-codex')
 import static56578 as st
-spec=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
+spec=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 p,base=g.open_client();r=SquadReader(p,base)
 rows=[];dest=Path(__file__).parent/('vitals-%d'%time.time());dest.mkdir()
 for t in r.snapshot(0x062dd95d)['targets']:

@@ -2,9 +2,9 @@
 import importlib.util, json, struct, subprocess, os
 from pathlib import Path
 P=Path(__file__).parent
-src=Path(r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-member-states.py')
+src=Path(r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-member-states.py')
 spec=importlib.util.spec_from_file_location('member',src);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
-base=Path(r'F:\d1\d1preservation-main\cfw-staging\agr-divide-objective20-m52-disarm39.txt')
+base=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\agr-divide-objective20-m52-disarm39.txt')
 (P/'skiff-candidate-base.txt').write_bytes(base.read_bytes())
 body=bytearray(m.member(1))
 activation=bytes(body)
@@ -25,8 +25,8 @@ for line in base.read_text().splitlines():
 assert hit==1,hit
 (P/'agr-drop2-exit-candidate.txt').write_text('\n'.join(lines)+'\n',encoding='utf8')
 (P/'agr-drop2-activate-only-control.txt').write_text('\n'.join(line.replace(body.hex(),activation.hex()) for line in lines)+'\n',encoding='utf8')
-env=dict(os.environ,D1_BUILD='later-56578',D1_BUILDS=r'F:\d1\d1preservation-main\capture-rig\builds.json')
-cmd=[r'F:\d1\public-work\target-codex-static\release\d1-oracle.exe','object','--tag','0x80800868','--obj',body.hex()]
+env=dict(os.environ,D1_BUILD='later-56578',D1_BUILDS=r'<D1_ROOT>\d1preservation-main\capture-rig\builds.json')
+cmd=[r'<D1_ROOT>\public-work\target-codex-static\release\d1-oracle.exe','object','--tag','0x80800868','--obj',body.hex()]
 r=subprocess.run(cmd,env=env,capture_output=True,text=True,timeout=60)
 (P/'drop2-exit-codec-check.txt').write_text(r.stdout+r.stderr,encoding='utf8')
 print('candidate written privately; native codec exit',r.returncode);print(r.stdout[-1200:]);print(r.stderr[-1200:])

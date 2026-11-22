@@ -1,8 +1,8 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $research=Join-Path $rt 'RESEARCH'
-. 'F:\d1\d1xenia\scripts\Final124RunHelpers.ps1'
+. '<D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1'
 $old=Read-D1ProcessManifest -Path (Join-Path $rt 'SIGNON_LOCAL\logs\FINAL124_JOIN173-processes.json')
 foreach ($identity in $old.processes) { if (Get-D1OwnedProcess -Identity $identity) { throw 'Prior owned stack is live' } }
 $clients=@(Get-CimInstance Win32_Process -Filter "Name='rpcs3.exe'")

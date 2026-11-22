@@ -51,7 +51,7 @@
         "tag": "rpcs3",
         "id": 1896,
         "startTimeUtcTicks": "639271299702404102",
-        "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+        "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
       },
       "exact_owned_alive": false
     },

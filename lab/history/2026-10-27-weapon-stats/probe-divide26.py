@@ -1,8 +1,8 @@
 """Bounded pad-only probe along Claude's known low-area centre chain; no guest writes."""
 from pathlib import Path
 import subprocess,sys,time
-run=Path(r'F:\d1\d1preservation-main\cfw-staging\weapon26-base-stats')
-tools=Path(r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup')
+run=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\weapon26-base-stats')
+tools=Path(r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup')
 assert 'DIVIDE REACHED' in (run/'replay-console.log').read_text(encoding='utf-8')
 lock=run/'replay.lock'
 with lock.open('x') as f:f.write('Codex bounded Divide centre probe owns pad.\n')

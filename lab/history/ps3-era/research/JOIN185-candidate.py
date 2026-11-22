@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 root=Path(__file__).parent
-mission=json.loads(Path('F:/d1/d1xenia/missions/a_guardian_rises.json').read_text(encoding='utf-8'))
+mission=json.loads(Path('<D1_ROOT>/d1xenia/missions/a_guardian_rises.json').read_text(encoding='utf-8'))
 removed=[step for step in mission['steps'] if step.get('at') in (90,135,140)]
 assert len(removed)==3
 mission['steps']=[step for step in mission['steps'] if step not in removed]

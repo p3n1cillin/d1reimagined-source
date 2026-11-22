@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $r=Join-Path $rt 'RESEARCH'
 $cleanup=Get-Content -LiteralPath "$rt\SIGNON_LOCAL\logs\JOIN204-cleanup-result.json" -Raw|ConvertFrom-Json
@@ -15,7 +15,7 @@ foreach($p in @("$r\JOIN205-before-title.yml","$r\JOIN205-before-d1ppu.txt","$rt
 Copy-Item -LiteralPath "$rpc\config\custom_configs\config_BLES01857.yml" -Destination "$r\JOIN205-before-title.yml"
 Copy-Item -LiteralPath "$rpc\d1\d1ppu.txt" -Destination "$r\JOIN205-before-d1ppu.txt"
 $launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN204-launch.ps1" -Raw).Replace('JOIN204','JOIN205')
-$launch=$launch.Replace(';--character-gear;@F:\d1\<pc>-import\d1xenia\local\RESEARCH\JOIN205-titan-ghost-gear.json',';--character-gear;starter:01.24:titan')
+$launch=$launch.Replace(';--character-gear;@<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\JOIN205-titan-ghost-gear.json',';--character-gear;starter:01.24:titan')
 if($launch -match 'character-overlay|ghost-gear' -or $launch -notmatch 'starter:01.24:titan'){throw 'Expected committed starter default'}
 [IO.File]::WriteAllText("$rt\SIGNON_LOCAL\JOIN205-launch.ps1",$launch,[Text.UTF8Encoding]::new($false))
 $trace=@'
@@ -30,10 +30,10 @@ $trace+="`n"
 [IO.File]::WriteAllText("$r\JOIN205-planned-d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText("$rpc\d1\d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 foreach($marker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText("$rpc\d1\$marker",'')}
-$diff=git -C 'F:\d1\d1xenia' diff -- server/bap_server.py server/test_bap_server.py
+$diff=git -C '<D1_ROOT>\d1xenia' diff -- server/bap_server.py server/test_bap_server.py
 [IO.File]::WriteAllText("$r\JOIN205-tested-source.diff",($diff -join "`n"),[Text.UTF8Encoding]::new($false))
-[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C 'F:\d1\d1xenia' rev-parse HEAD).Trim();source_clean=$false;
-    server_sha256=(Get-FileHash -LiteralPath 'F:\d1\d1xenia\server\bap_server.py').Hash;
+[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C '<D1_ROOT>\d1xenia' rev-parse HEAD).Trim();source_clean=$false;
+    server_sha256=(Get-FileHash -LiteralPath '<D1_ROOT>\d1xenia\server\bap_server.py').Hash;
     tested_source_diff_sha256=(Get-FileHash -LiteralPath "$r\JOIN205-tested-source.diff").Hash;
     change='Committed starter default (Generalist appearance 0, dye 15/2493); no gear file or overlay; unchanged renderer and mission; host exit-code watcher; manual control of Breach dialogue/light props (uncommitted mission aliases).';
     trace=$trace}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN205-prepare.json" -Encoding utf8

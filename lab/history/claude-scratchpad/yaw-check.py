@@ -1,6 +1,6 @@
 """Check candidate facing offsets against the direction of a forward walk."""
 import importlib.util, json, math, struct, sys
-spec = importlib.util.spec_from_file_location('walk', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py')
+spec = importlib.util.spec_from_file_location('walk', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py')
 walk = importlib.util.module_from_spec(spec); spec.loader.exec_module(walk)
 c = walk.Client()
 tracked = json.load(open(sys.argv[1]))

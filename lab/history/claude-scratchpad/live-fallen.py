@@ -5,7 +5,7 @@ Writes [{handle, type, addr}] for every member object field that holds a Divide 
 between two reads 1.5 s apart, plus the static ones (marked moved=false).
 """
 import importlib.util, json, math, struct, sys, time
-spec = importlib.util.spec_from_file_location('g', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+spec = importlib.util.spec_from_file_location('g', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
 p, base = g.open_client()
 reg = p.u(p.u(base + g.REGISTRY, 'Q'), 'Q')

@@ -3,5 +3,5 @@
   "id": 4992,
   "startTimeUtcTicks": "639270153782585782",
   "executable": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
-  "command_line": "\"%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe\" F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\continue-natural-player180.py"
+  "command_line": "\"%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe\" <D1_ROOT>\\<pc>-import\\d1xenia\\local\\RESEARCH\\continue-natural-player180.py"
 }

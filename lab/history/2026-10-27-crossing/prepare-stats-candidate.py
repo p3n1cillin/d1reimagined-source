@@ -9,9 +9,9 @@ No file is served by this script.
 import hashlib, json, os, re, struct, subprocess
 from pathlib import Path
 root = Path(__file__).parent
-oracle = r'F:\d1\d1preservation-main\d1-server\target\release\d1-oracle.exe'
-env = dict(os.environ, D1_BUILDS=r'F:\d1\d1preservation-main\capture-rig\builds.json', D1_BUILD='later-56578')
-source = Path(r'F:\d1\d1preservation-main\capture-rig\builds\later-56578\grants\khvostov-3598.bin')
+oracle = r'<D1_ROOT>\d1preservation-main\d1-server\target\release\d1-oracle.exe'
+env = dict(os.environ, D1_BUILDS=r'<D1_ROOT>\d1preservation-main\capture-rig\builds.json', D1_BUILD='later-56578')
+source = Path(r'<D1_ROOT>\d1preservation-main\capture-rig\builds\later-56578\grants\khvostov-3598.bin')
 
 
 def command(args):

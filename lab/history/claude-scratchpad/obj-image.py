@@ -1,6 +1,6 @@
 """Address of a sensor client's state-A image (group kind sub), using the run-14 readback layout. Read-only."""
 import importlib.util, struct, sys
-s = importlib.util.spec_from_file_location('g', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+s = importlib.util.spec_from_file_location('g', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 g = importlib.util.module_from_spec(s); s.loader.exec_module(g)
 import io, contextlib
 p, base = g.open_client()

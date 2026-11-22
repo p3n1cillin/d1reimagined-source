@@ -38,7 +38,7 @@ The full write-up is in `notes/ps4-56578-continuation-2026-10-27.md` (the last t
    - The scanned stack frames (`0x40A96E`, `0xE944B`, `0x3532EE`) aren't a reliable call chain. `0x3532EB` is a generic `call r8` dispatch, and `0xE93E0` is a handle-check helper.
    - Old notes' handler addresses (e.g. `0x3561D8`) are 01.29, not 56578.
 5. **Inactivity.** Run 15 was returned to Orbit for inactivity mid-sweep. Touchpad-only input doesn't count, and those presses also reset the idle guard's timer, so it never stepped in. Any automated loop must nudge a stick.
-6. **HUD.** The display is on when the user is connected via TeamViewer; `F:\d1\tools\d1-shot.ps1` then captures the real HUD (radar, ammo 12/114, Nav Mode).
+6. **HUD.** The display is on when the user is connected via TeamViewer; `<D1_ROOT>\tools\d1-shot.ps1` then captures the real HUD (radar, ammo 12/114, Nav Mode).
 
 **Next, in order:**
 
@@ -51,7 +51,7 @@ The full write-up is in `notes/ps4-56578-continuation-2026-10-27.md` (the last t
 - Public main is PR-only: branch from the latest origin/main, fill in the PR template; squash auto-merge.
 - No third-party downloads, no Sony key work.
 - No game files, keys, screenshots or run evidence in repos.
-- Build the activity host with `LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`, after stopping the run (the host locks its exe).
+- Build the activity host with `LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin`, after stopping the run (the host locks its exe).
 - Kill helper processes with a PowerShell process filter.
 
 **Handing back to Claude.** When you're done, or when you're close to your usage limit, hand back to Claude the same way Claude handed to you. Write a full handoff prompt covering:
@@ -61,4 +61,4 @@ The full write-up is in `notes/ps4-56578-continuation-2026-10-27.md` (the last t
 - PRs and uncommitted work;
 - the next steps.
 
-Then paste it into the Claude desktop app, Code tab, session "PS4 build 56578 retarget", and send it. In case the limit cuts you off first, also keep the same content in `F:\d1\d1xenia\HANDOFF-codex-to-claude.md`, updated after each meaningful step.
+Then paste it into the Claude desktop app, Code tab, session "PS4 build 56578 retarget", and send it. In case the limit cuts you off first, also keep the same content in `<D1_ROOT>\d1xenia\HANDOFF-codex-to-claude.md`, updated after each meaningful step.

@@ -1,11 +1,11 @@
 """Bounded, read-only 56578 completion/profile/lifetime probe. No game calls."""
 from pathlib import Path
 import importlib.util,json,struct,sys,time
-sys.path.insert(0,r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup')
+sys.path.insert(0,r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup')
 from d1_squad_tracking import SquadReader
 sys.path.insert(0,r'lab/history\2026-10-28-static-combat-codex')
 import static56578 as st
-sp=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(sp);sp.loader.exec_module(g)
+sp=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(sp);sp.loader.exec_module(g)
 p,b=g.open_client();r=SquadReader(p,b)
 for va in (0x56b260,0x56dc00,0x10c430,0x75e4c0): assert p.read(b+va,24)==st.read(va,24),hex(va)
 out={'time':time.time(),'base':hex(b),'profiles':[],'lifetime':[]}
@@ -34,7 +34,7 @@ for j in range(n):
  cp=r.resolve(p.u(rec+16,'I'))+p.u(rec+24,'Q')
  out['lifetime'].append({'component':hex(cp),'phase':p.u(cp+0x1ac,'b'),'record':p.read(rec,56).hex(),'state':p.read(cp+0x1a0,32).hex()})
  image=bytearray(p.read(cp+0x1ac,0x504));image[0]=7
- draft=Path(r'F:\d1\d1preservation-main\cfw-staging\agr-postgame-phase7.draft.txt')
+ draft=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\agr-postgame-phase7.draft.txt')
  draft.write_text('# PRIVATE UNPUBLISHED DRAFT; requires source PR for @phase.\n# sense48 gen 0; lifetime group 4786c0e0, kind16, sub3; no pending clients at sample.\n# Publish using clients 4786c0e0 THIS_PATH after rebuilding only when lab stopped.\n# Native 75e4c0 requires phase 7 for 7976b0 Enter post game.\n# Retain the current authority sequence (from outro), not launch authority 3.\n@authority 13,2,0\n@phase 7\n')
  out['phase7_draft']=str(draft)
 globals_obj=b+0x26527f8;glob=p.u(globals_obj+0x50,'Q')+8

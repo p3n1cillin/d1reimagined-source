@@ -1,7 +1,7 @@
 #!/bin/bash
 # Post-game CONTINUE on a parked run: pre-departure component read -> recall gate check -> monitor + recording ->
 # hold triangle ~4.2 s (hold-to-confirm, 3 s) -> screenshots through the load. Usage: continue-hold.sh RUNNAME
-C=F:/d1/d1preservation-main/cfw-staging; Q=lab/history/2026-10-29-postgame-codex
+C=<D1_ROOT>/d1preservation-main/cfw-staging; Q=lab/history/2026-10-29-postgame-codex
 S=lab/history/lab-scripts-2026-10-29; R=$C/$1; K=$R/capture
 recorders() { powershell -NoProfile -Command "(Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | Where-Object { \$_.CommandLine -match 'd1-record' }).Count"; }
 until grep -q 'recording stopped' $R/capture.log 2>/dev/null; do sleep 10; done
@@ -9,8 +9,8 @@ until [ "$(recorders | tr -d '\r')" = "0" ]; do sleep 10; done
 echo "$(date +%H:%M:%S) tour done, no recorder running"
 # The tour ends on ACTIVITY REWARDS: R1 twice selects ADVANCEMENT. Codex's read-only probe captures the live UI
 # tree there (screen/body tags, visibility, post_game_data) before CONTINUE destroys it.
-powershell -NoProfile -File F:/d1/tools/d1-pad.ps1 -Keys U > /dev/null; sleep 1.5
-powershell -NoProfile -File F:/d1/tools/d1-pad.ps1 -Keys U > /dev/null; sleep 2
+powershell -NoProfile -File <D1_ROOT>/tools/d1-pad.ps1 -Keys U > /dev/null; sleep 1.5
+powershell -NoProfile -File <D1_ROOT>/tools/d1-pad.ps1 -Keys U > /dev/null; sleep 2
 (cd $S && python -c "
 import importlib.util
 s=importlib.util.spec_from_file_location('fight','fight.py');f=importlib.util.module_from_spec(s);s.loader.exec_module(f); f.grab('$K/advancement-selected.png')" 2>&1 | grep -v shadPS4)
@@ -19,7 +19,7 @@ g=$(cd $Q && timeout 90 python probe-recall-gate-readonly.py 2>/dev/null | grep 
 python -c "
 import json,sys; d=json.load(open(sys.argv[1])); print('gate', {k:d.get(k) for k in ('profile_completion673','plane_state','leader_predicate','selection_activity','ordinary_branch_predicted')})
 sys.exit(0 if d.get('ordinary_branch_predicted') is True and d.get('selection_activity')==165 else 3)" "$g" || { echo "gate not ordinary/165: no input sent"; exit 3; }
-(cd F:/d1/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $K/continue.mp4 --seconds 240 > $K/continue-record.log 2>&1 &)
+(cd <D1_ROOT>/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $K/continue.mp4 --seconds 240 > $K/continue-record.log 2>&1 &)
 (cd $Q && timeout 220 python monitor-recall-departure-readonly.py --run $1 --seconds 180 > $K/continue-monitor.out 2>&1 &)
 (cd $Q && timeout 220 python probe-hangar-cues-readonly.py --run $1 --seconds 180 --interval 0.25 > $K/continue-cues.out 2>&1 &)   # Codex: read-only world/cue catalogue through the load
 until grep -q READY $K/continue-monitor.out 2>/dev/null; do sleep 0.5; done; sleep 3

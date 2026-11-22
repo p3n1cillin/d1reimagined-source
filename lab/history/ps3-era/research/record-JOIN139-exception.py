@@ -1,9 +1,9 @@
 import json, sys
 from pathlib import Path
-sys.path.insert(0, r'F:\d1\d1xenia\tools\content_capture')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\tools\content_capture')
 from capture import Capture
 from monitor import Detector, native_exception_observation
-root=Path(r'F:\d1\<pc>-import\d1xenia\local')
+root=Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 manifest=json.loads((root/'SIGNON_LOCAL/logs/FINAL124_JOIN139-processes.json').read_text(encoding='utf-8-sig'))
 owned=next(p for p in manifest['processes'] if p['tag']=='rpcs3')
 records=json.loads((root/'SIGNON_LOCAL/logs/JOIN139-windows-crash-structured.json').read_text(encoding='utf-8-sig'))

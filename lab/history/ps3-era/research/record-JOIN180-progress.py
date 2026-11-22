@@ -1,6 +1,6 @@
 import datetime,json
 from pathlib import Path
-runtime=Path('F:/d1/<pc>-import/d1xenia/local')
+runtime=Path('<D1_ROOT>/<pc>-import/d1xenia/local')
 path=runtime/'PRIVATE_ENGINEERING/2026-10-08-progress.md'
 at=datetime.datetime.now(datetime.timezone.utc).isoformat()
 prefix=f'''## Active engineering checkpoint — {at}

@@ -23,7 +23,7 @@ Addresses (build 56578, ELF sha 672f0341...; re-derived 2026-10-13, see notes/ps
 import ctypes, ctypes.wintypes as wt, re, struct, subprocess, sys
 
 ELF_SHA = '672f03411c0503dfbcda804cbb9fb27cdd9a8d73a8bcb71bf0c4f688073b0833'
-LOG = r'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt'
+LOG = r'<D1_ROOT>\tools\shadPS4\0.19.0\user\log\shad_log.txt'
 MANAGER_PTR = 0x26CA4E0
 SESSION_STRIDE, INNER_STRIDE, STATE_OFF, PARAMS_OFF, VALID_MASK = 0x131C8, 0x98E0, 0x8C58, 0x6B38, 0x7F0
 ACTIVITY_PARAM, ACTIVITY_ID, GOAL_VALUE, HAS_VALUE = 0x9B8, 0xEA, 0xE4, 0xE0

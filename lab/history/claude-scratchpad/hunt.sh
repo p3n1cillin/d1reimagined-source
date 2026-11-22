@@ -1,7 +1,7 @@
 #!/bin/bash
 # Hunt the live members of a Dock 13 cohort until the host gate reports it cleared. Usage: hunt.sh RUNNAME [ROUNDS]
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
-H=$(ls -d F:/d1/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
+H=$(ls -d <D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
 C=5,6,7,8,9,10,11,12
 for i in $(seq 1 ${2:-12}); do
   sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "is exactly zero" && break

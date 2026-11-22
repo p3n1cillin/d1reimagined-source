@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $r=Join-Path $rt 'RESEARCH'
 $cleanup=Get-Content -LiteralPath "$rt\SIGNON_LOCAL\logs\JOIN199-cleanup-result.json" -Raw|ConvertFrom-Json
@@ -15,7 +15,7 @@ foreach($p in @("$r\JOIN200-before-title.yml","$r\JOIN200-before-d1ppu.txt","$rt
 Copy-Item -LiteralPath "$rpc\config\custom_configs\config_BLES01857.yml" -Destination "$r\JOIN200-before-title.yml"
 Copy-Item -LiteralPath "$rpc\d1\d1ppu.txt" -Destination "$r\JOIN200-before-d1ppu.txt"
 $launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN199-launch.ps1" -Raw).Replace('JOIN199','JOIN200')
-$launch=$launch.Replace(';--character-overlay;@F:\d1\<pc>-import\d1xenia\local\RESEARCH\JOIN200-ghost-appearance-overlay.json','')
+$launch=$launch.Replace(';--character-overlay;@<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\JOIN200-ghost-appearance-overlay.json','')
 if($launch -match 'character-overlay'){throw 'Production run must not use overlay'}
 [IO.File]::WriteAllText("$rt\SIGNON_LOCAL\JOIN200-launch.ps1",$launch,[Text.UTF8Encoding]::new($false))
 $trace=@'
@@ -30,10 +30,10 @@ $trace+="`n"
 [IO.File]::WriteAllText("$r\JOIN200-planned-d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText("$rpc\d1\d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 foreach($marker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText("$rpc\d1\$marker",'')}
-$diff=git -C 'F:\d1\d1xenia' diff -- server/bap_server.py server/test_bap_server.py
+$diff=git -C '<D1_ROOT>\d1xenia' diff -- server/bap_server.py server/test_bap_server.py
 [IO.File]::WriteAllText("$r\JOIN200-tested-source.diff",($diff -join "`n"),[Text.UTF8Encoding]::new($false))
-[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C 'F:\d1\d1xenia' rev-parse HEAD).Trim();source_clean=$false;
-    server_sha256=(Get-FileHash -LiteralPath 'F:\d1\d1xenia\server\bap_server.py').Hash;
+[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C '<D1_ROOT>\d1xenia' rev-parse HEAD).Trim();source_clean=$false;
+    server_sha256=(Get-FileHash -LiteralPath '<D1_ROOT>\d1xenia\server\bap_server.py').Hash;
     tested_source_diff_sha256=(Get-FileHash -LiteralPath "$r\JOIN200-tested-source.diff").Hash;
     change='Production Generalist appearance 42; no profile overlay, no default arrangement/cosmetic, unchanged renderer and mission.';
     trace=$trace}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN200-prepare.json" -Encoding utf8

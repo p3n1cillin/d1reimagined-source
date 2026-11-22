@@ -15,7 +15,7 @@
 NAME=${1:?run name}
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 # D1_RUN_ROOT: the launcher's -RunRoot, when run folders are not under STAGING/full-game.
-FG=${D1_RUN_ROOT:-${D1_STAGING:-/f/d1/d1preservation-main/cfw-staging}/full-game}
+FG=${D1_RUN_ROOT:-${D1_STAGING:?set D1_STAGING (or D1_RUN_ROOT) to the cfw-staging folder, as a path this shell can use}/full-game}
 until R=$(ls -d $FG/*-$NAME 2>/dev/null | tail -1) && [ -n "$R" ] && [ -f $R/boot/activity-host.log ]; do sleep 3; done
 H=$R/boot/activity-host.log; RT=missions/routes; cd "$HERE"; echo "run $R"
 walk() { local name=$1 route=$2 secs=$3 tol=$4; shift 4

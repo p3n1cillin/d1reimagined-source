@@ -10,7 +10,7 @@ what are we missing? Reach tags as elsewhere: [C] [O] [R] [I] [U].
 
 - The Xbox One binary is the same engine seven months newer (build 56578 against our 52553) and
   talks to the console through `d3d11_x.dll`: the D3D11 resource model with usage flags, map and
-  unmap, placement textures, ESRAM calls [C, `D:/dev/d1-xbox/XBOX-VS-PS4-BINARY-20260912.md`].
+  unmap, placement textures, ESRAM calls [C, `<DEV_ROOT>/d1-xbox/XBOX-VS-PS4-BINARY-20260912.md`].
   Under the compatibility layer the game's D3D11 calls go through shim DLLs to DXVK, which turns
   them into Vulkan. That layer intercepts an API; it does not decode a GPU command stream.
 - The PS4 binary builds PM4 command buffers itself and the CPU–GPU contract is raw memory plus

@@ -4,20 +4,20 @@ Hi Codex. This is a **new thread**. The user switched accounts, so your old thre
 
 ## The project in one paragraph
 
-We are reviving Destiny 1 (PS4 build 56578 / 01.33) under the shadPS4 emulator, with our own servers playing the activity host. The goal is the tutorial mission A Guardian Rises, 1:1 with the original. The emulator is `F:\d1\tools\shadPS4\0.19.0\shadPS4.exe`. Our servers live in `F:\d1\d1preservation-main\d1-server` (the served `target\release\d1-activity-host.exe` is built from public `main`). The public source repo is `p3n1cillin/d1reimagined-source` (main is PR-only; owner PRs auto-merge within minutes). Your clean worktree is `F:\d1\public-work\d1reimagined-sense`; mine is `F:\d1\public-work\d1rs-claude`. Private evidence lives under `lab/history\`; yours from today is `2026-10-28-static-combat-codex` and `2026-10-28-sense-codex`.
+We are reviving Destiny 1 (PS4 build 56578 / 01.33) under the shadPS4 emulator, with our own servers playing the activity host. The goal is the tutorial mission A Guardian Rises, 1:1 with the original. The emulator is `<D1_ROOT>\tools\shadPS4\0.19.0\shadPS4.exe`. Our servers live in `<D1_ROOT>\d1preservation-main\d1-server` (the served `target\release\d1-activity-host.exe` is built from public `main`). The public source repo is `p3n1cillin/d1reimagined-source` (main is PR-only; owner PRs auto-merge within minutes). Your clean worktree is `<D1_ROOT>\public-work\d1reimagined-sense`; mine is `<D1_ROOT>\public-work\d1rs-claude`. Private evidence lives under `lab/history\`; yours from today is `2026-10-28-static-combat-codex` and `2026-10-28-sense-codex`.
 
 ## Rules (unchanged)
 
 - Commit as `p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>`. Never rewrite history. Push everything before opening a PR.
-- No game files, keys or raw evidence in repos. No third-party downloads. No Sony-key work. Dawn (`F:\d1\third-party-readonly\Dawn`, D2 GPL code) is read-only reference.
+- No game files, keys or raw evidence in repos. No third-party downloads. No Sony-key work. Dawn (`<D1_ROOT>\third-party-readonly\Dawn`, D2 GPL code) is read-only reference.
 - **I own the lab and all game input.** No pad input, debugger, control-file publish or process stops from you. Read-only memory reads (your snapshot readers, `d1-winguest.py sensor-clients`) are fine.
-- Build the host only after stopping its run, with `LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`, into a separate `CARGO_TARGET_DIR`.
+- Build the host only after stopping its run, with `LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin`, into a separate `CARGO_TARGET_DIR`.
 
 ## Where we are (all live-verified today)
 
 The server now drives the tutorial from boot to "Clear Out the Fallen", unattended apart from my bot's movement and fighting. Merged today: #59 squad live counts from udt 6, #60 tick under load, #61 udt 2 `world_globals_state` (`D1_AH_WORLD_PERIOD_MS=33.333333`, so armed triggers report once), #62 your pilot codec, #63 your strict cohort gate, #57 your native unit tracking, #64 your cast slot 0 fix, #65 notes, #66/#67 launcher host wait.
 
-Private schedule `F:\d1\d1preservation-main\cfw-staging\agr-steps-divide.txt` (activity 164):
+Private schedule `<D1_ROOT>\d1preservation-main\cfw-staging\agr-steps-divide.txt` (activity 164):
 
 | Fires on | Publishes |
 |---|---|
@@ -60,7 +60,7 @@ A full Khvostov magazine point-blank leaves a level-1 Dreg at about half health.
 
 ## Useful files
 
-- Today's handoffs: `F:\d1\d1xenia\HANDOFF-claude-to-codex-*.md`.
+- Today's handoffs: `<D1_ROOT>\d1xenia\HANDOFF-claude-to-codex-*.md`.
 - Your own: `HANDOFF-codex-to-claude-2026-10-28-1348.md`.
 - Notes: `notes/ps4-56578-dock13-2026-10-28.md`, `notes/ps4-56578-pilots-clock-combat.md`, `notes/ps4-sensor-sense.md`.
-- Live run now: sense43, host log `F:\d1\d1preservation-main\cfw-staging\contained-boot\*-sense43\activity-host.log`.
+- Live run now: sense43, host log `<D1_ROOT>\d1preservation-main\cfw-staging\contained-boot\*-sense43\activity-host.log`.

@@ -1,8 +1,8 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $r=Join-Path $rt 'RESEARCH'
-. F:\d1\d1xenia\scripts\Final124RunHelpers.ps1
+. <D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1
 $prior=Get-Content -LiteralPath "$r\JOIN238-independent-closure-verified.json" -Raw | ConvertFrom-Json
 if(-not $prior.all_hashes_match -or @($prior.checks).Count -lt 7 -or @($prior.checks | Where-Object exact_owned_alive).Count){throw 'Prior independent closure not verified'}
 foreach($check in $prior.checks){if(Get-D1OwnedProcess $check.identity){throw 'Prior owned identity still alive'}}
@@ -15,9 +15,9 @@ $expected=@{
 }
 foreach($entry in $expected.GetEnumerator()){if((Get-FileHash -LiteralPath (Join-Path $rpc $entry.Key)).Hash -ne $entry.Value){throw "Unexpected baseline $($entry.Key)"}}
 foreach($path in @("$r\JOIN239-before-title.yml","$r\JOIN239-before-d1ppu.txt","$rt\SIGNON_LOCAL\JOIN239-launch.ps1","$rt\SIGNON_LOCAL\FINAL124_JOIN239-control.jsonl")){if(Test-Path -LiteralPath $path){throw 'Preserve existing JOIN239 files'}}
-$diff=git -C 'F:\d1\d1xenia' diff
+$diff=git -C '<D1_ROOT>\d1xenia' diff
 [IO.File]::WriteAllText("$r\JOIN239-tested-source.diff",($diff -join "`n"),[Text.UTF8Encoding]::new($false))
-$launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN226-launch.ps1" -Raw).Replace('--character-overlay;@F:\d1\<pc>-import\d1xenia\local\RESEARCH\JOIN226-loot-overlay.json','--world-loot;F:\d1\d1xenia\missions\a_guardian_rises.json').Replace('JOIN226','JOIN239').Replace('unarmed starter with one synthetic pending rifle; explicit catalog selector2 incident test;','unarmed starter; mission-announced starter rifle (--world-loot), no private overlay or control event;')
+$launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN226-launch.ps1" -Raw).Replace('--character-overlay;@<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\JOIN226-loot-overlay.json','--world-loot;<D1_ROOT>\d1xenia\missions\a_guardian_rises.json').Replace('JOIN226','JOIN239').Replace('unarmed starter with one synthetic pending rifle; explicit catalog selector2 incident test;','unarmed starter; mission-announced starter rifle (--world-loot), no private overlay or control event;')
 $trace=@'
 # JOIN239: mission-announced starter rifle (no private overlay or control event); pickup path watches.
 5aede4 6 r4:24
@@ -33,7 +33,7 @@ Copy-Item -LiteralPath "$rpc\d1\d1ppu.txt" -Destination "$r\JOIN239-before-d1ppu
 [IO.File]::WriteAllText("$r\JOIN239-planned-d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText("$rpc\d1\d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 foreach($marker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText("$rpc\d1\$marker",'')}
-[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C 'F:\d1\d1xenia' rev-parse HEAD).Trim();source_clean=$false;source_status=@(git -C 'F:\d1\d1xenia' status --short);change='Committed source (d0ffccd). Recorder helper activates the game window for F11 (confirmed from the shortcut log line); aimed-fire helper with a 60 s entity window. Mission rifle, grant and Breach Fallen. No control lines or guest writes.';trace=$trace;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN239-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN239-prepare.json" -Encoding utf8
+[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C '<D1_ROOT>\d1xenia' rev-parse HEAD).Trim();source_clean=$false;source_status=@(git -C '<D1_ROOT>\d1xenia' status --short);change='Committed source (d0ffccd). Recorder helper activates the game window for F11 (confirmed from the shortcut log line); aimed-fire helper with a 60 s entity window. Mission rifle, grant and Breach Fallen. No control lines or guest writes.';trace=$trace;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN239-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN239-prepare.json" -Encoding utf8
 'JOIN239 prepared'
 
 

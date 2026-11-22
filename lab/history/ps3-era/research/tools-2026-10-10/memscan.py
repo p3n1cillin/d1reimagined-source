@@ -5,11 +5,11 @@ usage: memscan.py RUN TAG"""
 import json, re, struct, sys, time
 import numpy as np
 from pathlib import Path
-sys.path.insert(0, r"F:\d1\d1xenia\scripts")
+sys.path.insert(0, r"<D1_ROOT>\d1xenia\scripts")
 from rpcs3_owned_memory import OwnedMemory
 
 run, tag = sys.argv[1], sys.argv[2]
-rt = Path(r"F:\d1\<pc>-import\d1xenia\local")
+rt = Path(r"<D1_ROOT>\<pc>-import\d1xenia\local")
 manifest = rt / f"SIGNON_LOCAL/logs/FINAL124_{run}-processes.json"
 out = rt / f"RESEARCH/{run}-memscan-{tag}.txt"
 DEF = bytes.fromhex("80a5843f811c9dc584cc7b3340e5f178")

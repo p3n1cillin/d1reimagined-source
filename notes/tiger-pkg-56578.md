@@ -6,7 +6,7 @@ packages. Its compatibility table lists Rise of Iron PS4 packages. It reads ours
 
 ## Setup
 
-- Clone it outside this repository, for example to `F:\d1\third-party\tiger-pkg`, and build its
+- Clone it outside this repository, for example to `<D1_ROOT>\third-party\tiger-pkg`, and build its
   examples: `cargo build --release --examples`.
 - It needs `oo2core_3_win64.dll` (Oodle, by RAD Game Tools) in the folder you run it from. Use your
   own copy; it is not in this repository.

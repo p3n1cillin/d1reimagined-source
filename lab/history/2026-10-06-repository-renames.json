@@ -8,7 +8,7 @@
     "default_branch": "master",
     "repository_id": 1380528196,
     "url": "https://github.com/p3n1cillin/d1reimagined",
-    "checkout": "F:\\d1\\d1xenia",
+    "checkout": "<D1_ROOT>\\d1xenia",
     "origin": "https://github.com/p3n1cillin/d1reimagined.git"
   },
   {
@@ -20,7 +20,7 @@
     "default_branch": "main",
     "repository_id": 1391410720,
     "url": "https://github.com/p3n1cillin/d1reimagined-data",
-    "checkout": "F:\\d1\\d1xenia-data",
+    "checkout": "<D1_ROOT>\\d1xenia-data",
     "origin": "https://github.com/p3n1cillin/d1reimagined-data.git"
   }
 ]

@@ -3,7 +3,7 @@ fn u32at(b:&[u8],o:usize)->u32{u32::from_le_bytes(b[o..o+4].try_into().unwrap())
 fn i64at(b:&[u8],o:usize)->i64{i64::from_le_bytes(b[o..o+8].try_into().unwrap())}
 fn main()->Result<(),Box<dyn std::error::Error>> {
  let root="lab/history/2026-10-29-postgame-codex";
- let dir="F:/d1/d1preservation-main/dumps/later-56578-CUSA00219/CUSA00219/packages";
+ let dir="<D1_ROOT>/d1preservation-main/dumps/later-56578-CUSA00219/CUSA00219/packages";
  let estate=d1_pkg::Estate::load(dir)?;
  let mut content=d1_oracle::oodle::Content::open_default()?;
  let mut checked=0;

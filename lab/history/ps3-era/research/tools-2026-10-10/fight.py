@@ -5,7 +5,7 @@ usage: fight.py RUN SECONDS"""
 import json, math, re, struct, sys, time
 from contextlib import ExitStack
 from pathlib import Path
-sys.path.insert(0, r"F:\d1\d1xenia\scripts")
+sys.path.insert(0, r"<D1_ROOT>\d1xenia\scripts")
 from d1_guardian_route import HOOK, HookLease, SharedTail, RouteStopped, GuardedPad, GuardedPlayer, run_state, utc_now
 from d1_walker import Grid, Walker, facing_from_pointers
 from rpcs3_owned_memory import OwnedMemory, emulator_identity
@@ -13,7 +13,7 @@ GuardedPad.VK = {**GuardedPad.VK, "E": 0x45}  # R1 (fire) in this layout
 
 ENT = re.compile(rb"pc=0x138e24\s+lr=0x([0-9a-f]+)\b.*?\br4=0x([0-9a-f]+)\b", re.I)
 run, budget = sys.argv[1], float(sys.argv[2])
-rt = Path(r"F:\d1\<pc>-import\d1xenia\local")
+rt = Path(r"<D1_ROOT>\<pc>-import\d1xenia\local")
 manifest = rt / f"SIGNON_LOCAL/logs/FINAL124_{run}-processes.json"
 identity = emulator_identity(json.loads(manifest.read_text(encoding="utf-8-sig")))
 emulator = Path(identity["executable"]).parent

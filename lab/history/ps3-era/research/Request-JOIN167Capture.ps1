@@ -1,8 +1,8 @@
 param([Parameter(Mandatory)][string]$Screenshot,[Parameter(Mandatory)][string]$Observed)
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
-. 'F:\d1\d1xenia\scripts\Final124RunHelpers.ps1'
+. '<D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1'
 $checkpoint=Get-Content -LiteralPath (Join-Path $rt 'SIGNON_LOCAL\logs\JOIN167-capture-checkpoint.json') -Raw | ConvertFrom-Json
 if([DateTime]::UtcNow -ge ([DateTime]$checkpoint.deadline_utc).ToUniversalTime().AddSeconds(-15)){throw 'Bounded capture deadline too close'}
 $identity=$checkpoint.client

@@ -5,7 +5,7 @@ import json
 import re
 import subprocess
 
-rt = Path(r'F:\d1\<pc>-import\d1xenia\local')
+rt = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 logs = rt/'SIGNON_LOCAL/logs'
 cleanup = json.loads((logs/'JOIN174-cleanup-result.json').read_text(encoding='utf-8-sig'))
 assert cleanup['all_owned_closed'] and not cleanup['errors']
@@ -49,10 +49,10 @@ for relative, original in [('rpcs3/Emu/RSX/d1diag.h','d1diag.h'),('rpcs3/Emu/Cel
     dest = out/relative
     dest.parent.mkdir(parents=True,exist_ok=True)
     dest.write_text((rt/'RESEARCH/JOIN172-source-before'/original).read_text(encoding='utf-8'),encoding='utf-8')
-patch = Path(r'F:\d1\d1xenia\patches\rpcs3-ppu-watch-filters.patch')
+patch = Path(r'<D1_ROOT>\d1xenia\patches\rpcs3-ppu-watch-filters.patch')
 subprocess.run(['git','-c','core.autocrlf=false','apply','--check','--whitespace=error-all',str(patch)],cwd=out,check=True)
 subprocess.run(['git','-c','core.autocrlf=false','apply','--whitespace=error-all',str(patch)],cwd=out,check=True)
-root = Path(r'F:\d1\<pc>-import\dev\rpcs3')
+root = Path(r'<D1_ROOT>\<pc>-import\dev\rpcs3')
 checks = {f:(out/f).read_text(encoding='utf-8') == (root/f).read_text(encoding='utf-8')
           for f in ('rpcs3/Emu/RSX/d1diag.h','rpcs3/Emu/Cell/PPUThread.cpp','rpcs3/Emu/RSX/Common/ppu_watch_filter.h')}
 assert all(checks.values()), checks

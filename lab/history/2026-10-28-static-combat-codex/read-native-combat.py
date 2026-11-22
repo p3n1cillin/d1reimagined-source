@@ -2,7 +2,7 @@
 from pathlib import Path
 import importlib.util,struct,json,datetime,math
 import static56578 as st
-SRC=Path(r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py')
+SRC=Path(r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py')
 spec=importlib.util.spec_from_file_location('g',SRC);g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 p,base=g.open_client()
 controls=[]

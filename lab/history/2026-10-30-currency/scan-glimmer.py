@@ -1,7 +1,7 @@
 """Read-only: find the account inventory entries the test account serves (content 869 at slots 308..311 with
 quantity 1000/2000/3000/4000 at +0x10, 32 bytes apart) in the running client, and print what surrounds them."""
 import ctypes, ctypes.wintypes as w, importlib.util, struct, time
-spec = importlib.util.spec_from_file_location('g', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+spec = importlib.util.spec_from_file_location('g', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
 p, base = g.open_client()
 class MBI(ctypes.Structure):

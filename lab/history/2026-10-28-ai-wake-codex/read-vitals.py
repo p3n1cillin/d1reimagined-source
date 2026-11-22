@@ -1,9 +1,9 @@
 """Read-only experimental native damage pools. No native function calls."""
 from pathlib import Path
 import importlib.util,json,struct,sys,time,math
-sys.path.insert(0,r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup')
+sys.path.insert(0,r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup')
 from d1_squad_tracking import SquadReader
-spec=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
+spec=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 
 CONTROLS={
  0x4f61b0:'554889e54157415641554154534881ec980000004989f74c',

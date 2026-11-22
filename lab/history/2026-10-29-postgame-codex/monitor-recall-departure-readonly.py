@@ -15,8 +15,8 @@ import time
 from pathlib import Path
 
 P = Path(__file__).resolve().parent
-STAGING = Path(r"F:\d1\d1preservation-main\cfw-staging")
-BUILD_TABLE = Path(r"F:\d1\d1preservation-main\capture-rig\builds\later-56578\activity-table.tsv")
+STAGING = Path(r"<D1_ROOT>\d1preservation-main\cfw-staging")
+BUILD_TABLE = Path(r"<D1_ROOT>\d1preservation-main\capture-rig\builds\later-56578\activity-table.tsv")
 EXPECTED_165_HASH = 0x6EAF0959
 ANSI = re.compile(r"\x1b\[[0-9;]*m")
 LOG_MATCH = re.compile(

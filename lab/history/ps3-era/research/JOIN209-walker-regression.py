@@ -1,6 +1,6 @@
 import importlib.util, io, json, subprocess, sys, types, unittest
 from pathlib import Path
-repo=Path('F:/d1/d1xenia')
+repo=Path('<D1_ROOT>/d1xenia')
 sys.path.insert(0,str(repo/'scripts'))
 import d1_walker
 spec=importlib.util.spec_from_file_location('precision_tests',repo/'scripts/test_d1_walker.py')

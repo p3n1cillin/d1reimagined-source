@@ -1,7 +1,7 @@
 """Private bounded native props and interface dispatch sample, read-only."""
 import json, re, struct, sys, datetime
 from pathlib import Path
-sys.path.insert(0, 'F:/d1/d1xenia/scripts')
+sys.path.insert(0, '<D1_ROOT>/d1xenia/scripts')
 from d1_guardian_route import open_shared_read
 from rpcs3_owned_memory import OwnedMemory
 from rpcs3_final124_performance import Resources, u32

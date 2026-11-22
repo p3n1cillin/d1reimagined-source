@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $r=Join-Path $rt 'RESEARCH'
 $prior=Get-Content -LiteralPath "$r\JOIN216-independent-closure-verified.json" -Raw|ConvertFrom-Json
@@ -16,8 +16,8 @@ foreach($p in @("$r\JOIN217-before-title.yml","$r\JOIN217-before-d1ppu.txt","$rt
 Copy-Item -LiteralPath "$rpc\config\custom_configs\config_BLES01857.yml" -Destination "$r\JOIN217-before-title.yml"
 Copy-Item -LiteralPath "$rpc\d1\d1ppu.txt" -Destination "$r\JOIN217-before-d1ppu.txt"
 $launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN216-launch.ps1" -Raw).Replace('JOIN216','JOIN217')
-$old='--peer-family;--character-gear;starter:01.24:titan,@F:\d1\<pc>-import\d1xenia\local\RESEARCH\JOIN217-khvostov-gear.json'
-$new='--peer-family;--character-gear;starter:01.24:titan;--character-overlay;@F:\d1\<pc>-import\d1xenia\local\RESEARCH\JOIN217-loot-overlay.json'
+$old='--peer-family;--character-gear;starter:01.24:titan,@<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\JOIN217-khvostov-gear.json'
+$new='--peer-family;--character-gear;starter:01.24:titan;--character-overlay;@<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\JOIN217-loot-overlay.json'
 if(-not $launch.Contains($old)){throw 'Unexpected launch template'}
 $launch=$launch.Replace($old,$new).Replace('bounded seven-minute checkpoint','bounded fifteen-minute checkpoint').Replace('JOIN217: production mission, natural Breach crossing and deeper exploration with inspected owned inputs; no guest writes or manual teleport.','JOIN217: unarmed starter plus two private synthetic pending-loot records; production mission, owned ordinary inputs; no guest writes or manual teleport.')
 [IO.File]::WriteAllText("$rt\SIGNON_LOCAL\JOIN217-launch.ps1",$launch,[Text.UTF8Encoding]::new($false))
@@ -36,7 +36,7 @@ $trace+="`n"
 [IO.File]::WriteAllText("$r\JOIN217-planned-d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText("$rpc\d1\d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 foreach($marker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText("$rpc\d1\$marker",'')}
-$diff=git -C 'F:\d1\d1xenia' diff
+$diff=git -C '<D1_ROOT>\d1xenia' diff
 [IO.File]::WriteAllText("$r\JOIN217-tested-source.diff",($diff -join "`n"),[Text.UTF8Encoding]::new($false))
-[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C 'F:\d1\d1xenia' rev-parse HEAD).Trim();source_clean=$false;source_status=@(git -C 'F:\d1\d1xenia' status --short);change='Backend ownership fixes and new read-only loot probe under test; no mission/renderer change. Unarmed starter with two synthetic loot records, sources3/5. No position cache, native grant or pickup acceptance claimed.';trace=$trace;overlay_sha256=(Get-FileHash -LiteralPath "$r\JOIN217-loot-overlay.json").Hash;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN217-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN217-prepare.json" -Encoding utf8
+[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C '<D1_ROOT>\d1xenia' rev-parse HEAD).Trim();source_clean=$false;source_status=@(git -C '<D1_ROOT>\d1xenia' status --short);change='Backend ownership fixes and new read-only loot probe under test; no mission/renderer change. Unarmed starter with two synthetic loot records, sources3/5. No position cache, native grant or pickup acceptance claimed.';trace=$trace;overlay_sha256=(Get-FileHash -LiteralPath "$r\JOIN217-loot-overlay.json").Hash;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN217-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN217-prepare.json" -Encoding utf8
 'JOIN217 prepared'

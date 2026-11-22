@@ -10,6 +10,7 @@
 #   Tools        D1_TOOLS        Root\tools
 #   ShadPS4      D1_SHADPS4      Tools\shadPS4\0.19.0
 #   LibOrbisPkg  D1_LIBORBISPKG  Tools\liborbispkg\0.2.245
+#   ThirdParty   D1_THIRD_PARTY  Root\third-party (other people's code and data, read-only inputs)
 #   Workspace    D1_WORKSPACE    Root\d1preservation-main
 #   Staging      D1_STAGING      Workspace\cfw-staging
 #   PkgDir       D1_PKG_DIR      Root\01.29\d1shad
@@ -24,6 +25,7 @@ $script:D1PathLocations = [ordered]@{
     Tools       = @{ Key = 'tools';       Parent = 'Root';      Below = 'tools' }
     ShadPS4     = @{ Key = 'shadps4';     Parent = 'Tools';     Below = 'shadPS4\0.19.0' }
     LibOrbisPkg = @{ Key = 'liborbispkg'; Parent = 'Tools';     Below = 'liborbispkg\0.2.245' }
+    ThirdParty  = @{ Key = 'third_party'; Parent = 'Root';      Below = 'third-party' }
     Workspace   = @{ Key = 'workspace';   Parent = 'Root';      Below = 'd1preservation-main' }
     Staging     = @{ Key = 'staging';     Parent = 'Workspace'; Below = 'cfw-staging' }
     PkgDir      = @{ Key = 'pkg_dir';     Parent = 'Root';      Below = '01.29\d1shad' }
@@ -71,7 +73,7 @@ function Resolve-D1Path {
     if (-not $entry.Parent) {
         $others = @($script:D1PathLocations.Values | Where-Object { $_.Parent } | ForEach-Object { 'D1_' + $_.Key.ToUpperInvariant() }) -join ', '
         throw ("D1Paths: the D1 root folder is not set. Either set the environment variable D1_ROOT " +
-            "(e.g. D1_ROOT=D:\d1), or create $file containing {`"root`": `"D:/d1`"} " +
+            "(e.g. D1_ROOT=D:\Games\D1), or create $file containing {`"root`": `"D:/Games/D1`"} " +
             "(see tools/ps4_setup/paths.example.json). Individual locations can be set the same way: $others.")
     }
     $parent = (Resolve-D1Path $entry.Parent).Path
@@ -82,7 +84,7 @@ function Get-D1Path {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, Position = 0)]
-        [ValidateSet('Root', 'Tools', 'ShadPS4', 'LibOrbisPkg', 'Workspace', 'Staging', 'PkgDir', 'Fixtures')]
+        [ValidateSet('Root', 'Tools', 'ShadPS4', 'LibOrbisPkg', 'ThirdParty', 'Workspace', 'Staging', 'PkgDir', 'Fixtures')]
         [string]$Name,
         # Optional path below the location, e.g. Get-D1Path Tools 'd1-pad.ps1'.
         [Parameter(Position = 1)][string]$ChildPath

@@ -42,7 +42,7 @@ main_port.flip_rate != 0) continue;`), which is why the earlier `BB_FPS_LIMIT=60
 nothing.
 
 The emulator fork had met this already: its play profile runs `SHADPS4_D1_FLIP_RATE_60_PROBE=1`,
-whose `SelectStoredRate` rewrites a requested 1 to 0 (`D:/dev/shadPS4/src/core/d1_flip_rate_probe.cpp:45-59`).
+whose `SelectStoredRate` rewrites a requested 1 to 0 (`<DEV_ROOT>/shadPS4/src/core/d1_flip_rate_probe.cpp:45-59`).
 The native client had no equivalent.
 
 **Change:** `sceVideoOutSetFlipRate` stores 0 for a requested 1 unless `D1_FLIP_RATE=stock`,

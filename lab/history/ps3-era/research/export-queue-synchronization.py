@@ -3,10 +3,10 @@ import hashlib
 import json
 import subprocess
 
-source = Path(r'F:\d1\<pc>-import\dev\rpcs3')
-baseline = Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH\gpu-submit-result-baseline')
+source = Path(r'<D1_ROOT>\<pc>-import\dev\rpcs3')
+baseline = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\gpu-submit-result-baseline')
 export = baseline.parent / 'gpu-queue-synchronization-export'
-patch = Path(r'F:\d1\d1xenia\patches\rpcs3-queue-synchronization.patch')
+patch = Path(r'<D1_ROOT>\d1xenia\patches\rpcs3-queue-synchronization.patch')
 files = ['rpcs3/Emu/RSX/VK/VKCommandStream.cpp', 'rpcs3/Emu/RSX/VK/VKHelpers.h', 'rpcs3/Emu/RSX/VK/vkutils/swapchain.cpp']
 
 def run(*args):

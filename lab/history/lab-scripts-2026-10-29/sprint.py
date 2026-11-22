@@ -6,7 +6,7 @@ taps L3 (X) to sprint, polling the position; re-aims between waypoints or if the
 """
 import argparse, ctypes, importlib.util, json, math, time
 
-spec = importlib.util.spec_from_file_location('walk', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py')
+spec = importlib.util.spec_from_file_location('walk', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py')
 walk = importlib.util.module_from_spec(spec); spec.loader.exec_module(walk)
 u32 = ctypes.WinDLL('user32')
 VK_W, VK_X, VK_Q, VK_U = 0x57, 0x58, 0x51, 0x55

@@ -79,7 +79,7 @@
     }
   ],
   "content": 182,
-  "phase7_draft": "F:\\d1\\d1preservation-main\\cfw-staging\\agr-postgame-phase7.draft.txt",
+  "phase7_draft": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\agr-postgame-phase7.draft.txt",
   "globals": {
     "object": "0x78127f8",
     "definition": "0x38090b548",

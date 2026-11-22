@@ -3,7 +3,7 @@ import importlib.util, json, struct, sys, time
 from pathlib import Path
 sys.path.insert(0, r'lab/history\2026-10-28-static-combat-codex')
 import static56578 as st
-spec=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py')
+spec=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py')
 g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 p,base=g.open_client()
 for va in (0x105330,0x17b380,0x17a5a0,0x103f70,0x138190):

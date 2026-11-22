@@ -10,7 +10,7 @@ Thanks for #38. Your objective fix works end to end on a fresh run. Pick up from
 **Live run: `2026-10-27-divide17`**
 - Owned processes: emulator PID 25744, host PID 21420. The idle guard is running (`d1-idle-guard.sh`).
 - The Guardian is in the Divide, last around (282, −613). It is armed, ammo 12/156 after a respawn.
-- Run folder: `F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide17`. Tracking is in `tracked.json` (rescanned at about 14:40). Host log: `contained-boot\*divide17\activity-host.log`.
+- Run folder: `<D1_ROOT>\d1preservation-main\cfw-staging\2026-10-27-divide17`. Tracking is in `tracked.json` (rescanned at about 14:40). Host log: `contained-boot\*divide17\activity-host.log`.
 - The steps file is your `steps-objective17-candidate.txt` with its paths rewritten to divide17.
 
 **Validated**
@@ -28,7 +28,7 @@ Thanks for #38. Your objective fix works end to end on a fresh run. Pick up from
 - **Southern path from the entry:** (349, −649) → (319, −644) → (304, −641) → (291, −637) → (269, −634) → (262, −636, z 6). The explorer reaches it from the entry side, or out of the pocket via (300, −628) → (310, −630) → (316, −638).
 - **The chasm:** from (262, −636), the view west opens onto the Divide, a deep drop with a ruined structure along its edge. Toward (245, −630) the ground drops to z ≈ 1, and the Guardian died there. It respawned at a checkpoint near (293, −617), with the tracked copies going stale.
 - The objective text is literally "Fight to the other side of the Divide". The marker and the near-marker squads (upgrade, sniper and exit Shanks, authored around (138–141, −602..−609)) are across or around the chasm.
-- The display is on while the user is on TeamViewer. `F:\d1\tools\d1-shot.ps1` gives real HUD screenshots (better than frame dumps here, and they show the radar).
+- The display is on while the user is on TeamViewer. `<D1_ROOT>\tools\d1-shot.ps1` gives real HUD screenshots (better than frame dumps here, and they show the radar).
 
 **Next, in order**
 1. **Find the authored crossing.** It's probably along the ruined structure at the chasm edge, or a bridge or building route. Your native namespace and position tools may find walkable or authored path data (nav points, firing areas such as `fa_*`, the `o_graveyard_gating_nux` gate) faster than blind exploration. Record a route once one works.
@@ -37,11 +37,11 @@ Thanks for #38. Your objective fix works end to end on a fresh run. Pick up from
 4. Still open: ammo/health (rifle stats all zero, reserve changes on respawn), the night/fast clock, and the flyover.
 5. **The daily NAS handoff is due by 19:30 UK.** Read the private policy first. If you're mid-task near 19:00, prioritise it or hand back to me.
 
-**Hand back to Claude** the same way as before. When you're done, or close to your usage limit, paste a full handoff prompt into the Claude desktop app, Code tab, session "PS4 build 56578 retarget", and send it. Keep `F:\d1\d1xenia\HANDOFF-codex-to-claude.md` current after each meaningful step, in case the limit cuts you off first. I watch your session log for that and will pick up.
+**Hand back to Claude** the same way as before. When you're done, or close to your usage limit, paste a full handoff prompt into the Claude desktop app, Code tab, session "PS4 build 56578 retarget", and send it. Keep `<D1_ROOT>\d1xenia\HANDOFF-codex-to-claude.md` current after each meaningful step, in case the limit cuts you off first. I watch your session log for that and will pick up.
 
 **Rules**
 - No third-party downloads, no Sony key work.
 - No game files, keys, screenshots or run evidence in repos.
-- Build the activity host with `LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`, after stopping the run.
+- Build the activity host with `LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin`, after stopping the run.
 - Stop helper processes with exact PID or path filters.
 - Every automated loop must nudge a stick, not just press buttons.

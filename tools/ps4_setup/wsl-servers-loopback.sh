@@ -20,7 +20,7 @@ if [[ "$BIND" != 127.0.0.1 ]] && ! ip -4 -o addr show | grep -q " $BIND/"; then
     echo "REFUSING: $BIND is not present in WSL (apply d1-lab-net.cmd; mirrored networking required)" >&2; exit 2
 fi
 BIN="${D1_SERVER_BIN:-/opt/d1-target/d1-server/release}"
-REPO="${D1_REPO_LINUX:-/mnt/f/d1/d1preservation-main}"
+REPO="${D1_REPO_LINUX:?set D1_REPO_LINUX to the WSL path of the workspace folder}"
 [[ -d "$OUT" && ! -e "$OUT/servers.pids" ]] || { echo "REFUSING: missing or reused output $OUT" >&2; exit 2; }
 for f in "$BIN/shadnet-server" "$BIN/d1-responder" "$MANIFEST"; do
     [[ -e "$f" ]] || { echo "missing: $f" >&2; exit 1; }

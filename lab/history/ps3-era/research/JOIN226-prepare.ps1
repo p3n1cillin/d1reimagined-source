@@ -1,8 +1,8 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $r=Join-Path $rt 'RESEARCH'
-. F:\d1\d1xenia\scripts\Final124RunHelpers.ps1
+. <D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1
 $prior=Get-Content -LiteralPath "$r\JOIN225-independent-closure-verified.json" -Raw | ConvertFrom-Json
 if(-not $prior.all_hashes_match -or @($prior.checks).Count -lt 7 -or @($prior.checks | Where-Object exact_owned_alive).Count){throw 'Prior independent closure not verified'}
 foreach($check in $prior.checks){if(Get-D1OwnedProcess $check.identity){throw 'Prior owned identity still alive'}}
@@ -15,7 +15,7 @@ $expected=@{
 }
 foreach($entry in $expected.GetEnumerator()){if((Get-FileHash -LiteralPath (Join-Path $rpc $entry.Key)).Hash -ne $entry.Value){throw "Unexpected baseline $($entry.Key)"}}
 foreach($path in @("$r\JOIN226-before-title.yml","$r\JOIN226-before-d1ppu.txt","$rt\SIGNON_LOCAL\JOIN226-launch.ps1","$rt\SIGNON_LOCAL\FINAL124_JOIN226-control.jsonl")){if(Test-Path -LiteralPath $path){throw 'Preserve existing JOIN226 files'}}
-$diff=git -C 'F:\d1\d1xenia' diff
+$diff=git -C '<D1_ROOT>\d1xenia' diff
 [IO.File]::WriteAllText("$r\JOIN226-tested-source.diff",($diff -join "`n"),[Text.UTF8Encoding]::new($false))
 $launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN225-launch.ps1" -Raw).Replace('JOIN225','JOIN226')
 $trace=@'
@@ -33,7 +33,7 @@ Copy-Item -LiteralPath "$rpc\d1\d1ppu.txt" -Destination "$r\JOIN226-before-d1ppu
 [IO.File]::WriteAllText("$r\JOIN226-planned-d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText("$rpc\d1\d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 foreach($marker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText("$rpc\d1\$marker",'')}
-[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C 'F:\d1\d1xenia' rev-parse HEAD).Trim();source_clean=$false;source_status=@(git -C 'F:\d1\d1xenia' status --short);change='Repeat of JOIN225 (same uncommitted service-601 grant with self and peer updates) to inspect the character after the grant on video. Private unarmed starter and synthetic pending rifle; explicit selector-2 event (recipient 1, world 3) in the Breach. No guest writes.';trace=$trace;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN226-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN226-prepare.json" -Encoding utf8
+[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C '<D1_ROOT>\d1xenia' rev-parse HEAD).Trim();source_clean=$false;source_status=@(git -C '<D1_ROOT>\d1xenia' status --short);change='Repeat of JOIN225 (same uncommitted service-601 grant with self and peer updates) to inspect the character after the grant on video. Private unarmed starter and synthetic pending rifle; explicit selector-2 event (recipient 1, world 3) in the Breach. No guest writes.';trace=$trace;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN226-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN226-prepare.json" -Encoding utf8
 'JOIN226 prepared'
 
 

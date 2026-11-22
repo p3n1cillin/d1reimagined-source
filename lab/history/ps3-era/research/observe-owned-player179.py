@@ -7,7 +7,7 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, r"F:\d1\d1xenia\scripts")
+sys.path.insert(0, r"<D1_ROOT>\d1xenia\scripts")
 from d1_guardian_route import HOOK, HookLease, SharedTail, run_state
 from rpcs3_owned_memory import OwnedMemory, emulator_identity
 

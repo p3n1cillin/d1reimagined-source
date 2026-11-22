@@ -3,11 +3,11 @@ import hashlib
 import json
 import subprocess
 
-source = Path(r'F:\d1\<pc>-import\dev\rpcs3')
-research = Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH')
+source = Path(r'<D1_ROOT>\<pc>-import\dev\rpcs3')
+research = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH')
 baseline = research / 'descriptor-allocation-20261007-baseline'
 export = research / 'descriptor-allocation-20261007-export'
-patch = Path(r'F:\d1\d1xenia\patches\rpcs3-descriptor-allocation-cache.patch')
+patch = Path(r'<D1_ROOT>\d1xenia\patches\rpcs3-descriptor-allocation-cache.patch')
 relative = 'rpcs3/Emu/RSX/VK/vkutils/descriptors.cpp'
 
 def run(*args):

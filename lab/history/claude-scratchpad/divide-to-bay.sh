@@ -2,7 +2,7 @@
 # After the replay reports DIVIDE REACHED: gate fights until step 18, garage -> orange room -> Dock 13 corridor,
 # then hangar route + fights until step 21 (trigger 41). Logs host milestones. Run: divide-to-bay.sh RUNNAME
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
-H=$(ls -d F:/d1/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
+H=$(ls -d <D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
 step() { sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "mission step $1 at"; }
 sed -i "s#^H=.*#H=$H#" $S/breach.sh
 gate_clear() { python $S/alive.py $H 0x9243dffb | grep -qE "17:0.*18:0.*19:0"; }

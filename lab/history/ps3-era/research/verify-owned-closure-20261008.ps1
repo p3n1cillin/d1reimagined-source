@@ -1,7 +1,7 @@
 param([Parameter(Mandatory)][string]$Run)
 $ErrorActionPreference='Stop'
-. F:\d1\d1xenia\scripts\Final124RunHelpers.ps1
-$rt='F:\d1\<pc>-import\d1xenia\local'
+. <D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $logs=Join-Path $rt 'SIGNON_LOCAL\logs'
 $research=Join-Path $rt 'RESEARCH'

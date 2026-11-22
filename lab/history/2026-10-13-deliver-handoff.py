@@ -12,12 +12,12 @@ private = Path(r'lab/history')
 pointer = private/'2026-10-13-draft-pointer.json'
 job = json.loads(pointer.read_text(encoding='utf-8'))
 draft = Path(job['draft'])
-runtime = Path(r'F:\d1\d1preservation-main')
+runtime = Path(r'<D1_ROOT>\d1preservation-main')
 receipt_path = private/'2026-10-13-daily-handoff-receipt.json'
 if receipt_path.exists():
     raise SystemExit('An existing daily delivery receipt must be inspected instead of creating a duplicate')
-capture_path = Path(r'F:\d1\d1xenia\tools\content_capture\capture.py')
-config_path = Path(r'F:\d1\<pc>-import\d1xenia\local\content-capture\config.json')
+capture_path = Path(r'<D1_ROOT>\d1xenia\tools\content_capture\capture.py')
+config_path = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\content-capture\config.json')
 
 def utc(): return datetime.now(timezone.utc).isoformat()
 def native_running():

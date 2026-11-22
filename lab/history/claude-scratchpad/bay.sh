@@ -1,7 +1,7 @@
 #!/bin/bash
 # Respawn (orange room) -> fight room -> NUX door -> NW gap -> hangar bay -> fight. Repeat.
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
-H=$(ls -d F:/d1/d1preservation-main/cfw-staging/contained-boot/*-sense42)/activity-host.log
+H=$(ls -d <D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/*-sense42)/activity-host.log
 mkdir -p $S/bay
 for cyc in $(seq 1 ${1:-8}); do
   sleep 3

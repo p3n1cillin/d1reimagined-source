@@ -1,7 +1,7 @@
 """Publish one control list, never overwriting another pending command."""
 import sys,time
 from pathlib import Path
-run=Path(r'F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide16')
+run=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\2026-10-27-divide16')
 control=run.parent/'ah-control.txt'
 mode=sys.argv[1]
 lines=(run/'obj17-46.txt').read_text().splitlines()

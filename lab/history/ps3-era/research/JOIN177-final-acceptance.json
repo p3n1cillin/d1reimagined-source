@@ -64,7 +64,7 @@
     "client_alive": true,
     "layer": {
       "ModuleName": "VkLayer_khronos_validation.dll",
-      "FileName": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
+      "FileName": "<D1_ROOT>\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll"
     }
   },
   "cleanup": {

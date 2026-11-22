@@ -2,7 +2,7 @@
   "at": "2026-10-07T07:49:44.565480+00:00",
   "run": "FINAL124_JOIN159",
   "build_sha256": "55efc9072019124be3e880ca8c881339d057390c47d3bf77c799ccb6de920259",
-  "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN159-preserved-native-20261007T074231.mp4",
+  "source": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN159-preserved-native-20261007T074231.mp4",
   "source_sha256": "e94c1315bce52616839ff559ac7b9c508a0a822f9be994112a79cc6fd68096c4",
   "provenance": "Byte-identical finalized native recording preserved from its verified rolling-buffer copy. The earlier worker removed the recorder-path original; no repair, cut or re-encode applied.",
   "recorded_at": "2026-10-07T07:42:31.271953+00:00",

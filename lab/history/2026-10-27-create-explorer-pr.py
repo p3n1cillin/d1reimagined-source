@@ -7,7 +7,7 @@ import sys
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-repo = Path(r'F:\d1\public-work\d1reimagined-source')
+repo = Path(r'<D1_ROOT>\public-work\d1reimagined-source')
 private = Path(r'lab/history')
 env = dict(os.environ, GIT_TERMINAL_PROMPT='0', GCM_INTERACTIVE='never')
 r = subprocess.run(['git', '-C', str(repo), 'credential', 'fill'],

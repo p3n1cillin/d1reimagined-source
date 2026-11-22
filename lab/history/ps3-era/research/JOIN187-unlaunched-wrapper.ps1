@@ -1,10 +1,10 @@
 $env:VK_LAYER_GPUAV_ENABLE='0'
 $env:VK_LAYER_GPUAV_SAFE_MODE='0'
 $env:VK_INSTANCE_LAYERS='VK_LAYER_KHRONOS_validation'
-$env:VK_LAYER_PATH='F:\d1\<pc>-import\dev\validation-runtime-1.4.341.1'
+$env:VK_LAYER_PATH='<D1_ROOT>\<pc>-import\dev\validation-runtime-1.4.341.1'
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
-Set-Location -LiteralPath 'F:\d1\d1xenia'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
+Set-Location -LiteralPath '<D1_ROOT>\d1xenia'
 . .\scripts\Final124RunHelpers.ps1
 $env:D1_LOCAL=$rt
 $env:D1_RPCS3="$rt\RPCS3_FINAL124_SMOKE001"
@@ -12,10 +12,10 @@ $rpc=$env:D1_RPCS3
 $logs=Join-Path $rt 'SIGNON_LOCAL\logs'
 $control="$rt\SIGNON_LOCAL\FINAL124_JOIN186-control.jsonl"
 New-Item -ItemType File -Path $control -ErrorAction Stop | Out-Null
-$proxy='--ah-bubble-states;-1,0=0,3=0,14=0;--ah-zone;113:0x811c9dc5;--ah-world-state;113:1;--ah-roster;0;--ah-bubble-reset;14:1;--ah-sim-player;0x4786c0e0:5:0x0a3d4a2c8fbea6ba:1;--ah-game-mode;0x4786c0e0:3:3;--ah-baselines;@'+"$rt\SIGNON_LOCAL\baselines_highway_0124_all.txt"+';--ah-heartbeat;1;--ah-sim-clock;30;--ah-group-switch;--ah-mission;F:\d1\<pc>-import\d1xenia\local\RESEARCH\JOIN186-mission-candidate.json;--ah-control;'+$control
+$proxy='--ah-bubble-states;-1,0=0,3=0,14=0;--ah-zone;113:0x811c9dc5;--ah-world-state;113:1;--ah-roster;0;--ah-bubble-reset;14:1;--ah-sim-player;0x4786c0e0:5:0x0a3d4a2c8fbea6ba:1;--ah-game-mode;0x4786c0e0:3:3;--ah-baselines;@'+"$rt\SIGNON_LOCAL\baselines_highway_0124_all.txt"+';--ah-heartbeat;1;--ah-sim-clock;30;--ah-group-switch;--ah-mission;<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\JOIN186-mission-candidate.json;--ah-control;'+$control
 $completed=$false
 try {
-    & .\scripts\Invoke-Final124Join.ps1 -Name FINAL124_JOIN186 -Local $rt -DataRepo 'F:\d1\d1xenia-data' -BapExtra '--peer-family;--character-gear;starter:01.24:titan' -ProxyExtra $proxy -AfterMatchSeconds 0 -SkipOpeningCinematic
+    & .\scripts\Invoke-Final124Join.ps1 -Name FINAL124_JOIN186 -Local $rt -DataRepo '<D1_ROOT>\d1xenia-data' -BapExtra '--peer-family;--character-gear;starter:01.24:titan' -ProxyExtra $proxy -AfterMatchSeconds 0 -SkipOpeningCinematic
     $completed=$true
     # Preserve the completed conformance interval, then inspect actual UI/game inputs.
     $manifest=Read-D1ProcessManifest (Join-Path $logs 'FINAL124_JOIN186-processes.json')
@@ -27,7 +27,7 @@ try {
     $deadline=$waitStarted.AddSeconds(420)
     [ordered]@{at=$waitStarted.ToString('o');client=$client;last_native_screenshot=$shot;deadline_utc=$deadline.ToString('o');scope='Owned mission/transition test with explicit inspected inputs; any RSX capture must be armed separately.'} | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $logs 'JOIN186-capture-checkpoint.json') -Encoding utf8
     $probeExe='%USERPROFILE%\AppData\Local\Programs\Python\Python314\python.exe'
-    $probeArgs=@('F:\d1\d1xenia\scripts\rpcs3_final124_session.py','--manifest',(Join-Path $logs 'FINAL124_JOIN186-processes.json'),'--output',(Join-Path $rt 'RESEARCH\JOIN186-session-timeline.jsonl'),'--seconds','800','--interval','0.25')
+    $probeArgs=@('<D1_ROOT>\d1xenia\scripts\rpcs3_final124_session.py','--manifest',(Join-Path $logs 'FINAL124_JOIN186-processes.json'),'--output',(Join-Path $rt 'RESEARCH\JOIN186-session-timeline.jsonl'),'--seconds','800','--interval','0.25')
     $probe=Start-Process -FilePath $probeExe -ArgumentList @($probeArgs | ForEach-Object {ConvertTo-D1ProcessArgument $_}) -WindowStyle Hidden -RedirectStandardOutput (Join-Path $logs 'JOIN186-session-probe.log') -RedirectStandardError (Join-Path $logs 'JOIN186-session-probe.err') -PassThru
     $probeIdentity=Get-D1ProcessIdentity -Process $probe -Tag 'session-probe' -Executable $probeExe
     $probeIdentity | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $logs 'JOIN186-session-probe-process.json') -Encoding utf8
@@ -75,7 +75,7 @@ try {
             Copy-D1SharedFileSnapshot -Source $source -Destination (Join-Path $logs 'JOIN186-pre-stop-native.log') | Out-Null
         }
     } catch { $errors.Add('Final native evidence: '+$_.Exception.Message) }
-    try { & .\scripts\Invoke-Final124Join.ps1 -Name FINAL124_JOIN186 -Local $rt -DataRepo 'F:\d1\d1xenia-data' -Stop }
+    try { & .\scripts\Invoke-Final124Join.ps1 -Name FINAL124_JOIN186 -Local $rt -DataRepo '<D1_ROOT>\d1xenia-data' -Stop }
     catch {
         $errors.Add('Stack cleanup: '+$_.Exception.Message)
         foreach ($identity in $identities) {

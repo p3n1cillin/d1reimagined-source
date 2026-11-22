@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 root=Path(__file__).parent
-mission=json.loads(Path('F:/d1/d1xenia/missions/a_guardian_rises.json').read_text(encoding='utf-8'))
+mission=json.loads(Path('<D1_ROOT>/d1xenia/missions/a_guardian_rises.json').read_text(encoding='utf-8'))
 for step in mission['steps']:
     at=step.get('at')
     if at==20:

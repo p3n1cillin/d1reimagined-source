@@ -1,5 +1,5 @@
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
-R=/f/d1/public-work/d1reimagined-source
+R=<D1_ROOT>/public-work/d1reimagined-source
 cd $R; T=$S/tracked-r8.json
 timeout 700 python -I -u tools/ps4_setup/d1-walk.py --tracked $T --route missions/routes/breach.json --avoid 330,-837,340,-812 --max-seconds 640 > $S/walk-r8a.log 2>&1; echo "breach: $(grep -E 'done|stopped' $S/walk-r8a.log | tail -1)"
 timeout 300 python -I -u tools/ps4_setup/d1-walk.py --tracked $T --route missions/routes/breach_platform.json --max-seconds 200 > $S/walk-r8b.log 2>&1; echo "platform: $(grep -E 'done|stopped' $S/walk-r8b.log | tail -1)"

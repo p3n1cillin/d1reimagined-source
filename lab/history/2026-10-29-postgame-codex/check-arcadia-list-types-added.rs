@@ -6,7 +6,7 @@ mod sensor_list;
 use sensor::SensorPhaseUpdate;
 fn main() -> anyhow::Result<()> {
  let base=SensorPhaseUpdate{gen:0,name_hash:0x4786c0e0,name_i8:16,name_sub:3,phase:3,tail:None,clients:vec![],authority:None};
- let text=std::fs::read_to_string("F:/d1/d1preservation-main/cfw-staging/agr-postgame-scoreboard-arcadia.draft.txt")?;
+ let text=std::fs::read_to_string("<D1_ROOT>/d1preservation-main/cfw-staging/agr-postgame-scoreboard-arcadia.draft.txt")?;
  let params=sensor_list::params_for_list(&base,0x4786c0e0,0,&text)?;
  assert_eq!(params.phase,3);
  assert_eq!(params.clients.len(),21); // lifetime row is separately generated

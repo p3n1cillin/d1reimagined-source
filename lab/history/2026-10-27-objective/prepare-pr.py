@@ -1,5 +1,5 @@
 from pathlib import Path
-repo=Path(r'F:\d1\public-work\d1reimagined-source')
+repo=Path(r'<D1_ROOT>\public-work\d1reimagined-source')
 for file in ('docs/STATUS.md','notes/ps4-56578-continuation-2026-10-27.md'):
     p=repo/file; text=p.read_text(encoding='utf-8')
     if file.startswith('notes'):

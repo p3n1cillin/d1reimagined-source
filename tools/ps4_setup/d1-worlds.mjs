@@ -30,7 +30,7 @@
 // Reads packages with gibbon, from Blam Network's tiger libraries
 // (https://github.com/Blam-Network/tiger, MIT), whose 56578 definitions match our build. Build that
 // repository (npm ci && npm run build) and point D1_TIGER at its folder (default
-// F:/d1/third-party/Blam-Network_tiger). All 224 worlds take about a minute.
+// third-party/Blam-Network_tiger below D1_ROOT). All 224 worlds take about a minute.
 import { createRequire } from "node:module";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
@@ -49,7 +49,8 @@ export function fnv1(s) {
   return h >>> 0;
 }
 
-export function loadGibbon(tiger = process.env.D1_TIGER ?? "F:/d1/third-party/Blam-Network_tiger") {
+export function loadGibbon(tiger = process.env.D1_TIGER ?? (process.env.D1_ROOT ? path.join(process.env.D1_ROOT, "third-party", "Blam-Network_tiger") : undefined)) {
+  if (!tiger) throw new Error("set D1_TIGER (a built Blam-Network tiger checkout) or D1_ROOT (then third-party/Blam-Network_tiger below it)");
   // The CommonJS build: the ES-module one imports cstruct without file extensions, which Node 22 refuses.
   return createRequire(import.meta.url)(
     path.join(tiger, "packages/gibbon/dist-cjs/versions/destiny1/v56578_17_04_12_1251_evil.js")

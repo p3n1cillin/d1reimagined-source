@@ -1,7 +1,7 @@
 use std::{fs,path::Path};
 use d1_oracle::object::ObjectOracle;
 const P:&str="lab/history/2026-10-29-postgame-codex";
-const S:&str="F:/d1/d1preservation-main/cfw-staging";
+const S:&str="<D1_ROOT>/d1preservation-main/cfw-staging";
 fn main()->Result<(),Box<dyn std::error::Error>> {
  let raw=fs::read(format!("{P}/sense54-before-recall-gate-profile.obj"))?;
  let template=fs::read("lab/history/2026-10-28-evening-claude/profile-complete164-xp900.obj")?;

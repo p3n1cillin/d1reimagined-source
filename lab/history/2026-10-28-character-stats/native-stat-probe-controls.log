@@ -64,12 +64,12 @@
    Compiling serde_derive v1.0.229
    Compiling clap_derive v4.6.4
    Compiling clap v4.6.6
-   Compiling d1-build v0.1.0 (F:\d1\public-work\d1reimagined-source\ps4\d1-server\crates\d1-build)
-   Compiling d1-pkg v0.1.0 (F:\d1\public-work\d1reimagined-source\ps4\d1-server\crates\d1-pkg)
-   Compiling d1-eboot v0.1.0 (F:\d1\public-work\d1reimagined-source\ps4\d1-server\crates\d1-eboot)
+   Compiling d1-build v0.1.0 (<D1_ROOT>\public-work\d1reimagined-source\ps4\d1-server\crates\d1-build)
+   Compiling d1-pkg v0.1.0 (<D1_ROOT>\public-work\d1reimagined-source\ps4\d1-server\crates\d1-pkg)
+   Compiling d1-eboot v0.1.0 (<D1_ROOT>\public-work\d1reimagined-source\ps4\d1-server\crates\d1-eboot)
    Compiling unicorn-engine-sys v2.1.5
    Compiling unicorn-engine v2.1.5
-   Compiling d1-oracle v0.1.0 (F:\d1\public-work\d1reimagined-source\ps4\d1-server\crates\d1-oracle)
+   Compiling d1-oracle v0.1.0 (<D1_ROOT>\public-work\d1reimagined-source\ps4\d1-server\crates\d1-oracle)
    Compiling private-d1-stat-probe v0.1.0 (lab/history\2026-10-28-character-stats\native-stat-probe)
     Finished `release` profile [optimized] target(s) in 47.90s
      Running `lab/history\2026-10-28-character-stats\native-stat-probe\target\release\private-d1-stat-probe.exe lab/history\2026-10-28-character-stats`

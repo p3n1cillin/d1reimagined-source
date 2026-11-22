@@ -63,42 +63,42 @@
   },
   "evidence": [
     {
-      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN217-pre-stop-native.log",
+      "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN217-pre-stop-native.log",
       "bytes": 29174692,
       "sha256": "4db9275d051f58ad3219c149073a019c7800c8ac383a120e41333c68b8c5a12e"
     },
     {
-      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\FINAL124_JOIN217-bap.log",
+      "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\FINAL124_JOIN217-bap.log",
       "bytes": 35832,
       "sha256": "9e8c549b5c0886a89692fad27968740471124203ae69ec1b63fcee76aff176bf"
     },
     {
-      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\FINAL124_JOIN217-ahl.log",
+      "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\FINAL124_JOIN217-ahl.log",
       "bytes": 117638,
       "sha256": "e620fe5168e2e3cf69c6b41f80c32490807308c451dd9b9119e54806ba068dcc"
     },
     {
-      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-independent-closure-verified.json",
+      "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-independent-closure-verified.json",
       "bytes": 3109,
       "sha256": "c8ee772e13046f2ddf7f6bd9fd9ed3d69f944c5c7f5b9b613fc53da97ad8c0bf"
     },
     {
-      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN217-cleanup-result.json",
+      "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN217-cleanup-result.json",
       "bytes": 269,
       "sha256": "b3049319e707a7d8367b903d4d0141cb75713d16532c18a62fbcdc2fab87d06e"
     },
     {
-      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-loot-overlay.json",
+      "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-loot-overlay.json",
       "bytes": 3647,
       "sha256": "078d73fd00be0031f4facffbc590b936d6bc51d1c8910d87199590116bccc1ee"
     },
     {
-      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-overlay-preflight.json",
+      "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-overlay-preflight.json",
       "bytes": 390,
       "sha256": "afebf5cbe57ee1c2e9a3bdbb61e97dc3c78d3903c94a4976f89354cddae1c0f0"
     },
     {
-      "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-rifle-approach\\result.json",
+      "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN217-rifle-approach\\result.json",
       "bytes": 362,
       "sha256": "400608cd8af57518571fcf50ce218111f0d783c8cae52438d35a463fd1067cb9"
     }

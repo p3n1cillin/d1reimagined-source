@@ -4,8 +4,8 @@
   "base": "0x5110000",
   "started_utc": "2026-10-30T16:09:50.165651+00:00",
   "seconds_requested": 180.0,
-  "log_dir": "F:\\d1\\d1preservation-main\\cfw-staging\\contained-boot\\20261030-152544-sense66",
-  "follow_file": "F:\\d1\\d1preservation-main\\cfw-staging\\sense66-launched-activity.txt",
+  "log_dir": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\contained-boot\\20261030-152544-sense66",
+  "follow_file": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\sense66-launched-activity.txt",
   "events": "lab/history\\2026-10-29-postgame-codex\\recall-departure-sense66-1793376590037753100.jsonl",
   "milestones_after_start": {
     "native_countdown_active": {

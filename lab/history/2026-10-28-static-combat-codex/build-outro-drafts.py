@@ -1,6 +1,6 @@
 from pathlib import Path
 import struct,json,datetime,subprocess,os,hashlib
-P=Path(r'lab/history\2026-10-28-static-combat-codex');S=Path(r'F:\d1\d1preservation-main\cfw-staging')
+P=Path(r'lab/history\2026-10-28-static-combat-codex');S=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging')
 source=S/'agr-dock13-obj26-m52.txt';text=source.read_text();identity=json.loads((P/'outro-player-identity-readonly.json').read_text())['oracle_identity'];ident=bytes.fromhex(identity)
 assert ident==bytes.fromhex('d100000000000201')
 

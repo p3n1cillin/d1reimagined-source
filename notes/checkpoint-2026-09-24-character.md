@@ -11,26 +11,26 @@ change and is a separate issue.
 
 ## Local instance and service stack
 
-- RPCS3 copy: `D:\Destiny360\RPCS3_TEST048_SETUP\rpcs3.exe`, game executable
-  `D:\Destiny360\01_WORKING\ps3_destiny\PS3_GAME\USRDIR\EBOOT.BIN`.
-- `D:\Destiny360\RPCS3_TEST048_SETUP\config\config.yml` uses
+- RPCS3 copy: `<PS3_ROOT>\RPCS3_TEST048_SETUP\rpcs3.exe`, game executable
+  `<PS3_ROOT>\01_WORKING\ps3_destiny\PS3_GAME\USRDIR\EBOOT.BIN`.
+- `<PS3_ROOT>\RPCS3_TEST048_SETUP\config\config.yml` uses
   `Shader Mode: Async Recompiler (multi-threaded)`. Shader Interpreter had stalled at
   198/6650 variants. The previous config is backed up as
   `config.shader-interpreter.2026-09-24.yml.bak`.
 - Private runtime material (CA, schemas, logs, game captures) is under
-  `D:\Destiny360\SIGNON_LOCAL`, outside Git. Do not commit it.
-- Services needed for a fresh sign-in: `D:\Destiny360\RPCN_LOCAL\rpcn.exe`,
-  `server/dns_sinkhole.py --destiny-hosts --log D:\Destiny360\SIGNON_LOCAL\logs\...`,
+  `<PS3_ROOT>\SIGNON_LOCAL`, outside Git. Do not commit it.
+- Services needed for a fresh sign-in: `<PS3_ROOT>\RPCN_LOCAL\rpcn.exe`,
+  `server/dns_sinkhole.py --destiny-hosts --log <PS3_ROOT>\SIGNON_LOCAL\logs\...`,
   `server/stun_stub.py`, `server/signon_probe.py --mode auth3 --destiny-hosts
   --manifest-url http://content.local.test/manifest --manifest-packages
-  D:\Destiny360\01_WORKING\ps3_destiny\PS3_GAME\USRDIR\packages`,
+  <PS3_ROOT>\01_WORKING\ps3_destiny\PS3_GAME\USRDIR\packages`,
   `server/lobby_probe.py --timeout 60`, and `server/bap_server.py --ws-signin
-  --schema D:\Destiny360\SIGNON_LOCAL\investment_schema_character.json`.
+  --schema <PS3_ROOT>\SIGNON_LOCAL\investment_schema_character.json`.
   All are loopback-only. Check listeners/processes before retrying: an earlier set of
   DNS, STUN and SignOn helpers had silently exited, causing the generic “Destiny
   servers are not available” screen *before* setup. They were restarted on this turn.
 - Current test 054 BAP log:
-  `D:\Destiny360\SIGNON_LOCAL\logs\TEST054_SELF_CHARACTER-bap.log`.
+  `<PS3_ROOT>\SIGNON_LOCAL\logs\TEST054_SELF_CHARACTER-bap.log`.
   DNS/STUN restart logs have the `TEST053_RESTART-` prefix. The SignOn helper currently
   runs in a direct terminal session, so restart it if that session closes.
 - The user authorized pushing work to the private
@@ -50,7 +50,7 @@ change and is a separate issue.
 | 054 | Also include the self-family type-1 character object in the version-2 update | Finish still spins. Service 501 received/replied at 21:41:35; the server pushed self family 4 and answered the follow-up family 3 fetch. Only keepalives and service 701 followed, with no disconnect through at least 21:46. The new ID also appeared in guest memory at `0x700e0d48`, inside the self-family character object. |
 
 The relevant raw BAP captures and logs are in
-`D:\Destiny360\SIGNON_LOCAL\captures\bap` and `...\logs`. For comparison 052,
+`<PS3_ROOT>\SIGNON_LOCAL\captures\bap` and `...\logs`. For comparison 052,
 the 501 request was frame 14 and the follow-up 206 fetch was frame 15 in session
 `20260924-211857-796656`. Service 701 continues to be called periodically and gets
 schema-encoded result `error_none`; that alone does not prove it is implemented fully.

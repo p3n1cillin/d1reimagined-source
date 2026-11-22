@@ -1,10 +1,10 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
-. 'F:\d1\d1xenia\scripts\Final124RunHelpers.ps1'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
+. '<D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1'
 $manifest=Read-D1ProcessManifest (Join-Path $rt 'SIGNON_LOCAL\logs\FINAL124_JOIN183-processes.json')
 $client=$manifest.processes | Where-Object tag -EQ 'rpcs3'
 if(-not(Get-D1OwnedProcess $client)){throw 'Exact client is closed'}
-& 'F:\d1\d1xenia\scripts\Send-RpcsKey.ps1' -Keys X -HoldMs 400 -ProcessId 22436 -ProcessIdentity $client
+& '<D1_ROOT>\d1xenia\scripts\Send-RpcsKey.ps1' -Keys X -HoldMs 400 -ProcessId 22436 -ProcessIdentity $client
 $watch=Join-Path $rt 'RPCS3_FINAL124_SMOKE001\d1\d1ppu.txt'
 $planned=Join-Path $rt 'RESEARCH\JOIN183-planned-d1ppu.txt'
 if((Get-FileHash -LiteralPath $watch).Hash -ne (Get-FileHash -LiteralPath $planned).Hash){throw 'Watch changed; preserve it'}

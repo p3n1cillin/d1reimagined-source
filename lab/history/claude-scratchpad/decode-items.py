@@ -1,7 +1,7 @@
 """Decode staged inventory elements with the build's own codec; print level, content index, grid and stats."""
 import glob, json, os, struct, subprocess, sys
 from pathlib import Path
-root = Path(r'F:\d1\d1preservation-main')
+root = Path(r'<D1_ROOT>\d1preservation-main')
 env = dict(os.environ, D1_BUILDS=str(root / 'capture-rig/builds.json'), D1_BUILD='later-56578')
 for item in [Path(p) for p in sys.argv[1:]]:
     r = subprocess.run([str(root / 'd1-server/target/release/d1-oracle.exe'), '--json', 'object', '--tag', '0x80801732',

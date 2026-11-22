@@ -1,7 +1,7 @@
 """Diagnostic AH activation from this run's native prop defaults; no guest writes."""
 exec(compile(open(__file__.replace('probe-gantry.py','inspect-namespace.py')).read().split('groups=[]')[0], 'inspect-namespace.py','exec'))
 import time
-run=Path(r'F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide17')
+run=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\2026-10-27-divide17')
 rows=json.loads(Path(__file__).with_name('namespace-04.json').read_text())['rows']
 r=next(r for r in rows if r['dx']==209)
 obj=int(r['object'],16)

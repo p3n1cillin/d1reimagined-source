@@ -3,10 +3,10 @@ import hashlib
 import json
 import subprocess
 
-source = Path(r'F:\d1\<pc>-import\dev\rpcs3')
-baseline = Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH\gpu-descriptor-timeline-baseline')
+source = Path(r'<D1_ROOT>\<pc>-import\dev\rpcs3')
+baseline = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\gpu-descriptor-timeline-baseline')
 export = baseline.parent / 'gpu-descriptor-timeline-export-final'
-patch = Path(r'F:\d1\d1xenia\patches\rpcs3-descriptor-timeline.patch')
+patch = Path(r'<D1_ROOT>\d1xenia\patches\rpcs3-descriptor-timeline.patch')
 files = ['rpcs3/Emu/RSX/d1diag.h', 'rpcs3/Emu/RSX/VK/VKCommandStream.cpp', 'rpcs3/Emu/RSX/VK/VKGSRenderTypes.hpp', 'rpcs3/Emu/RSX/VK/VKResourceManager.h', 'rpcs3/Emu/RSX/VK/vkutils/descriptors.cpp', 'rpcs3/Emu/RSX/VK/vkutils/garbage_collector.h']
 
 def run(*args):

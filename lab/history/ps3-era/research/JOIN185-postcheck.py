@@ -2,8 +2,8 @@ import collections,datetime,hashlib,json,re,sys
 from pathlib import Path
 root=Path(__file__).parent
 rt=root.parent
-sys.path.insert(0,'F:/d1/d1xenia')
-sys.path.insert(0,'F:/d1/d1xenia/tools/content_capture')
+sys.path.insert(0,'<D1_ROOT>/d1xenia')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/tools/content_capture')
 from tools.content_capture.capture import validate_video
 out={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'run':'FINAL124_JOIN185'}
 samples=[json.loads(line) for line in (root/'JOIN185-session-timeline.jsonl').read_text().splitlines() if line.strip()]

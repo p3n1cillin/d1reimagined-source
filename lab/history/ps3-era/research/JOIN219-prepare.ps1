@@ -1,8 +1,8 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $r=Join-Path $rt 'RESEARCH'
-. F:\d1\d1xenia\scripts\Final124RunHelpers.ps1
+. <D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1
 $prior=Get-Content -LiteralPath "$r\JOIN218-independent-closure-verified.json" -Raw | ConvertFrom-Json
 if(-not $prior.all_hashes_match -or @($prior.checks).Count -ne 9 -or @($prior.checks | Where-Object exact_owned_alive).Count){throw 'Prior independent closure not verified'}
 foreach($check in $prior.checks){if(Get-D1OwnedProcess $check.identity){throw 'Prior owned identity still alive'}}
@@ -15,7 +15,7 @@ $expected=@{
 }
 foreach($entry in $expected.GetEnumerator()){if((Get-FileHash -LiteralPath (Join-Path $rpc $entry.Key)).Hash -ne $entry.Value){throw "Unexpected baseline $($entry.Key)"}}
 foreach($path in @("$r\JOIN219-before-title.yml","$r\JOIN219-before-d1ppu.txt","$rt\SIGNON_LOCAL\JOIN219-launch.ps1","$rt\SIGNON_LOCAL\FINAL124_JOIN219-control.jsonl")){if(Test-Path -LiteralPath $path){throw 'Preserve existing JOIN219 files'}}
-if(@(git -C 'F:\d1\d1xenia' status --porcelain).Count){throw 'Record changed source before launch'}
+if(@(git -C '<D1_ROOT>\d1xenia' status --porcelain).Count){throw 'Record changed source before launch'}
 $launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN218-launch.ps1" -Raw).Replace('JOIN218','JOIN219')
 $trace=@'
 # JOIN219: client incident context and body selection, read-only.
@@ -38,5 +38,5 @@ Copy-Item -LiteralPath "$rpc\d1\d1ppu.txt" -Destination "$r\JOIN219-before-d1ppu
 [IO.File]::WriteAllText("$r\JOIN219-planned-d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText("$rpc\d1\d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 foreach($marker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText("$rpc\d1\$marker",'')}
-[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C 'F:\d1\d1xenia' rev-parse HEAD).Trim();source_clean=$true;source_status=@();change='Native incoming incident interface and action-body lookup; unmodified starter, no mission/renderer change, echo or incident injection.';trace=$trace;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN219-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN219-prepare.json" -Encoding utf8
+[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C '<D1_ROOT>\d1xenia' rev-parse HEAD).Trim();source_clean=$true;source_status=@();change='Native incoming incident interface and action-body lookup; unmodified starter, no mission/renderer change, echo or incident injection.';trace=$trace;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN219-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN219-prepare.json" -Encoding utf8
 'JOIN219 prepared'

@@ -22,5 +22,5 @@ Down $W; Start-Sleep -Milliseconds $RunMs
 Tap $J
 if (-not $Single) { Start-Sleep -Milliseconds $SecondJumpMs; Tap $J }
 Start-Sleep -Milliseconds $AfterMs; Up $W
-Set-Content -Path 'F:\d1\tools\d1-pad-last.txt' -Value ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())
+Set-Content -Path '<D1_ROOT>\tools\d1-pad-last.txt' -Value ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())
 'jumped'

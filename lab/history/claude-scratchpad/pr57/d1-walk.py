@@ -28,7 +28,7 @@ _unit_spec.loader.exec_module(_unit_tracking)
 src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'd1-winguest.py')).read()
 wg = {'__name__': 'lib'}
 exec(compile(src, 'd1-winguest.py', 'exec'), wg)
-PAD = os.environ.get('D1_PAD', r'F:\d1\tools\d1-pad.ps1')
+PAD = os.environ.get('D1_PAD', r'<D1_ROOT>\tools\d1-pad.ps1')
 
 
 def pad(*keys, gap=150):

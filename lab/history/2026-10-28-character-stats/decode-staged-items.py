@@ -1,6 +1,6 @@
 from pathlib import Path
 import os,subprocess,json,struct
-root=Path(r'lab/history\2026-10-28-character-stats');base=Path(r'F:\d1\d1preservation-main');exe=base/'d1-server/target/release/d1-oracle.exe'
+root=Path(r'lab/history\2026-10-28-character-stats');base=Path(r'<D1_ROOT>\d1preservation-main');exe=base/'d1-server/target/release/d1-oracle.exe'
 env=dict(os.environ,D1_BUILD='later-56578',D1_BUILDS=str(base/'capture-rig/builds.json'))
 def decode(path,tag):
  r=subprocess.run([str(exe),'--json','object','--tag',hex(tag),'--decode',path.read_bytes().hex()],env=env,encoding='utf-8',capture_output=True,check=True)

@@ -37,7 +37,7 @@ No source commit, push or publication was made in this heartbeat.
 
 Resumed source/log investigation of the blocked client-owned Enter-the-Wall
 trigger. Relevant runtime source is
-`F:\d1\d1preservation-main\d1-server\crates\d1-activity-host\src`.
+`<D1_ROOT>\d1preservation-main\d1-server\crates\d1-activity-host\src`.
 
 - `state.rs` around 1048 accepts ClientAuthoritativeDataUpdate (udt 21) but
   currently does nothing with its state. Its documented wire contract is fire

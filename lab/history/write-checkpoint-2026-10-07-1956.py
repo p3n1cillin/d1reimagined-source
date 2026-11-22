@@ -6,12 +6,12 @@ import subprocess
 root=Path(r'lab/history')
 now=datetime.now(timezone.utc).isoformat()
 git=lambda cwd,*args:subprocess.check_output(['git','-C',cwd,*args],text=True).strip()
-source=git(r'F:\d1\d1xenia','rev-parse','HEAD')
-data=git(r'F:\d1\d1xenia-data','rev-parse','HEAD')
+source=git(r'<D1_ROOT>\d1xenia','rev-parse','HEAD')
+data=git(r'<D1_ROOT>\d1xenia-data','rev-parse','HEAD')
 assert source=='d3ae32bf2c659afd1059625a77842d902e2a4971'
 assert data=='a3b316bafa6ff72f75549365d8b7b4f37cc97c1e'
-assert not git(r'F:\d1\d1xenia','status','--porcelain')
-assert not git(r'F:\d1\d1xenia-data','status','--porcelain')
+assert not git(r'<D1_ROOT>\d1xenia','status','--porcelain')
+assert not git(r'<D1_ROOT>\d1xenia-data','status','--porcelain')
 checkpoint={
  'at':now,'previous_goal_turn':'PROGRESS','current_goal_turn':'PROGRESS','goal_status':'active/incomplete',
  'objective_read':'Full goal-objective.md read at current goal-turn start; full-game requirements remain intact.',

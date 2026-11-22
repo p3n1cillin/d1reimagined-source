@@ -1,6 +1,6 @@
 import ctypes, ctypes.wintypes as wt, struct, re, sys
-src=open(r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py').read()
-g={'__name__':'lib','__file__':r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py'}; exec(compile(src,'d1-walk.py','exec'),g)
+src=open(r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py').read()
+g={'__name__':'lib','__file__':r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py'}; exec(compile(src,'d1-walk.py','exec'),g)
 c=g['Client']()
 k32=ctypes.WinDLL('kernel32',use_last_error=True)
 class MBI(ctypes.Structure):

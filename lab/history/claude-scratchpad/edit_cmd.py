@@ -1,5 +1,5 @@
 from pathlib import Path
-D = Path('F:/d1/public-work/wt-paths/tools/ps4_setup')
+D = Path('<D1_ROOT>/public-work/wt-paths/tools/ps4_setup')
 
 
 def edit(f, pairs):
@@ -27,12 +27,12 @@ edit('Build-D1ShadPS4.cmd', [
      '  )\n'
      '  set "D1_TOOLS=%D1_ROOT%\\tools"\n'
      ')\n'),
-    ('if "%SRC%"=="" set "SRC=F:\\d1\\tools\\shadPS4-src\\v0.19.0-d1"',
+    ('if "%SRC%"=="" set "SRC=<D1_ROOT>\\tools\\shadPS4-src\\v0.19.0-d1"',
      'if "%SRC%"=="" set "SRC=%D1_TOOLS%\\shadPS4-src\\v0.19.0-d1"'),
-    ('if "%OUT%"=="" set "OUT=F:\\d1\\tools\\shadPS4-src\\build-d1"',
+    ('if "%OUT%"=="" set "OUT=<D1_ROOT>\\tools\\shadPS4-src\\build-d1"',
      'if "%OUT%"=="" set "OUT=%D1_TOOLS%\\shadPS4-src\\build-d1"'),
-    ('set "LLVM=F:\\d1\\tools\\llvm-23.1.3\\bin"', 'set "LLVM=%D1_TOOLS%\\llvm-23.1.3\\bin"'),
-    ('call "F:\\VS\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat" >nul || exit /b 1',
+    ('set "LLVM=<D1_ROOT>\\tools\\llvm-23.1.3\\bin"', 'set "LLVM=%D1_TOOLS%\\llvm-23.1.3\\bin"'),
+    ('call "<VS_BUILDTOOLS>\\VC\\Auxiliary\\Build\\vcvars64.bat" >nul || exit /b 1',
      'if not defined VCVARS for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere.exe" -latest -products * -property installationPath`) do set "VCVARS=%%i\\VC\\Auxiliary\\Build\\vcvars64.bat"\n'
      'call "%VCVARS%" >nul || exit /b 1'),
 ])

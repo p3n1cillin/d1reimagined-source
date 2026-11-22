@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys,json,hashlib,datetime,subprocess
-sys.path.insert(0,'F:/d1/d1xenia/tools/content_capture')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/tools/content_capture')
 from capture import validate_video
 rt=Path(__file__).parent.parent
 ffmpeg=rt/'DEVLOGS/tools/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe'

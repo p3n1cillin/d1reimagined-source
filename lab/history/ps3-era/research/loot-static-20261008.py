@@ -1,7 +1,7 @@
 """Private 01.24 loot call-chain analysis; source data stays outside Git."""
 import json,sys
 from pathlib import Path
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from d1_eboot import Eboot
 root=Path(__file__).parent
 out=root/'loot-static-20261008'

@@ -6,8 +6,8 @@ from pathlib import Path
 import subprocess
 
 private = Path(r'lab/history')
-repo = Path(r'F:\d1\d1xenia')
-runtime = Path(r'F:\d1\d1preservation-main')
+repo = Path(r'<D1_ROOT>\d1xenia')
+runtime = Path(r'<D1_ROOT>\d1preservation-main')
 pointer = private / '2026-10-15-draft-pointer.json'
 if pointer.exists():
     raise SystemExit('Existing daily draft retained; use its pointer, do not duplicate it.')

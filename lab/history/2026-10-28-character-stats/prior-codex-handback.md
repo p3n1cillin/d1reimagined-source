@@ -8,7 +8,7 @@ The weapon investment-stat source is now traced natively. It is the peer charact
 
 ## Source and validation
 
-Repo: F:\d1\public-work\d1reimagined-source
+Repo: <D1_ROOT>\public-work\d1reimagined-source
 - PR46 merged: https://github.com/p3n1cillin/d1reimagined-source/pull/46
 - origin/main is a10fdf0, containing the new Rust generator and native-result documentation.
 - Local branch ps4/weapon-live-stats is clean at f5e4c29 (two commits: fc8d98a, f5e4c29), pushed. No history was rewritten. Branch future work from latest origin/main.
@@ -68,11 +68,11 @@ Peer shared block+30 = card shared block+68.
 ## Current live lab — verify before input
 
 Run: weapon26-base-stats
-Run directory: F:\d1\d1preservation-main\cfw-staging\weapon26-base-stats
-Host log: F:\d1\d1preservation-main\cfw-staging\contained-boot\20261027-223723-weapon26-base-stats\activity-host.log
+Run directory: <D1_ROOT>\d1preservation-main\cfw-staging\weapon26-base-stats
+Host log: <D1_ROOT>\d1preservation-main\cfw-staging\contained-boot\20261027-223723-weapon26-base-stats\activity-host.log
 - Emulator14392 (started22:37:32), AH26472 (22:37:25), eboot base5170000.
 - Canonical replay25188 COMPLETED and exited. Divide probe7044 and the later gate-approach/retrack commands also ended. No Codex movement driver or debugger is active; only the idle guard remains.
-- Idle guard launcher8116, childbash24720 and10008 were verified earlier. Filter by exact command/path again before stopping. The guard needs a quoted `bash -lc "exec /f/d1/tools/d1-idle-guard.sh"`; an unquoted ArgumentList silently exited, and a non-login shell lacked grep. Current guard has no stderr.
+- Idle guard launcher8116, childbash24720 and10008 were verified earlier. Filter by exact command/path again before stopping. The guard needs a quoted `bash -lc "exec <D1_ROOT>/tools/d1-idle-guard.sh"`; an unquoted ArgumentList silently exited, and a non-login shell lacked grep. Current guard has no stderr.
 - Observer8612 was a Python PID reused from the old AH; it completed and exited after clean detach. Do not assume an old PID's identity.
 - Run codex-owned-processes.json and codex-test-plan.json preserve ownership/inputs. The run launcher used120minutes, with a planned stop around00:37 on28Oct.
 - No canonical roster was overwritten or promoted. Future runs still need:
@@ -91,7 +91,7 @@ Host log: F:\d1\d1preservation-main\cfw-staging\contained-boot\20261027-223723-w
 
 27Oct consolidated report was already delivered19:09 and independently verified19:09:46. Do NOT make another27Oct report or modify ready packages. Report ID<lab-pc>-20261027T190944-ff2b8032cd2f48d3b8b3b4f400293ba8; receipt is PRIVATE_ENGINEERING\2026-10-27-daily-handoff-receipt.json. It references the16:39 three-clip event package without resending media. Tonight's later evidence belongs in the next eligible edition with actual timestamps, following the private handoff policy. All production inputs remain private. No final-video editing or publication.
 
-No third-party downloads or Sony-key work. No game files/keys/raw evidence in repos. Stop helpers with exact verified PID/path filters. Every automated game loop must nudge a stick. The existing held-key pad/route driver is explicitly user-authorized. Build AH only after stopping its owned run, with LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin.
+No third-party downloads or Sony-key work. No game files/keys/raw evidence in repos. Stop helpers with exact verified PID/path filters. Every automated game loop must nudge a stick. The existing held-key pad/route driver is explicitly user-authorized. Build AH only after stopping its owned run, with LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin.
 
 ## Delivery status
 

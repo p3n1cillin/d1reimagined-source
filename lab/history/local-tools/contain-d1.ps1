@@ -7,9 +7,9 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Write-Host 'Right-click the .cmd and choose Run as administrator.' -ForegroundColor Red; Read-Host 'Enter to close'; exit 1
 }
 $hosts = "$env:SystemRoot\System32\drivers\etc\hosts"
-$begin = '# >>> D1 local redirects (F:\d1\tools\contain-d1.ps1)'
+$begin = '# >>> D1 local redirects (<D1_ROOT>\tools\contain-d1.ps1)'
 $end   = '# <<< D1 local redirects'
-$exe   = 'F:\d1\tools\shadPS4\0.19.0\shadPS4.exe'
+$exe   = '<D1_ROOT>\tools\shadPS4\0.19.0\shadPS4.exe'
 $rule  = 'D1 shadPS4 - block outbound'
 
 function Write-Hosts($content) {
@@ -37,7 +37,7 @@ foreach ($l in $lines) { if ($l -eq $begin) { $skip = $true; continue }; if ($l 
 
 if ($Mode -eq 'apply') {
     if ((Get-Item -LiteralPath $hosts).Length -gt 0) { Copy-Item -LiteralPath $hosts -Destination "$hosts.d1-backup-$(Get-Date -Format yyyyMMdd-HHmmss)" }
-    $block = Get-Content -LiteralPath 'F:\d1\tools\shadPS4\d1-hosts.txt' | Where-Object { $_ -match '^\s*127\.0\.0\.1\s' }
+    $block = Get-Content -LiteralPath '<D1_ROOT>\tools\shadPS4\d1-hosts.txt' | Where-Object { $_ -match '^\s*127\.0\.0\.1\s' }
     $keep.Add($begin); $block | ForEach-Object { $keep.Add($_) }; $keep.Add($end)
     Write-Hosts $keep
     Get-NetFirewallRule -DisplayName $rule -ErrorAction SilentlyContinue | Remove-NetFirewallRule

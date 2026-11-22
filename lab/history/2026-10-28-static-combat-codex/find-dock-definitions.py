@@ -1,7 +1,7 @@
 """Extract only owned package blocks containing entity definitions; outputs private."""
 from pathlib import Path
 import collections,json,os,re,struct,subprocess,time
-ROOT=Path(__file__).parent;BASE=Path(r'F:\d1\d1preservation-main')
+ROOT=Path(__file__).parent;BASE=Path(r'<D1_ROOT>\d1preservation-main')
 env=dict(os.environ,D1_BUILD='later-56578',D1_BUILDS=str(BASE/'capture-rig/builds.json'))
 oracle=BASE/'d1-server/target/release/d1-oracle.exe'
 entries=[e for e in json.loads((ROOT/'entries-025c-v2.json').read_text()) if e['class_tag']==0x80800861]

@@ -4,8 +4,8 @@
   "base": "0x5260000",
   "started_utc": "2026-10-29T17:33:43.149172+00:00",
   "seconds_requested": 180.0,
-  "log_dir": "F:\\d1\\d1preservation-main\\cfw-staging\\contained-boot\\20261029-165123-sense57",
-  "follow_file": "F:\\d1\\d1preservation-main\\cfw-staging\\sense57-launched-activity.txt",
+  "log_dir": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\contained-boot\\20261029-165123-sense57",
+  "follow_file": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\sense57-launched-activity.txt",
   "events": "lab/history\\2026-10-29-postgame-codex\\recall-departure-sense57-1793295223029480100.jsonl",
   "milestones_after_start": {
     "native_countdown_active": {

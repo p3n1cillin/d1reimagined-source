@@ -10,7 +10,7 @@ are not already in `tools/ps4_setup`.
 The maintained, portable versions of what a run needs live elsewhere: the served fixtures in
 `ps4/fixtures/56578`, and the unattended Tower route in `lab/tower-route`. Scripts here still name the
 lab machine's folders. The private folder they came from is written as `lab/history`, and
-`D1_ROOT`-style paths such as `F:/d1/...` are the lab's own layout. Read them as a record, and use
+`D1_ROOT`-style paths such as `<D1_ROOT>/...` are the lab's own layout. Read them as a record, and use
 the maintained copies to run.
 
 Imported with `tools/import_lab_history.py`, which leaves out:

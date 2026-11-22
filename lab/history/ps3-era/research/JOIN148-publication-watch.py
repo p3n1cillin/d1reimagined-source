@@ -1,9 +1,9 @@
 import datetime,json,struct,sys,time
 from pathlib import Path
-sys.path.insert(0,r'F:\d1\d1xenia\scripts')
+sys.path.insert(0,r'<D1_ROOT>\d1xenia\scripts')
 from rpcs3_owned_memory import OwnedMemory
 from rpcs3_final124_transition import snapshot
-root=Path(r'F:\d1\<pc>-import\d1xenia\local')
+root=Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 manifest=root/'SIGNON_LOCAL/logs/FINAL124_JOIN148-processes.json'
 until=time.monotonic()+900
 with OwnedMemory(manifest) as memory,(root/'SIGNON_LOCAL/logs/JOIN148-publication-timeline.jsonl').open('a',encoding='utf-8') as stream:

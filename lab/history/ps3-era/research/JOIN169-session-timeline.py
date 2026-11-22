@@ -1,8 +1,8 @@
 import datetime, json, struct, sys, time
 from pathlib import Path
-sys.path.insert(0, r'F:\d1\d1xenia\scripts')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\scripts')
 from rpcs3_owned_memory import OwnedMemory
-rt=Path(r'F:\d1\<pc>-import\d1xenia\local')
+rt=Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 manifest=rt/'SIGNON_LOCAL/logs/FINAL124_JOIN169-processes.json'
 output=rt/'RESEARCH/JOIN169-session-timeline.jsonl'
 def u32(read, address): return struct.unpack('>I',read(address,4))[0]

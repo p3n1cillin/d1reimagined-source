@@ -14,7 +14,7 @@ def load(name, path=None):
 
 
 fight, hp, fo = load('fight'), load('health'), load('follow')
-wp = load('wp', r'F:\d1\public-work\d1rs-claude\tools\ps4_setup\d1-waypoint.py')
+wp = load('wp', r'<D1_ROOT>\public-work\d1rs-claude\tools\ps4_setup\d1-waypoint.py')
 
 
 def main():

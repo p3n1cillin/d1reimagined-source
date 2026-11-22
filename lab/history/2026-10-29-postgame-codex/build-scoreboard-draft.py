@@ -2,9 +2,9 @@
 from pathlib import Path
 import struct,json,os,subprocess,hashlib
 P=Path(__file__).parent
-S=Path(r'F:\d1\d1preservation-main\cfw-staging')
-O=Path(r'F:\d1\public-work\target-claude\release\d1-oracle.exe')
-env=dict(os.environ,D1_BUILD='later-56578',D1_BUILDS=r'F:\d1\d1preservation-main\capture-rig\builds.json')
+S=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging')
+O=Path(r'<D1_ROOT>\public-work\target-claude\release\d1-oracle.exe')
+env=dict(os.environ,D1_BUILD='later-56578',D1_BUILDS=r'<D1_ROOT>\d1preservation-main\capture-rig\builds.json')
 cfg=(P/'owned-80aa3ee6.bin').read_bytes()
 n,rel=struct.unpack_from('<Qq',cfg,0x40)
 stats=0x48+rel+16

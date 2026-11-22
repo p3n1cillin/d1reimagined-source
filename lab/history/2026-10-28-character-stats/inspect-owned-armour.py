@@ -1,7 +1,7 @@
 from pathlib import Path
 import csv,hashlib,json,os,struct,subprocess
 root=Path(r'lab/history\2026-10-28-character-stats')
-base=Path(r'F:\d1\d1preservation-main');exe=base/'d1-server/target/release/d1-oracle.exe'
+base=Path(r'<D1_ROOT>\d1preservation-main');exe=base/'d1-server/target/release/d1-oracle.exe'
 env=dict(os.environ,D1_BUILDS=str(base/'capture-rig/builds.json'),D1_BUILD='later-56578')
 table={int(r['content_index']):r for r in csv.DictReader([l for l in (base/'capture-rig/builds/later-56578/item-content-index.tsv').read_text(encoding='utf-8').splitlines() if not l.startswith('#')],delimiter='\t')}
 def pairs(b,field):

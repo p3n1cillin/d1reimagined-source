@@ -1,6 +1,6 @@
 from pathlib import Path
 import importlib.util,struct,json,time
-s=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(s);s.loader.exec_module(g);p,b=g.open_client();a=p.u(p.u(b+g.PLAYER_POOL,'Q')+8,'Q');T=b+0x26897f0;data=p.u(T+8,'Q');es=p.u(T+0x10,'I');mask=p.u(T+0x28,'i')&0xffffffffffffffff;out=[]
+s=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(s);s.loader.exec_module(g);p,b=g.open_client();a=p.u(p.u(b+g.PLAYER_POOL,'Q')+8,'Q');T=b+0x26897f0;data=p.u(T+8,'Q');es=p.u(T+0x10,'I');mask=p.u(T+0x28,'i')&0xffffffffffffffff;out=[]
 for off in [0x644,0x690,0x6a0]:
  h=p.u(a+off,'I')
  if h in (0,0xffffffff):continue

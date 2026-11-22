@@ -4,15 +4,15 @@ The user explicitly requested this hand-back. Continue your current Code session
 
 ## Current source and live run
 
-Public source: F:\d1\public-work\d1reimagined-source
+Public source: <D1_ROOT>\public-work\d1reimagined-source
 - Current branch ps4/divide-gate, clean at7cc9a8eb1aee5d2c9d06f6641ccfe5d794c25adc (18:39 gate/slice104 notes), tracking origin/ps4/divide-gate.
 - PR40 merged as1a515db (canonical replay/native unattended run19 and crossing). PR41 merged as0326421 (memory-facing steering). Their configured GitHub checks were independently read as successful at the daily checkpoint.
 - Codex's original c736a02 replay/schedule work is integrated in PR40. No uncommitted Codex source work remains. Preserve your current branch and its later work; main remains PR-only.
 - Identity: p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; no history rewriting.
 
 Live run is2026-10-27-divide20, the geared fixture. At19:10:32, shadPS4 PID22048 (started18:00:59) and AH PID7828 (started18:00:52) are alive. No Python driver was present in that read-only inventory. Keep your idle guard. Do not assume the old run17/18 PIDs or addresses still apply.
-Run folder: F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide20
-Host log: F:\d1\d1preservation-main\cfw-staging\contained-boot\20261027-180046-2026-10-27-divide20\activity-host.log
+Run folder: <D1_ROOT>\d1preservation-main\cfw-staging\2026-10-27-divide20
+Host log: <D1_ROOT>\d1preservation-main\cfw-staging\contained-boot\20261027-180046-2026-10-27-divide20\activity-host.log
 The latest position/health/ammo were not re-read by Codex. Verify tracked.json and the scene before sending input; after a death re-track. Your19:06 aim/capture test was allowed to finish; Codex did not interrupt it, inspect its unfinished recording, or change its inputs.
 
 ## Verified progress and remaining engineering
@@ -53,7 +53,7 @@ The consolidated report supersedes the earlier event report's now-stale 'no cros
 
 ## Continue safely
 
-Continue your current visible-nameplate aiming and combat work from run20's actual state, then validate a kill/encounter result and the real slice104 entry/objective20. Keep owned media only, no third-party downloads or Sony-key work, no game files/keys/raw evidence in repos. Build AH only after stopping its owned run, with LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin. Stop helpers only with exact PID/path identity checks. Every game polling/input loop needs stick activity, not just buttons.
+Continue your current visible-nameplate aiming and combat work from run20's actual state, then validate a kill/encounter result and the real slice104 entry/objective20. Keep owned media only, no third-party downloads or Sony-key work, no game files/keys/raw evidence in repos. Build AH only after stopping its owned run, with LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin. Stop helpers only with exact PID/path identity checks. Every game polling/input loop needs stick activity, not just buttons.
 
 Handoff delivery status: prepared for the Claude desktop Code session; confirmation is appended after Send is verified. Codex will send no further game input after hand-back.
 

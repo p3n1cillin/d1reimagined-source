@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $r=Join-Path $rt 'RESEARCH'
 $cleanup=Get-Content -LiteralPath "$rt\SIGNON_LOCAL\logs\JOIN200-cleanup-result.json" -Raw|ConvertFrom-Json
@@ -15,7 +15,7 @@ foreach($p in @("$r\JOIN201-before-title.yml","$r\JOIN201-before-d1ppu.txt","$rt
 Copy-Item -LiteralPath "$rpc\config\custom_configs\config_BLES01857.yml" -Destination "$r\JOIN201-before-title.yml"
 Copy-Item -LiteralPath "$rpc\d1\d1ppu.txt" -Destination "$r\JOIN201-before-d1ppu.txt"
 $launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN200-launch.ps1" -Raw).Replace('JOIN200','JOIN201')
-$launch=$launch.Replace(';--character-gear;starter:01.24:titan',';--character-gear;@F:\d1\<pc>-import\d1xenia\local\RESEARCH\JOIN201-titan-ghost-gear.json')
+$launch=$launch.Replace(';--character-gear;starter:01.24:titan',';--character-gear;@<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\JOIN201-titan-ghost-gear.json')
 if($launch -match 'character-overlay' -or $launch -notmatch 'JOIN201-titan-ghost-gear'){throw 'Expected gear file, no overlay'}
 [IO.File]::WriteAllText("$rt\SIGNON_LOCAL\JOIN201-launch.ps1",$launch,[Text.UTF8Encoding]::new($false))
 $trace=@'
@@ -30,10 +30,10 @@ $trace+="`n"
 [IO.File]::WriteAllText("$r\JOIN201-planned-d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText("$rpc\d1\d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 foreach($marker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText("$rpc\d1\$marker",'')}
-$diff=git -C 'F:\d1\d1xenia' diff -- server/bap_server.py server/test_bap_server.py
+$diff=git -C '<D1_ROOT>\d1xenia' diff -- server/bap_server.py server/test_bap_server.py
 [IO.File]::WriteAllText("$r\JOIN201-tested-source.diff",($diff -join "`n"),[Text.UTF8Encoding]::new($false))
-[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C 'F:\d1\d1xenia' rev-parse HEAD).Trim();source_clean=$true;
-    server_sha256=(Get-FileHash -LiteralPath 'F:\d1\d1xenia\server\bap_server.py').Hash;
+[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C '<D1_ROOT>\d1xenia' rev-parse HEAD).Trim();source_clean=$true;
+    server_sha256=(Get-FileHash -LiteralPath '<D1_ROOT>\d1xenia\server\bap_server.py').Hash;
     tested_source_diff_sha256=(Get-FileHash -LiteralPath "$r\JOIN201-tested-source.diff").Hash;
     change='Private gear file: Titan starter kit plus Generalist appearance 0 and dye 15/2493 from its art record; committed server, unchanged renderer and mission.';
     trace=$trace}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN201-prepare.json" -Encoding utf8

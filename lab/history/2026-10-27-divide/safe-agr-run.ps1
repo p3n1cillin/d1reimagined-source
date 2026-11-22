@@ -8,10 +8,10 @@ param(
     [int]$WatchSeconds = 220,
     # Raw d1-watchwrite arguments (e.g. --read ADDR) instead of -WatchExec.
     [string[]]$WatchArgs = @(),
-    [string]$Steps = 'F:\d1\d1preservation-main\cfw-staging\agr-steps-breach13.txt',
+    [string]$Steps = '<D1_ROOT>\d1preservation-main\cfw-staging\agr-steps-breach13.txt',
     # The served profile. profile-tutorial-t.bin is the unarmed tutorial Guardian (no weapons in the
     # inventory or the roster) who owes the starter Khvostov as pending loot.
-    [string]$Profile = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578\profile-tutorial-t.bin',
+    [string]$Profile = '<D1_ROOT>\d1preservation-main\capture-rig\builds\later-56578\profile-tutorial-t.bin',
     # -Geared: the old fixture (geared inventory and roster, hand cannon in hand, no rifle grant).
     [switch]$Geared,
     # Session length passed to d1-lab-served.ps1 (its default is 90 minutes).
@@ -24,11 +24,11 @@ param(
 $ErrorActionPreference = 'Continue'
 $existing = @(Get-Process shadPS4, d1-activity-host, d1-responder, shadnet-server -ErrorAction SilentlyContinue); if ($existing.Count) { throw "Existing emulator/services found; refusing a new run" }
 Start-Sleep 3
-$B = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578'
-$D = "F:\d1\d1preservation-main\cfw-staging\$Name"
+$B = '<D1_ROOT>\d1preservation-main\capture-rig\builds\later-56578'
+$D = "<D1_ROOT>\d1preservation-main\cfw-staging\$Name"
 New-Item -ItemType Directory -Force $D | Out-Null
-$L = 'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt'
-$pad = 'F:\d1\tools\d1-pad.ps1'
+$L = '<D1_ROOT>\tools\shadPS4\0.19.0\user\log\shad_log.txt'
+$pad = '<D1_ROOT>\tools\d1-pad.ps1'
 # The Breach props (lights, barrier, rifle) are created by the client only while it holds their
 # authority block: every block assigned to machine 3 (the client's machine in bubble 3), not yet
 # applied, so the client acknowledges it and keeps it (notes 26 Oct).
@@ -42,7 +42,7 @@ if (-not $Geared) {
     $x += ",D1_LOOT_GRANT_ROSTER=$GD\rosters-f0-tutorial-khv"
 }
 if ($Extra) { $x += ",$Extra" }
-Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', 'F:\d1\tools\d1-lab-served.ps1', '-Name', $Name,
+Start-Process pwsh -WindowStyle Hidden -ArgumentList @('-NoProfile', '-File', '<D1_ROOT>\tools\d1-lab-served.ps1', '-Name', $Name,
     '-Profile', $Profile, '-Minutes', "$Minutes",
     '-UnlockFlags', '98,308,419,440,834,2668,3391,5021,5998,6029,433,2539,2549,3558,3587,3520,3527,3531,3533,3534,3535,3536,3544,3568,3594,3595,305,2669,2670,3389',
     '-Extra', $x)
@@ -68,15 +68,15 @@ if (WaitFor "Entering state 'character:prologue'" 300) {
 }
 $w = $null
 if ($WatchExec) {
-    $a = @('-I', 'F:\d1\tools\d1-watchwrite.py', '--seconds', "$WatchSeconds", '--max-hits', '60', '--exec', $WatchExec, '--out', "$D\watch.jsonl")
+    $a = @('-I', '<D1_ROOT>\tools\d1-watchwrite.py', '--seconds', "$WatchSeconds", '--max-hits', '60', '--exec', $WatchExec, '--out', "$D\watch.jsonl")
     foreach ($p in $Peek) { $a += @('--peek', $p) }
     $w = Start-Process python -ArgumentList $a -PassThru -WindowStyle Hidden
 }
 if (WaitFor "Entering state 'activity:in_world'" 200) { Start-Sleep 8; Skip; Start-Sleep 10; Skip; 'cutscenes skipped' }
 if (WaitFor "transitioning:teleportation' due to completed" 150) { 'in gameplay (112)' }
 Start-Sleep 10
-& 'F:\d1\tools\d1-shot.ps1' -Out "$D\gameplay.png" | Out-Null
+& '<D1_ROOT>\tools\d1-shot.ps1' -Out "$D\gameplay.png" | Out-Null
 if ($w) { Wait-Process -Id $w.Id -Timeout ($WatchSeconds + 30) -ErrorAction SilentlyContinue }
-python -I F:\d1\tools\d1-winguest.py masks 2>&1 | Select-Object -Last 1
+python -I <D1_ROOT>\tools\d1-winguest.py masks 2>&1 | Select-Object -Last 1
 "run dir: $D"
 

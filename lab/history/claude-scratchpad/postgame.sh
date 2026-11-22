@@ -1,6 +1,6 @@
 #!/bin/bash
 # After the outro: push the completed profile, then publish the @phase 7 list; record what follows. Usage: postgame.sh RUNNAME
-C=F:/d1/d1preservation-main/cfw-staging; P=lab/history/2026-10-28-evening-claude
+C=<D1_ROOT>/d1preservation-main/cfw-staging; P=lab/history/2026-10-28-evening-claude
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
 grab() { python -c "
 import importlib.util
@@ -12,12 +12,12 @@ D=$(ls -d $C/contained-boot/*-$1); H=$D/activity-host.log
 until sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "mission step 25"; do sleep 3; done
 sed 's/\x1b\[[0-9;]*m//g' $H | grep -E "mission step 2[2-5]|incident (2681|891)" | tail -6 | cut -c12-27,60-160
 mkdir -p $C/$1/capture
-(cd F:/d1/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $C/$1/capture/postgame.mp4 --seconds 300 >/dev/null 2>&1 &)
+(cd <D1_ROOT>/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $C/$1/capture/postgame.mp4 --seconds 300 >/dev/null 2>&1 &)
 sleep 5; cp $P/profile-complete164-prog.bin $C/profile-push.bin; echo "$(date +%H:%M:%S) completed profile staged"
 sleep 25; grep -a "PROFILE PUSH" $D/responder.log | tail -1 | cut -c1-140
-echo "pending before phase 7:"; (cd F:/d1/public-work/d1rs-claude/tools/ps4_setup && timeout 60 python -I d1-winguest.py sensor-clients 2>&1 | grep -v "^shadPS4" | head -4)
+echo "pending before phase 7:"; (cd <D1_ROOT>/public-work/d1rs-claude/tools/ps4_setup && timeout 60 python -I d1-winguest.py sensor-clients 2>&1 | grep -v "^shadPS4" | head -4)
 t0=$(date -u +%Y-%m-%dT%H:%M:%S); r0=$(grep -a -c "INVESTMENT message id\|RECV type" $D/responder.log)
-echo "clients 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-postgame-phase7.draft.txt" > $C/ah-control.txt
+echo "clients 0x4786c0e0 <D1_ROOT>/d1preservation-main/cfw-staging/agr-postgame-phase7.draft.txt" > $C/ah-control.txt
 until [ ! -f $C/ah-control.txt ]; do sleep 1; done; echo "$(date +%H:%M:%S) phase 7 list published"
 sed 's/\x1b\[[0-9;]*m//g' $H | grep "control:" | tail -2 | cut -c12-27,60-200
 for k in 1 2 3 4 5 6 7 8; do sleep 15; grab $1 postgame-$k; done

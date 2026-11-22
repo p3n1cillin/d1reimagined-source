@@ -1,8 +1,8 @@
 """Private bounded static review; leaves package and media inputs untouched."""
 import json, sys
 from pathlib import Path
-repo = Path('F:/d1/d1xenia')
-data = Path('F:/d1/d1xenia-data')
+repo = Path('<D1_ROOT>/d1xenia')
+data = Path('<D1_ROOT>/d1xenia-data')
 root = Path(__file__).parent
 types = json.loads((data / 'ps3_updates/types_01.24.json').read_text())
 seen = set()

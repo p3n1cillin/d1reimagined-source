@@ -5,7 +5,7 @@ from pathlib import Path, PurePosixPath
 from datetime import datetime, timezone
 import json, subprocess, sys, hashlib
 P=Path(__file__).parent
-sys.path.insert(0,r'F:\d1\d1xenia\tools\content_capture')
+sys.path.insert(0,r'<D1_ROOT>\d1xenia\tools\content_capture')
 from capture import Capture,lock,check_text
 DATE='2026-10-29'
 POINTER=P/(DATE+'-draft-pointer.json')
@@ -48,8 +48,8 @@ with lock(P/(DATE+'-delivery.lock'),timeout=1):
           'manifest_sha256':sha(ready/'hashes.json'),'all_payload_hashes_match':True,
           'new_decode':'NOT RUN; prior metadata records full decode','media_resent':False})
     stamp=datetime.now(timezone.utc).isoformat()
-    source=Path(r'F:\d1\public-work\d1rs-claude')
-    reporting=Path(r'F:\d1\public-work\d1reimagined-sense')
+    source=Path(r'<D1_ROOT>\public-work\d1rs-claude')
+    reporting=Path(r'<D1_ROOT>\public-work\d1reimagined-sense')
     lab_source={'commit':git(source,'rev-parse','HEAD'),'branch':git(source,'branch','--show-current'),
                 'dirty':git(source,'status','--porcelain')}
     inspected={'commit':git(reporting,'rev-parse','HEAD'),'branch':git(reporting,'branch','--show-current'),

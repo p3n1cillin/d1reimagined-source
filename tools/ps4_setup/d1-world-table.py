@@ -629,7 +629,7 @@ def main(argv=None):
     if a.manifest is None:
         a.manifest = Path(d1paths.workspace()) / 'manifest' / 'data' / 'world_en.sqlite'
     if a.legacy_table is None:
-        a.legacy_table = Path(os.environ.get('D1_TIGER', 'F:/d1/third-party/Blam-Network_tiger')) / LEGACY_TABLE
+        a.legacy_table = Path(os.environ.get('D1_TIGER') or d1paths.third_party() / 'Blam-Network_tiger') / LEGACY_TABLE
     with tempfile.TemporaryDirectory() as tmp:
         path = a.worlds_json
         if path is None:

@@ -1,14 +1,14 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $evidence=Join-Path $rt 'RESEARCH\JOIN178-native-replay001'
-. 'F:\d1\d1xenia\scripts\Final124RunHelpers.ps1'
+. '<D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1'
 $env:D1_LOCAL=$rt
 $env:D1_RPCS3=$rpc
 $env:VK_LAYER_GPUAV_ENABLE='0'
 $env:VK_LAYER_GPUAV_SAFE_MODE='0'
 $env:VK_INSTANCE_LAYERS='VK_LAYER_KHRONOS_validation'
-$env:VK_LAYER_PATH='F:\d1\<pc>-import\dev\validation-runtime-1.4.341.1'
+$env:VK_LAYER_PATH='<D1_ROOT>\<pc>-import\dev\validation-runtime-1.4.341.1'
 if(Get-CimInstance Win32_Process -Filter "Name='rpcs3.exe'"){throw 'RPCS3 is already running'}
 if(Test-Path -LiteralPath $evidence){throw 'Replay evidence directory already exists'}
 $saved=Get-Content -LiteralPath (Join-Path $rt 'SIGNON_LOCAL\logs\JOIN178-rsx-capture-result.json') -Raw|ConvertFrom-Json

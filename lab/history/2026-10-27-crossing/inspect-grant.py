@@ -1,7 +1,7 @@
 """Decode the owned grant with its build's codec; print only relevant field values."""
 import json, os, struct, subprocess
 from pathlib import Path
-root = Path(r'F:\d1\d1preservation-main')
+root = Path(r'<D1_ROOT>\d1preservation-main')
 env = dict(os.environ, D1_BUILDS=str(root/'capture-rig/builds.json'), D1_BUILD='later-56578')
 item = root/'capture-rig/builds/later-56578/grants/khvostov-3598.bin'
 args = [str(root/'d1-server/target/release/d1-oracle.exe'), '--json', 'object',

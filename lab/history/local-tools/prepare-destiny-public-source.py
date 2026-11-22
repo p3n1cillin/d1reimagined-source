@@ -4,8 +4,8 @@ from pathlib import Path
 import shutil
 import subprocess
 
-src = Path(r'F:\d1\d1preservation-main')
-target = Path(r'F:\d1\public-work\d1reimagined-source')
+src = Path(r'<D1_ROOT>\d1preservation-main')
+target = Path(r'<D1_ROOT>\public-work\d1reimagined-source')
 out = target / 'ps4'
 if out.exists(): raise SystemExit('Refusing an existing export')
 allowed = {'.rs','.toml','.lock','.md','.py','.sh','.proto','.h','.ps1','.java',
@@ -38,7 +38,7 @@ walk(src)
 # Record only source provenance and exclusion categories, not private directory inventories.
 (target/'docs').mkdir(exist_ok=True)
 receipt = {'date':'2026-10-12','private_project_commit':subprocess.check_output(
-    ['git','-C',r'F:\d1\d1xenia','rev-parse','HEAD']).decode().strip(),
+    ['git','-C',r'<D1_ROOT>\d1xenia','rev-parse','HEAD']).decode().strip(),
     'ps4_source':'User-supplied d1preservation-main source snapshot plus documented local fixes',
     'files':len(copied),'history_imported':False,'game_inputs_included':False,
     'exclusions':['game/firmware binaries','native derived fixtures and catalogues',

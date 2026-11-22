@@ -4,8 +4,8 @@ defaults (a full re-encode sends them present-and-zero: HUD opacity 0). Sub-obje
 codec (d1-oracle object --tag SUB --obj-file) and spliced in bit by bit.
     build-account2.py OUT [SLOT:CONTENT:QTY ...] [f7:IDX:CONTENT:QTY ...]"""
 import os, re, subprocess, sys
-ORACLE = r'F:\d1\public-work\target-claude\release\d1-oracle.exe'
-ENV = dict(os.environ, D1_BUILDS=r'F:\d1\d1preservation-main\capture-rig\builds.json', D1_BUILD='later-56578')
+ORACLE = r'<D1_ROOT>\public-work\target-claude\release\d1-oracle.exe'
+ENV = dict(os.environ, D1_BUILDS=r'<D1_ROOT>\d1preservation-main\capture-rig\builds.json', D1_BUILD='later-56578')
 HERE = os.path.dirname(os.path.abspath(__file__))
 QTY_FIELDS = tuple(int(x, 0) for x in os.environ.get('QTY_FIELDS', '0x10').split(','))  # entry offsets given the quantity
 ACCT, CHR, PROF = 0xD100000000000001, 0xD100000000000101, 0xD100000000000201

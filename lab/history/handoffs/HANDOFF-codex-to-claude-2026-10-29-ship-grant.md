@@ -5,7 +5,7 @@ schedule edits, game memory writes, process stops, public source edits or host
 builds. All outputs below are UNSERVED. Continue the original sense50 test;
 these are separate ship experiments.
 
-## Files under F:\d1\d1preservation-main\cfw-staging
+## Files under <D1_ROOT>\d1preservation-main\cfw-staging
 
 - `arcadia-3517-inventory.draft.bin`: client-encoded family4/type3 element,
   171 bytes /1367 bits; stable SYNTHETIC instance SOID **d1000000000003f1**.

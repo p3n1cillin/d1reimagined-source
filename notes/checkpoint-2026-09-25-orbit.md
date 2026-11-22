@@ -7,13 +7,13 @@ rainbow-distorted in places; that is a separate graphics issue.
 
 ## How to run
 
-- RPCS3 copy `D:\Destiny360\RPCS3_TEST048_SETUP` (XInput pad = Player 1, async shaders).
+- RPCS3 copy `<PS3_ROOT>\RPCS3_TEST048_SETUP` (XInput pad = Player 1, async shaders).
   Launch it directly (not `Invoke-Rpcs3LocalTest.ps1`, which makes a keyboard-pad copy).
 - Services: rpcn, `dns_sinkhole.py --destiny-hosts`, `stun_stub.py`, `signon_probe.py --mode
   auth3 --destiny-hosts --manifest-url http://content.local.test/manifest --manifest-packages
   ...\USRDIR\packages`, `lobby_probe.py --timeout 60`, and
-  `bap_server.py --ws-signin --schema D:\Destiny360\SIGNON_LOCAL\investment_schema_character.json
-  --store D:\Destiny360\SIGNON_LOCAL\characters.json`.
+  `bap_server.py --ws-signin --schema <PS3_ROOT>\SIGNON_LOCAL\investment_schema_character.json
+  --store <PS3_ROOT>\SIGNON_LOCAL\characters.json`.
 - The BAP stand-in can be restarted while the game shows an error; dismissing reconnects.
 - Debugging: start `scripts/rpcs3_gdb_daemon.py` right after RPCS3 and never kill it while
   RPCS3 runs (the stub serves one connection per emulator session; a second one freezes the
@@ -562,7 +562,7 @@ Full run (about 10 minutes):
   successful `--self-flags 2` baseline. An RPCS3 `PrintWindow` capture appeared stuck on a
   shader-preload screen, but the emulator's F12 screenshot at 13:51:43 showed banana. Use F12
   captures for the actual frame; `PrintWindow` may return an old frame. Test log:
-  `D:\Destiny360\SIGNON_LOCAL\logs\TEST198-bap.log`.
+  `<PS3_ROOT>\SIGNON_LOCAL\logs\TEST198-bap.log`.
 - RPCS3 upstream issue [#12802](https://github.com/RPCS3/rpcs3/issues/12802) (2022) reports
   a white square on the right in Destiny and says Force CPU Blit avoided an older RSX
   verification error but caused flicker/corruption. It is related evidence, not a confirmed fix
@@ -583,8 +583,8 @@ Full run (about 10 minutes):
   holding W for 800 ms it split again (14:12:11) and remained split at 14:13:01. A later live
   window capture showed the same split while a Level Up prompt appeared. Thus Host GPU Labels
   does not resolve the movement-triggered rendering fault. Screenshot files are under
-  `D:\Destiny360\RPCS3_TEST048_SETUP\screenshots\BLES01857\`; the service logs are
-  `D:\Destiny360\SIGNON_LOCAL\logs\TEST200-*.log`. The config was restored from
+  `<PS3_ROOT>\RPCS3_TEST048_SETUP\screenshots\BLES01857\`; the service logs are
+  `<PS3_ROOT>\SIGNON_LOCAL\logs\TEST200-*.log`. The config was restored from
   `config_BLES01857.before-test200.yml` (`Allow Host GPU Labels: false`, `Force CPU Blit: false`).
   A still-running TEST200 process retains its launch-time setting until restarted.
 - The next rendering diagnostic was to capture the bad frame with RPCS3's RSX capture facility
@@ -600,11 +600,11 @@ Full run (about 10 minutes):
   blocks behind the urgent-message dialog. Strict mode therefore does not fix the artifact.
   Restored the per-game config from `config_BLES01857.before-test201.yml` (strict false).
   RPCS3 `Utilities > Create RSX Capture` saved
-  `D:\Destiny360\RPCS3_TEST048_SETUP\captures\BLES01857_20260926143340_capture.rrc.gz`
+  `<PS3_ROOT>\RPCS3_TEST048_SETUP\captures\BLES01857_20260926143340_capture.rrc.gz`
   (42,555,130 bytes); `RPCS3.log` confirms capture success. The menu was accessible after
   completing the RPCS3 welcome dialog. `Utilities > Open RSX Capture` asks to close the running
   game; inspection of the capture is the next step. TEST201 service logs are in
-  `D:\Destiny360\SIGNON_LOCAL\logs\TEST201-*`.
+  `<PS3_ROOT>\SIGNON_LOCAL\logs\TEST201-*`.
 - TEST202 (run launched as "TEST199" in parallel with the other agent's TEST199; its logs were
   renamed to `TEST202-*`, the other agent's TEST199 service logs were overwritten - its result
   is recorded above): full mission run with `--self-flags 2`, tracing the unlock-expression
@@ -697,9 +697,9 @@ Full run (about 10 minutes):
   main-memory G-buffer the SPUs read (or flush the full surface on SPU DMA access), which needs
   a source build of RPCS3.
 - **RPCS3 source build** (2026-09-26): RPCS3 at our release commit b5a174e9 cloned to
-  `C:\dev\rpcs3` (submodules), Qt 6.11.2 msvc2022_64 from the Qt online repository (package
+  `<DEV_ROOT>\rpcs3` (submodules), Qt 6.11.2 msvc2022_64 from the Qt online repository (package
   archives downloaded directly: aqtinstall 3.3.0 does not know the 6.11 repository layout) to
-  `C:\dev\qt`, a minimal Vulkan SDK (`C:\dev\vulkansdk`: Vulkan-Headers v1.4.341 + an import
+  `<DEV_ROOT>\qt`, a minimal Vulkan SDK (`<DEV_ROOT>\vulkansdk`: Vulkan-Headers v1.4.341 + an import
   lib generated from `System32\vulkan-1.dll`), RPCS3's precompiled LLVM libs
   (`llvmlibs_mt.7z`, sha256 verified, extracted with 7-Zip's `7zr.exe`). `MSBuild rpcs3.sln
   /p:Configuration=Release` builds `bin\rpcs3.exe` in ~15 min (only the gtest test project
@@ -782,11 +782,11 @@ Full run (about 10 minutes):
   6. Bloom/downsample chain (512x312 MRT at 0xCE702000/0xCEA18000/0xCE540000) and composite.
   Magenta/black blocks plus a whole-screen exposure change fit NaN/Inf values in part of the
   HDR light buffer feeding the 1x1 exposure average. Next: a one-frame dump of every render
-  target (instrumented build, marker `C:/dev/d1dump.on`) during movement, to find the first
+  target (instrumented build, marker `<DEV_ROOT>/d1dump.on`) during movement, to find the first
   pass whose output has the blocks.
 - **Blocks traced to surface aliasing (TEST225).** The build can dump every render/depth
-  target of one frame when the RSX switches away from it (marker `C:/dev/d1dump.on`, output
-  `D:\Destiny360\d1dump\<id>\`, analysis `scripts/d1dump_scan.py`, driver
+  target of one frame when the RSX switches away from it (marker `<DEV_ROOT>/d1dump.on`, output
+  `<PS3_ROOT>\d1dump\<id>\`, analysis `scripts/d1dump_scan.py`, driver
   `scripts/Invoke-MoveDump.ps1`). In a broken frame, G-buffer, depth, stencil and the small
   passes are clean. The first light pass into 0xCEB60000 (1024x624 RGBA16F, pitch 8192) leaves
   exactly x 0-639, y 312-539 at zero, and the top rows 0-126 dark. Those byte ranges are the
@@ -873,7 +873,7 @@ Full run (about 10 minutes):
 - The instrumented build now traces PPU function entries under the LLVM decoder. Each compiled
   function below 0x2000000 checks a byte table at the fixed host address 0x6d0000000000
   (`d1diag::g_ppu_mask`, one byte per 4-byte PPU address) and calls `ppu_d1hit` when it is set.
-  The watch list is `C:/dev/d1ppu.txt`, re-read about once a second from the RSX flip. One watch
+  The watch list is `<DEV_ROOT>/d1ppu.txt`, re-read about once a second from the RSX flip. One watch
   per line: `ADDR [MAXHITS] [rN:LEN ...]` (hex address, default 50 hits, memory dumps at
   registers). Each hit logs `D1P <us> pc lr r1 r3-r10 chain <saved return addresses> mN=<hex>`.
   A line `coverage` arms every function for a single logged first call (`D1C <us> pc lr`), and
@@ -923,8 +923,8 @@ Full run (about 10 minutes):
   scripts need the keyboard pad: `scripts/Set-PadConfig.ps1 -Mode keyboard` before a run,
   `-Mode xinput` afterwards.
 - Deployed `rpcs3.exe` = the diagnostic build (rendering fix, memory fixes, D1T/D1DIAG/D1MEM
-  logging, PPU call hook, `C:/dev/d1noblitfix.on` switch); `rpcs3.orig.exe` = official.
-  `C:/dev/d1ppu.txt` holds no watches. RPCS3 and the loopback stand-ins are stopped.
+  logging, PPU call hook, `<DEV_ROOT>/d1noblitfix.on` switch); `rpcs3.orig.exe` = official.
+  `<DEV_ROOT>/d1ppu.txt` holds no watches. RPCS3 and the loopback stand-ins are stopped.
 
 ## World-state group peer (2026-09-27, after TEST253)
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 import ctypes,importlib.util,struct,json,datetime,sys
 P=Path(r'lab/history\2026-10-28-static-combat-codex')
-spec=importlib.util.spec_from_file_location('wg',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
+spec=importlib.util.spec_from_file_location('wg',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 p,base=g.open_client();reg=p.u(p.u(base+g.REGISTRY,'Q'),'Q')
 def resolve(tag):
  v=ctypes.c_int32(tag).value>>13;sl=(((v&0xffffffff)>>18)|0x3ff)&v&0xffffffff;r=reg+sl*64
@@ -13,6 +13,6 @@ for tag,fn,off,n in [(0x80cb9120,'owned-dockroute-80cb9120.bin',0x1360,0x40),(0x
   a=resolve(tag);expected=(P/fn).read_bytes()[off:off+n];actual=p.read(a+off,n);r={'tag':hex(tag),'off':hex(off),'bytes':n,'native_match':actual==expected,'address':hex(a+off)}
  except (OSError,AssertionError) as e:r={'tag':hex(tag),'error':str(e)}
  out['controls'].append(r)
-us=importlib.util.spec_from_file_location('unit',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1_unit_tracking.py');u=importlib.util.module_from_spec(us);sys.modules['unit']=u;us.loader.exec_module(u)
+us=importlib.util.spec_from_file_location('unit',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1_unit_tracking.py');u=importlib.util.module_from_spec(us);sys.modules['unit']=u;us.loader.exec_module(u)
 sample=u.read_unit_position(p,base);out['player_position']=sample.position if sample else None
 (P/'dockroute-native-checks.json').write_text(json.dumps(out,indent=2));print(json.dumps(out,indent=2))

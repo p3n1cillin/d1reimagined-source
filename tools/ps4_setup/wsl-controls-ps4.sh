@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Save each actual tool exit code; the overall run fails if any required control fails.
 set -uo pipefail
-cd /mnt/f/d1/d1preservation-main
+cd "${D1_REPO_LINUX:?set D1_REPO_LINUX to the WSL path of the workspace folder}"
 export D1_REPO="$PWD"
 out=cfw-staging/2026-10-11
 mkdir -p "$out"

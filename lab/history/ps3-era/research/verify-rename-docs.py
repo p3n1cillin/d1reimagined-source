@@ -4,7 +4,7 @@ import re
 import subprocess
 from datetime import datetime, timezone
 
-roots = [Path(r'F:\d1\d1xenia'), Path(r'F:\d1\d1xenia-data')]
+roots = [Path(r'<D1_ROOT>\d1xenia'), Path(r'<D1_ROOT>\d1xenia-data')]
 files = []
 broken = []
 for root in roots:
@@ -29,5 +29,5 @@ assert not broken, broken
 receipt = {'at': datetime.now(timezone.utc).isoformat(), 'readmes_reviewed': files,
            'readme_count': len(files), 'broken_local_links': broken,
            'brand_date_and_current_repository_links': 'PASS'}
-Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH\rename-readme-verification.json').write_text(json.dumps(receipt, indent=2))
+Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\rename-readme-verification.json').write_text(json.dumps(receipt, indent=2))
 print('Six README branding/date/current URL and relative-link checks PASS.')

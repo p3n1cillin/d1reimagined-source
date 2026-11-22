@@ -1,6 +1,6 @@
 """Scan the live client's eboot image for 8-byte pointers to the given eboot-relative targets."""
 import sys, struct
-src = open(r'F:\d1\tools\d1-winguest.py').read()
+src = open(r'<D1_ROOT>\tools\d1-winguest.py').read()
 wg = {'__name__': 'lib'}; exec(compile(src, 'd1-winguest.py', 'exec'), wg)
 p, base = wg['open_client']()
 targets = {base + int(a, 16): a for a in sys.argv[1:]}

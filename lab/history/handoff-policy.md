@@ -55,7 +55,7 @@ Use a machine-specific date folder. For the current development machine:\
 \\\<lan>\share\incoming\<lab-pc>\YYYY\MM\DD\\\<unique-package-id>.ready\
 \`\`\`\
 \
-The existing \`Y:\incoming\<lab-pc>\\...\` path can be used only after confirming Y: maps to that same share. Do not assume drive letters are identical on both PCs. Machine names, addresses and paths are private provenance, never public copy.\
+The existing \`<NAS_INCOMING>\<lab-pc>\\...\` path can be used only after confirming Y: maps to that same share. Do not assume drive letters are identical on both PCs. Machine names, addresses and paths are private provenance, never public copy.\
 \
 The existing importer requires schema version 1. A package is a directory containing \`metadata.json\`, \`hashes.json\` and every referenced media/report file. Prefer this layout:\
 \

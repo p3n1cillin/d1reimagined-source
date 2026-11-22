@@ -1,9 +1,9 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $logs=Join-Path $rt 'SIGNON_LOCAL\logs'
 $private=Join-Path $rt 'PRIVATE_ENGINEERING'
-. 'F:\d1\d1xenia\scripts\Final124RunHelpers.ps1'
+. '<D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1'
 function Read-Json([string]$path){ Get-Content -LiteralPath $path -Raw | ConvertFrom-Json }
 function Save-NewJson([string]$path,$value){
     $stream=[IO.File]::Open($path,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)

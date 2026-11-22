@@ -1,4 +1,4 @@
-cd /f/d1/public-work/d1reimagined-source
+cd <D1_ROOT>/public-work/d1reimagined-source
 S=lab/history/lab-scripts-2026-10-29
 T=$S/tracked-$1.json
 timeout 700 python -I -u tools/ps4_setup/d1-walk.py --tracked $T --route missions/routes/breach.json --max-seconds 640 > $S/walk-$1.log 2>&1; grep -E "done|stopped|fell" $S/walk-$1.log

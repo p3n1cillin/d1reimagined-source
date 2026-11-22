@@ -1,7 +1,7 @@
 #!/bin/bash
 # Walk the Divide crossing route from the nearest point to just outside the gate (native unit position).
 S=lab/history/lab-scripts-2026-10-29
-cd F:/d1/public-work/d1reimagined-sense
+cd <D1_ROOT>/public-work/d1reimagined-sense
 python -I -c "
 import importlib.util,json,math
 s=importlib.util.spec_from_file_location('w','tools/ps4_setup/d1-walk.py');w=importlib.util.module_from_spec(s);s.loader.exec_module(w)

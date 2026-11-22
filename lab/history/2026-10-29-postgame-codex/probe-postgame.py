@@ -1,11 +1,11 @@
 """One bounded read-only 56578 sample. Never writes game/control/schedule files."""
 import importlib.util,json,struct,sys,time,re
 from pathlib import Path
-sys.path.insert(0,r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup')
+sys.path.insert(0,r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup')
 from d1_squad_tracking import SquadReader
 sys.path.insert(0,r'lab/history\2026-10-28-static-combat-codex')
 import static56578 as st
-sp=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(sp);sp.loader.exec_module(g)
+sp=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(sp);sp.loader.exec_module(g)
 p,b=g.open_client();r=SquadReader(p,b);out={'time':time.time(),'base':hex(b)}
 for va in (0x56dc00,0x7976b0,0x574900,0x770ba0):assert p.read(b+va,24)==st.read(va,24),hex(va)
 sel=p.u(b+0x26bc068,'Q')

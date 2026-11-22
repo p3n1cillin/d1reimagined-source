@@ -5,16 +5,16 @@ Operating system: Windows, Major: 10, Minor: 0, Build: 26300, Service Pack: none
 Qt version: Compiled against Qt 6.11.2 | Run-time uses Qt 6.11.2
 Current Time: 2026-10-07T14:45:05
 Initialization times before main(): 0.140672Gc
-·! 0:00:00.000005 SYS: argc: 4, argv: 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe' '--no-gui' '--rsx-capture' 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz'
-·! 0:00:00.000353 SYS: argv_utf8: 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe' '--no-gui' '--rsx-capture' 'F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz'
+·! 0:00:00.000005 SYS: argc: 4, argv: '<D1_ROOT>\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe' '--no-gui' '--rsx-capture' '<D1_ROOT>\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz'
+·! 0:00:00.000353 SYS: argv_utf8: '<D1_ROOT>\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe' '--no-gui' '--rsx-capture' '<D1_ROOT>\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz'
 ·A 0:00:00.167388 {Vulkan Device Enumeration Thread} RSX: Found Vulkan-compatible GPU: 'NVIDIA GeForce RTX 2060 SUPER' running on driver 617.14.0.0
 ·! 0:00:00.168469 CFG: Setting the default renderer to Vulkan. Default GPU: 'NVIDIA GeForce RTX 2060 SUPER'
 ·! 0:00:00.168627 SYS: Option passed via command line: no-gui 
-·! 0:00:00.168630 SYS: Option passed via command line: rsx-capture F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz
+·! 0:00:00.168630 SYS: Option passed via command line: rsx-capture <D1_ROOT>\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz
 ·! 0:00:00.168924 UUID: Installation ID: {52497f52-3051-4522-b947-bd29be826cd4}
 ·! 0:00:00.284575 SYS: Setting user ID '00000001'
 ·A 0:00:00.284585 SYS: LLVM version: 22.1.8
-·! 0:00:00.292042 VFS: VFS config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/vfs.yml
+·! 0:00:00.292042 VFS: VFS config missing. Using default settings. Path: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/vfs.yml
 ·! 0:00:00.292096 SYS: Using VFS config:
 $(EmulatorDir): ""
 /dev_hdd0/: $(EmulatorDir)dev_hdd0/
@@ -31,23 +31,23 @@ $(EmulatorDir): ""
     Serial: ""
     VID: ""
     PID: ""
-·! 0:00:00.292175 VFS: Mounted path "/dev_hdd0" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_hdd0/"
-·! 0:00:00.292226 VFS: Mounted path "/dev_flash" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash/"
-·! 0:00:00.292272 VFS: Mounted path "/dev_flash2" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash2/"
-·! 0:00:00.292316 VFS: Mounted path "/dev_flash3" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash3/"
+·! 0:00:00.292175 VFS: Mounted path "/dev_hdd0" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_hdd0/"
+·! 0:00:00.292226 VFS: Mounted path "/dev_flash" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash/"
+·! 0:00:00.292272 VFS: Mounted path "/dev_flash2" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash2/"
+·! 0:00:00.292316 VFS: Mounted path "/dev_flash3" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash3/"
 ·! 0:00:00.292321 VFS: Mounted path "/app_home" to "//"
-·! 0:00:00.292402 VFS: Mounted path "/dev_usb000" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_usb000/"
-·! 0:00:00.292433 SYS: Applying global config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/config.yml
+·! 0:00:00.292402 VFS: Mounted path "/dev_usb000" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_usb000/"
+·! 0:00:00.292433 SYS: Applying global config: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/config.yml
 ·! 0:00:00.296843 SYS: Logged in as user '00000001' with the username 'User'
-·! 0:00:00.296980 IPC: IPC config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/ipc.yml
+·! 0:00:00.296980 IPC: IPC config missing. Using default settings. Path: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/ipc.yml
 ·! 0:00:00.296992 SYS: Using IPC config:
 IPC Server enabled: false
 IPC Port: 28012
 ·A 0:00:00.297063 SYS: Firmware version: 4.60
 ·! 0:00:00.298317 SYS: get_one_drive_paths: Found OneDrive registry path: '%USERPROFILE%\OneDrive' (key='Software\Microsoft\OneDrive\Accounts\Personal')
 ·! 0:00:00.298632 SYS: New timer resolution: 500 us (old=1000 us, min=15625 us, max=500 us)
-·! 0:00:00.298644 SYS: Booting rsx capture from command line: F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz
-·! 0:00:00.448343 VFS: VFS config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/vfs.yml
+·! 0:00:00.298644 SYS: Booting rsx capture from command line: <D1_ROOT>\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\captures\BLES01857_20261007142325_capture.rrc.gz
+·! 0:00:00.448343 VFS: VFS config missing. Using default settings. Path: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/vfs.yml
 ·! 0:00:00.448399 SYS: Using VFS config:
 $(EmulatorDir): ""
 /dev_hdd0/: $(EmulatorDir)dev_hdd0/
@@ -64,15 +64,15 @@ $(EmulatorDir): ""
     Serial: ""
     VID: ""
     PID: ""
-·! 0:00:00.448481 VFS: Mounted path "/dev_hdd0" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_hdd0/"
-·! 0:00:00.448528 VFS: Mounted path "/dev_flash" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash/"
-·! 0:00:00.448572 VFS: Mounted path "/dev_flash2" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash2/"
-·! 0:00:00.448615 VFS: Mounted path "/dev_flash3" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash3/"
+·! 0:00:00.448481 VFS: Mounted path "/dev_hdd0" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_hdd0/"
+·! 0:00:00.448528 VFS: Mounted path "/dev_flash" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash/"
+·! 0:00:00.448572 VFS: Mounted path "/dev_flash2" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash2/"
+·! 0:00:00.448615 VFS: Mounted path "/dev_flash3" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_flash3/"
 ·! 0:00:00.448620 VFS: Mounted path "/app_home" to "//"
-·! 0:00:00.448701 VFS: Mounted path "/dev_usb000" to "F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_usb000/"
-·! 0:00:00.448735 SYS: Applying global config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/config.yml
+·! 0:00:00.448701 VFS: Mounted path "/dev_usb000" to "<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/dev_usb000/"
+·! 0:00:00.448735 SYS: Applying global config: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/config.yml
 ·! 0:00:00.452979 SYS: Logged in as user '00000001' with the username 'User'
-·! 0:00:00.453082 IPC: IPC config missing. Using default settings. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/ipc.yml
+·! 0:00:00.453082 IPC: IPC config missing. Using default settings. Path: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/ipc.yml
 ·! 0:00:00.453093 SYS: Using IPC config:
 IPC Server enabled: false
 IPC Port: 28012
@@ -89,13 +89,13 @@ vm::g_reservations = 00007ff699f8d000 - 00007ff699f94fff
 ·E 0:00:00.467171 PPU: PPU Cache location not initialized.
 ·! 0:00:00.471611 IPv6_layer: is_ipv6_supported(): disabled cause: force-disabled through config
 ·! 0:00:00.471689 sys_net: P2P port 3658 was bound!
-·! 0:00:00.471826 rpcn: Loading RPCN config. Path: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/rpcn.yml
+·! 0:00:00.471826 rpcn: Loading RPCN config. Path: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/rpcn.yml
 ·! 0:00:00.471982 cellSysutil: cellAudioOut: found support for Linear PCM 2 Ch.
 ·! 0:00:00.471984 cellSysutil: cellAudioOut: added primary mode: type=0, channel=2, fs=4, layout=1
 ·! 0:00:00.471986 cellSysutil: cellAudioOut: added secondary mode: type=0, channel=2, fs=4, layout=1
 ·! 0:00:00.471986 cellSysutil: cellAudioOut: initial primary output configuration: channels=2, encoder=0, downmixer=0
 ·! 0:00:00.471987 cellSysutil: cellAudioOut: initial secondary output configuration: channels=2, encoder=0, downmixer=0
-·! 0:00:00.483122 CFG: Loading usio config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/usio.yml
+·! 0:00:00.483122 CFG: Loading usio config: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/usio.yml
 ·! 0:00:00.483766 sys_usbd: USIO config=
 
 ·S 0:00:00.483773 sys_usbd: Emulating device: Skylanders Portal (1)
@@ -103,12 +103,12 @@ vm::g_reservations = 00007ff699f8d000 - 00007ff699f94fff
 ·S 0:00:00.483788 sys_usbd: Emulating device: Lego Dimensions Portal (1)
 ·S 0:00:00.483795 sys_usbd: Emulating device: Kamen Rider Summonride Portal (1)
 ·S 0:00:00.483807 sys_usbd: Emulating device: lgFF_c283_c29b (1)
-·! 0:00:00.483823 CFG: Loading LogitechG27 config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/LogitechG27.yml
+·! 0:00:00.483823 CFG: Loading LogitechG27 config: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/LogitechG27.yml
 ·S 0:00:00.484460 sys_usbd: Emulating device: PS3A-USJ (1)
 ·! 0:00:00.484693 Music: Constructing Qt music handler...
-·! 0:00:00.503283 CFG: Loading gem_real config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem_real.yml
-·! 0:00:00.503533 CFG: Loading gem config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem.yml
-·! 0:00:00.504085 CFG: Loading gem_mouse config: F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem_mouse.yml
+·! 0:00:00.503283 CFG: Loading gem_real config: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem_real.yml
+·! 0:00:00.503533 CFG: Loading gem config: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem.yml
+·! 0:00:00.504085 CFG: Loading gem_mouse config: <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/gem_mouse.yml
 ·! 0:00:00.505296 cellGem: Real gem config=Player 1:
   Start: Start
   Select: Select
@@ -464,7 +464,7 @@ Player 4:
 ·! 0:00:00.506385 {Gem Thread} cellGem: Starting thread
 ·! 0:00:00.507123 GUI: gui_application: Creating new game window
 ·! 0:00:00.507139 GUI: gui_application: game window geometry: x=0, y=0, w=2560, h=1080, screen=0, resize=0, manually=1
-·! 0:00:00.507183 CFG: Loading recording config from 'F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/recording.yml'
+·! 0:00:00.507183 CFG: Loading recording config from '<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/recording.yml'
 ·! 0:00:00.507381 GUI: Using recording config:
 Video:
   Framerate: 30
@@ -485,34 +485,34 @@ Audio:
 ·! 0:00:00.509830 {cellAudio Thread} cellAudio: cellAudio initializing. Backend: Cubeb
 ·! 0:00:00.509833 {cellAudio Thread} Cubeb: Trying to open default device
 ·! 0:00:00.509834 {cellAudio Thread} Cubeb: Searching for default device
-·! 0:00:00.525726 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{086dc989-c606-4ea1-8cd3-1da9cbf69978}" (PREFERRED)
+·! 0:00:00.525726 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{086dc989-c606-4ea1-8cd3-1da9cbf69978}" (PREFERRED)
 	Name:	"Headphones (2- Arctis Nova 7)"
 	Group:	"USB\VID_1038&PID_2202&MI_00\7&1fe88594&0&0000"
 	Vendor:	"(
-·! 0:00:00.525737 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{42122191-4642-4d34-ae64-333cb898afed}"
+·! 0:00:00.525737 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{42122191-4642-4d34-ae64-333cb898afed}"
 	Name:	"Realtek Digital Output (Realtek(R) Audio)"
 	Group:	"HDAUDIO\FUNC_01&VEN_10EC&DEV_0887&SUBSYS_1458A182&REV_1003
-·! 0:00:00.525740 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{6d466fa4-fbae-474e-92bc-c19fd4746de5}"
+·! 0:00:00.525740 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{6d466fa4-fbae-474e-92bc-c19fd4746de5}"
 	Name:	"Speakers (Realtek(R) Audio)"
 	Group:	"HDAUDIO\FUNC_01&VEN_10EC&DEV_0887&SUBSYS_1458A182&REV_1003\5&18339b10&0&
-·! 0:00:00.525742 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{d4f8c637-2eb4-4bfd-95e0-a04146061710}"
+·! 0:00:00.525742 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb.c:727:DeviceID: "{0.0.0.00000000}.{d4f8c637-2eb4-4bfd-95e0-a04146061710}"
 	Name:	"Optix G24C (NVIDIA High Definition Audio)"
 	Group:	"HDAUDIO\FUNC_01&VEN_10DE&DEV_0093&SUBSYS_1462C757&REV_1001
 ·! 0:00:00.525743 {cellAudio Thread} Cubeb: Found 4 possible output devices
 ·! 0:00:00.525744 {cellAudio Thread} Cubeb: Found device '{0.0.0.00000000}.{086dc989-c606-4ea1-8cd3-1da9cbf69978}' with 2 channels
 ·! 0:00:00.525745 {cellAudio Thread} Cubeb: Channel count is 2
-·! 0:00:00.528630 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:1912:default device period: 100000, minimum device period: 30000
-·! 0:00:00.528634 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:1927:Minimum latency in frames: 480
-·! 0:00:00.528662 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2617:(000001DD7F6A9550) Setup render: device=000001DD4A0EBE70
-·! 0:00:00.529906 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2333:Setup requested=[f=2 r=48000 c=2 l=3] mix=[f=2 r=48000 c=2 l=3]
-·! 0:00:00.534738 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2431:Buffer size is: 1056 for render
+·! 0:00:00.528630 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:1912:default device period: 100000, minimum device period: 30000
+·! 0:00:00.528634 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:1927:Minimum latency in frames: 480
+·! 0:00:00.528662 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2617:(000001DD7F6A9550) Setup render: device=000001DD4A0EBE70
+·! 0:00:00.529906 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2333:Setup requested=[f=2 r=48000 c=2 l=3] mix=[f=2 r=48000 c=2 l=3]
+·! 0:00:00.534738 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2431:Buffer size is: 1056 for render
 
-·! 0:00:00.534962 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2668:Target sample rate: 48000
-·! 0:00:00.534974 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_resampler_internal.h:553:Input and output sample-rate match, target rate of 48000Hz
-·! 0:00:00.535102 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2898:Stream init successful (000001DD7F6A9550)
+·! 0:00:00.534962 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2668:Target sample rate: 48000
+·! 0:00:00.534974 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_resampler_internal.h:553:Input and output sample-rate match, target rate of 48000Hz
+·! 0:00:00.535102 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:2898:Stream init successful (000001DD7F6A9550)
 ·! 0:00:00.535560 {cellAudio Thread} Cubeb: Stream started
-·! 0:00:00.535690 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:3158:GetStreamLatency returned 0, using workaround.
-·! 0:00:00.535697 {cellAudio Thread} Cubeb: Cubeb log: F:\d1\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:3166:Output latency 0 frames.
+·! 0:00:00.535690 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:3158:GetStreamLatency returned 0, using workaround.
+·! 0:00:00.535697 {cellAudio Thread} Cubeb: Cubeb log: <D1_ROOT>\<pc>-import\dev\rpcs3\3rdparty\cubeb\cubeb\src\cubeb_wasapi.cpp:3166:Output latency 0 frames.
 ·! 0:00:00.535699 {cellAudio Thread} cellAudio: Opened audio backend (sampling_rate=48000, sample_size=4, channels=2, layout=Stereo)
 ·! 0:00:00.600525 GUI: Registering device notifications...
 ·A 0:00:00.641570 RSX: Found Vulkan-compatible GPU: 'NVIDIA GeForce RTX 2060 SUPER' running on driver 617.14.0.0
@@ -543,9 +543,9 @@ Audio:
 ·! 0:00:00.794999 RSX: Async pipeline compiler auto-selected 8 worker(s) for 16 host thread(s).
 ·! 0:00:00.806228 {Pad Thread} Input: Using input configuration: 'Default' (override='')
 ·! 0:00:00.806236 {Pad Thread} Input: Loading pad config (title_id='', config_file='Default', strict=0)
-·! 0:00:00.806366 {Pad Thread} Input: Loading input configuration: 'F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/input_configs/global/Default.yml'
+·! 0:00:00.806366 {Pad Thread} Input: Loading input configuration: '<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/input_configs/global/Default.yml'
 ·! 0:00:00.809348 {Pad Thread} Input: Loading pad config (title_id='', config_file='Default', strict=0)
-·! 0:00:00.809432 {Pad Thread} Input: Loading input configuration: 'F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/input_configs/global/Default.yml'
+·! 0:00:00.809432 {Pad Thread} Input: Loading input configuration: '<D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/config/input_configs/global/Default.yml'
 ·! 0:00:00.812890 {Pad Thread} Input: Pad 0: device='XInput Pad #1', handler=XInput, VID=0x54c, PID=0x268, class_type=0x0, class_profile=0x0
 ·! 0:00:00.813116 {Pad Thread} Input: Pad 0: config=
 Handler: XInput
@@ -1439,7 +1439,7 @@ Buddy Device: ""
 ·W 0:00:20.689891 {RSX [0x1000ca10]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
 ·! 0:00:20.708247 {TID: 16416} SCREENSHOT: Taking screenshot (1280x720)
 ·W 0:00:20.714369 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
-·S 0:00:20.743526 {TID: 16416} SCREENSHOT: Successfully saved screenshot to F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/screenshots/screenshot_2026_10_07_14_45_26.png
+·S 0:00:20.743526 {TID: 16416} SCREENSHOT: Successfully saved screenshot to <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/screenshots/screenshot_2026_10_07_14_45_26.png
 ·W 0:00:20.746586 {RSX [0x1000b170]} D1: D1MEM surface=54M texture=34M scratch=20M system=338M swapchain=0M device_local=206M host_visible=281M tex_unreleased=32 tex_mem=54M tex_tmp=18M rtt_active=15M rtt_invalidated=31 programs=+48/-0 dsets=87 released=0
 ·W 0:00:20.753753 {RSX [0x1000ca10]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
 ·W 0:00:20.780530 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
@@ -1786,7 +1786,7 @@ Buddy Device: ""
 ·W 0:00:31.112320 {RSX [0x1000ca10]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
 ·! 0:00:31.131847 {TID: 20376} SCREENSHOT: Taking screenshot (1280x720)
 ·W 0:00:31.137129 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
-·S 0:00:31.166519 {TID: 20376} SCREENSHOT: Successfully saved screenshot to F:/d1/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/screenshots/screenshot_2026_10_07_14_45_36.png
+·S 0:00:31.166519 {TID: 20376} SCREENSHOT: Successfully saved screenshot to <D1_ROOT>/<pc>-import/d1xenia/local/RPCS3_FINAL124_SMOKE001/screenshots/screenshot_2026_10_07_14_45_36.png
 ·W 0:00:31.177589 {RSX [0x1000ca10]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)
 ·W 0:00:31.205809 {RSX Replay} sys_rsx: sys_rsx_context_attribute(context_id=0x55555555, package_id=0x1, a3=0x10000000, a4=0x10000000, a5=0x0, a6=0x0)
 ·W 0:00:31.248953 {RSX [0x1000ca10]} RSX: Cached object for address 0xCF8C6000 was found, but it does not match stored parameters (width=16 vs 256; height=16 vs 16; depth=16 vs 1; mipmaps=1 vs 1)

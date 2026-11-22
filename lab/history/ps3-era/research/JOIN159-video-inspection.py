@@ -6,11 +6,11 @@ import subprocess
 import shutil
 import sys
 
-sys.path.insert(0, r'F:\d1\d1xenia')
-sys.path.insert(0, r'F:\d1\d1xenia\tools\content_capture')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\tools\content_capture')
 from tools.content_capture.capture import validate_video
 
-rt = Path(r'F:\d1\<pc>-import\d1xenia\local')
+rt = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 buffer_source = rt / 'content-capture/buffer/3958f8a7799b4a13808f094a41fb0da4.mp4'
 source = rt / 'RESEARCH/JOIN159-preserved-native-20261007T074231.mp4'
 expected_hash = 'e94c1315bce52616839ff559ac7b9c508a0a822f9be994112a79cc6fd68096c4'

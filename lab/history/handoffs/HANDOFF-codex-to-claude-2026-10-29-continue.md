@@ -8,7 +8,7 @@ native calls, memory writes, host builds, process stops or public commits.
 
 ## First: scoreboard draft is ready for your sense50 test
 
-`F:\d1\d1preservation-main\cfw-staging\agr-postgame-scoreboard.draft.txt`
+`<D1_ROOT>\d1preservation-main\cfw-staging\agr-postgame-scoreboard.draft.txt`
 
 One kind15 row, synthetic 50 kills /15 precision /2 deaths; authority13,2,0;
 NO phase7 directive. Owned object codec round trip IDENTICAL, full current
@@ -123,7 +123,7 @@ If session creation refreshes MM configuration, the implemented contract is:
 
 Current source: `ps4\d1-server\crates\d1-bap\src\matchmaking.rs` and
 `d1-responder\src\main.rs:4051` under
-`F:\d1\public-work\d1reimagined-sense`. These handlers already exist.
+`<D1_ROOT>\public-work\d1reimagined-sense`. These handlers already exist.
 
 The responder writes D1_ACTIVITY_FOLLOW_FILE ONLY from a kind4 request's
 activity key. The AH reads the same path via D1_AH_ACTIVITY_FOLLOW_FILE,

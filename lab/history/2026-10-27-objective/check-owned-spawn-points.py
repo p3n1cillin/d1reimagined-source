@@ -1,8 +1,8 @@
 import json,os,struct,subprocess
 from pathlib import Path
 root=Path(__file__).parent
-env=dict(os.environ,D1_BUILDS=r'F:\d1\d1preservation-main\capture-rig\builds.json',D1_BUILD='later-56578')
-oracle=r'F:\d1\public-work\d1reimagined-source\ps4\d1-server\target\release\d1-oracle.exe'
+env=dict(os.environ,D1_BUILDS=r'<D1_ROOT>\d1preservation-main\capture-rig\builds.json',D1_BUILD='later-56578')
+oracle=r'<D1_ROOT>\public-work\d1reimagined-source\ps4\d1-server\target\release\d1-oracle.exe'
 rows=[]
 for tag in (0x80cc380d,0x80cc3810,0x80cc3811,0x80cc3812,0x80cc3813):
     out=root/f'owned-spawn-{tag:08x}.bin'

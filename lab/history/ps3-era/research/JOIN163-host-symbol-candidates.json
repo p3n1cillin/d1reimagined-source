@@ -15,7 +15,7 @@
   ],
   "symbol_modules": [
     {
-      "name": "F:\\d1\\<pc>-import\\dev\\rpcs3\\bin\\rpcs3.exe",
+      "name": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\bin\\rpcs3.exe",
       "result": 140701460201472
     },
     {
@@ -39,7 +39,7 @@
       "result": 140721459560448
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\opencv_world4140.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\opencv_world4140.dll",
       "result": 140719497805824
     },
     {
@@ -135,11 +135,11 @@
       "result": 140721501634560
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Gui.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Gui.dll",
       "result": 140719441707008
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Core.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Core.dll",
       "result": 140719451340800
     },
     {
@@ -147,27 +147,27 @@
       "result": 140721468342272
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Widgets.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Widgets.dll",
       "result": 140719471853568
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Concurrent.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Concurrent.dll",
       "result": 140720886579200
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Multimedia.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Multimedia.dll",
       "result": 140719494725632
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6MultimediaWidgets.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6MultimediaWidgets.dll",
       "result": 140720879435776
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Svg.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Svg.dll",
       "result": 140719591849984
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6SvgWidgets.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6SvgWidgets.dll",
       "result": 140720802234368
     },
     {
@@ -251,7 +251,7 @@
       "result": 140720896147456
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Network.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\Qt6Network.dll",
       "result": 140719492628480
     },
     {
@@ -339,7 +339,7 @@
       "result": 140721458642944
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\qt6\\plugins\\platforms\\qwindows.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\qt6\\plugins\\platforms\\qwindows.dll",
       "result": 140719470804992
     },
     {
@@ -391,7 +391,7 @@
       "result": 140720717168640
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\qt6\\plugins\\styles\\qmodernwindowsstyle.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\qt6\\plugins\\styles\\qmodernwindowsstyle.dll",
       "result": 140719481290752
     },
     {
@@ -451,7 +451,7 @@
       "result": 140718765965312
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\qt6\\plugins\\imageformats\\qico.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\qt6\\plugins\\imageformats\\qico.dll",
       "result": 140720744431616
     },
     {
@@ -519,7 +519,7 @@
       "result": 140721429544960
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\qt6\\plugins\\multimedia\\ffmpegmediaplugin.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\qt6\\plugins\\multimedia\\ffmpegmediaplugin.dll",
       "result": 140719392030720
     },
     {
@@ -539,23 +539,23 @@
       "result": 140720886317056
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\swresample-5.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\swresample-5.dll",
       "result": 140719481028608
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\swscale-8.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\swscale-8.dll",
       "result": 140719368765440
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\avformat-61.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\avformat-61.dll",
       "result": 140719369617408
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\avutil-59.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\avutil-59.dll",
       "result": 140719350677504
     },
     {
-      "name": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\avcodec-61.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\avcodec-61.dll",
       "result": 140719372304384
     },
     {
@@ -571,7 +571,7 @@
       "result": 140721416896512
     },
     {
-      "name": "F:\\d1\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll",
+      "name": "<D1_ROOT>\\<pc>-import\\dev\\validation-runtime-1.4.341.1\\VkLayer_khronos_validation.dll",
       "result": 140719252897792
     },
     {
@@ -704,7 +704,7 @@
           "module_offset": "0xbdbda6",
           "symbol": "gui_application::exec",
           "displacement": "0x276",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\rpcs3qt\\gui_application.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\rpcs3qt\\gui_application.cpp",
           "source_line": 274
         },
         {
@@ -754,7 +754,7 @@
           "module_offset": "0xb319c5",
           "symbol": "run_rpcs3",
           "displacement": "0x5155",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\rpcs3.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\rpcs3.cpp",
           "source_line": 1388
         },
         {
@@ -848,7 +848,7 @@
           "module_offset": "0x10bc0fa",
           "symbol": "`logs::file_writer::file_writer'::`2'::<lambda_1>::operator()",
           "displacement": "0x1ca",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\logs.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\logs.cpp",
           "source_line": 527
         },
         {
@@ -868,7 +868,7 @@
           "module_offset": "0x10bb19e",
           "symbol": "std::thread::_Invoke<std::tuple<`logs::file_writer::file_writer'::`2'::<lambda_1> >,0>",
           "displacement": "0xe",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
           "source_line": 61
         },
         {
@@ -966,7 +966,7 @@
           "module_offset": "0x10abde4",
           "symbol": "Discord_UpdateConnection",
           "displacement": "0x14",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\discord-rpc\\discord-rpc\\src\\discord_rpc.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\discord-rpc\\discord-rpc\\src\\discord_rpc.cpp",
           "source_line": 136
         },
         {
@@ -976,7 +976,7 @@
           "module_offset": "0x10abae3",
           "symbol": "`IoThreadHolder::Start'::`2'::<lambda_1>::operator()",
           "displacement": "0x163",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\discord-rpc\\discord-rpc\\src\\discord_rpc.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\discord-rpc\\discord-rpc\\src\\discord_rpc.cpp",
           "source_line": 96
         },
         {
@@ -986,7 +986,7 @@
           "module_offset": "0x10ab64e",
           "symbol": "std::thread::_Invoke<std::tuple<`IoThreadHolder::Start'::`2'::<lambda_1> >,0>",
           "displacement": "0xe",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
           "source_line": 61
         },
         {
@@ -1026,7 +1026,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -1044,7 +1044,7 @@
           "module_offset": "0x119f81d",
           "symbol": "rsx::overlays::message_item::message_item<enum localized_string_id>",
           "displacement": "0x43d",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\Overlays\\overlay_message.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\Overlays\\overlay_message.cpp",
           "source_line": 63
         },
         {
@@ -1062,7 +1062,7 @@
           "module_offset": "0x151eb4f",
           "symbol": "progress_dialog_string_t::get_string_ptr",
           "displacement": "0x3f",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\scoped_progress_dialog.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\scoped_progress_dialog.cpp",
           "source_line": 7
         },
         {
@@ -1112,7 +1112,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -1164,7 +1164,7 @@
           "module_offset": "0x10db7b8",
           "symbol": "thread_ctrl::wait_until",
           "displacement": "0x88",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3161
         },
         {
@@ -1174,7 +1174,7 @@
           "module_offset": "0x1264db8",
           "symbol": "progress_dialog_server::operator()",
           "displacement": "0xb78",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\system_progress.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\system_progress.cpp",
           "source_line": 196
         },
         {
@@ -1222,7 +1222,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -1256,7 +1256,7 @@
           "module_offset": "0x765be6",
           "symbol": "std::basic_string<char,std::char_traits<char>,std::allocator<char> >::resize",
           "displacement": "0x66",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\xstring",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\xstring",
           "source_line": 2303
         },
         {
@@ -1314,7 +1314,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -1356,7 +1356,7 @@
           "module_offset": "0x10db7b8",
           "symbol": "thread_ctrl::wait_until",
           "displacement": "0x88",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3161
         },
         {
@@ -1366,7 +1366,7 @@
           "module_offset": "0x14705f3",
           "symbol": "perf_monitor::operator()",
           "displacement": "0xb3",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\perf_monitor.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\perf_monitor.cpp",
           "source_line": 38
         },
         {
@@ -1412,7 +1412,7 @@
           "module_offset": "0x12c3d20",
           "symbol": "rpcn::rpcn_client::rpcn_thread",
           "displacement": "0x8d0",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
           "source_line": 608
         },
         {
@@ -1438,7 +1438,7 @@
           "module_offset": "0xae147f",
           "symbol": "std::thread::_Invoke<std::tuple<void (__cdecl sdl_camera_video_sink::*)(void),sdl_camera_video_sink *>,0,1>",
           "displacement": "0xf",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
           "source_line": 61
         },
         {
@@ -1478,7 +1478,7 @@
           "module_offset": "0xa2ab13",
           "symbol": "EmbedReceive",
           "displacement": "0x33",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\wolfssl\\wolfssl\\src\\wolfio.c",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\wolfssl\\wolfssl\\src\\wolfio.c",
           "source_line": 435
         },
         {
@@ -1488,7 +1488,7 @@
           "module_offset": "0x9f2b96",
           "symbol": "GetInputData",
           "displacement": "0xe6",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\wolfssl\\wolfssl\\src\\internal.c",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\wolfssl\\wolfssl\\src\\internal.c",
           "source_line": 22723
         },
         {
@@ -1516,7 +1516,7 @@
           "module_offset": "0xa2c18c",
           "symbol": "WOLFSSL_ERROR",
           "displacement": "0x3c",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\wolfssl\\wolfssl\\wolfcrypt\\src\\logging.c",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\wolfssl\\wolfssl\\wolfcrypt\\src\\logging.c",
           "source_line": 1811
         },
         {
@@ -1526,7 +1526,7 @@
           "module_offset": "0x9d2cb8",
           "symbol": "wolfSSL_read",
           "displacement": "0x2e8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\wolfssl\\wolfssl\\src\\ssl.c",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\wolfssl\\wolfssl\\src\\ssl.c",
           "source_line": 1993
         },
         {
@@ -1536,7 +1536,7 @@
           "module_offset": "0x12c2268",
           "symbol": "rpcn::rpcn_client::recvn",
           "displacement": "0xf8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
           "source_line": 819
         },
         {
@@ -1546,7 +1546,7 @@
           "module_offset": "0xacccb6",
           "symbol": "std::vector<unsigned char,std::allocator<unsigned char> >::resize",
           "displacement": "0x106",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\vector",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\vector",
           "source_line": 1633
         },
         {
@@ -1556,7 +1556,7 @@
           "module_offset": "0x12befdf",
           "symbol": "rpcn::rpcn_client::handle_input",
           "displacement": "0x2f",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
           "source_line": 621
         },
         {
@@ -1584,7 +1584,7 @@
           "module_offset": "0x12c3283",
           "symbol": "rpcn::rpcn_client::rpcn_reader_thread",
           "displacement": "0xe3",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
           "source_line": 407
         },
         {
@@ -1594,7 +1594,7 @@
           "module_offset": "0xae147f",
           "symbol": "std::thread::_Invoke<std::tuple<void (__cdecl sdl_camera_video_sink::*)(void),sdl_camera_video_sink *>,0,1>",
           "displacement": "0xf",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
           "source_line": 61
         },
         {
@@ -1644,7 +1644,7 @@
           "module_offset": "0x12c3fc9",
           "symbol": "rpcn::rpcn_client::rpcn_writer_thread",
           "displacement": "0x99",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\rpcn_client.cpp",
           "source_line": 422
         },
         {
@@ -1654,7 +1654,7 @@
           "module_offset": "0xae147f",
           "symbol": "std::thread::_Invoke<std::tuple<void (__cdecl sdl_camera_video_sink::*)(void),sdl_camera_video_sink *>,0,1>",
           "displacement": "0xf",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\thread",
           "source_line": 61
         },
         {
@@ -1702,7 +1702,7 @@
           "module_offset": "0x753365",
           "symbol": "windows_iocp_thread",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\libusb\\libusb\\libusb\\os\\windows_common.c",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\libusb\\libusb\\libusb\\os\\windows_common.c",
           "source_line": 451
         },
         {
@@ -1758,7 +1758,7 @@
           "module_offset": "0x75b055",
           "symbol": "windows_event_thread_main",
           "displacement": "0x215",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\libusb\\libusb\\libusb\\os\\windows_hotplug.c",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\libusb\\libusb\\libusb\\os\\windows_hotplug.c",
           "source_line": 237
         },
         {
@@ -1800,7 +1800,7 @@
           "module_offset": "0x75b0c0",
           "symbol": "windows_proc_callback",
           "displacement": "0x0",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\libusb\\libusb\\libusb\\os\\windows_hotplug.c",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\libusb\\libusb\\libusb\\os\\windows_hotplug.c",
           "source_line": 266
         },
         {
@@ -1846,7 +1846,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -1920,7 +1920,7 @@
           "module_offset": "0x1911efa",
           "symbol": "std::_Func_impl_no_alloc<`music_state::music_state'::`2'::<lambda_3>,void>::_Do_call",
           "displacement": "0x14a",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\functional",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\functional",
           "source_line": 1005
         },
         {
@@ -1962,7 +1962,7 @@
           "module_offset": "0xab8e5e",
           "symbol": "named_thread<std::function<void __cdecl(void)> >::entry_point",
           "displacement": "0x7e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -2010,7 +2010,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -2140,7 +2140,7 @@
           "module_offset": "0x1132782",
           "symbol": "gem_config_data::operator()",
           "displacement": "0x272",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellGem.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellGem.cpp",
           "source_line": 1475
         },
         {
@@ -2194,7 +2194,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -2276,7 +2276,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -2318,7 +2318,7 @@
           "module_offset": "0x11215a2",
           "symbol": "camera_context::operator()",
           "displacement": "0x4c2",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellCamera.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellCamera.cpp",
           "source_line": 1758
         },
         {
@@ -2380,7 +2380,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -2438,7 +2438,7 @@
           "module_offset": "0x75a724",
           "symbol": "libusb_handle_events_timeout_completed",
           "displacement": "0x11f4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\libusb\\libusb\\libusb\\io.c",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\libusb\\libusb\\libusb\\io.c",
           "source_line": 2377
         },
         {
@@ -2456,7 +2456,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -2514,7 +2514,7 @@
           "module_offset": "0x11ad06a",
           "symbol": "usb_handler_thread::operator()",
           "displacement": "0x1ea",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_usbd.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_usbd.cpp",
           "source_line": 717
         },
         {
@@ -2568,7 +2568,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -2642,7 +2642,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -2692,7 +2692,7 @@
           "module_offset": "0x117db6e",
           "symbol": "cell_audio_thread::operator()",
           "displacement": "0x67e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellAudio.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellAudio.cpp",
           "source_line": 864
         },
         {
@@ -2754,7 +2754,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -2846,7 +2846,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -2896,7 +2896,7 @@
           "module_offset": "0x12d3993",
           "symbol": "np::np_handler::operator()",
           "displacement": "0xf53",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\np_handler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\np_handler.cpp",
           "source_line": 1137
         },
         {
@@ -2944,7 +2944,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -3010,7 +3010,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -3028,7 +3028,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -3070,7 +3070,7 @@
           "module_offset": "0x119daee",
           "symbol": "named_thread<rsx::overlays::display_manager::overlay_input_thread>::entry_point",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -3126,7 +3126,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -3192,7 +3192,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -3210,7 +3210,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -3252,7 +3252,7 @@
           "module_offset": "0x119daee",
           "symbol": "named_thread<rsx::overlays::display_manager::overlay_input_thread>::entry_point",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -3308,7 +3308,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -3390,7 +3390,7 @@
           "module_offset": "0x1816ffa",
           "symbol": "tcp_timeout_monitor::operator()",
           "displacement": "0xca",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\lv2_socket_p2ps.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\lv2_socket_p2ps.cpp",
           "source_line": 98
         },
         {
@@ -3470,7 +3470,7 @@
           "module_offset": "0x75e3ec",
           "symbol": "std::basic_string<char,std::char_traits<char>,std::allocator<char> >::_Tidy_deallocate",
           "displacement": "0x4c",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\xstring",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\xstring",
           "source_line": 3215
         }
       ],
@@ -3500,7 +3500,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -3566,7 +3566,7 @@
           "module_offset": "0x14dfbc6",
           "symbol": "cond_variable::imp_wait",
           "displacement": "0x46",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\cond.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\cond.cpp",
           "source_line": 14
         },
         {
@@ -3592,7 +3592,7 @@
           "module_offset": "0x1740cd4",
           "symbol": "vuart_av_thread::operator()",
           "displacement": "0x4a4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_uart.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_uart.cpp",
           "source_line": 2011
         },
         {
@@ -3636,7 +3636,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -3662,7 +3662,7 @@
           "module_offset": "0x10da06a",
           "symbol": "thread_base::initialize",
           "displacement": "0x6a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2839
         }
       ],
@@ -3692,7 +3692,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -3726,7 +3726,7 @@
           "module_offset": "0x10ddaae",
           "symbol": "`anonymous namespace'::root_info::slot_free",
           "displacement": "0x20e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 835
         },
         {
@@ -3784,7 +3784,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -3826,7 +3826,7 @@
           "module_offset": "0x17327a4",
           "symbol": "lv2_timer_thread::operator()",
           "displacement": "0x74",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_timer.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_timer.cpp",
           "source_line": 131
         },
         {
@@ -3880,7 +3880,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -3954,7 +3954,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -4004,7 +4004,7 @@
           "module_offset": "0x14f88e0",
           "symbol": "watchdog_t::operator()",
           "displacement": "0x100",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_game.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_game.cpp",
           "source_line": 112
         },
         {
@@ -4014,7 +4014,7 @@
           "module_offset": "0x10da06a",
           "symbol": "thread_base::initialize",
           "displacement": "0x6a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2839
         },
         {
@@ -4040,7 +4040,7 @@
           "module_offset": "0x14f9159",
           "symbol": "named_thread<watchdog_t>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         }
       ],
@@ -4070,7 +4070,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -4088,7 +4088,7 @@
           "module_offset": "0x10ddaae",
           "symbol": "`anonymous namespace'::root_info::slot_free",
           "displacement": "0x20e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 835
         },
         {
@@ -4212,7 +4212,7 @@
           "module_offset": "0x190bf2f",
           "symbol": "mic_context::operator()",
           "displacement": "0x12f",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellMic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellMic.cpp",
           "source_line": 104
         },
         {
@@ -4258,7 +4258,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -4364,7 +4364,7 @@
           "module_offset": "0x166fed0",
           "symbol": "network_thread::operator()",
           "displacement": "0x340",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\network_context.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\network_context.cpp",
           "source_line": 198
         },
         {
@@ -4414,7 +4414,7 @@
           "module_offset": "0x10da06a",
           "symbol": "thread_base::initialize",
           "displacement": "0x6a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2839
         }
       ],
@@ -4444,7 +4444,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -4550,7 +4550,7 @@
           "module_offset": "0x13752b6",
           "symbol": "spu_llvm::operator()",
           "displacement": "0x136",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUCommonRecompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUCommonRecompiler.cpp",
           "source_line": 9173
         },
         {
@@ -4600,7 +4600,7 @@
           "module_offset": "0x10ddaae",
           "symbol": "`anonymous namespace'::root_info::slot_free",
           "displacement": "0x20e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 835
         }
       ],
@@ -4630,7 +4630,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -4706,7 +4706,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -4748,7 +4748,7 @@
           "module_offset": "0x10db7b8",
           "symbol": "thread_ctrl::wait_until",
           "displacement": "0x88",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3161
         },
         {
@@ -4774,7 +4774,7 @@
           "module_offset": "0x133e825",
           "symbol": "named_thread<ppu_syscall_usage>::entry_point",
           "displacement": "0x95",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -4820,7 +4820,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -4914,7 +4914,7 @@
           "module_offset": "0x16cc40c",
           "symbol": "signaling_handler::operator()",
           "displacement": "0x9c",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\signaling_handler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\NP\\signaling_handler.cpp",
           "source_line": 404
         },
         {
@@ -4932,7 +4932,7 @@
           "module_offset": "0x10da06a",
           "symbol": "thread_base::initialize",
           "displacement": "0x6a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2839
         },
         {
@@ -4950,7 +4950,7 @@
           "module_offset": "0x12d57e5",
           "symbol": "named_thread<signaling_handler>::entry_point",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -5038,7 +5038,7 @@
           "module_offset": "0x1634d36",
           "symbol": "get_last_error",
           "displacement": "0x16",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\sys_net_helpers.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\sys_net_helpers.cpp",
           "source_line": 132
         },
         {
@@ -5056,7 +5056,7 @@
           "module_offset": "0x16d25c4",
           "symbol": "nt_p2p_port::recv_data",
           "displacement": "0xd84",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\nt_p2p_port.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\nt_p2p_port.cpp",
           "source_line": 386
         },
         {
@@ -5098,7 +5098,7 @@
           "module_offset": "0x1671ac5",
           "symbol": "base_network_thread::wake_threads",
           "displacement": "0x45",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\network_context.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\network_context.cpp",
           "source_line": 152
         },
         {
@@ -5148,7 +5148,7 @@
           "module_offset": "0x167051e",
           "symbol": "p2p_thread::operator()",
           "displacement": "0x22e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\network_context.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_net\\network_context.cpp",
           "source_line": 303
         },
         {
@@ -5202,7 +5202,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -5292,7 +5292,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -5342,7 +5342,7 @@
           "module_offset": "0x15f5bbd",
           "symbol": "gdb_thread::cmd_vcont",
           "displacement": "0x1cd",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\GDB.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\GDB.cpp",
           "source_line": 847
         },
         {
@@ -5388,7 +5388,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -5510,7 +5510,7 @@
           "module_offset": "0x1215795",
           "symbol": "cpu_prof::operator()",
           "displacement": "0x4b5",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 386
         },
         {
@@ -5544,7 +5544,7 @@
           "module_offset": "0x10ddaae",
           "symbol": "`anonymous namespace'::root_info::slot_free",
           "displacement": "0x20e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 835
         }
       ],
@@ -5574,7 +5574,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -5592,7 +5592,7 @@
           "module_offset": "0x10ddaae",
           "symbol": "`anonymous namespace'::root_info::slot_free",
           "displacement": "0x20e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 835
         },
         {
@@ -5716,7 +5716,7 @@
           "module_offset": "0x11cfbf9",
           "symbol": "msg_dlg_thread_info::operator()",
           "displacement": "0x119",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellMsgDialog.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\cellMsgDialog.cpp",
           "source_line": 122
         },
         {
@@ -5762,7 +5762,7 @@
           "module_offset": "0x75e3ec",
           "symbol": "std::basic_string<char,std::char_traits<char>,std::allocator<char> >::_Tidy_deallocate",
           "displacement": "0x4c",
-          "source_file": "F:\\VS\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\include\\xstring",
+          "source_file": "<VS_BUILDTOOLS>\\VC\\Tools\\MSVC\\14.51.36231\\include\\xstring",
           "source_line": 3215
         },
         {
@@ -5830,7 +5830,7 @@
           "module_offset": "0x11900f4",
           "symbol": "rsxaudio_periodic_tmr::wait",
           "displacement": "0xb4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_rsxaudio.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_rsxaudio.cpp",
           "source_line": 2156
         },
         {
@@ -5898,7 +5898,7 @@
           "module_offset": "0x118be69",
           "symbol": "named_thread<rsxaudio_data_thread>::entry_point",
           "displacement": "0x119",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -5954,7 +5954,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -6078,7 +6078,7 @@
           "module_offset": "0xfc3454",
           "symbol": "vk::driver_manager_t::operator()",
           "displacement": "0x134",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKCommandStream.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKCommandStream.cpp",
           "source_line": 104
         },
         {
@@ -6130,7 +6130,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -6140,7 +6140,7 @@
           "module_offset": "0xfc3454",
           "symbol": "vk::driver_manager_t::operator()",
           "displacement": "0x134",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKCommandStream.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKCommandStream.cpp",
           "source_line": 104
         },
         {
@@ -6150,7 +6150,7 @@
           "module_offset": "0xf82489",
           "symbol": "named_thread<vk::driver_manager_t>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         }
       ]
@@ -6179,7 +6179,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -6277,7 +6277,7 @@
           "module_offset": "0x119e2b6",
           "symbol": "rsx::overlays::display_manager::input_thread_loop",
           "displacement": "0x6e6",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\Overlays\\overlay_manager.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\Overlays\\overlay_manager.cpp",
           "source_line": 326
         },
         {
@@ -6517,7 +6517,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -6575,7 +6575,7 @@
           "module_offset": "0x10097fe",
           "symbol": "vk::pipe_compiler::operator()",
           "displacement": "0x56e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
           "source_line": 37
         },
         {
@@ -6609,7 +6609,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -6619,7 +6619,7 @@
           "module_offset": "0x100a279",
           "symbol": "named_thread<vk::pipe_compiler>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -6667,7 +6667,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -6725,7 +6725,7 @@
           "module_offset": "0x10097fe",
           "symbol": "vk::pipe_compiler::operator()",
           "displacement": "0x56e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
           "source_line": 37
         },
         {
@@ -6759,7 +6759,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -6769,7 +6769,7 @@
           "module_offset": "0x100a279",
           "symbol": "named_thread<vk::pipe_compiler>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -6817,7 +6817,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -6875,7 +6875,7 @@
           "module_offset": "0x10097fe",
           "symbol": "vk::pipe_compiler::operator()",
           "displacement": "0x56e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
           "source_line": 37
         },
         {
@@ -6909,7 +6909,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -6919,7 +6919,7 @@
           "module_offset": "0x100a279",
           "symbol": "named_thread<vk::pipe_compiler>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -6967,7 +6967,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -7025,7 +7025,7 @@
           "module_offset": "0x10097fe",
           "symbol": "vk::pipe_compiler::operator()",
           "displacement": "0x56e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
           "source_line": 37
         },
         {
@@ -7059,7 +7059,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -7069,7 +7069,7 @@
           "module_offset": "0x100a279",
           "symbol": "named_thread<vk::pipe_compiler>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -7117,7 +7117,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -7175,7 +7175,7 @@
           "module_offset": "0x10097fe",
           "symbol": "vk::pipe_compiler::operator()",
           "displacement": "0x56e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
           "source_line": 37
         },
         {
@@ -7209,7 +7209,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -7219,7 +7219,7 @@
           "module_offset": "0x100a279",
           "symbol": "named_thread<vk::pipe_compiler>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -7267,7 +7267,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -7325,7 +7325,7 @@
           "module_offset": "0x10097fe",
           "symbol": "vk::pipe_compiler::operator()",
           "displacement": "0x56e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
           "source_line": 37
         },
         {
@@ -7359,7 +7359,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -7369,7 +7369,7 @@
           "module_offset": "0x100a279",
           "symbol": "named_thread<vk::pipe_compiler>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -7417,7 +7417,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -7475,7 +7475,7 @@
           "module_offset": "0x10097fe",
           "symbol": "vk::pipe_compiler::operator()",
           "displacement": "0x56e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
           "source_line": 37
         },
         {
@@ -7509,7 +7509,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -7519,7 +7519,7 @@
           "module_offset": "0x100a279",
           "symbol": "named_thread<vk::pipe_compiler>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -7567,7 +7567,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -7625,7 +7625,7 @@
           "module_offset": "0x10097fe",
           "symbol": "vk::pipe_compiler::operator()",
           "displacement": "0x56e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\VK\\VKPipelineCompiler.cpp",
           "source_line": 37
         },
         {
@@ -7659,7 +7659,7 @@
           "module_offset": "0x10dac71",
           "symbol": "thread_base::set_name",
           "displacement": "0x151",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2889
         },
         {
@@ -7669,7 +7669,7 @@
           "module_offset": "0x100a279",
           "symbol": "named_thread<vk::pipe_compiler>::entry_point",
           "displacement": "0x69",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -7741,7 +7741,7 @@
           "module_offset": "0x14cc8ed",
           "symbol": "rsx::thread::run_FIFO",
           "displacement": "0x6cd",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXFIFO.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXFIFO.cpp",
           "source_line": 676
         },
         {
@@ -7767,7 +7767,7 @@
           "module_offset": "0x1216848",
           "symbol": "cpu_thread::check_state",
           "displacement": "0xa8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 841
         },
         {
@@ -7793,7 +7793,7 @@
           "module_offset": "0x1155d95",
           "symbol": "rsx::thread::on_task",
           "displacement": "0x5c5",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
           "source_line": 1298
         },
         {
@@ -7851,7 +7851,7 @@
           "module_offset": "0x114e9af",
           "symbol": "rsx::thread::cpu_task",
           "displacement": "0x4f",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
           "source_line": 1007
         },
         {
@@ -7877,7 +7877,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         }
       ],
@@ -7913,7 +7913,7 @@
           "module_offset": "0x14cc8ed",
           "symbol": "rsx::thread::run_FIFO",
           "displacement": "0x6cd",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXFIFO.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXFIFO.cpp",
           "source_line": 676
         },
         {
@@ -7923,7 +7923,7 @@
           "module_offset": "0x1155d95",
           "symbol": "rsx::thread::on_task",
           "displacement": "0x5c5",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
           "source_line": 1298
         },
         {
@@ -7933,7 +7933,7 @@
           "module_offset": "0x114e9af",
           "symbol": "rsx::thread::cpu_task",
           "displacement": "0x4f",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
           "source_line": 1007
         },
         {
@@ -7943,7 +7943,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         },
         {
@@ -7953,7 +7953,7 @@
           "module_offset": "0xbdbae5",
           "symbol": "named_thread<VKGSRender>::entry_point",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         }
       ]
@@ -7982,7 +7982,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -8056,7 +8056,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -8098,7 +8098,7 @@
           "module_offset": "0xb0b8fb",
           "symbol": "pad_thread::operator()",
           "displacement": "0xb5b",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Input\\pad_thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Input\\pad_thread.cpp",
           "source_line": 555
         },
         {
@@ -8170,7 +8170,7 @@
           "module_offset": "0x1aca037",
           "symbol": "monitor_device_notifications::thread_proc",
           "displacement": "0x77",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\cubeb\\cubeb\\src\\cubeb_wasapi.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\cubeb\\cubeb\\src\\cubeb_wasapi.cpp",
           "source_line": 529
         },
         {
@@ -8220,7 +8220,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -8230,7 +8230,7 @@
           "module_offset": "0x10ddaae",
           "symbol": "`anonymous namespace'::root_info::slot_free",
           "displacement": "0x20e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 835
         },
         {
@@ -8288,7 +8288,7 @@
           "module_offset": "0x133d764",
           "symbol": "`lv2_obj::wait_timeout'::`2'::<lambda_1>::operator()",
           "displacement": "0xe4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2199
         },
         {
@@ -8298,7 +8298,7 @@
           "module_offset": "0x1340654",
           "symbol": "lv2_obj::wait_timeout",
           "displacement": "0x124",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2238
         },
         {
@@ -8308,7 +8308,7 @@
           "module_offset": "0x12101f2",
           "symbol": "vm::passive_lock",
           "displacement": "0xa2",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Memory\\vm.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Memory\\vm.cpp",
           "source_line": 389
         },
         {
@@ -8318,7 +8318,7 @@
           "module_offset": "0x133f401",
           "symbol": "lv2_obj::notify_all",
           "displacement": "0x371",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2429
         },
         {
@@ -8328,7 +8328,7 @@
           "module_offset": "0x12192e5",
           "symbol": "cpu_counter::remove",
           "displacement": "0xb5",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 612
         },
         {
@@ -8338,7 +8338,7 @@
           "module_offset": "0x1730c72",
           "symbol": "sys_semaphore_wait",
           "displacement": "0x1b2",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_semaphore.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_semaphore.cpp",
           "source_line": 195
         },
         {
@@ -8356,7 +8356,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -8390,7 +8390,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         }
       ],
@@ -8428,7 +8428,7 @@
           "module_offset": "0x1acba14",
           "symbol": "`anonymous namespace'::wasapi_stream_render_loop",
           "displacement": "0x1b4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\3rdparty\\cubeb\\cubeb\\src\\cubeb_wasapi.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\3rdparty\\cubeb\\cubeb\\src\\cubeb_wasapi.cpp",
           "source_line": 1441
         },
         {
@@ -8497,7 +8497,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -8507,7 +8507,7 @@
           "module_offset": "0x14cd2dc",
           "symbol": "rsx::thread::send_event",
           "displacement": "0x6c",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_rsx.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_rsx.cpp",
           "source_line": 105
         },
         {
@@ -8549,7 +8549,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -8567,7 +8567,7 @@
           "module_offset": "0x114b77f",
           "symbol": "`rsx::thread::on_task'::`2'::<lambda_3>::operator()",
           "displacement": "0x1ff",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\RSX\\RSXThread.cpp",
           "source_line": 1214
         },
         {
@@ -8577,7 +8577,7 @@
           "module_offset": "0x10da06a",
           "symbol": "thread_base::initialize",
           "displacement": "0x6a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 2839
         },
         {
@@ -8587,7 +8587,7 @@
           "module_offset": "0xab8e5e",
           "symbol": "named_thread<std::function<void __cdecl(void)> >::entry_point",
           "displacement": "0x7e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -8627,7 +8627,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -8637,7 +8637,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -8663,7 +8663,7 @@
           "module_offset": "0x13db5b1",
           "symbol": "sys_event_queue_receive",
           "displacement": "0x2b1",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
           "source_line": 522
         },
         {
@@ -8697,7 +8697,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -8731,7 +8731,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -8765,7 +8765,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -8783,7 +8783,7 @@
           "module_offset": "0x10d7b59",
           "symbol": "thread_base::exec",
           "displacement": "0x1c9",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3420
         },
         {
@@ -8821,7 +8821,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -8831,7 +8831,7 @@
           "module_offset": "0x1724705",
           "symbol": "lv2_lwmutex::try_own<ppu_thread>",
           "displacement": "0x25",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwmutex.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwmutex.h",
           "source_line": 92
         },
         {
@@ -8849,7 +8849,7 @@
           "module_offset": "0x10de188",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x5b8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1214
         },
         {
@@ -8875,7 +8875,7 @@
           "module_offset": "0x1726304",
           "symbol": "_sys_lwcond_queue_wait",
           "displacement": "0x3e4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
           "source_line": 517
         },
         {
@@ -8885,7 +8885,7 @@
           "module_offset": "0x1721d44",
           "symbol": "idm::check<lv2_obj,lv2_lwmutex,`_sys_lwmutex_unlock'::`2'::<lambda_1>,void>",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\IdManager.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\IdManager.h",
           "source_line": 690
         },
         {
@@ -8895,7 +8895,7 @@
           "module_offset": "0x1216848",
           "symbol": "cpu_thread::check_state",
           "displacement": "0xa8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 841
         },
         {
@@ -8929,7 +8929,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -8963,7 +8963,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -9017,7 +9017,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -9027,7 +9027,7 @@
           "module_offset": "0x1724705",
           "symbol": "lv2_lwmutex::try_own<ppu_thread>",
           "displacement": "0x25",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwmutex.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwmutex.h",
           "source_line": 92
         },
         {
@@ -9037,7 +9037,7 @@
           "module_offset": "0x133f401",
           "symbol": "lv2_obj::notify_all",
           "displacement": "0x371",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2429
         },
         {
@@ -9063,7 +9063,7 @@
           "module_offset": "0x1726304",
           "symbol": "_sys_lwcond_queue_wait",
           "displacement": "0x3e4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
           "source_line": 517
         },
         {
@@ -9073,7 +9073,7 @@
           "module_offset": "0x1216848",
           "symbol": "cpu_thread::check_state",
           "displacement": "0xa8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 841
         },
         {
@@ -9107,7 +9107,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -9141,7 +9141,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -9175,7 +9175,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -9213,7 +9213,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -9223,7 +9223,7 @@
           "module_offset": "0x1724705",
           "symbol": "lv2_lwmutex::try_own<ppu_thread>",
           "displacement": "0x25",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwmutex.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwmutex.h",
           "source_line": 92
         },
         {
@@ -9241,7 +9241,7 @@
           "module_offset": "0x10de188",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x5b8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1214
         },
         {
@@ -9267,7 +9267,7 @@
           "module_offset": "0x1726304",
           "symbol": "_sys_lwcond_queue_wait",
           "displacement": "0x3e4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
           "source_line": 517
         },
         {
@@ -9277,7 +9277,7 @@
           "module_offset": "0x1216848",
           "symbol": "cpu_thread::check_state",
           "displacement": "0xa8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 841
         },
         {
@@ -9287,7 +9287,7 @@
           "module_offset": "0x12101f2",
           "symbol": "vm::passive_lock",
           "displacement": "0xa2",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Memory\\vm.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Memory\\vm.cpp",
           "source_line": 389
         },
         {
@@ -9321,7 +9321,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -9355,7 +9355,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -9409,7 +9409,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -9419,7 +9419,7 @@
           "module_offset": "0x10de188",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x5b8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1214
         },
         {
@@ -9429,7 +9429,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -9455,7 +9455,7 @@
           "module_offset": "0x1730ccc",
           "symbol": "sys_semaphore_wait",
           "displacement": "0x20c",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_semaphore.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_semaphore.cpp",
           "source_line": 160
         },
         {
@@ -9473,7 +9473,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -9507,7 +9507,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -9541,7 +9541,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -9559,7 +9559,7 @@
           "module_offset": "0x10d7b59",
           "symbol": "thread_base::exec",
           "displacement": "0x1c9",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3420
         },
         {
@@ -9577,7 +9577,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         }
       ],
@@ -9607,7 +9607,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -9617,7 +9617,7 @@
           "module_offset": "0x10ddaae",
           "symbol": "`anonymous namespace'::root_info::slot_free",
           "displacement": "0x20e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 835
         },
         {
@@ -9675,7 +9675,7 @@
           "module_offset": "0x133d764",
           "symbol": "`lv2_obj::wait_timeout'::`2'::<lambda_1>::operator()",
           "displacement": "0xe4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2199
         },
         {
@@ -9693,7 +9693,7 @@
           "module_offset": "0x1340654",
           "symbol": "lv2_obj::wait_timeout",
           "displacement": "0x124",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2238
         },
         {
@@ -9703,7 +9703,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -9721,7 +9721,7 @@
           "module_offset": "0x121523d",
           "symbol": "`cpu_thread::check_state'::`4'::<lambda_1>::operator()",
           "displacement": "0x25d",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 968
         },
         {
@@ -9731,7 +9731,7 @@
           "module_offset": "0x133f401",
           "symbol": "lv2_obj::notify_all",
           "displacement": "0x371",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2429
         },
         {
@@ -9741,7 +9741,7 @@
           "module_offset": "0x1340048",
           "symbol": "lv2_obj::sleep",
           "displacement": "0x118",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1437
         },
         {
@@ -9751,7 +9751,7 @@
           "module_offset": "0x15fa9c0",
           "symbol": "sys_event_flag_wait",
           "displacement": "0x2f0",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event_flag.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event_flag.cpp",
           "source_line": 233
         },
         {
@@ -9777,7 +9777,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         }
       ],
@@ -9792,7 +9792,7 @@
         "module_offset": "0x1340701",
         "symbol": "lv2_obj::wait_timeout",
         "displacement": "0x1d1",
-        "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+        "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
         "source_line": 2265
       },
       "rsp": "0xe8847ff460",
@@ -9809,7 +9809,7 @@
           "module_offset": "0x133f401",
           "symbol": "lv2_obj::notify_all",
           "displacement": "0x371",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2429
         },
         {
@@ -9819,7 +9819,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -9829,7 +9829,7 @@
           "module_offset": "0x1733e60",
           "symbol": "sys_timer_usleep",
           "displacement": "0xb0",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_timer.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_timer.cpp",
           "source_line": 472
         },
         {
@@ -9839,7 +9839,7 @@
           "module_offset": "0x11ed10c",
           "symbol": "ppu_load_acquire_reservation<unsigned __int64>",
           "displacement": "0x34c",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3635
         },
         {
@@ -9857,7 +9857,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -9867,7 +9867,7 @@
           "module_offset": "0x1216541",
           "symbol": "cpu_counter::add",
           "displacement": "0x91",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 541
         },
         {
@@ -9901,7 +9901,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -9935,7 +9935,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -9953,7 +9953,7 @@
           "module_offset": "0x10d7b59",
           "symbol": "thread_base::exec",
           "displacement": "0x1c9",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3420
         },
         {
@@ -9971,7 +9971,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         },
         {
@@ -9981,7 +9981,7 @@
           "module_offset": "0xb5abc5",
           "symbol": "named_thread<ppu_thread>::entry_point",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         }
       ],
@@ -10011,7 +10011,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -10021,7 +10021,7 @@
           "module_offset": "0x10ddaae",
           "symbol": "`anonymous namespace'::root_info::slot_free",
           "displacement": "0x20e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 835
         },
         {
@@ -10079,7 +10079,7 @@
           "module_offset": "0x133d764",
           "symbol": "`lv2_obj::wait_timeout'::`2'::<lambda_1>::operator()",
           "displacement": "0xe4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2199
         },
         {
@@ -10097,7 +10097,7 @@
           "module_offset": "0x1340654",
           "symbol": "lv2_obj::wait_timeout",
           "displacement": "0x124",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2238
         },
         {
@@ -10107,7 +10107,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -10117,7 +10117,7 @@
           "module_offset": "0x133f401",
           "symbol": "lv2_obj::notify_all",
           "displacement": "0x371",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2429
         },
         {
@@ -10127,7 +10127,7 @@
           "module_offset": "0x1340048",
           "symbol": "lv2_obj::sleep",
           "displacement": "0x118",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1437
         },
         {
@@ -10137,7 +10137,7 @@
           "module_offset": "0x15fa9c0",
           "symbol": "sys_event_flag_wait",
           "displacement": "0x2f0",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event_flag.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event_flag.cpp",
           "source_line": 233
         },
         {
@@ -10163,7 +10163,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -10173,7 +10173,7 @@
           "module_offset": "0x1216541",
           "symbol": "cpu_counter::add",
           "displacement": "0x91",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 541
         },
         {
@@ -10211,7 +10211,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -10269,7 +10269,7 @@
           "module_offset": "0x133d764",
           "symbol": "`lv2_obj::wait_timeout'::`2'::<lambda_1>::operator()",
           "displacement": "0xe4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2199
         },
         {
@@ -10287,7 +10287,7 @@
           "module_offset": "0x1340654",
           "symbol": "lv2_obj::wait_timeout",
           "displacement": "0x124",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2238
         },
         {
@@ -10305,7 +10305,7 @@
           "module_offset": "0x121523d",
           "symbol": "`cpu_thread::check_state'::`4'::<lambda_1>::operator()",
           "displacement": "0x25d",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 968
         },
         {
@@ -10315,7 +10315,7 @@
           "module_offset": "0x133f401",
           "symbol": "lv2_obj::notify_all",
           "displacement": "0x371",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 2429
         },
         {
@@ -10325,7 +10325,7 @@
           "module_offset": "0x1340048",
           "symbol": "lv2_obj::sleep",
           "displacement": "0x118",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1437
         },
         {
@@ -10335,7 +10335,7 @@
           "module_offset": "0x15fa9c0",
           "symbol": "sys_event_flag_wait",
           "displacement": "0x2f0",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event_flag.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event_flag.cpp",
           "source_line": 233
         },
         {
@@ -10361,7 +10361,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -10371,7 +10371,7 @@
           "module_offset": "0x1216541",
           "symbol": "cpu_counter::add",
           "displacement": "0x91",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 541
         },
         {
@@ -10414,7 +10414,7 @@
           "module_offset": "0x123ff3d",
           "symbol": "spu_thread::cpu_task",
           "displacement": "0x3cd",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
           "source_line": 1569
         },
         {
@@ -10440,7 +10440,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         },
         {
@@ -10450,7 +10450,7 @@
           "module_offset": "0xb5ac55",
           "symbol": "named_thread<spu_thread>::entry_point",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -10487,7 +10487,7 @@
           "module_offset": "0x1805e0e",
           "symbol": "spu_llvm_recompiler::exec_wrch",
           "displacement": "0xe",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPULLVMRecompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPULLVMRecompiler.cpp",
           "source_line": 5012
         },
         {
@@ -10505,7 +10505,7 @@
           "module_offset": "0x123ff3d",
           "symbol": "spu_thread::cpu_task",
           "displacement": "0x3cd",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
           "source_line": 1569
         },
         {
@@ -10531,7 +10531,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         },
         {
@@ -10541,7 +10541,7 @@
           "module_offset": "0xb5ac55",
           "symbol": "named_thread<spu_thread>::entry_point",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -10566,7 +10566,7 @@
         "module_offset": "0x124c134",
         "symbol": "spu_thread::process_mfc_cmd",
         "displacement": "0xe4",
-        "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+        "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
         "source_line": 4275
       },
       "rsp": "0xe886fff630",
@@ -10591,7 +10591,7 @@
           "module_offset": "0x124dc30",
           "symbol": "spu_thread::process_mfc_cmd",
           "displacement": "0x1be0",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
           "source_line": 4999
         },
         {
@@ -10609,7 +10609,7 @@
           "module_offset": "0x124dc30",
           "symbol": "spu_thread::process_mfc_cmd",
           "displacement": "0x1be0",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
           "source_line": 4999
         },
         {
@@ -10651,7 +10651,7 @@
           "module_offset": "0x12502e7",
           "symbol": "spu_thread::set_ch_value",
           "displacement": "0x947",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
           "source_line": 6471
         },
         {
@@ -10669,7 +10669,7 @@
           "module_offset": "0x17896c5",
           "symbol": "spu_llvm_recompiler::exec_mfc_cmd<0>",
           "displacement": "0x15",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPULLVMRecompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPULLVMRecompiler.cpp",
           "source_line": 5041
         },
         {
@@ -10679,7 +10679,7 @@
           "module_offset": "0x17896c5",
           "symbol": "spu_llvm_recompiler::exec_mfc_cmd<0>",
           "displacement": "0x15",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPULLVMRecompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPULLVMRecompiler.cpp",
           "source_line": 5041
         },
         {
@@ -10689,7 +10689,7 @@
           "module_offset": "0x1805e0e",
           "symbol": "spu_llvm_recompiler::exec_wrch",
           "displacement": "0xe",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPULLVMRecompiler.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPULLVMRecompiler.cpp",
           "source_line": 5012
         },
         {
@@ -10707,7 +10707,7 @@
           "module_offset": "0x123ff3d",
           "symbol": "spu_thread::cpu_task",
           "displacement": "0x3cd",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
           "source_line": 1569
         },
         {
@@ -10733,7 +10733,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         },
         {
@@ -10743,7 +10743,7 @@
           "module_offset": "0xb5ac55",
           "symbol": "named_thread<spu_thread>::entry_point",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -10788,7 +10788,7 @@
           "module_offset": "0x123ff3d",
           "symbol": "spu_thread::cpu_task",
           "displacement": "0x3cd",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
           "source_line": 1569
         },
         {
@@ -10814,7 +10814,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         },
         {
@@ -10824,7 +10824,7 @@
           "module_offset": "0xb5ac55",
           "symbol": "named_thread<spu_thread>::entry_point",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -10877,7 +10877,7 @@
           "module_offset": "0x123ff3d",
           "symbol": "spu_thread::cpu_task",
           "displacement": "0x3cd",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
           "source_line": 1569
         },
         {
@@ -10903,7 +10903,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         },
         {
@@ -10913,7 +10913,7 @@
           "module_offset": "0xb5ac55",
           "symbol": "named_thread<spu_thread>::entry_point",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -10958,7 +10958,7 @@
           "module_offset": "0x123ff3d",
           "symbol": "spu_thread::cpu_task",
           "displacement": "0x3cd",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\SPUThread.cpp",
           "source_line": 1569
         },
         {
@@ -10984,7 +10984,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         },
         {
@@ -10994,7 +10994,7 @@
           "module_offset": "0xb5ac55",
           "symbol": "named_thread<spu_thread>::entry_point",
           "displacement": "0x75",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.h",
           "source_line": 481
         },
         {
@@ -11034,7 +11034,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -11044,7 +11044,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -11070,7 +11070,7 @@
           "module_offset": "0x13db5b1",
           "symbol": "sys_event_queue_receive",
           "displacement": "0x2b1",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
           "source_line": 522
         },
         {
@@ -11104,7 +11104,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -11138,7 +11138,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -11172,7 +11172,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -11190,7 +11190,7 @@
           "module_offset": "0x10d7b59",
           "symbol": "thread_base::exec",
           "displacement": "0x1c9",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3420
         },
         {
@@ -11228,7 +11228,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -11254,7 +11254,7 @@
           "module_offset": "0x1311467",
           "symbol": "sys_spu_thread_group_join",
           "displacement": "0x247",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_spu.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_spu.cpp",
           "source_line": 1680
         },
         {
@@ -11288,7 +11288,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -11298,7 +11298,7 @@
           "module_offset": "0x1216541",
           "symbol": "cpu_counter::add",
           "displacement": "0x91",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 541
         },
         {
@@ -11340,7 +11340,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -11374,7 +11374,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -11392,7 +11392,7 @@
           "module_offset": "0x10d7b59",
           "symbol": "thread_base::exec",
           "displacement": "0x1c9",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3420
         }
       ],
@@ -11422,7 +11422,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -11432,7 +11432,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -11458,7 +11458,7 @@
           "module_offset": "0x13db5b1",
           "symbol": "sys_event_queue_receive",
           "displacement": "0x2b1",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
           "source_line": 522
         },
         {
@@ -11492,7 +11492,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -11502,7 +11502,7 @@
           "module_offset": "0x1216541",
           "symbol": "cpu_counter::add",
           "displacement": "0x91",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 541
         },
         {
@@ -11544,7 +11544,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -11578,7 +11578,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -11616,7 +11616,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -11626,7 +11626,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -11652,7 +11652,7 @@
           "module_offset": "0x13db5b1",
           "symbol": "sys_event_queue_receive",
           "displacement": "0x2b1",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
           "source_line": 522
         },
         {
@@ -11686,7 +11686,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -11696,7 +11696,7 @@
           "module_offset": "0x1216541",
           "symbol": "cpu_counter::add",
           "displacement": "0x91",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 541
         },
         {
@@ -11738,7 +11738,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -11772,7 +11772,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -11810,7 +11810,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -11828,7 +11828,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -11854,7 +11854,7 @@
           "module_offset": "0x13db5b1",
           "symbol": "sys_event_queue_receive",
           "displacement": "0x2b1",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
           "source_line": 522
         },
         {
@@ -11880,7 +11880,7 @@
           "module_offset": "0x14d886b",
           "symbol": "config_event_entry",
           "displacement": "0xbb",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\sys_io_.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\Modules\\sys_io_.cpp",
           "source_line": 56
         },
         {
@@ -11922,7 +11922,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -11956,7 +11956,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -11974,7 +11974,7 @@
           "module_offset": "0x10d7b59",
           "symbol": "thread_base::exec",
           "displacement": "0x1c9",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3420
         }
       ],
@@ -12004,7 +12004,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -12014,7 +12014,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -12040,7 +12040,7 @@
           "module_offset": "0x13db5b1",
           "symbol": "sys_event_queue_receive",
           "displacement": "0x2b1",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
           "source_line": 522
         },
         {
@@ -12074,7 +12074,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -12108,7 +12108,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -12142,7 +12142,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -12160,7 +12160,7 @@
           "module_offset": "0x10d7b59",
           "symbol": "thread_base::exec",
           "displacement": "0x1c9",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3420
         },
         {
@@ -12198,7 +12198,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -12208,7 +12208,7 @@
           "module_offset": "0x10ddaae",
           "symbol": "`anonymous namespace'::root_info::slot_free",
           "displacement": "0x20e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 835
         },
         {
@@ -12234,7 +12234,7 @@
           "module_offset": "0x1726304",
           "symbol": "_sys_lwcond_queue_wait",
           "displacement": "0x3e4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
           "source_line": 517
         },
         {
@@ -12244,7 +12244,7 @@
           "module_offset": "0x1216848",
           "symbol": "cpu_thread::check_state",
           "displacement": "0xa8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 841
         },
         {
@@ -12254,7 +12254,7 @@
           "module_offset": "0x12101f2",
           "symbol": "vm::passive_lock",
           "displacement": "0xa2",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Memory\\vm.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Memory\\vm.cpp",
           "source_line": 389
         },
         {
@@ -12288,7 +12288,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -12322,7 +12322,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -12356,7 +12356,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -12394,7 +12394,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -12438,7 +12438,7 @@
           "module_offset": "0x1726304",
           "symbol": "_sys_lwcond_queue_wait",
           "displacement": "0x3e4",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_lwcond.cpp",
           "source_line": 517
         },
         {
@@ -12448,7 +12448,7 @@
           "module_offset": "0x1216848",
           "symbol": "cpu_thread::check_state",
           "displacement": "0xa8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 841
         },
         {
@@ -12458,7 +12458,7 @@
           "module_offset": "0x12101f2",
           "symbol": "vm::passive_lock",
           "displacement": "0xa2",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Memory\\vm.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Memory\\vm.cpp",
           "source_line": 389
         },
         {
@@ -12492,7 +12492,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -12526,7 +12526,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -12560,7 +12560,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         }
       ],
@@ -12590,7 +12590,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -12608,7 +12608,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -12634,7 +12634,7 @@
           "module_offset": "0x1730ccc",
           "symbol": "sys_semaphore_wait",
           "displacement": "0x20c",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_semaphore.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_semaphore.cpp",
           "source_line": 160
         },
         {
@@ -12660,7 +12660,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -12694,7 +12694,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -12728,7 +12728,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -12746,7 +12746,7 @@
           "module_offset": "0x10d7b59",
           "symbol": "thread_base::exec",
           "displacement": "0x1c9",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3420
         },
         {
@@ -12784,7 +12784,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -12818,7 +12818,7 @@
           "module_offset": "0x15faa04",
           "symbol": "sys_event_flag_wait",
           "displacement": "0x334",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event_flag.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event_flag.cpp",
           "source_line": 198
         },
         {
@@ -12844,7 +12844,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -12878,7 +12878,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -12912,7 +12912,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -12930,7 +12930,7 @@
           "module_offset": "0x10d7b59",
           "symbol": "thread_base::exec",
           "displacement": "0x1c9",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3420
         },
         {
@@ -12948,7 +12948,7 @@
           "module_offset": "0x1215f88",
           "symbol": "cpu_thread::operator()",
           "displacement": "0x238",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 763
         }
       ],
@@ -12978,7 +12978,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -12988,7 +12988,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -13014,7 +13014,7 @@
           "module_offset": "0x13db5b1",
           "symbol": "sys_event_queue_receive",
           "displacement": "0x2b1",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
           "source_line": 522
         },
         {
@@ -13048,7 +13048,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -13058,7 +13058,7 @@
           "module_offset": "0x1216541",
           "symbol": "cpu_counter::add",
           "displacement": "0x91",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 541
         },
         {
@@ -13100,7 +13100,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -13134,7 +13134,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         },
         {
@@ -13172,7 +13172,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -13182,7 +13182,7 @@
           "module_offset": "0x133fafe",
           "symbol": "lv2_obj::schedule_all",
           "displacement": "0x4e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1905
         },
         {
@@ -13208,7 +13208,7 @@
           "module_offset": "0x13db5b1",
           "symbol": "sys_event_queue_receive",
           "displacement": "0x2b1",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\sys_event.cpp",
           "source_line": 522
         },
         {
@@ -13250,7 +13250,7 @@
           "module_offset": "0x133f48e",
           "symbol": "ppu_execute_syscall",
           "displacement": "0x6e",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\lv2\\lv2.cpp",
           "source_line": 1324
         },
         {
@@ -13260,7 +13260,7 @@
           "module_offset": "0x1216541",
           "symbol": "cpu_counter::add",
           "displacement": "0x91",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\CPU\\CPUThread.cpp",
           "source_line": 541
         },
         {
@@ -13302,7 +13302,7 @@
           "module_offset": "0x11fd124",
           "symbol": "ppu_thread::fast_call",
           "displacement": "0x184",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 3296
         },
         {
@@ -13336,7 +13336,7 @@
           "module_offset": "0x11f84da",
           "symbol": "ppu_thread::cpu_task",
           "displacement": "0x33a",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\Emu\\Cell\\PPUThread.cpp",
           "source_line": 2548
         }
       ],
@@ -13385,7 +13385,7 @@
           "module_offset": "0x10ddf57",
           "symbol": "atomic_wait_engine::wait",
           "displacement": "0x387",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\atomic.cpp",
           "source_line": 1130
         },
         {
@@ -13453,7 +13453,7 @@
           "module_offset": "0x11dc1e8",
           "symbol": "``utils::video_encoder::encode'::`2'::<lambda_1>::operator()'::`201'::<lambda_6>::operator()",
           "displacement": "0x328",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\media_utils.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\media_utils.cpp",
           "source_line": 1596
         },
         {
@@ -13487,7 +13487,7 @@
           "module_offset": "0x10db4a8",
           "symbol": "thread_ctrl::wait_for",
           "displacement": "0xe8",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\Utilities\\Thread.cpp",
           "source_line": 3132
         },
         {
@@ -13505,7 +13505,7 @@
           "module_offset": "0x11da051",
           "symbol": "`utils::video_encoder::encode'::`2'::<lambda_1>::operator()",
           "displacement": "0x2081",
-          "source_file": "F:\\d1\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\media_utils.cpp",
+          "source_file": "<D1_ROOT>\\<pc>-import\\dev\\rpcs3\\rpcs3\\util\\media_utils.cpp",
           "source_line": 1717
         },
         {

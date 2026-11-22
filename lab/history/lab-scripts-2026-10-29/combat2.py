@@ -12,7 +12,7 @@ def L(n, p=None):
     s = importlib.util.spec_from_file_location(n, p or os.path.join(HERE, n + '.py')); m = importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
 g = L('g', os.path.join(SENSE, 'd1-winguest.py')); pl = L('plates'); hp = L('health'); fight = L('fight')
 import d1_unit_tracking as ut
-sys.path.insert(0, r'F:/d1/public-work/d1rs-claude/tools/ps4_setup')
+sys.path.insert(0, r'<D1_ROOT>/public-work/d1rs-claude/tools/ps4_setup')
 from d1_squad_tracking import SquadReader, Unavailable   # PR #68: live squad members' native body positions
 VITALS = L('native_vitals', r'lab/history/2026-10-28-ai-wake-codex/read-vitals.py')  # private, read-only
 

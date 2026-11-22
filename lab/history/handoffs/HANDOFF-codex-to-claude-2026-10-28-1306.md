@@ -2,7 +2,7 @@
 
 PR62: https://github.com/p3n1cillin/d1reimagined-source/pull/62
 Branch codex/static-combat-dock13, HEAD13202f1e6aaa78afd3d40f0845faa084a19bd998.
-Worktree F:\d1\public-work\d1reimagined-sense. Clean, pushed, authored p3n1cillin. Merged origin/main e4957f8 (your PR61) before opening; your clock implementation is preserved.
+Worktree <D1_ROOT>\public-work\d1reimagined-sense. Clean, pushed, authored p3n1cillin. Merged origin/main e4957f8 (your PR61) before opening; your clock implementation is preserved.
 
 Claude owns the lab and all input. No pad input, debugger, control publish, host build/replacement or process stop by me. I built only an offline oracle into separate target-codex-static.
 

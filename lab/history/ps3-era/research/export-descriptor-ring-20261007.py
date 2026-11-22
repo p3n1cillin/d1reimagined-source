@@ -3,12 +3,12 @@ import hashlib
 import json
 import subprocess
 
-source = Path(r'F:\d1\<pc>-import\dev\rpcs3')
-research = Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH')
+source = Path(r'<D1_ROOT>\<pc>-import\dev\rpcs3')
+research = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH')
 baseline = research / 'descriptor-ring-20261007-baseline'
 export = research / 'descriptor-ring-20261007-export'
 verify = research / 'descriptor-ring-20261007-reproduction'
-patch = Path(r'F:\d1\d1xenia\patches\rpcs3-descriptor-lifetime-ring.patch')
+patch = Path(r'<D1_ROOT>\d1xenia\patches\rpcs3-descriptor-lifetime-ring.patch')
 old = json.loads((baseline / 'baseline.json').read_text(encoding='utf-8-sig'))['files']
 added = 'rpcs3/Emu/RSX/Common/descriptor_lifetime_ring.h'
 

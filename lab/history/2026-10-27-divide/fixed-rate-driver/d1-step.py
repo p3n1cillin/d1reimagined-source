@@ -61,7 +61,7 @@ def main():
     print(f'at ({p1[0]:.1f}, {p1[1]:.1f}, {p1[2]:.1f}) moved {moved:.1f}'
           + (f' heading {heading:.0f} deg' if heading is not None else '') + f' trail {len(trail)}')
     if a.shot:
-        subprocess.run(['powershell', '-NoProfile', '-File', r'F:\d1\tools\d1-shot.ps1', '-Out', a.shot],
+        subprocess.run(['powershell', '-NoProfile', '-File', r'<D1_ROOT>\tools\d1-shot.ps1', '-Out', a.shot],
                        capture_output=True)
 
 

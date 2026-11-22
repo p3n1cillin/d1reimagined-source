@@ -2,10 +2,10 @@ import json
 from pathlib import Path
 import sys
 
-sys.path.insert(0, r'F:\d1\d1xenia\tools\content_capture')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\tools\content_capture')
 from capture import Capture, atomic_json, copy_closed
 
-root = Path(r'F:\d1\<pc>-import\d1xenia\local\content-capture')
+root = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\content-capture')
 capture = Capture(root / 'config.json')
 clip = '<lab-pc>-20261006T082350-35a26ff986fc4d87a5428cdef765c812'
 state_path = capture.states / (clip + '.json')

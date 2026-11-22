@@ -70,13 +70,13 @@ Fresh run character27-baseline was launched at00:44:56Z with original profile/it
 4. Trace reserve using Inventory21=32 and initial-fill logic; reference292 at pickup. No authored-stat edits just to match the HUD.
 5. Gate/slice104/automatic step17/marker52 still require proof. Only targets104 has been observed; no accepted104 arrival. Survival, kills, checkpoint fidelity, correct starter level/loadout, clock/darkness and ship departure remain open.
 
-Dawn reference is source-only/read-only at F:\d1\third-party-readonly\Dawn\Dawn. User authorized this clone; no additional third-party downloads, no running/building/copying its GPL3 code. Mechanisms are leads; every D1 offset/schema/value must come from owned56578.
+Dawn reference is source-only/read-only at <D1_ROOT>\third-party-readonly\Dawn\Dawn. User authorized this clone; no additional third-party downloads, no running/building/copying its GPL3 code. Mechanisms are leads; every D1 offset/schema/value must come from owned56578.
 
 ## Deadline, privacy and capture
 
 No second27Oct NAS report.27Oct19:09 report is immutable; late27Oct and tonight's evidence goes in the next eligible edition with actual timestamps. Existing capture/outbox/verified-transfer workflow only. No final-video editing or publishing. Production inputs remain private. Do not copy policy files into packages.
 
-Keep all game files, keys, screenshots and raw run evidence outside repos. Commit code/docs as p3n1cillin; public main PR-only. Stop helpers by exact verified PID/path. Every automated game loop needs stick movement; the existing test driver is user-authorized. Build AH only after stopping the owned run, with LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin. No AH build in this continuation so far.
+Keep all game files, keys, screenshots and raw run evidence outside repos. Commit code/docs as p3n1cillin; public main PR-only. Stop helpers by exact verified PID/path. Every automated game loop needs stick movement; the existing test driver is user-authorized. Build AH only after stopping the owned run, with LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin. No AH build in this continuation so far.
 
 At08:00 send the full factual final hand-back to Claude's named desktop Code session, verify delivery, record it here, delete the one-time automation and stop Codex engineering/game input after ownership transfers.
 
@@ -104,7 +104,7 @@ New source docs/PS4_CHARACTER_STATS.md describes tool, controls and limits; sour
 
 ## 28 Oct source isolation / baseline ended
 
-Source checkout had been switched by parallel offline work at00:32-00:34 to ps4/mission-map (72c9bb7). I did not commit on that branch. Backed up my exact five tracked-file diff + three new files privately, fetched origin/main851dc22 (PR50 included), and made an isolated worktree atF:\d1\public-work\d1reimagined-stats on branchcodex/character-live-stats. Managed worktree API could not operate because this chat's rootF:\d1 is not a Git repo, so this is an ordinary git worktree. Applied my patch cleanly and copied only my three new files. Verified the shared HEAD/diff/new-file hashes were unchanged before reversing only my shared WIP; normalized blobs equal HEAD; shared original checkout is now CLEAN. No Claude commits/branches were rewritten. All future edits/builds use the isolated worktree. Private probe Cargo path and future combat-trial tools retargeted to isolated source; active run28 replay started from original source, whose replay/walker were not modified by my reversal.
+Source checkout had been switched by parallel offline work at00:32-00:34 to ps4/mission-map (72c9bb7). I did not commit on that branch. Backed up my exact five tracked-file diff + three new files privately, fetched origin/main851dc22 (PR50 included), and made an isolated worktree at<D1_ROOT>\public-work\d1reimagined-stats on branchcodex/character-live-stats. Managed worktree API could not operate because this chat's root<D1_ROOT> is not a Git repo, so this is an ordinary git worktree. Applied my patch cleanly and copied only my three new files. Verified the shared HEAD/diff/new-file hashes were unchanged before reversing only my shared WIP; normalized blobs equal HEAD; shared original checkout is now CLEAN. No Claude commits/branches were rewritten. All future edits/builds use the isolated worktree. Private probe Cargo path and future combat-trial tools retargeted to isolated source; active run28 replay started from original source, whose replay/walker were not modified by my reversal.
 
 Native byte-watch extension (--read-byte) passed mixed DR7 access/width controls and natively caught20 Defense-selector reads in character UI at9A9042, aftercmp al,[rcx+145] at9A903C.192 owned/native bytes match. It was not a health/resistance path. General config8-byte watch had60 Light-selector hits282390 (not Defense); wrong globals-root watch0hits not evidence. All three observers detached cleanly.
 

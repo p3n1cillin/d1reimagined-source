@@ -1,8 +1,8 @@
 import json,sys,hashlib,datetime
 from pathlib import Path
 root=Path(__file__).parent;rt=root.parent
-sys.path.insert(0,'F:/d1/d1xenia')
-sys.path.insert(0,'F:/d1/d1xenia/tools/content_capture')
+sys.path.insert(0,'<D1_ROOT>/d1xenia')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/tools/content_capture')
 from tools.content_capture.capture import validate_video
 rows=[]
 for path in (rt/'content-capture/native-segments').glob('*.json'):

@@ -2,8 +2,8 @@
 import importlib.util,json,re,struct
 from pathlib import Path
 pvt=Path(__file__).resolve().parent
-run=Path(r'F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide14')
-s=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+run=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\2026-10-27-divide14')
+s=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 g=importlib.util.module_from_spec(s);s.loader.exec_module(g)
 p,base=g.open_client()
 reg=p.u(p.u(base+g.REGISTRY,'Q'),'Q')

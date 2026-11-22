@@ -17,17 +17,17 @@ Historical PS3 results; current acceptance is recorded in the dated checkpoints.
 
 ## PS3 comparison 003 — Local RPCN sign-in
 
-- Date: 2026-09-24. Isolated copy of the same official RPCS3 build at `D:\Destiny360\RPCS3_TEST003_LOCAL_RPCN` (baseline install untouched). Network Status `Connected`, PSN Status `RPCN`.
-- Sign-in service: RPCN server 1.10.0 (protocol 32, matching RPCS3 `b5a174e9`; 1.11.0 speaks 33 and is incompatible), run from `D:\Destiny360\RPCN_LOCAL` bound to `127.0.0.1` only, email validation and ticket signing disabled. A throwaway account `d1localtest` was created on that local server only with `scripts/rpcn_local_account.py`. No public RPCN account was created.
+- Date: 2026-09-24. Isolated copy of the same official RPCS3 build at `<PS3_ROOT>\RPCS3_TEST003_LOCAL_RPCN` (baseline install untouched). Network Status `Connected`, PSN Status `RPCN`.
+- Sign-in service: RPCN server 1.10.0 (protocol 32, matching RPCS3 `b5a174e9`; 1.11.0 speaks 33 and is incompatible), run from `<PS3_ROOT>\RPCN_LOCAL` bound to `127.0.0.1` only, email validation and ticket signing disabled. A throwaway account `d1localtest` was created on that local server only with `scripts/rpcn_local_account.py`. No public RPCN account was created.
 - First attempt: still **buffalo**, plus an "RPCN unknown error" popup. Cause: RPCN's UDP helper was bound to `[::1]` only, so RPCS3's IPv4 address check on `127.0.0.1:3657` went unanswered. Setting an unparsable `HostIPv6` makes RPCN fall back to `127.0.0.1:3657`.
 - Second attempt: **buffalo cleared**. Destiny showed "SIGNING IN", then "Destiny servers are not available. Dismiss this message to try again."
-- Log evidence (private: `D:\Destiny360\LOGS\PS3-Test003-local-rpcn.RPCS3.log`): the game called `sceNpManagerRequestTicket2` for service ID `UP0002-BLUS31181_00` and the local RPCN issued each ticket. Its network threads are named `DW Thread` and `_DW HTTP Processor` (Demonware). At boot it looked up `dev-stun.demonware.net`. After each ticket it tried HTTPS (port 443) sign-on hosts in turn: `www8.signon.deadorbit.net`, `www1.signon.gravityshavings.net`, `www1.signon.deadorbit.net`, `www2.signon.gravityshavings.net`, `www2.signon.deadorbit.net`.
+- Log evidence (private: `<PS3_ROOT>\LOGS\PS3-Test003-local-rpcn.RPCS3.log`): the game called `sceNpManagerRequestTicket2` for service ID `UP0002-BLUS31181_00` and the local RPCN issued each ticket. Its network threads are named `DW Thread` and `_DW HTTP Processor` (Demonware). At boot it looked up `dev-stun.demonware.net`. After each ticket it tried HTTPS (port 443) sign-on hosts in turn: `www8.signon.deadorbit.net`, `www1.signon.gravityshavings.net`, `www1.signon.deadorbit.net`, `www2.signon.gravityshavings.net`, `www2.signon.deadorbit.net`.
 - Those names resolved publicly, so these attempts reached Bungie's live sign-on service with a locally issued, unsigned ticket. RPCS3 was stopped once this was noticed. Future local tests should keep the game from contacting live services.
 - What this proves: RPCS3 + a local RPCN server satisfies Destiny's PSN sign-in check, and the next gate is Bungie/Demonware sign-on over HTTPS. What remains unknown: the sign-on request and response format, and whether a compatible local service can be built.
 
 ## PS3 comparisons 004–013 — Local-only sign-on path
 
-Date: 2026-09-24. All runs used a fresh copy of `D:\Destiny360\RPCS3_TEST003_LOCAL_RPCN` made by `server/prepare_rpcs3_copy.py` (the baseline stays untouched), the same working game copy (`BLES01857` 01.00), and the loopback RPCN server from comparison 003. From 004 on, RPCS3's **DNS address** was `127.0.0.1` and `server/dns_sinkhole.py` answered every name locally, so no run could reach live Bungie/Demonware hosts by name. Tools are described in `server/README.md`; private logs are in each `D:\Destiny360\RPCS3_TESTnnn_*\log` folder and `D:\Destiny360\SIGNON_LOCAL\logs`.
+Date: 2026-09-24. All runs used a fresh copy of `<PS3_ROOT>\RPCS3_TEST003_LOCAL_RPCN` made by `server/prepare_rpcs3_copy.py` (the baseline stays untouched), the same working game copy (`BLES01857` 01.00), and the loopback RPCN server from comparison 003. From 004 on, RPCS3's **DNS address** was `127.0.0.1` and `server/dns_sinkhole.py` answered every name locally, so no run could reach live Bungie/Demonware hosts by name. Tools are described in `server/README.md`; private logs are in each `<PS3_ROOT>\RPCS3_TESTnnn_*\log` folder and `<PS3_ROOT>\SIGNON_LOCAL\logs`.
 
 | Test | Change from previous | Result |
 | --- | --- | --- |
@@ -46,27 +46,27 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
 
 ## PS3 comparison 014 — Game CA patch, firmware roots untouched
 
-- Date: 2026-09-24. Fresh copy `D:\Destiny360\RPCS3_TEST014_GAME_CA_PATCH` of the comparison 003 baseline, made with `server/prepare_rpcs3_copy.py --game-ca`. Same local DNS sinkhole, STUN stub, loopback RPCN and `signon_probe.py --mode terminate --destiny-hosts` as comparison 006, with the SSLv3 server from 007. Firmware `CA01`–`CA05` left original.
-- Static analysis (EBOOT decrypted with `rpcs3.exe --decrypt` into `D:\Destiny360\RESEARCH\ps3_decrypt`, outside Git): at `0x106880` the game calls `cellSslCertificateLoader(0x1f)` for CA01–CA05, then `cellHttpsInit(2, …)` with that buffer **and** a PEM string built into the executable at `0x011b7218` ("Tiger Root Authority", 2013–2033, then GeoTrust Global CA). If either step fails, the game takes its fatal path, which explains the crash in 007–013. The SSL callback registered with `cellHttpClientSetSslCallback` (`0x10816c`) reads each certificate's subject name, then returns `verifyErr` with a masked set of flags cleared, so the game itself refuses untrusted chains.
+- Date: 2026-09-24. Fresh copy `<PS3_ROOT>\RPCS3_TEST014_GAME_CA_PATCH` of the comparison 003 baseline, made with `server/prepare_rpcs3_copy.py --game-ca`. Same local DNS sinkhole, STUN stub, loopback RPCN and `signon_probe.py --mode terminate --destiny-hosts` as comparison 006, with the SSLv3 server from 007. Firmware `CA01`–`CA05` left original.
+- Static analysis (EBOOT decrypted with `rpcs3.exe --decrypt` into `<PS3_ROOT>\RESEARCH\ps3_decrypt`, outside Git): at `0x106880` the game calls `cellSslCertificateLoader(0x1f)` for CA01–CA05, then `cellHttpsInit(2, …)` with that buffer **and** a PEM string built into the executable at `0x011b7218` ("Tiger Root Authority", 2013–2033, then GeoTrust Global CA). If either step fails, the game takes its fatal path, which explains the crash in 007–013. The SSL callback registered with `cellHttpClientSetSslCallback` (`0x10816c`) reads each certificate's subject name, then returns `verifyErr` with a masked set of flags cleared, so the game itself refuses untrusted chains.
 - Change: an RPCS3 patch (`server/game_ca_patch.py`; hash `PPU-10d41d88e5ce442299c2ba4cb681f0b307f33527`) writes the local `ca_v4` PEM plus a NUL over the embedded string in guest memory. The log confirmed `PAT: Applied patch … (<- 2)`. Game files on disk are unchanged.
-- Result: **handshake completed.** After the NP ticket request, the game resolved `www7.signon.deadorbit.net` (→ 127.0.1.7). It accepted the local leaf over SSLv3 RSA_RC4_128_SHA and sent `POST /SignOn?platform=ps3_ppu&build=41375.14.07.03.1501.live` (`User-Agent: PS3Application libhttp/4.6.0-000 (CellOS)`, `X-TransactionID: 0`, `Content-Type: application/octet-stream`, 390-byte body). The probe answered 503 and the game made no further sign-on attempt. The screen showed "SIGNING IN", then "Destiny servers are not available. Dismiss this message to try again." (user screenshot). No crash occurred. The raw request is kept privately under `D:\Destiny360\SIGNON_LOCAL\captures`.
+- Result: **handshake completed.** After the NP ticket request, the game resolved `www7.signon.deadorbit.net` (→ 127.0.1.7). It accepted the local leaf over SSLv3 RSA_RC4_128_SHA and sent `POST /SignOn?platform=ps3_ppu&build=41375.14.07.03.1501.live` (`User-Agent: PS3Application libhttp/4.6.0-000 (CellOS)`, `X-TransactionID: 0`, `Content-Type: application/octet-stream`, 390-byte body). The probe answered 503 and the game made no further sign-on attempt. The screen showed "SIGNING IN", then "Destiny servers are not available. Dismiss this message to try again." (user screenshot). No crash occurred. The raw request is kept privately under `<PS3_ROOT>\SIGNON_LOCAL\captures`.
 - Body shape (protobuf wire format): field 1 = 2; field 2 = 294-byte NP ticket (version 2.1, the local RPCN account `d1localtest`, service `UP0002-BLUS31181_00`); field 3 = `"en"`; field 5 = a 15-character ID string; field 6 = build `41375.14.07.03.1501.live`; field 7 = 0; field 13 = a 64-bit varint; field 15 = packed varints `0xE0000002, 0xE0000001`; field 17 = `"europe_disc"`; field 19 = `"en"`. Field meanings are not yet known.
 
 ## PS3 comparison 015 — Local SignOn success reply
 
-- Date: 2026-09-24. Fresh copy `D:\Destiny360\RPCS3_TEST015_SIGNON_SUCCESS` (same as 014, game CA patch applied). The one change: `signon_probe.py --mode signon` answers `POST /SignOn` with HTTP 200 and a success message built by `server/signon_proto.py`. The schema comes from the game's nanopb descriptors (request `0x011ca1c0`, response `0x011ca300`; handler `0x126744`). The reply points the game at `127.1.1.127:12850`, where `server/session_listener.py` logs traffic.
+- Date: 2026-09-24. Fresh copy `<PS3_ROOT>\RPCS3_TEST015_SIGNON_SUCCESS` (same as 014, game CA patch applied). The one change: `signon_probe.py --mode signon` answers `POST /SignOn` with HTTP 200 and a success message built by `server/signon_proto.py`. The schema comes from the game's nanopb descriptors (request `0x011ca1c0`, response `0x011ca300`; handler `0x126744`). The reply points the game at `127.1.1.127:12850`, where `server/session_listener.py` logs traffic.
 - Input: the user was away, so Player 1 in this copy was switched from XInput to the keyboard handler (Cross = X; original saved as `Default.xinput.yml.bak`), and X was posted to the game window from a script. A Windows Firewall prompt for the new `rpcs3.exe` path appeared and was left unanswered; all traffic was loopback.
-- Result: **SignOn accepted on the first attempt.** The game did not contact the session address. Instead it resolved `panther-ps3-auth3.prod.demonware.net` (sinkholed to 127.0.0.1) and sent `POST /auth/` with `Content-Type: application/json`, retrying at 1, 2 and 4 s while the probe answered 503. The screen stayed on "SIGNING IN". The raw requests are in `D:\Destiny360\SIGNON_LOCAL\captures`.
+- Result: **SignOn accepted on the first attempt.** The game did not contact the session address. Instead it resolved `panther-ps3-auth3.prod.demonware.net` (sinkholed to 127.0.0.1) and sent `POST /auth/` with `Content-Type: application/json`, retrying at 1, 2 and 4 s while the probe answered 503. The screen stayed on "SIGNING IN". The raw requests are in `<PS3_ROOT>\SIGNON_LOCAL\captures`.
 - Next gate: Demonware authentication. This session did not continue past it.
 
 ## PS3 comparison 017 — Lobby header acknowledged
 
-- Date: 2026-09-24. Copy `D:\Destiny360\RPCS3_TEST017_LOBBY_HEADER`, services as in 016, plus `server/lobby_probe.py` on `127.0.3.1:3074`, which answers the greeting with `server_header_ack` (protocol 210).
-- Result (017b): the client accepted the header and sent a 153-byte `client_auth` frame (`AB 82`). The probe did not reply, and the client disconnected after about 10 s (**cattle**). Captures are in `D:\Destiny360\SIGNON_LOCAL\captures\lobby210`. Static analysis of that frame is in `notes/ps3-route.md`.
+- Date: 2026-09-24. Copy `<PS3_ROOT>\RPCS3_TEST017_LOBBY_HEADER`, services as in 016, plus `server/lobby_probe.py` on `127.0.3.1:3074`, which answers the greeting with `server_header_ack` (protocol 210).
+- Result (017b): the client accepted the header and sent a 153-byte `client_auth` frame (`AB 82`). The probe did not reply, and the client disconnected after about 10 s (**cattle**). Captures are in `<PS3_ROOT>\SIGNON_LOCAL\captures\lobby210`. Static analysis of that frame is in `notes/ps3-route.md`.
 
 ## PS3 comparison 018 — Lobby authentication completed
 
-- Date: 2026-09-24. Fresh copy `D:\Destiny360\RPCS3_TEST018_LOBBY_AUTH` of 017. The only change: `lobby_probe.py` derives the `CLIENTCHAL` verify from the auth3 session key and answers `client_auth` with `server_auth_done`. Before the live run, the derivation reproduced the 017b client challenge offline.
+- Date: 2026-09-24. Fresh copy `<PS3_ROOT>\RPCS3_TEST018_LOBBY_AUTH` of 017. The only change: `lobby_probe.py` derives the `CLIENTCHAL` verify from the auth3 session key and answers `client_auth` with `server_auth_done`. Before the live run, the derivation reproduced the 017b client challenge offline.
 - Input: X posted to the game window from a script. The game reached the lobby without further input.
 - Result: SignOn and auth3 succeeded as before. In the lobby, the probe logged `client_auth title=5378 challenge_verified=True` and sent `server_auth_done`. RPCS3 shows the client read the full 10-byte frame and began waiting for the next frame. A game job thread closed the socket about 70 ms later, after a `stat` of `/dev_hdd1/downloads/` returned ENOENT. No further DNS lookups or connections followed. The screen showed **termite**: "Failed to download configuration files from Bungie servers, please try again." (RPCS3 screenshot, kept privately under the test folder.)
 - Next gate: termite. Leads are listed in `notes/ps3-route.md`.
@@ -194,7 +194,7 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
   Per-game setting restored to false. Next: obtain an RSX frame capture in a GUI-enabled run.
 - 201: Strict Rendering Mode enabled as the single graphics change. Mission reached but the
   first F12 image already showed a purple band and dark blocks. Setting restored. An RPCS3 RSX
-  capture was saved at `D:\Destiny360\RPCS3_TEST048_SETUP\captures\BLES01857_20260926143340_capture.rrc.gz`.
+  capture was saved at `<PS3_ROOT>\RPCS3_TEST048_SETUP\captures\BLES01857_20260926143340_capture.rrc.gz`.
 - 202: unlock-expression trace after the join: no evaluations; urgent message still shown.
 - 203: OpenGL: RSX fatal before sign-in.
 - 204: + RSX reservation accuracy + no async memory manager: movement works; split after
@@ -219,7 +219,7 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
   movement - no fix.
 - 224: render-graph trace (`d1trace_timeline.py --graph`): per-frame pass order recorded (see
   checkpoint); the trace slowed the game so much that all frames came out clean.
-- 225: one-frame render-target dumps (`C:/dev/d1dump.on`, `scripts/d1dump_scan.py`): the black
+- 225: one-frame render-target dumps (`<DEV_ROOT>/d1dump.on`, `scripts/d1dump_scan.py`): the black
   blocks are already in the HDR light buffer 0xCEB60000 after its first pass, and match exactly
   the HUD targets that alias that memory (0xCEB60000 1280x127 and 0xCEDD0000 1280x228 ARGB8,
   pitch 8192). Surface aliasing in RPCS3's surface cache, not SPU data.
@@ -293,7 +293,7 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
   storage): 30-minute soak, 30/30 steps ok, RPCS3 alive throughout; private 12.9 GB flat for the
   first 12 minutes (live tables ~2600, ~260k released), then +0.2 GB/min while new areas compile
   new pipelines (programs 255k -> 288k), ending ~16 GB.
-- 250: TEST249 build with `C:/dev/d1noblitfix.on` (VRAM->main blits back on the GPU path):
+- 250: TEST249 build with `<DEV_ROOT>/d1noblitfix.on` (VRAM->main blits back on the GPU path):
   does the write tracking alone keep the frame clean?
   Result: two full movement passes, 14/14 frames clean. With the local-memory write tracking the
   CPU path for VRAM->main blits (TEST216) is not needed; it was dropped from
@@ -318,7 +318,7 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
   Static analysis below shows the existing group peer 0 is already the local slot.
 - 255: TEST253 configuration plus Codex's new captures in Dock 13
   (`rpcs3_replicated_objects.py --json-out/--schema-out`, private files
-  `D:\Destiny360\SIGNON_LOCAL\TEST255-objects.json` / `TEST255-object-types.json`): all 121
+  `<PS3_ROOT>\SIGNON_LOCAL\TEST255-objects.json` / `TEST255-object-types.json`): all 121
   records have baselines (awaiting 0). `rpcs3_world_peer.py` read zone -1, group peer -1,
   local slot 0 at the slice it reads (not zone 104 - the slice pointer or record offset
   needs checking). State types by kind: see checkpoint.
@@ -365,7 +365,7 @@ What this establishes: with DNS, STUN (NAT discovery) and PSN sign-in served loc
 - 263-264: first bubble sweep (`scripts/Invoke-BubbleSweep.ps1`) while the user used the PC: F12
   screenshots failed - F12 is a Qt window shortcut and only fires while the game window is
   active. The instrumented build now takes a screenshot when `d1\d1shot.on` (next to rpcs3.exe)
-  appears; `Invoke-RpcsStep.ps1` uses it. The private data moved from `D:\Destiny360` into the
+  appears; `Invoke-RpcsStep.ps1` uses it. The private data moved from `<PS3_ROOT>` into the
   repo's ignored `local\` folder the same afternoon.
 - 265-270: bubble sweep from `local\`, with `--ah-baselines-watch` feeding each bubble's records
   back to the stand-in during the run (TEST267: 150 new baselines picked up, spawn succeeded).

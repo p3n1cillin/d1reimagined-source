@@ -1,9 +1,9 @@
 from pathlib import Path
 import importlib.util,sys,json,time
-run=Path(r'F:\d1\d1preservation-main\cfw-staging\sense34')
+run=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\sense34')
 assert not (run/'replay.lock').exists()
 shots=run/'kill-fight';shots.mkdir()
-p=Path(r'F:\d1\public-work\d1reimagined-stats\tools\ps4_setup\d1-waypoint.py')
+p=Path(r'<D1_ROOT>\public-work\d1reimagined-stats\tools\ps4_setup\d1-waypoint.py')
 s=importlib.util.spec_from_file_location('fight',p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 # Measured from the current 1936x1119 capture: the D1 hip reticle is lower than window centre.
 m.RY=652

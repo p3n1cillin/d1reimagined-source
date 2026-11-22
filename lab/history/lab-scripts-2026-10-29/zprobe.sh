@@ -1,4 +1,4 @@
-cd /f/d1/tools; S=lab/history/lab-scripts-2026-10-29
+cd <D1_ROOT>/tools; S=lab/history/lab-scripts-2026-10-29
 timeout 40 python -I d1-watchwrite.py --seconds 4 --max-hits 1 --exec 0x77fb05 --peek "r15=" --peek rbp-0xb8 --peek rbp-0xbc --peek rbp-0xb4 --peek rbx+0x378 --peek rbx+0x380 --peek rbx+0x370 --out $S/zp.jsonl >/dev/null 2>&1
 python -I -c "
 import json,struct

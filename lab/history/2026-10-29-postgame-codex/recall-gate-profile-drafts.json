@@ -16,7 +16,7 @@
     {
       "new_value": 1,
       "object": "lab/history\\2026-10-29-postgame-codex\\sense54-completion673-1-recall.obj",
-      "draft": "F:\\d1\\d1preservation-main\\cfw-staging\\sense54-completion673-1-recall.draft.bin",
+      "draft": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\sense54-completion673-1-recall.draft.bin",
       "bytes": 20836,
       "bits": 166685,
       "object_sha256": "85e15a1c21ab39afe44e1846decde0ad0ded07f6b2167c0ed70561a98b65de3e",
@@ -25,7 +25,7 @@
     {
       "new_value": 0,
       "object": "lab/history\\2026-10-29-postgame-codex\\sense54-completion673-0-recall.obj",
-      "draft": "F:\\d1\\d1preservation-main\\cfw-staging\\sense54-completion673-0-recall.draft.bin",
+      "draft": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\sense54-completion673-0-recall.draft.bin",
       "bytes": 20836,
       "bits": 166685,
       "object_sha256": "3ad08c9d0c65af26f83397122bb14c4bbb99a7f618443df48721023dddc3ac4d",

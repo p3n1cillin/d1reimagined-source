@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// tools/ps4_setup/d1-worlds.mjs: hashes always; the owned packages when D1_PACKAGES (or the default
-// dump) and Blam Network's tiger build (D1_TIGER) are present, skipped otherwise.
+// tools/ps4_setup/d1-worlds.mjs: hashes always; the owned packages when D1_PACKAGES (or D1_ROOT) and Blam Network's tiger build (D1_TIGER) are present, skipped otherwise.
 //
 //   node --test tests/test_d1_worlds.mjs
 import { test } from "node:test";
@@ -9,11 +8,13 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { fnv1, hex, loadGibbon, readActivityTable, readWorlds, readInsertionPoints } from "../tools/ps4_setup/d1-worlds.mjs";
 
-const tiger = process.env.D1_TIGER ?? "F:/d1/third-party/Blam-Network_tiger";
+const root = process.env.D1_ROOT;
+const tiger = process.env.D1_TIGER ?? (root ? path.join(root, "third-party", "Blam-Network_tiger") : undefined);
 const packages =
-  process.env.D1_PACKAGES ?? "F:/d1/d1preservation-main/dumps/later-56578-CUSA00219/CUSA00219/packages";
-const gibbon = path.join(tiger, "packages/gibbon/dist-cjs/versions/destiny1/v56578_17_04_12_1251_evil.js");
-const owned = existsSync(packages) && existsSync(gibbon);
+  process.env.D1_PACKAGES ??
+  (root ? path.join(root, "d1preservation-main", "dumps", "later-56578-CUSA00219", "CUSA00219", "packages") : undefined);
+const gibbon = tiger && path.join(tiger, "packages/gibbon/dist-cjs/versions/destiny1/v56578_17_04_12_1251_evil.js");
+const owned = Boolean(packages && gibbon) && existsSync(packages) && existsSync(gibbon);
 
 test("world and bundle names hash as the client's records do", () => {
   assert.equal(fnv1("cine_speaker"), 0x796b3b8c);

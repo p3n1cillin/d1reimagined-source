@@ -1,7 +1,7 @@
 #!/bin/bash
 # Dock 13 attrition: sprint from the orange-room respawn to the fight room, close-quarters fight; log progress.
 S=lab/history/lab-scripts-2026-10-29
-H=$(ls -d F:/d1/d1preservation-main/cfw-staging/contained-boot/*-sense40)/activity-host.log
+H=$(ls -d <D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/*-sense40)/activity-host.log
 mkdir -p $S/dk40
 for cyc in $(seq 1 ${1:-8}); do
   sleep 3

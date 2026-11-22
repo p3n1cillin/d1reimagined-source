@@ -1,7 +1,7 @@
 """Read-only 56578 namespace probe; current process and base are verified by d1-winguest."""
 import ctypes, importlib.util, json, struct, sys
 from pathlib import Path
-src = Path(r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+src = Path(r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 s = importlib.util.spec_from_file_location('winguest', src)
 g = importlib.util.module_from_spec(s); s.loader.exec_module(g)
 p, base = g.open_client()

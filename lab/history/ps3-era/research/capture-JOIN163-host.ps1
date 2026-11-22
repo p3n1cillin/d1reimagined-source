@@ -1,6 +1,6 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
-. 'F:\d1\d1xenia\scripts\Final124RunHelpers.ps1'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
+. '<D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1'
 $logs=Join-Path $rt 'SIGNON_LOCAL\logs'
 $identity=(Read-D1ProcessManifest (Join-Path $logs 'FINAL124_JOIN163-processes.json')).processes | Where-Object tag -EQ 'rpcs3'
 $client=Get-D1OwnedProcess $identity

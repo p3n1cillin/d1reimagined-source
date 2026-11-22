@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $research=Join-Path $rt 'RESEARCH'
 $closed=Get-Content -LiteralPath (Join-Path $research 'JOIN186-independent-closed.json') -Raw | ConvertFrom-Json
@@ -36,7 +36,7 @@ $trace+="`n"
 [IO.File]::WriteAllText((Join-Path $research 'JOIN187-planned-d1ppu.txt'),$trace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText((Join-Path $rpc 'd1\d1ppu.txt'),$trace,[Text.UTF8Encoding]::new($false))
 foreach($marker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText((Join-Path $rpc ('d1\'+$marker)),'')}
-$receipt=[ordered]@{at=[DateTime]::UtcNow.ToString('o');build=$build;source_base='7bedf8e5df854bac79633baf242cc6110957a5f8';source_clean=$false;change='Production completion-driven mission with original 20-second start; unobstructed scene/cast inspection required.';candidate_sha256=(Get-FileHash -LiteralPath (Join-Path $research 'JOIN187-mission-candidate.json')).Hash.ToLowerInvariant();probe_sha256=(Get-FileHash -LiteralPath 'F:\d1\d1xenia\scripts\rpcs3_final124_performance.py').Hash.ToLowerInvariant();trace=$trace;scope='C5 native diagnostics; manual handover must be labelled, no production playback acceptance claimed.'}
+$receipt=[ordered]@{at=[DateTime]::UtcNow.ToString('o');build=$build;source_base='7bedf8e5df854bac79633baf242cc6110957a5f8';source_clean=$false;change='Production completion-driven mission with original 20-second start; unobstructed scene/cast inspection required.';candidate_sha256=(Get-FileHash -LiteralPath (Join-Path $research 'JOIN187-mission-candidate.json')).Hash.ToLowerInvariant();probe_sha256=(Get-FileHash -LiteralPath '<D1_ROOT>\d1xenia\scripts\rpcs3_final124_performance.py').Hash.ToLowerInvariant();trace=$trace;scope='C5 native diagnostics; manual handover must be labelled, no production playback acceptance claimed.'}
 $receipt | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $research 'JOIN187-prepare.json') -Encoding utf8
 $wrapper
 

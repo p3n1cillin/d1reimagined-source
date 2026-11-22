@@ -1,8 +1,8 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $research=Join-Path $rt 'RESEARCH'
-. 'F:\d1\d1xenia\scripts\Final124RunHelpers.ps1'
+. '<D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1'
 $closed=Get-Content -LiteralPath (Join-Path $research 'JOIN180-independent-closed.json') -Raw | ConvertFrom-Json
 if(-not $closed.all_exact_owned_closed -or -not $closed.all_hashes_match){throw 'Prior cleanup is not verified'}
 if(@(Get-CimInstance Win32_Process -Filter "Name='rpcs3.exe'").Count){throw 'A native client is live; preserve it'}
@@ -26,8 +26,8 @@ foreach($marker in 'd1checkpoint','d1depthfp.on','d1descriptor','d1descriptorrin
 Copy-Item -LiteralPath (Join-Path $rpc 'config\custom_configs\config_BLES01857.yml') -Destination (Join-Path $research 'JOIN181-before-title.yml')
 Copy-Item -LiteralPath (Join-Path $rpc 'd1\d1ppu.txt') -Destination (Join-Path $research 'JOIN181-before-d1ppu.txt')
 $text=(Get-Content -LiteralPath (Join-Path $rt 'SIGNON_LOCAL\JOIN180-launch.ps1') -Raw).Replace('JOIN180','JOIN181')
-$old='--ah-mission;F:\d1\d1xenia\missions\a_guardian_rises.json'
-$new='--ah-mission;F:\d1\<pc>-import\d1xenia\local\RESEARCH\JOIN181-mission-marker-candidate.json'
+$old='--ah-mission;<D1_ROOT>\d1xenia\missions\a_guardian_rises.json'
+$new='--ah-mission;<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\JOIN181-mission-marker-candidate.json'
 if(-not $text.Contains($old)){throw 'Existing launcher mission string changed'}
 $text=$text.Replace($old,$new)
 [IO.File]::WriteAllText($wrapper,$text,[Text.UTF8Encoding]::new($false))

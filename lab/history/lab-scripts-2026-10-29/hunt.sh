@@ -1,7 +1,7 @@
 #!/bin/bash
 # Hunt the live members of a Dock 13 cohort until the host gate reports it cleared. Usage: hunt.sh RUNNAME [ROUNDS]
 S=lab/history/lab-scripts-2026-10-29
-H=$(ls -d F:/d1/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
+H=$(ls -d <D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
 C=5,6,7,8,9,10,11,12
 rel() { python $S/release.py; }                # every tool ends with no key held (a kill mid-press leaves it down)
 for i in $(seq 1 ${2:-12}); do

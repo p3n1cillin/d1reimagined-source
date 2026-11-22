@@ -5,7 +5,7 @@ import re
 import sys
 
 name, build = sys.argv[1:]
-logs = Path(r'F:\d1\<pc>-import\d1xenia\local\SIGNON_LOCAL\logs')
+logs = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\SIGNON_LOCAL\logs')
 text = (logs / (name + '-pre-stop-native.log')).read_text(encoding='utf-8')
 last = re.findall(r'^·[^\n]*', text, re.M)[-1]
 value = {'at': datetime.now(timezone.utc).isoformat(), 'build': build, 'fixture_completed': True,

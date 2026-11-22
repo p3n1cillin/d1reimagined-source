@@ -1,6 +1,6 @@
 import sys,struct
 from pathlib import Path
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from d1_eboot import Eboot
 root=Path(__file__).parent
 out=root/'JOIN183-cinematic-static';out.mkdir(exist_ok=True)

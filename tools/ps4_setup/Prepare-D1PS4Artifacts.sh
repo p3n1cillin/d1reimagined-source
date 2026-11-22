@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # BOOTSTRAP.md 3a/3b/4: use existing generators and controls, never substitute a build.
 set -euo pipefail
-repo=/mnt/f/d1/d1preservation-main
+repo=${D1_REPO_LINUX:?set D1_REPO_LINUX to the WSL path of the workspace folder}
+export D1_REPO_LINUX="$repo"
 cd "$repo"
 export D1_REPO="$repo"
 export PYTHONPATH="/opt/d1-tools${PYTHONPATH:+:$PYTHONPATH}"
@@ -15,7 +16,7 @@ packages="$repo/dumps/patch-01.29-CUSA00219/packages"
 [[ -d "$packages" && -n "$(find "$packages" -maxdepth 1 -type f -name '*.pkg' -print -quit)" ]] || {
     echo 'REFUSING: installed Bungie content packages are missing' >&2; exit 2;
 }
-bash /mnt/f/d1/tools/Install-D1WSLEntrypoints.sh
+bash "$(dirname "${BASH_SOURCE[0]}")/Install-D1WSLEntrypoints.sh"
 python3 -c 'import capstone, unicorn'
 mkdir -p capture-rig/manifests capture-rig/schemas
 bin="$repo/d1-server/target/release"

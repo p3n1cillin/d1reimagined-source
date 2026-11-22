@@ -21,7 +21,7 @@ pointer=private/(args.date+'-draft-pointer.json')
 receipt_path=private/(args.date+'-daily-handoff-receipt.json')
 job=json.loads(pointer.read_text(encoding='utf-8'))
 draft=Path(job['draft'])
-source=Path(r'F:\d1\d1xenia\tools\content_capture')
+source=Path(r'<D1_ROOT>\d1xenia\tools\content_capture')
 sys.path.insert(0,str(source))
 from capture import Capture, lock, check_text
 
@@ -66,7 +66,7 @@ with lock(private/(args.date+'-delivery.lock'),timeout=1):
         metadata.update(native_safe_checkpoint_observed_at=utc(),
                         safe_checkpoint_basis='Read-only native process inventory is empty; no emulator or server was stopped by this handoff.')
         for name, expected in metadata.get('handoff_tool_source_sha256',{}).items():
-            p=Path(r'F:\d1\d1xenia')/name
+            p=Path(r'<D1_ROOT>\d1xenia')/name
             if hashlib.sha256(p.read_bytes()).hexdigest()!=expected:
                 raise RuntimeError('Handoff tool source changed after validation; draft retained')
         for item in json.loads((draft/'selected-screenshots.json').read_text(encoding='utf-8')):

@@ -6,8 +6,8 @@ from pathlib import Path
 import subprocess
 
 private = Path(r'lab/history')
-repo = Path(r'F:\d1\d1xenia')
-runtime = Path(r'F:\d1\d1preservation-main')
+repo = Path(r'<D1_ROOT>\d1xenia')
+runtime = Path(r'<D1_ROOT>\d1preservation-main')
 at = datetime.now(timezone.utc)
 draft = private/('daily-2026-10-14-'+at.strftime('%Y%m%dT%H%M%S'))
 draft.mkdir()
@@ -16,7 +16,7 @@ checkpoint = git('rev-parse','575358b')
 head = git('rev-parse','HEAD')
 dirty = git('status','--porcelain')
 previous = '<lab-pc>-20261013T181812-ae94e24c41d043fda43b6500d0e35f5c'
-prior = Path(r'Y:\incoming\<lab-pc>\2026\10\13')/(previous+'.ready')
+prior = Path(r'<NAS_INCOMING>\<lab-pc>\2026\10\13')/(previous+'.ready')
 manifest = json.loads((prior/'hashes.json').read_text())
 for name, pin in manifest['files'].items():
     data=(prior/name).read_bytes()
@@ -270,7 +270,7 @@ meta={'recorded_at':at.isoformat(),'reporting_date':'2026-10-14','reporting_time
 for name,value in [('events.json',events),('metadata-input.json',meta),('selected-screenshots.json',shots)]:
     (draft/name).write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8')
 (draft/'daily-report.md').write_text(report,encoding='utf-8')
-cfg_path=Path(r'F:\d1\<pc>-import\d1xenia\local\content-capture\config.json')
+cfg_path=Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\content-capture\config.json')
 cfg=json.loads(cfg_path.read_text(encoding='utf-8-sig'))
 cfg.update(CURRENT_GAME_BUILD='PS4 CUSA00219 owned build 56578.17.04.12.1251.evil; package metadata 01.33; retained synthetic lab patch',
            CURRENT_SESSION='daily-engineering-handoff-2026-10-14',CURRENT_FEATURE='served-director-and-armed-world-entry')

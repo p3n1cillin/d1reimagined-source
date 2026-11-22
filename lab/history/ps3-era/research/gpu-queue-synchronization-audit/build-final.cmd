@@ -1,6 +1,6 @@
 @echo off
-call F:\VS\BuildTools\VC\Auxiliary\Build\vcvars64.bat >nul
-cd /d F:\d1\<pc>-import\d1xenia\local\RESEARCH\gpu-queue-synchronization-audit
+call <VS_BUILDTOOLS>\VC\Auxiliary\Build\vcvars64.bat >nul
+cd /d <D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\gpu-queue-synchronization-audit
 cl /nologo /std:c++20 /EHsc /W4 before-final\queue-synchronization-audit.cpp /Febefore-final\audit.exe /Fobefore-final\audit.obj >before-final\build.log 2>&1
 if errorlevel 1 exit /b %errorlevel%
 before-final\audit.exe >before-final\result.log 2>&1

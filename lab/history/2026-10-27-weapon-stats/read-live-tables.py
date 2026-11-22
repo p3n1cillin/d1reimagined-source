@@ -1,6 +1,6 @@
 import importlib.util,struct,json
 from pathlib import Path
-s=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+s=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 g=importlib.util.module_from_spec(s);s.loader.exec_module(g)
 p,base=g.open_client()
 players=p.u(p.u(base+g.PLAYER_POOL,'Q')+8,'Q')

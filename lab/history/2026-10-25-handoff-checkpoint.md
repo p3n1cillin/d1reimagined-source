@@ -33,7 +33,7 @@ files as `19150dc`, mirrored them into runtime, rebuilt and tested the host.
 No commit/push command was issued by this heartbeat. Preserve those changes.
 Reporting snapshot is `d4f9cda`. The tested/runtime listener SHA-256 is
 `3628d502ee2cef564c9568988483e145538542b1c7c9a8bf25510ec35aa38352`.
-Canonical current source is `F:\d1\public-work\d1reimagined-source`; the old
+Canonical current source is `<D1_ROOT>\public-work\d1reimagined-source`; the old
 private checkout is stale and its former remote returned Repository not found.
 Its pre-existing capture changes and untracked file `3` remain preserved.
 

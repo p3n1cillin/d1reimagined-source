@@ -1,7 +1,7 @@
 """Private latest-package component interface/configuration inspection."""
 import json,struct,sys
 from pathlib import Path
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from d1_pkg import PackageSet,Oodle,split_tag_hash,dyn_array
 rt=Path(__file__).parent.parent
 out=Path(__file__).parent/'JOIN210-static'

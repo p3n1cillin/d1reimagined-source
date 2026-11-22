@@ -28,6 +28,32 @@ PERSONAL = re.compile(
     r"|(?<![\w.~])/(?:home|Users)/(?![<$])[a-z][\w.-]*/",
     re.I,
 )
+# This project's own lab folders on the maintainers' PCs: a drive letter followed by d1 (in any slash or
+# escaping style), its WSL and MSYS spellings (/mnt/<drive>/d1, /<drive>/d1), and the other machine roots the
+# lab history used. Write the placeholder from LAB_PLACEHOLDERS, or have the tool read the location
+# (tools/ps4_setup/d1paths.py, D1Paths.ps1, or an environment variable).
+# .github/scripts/scrub_lab_paths.py rewrites existing ones.
+_SEP = r"[\\/]+"
+LAB_PLACEHOLDERS = {
+    "d1": "<D1_ROOT>", "d1-lab": "<LAB_ROOT>", "d1-game": "<GAME_ROOT>", "destiny360": "<PS3_ROOT>",
+    "dev": "<DEV_ROOT>", "vs/buildtools": "<VS_BUILDTOOLS>", "incoming": "<NAS_INCOMING>",
+}
+# No lookbehind on the drive letter: paths also follow a switch (/Fe:F:...), a URI scheme (file:F:...) or a
+# word whose space was lost in a log. The root must end at a separator or a non-name character.
+LAB_PATH = re.compile(
+    r"[A-Za-z]:" + _SEP + r"(?P<root>d1|d1-lab|d1-game|Destiny360|dev|VS" + _SEP + r"BuildTools|incoming)(?![\w.-])"
+    r"|(?<![\w.])/mnt/[a-z]/(?P<wsl>d1|d1-lab|d1-game)(?![\w.-])"
+    r"|(?<![\w.:/])/[a-z]/(?P<msys>d1|d1-lab|d1-game)(?![\w.-])",
+    re.I,
+)
+
+
+def lab_placeholder(match):
+    """The placeholder for one LAB_PATH match."""
+    root = match.group("root") or match.group("wsl") or match.group("msys")
+    return LAB_PLACEHOLDERS[re.sub(_SEP, "/", root).lower()]
+
+
 LINK = re.compile(r"\]\(([^)\s#]+)(?:#[^)\s]*)?\)")
 # Fenced blocks and inline code, where `a[i](x)` is code rather than a link.
 CODE = re.compile(r"^(```|~~~).*?^\1|`[^`\n]*`", re.S | re.M)
@@ -63,6 +89,9 @@ def main():
             personal = PERSONAL.search(line)
             if personal:
                 errors.append((current, f"Personal path {personal.group(0)!r}: use a placeholder such as <home>, or an environment variable"))
+            lab = LAB_PATH.search(line)
+            if lab:
+                errors.append((current, f"Local path {lab.group(0)!r}: write a placeholder (e.g. {lab_placeholder(lab)}), or read the location from d1paths / an environment variable"))
     for status, path in changed:
         if status == "D" or not path.endswith(".md"):
             continue

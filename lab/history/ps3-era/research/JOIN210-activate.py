@@ -1,15 +1,15 @@
 """Preflight a native-identified prop command, then send a diagnostic control."""
 import datetime,json,sys
 from pathlib import Path
-sys.path.insert(0,'F:/d1/d1xenia/server')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/server')
 import bap_server as bap, investment as inv
 root=Path(__file__).parent
 phase=int(sys.argv[1]); channel=int(sys.argv[2])
 if phase not in (1,2,3,4,5) or channel not in (0,1,2): raise ValueError('bounded diagnostic')
 dest=root/f'JOIN210-activation-{phase}.json'
 if dest.exists(): raise ValueError('preserve existing request')
-schema=json.loads(Path('F:/d1/d1xenia-data/ps3_updates/types_01.24.json').read_text())
-mission=json.loads(Path('F:/d1/d1xenia/missions/a_guardian_rises.json').read_text())
+schema=json.loads(Path('<D1_ROOT>/d1xenia-data/ps3_updates/types_01.24.json').read_text())
+mission=json.loads(Path('<D1_ROOT>/d1xenia/missions/a_guardian_rises.json').read_text())
 payload={str(i):0 for i in range(0,36,4)}
 for i in range(channel+1): payload.update({str(i*12):1,str(i*12+4):1,str(i*12+8):1.0})
 if phase in (4,5): payload.update({'24':phase-2,'28':phase-2,'32':0.0 if phase==4 else 1.0})

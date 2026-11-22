@@ -6,7 +6,7 @@
 Two local inputs, both Bungie's own public data and neither kept in the repository:
 
 - `--dim`: the final D1 manifest as DIM ships it (`d1-manifest-base.json.gz` and
-  `d1-manifest-strings-en.json.gz`; default `F:/d1/third-party/trawl-2026-11-05/data/dim-d1-manifest`).
+  `d1-manifest-strings-en.json.gz`; default `trawl-2026-11-05/data/dim-d1-manifest` below D1_THIRD_PARTY).
   It is the source of every activity row: hash, name, type, level, light, party sizes,
   matchmaking, playlist flag, skulls and rewards.
 - `--world`: the mobile world database (`manifest/data/world_en.sqlite` of the workspace) for what
@@ -28,7 +28,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import d1paths  # noqa: E402
 
-DIM = Path('F:/d1/third-party/trawl-2026-11-05/data/dim-d1-manifest')
+DIM_BELOW = 'trawl-2026-11-05/data/dim-d1-manifest'   # below D1_THIRD_PARTY, resolved when used
 
 # Activity type identifier -> catalog category. The types with no identifier are told apart by
 # their English name (below) and destination.
@@ -115,12 +115,13 @@ def playlists(rows):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('--dim', type=Path, default=DIM)
+    ap.add_argument('--dim', type=Path, default=None)
     ap.add_argument('--world', type=Path,
                     default=Path(d1paths.workspace()) / 'manifest' / 'data' / 'world_en.sqlite')
     ap.add_argument('--out', type=Path,
                     default=HERE.parents[1] / 'ps4' / 'fixtures' / '56578' / 'activities' / 'catalog.json')
     a = ap.parse_args()
+    a.dim = a.dim or d1paths.third_party().joinpath(*DIM_BELOW.split('/'))
     base, strings = load_dim(a.dim)
     world = load_world(a.world)
     acts, s_acts = base['DestinyActivityDefinition'], strings['DestinyActivityDefinition']

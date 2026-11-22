@@ -308,10 +308,10 @@ The clock chain is in FRAME-CAPS-REMOVED-20261005.md section 5. New facts:
 | D. Frame generation (FSR 3 / DLSS FG) | generate frames between rendered ones | yes | does not fix sim judder | +1 frame plus generation | artifacts, needs motion vectors | not a fix; optional layer later |
 | E. 120 Hz authority | tick at 120 | no, h = 1/120 | removed at 120 only | lowest | very high: every rate-sensitive system | rejected |
 
-The fork's roadmap reached the same fork in the road (`D:/dev/shadPS4/documents/perf/ROADMAP-20260912-60-120.md`
+The fork's roadmap reached the same fork in the road (`<DEV_ROOT>/shadPS4/documents/perf/ROADMAP-20260912-60-120.md`
 13.4-13.5) and its clock model already holds the pieces as a model:
 `PresentationPolicy`, `fractional_alpha` and `SnapshotGenerations` in
-`D:/dev/shadPS4/src/core/d1_clock_pipeline.h` `[R]`.
+`<DEV_ROOT>/shadPS4/src/core/d1_clock_pipeline.h` `[R]`.
 
 ## 4. The design
 
@@ -658,10 +658,10 @@ Internal:
 - CADENCE-20261006.md
 - STALE-GEOMETRY-VERDICT-20261006.md
 - `artifacts/renderer-research-20261005/xbox/` (uncapping-and-clocks.md, kx_game_wait.h, kx_simulation.h)
-- `D:/dev/shadPS4/documents/perf/ROADMAP-20260912-60-120.md`
-- `D:/dev/shadPS4/documents/Debugging/Destiny1ClockPipeline.md`
-- `D:/dev/shadPS4/src/core/d1_clock_pipeline.h`
-- `D:/dev/d2-preservation/source/tiger-engine/status/runtime-port/D2_PS4_0159_NATIVE_ENGINE_LOOP.md`
+- `<DEV_ROOT>/shadPS4/documents/perf/ROADMAP-20260912-60-120.md`
+- `<DEV_ROOT>/shadPS4/documents/Debugging/Destiny1ClockPipeline.md`
+- `<DEV_ROOT>/shadPS4/src/core/d1_clock_pipeline.h`
+- `<DEV_ROOT>/d2-preservation/source/tiger-engine/status/runtime-port/D2_PS4_0159_NATIVE_ENGINE_LOOP.md`
 - `artifacts/frame-rate-research-20261006/` (address maps and scripts)
 
 External (each read by an agent; see the agents' notes for more):

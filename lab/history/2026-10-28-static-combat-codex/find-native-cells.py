@@ -1,7 +1,7 @@
 """Bounded read-only startup-cell inventory. No game control or debugger."""
 import importlib.util,json,struct
 import static56578 as st
-spec=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
+spec=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 p,base=g.open_client();out=[]
 for tag in (0x80800463,0x80802ba7):
  needle=struct.pack('<I',tag)

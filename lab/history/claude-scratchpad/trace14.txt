@@ -230,4 +230,4 @@ D1 trace 0x377b10000: type 9 32x32x1 L1 bind 2 view base 0 n 1 size 0x8000
 D1 trace free #554 type 10 32x32x32 L1
 D1 trace new #2860 type 9 32x32x1 L1 (from guest memory)
 D1 event RT 44734111020c5924 cb0 377b10000 32x32 slices 0-0 gsize 0x8000 R8G8B8A8Unorm wm15 blend0 clearfalse
-D1 dump: 583 textures written to F:\d1\d1preservation-main\cfw-staging\2026-10-26-gfx14\dump
+D1 dump: 583 textures written to <D1_ROOT>\d1preservation-main\cfw-staging\2026-10-26-gfx14\dump

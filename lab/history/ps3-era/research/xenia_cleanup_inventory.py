@@ -3,7 +3,7 @@ import json
 import os
 from pathlib import Path
 
-runtime = Path('F:/d1/<pc>-import/d1xenia/local')
+runtime = Path('<D1_ROOT>/<pc>-import/d1xenia/local')
 targets = [(p, 'retired emulator build/test') for p in runtime.iterdir() if p.name.upper().startswith('XENIA')]
 for rel, reason in (
     ('00_ORIGINAL_DUMP/HDD_CAPTURE_2026-09-23', 'Xbox HDD capture'),

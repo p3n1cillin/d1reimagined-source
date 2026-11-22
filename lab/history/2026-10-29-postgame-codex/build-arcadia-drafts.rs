@@ -1,10 +1,10 @@
 use std::{fs, path::Path};
 use d1_oracle::{inventory::{ItemSpec,ItemSpec as Spec},item_index::IndexTable,object::ObjectOracle};
 const P: &str="lab/history/2026-10-29-postgame-codex";
-const S: &str="F:/d1/d1preservation-main/cfw-staging";
+const S: &str="<D1_ROOT>/d1preservation-main/cfw-staging";
 const I: u64=0xD100_0000_0000_03F1;
 fn main()->Result<(),Box<dyn std::error::Error>> {
- let table=IndexTable::load(Path::new("F:/d1/d1preservation-main/capture-rig/builds/later-56578/item-content-index.tsv"))?;
+ let table=IndexTable::load(Path::new("<D1_ROOT>/d1preservation-main/capture-rig/builds/later-56578/item-content-index.tsv"))?;
  let mut spec:Spec=ItemSpec::resolved(I,0x8e7bf3ba,"Ships",&table)?;
  assert_eq!(spec.content_index,3517); spec.level=1;
  let obj=spec.to_object()?;

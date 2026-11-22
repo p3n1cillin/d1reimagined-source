@@ -3,10 +3,10 @@ import hashlib
 import json
 import subprocess
 
-source = Path(r'F:\d1\<pc>-import\dev\rpcs3')
-baseline = Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH\gpu-query-scope-baseline')
+source = Path(r'<D1_ROOT>\<pc>-import\dev\rpcs3')
+baseline = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\gpu-query-scope-baseline')
 export = baseline.parent / 'gpu-query-scope-export'
-patch = Path(r'F:\d1\d1xenia\patches\rpcs3-query-scope.patch')
+patch = Path(r'<D1_ROOT>\d1xenia\patches\rpcs3-query-scope.patch')
 files = ['rpcs3/Emu/RSX/VK/VKHelpers.cpp', 'rpcs3/Emu/RSX/VK/VKDraw.cpp', 'rpcs3/Emu/RSX/VK/VKGSRender.cpp']
 
 def run(*args):

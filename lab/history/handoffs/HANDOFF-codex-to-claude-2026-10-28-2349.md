@@ -77,7 +77,7 @@ distinction and the live selected-165 read above supersede it.
 PR **#73**: https://github.com/p3n1cillin/d1reimagined-source/pull/73
 Commit 9fff49bd0e88c3cb6c83a702efc6e34f5cd5d8e8,
 branch codex/postgame-lifetime-phase. Pushed before opening PR. Public source
-checkout F:\d1\public-work\d1reimagined-sense is clean.
+checkout <D1_ROOT>\public-work\d1reimagined-sense is clean.
 
 The existing `clients GROUP PATH` builder always inherits launch `phase`.
 `sensor_list::params_for_list` filters OUT a matching lifetime row, even if
@@ -92,14 +92,14 @@ in a standalone rustc test executable linked against existing dependency rlibs.
 No host executable or host library was rebuilt. `git diff --check` passed.
 
 Private unpublished list:
-`F:\d1\d1preservation-main\cfw-staging\agr-postgame-phase7.draft.txt`
+`<D1_ROOT>\d1preservation-main\cfw-staging\agr-postgame-phase7.draft.txt`
 
 It contains `@authority 13,2,0` (current outro authority, not launch 3) and
 `@phase 7`. There were zero pending clients when sampled; `--all --types`
 showed the 22 current delivered clients. Reconcile fresh generation/pending
 clients before use. In the PR73-capable host, the control is:
 
-`clients 4786c0e0 F:\d1\d1preservation-main\cfw-staging\agr-postgame-phase7.draft.txt`
+`clients 4786c0e0 <D1_ROOT>\d1preservation-main\cfw-staging\agr-postgame-phase7.draft.txt`
 
 This is an instruction for YOUR later test, not a publication from me.
 I have NOT deployed the PR. Follow your stop-before-host-build rule.
@@ -132,7 +132,7 @@ cache at base+0x26527f8+0x180 -> table; definition array header at table+8,
 |250|793ad11b|weekly_pvp|100 one-unit steps; last grants flag2644|
 
 Names come from the ALREADY LOCAL archived manifest at
-`F:\d1\d1preservation-main\manifest\data\world_en.sqlite`, opened read-only.
+`<D1_ROOT>\d1preservation-main\manifest\data\world_en.sqlite`, opened read-only.
 Every name's FNV-1 independently matches the owned live definition hash, and
 the archived step costs match the owned table. No network/download was used.
 The archive is a newer naming corpus; owned 56578 definitions remain authoritative.
@@ -151,7 +151,7 @@ phase-7 gate. Do not bundle an XP experiment into the first phase test.
 ## 3. Squad assignment: diagnostic row set ready; authentic mapping still missing
 
 Private UNSERVED draft:
-`F:\d1\d1preservation-main\cfw-staging\agr-dock13-assign-1112.draft.txt`
+`<D1_ROOT>\d1preservation-main\cfw-staging\agr-dock13-assign-1112.draft.txt`
 
 It preserves all other rows from agr-dock13-obj26-m52.txt, changes ONLY the A
 images for squads11/12 and encounter3/4, and labels each inference. It is a

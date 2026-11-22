@@ -1,6 +1,6 @@
 from pathlib import Path
 
-rt = Path(r'F:\d1\<pc>-import\d1xenia\local')
+rt = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 source = rt / 'SIGNON_LOCAL/JOIN162-launch.ps1'
 target = rt / 'SIGNON_LOCAL/JOIN163-launch.ps1'
 assert not target.exists(), 'Unique fixture already exists'
@@ -9,7 +9,7 @@ text = text.replace('$completed=$false\ntry {', '''$completed=$false
 $armingJob=Start-Job -ScriptBlock {
     param($rt, $rpc, $logs)
     $ErrorActionPreference='Stop'
-    . 'F:\\d1\\d1xenia\\scripts\\Final124RunHelpers.ps1'
+    . '<D1_ROOT>\\d1xenia\\scripts\\Final124RunHelpers.ps1'
     $deadline=[DateTime]::UtcNow.AddMinutes(10)
     $manifestPath=Join-Path $logs 'FINAL124_JOIN163-processes.json'
     $bap=Join-Path $logs 'FINAL124_JOIN163-bap.log'

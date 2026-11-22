@@ -64,7 +64,7 @@ function Resolve-D1Path {
     if (-not $entry.Parent) {
         $others = @($script:D1PathLocations.Values | Where-Object { $_.Parent } | ForEach-Object { 'D1_' + $_.Key.ToUpperInvariant() }) -join ', '
         throw ("D1Paths: the D1 root folder is not set. Either set the environment variable D1_ROOT " +
-            "(e.g. D1_ROOT=D:\d1), or create $file containing {`"root`": `"D:/d1`"} " +
+            "(e.g. D1_ROOT=<D1_ROOT>), or create $file containing {`"root`": `"<D1_ROOT>`"} " +
             "(see tools/ps4_setup/paths.example.json). Individual locations can be set the same way: $others.")
     }
     $parent = (Resolve-D1Path $entry.Parent).Path

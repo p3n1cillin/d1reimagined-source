@@ -4,8 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
-rt = Path(r"F:\d1\<pc>-import\d1xenia\local")
-repo = Path(r"F:\d1\d1xenia")
+rt = Path(r"<D1_ROOT>\<pc>-import\d1xenia\local")
+repo = Path(r"<D1_ROOT>\d1xenia")
 progress = rt / "PRIVATE_ENGINEERING" / "2026-10-08-progress.md"
 old = progress.read_text(encoding="utf-8-sig")
 heading = "## Safe engineering checkpoint — source 578ad60, JOIN217 (2026-10-08 22:05 UTC)"

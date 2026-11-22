@@ -4,7 +4,7 @@
     "tag": "rpcs3",
     "id": 10156,
     "startTimeUtcTicks": "639269794648452920",
-    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+    "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
   },
   "capture_sha256": "f17d48b7ec856e2cf8335d78a37a672d3ae9beaa430dafa32735fa32d34479dc",
   "capture_build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",

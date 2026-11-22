@@ -1,4 +1,4 @@
-cd /f/d1/public-work/d1reimagined-source
+cd <D1_ROOT>/public-work/d1reimagined-source
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
 T=$S/tracked-$1.json
 for i in 1 2 3; do out=$(timeout 600 python -I -u tools/ps4_setup/d1-walk.py --scan 383,-962,12.5 --radius 25 --out $T 2>&1 | grep tracked | tail -1); echo "scan: $out"; n=$(echo "$out" | awk '{print $1}'); [ "${n:-0}" -ge 100 ] && break; done

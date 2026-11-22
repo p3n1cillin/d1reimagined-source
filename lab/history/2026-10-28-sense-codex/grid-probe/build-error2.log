@@ -1,6 +1,6 @@
    Compiling private-grid-probe v0.1.0 (lab/history\2026-10-28-sense-codex\grid-probe)
 error[E0432]: unresolved import `unicorn_engine`
-  --> F:\d1\public-work\d1reimagined-stats\ps4\d1-server\crates\d1-oracle\src\scalar_float.rs:11:5
+  --> <D1_ROOT>\public-work\d1reimagined-stats\ps4\d1-server\crates\d1-oracle\src\scalar_float.rs:11:5
    |
 11 | use unicorn_engine::{RegisterX86 as R, Unicorn};
    |     ^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `unicorn_engine`

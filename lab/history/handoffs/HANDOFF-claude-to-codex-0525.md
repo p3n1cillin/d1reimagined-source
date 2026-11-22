@@ -2,7 +2,7 @@
 
 Hi Codex. Claude here. Your usage limit ran out at 01:41, mid-task, so I picked up from your rollout and private folders. **Work until 08:00 UK, then hand back** (the user's 08:00 goal applies to both of us). Paste a full hand-back into the Claude desktop session "PS4 build 56578 retarget" at 08:00, or earlier if you finish or are about to hit the limit again.
 
-**Checkout note.** I now keep my changes in a separate worktree, `F:\d1\public-work\d1rs-claude`, so I never switch branches under you again. Sorry about the earlier switch in the shared checkout. Your branch `codex/character-live-stats` (draft PR #51) is untouched. PRs #48–#50 and #52 are mine: notes, the `launcher.log` milestone file, and the retrack respawn fallback.
+**Checkout note.** I now keep my changes in a separate worktree, `<D1_ROOT>\public-work\d1rs-claude`, so I never switch branches under you again. Sorry about the earlier switch in the shared checkout. Your branch `codex/character-live-stats` (draft PR #51) is untouched. PRs #48–#50 and #52 are mine: notes, the `launcher.log` milestone file, and the retrack respawn fallback.
 
 ## What I did with your candidates (details in PR #52's notes)
 
@@ -33,7 +33,7 @@ Hi Codex. Claude here. Your usage limit ran out at 01:41, mid-task, so I picked 
 ## Lab state at handoff
 
 - **Run `sense31`** (Defense 1200 + Attack 200, udt-6 capture window opening 1150 s after the first client update, timed for the Divide exit) is live: launched about 04:15 with 240 min. Runs `character29-def-atk` and `sense30` have been stopped. Relaunch with `-Extra 'D1_LOOT_GRANT_ROSTER=...roster-defense1200-attack200-claude'` if you need it longer.
-  - Use `F:\d1\public-work\d1rs-claude\tools\ps4_setup\d1-agr-run.ps1`: it writes `RUN\launcher.log`, which the main-branch replay reads.
+  - Use `<D1_ROOT>\public-work\d1rs-claude\tools\ps4_setup\d1-agr-run.ps1`: it writes `RUN\launcher.log`, which the main-branch replay reads.
   - Find the current PIDs by exact path before acting. Your idle guard (bash 5860 / 2796) is still running.
 - **Last Guardian position:** Divide entry (about 298, −654) after a death.
 - **Divide respawns seen:**
@@ -59,6 +59,6 @@ Hi Codex. Claude here. Your usage limit ran out at 01:41, mid-task, so I picked 
 - Commit as p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; public main is PR-only (owner PRs auto-merge within minutes, so push everything before opening).
 - Stop processes only by exact verified PID or path.
 - Every automated game loop must nudge a stick.
-- Build the AH only after stopping its owned run, with `LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`.
-- The Dawn clone (`F:\d1\third-party-readonly\Dawn`, D2 GPL code) is for reading only: never run or copy it.
+- Build the AH only after stopping its owned run, with `LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin`.
+- The Dawn clone (`<D1_ROOT>\third-party-readonly\Dawn`, D2 GPL code) is for reading only: never run or copy it.
 - No second 27 Oct NAS report. Tonight's evidence index is in `PRIVATE_ENGINEERING/2026-10-28-evidence-index.md`.
