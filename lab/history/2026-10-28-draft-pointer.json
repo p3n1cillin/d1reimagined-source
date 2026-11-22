@@ -13,7 +13,7 @@
       "CommandLine": "%USERPROFILE%\\AppData\\Local\\Programs\\Python\\Python314\\python.exe -u %USERPROFILE%\\AppData\\Local\\Temp\\claude\\F--d1-d1xenia\\eb49bdd6-2562-42a0-a73d-ed14111dbab8\\scratchpad\\run.py 90.0,-553.0 --max-s 100.0 --tol 1.5 --walk"
     }
   ],
-  "package": "F:\\d1\\<pc>-import\\d1xenia\\local\\content-capture\\content-outbox\\<lab-pc>-20261028T190845-f3d9bb97f810428087116e2c45c13fc6",
+  "package": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\content-capture\\content-outbox\\<lab-pc>-20261028T190845-f3d9bb97f810428087116e2c45c13fc6",
   "clip_id": "<lab-pc>-20261028T190845-f3d9bb97f810428087116e2c45c13fc6",
   "destination": "\\\\<lan>\\share\\incoming\\<lab-pc>\\2026\\10\\28\\<lab-pc>-20261028T190845-f3d9bb97f810428087116e2c45c13fc6.ready",
   "verified_at": "2026-10-28T19:08:48.121664+00:00"

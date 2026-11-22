@@ -2,7 +2,7 @@
 
 On 1 November the user asked to pull down, build and use other people's projects where they help,
 with credit in [CREDITS.md](../CREDITS.md). These were checked out and, where useful, built outside
-this repository (under `F:\d1\third-party`). Licences are their own: GPL code is used as a tool or a
+this repository (under `<D1_ROOT>\third-party`). Licences are their own: GPL code is used as a tool or a
 reference, not copied in.
 
 | Project | Licence | What it gives us | Status here |

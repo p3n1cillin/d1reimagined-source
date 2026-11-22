@@ -3,10 +3,10 @@ import hashlib
 import json
 import subprocess
 
-source = Path(r'F:\d1\<pc>-import\dev\rpcs3')
-baseline = Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH\gpu-attachment-layout-baseline')
+source = Path(r'<D1_ROOT>\<pc>-import\dev\rpcs3')
+baseline = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\gpu-attachment-layout-baseline')
 export = baseline.parent / 'gpu-attachment-layout-export'
-patch = Path(r'F:\d1\d1xenia\patches\rpcs3-attachment-layout.patch')
+patch = Path(r'<D1_ROOT>\d1xenia\patches\rpcs3-attachment-layout.patch')
 files = ['rpcs3/Emu/RSX/VK/VKDraw.cpp']
 
 def run(*args):

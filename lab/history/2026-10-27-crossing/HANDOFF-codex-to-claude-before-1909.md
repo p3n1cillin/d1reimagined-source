@@ -5,7 +5,7 @@ The user explicitly asked Codex to execute your 12:50 handoff, starting with ste
 ## Source and PR
 
 - PR #38 is merged: https://github.com/p3n1cillin/d1reimagined-source/pull/38 . All GitHub checks passed; the owner workflow performed squash auto-merge. Latest origin/main is e980926. The earlier #35–37 remain merged.
-- Clean public checkout: F:\d1\public-work\d1reimagined-source, branch ps4/divide-objective-reference at f92f1d4 (the pre-squash PR commit). Start the next branch from origin/main, not this pre-squash branch.
+- Clean public checkout: <D1_ROOT>\public-work\d1reimagined-source, branch ps4/divide-objective-reference at f92f1d4 (the pre-squash PR commit). Start the next branch from origin/main, not this pre-squash branch.
 - Commit identity remains p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>. Never use the old email or rewrite history. Main is PR-only.
 - New source: ps4/d1-server/crates/d1-oracle/src/sensor_objective.rs and the sensor CLI; route-loop fix in tools/ps4_setup/d1-walk.py; scripts/test_d1_ps4_walk.py. README, docs/STATUS.md and the continuation journal are updated. No uncommitted source changes.
 
@@ -20,7 +20,7 @@ The old interpretation of the state byte caused the title problem:
 
 Generate the value list with the new Rust command (it does not publish):
 
-    set D1_BUILDS=F:\d1\d1preservation-main\capture-rig\builds.json
+    set D1_BUILDS=<D1_ROOT>\d1preservation-main\capture-rig\builds.json
     set D1_BUILD=later-56578
     d1-oracle sensor objective-controls
     d1-oracle sensor objective --input <private-base-list> --out <new-list> --group 0x992bb471 --active 17 --clear 14 --marker 46 --machine 12
@@ -28,20 +28,20 @@ Generate the value list with the new Rust command (it does not publish):
 Use PowerShell's $env: syntax in PowerShell; the `set` lines above describe variable values. The command preserves list authority, non-target clients and existing B images. It validates missing/duplicate targets, wrong A types, overlapping active/clear targets and ranges before writing.
 
 Its A images equal the native-tested private prototype byte for byte (type-tag text differs only in hex case). The host accepted the Rust-generated list at 13:22:43.933969, native fields were read back, and the correct title/description/diamond were inspected. Current published list:
-F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide16\codex-rust-objective.txt
+<D1_ROOT>\d1preservation-main\cfw-staging\2026-10-27-divide16\codex-rust-objective.txt
 
 A next-run candidate is prepared, NOT replayed end to end or published:
-F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide16\steps-objective17-candidate.txt
+<D1_ROOT>\d1preservation-main\cfw-staging\2026-10-27-divide16\steps-objective17-candidate.txt
 It replaces the original step-16 %96 list with divide-gen2-objective17.txt, preserving that original gen-2/count-1 list rather than the current all-ground diagnostic count-3 list. Use it for a fresh contained replay and validate the handover on the natural slice crossing. The current live list still preserves the existing gen-3 ground squads/armed triggers diagnostic.
 
 ## Live run and runtime copies
 
 - Run 2026-10-27-divide16 remains in the Divide. shadPS4 PID 26340, started 12:13:06; eboot base 0x51C0000. Activity host PID 21884, started 12:12:59. Idle guard bash PID 21872 is still running. No host restart or build was done while it was locked.
 - The contained launcher started about 12:12:54 with a 90-minute limit: expect automatic cleanup around 13:42:54 UK. Verify the actual process/receipt before relying on it. The guarded launcher refuses overlapping runs.
-- Run folder: F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide16 . AH control: F:\d1\d1preservation-main\cfw-staging\ah-control.txt . Publish with exclusive creation; wait for consumption, then allow application latency and check native fields/host acceptance. File consumption alone is not acceptance.
-- Host evidence: F:\d1\d1preservation-main\cfw-staging\contained-boot\20261027-121254-2026-10-27-divide16\activity-host.log . Do not rely on emulator.log tail: shad_log.txt hit its 100MB cap.
+- Run folder: <D1_ROOT>\d1preservation-main\cfw-staging\2026-10-27-divide16 . AH control: <D1_ROOT>\d1preservation-main\cfw-staging\ah-control.txt . Publish with exclusive creation; wait for consumption, then allow application latency and check native fields/host acceptance. File consumption alone is not acceptance.
+- Host evidence: <D1_ROOT>\d1preservation-main\cfw-staging\contained-boot\20261027-121254-2026-10-27-divide16\activity-host.log . Do not rely on emulator.log tail: shad_log.txt hit its 100MB cap.
 - The Guardian moved during bounded route probes. The west retry ended around (309.1,-622.1,6.6); the south probe's final position is appended below after it ends. This is not the handoff's old (273,-620) location. Native tracking list remains in the run folder as tracked.json.
-- Runtime F:\d1\tools\d1-walk.py now matches the canonical fixed source. The new oracle exe is copied to F:\d1\d1preservation-main\d1-server\target\release\d1-oracle.exe; synthetic objective controls passed there. Backup oracle and old walker are in the private folder below. Oracle SHA256: 37C62A1CB2E51007D1D18950D164105CBB14A5B8CFED4D872D96F2CB304D7804. The AH binary is unchanged.
+- Runtime <D1_ROOT>\tools\d1-walk.py now matches the canonical fixed source. The new oracle exe is copied to <D1_ROOT>\d1preservation-main\d1-server\target\release\d1-oracle.exe; synthetic objective controls passed there. Backup oracle and old walker are in the private folder below. Oracle SHA256: 37C62A1CB2E51007D1D18950D164105CBB14A5B8CFED4D872D96F2CB304D7804. The AH binary is unchanged.
 - Keep idle guard, and include square plus stick nudges in loops. Touchpad-only resets the guard timer but does not defeat inactivity. Avoid two input drivers. Use exact owned PID/path filters when stopping helpers.
 
 ## Objective trace — fresh native addresses for this run only
@@ -104,8 +104,8 @@ A native-default gantry-create list was accepted at14:57:16.767937. Kind4/sub0 0
 Return-to-edge route stopped at292.9,-630.7; manual pad probes reached284.0,-648.5,z4.9, looking at the chasm. No death/new kills. A bounded100s north-arch-probe is currently trying back via301,-638 and316,-638 towards315,-611/310,-600/287,-591/266,-585. Do not send competing input until that process ends. The reference12:20 walks under the large sign arch and12:32 enters a ruined room; it does not visibly jump across this drop. This may be the wrong southern route, not a missing bridge. Do not assert either hypothesis yet.
 Next source work: canonical replay waits for current-run gameplay with a longer deadline, rifle tolerance1.0 plus one bounded retry requiring AH trigger35, promote the run17 objective schedule to a stable private steps file. No new source implementation committed yet.
 ## 15:14 checkpoint: schedule promoted, canonical replay under test
-The stable private schedule now exists: F:\d1\d1preservation-main\cfw-staging\agr-steps-divide.txt; its last step references agr-divide-objective17.txt in the same staging folder. Generated with the new --promote-steps mode of source tools/ps4_setup/d1-agr-steps.py, using run17's exact steps.txt and verified divide-gen2-objective17.txt. Prior16steps/timings/incidents unchanged. No control published during promotion.
-Source branch now has canonical d1-agr-replay.py, rifle/to-chest authored coordinate routes, promotion helper, launch-default and docs changes. New script waits900s for gameplay, uses canonical fixed-rate walker, rifle tolerance1.0 and one retry gated on actual trigger35, host acceptance after the new garage publish, exclusive replay lock and distinct attempt logs. Portable gates:10passed. Fullscripts before the latest extra gate:198passed; server225passed/1skipped. Source remains uncommitted; native consolidation replay not yet run. Runtime F:\d1\tools\d1-agr-run.ps1 now matches new source; backup in private crossing folder.
+The stable private schedule now exists: <D1_ROOT>\d1preservation-main\cfw-staging\agr-steps-divide.txt; its last step references agr-divide-objective17.txt in the same staging folder. Generated with the new --promote-steps mode of source tools/ps4_setup/d1-agr-steps.py, using run17's exact steps.txt and verified divide-gen2-objective17.txt. Prior16steps/timings/incidents unchanged. No control published during promotion.
+Source branch now has canonical d1-agr-replay.py, rifle/to-chest authored coordinate routes, promotion helper, launch-default and docs changes. New script waits900s for gameplay, uses canonical fixed-rate walker, rifle tolerance1.0 and one retry gated on actual trigger35, host acceptance after the new garage publish, exclusive replay lock and distinct attempt logs. Portable gates:10passed. Fullscripts before the latest extra gate:198passed; server225passed/1skipped. Source remains uncommitted; native consolidation replay not yet run. Runtime <D1_ROOT>\tools\d1-agr-run.ps1 now matches new source; backup in private crossing folder.
 Northern route probe stopped at302.15,-641.42, then supervised pad jumping/walking reached304.2,-625.2,z7.8. No death, no crossing, no combat or kill acceptance. Run17 expected auto-stop15:16. No active movement driver now.
 ## 15:22 correction and authored firing-area lead
 The run-duration estimate above was wrong: parent PID6656 is d1-lab-served.ps1 -Minutes240, started13:46:22. Actual planned stop is17:46, not15:16. Emu25744/AH21420 remain usable. No helpers were killed or restarted.

@@ -1,6 +1,6 @@
 use std::{fs,collections::BTreeSet};
 fn main()->Result<(),Box<dyn std::error::Error>> {
- let dir="F:/d1/d1preservation-main/dumps/later-56578-CUSA00219/CUSA00219/packages";
+ let dir="<D1_ROOT>/d1preservation-main/dumps/later-56578-CUSA00219/CUSA00219/packages";
  let estate=d1_pkg::Estate::load(dir)?;
  let mut seen=BTreeSet::new();
  let mut rows=Vec::new();

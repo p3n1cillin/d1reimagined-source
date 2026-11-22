@@ -12,8 +12,8 @@ with the new item as its .item/.soid sidecar.
 """
 import argparse, json, os, re, struct, subprocess, sys, time
 
-ORACLE = r'F:\d1\public-work\target-claude\release\d1-oracle.exe'
-ROOT = r'F:\d1\d1preservation-main'
+ORACLE = r'<D1_ROOT>\public-work\target-claude\release\d1-oracle.exe'
+ROOT = r'<D1_ROOT>\d1preservation-main'
 ENV = dict(os.environ, D1_BUILDS=ROOT + r'\capture-rig\builds.json', D1_BUILD='later-56578',
            D1_PKGDIR=ROOT + r'\dumps\later-56578-CUSA00219\CUSA00219\packages')
 BUILD = ROOT + r'\capture-rig\builds\later-56578'

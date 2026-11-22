@@ -1,6 +1,6 @@
 """Offline, read-only: resource tags referenced by the revival performances (private)."""
 import sys, struct, collections
-sys.path.insert(0, 'F:/d1/d1xenia/scripts')
+sys.path.insert(0, '<D1_ROOT>/d1xenia/scripts')
 from pathlib import Path
 from d1_pkg import PackageSet, Oodle, tag_hash, split_tag_hash
 runtime = Path('..')

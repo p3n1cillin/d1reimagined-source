@@ -2,7 +2,7 @@
 from pathlib import Path
 import shutil
 p = Path(__file__).resolve().parent
-staging = Path(r'F:\d1\d1preservation-main\cfw-staging')
+staging = Path(r'<D1_ROOT>\d1preservation-main\cfw-staging')
 run = staging/'2026-10-27-divide13'
 run.mkdir(exist_ok=False)
 for name in ['breach-prop3-only.txt','divide-squads-gen2.txt']:

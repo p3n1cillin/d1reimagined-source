@@ -6,12 +6,12 @@ import shutil
 import subprocess
 import sys
 
-sys.path.insert(0, r'F:\d1\d1xenia')
-sys.path.insert(0, r'F:\d1\d1xenia\tools\content_capture')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\tools\content_capture')
 from tools.content_capture.capture import validate_video
 
 name, folder = sys.argv[1:]
-rt = Path(r'F:\d1\<pc>-import\d1xenia\local')
+rt = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 logs = rt / 'SIGNON_LOCAL/logs'
 cleanup = json.loads((logs / f'{name}-cleanup-result.json').read_text(encoding='utf-8-sig'))
 assert cleanup['fixture_completed'] and cleanup['all_owned_closed'] and not cleanup['errors']

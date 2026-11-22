@@ -1,7 +1,7 @@
 from pathlib import Path
 import ctypes,importlib.util,sys,struct,json,datetime
 P=Path(r'lab/history\2026-10-28-static-combat-codex');sys.path.insert(0,str(P));import static56578 as st
-sp=importlib.util.spec_from_file_location('wg',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(sp);sp.loader.exec_module(g);p,base=g.open_client();reg=p.u(p.u(base+g.REGISTRY,'Q'),'Q')
+sp=importlib.util.spec_from_file_location('wg',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(sp);sp.loader.exec_module(g);p,base=g.open_client();reg=p.u(p.u(base+g.REGISTRY,'Q'),'Q')
 for va in (0x30dfa0,0x30e030,0x324870,0x324a90,0x5142c0,0x546fd0):assert p.read(base+va,24)==st.read(va,24)
 def resolve(tag):
  v=ctypes.c_int32(tag).value>>13;sl=(((v&0xffffffff)>>18)|0x3ff)&v&0xffffffff;r=reg+sl*64;d,es,m=p.u(r+16,'Q'),p.u(r+48,'i'),p.u(r+52,'i');assert d and 0<es<0x100000;e=d+(tag&0x1fff)*es;return e-ctypes.c_int64(m&p.u(e+8,'Q')).value

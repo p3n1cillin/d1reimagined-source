@@ -1,7 +1,7 @@
 import argparse,ctypes,ctypes.wintypes as wt,datetime,importlib.util,json,struct
 from pathlib import Path
 a=argparse.ArgumentParser();a.add_argument('--pid',type=int,required=True);a.add_argument('--out',type=Path,required=True);args=a.parse_args()
-s=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(s);s.loader.exec_module(g)
+s=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(s);s.loader.exec_module(g)
 p,base=g.open_client();getpid=g.k32.GetProcessId;getpid.argtypes=[wt.HANDLE];getpid.restype=wt.DWORD;pid=getpid(p.h);assert pid==args.pid,(pid,args.pid)
 players=p.u(p.u(base+g.PLAYER_POOL,'Q')+8,'Q')
 r={'pid':pid,'base':hex(base),'players':hex(players),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'tables':[]}

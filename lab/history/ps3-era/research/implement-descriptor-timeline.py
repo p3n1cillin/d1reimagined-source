@@ -1,7 +1,7 @@
 from pathlib import Path
 import shutil
-root=Path(r'F:\d1\<pc>-import\dev\rpcs3')
-base=Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH\gpu-descriptor-timeline-baseline')
+root=Path(r'<D1_ROOT>\<pc>-import\dev\rpcs3')
+base=Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\gpu-descriptor-timeline-baseline')
 files=['rpcs3/Emu/RSX/d1diag.h','rpcs3/Emu/RSX/VK/VKCommandStream.cpp','rpcs3/Emu/RSX/VK/VKGSRenderTypes.hpp','rpcs3/Emu/RSX/VK/VKResourceManager.h','rpcs3/Emu/RSX/VK/vkutils/descriptors.cpp','rpcs3/Emu/RSX/VK/vkutils/garbage_collector.h']
 base.mkdir(exist_ok=False)
 for relative in files:

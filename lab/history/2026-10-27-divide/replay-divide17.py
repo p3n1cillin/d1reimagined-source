@@ -6,11 +6,11 @@ import sys
 import time
 
 PYTHON = sys.executable
-REPO = Path(r'F:\d1\public-work\d1reimagined-source')
+REPO = Path(r'<D1_ROOT>\public-work\d1reimagined-source')
 TOOLS = Path('lab/history\\2026-10-27-divide\\fixed-rate-driver')
 ROUTES = REPO / 'missions/routes'
 PRIVATE = Path(__file__).resolve().parent
-STAGING = Path(r'F:\d1\d1preservation-main\cfw-staging')
+STAGING = Path(r'<D1_ROOT>\d1preservation-main\cfw-staging')
 RUN = STAGING / '2026-10-27-divide17'
 TRACKED = RUN / 'tracked.json'
 
@@ -36,7 +36,7 @@ def walk(name, route, seconds, tolerance=1.3, extra=()):
 
 
 def pad(key):
-    command('pad-' + key.lower(), ['powershell', '-NoProfile', '-File', r'F:\d1\tools\d1-pad.ps1',
+    command('pad-' + key.lower(), ['powershell', '-NoProfile', '-File', r'<D1_ROOT>\tools\d1-pad.ps1',
                                   '-Keys', key], 15)
 
 

@@ -1,9 +1,9 @@
 """Read-only: decode the urgent selector entry's unlock expression and its flag byte. usage: readexpr.py RUN"""
 import struct, sys
-sys.path.insert(0, r"F:\d1\d1xenia\scripts")
+sys.path.insert(0, r"<D1_ROOT>\d1xenia\scripts")
 from rpcs3_owned_memory import OwnedMemory
 run = sys.argv[1]
-m = rf"F:\d1\<pc>-import\d1xenia\local\SIGNON_LOCAL\logs\FINAL124_{run}-processes.json"
+m = rf"<D1_ROOT>\<pc>-import\d1xenia\local\SIGNON_LOCAL\logs\FINAL124_{run}-processes.json"
 with OwnedMemory(m) as mem:
     for entry, name in ((0x70092668, "urgent 0x80a58505"), (0x700926a0, "next 0x80a5e9fb")):
         e = mem.read(entry, 0x40)

@@ -1,7 +1,7 @@
 from pathlib import Path
 import json,os,struct,subprocess,sys
 ROOT=Path(__file__).parent
-BASE=Path(r'F:\d1\d1preservation-main')
+BASE=Path(r'<D1_ROOT>\d1preservation-main')
 ORACLE=BASE/'d1-server/target/release/d1-oracle.exe'
 ENV=dict(os.environ,D1_BUILD='later-56578',D1_BUILDS=str(BASE/'capture-rig/builds.json'))
 for arg in sys.argv[1:]:

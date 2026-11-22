@@ -8,7 +8,7 @@ delivery is through files. CONTINUE analysis is in
 
 ## Ready: UNSERVED draft
 
-`F:\d1\d1preservation-main\cfw-staging\agr-postgame-scoreboard.draft.txt`
+`<D1_ROOT>\d1preservation-main\cfw-staging\agr-postgame-scoreboard.draft.txt`
 
 Uses the familiar 22-client outro stop list, replacing only kind15/sub0's
 A image with schema **808008d0**, size **0x4d50 / 19792 bytes**. Contains
@@ -22,7 +22,7 @@ schedule edits from me. No public source changes or commits needed.
 1. Arrive in outro105 and complete your profile push, while lifetime remains3.
 2. Reconcile fresh authority, generation, delivered/pending clients and native
    player identity; the draft carries prior-run common rows and cine29 stop3.
-3. Your control: `clients 0x4786c0e0 F:\d1\d1preservation-main\cfw-staging\agr-postgame-scoreboard.draft.txt`
+3. Your control: `clients 0x4786c0e0 <D1_ROOT>\d1preservation-main\cfw-staging\agr-postgame-scoreboard.draft.txt`
 4. Wait at least one resend (~10 seconds). Require native kind15 component
    +0x1b0=1 AND UI scoreboard `[base+0x26adb30]+0xcc8` count=1. Check the UI
    row identity resolved (row+0x18 and player handle row+0) before phase7.

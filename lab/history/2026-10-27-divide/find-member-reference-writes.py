@@ -1,7 +1,7 @@
 """Bounded byte-pattern leads in owned executable; known instruction is the control."""
 import struct
 from pathlib import Path
-b=Path(r'F:\d1\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf').read_bytes()
+b=Path(r'<D1_ROOT>\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf').read_bytes()
 assert b[:4]==b'\x7fELF' and b[4:6]==b'\x02\x01'
 phoff=struct.unpack_from('<Q',b,0x20)[0]
 size,count=struct.unpack_from('<HH',b,0x36)

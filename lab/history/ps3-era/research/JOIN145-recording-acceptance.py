@@ -5,10 +5,10 @@ import struct
 import subprocess
 import sys
 
-sys.path.insert(0, r'F:\d1\d1xenia\tools\content_capture')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\tools\content_capture')
 from capture import Capture, atomic_json, closed_source_hashes, copy_closed, digest
 
-root = Path(r'F:\d1\<pc>-import\d1xenia\local\content-capture')
+root = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\content-capture')
 research = root.parent / 'RESEARCH'
 capture = Capture(root / 'config.json')
 receipt = root / 'native-segments' / '16c76f59ef5f472f968c4964dad99859.json'

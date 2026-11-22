@@ -4,7 +4,7 @@ The user explicitly requested this hand-back to your Code session "PS4 build 565
 
 ## Source / PRs
 
-Repo p3n1cillin/d1reimagined-source, worktree F:\d1\public-work\d1reimagined-sense. Commit identity p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; no rewritten history. Everything committed and pushed, main PR-only.
+Repo p3n1cillin/d1reimagined-source, worktree <D1_ROOT>\public-work\d1reimagined-sense. Commit identity p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; no rewritten history. Everything committed and pushed, main PR-only.
 
 1. PR63 MERGED: https://github.com/p3n1cillin/d1reimagined-source/pull/63
    Main f8d8b711a7ce31611be4d87269c03459182c4376, merged13:32:45Z. Branch codex/cohort-kill-gate, e46b303103fb5d2a340c59479296ed9eb604bae7.
@@ -26,11 +26,11 @@ A refused/lost/oversized delta, dead decoder or full queue holds the affected ep
 
 No listener timer cadence/load-loop changes and no world-clock changes. The existing on_tick merely drains connection-local sense results before evaluating the existing sensor schedule.
 
-Validation: cargo test --offline --locked --release -p d1-activity-host, owned56578 config, separate F:\d1\public-work\target-codex-static:100 library tests passed, binary target and doc tests passed. The new cohort/parser/reset/stale-result/backlog/error tests passed. This did not replace/build the served host executable in your lab. Build your host from main only after safely stopping its owned run, with LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin.
+Validation: cargo test --offline --locked --release -p d1-activity-host, owned56578 config, separate <D1_ROOT>\public-work\target-codex-static:100 library tests passed, binary target and doc tests passed. The new cohort/parser/reset/stale-result/backlog/error tests passed. This did not replace/build the served host executable in your lab. Build your host from main only after safely stopping its owned run, with LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin.
 
 ## Task2: private ending drafts (UNPUBLISHED)
 
-All are under F:\d1\d1preservation-main\cfw-staging:
+All are under <D1_ROOT>\d1preservation-main\cfw-staging:
 - agr-outro104-clear26-request105.draft.txt
 - agr-outro105-register.draft.txt
 - agr-outro105-play.draft.txt
@@ -41,7 +41,7 @@ Private analysis root P = lab/history\2026-10-28-static-combat-codex
 See P\outro-draft-notes.md, build-outro-drafts.py, outro-draft-manifest.json, outro-scenario-slices.json, outro-cinematic-handler.txt and outro-cinematic-start.txt. All owned extracted bytes/images remain there, not in repos.
 
 Phase A draft step (append only after objective26 and rebuilding the strict gate):
-164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-outro104-clear26-request105.draft.txt 105
+164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 <D1_ROOT>/d1preservation-main/cfw-staging/agr-outro104-clear26-request105.draft.txt 105
 
 The121-row request list preserves the current canonical agr-dock13-obj26-m52.txt and only clears26's presentation. It is NOT service/progression completion. The region105 column invokes the existing membership slice-request handshake. Do not set the generic activity lifetime to4: cosmo_m0_phase04_outro is an authored slice/phase name, not lifetime enum4. Keep lifecycle phase3.
 
@@ -50,9 +50,9 @@ Owned56578 content: scenario80cb800d bubble13 has104 and105;105 name hash439d9d2
 The three105 lists predict22 sensor clients (21 common game-mode rows preserved from canonical Dock list, plus cinematic29). They are NOT a fresh native pending capture and carry COPIED authority13 as a provisional template. On ACTUAL arrival105, check current machine, generation and fresh pending list; reconcile all arrivals rather than blindly replacing that capture with this predicted set. Do not republish unrelated old squad spawn states.
 
 IMPORTANT: existing %105|N still has a timeout fallback. The draft deliberately stops at request105; do NOT append %105|N→play and call it safe. After actual CURRENT105 and pending/authority/identity validation, publish register-stopped, then play under your supervision, or use a SEPARATE supervised phaseB schedule:
-164 0 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-outro105-register.draft.txt
-164 +2 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-outro105-play.draft.txt
-164 @891,1726|150 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-outro105-stop.draft.txt
+164 0 0x4786c0e0 <D1_ROOT>/d1preservation-main/cfw-staging/agr-outro105-register.draft.txt
+164 +2 0x4786c0e0 <D1_ROOT>/d1preservation-main/cfw-staging/agr-outro105-play.draft.txt
+164 @891,1726|150 0x4786c0e0 <D1_ROOT>/d1preservation-main/cfw-staging/agr-outro105-stop.draft.txt
 Those phaseB lines are COMMENTED in agr-outro-steps.draft.txt. No active schedule was modified. The150s timeout is a bounded diagnostic STOP, never mission success. Completion/results/reward commits remain separate and unimplemented here. A cinematic stop/skip alone does not complete the mission.
 
 Cine29 images:212bytes, counter1 stopped; counter2 playing1; counter3 stopped; optional object ref ABSENT {811c9dc5,FF,FFFF}; teamfilterFF. Play castcount1 with LOCAL PLAYER IDENTITY at+A0. Recheck counter against any prior cine29 publication in the same run.

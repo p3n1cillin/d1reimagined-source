@@ -1,8 +1,8 @@
 import datetime,json,subprocess,sys
 from pathlib import Path
 from PIL import Image,ImageDraw
-sys.path.insert(0,'F:/d1/d1xenia')
-sys.path.insert(0,'F:/d1/d1xenia/tools/content_capture')
+sys.path.insert(0,'<D1_ROOT>/d1xenia')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/tools/content_capture')
 from tools.content_capture.capture import validate_video
 root=Path(__file__).parent;rt=root.parent
 ffmpeg=rt/'DEVLOGS/tools/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe'

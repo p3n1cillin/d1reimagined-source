@@ -16,7 +16,7 @@ def load(name, path=None):
 
 
 fight, mk, plates = load('fight'), load('marker'), load('plates')
-walk = load('walk', r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-walk.py')
+walk = load('walk', r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-walk.py')
 u32 = ctypes.WinDLL('user32')
 RATE = 2.26 * 1.14 * 110 / 90 / 1000
 RX, RY, HALF_W, HALF_H = 968, 571, 960, 540

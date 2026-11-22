@@ -1,7 +1,7 @@
 """Read-only observations for run 12. Fails on another boot/group; no guest writes."""
 import importlib.util, json, struct
 from pathlib import Path
-spec = importlib.util.spec_from_file_location('guest', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+spec = importlib.util.spec_from_file_location('guest', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 g = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(g)
 p, base = g.open_client()
@@ -20,7 +20,7 @@ client = 0x380571500
 assert p.u(client,'I') == 0x9243DFFB and p.u(client+6,'h') == 20
 tag = p.u(client+0x68,'I')
 print('squad20 client +0x68',hex(tag),'not an established object handle')
-run = Path(r'F:\d1\d1preservation-main\cfw-staging\2026-10-27-divide12')
+run = Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\2026-10-27-divide12')
 watch = [json.loads(line) for line in (run/'squad-authority-watch.jsonl').read_text().splitlines()]
 components = sorted({int(row['rdi'],0) for row in watch if row.get('rip_img') == '0x102b60'})
 table = base + g.LT_TABLE

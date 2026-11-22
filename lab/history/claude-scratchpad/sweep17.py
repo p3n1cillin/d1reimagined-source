@@ -2,14 +2,14 @@
 import importlib.util, json, os, subprocess, sys, time
 import numpy as np
 from PIL import Image
-HERE = r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup'
+HERE = r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup'
 spec = importlib.util.spec_from_file_location('nf', os.path.join(HERE, 'd1-navfollow.py'))
 nf = importlib.util.module_from_spec(spec); spec.loader.exec_module(nf)
 RUN = sys.argv[3]
-CTRL = r'F:\d1\d1preservation-main\cfw-staging\ah-control.txt'
+CTRL = r'<D1_ROOT>\d1preservation-main\cfw-staging\ah-control.txt'
 S = os.path.dirname(os.path.abspath(__file__))
 tpl = np.asarray(Image.open(os.path.join(S, 'diamond17.png')).convert('L'), dtype=np.float32)
-def pad(k): subprocess.run(['powershell', '-NoProfile', '-File', r'F:\d1\tools\d1-pad.ps1', '-Keys', k], capture_output=True)
+def pad(k): subprocess.run(['powershell', '-NoProfile', '-File', r'<D1_ROOT>\tools\d1-pad.ps1', '-Keys', k], capture_output=True)
 out = open(os.path.join(S, 'sweep17.jsonl'), 'a')
 for n in range(int(sys.argv[1]), int(sys.argv[2])):
     subprocess.run([sys.executable, '-I', os.path.join(RUN, 'make-obj17.py'), str(n)], capture_output=True)

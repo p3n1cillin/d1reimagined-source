@@ -17,7 +17,7 @@ the Divide** (slice set 96). Everything below is merged to `d1reimagined-source`
   `wall_fan_tunnel_to_divide.json`. If the Breach walk stalls among the cars at waypoint 20,
   restart it from waypoint 14.
 - **Garage door.** It opens when Breach props 3, 7 and 8 (`0xfc0e45a3:0x4`) get the activation
-  image: `clients 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-b-props-378.txt` in
+  image: `clients 0x4786c0e0 <D1_ROOT>/d1preservation-main/cfw-staging/agr-b-props-378.txt` in
   `cfw-staging/ah-control.txt`. Which of the three is the door is not known yet.
 - **The Divide = slice set 96.** It loads group `0x9243dffb`: 12 squads, 6 squad members,
   10 triggers, 3 props, and kinds 0x3, 0x6 and 0x25. The local machine there is **12**, not 3 as
@@ -25,7 +25,7 @@ the Divide** (slice set 96). Everything below is merged to `d1reimagined-source`
 - **Authority (PR #30).** A control-file list can carry `@authority MACHINE[,SEQ[,APPLIED]]`. The
   list `cfw-staging/agr-s96-clients-auth.txt` (`@authority 12,2,0`) cleared all 37 pending Divide
   clients. Publish it after `client is now in slice set 96` appears in `activity-host.log`.
-- **Seeing with the monitor off.** Launch with `D1_DUMP_DIR=F:\d1\tools\shadPS4\dump-live`, then run
+- **Seeing with the monitor off.** Launch with `D1_DUMP_DIR=<D1_ROOT>\tools\shadPS4\dump-live`, then run
   `tools/ps4_setup/d1-scene.py OUT.png`.
 
 ## Next tasks, in order
@@ -49,8 +49,8 @@ the Divide** (slice set 96). Everything below is merged to `d1reimagined-source`
 - Commit as `p3n1cillin` (`<old-email>`).
 - No third-party downloads. No attempts to get or break Sony retail keys. Game files, keys and run
   evidence never go in any repo.
-- Build the AH with `LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`. A running host locks its exe:
-  stop the run before rebuilding. The lab tree `F:\d1\d1preservation-main\d1-server` is not a git
+- Build the AH with `LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin`. A running host locks its exe:
+  stop the run before rebuilding. The lab tree `<D1_ROOT>\d1preservation-main\d1-server` is not a git
   repo, so mirror changes to `ps4/d1-server` in the public repo.
 - Kill helper processes with a PowerShell process filter. A bash `pkill` pattern can match its
   own shell.

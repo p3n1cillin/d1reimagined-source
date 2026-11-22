@@ -1,7 +1,7 @@
 #!/bin/bash
 # Post-game CONTINUE on a parked run: pre-departure component read -> recall gate check -> monitor + recording ->
 # hold triangle ~4.2 s (hold-to-confirm, 3 s) -> screenshots through the load. Usage: continue-hold.sh RUNNAME
-C=F:/d1/d1preservation-main/cfw-staging; Q=lab/history/2026-10-29-postgame-codex
+C=<D1_ROOT>/d1preservation-main/cfw-staging; Q=lab/history/2026-10-29-postgame-codex
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad; R=$C/$1; K=$R/capture
 recorders() { powershell -NoProfile -Command "(Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | Where-Object { \$_.CommandLine -match 'd1-record' }).Count"; }
 until grep -q 'recording stopped' $R/capture.log 2>/dev/null; do sleep 10; done
@@ -15,7 +15,7 @@ g=$(cd $Q && timeout 90 python probe-recall-gate-readonly.py 2>/dev/null | grep 
 python -c "
 import json,sys; d=json.load(open(sys.argv[1])); print('gate', {k:d.get(k) for k in ('profile_completion673','plane_state','leader_predicate','selection_activity','ordinary_branch_predicted')})
 sys.exit(0 if d.get('ordinary_branch_predicted') is True and d.get('selection_activity')==165 else 3)" "$g" || { echo "gate not ordinary/165: no input sent"; exit 3; }
-(cd F:/d1/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $K/continue.mp4 --seconds 240 > $K/continue-record.log 2>&1 &)
+(cd <D1_ROOT>/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $K/continue.mp4 --seconds 240 > $K/continue-record.log 2>&1 &)
 (cd $Q && timeout 220 python monitor-recall-departure-readonly.py --run $1 --seconds 180 > $K/continue-monitor.out 2>&1 &)
 until grep -q READY $K/continue-monitor.out 2>/dev/null; do sleep 0.5; done; sleep 3
 cd $S && python -c "

@@ -51,7 +51,7 @@ Active config `80aa3ee6`, array `+40`, 23 stats:
 
 For 15 precision kills / 50 kills, use float **0.3**, not 30. Live shared stat cells have parallel raw/percentage formatters: 50 -> 5000 and 15 -> 1500. The percentage path scales by 100. The proposed value should therefore display 30%; this specific new value has not been published/live-verified.
 
-UNSERVED `F:\d1\d1preservation-main\cfw-staging\agr-postgame-scoreboard-arcadia-ratio30.draft.txt` changes only stat index4 in the current Arcadia display draft. Orbs remain 0 because I do not have an observed nonzero count. Preserve or replace with an actually observed orb count at index21.
+UNSERVED `<D1_ROOT>\d1preservation-main\cfw-staging\agr-postgame-scoreboard-arcadia-ratio30.draft.txt` changes only stat index4 in the current Arcadia display draft. Orbs remain 0 because I do not have an observed nonzero count. Preserve or replace with an actually observed orb count at index21.
 
 Validation with the inventory typed-value registry: object **2388 bits / 299 bytes, round trip identical**; actual list parser + full udt5 encoder **PASS, phase3, 21 non-lifetime clients, 1338 bytes**. The ordinary unregistered CLI cannot round-trip the embedded inventory type; the private with-types control is the relevant successful check, as in the earlier Arcadia hand-back.
 

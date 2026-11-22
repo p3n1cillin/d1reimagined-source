@@ -5,7 +5,7 @@
   "goal_status": "active/incomplete",
   "source_commit": "c1e564650d24f0159a3b8a6e985b71e0cccca34f",
   "data_commit": "370a3209ddd2c26f1fa44df00cbf6575ccf119fc",
-  "JOIN172_acceptance": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN172-session-probe-acceptance.json",
+  "JOIN172_acceptance": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\logs\\JOIN172-session-probe-acceptance.json",
   "all_owned_closed": true,
   "cpu_checks": 44,
   "final_build": {

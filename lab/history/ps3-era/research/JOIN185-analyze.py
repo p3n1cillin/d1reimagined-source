@@ -30,7 +30,7 @@ for index in range(6):
 print(json.dumps({k:v for k,v in summary.items() if k not in ('performances','actors')}))
 for tag,item in summary['performances'].items():print(tag,item['name'],item['states'],item['transitions'])
 print('actor variants',[(a['index'],a['variants']) for a in summary['actors']])
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from d1_eboot import Eboot
 eb=Eboot(root/'ps3_updates/01.24/USRDIR/EBOOT.elf')
 out=root/'JOIN185-static';out.mkdir(exist_ok=True)

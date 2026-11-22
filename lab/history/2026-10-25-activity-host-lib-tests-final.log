@@ -1,4 +1,4 @@
-   Compiling d1-activity-host v0.1.0 (F:\d1\public-work\d1reimagined-source\ps4\d1-server\crates\d1-activity-host)
+   Compiling d1-activity-host v0.1.0 (<D1_ROOT>\public-work\d1reimagined-source\ps4\d1-server\crates\d1-activity-host)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 2.77s
      Running unittests src\lib.rs (target\debug\deps\d1_activity_host-ebe0acd55adda004.exe)
 

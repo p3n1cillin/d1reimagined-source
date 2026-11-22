@@ -1,7 +1,7 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
-$repo='F:\d1\d1xenia'
-$imported='F:\d1\<pc>-import\d1xenia'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
+$repo='<D1_ROOT>\d1xenia'
+$imported='<D1_ROOT>\<pc>-import\d1xenia'
 $inventory=Get-Content (Join-Path $rt 'PRIVATE_ENGINEERING\2026-10-06-xenia-cleanup-inventory.json') -Raw | ConvertFrom-Json
 if ($inventory.root -ne $rt) { throw 'Unexpected inventory root' }
 if (Get-Process xenia_canary -ErrorAction SilentlyContinue) { throw 'A retired emulator is running' }
@@ -11,7 +11,7 @@ $protected=@(
     (Join-Path $rt 'RPCS3_FINAL124_SMOKE001\config\custom_configs\config_BLES01857.yml'),
     (Join-Path $rt 'RPCS3_FINAL124_SMOKE001\d1\d1ppu.txt'),
     (Join-Path $rt 'RESEARCH\ps3_updates\01.24\USRDIR\EBOOT.elf'),
-    'F:\d1\d1xenia-data\SHA256SUMS.txt'
+    '<D1_ROOT>\d1xenia-data\SHA256SUMS.txt'
 )
 $before=@{}; foreach ($path in $protected) { $before[$path]=(Get-FileHash -LiteralPath $path).Hash }
 $allowedTop=@('00_ORIGINAL_DUMP','01_WORKING','02_EXTRACTED','TOOLS','LOGS','HASHES')

@@ -1,6 +1,6 @@
 import importlib.util,struct,json,time
 from pathlib import Path
-spec=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
+spec=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 p,base=g.open_client()
 T=base+0x26897f0;entries=p.u(T+8,'Q');stride=p.u(T+16,'I');mask=p.u(T+0x28,'i')&0xffffffffffffffff
 assert stride==32

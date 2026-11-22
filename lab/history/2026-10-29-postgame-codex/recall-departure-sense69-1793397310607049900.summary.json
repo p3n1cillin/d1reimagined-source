@@ -4,8 +4,8 @@
   "base": "0x5160000",
   "started_utc": "2026-10-30T21:55:10.749501+00:00",
   "seconds_requested": 180.0,
-  "log_dir": "F:\\d1\\d1preservation-main\\cfw-staging\\contained-boot\\20261030-210012-sense69",
-  "follow_file": "F:\\d1\\d1preservation-main\\cfw-staging\\sense69-launched-activity.txt",
+  "log_dir": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\contained-boot\\20261030-210012-sense69",
+  "follow_file": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\sense69-launched-activity.txt",
   "events": "lab/history\\2026-10-29-postgame-codex\\recall-departure-sense69-1793397310607049900.jsonl",
   "milestones_after_start": {
     "native_countdown_active": {

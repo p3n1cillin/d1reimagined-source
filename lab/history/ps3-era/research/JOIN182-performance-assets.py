@@ -1,6 +1,6 @@
 import sys,struct,json,hashlib
 from pathlib import Path
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from d1_pkg import PackageSet,Oodle
 root=Path(__file__).parent;rt=root.parent
 paths=list((root/'ps3_updates/final/packages').glob('*025c*.pkg'))

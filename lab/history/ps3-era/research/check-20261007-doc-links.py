@@ -3,7 +3,7 @@ import json
 import re
 import subprocess
 
-roots = [Path(r'F:\d1\d1xenia'), Path(r'F:\d1\d1xenia-data')]
+roots = [Path(r'<D1_ROOT>\d1xenia'), Path(r'<D1_ROOT>\d1xenia-data')]
 checked = 0
 missing = []
 files = []
@@ -23,6 +23,6 @@ for root in roots:
             if not (path.parent / target).exists():
                 missing.append({'document': relative, 'target': target})
 receipt = {'files': files, 'relative_links_checked': checked, 'missing': missing}
-Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH\20261007-doc-links.json').write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\20261007-doc-links.json').write_text(json.dumps(receipt, indent=2), encoding='utf-8')
 print(json.dumps(receipt, indent=2))
 assert not missing

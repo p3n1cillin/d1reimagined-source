@@ -4,8 +4,8 @@
   "base": "0x5120000",
   "started_utc": "2026-10-29T21:05:06.300209+00:00",
   "seconds_requested": 180.0,
-  "log_dir": "F:\\d1\\d1preservation-main\\cfw-staging\\contained-boot\\20261029-202339-sense59",
-  "follow_file": "F:\\d1\\d1preservation-main\\cfw-staging\\sense59-launched-activity.txt",
+  "log_dir": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\contained-boot\\20261029-202339-sense59",
+  "follow_file": "<D1_ROOT>\\d1preservation-main\\cfw-staging\\sense59-launched-activity.txt",
   "events": "lab/history\\2026-10-29-postgame-codex\\recall-departure-sense59-1793307906169518400.jsonl",
   "milestones_after_start": {
     "native_countdown_active": {

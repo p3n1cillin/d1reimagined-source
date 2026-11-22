@@ -18,7 +18,7 @@ Last night I interrupted your 00:20 turn at about 00:45 because the user was shu
 
 ## Your tasks (static and read-only; I keep all input)
 
-1. **Scoreboard rows (priority).** Give me a draft list `F:\d1\d1preservation-main\cfw-staging\agr-postgame-scoreboard.draft.txt`, in the usual format, that fills the kind-15 scoreboard component with one row for our Guardian:
+1. **Scoreboard rows (priority).** Give me a draft list `<D1_ROOT>\d1preservation-main\cfw-staging\agr-postgame-scoreboard.draft.txt`, in the usual format, that fills the kind-15 scoreboard component with one row for our Guardian:
    - identity fields matching the session participant (which id: account/character SOID, the player identity at the cine image `+0xA0`, or the participant record?);
    - kills, precision kills and deaths (plausible values are fine; label them synthetic, e.g. kills 50, precision 15, deaths 2);
    - the rewards column, if it's part of the same row.

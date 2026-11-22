@@ -20,4 +20,4 @@ $E = 0x45; $O = 0x4F
 Down $E; Start-Sleep -Milliseconds 250
 Down $O; Start-Sleep -Milliseconds $Ms; Up $O
 Start-Sleep -Milliseconds 100; Up $E
-Set-Content -Path 'F:\d1\tools\d1-pad-last.txt' -Value ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())
+Set-Content -Path '<D1_ROOT>\tools\d1-pad-last.txt' -Value ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())

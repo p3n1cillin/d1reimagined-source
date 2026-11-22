@@ -3,7 +3,7 @@ import re
 import struct
 import sys
 from pathlib import Path
-sys.path.insert(0, r"F:\d1\d1xenia\scripts")
+sys.path.insert(0, r"<D1_ROOT>\d1xenia\scripts")
 from d1_pkg import PackageSet,Oodle,split_tag_hash,dyn_array
 root=Path(__file__).parent
 rt=root.parent

@@ -1,5 +1,5 @@
 {"utc": "2026-10-09T12:23:25.603331+00:00", "ev": "position", "xyz": [383.10528564453125, -961.8470458984375, 12.678086280822754]}
-{"utc": "2026-10-09T12:23:25.604422+00:00", "ev": "start", "identity": {"tag": "rpcs3", "id": 15584, "startTimeUtcTicks": "639271450141093417", "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"}, "entity": "0x602c3f00", "xyz": [383.10528564453125, -961.8470458984375, 12.678086280822754], "route": "F:\\d1\\d1xenia\\missions\\routes\\enter_the_wall.json", "points": 30, "allow_breach_preload": true}
+{"utc": "2026-10-09T12:23:25.604422+00:00", "ev": "start", "identity": {"tag": "rpcs3", "id": 15584, "startTimeUtcTicks": "639271450141093417", "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"}, "entity": "0x602c3f00", "xyz": [383.10528564453125, -961.8470458984375, 12.678086280822754], "route": "<D1_ROOT>\\d1xenia\\missions\\routes\\enter_the_wall.json", "points": 30, "allow_breach_preload": true}
 {"utc": "2026-10-09T12:23:25.605366+00:00", "ev": "waypoint", "route_index": 0, "xyz": [383.1052551269531, -961.8474731445312, 12.678217887878418], "radius": 1.5}
 {"utc": "2026-10-09T12:23:25.609898+00:00", "ev": "walker", "message": "reached [383.1052551269531, -961.8474731445312] at [383.1, -961.8, 12.7] in 0 s"}
 {"utc": "2026-10-09T12:23:25.611720+00:00", "ev": "waypoint", "route_index": 1, "xyz": [380.44134521484375, -959.7614135742188, 11.869773864746094], "radius": 1.5}
@@ -384,13 +384,13 @@
 {"utc": "2026-10-09T12:25:22.428739+00:00", "ev": "hold", "keys": ["L"], "milliseconds": 120}
 {"utc": "2026-10-09T12:25:22.672875+00:00", "ev": "walker", "message": "reached [353.7513732910156, -796.29150390625] at [353.9, -796.1, 14.8] in 4 s"}
 {"utc": "2026-10-09T12:25:22.673735+00:00", "ev": "wall_endpoint_reached", "xyz": [353.8978271484375, -796.096435546875, 14.778426170349121]}
-{"utc": "2026-10-09T12:25:22.674301+00:00", "ev": "waypoint", "route": "F:\\d1\\d1xenia\\missions\\routes\\breach.json", "route_index": 63, "xyz": [357.604248046875, -796.2574462890625, 14.105817794799805], "radius": 1.5}
+{"utc": "2026-10-09T12:25:22.674301+00:00", "ev": "waypoint", "route": "<D1_ROOT>\\d1xenia\\missions\\routes\\breach.json", "route_index": 63, "xyz": [357.604248046875, -796.2574462890625, 14.105817794799805], "radius": 1.5}
 {"utc": "2026-10-09T12:25:22.788764+00:00", "ev": "position", "xyz": [354.07110595703125, -796.0938110351562, 14.777509689331055]}
 {"utc": "2026-10-09T12:25:23.284652+00:00", "ev": "hold", "keys": ["L"], "milliseconds": 93.48326822015197}
 {"utc": "2026-10-09T12:25:23.503655+00:00", "ev": "position", "xyz": [355.8701477050781, -796.510498046875, 14.796845436096191]}
 {"utc": "2026-10-09T12:25:23.503762+00:00", "ev": "hold", "keys": ["J"], "milliseconds": 120}
 {"utc": "2026-10-09T12:25:23.751432+00:00", "ev": "walker", "message": "reached [357.604248046875, -796.2574462890625] at [356.3, -795.9, 14.8] in 1 s"}
-{"utc": "2026-10-09T12:25:23.752476+00:00", "ev": "waypoint", "route": "F:\\d1\\d1xenia\\missions\\routes\\breach.json", "route_index": 64, "xyz": [361.14996337890625, -795.6204833984375, 14.035287857055664], "radius": 1.5}
+{"utc": "2026-10-09T12:25:23.752476+00:00", "ev": "waypoint", "route": "<D1_ROOT>\\d1xenia\\missions\\routes\\breach.json", "route_index": 64, "xyz": [361.14996337890625, -795.6204833984375, 14.035287857055664], "radius": 1.5}
 {"utc": "2026-10-09T12:25:24.110592+00:00", "ev": "position", "xyz": [357.16937255859375, -796.0958251953125, 14.810921669006348]}
 {"utc": "2026-10-09T12:25:24.331681+00:00", "ev": "walker", "message": "stopped: client slice changed: current (112, 2166136261), target (24, 1754485874), native current (24, 1754485874), native target (112, 2166136261)"}
 {"utc": "2026-10-09T12:25:24.331927+00:00", "ev": "result", "run": "FINAL124_JOIN231", "started_utc": "2026-10-09T12:23:22.783844+00:00", "status": "stopped", "radius": 1.5, "final_radius": 0.25, "continue_breach": true, "reason": "client slice changed: current (112, 2166136261), target (24, 1754485874), native current (24, 1754485874), native target (112, 2166136261)", "finished_utc": "2026-10-09T12:25:24.331919+00:00"}

@@ -12,13 +12,13 @@ It prints **READY** with the private output filename. You operate the tap. It se
 
 It automatically selected:
 
-F:\d1\d1preservation-main\cfw-staging\contained-boot\20261029-140735-sense55
+<D1_ROOT>\d1preservation-main\cfw-staging\contained-boot\20261029-140735-sense55
 
 and reads:
 
 - responder.log / responder.err.log: new BAP42/kind4, response43, activity-follow and sign-out evidence;
 - activity-host.log / activity-host.err.log: new join request/result, published activity index, spawn-bundle index and world-table choice;
-- F:\d1\d1preservation-main\cfw-staging\sense55-launched-activity.txt: hash and mapped activity index, including decimal-format file contents.
+- <D1_ROOT>\d1preservation-main\cfw-staging\sense55-launched-activity.txt: hash and mapped activity index, including decimal-format file contents.
 
 Logs are pinned at start: it will not silently switch to a later boot. --log-dir <absolute-path> can override discovery if necessary. Startup history is labelled log_baseline, not counted as new traffic. No console heartbeat/log spam is copied unless relevant to departure.
 

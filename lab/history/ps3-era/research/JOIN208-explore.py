@@ -2,7 +2,7 @@
 import sys, json, time, math, argparse
 from pathlib import Path
 from contextlib import ExitStack
-sys.path.insert(0, 'F:/d1/d1xenia/scripts')
+sys.path.insert(0, '<D1_ROOT>/d1xenia/scripts')
 from d1_guardian_route import Guard, GuardedPad, GuardedPlayer, SharedTail, HookLease, HOOK, RouteStopped, utc_now, BREACH_SLICE, WALL_SLICE, UNSTABLE_RETRIES, UNSTABLE_RETRY_SECONDS
 from d1_walker import Walker, Grid, facing_from_pointers
 from d1_traverse import heading

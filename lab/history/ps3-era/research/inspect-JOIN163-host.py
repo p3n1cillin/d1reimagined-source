@@ -5,7 +5,7 @@ import json
 import struct
 import bisect
 
-rt=Path(r'F:\d1\<pc>-import\d1xenia\local')
+rt=Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 raw=(rt/'RESEARCH/JOIN163-host-stall.dmp').read_bytes()
 assert raw[:4]==b'MDMP'
 n,offset=struct.unpack_from('<II',raw,8)
@@ -25,7 +25,7 @@ for i in range(count):
     modules.append({'base':base,'size':size,'name':string(name)})
 def module(addr):
     return next((m for m in modules if m['base']<=addr<m['base']+m['size']),None)
-dbg=c.WinDLL(r'F:\VS\BuildTools\Common7\IDE\Extensions\TestPlatform\Extensions\Cpp\x64\dbghelp.dll',use_last_error=True)
+dbg=c.WinDLL(r'<VS_BUILDTOOLS>\Common7\IDE\Extensions\TestPlatform\Extensions\Cpp\x64\dbghelp.dll',use_last_error=True)
 kernel=c.WinDLL('kernel32',use_last_error=True)
 kernel.GetCurrentProcess.restype=w.HANDLE
 h=kernel.GetCurrentProcess()
@@ -34,12 +34,12 @@ dbg.SymSetOptions.argtypes=[w.DWORD];dbg.SymSetOptions.restype=w.DWORD
 dbg.SymLoadModuleExW.argtypes=[w.HANDLE,w.HANDLE,w.LPCWSTR,w.LPCWSTR,c.c_uint64,w.DWORD,c.c_void_p,w.DWORD];dbg.SymLoadModuleExW.restype=c.c_uint64
 dbg.SymCleanup.argtypes=[w.HANDLE];dbg.SymCleanup.restype=w.BOOL
 dbg.SymSetOptions(0x00000004|0x00000002|0x00000200|0x00080000) # deferred, undecorate, fail critical errors, no prompts
-assert dbg.SymInitializeW(h,r'F:\d1\<pc>-import\dev\rpcs3\bin',False),c.get_last_error()
+assert dbg.SymInitializeW(h,r'<D1_ROOT>\<pc>-import\dev\rpcs3\bin',False),c.get_last_error()
 loaded=[]
 for m in modules:
     path=m['name']
     if Path(path).name.lower()=='rpcs3.exe':
-        path=r'F:\d1\<pc>-import\dev\rpcs3\bin\rpcs3.exe'
+        path=r'<D1_ROOT>\<pc>-import\dev\rpcs3\bin\rpcs3.exe'
     if Path(path).exists():
         loaded.append({'name':path,'result':dbg.SymLoadModuleExW(h,None,path,None,m['base'],m['size'],None,0)})
 class Symbol(c.Structure):
@@ -77,7 +77,7 @@ def read_memory(address,size):
     m=module(address)
     if not m:return None
     path=m['name']
-    if Path(path).name.lower()=='rpcs3.exe':path=r'F:\d1\<pc>-import\dev\rpcs3\bin\rpcs3.exe'
+    if Path(path).name.lower()=='rpcs3.exe':path=r'<D1_ROOT>\<pc>-import\dev\rpcs3\bin\rpcs3.exe'
     if path not in images:
         if not Path(path).exists():return None
         pe=Path(path).read_bytes();offset,=struct.unpack_from('<I',pe,60)
@@ -122,7 +122,7 @@ def function_callback(process,address):
     key=m['name']
     if key not in function_tables:
         path=key
-        if Path(path).name.lower()=='rpcs3.exe':path=r'F:\d1\<pc>-import\dev\rpcs3\bin\rpcs3.exe'
+        if Path(path).name.lower()=='rpcs3.exe':path=r'<D1_ROOT>\<pc>-import\dev\rpcs3\bin\rpcs3.exe'
         if not Path(path).exists():return None
         pe=Path(path).read_bytes();nt,=struct.unpack_from('<I',pe,60)
         exception_rva,size=struct.unpack_from('<II',pe,nt+24+112+3*8)

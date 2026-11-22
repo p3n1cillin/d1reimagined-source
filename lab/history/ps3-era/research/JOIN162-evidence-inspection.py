@@ -5,11 +5,11 @@ import json
 import subprocess
 import sys
 
-sys.path.insert(0, r'F:\d1\d1xenia')
-sys.path.insert(0, r'F:\d1\d1xenia\tools\content_capture')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\tools\content_capture')
 from tools.content_capture.capture import validate_video
 
-rt = Path(r'F:\d1\<pc>-import\d1xenia\local')
+rt = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 segments = rt / 'content-capture/native-segments'
 output = rt / 'RESEARCH/JOIN162-evidence-inspection'
 output.mkdir(exist_ok=True)

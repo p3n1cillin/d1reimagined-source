@@ -1,10 +1,10 @@
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
-R=/f/d1/public-work/d1reimagined-source/tools/ps4_setup
+R=<D1_ROOT>/public-work/d1reimagined-source/tools/ps4_setup
 TL=$S/cap/timeline.txt; : > $TL
 mark() { echo "$(date +%s.%N | cut -c1-14) $*" >> $TL; }
-pad() { powershell -NoProfile -File /f/d1/tools/d1-pad.ps1 -Keys "$@" >/dev/null; }
+pad() { powershell -NoProfile -File <D1_ROOT>/tools/d1-pad.ps1 -Keys "$@" >/dev/null; }
 until grep -q 'in gameplay' $S/cap/boot.log 2>/dev/null; do sleep 5; done; sleep 15
-until powershell -NoProfile -File /f/d1/tools/d1-shot.ps1 -Out $S/cap/w.png >/dev/null && python -I -W ignore $S/lum.py $S/cap/w.png | awk '{exit !($3>40)}'; do sleep 5; done
+until powershell -NoProfile -File <D1_ROOT>/tools/d1-shot.ps1 -Out $S/cap/w.png >/dev/null && python -I -W ignore $S/lum.py $S/cap/w.png | awk '{exit !($3>40)}'; do sleep 5; done
 rm -f $S/cap/stop
 python -I -u $R/d1-record.py --out $S/cap/source.mp4 --seconds 1500 --stop-file $S/cap/stop > $S/cap/record.log 2>&1 &
 RP=$!

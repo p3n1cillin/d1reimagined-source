@@ -1,7 +1,7 @@
 S=lab/history/lab-scripts-2026-10-29
-R=/f/d1/public-work/d1reimagined-source
+R=<D1_ROOT>/public-work/d1reimagined-source
 until grep -q 'in gameplay' $S/cap/boot-route4.log 2>/dev/null; do sleep 5; done; sleep 15
-until powershell -NoProfile -File /f/d1/tools/d1-shot.ps1 -Out $S/r4.png >/dev/null && python -I -W ignore $S/lum.py $S/r4.png | awk '{exit !($3>40)}'; do sleep 5; done
+until powershell -NoProfile -File <D1_ROOT>/tools/d1-shot.ps1 -Out $S/r4.png >/dev/null && python -I -W ignore $S/lum.py $S/r4.png | awk '{exit !($3>40)}'; do sleep 5; done
 cd $R
 bash $S/breachwalk.sh r4 2>&1 | tail -4
 T=$S/tracked-r4.json

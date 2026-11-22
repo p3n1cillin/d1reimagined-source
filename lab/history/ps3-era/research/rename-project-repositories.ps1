@@ -11,8 +11,8 @@ foreach ($line in $credentialLines) {
 if(-not $credential.password) { throw 'GitHub credential has no access token.' }
 $headers=@{Authorization=('Bearer '+$credential.password);Accept='application/vnd.github+json';'X-GitHub-Api-Version'='2022-11-28'}
 $pairs=@(
-    @{old='d1xenia';new='d1reimagined';path='F:\d1\d1xenia'},
-    @{old='d1xenia-data';new='d1reimagined-data';path='F:\d1\d1xenia-data'})
+    @{old='d1xenia';new='d1reimagined';path='<D1_ROOT>\d1xenia'},
+    @{old='d1xenia-data';new='d1reimagined-data';path='<D1_ROOT>\d1xenia-data'})
 $receipt=[Collections.Generic.List[object]]::new()
 foreach($pair in $pairs) {
     $before=Invoke-RestMethod -Uri ('https://api.github.com/repos/p3n1cillin/'+$pair.old) -Headers $headers

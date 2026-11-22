@@ -6,7 +6,7 @@ This is the research phase of the full-game operation. Four research agents and 
 - the subsystem it can improve;
 - whether it was integrated, kept as a reference or rejected.
 
-Licences follow [licensing](../ps4/design/licensing.md). Rule 2's exception covers Blam Network's unlicensed material only: it is read and run locally and never copied here. Downloads and clones live outside the repository, under `F:\d1\third-party\trawl-2026-11-05\` (each folder has a `SOURCES.md`). Bungie's game data stays a local input.
+Licences follow [licensing](../ps4/design/licensing.md). Rule 2's exception covers Blam Network's unlicensed material only: it is read and run locally and never copied here. Downloads and clones live outside the repository, under `<D1_ROOT>\third-party\trawl-2026-11-05\` (each folder has a `SOURCES.md`). Bungie's game data stays a local input.
 
 ## Highest-leverage findings
 

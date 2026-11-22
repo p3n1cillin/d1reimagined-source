@@ -1,6 +1,6 @@
 #!/bin/bash
 S=lab/history/lab-scripts-2026-10-29
-H=$(ls -d F:/d1/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
+H=$(ls -d <D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
 done41() { sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "player trigger 0x992bb471/0x1d/41"; }
 for i in $(seq 1 8); do
   done41 && break

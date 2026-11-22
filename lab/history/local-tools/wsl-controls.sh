@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /mnt/f/d1/d1preservation-main
+cd <D1_ROOT>/d1preservation-main
 B=/opt/d1-target/d1-server/release
 for t in "d1-responder controls" "shadnet-server controls" "d1 controls"; do
   $B/$t > /tmp/c.log 2>&1; rc=$?

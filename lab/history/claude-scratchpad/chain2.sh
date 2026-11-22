@@ -2,7 +2,7 @@
 # Divide entry -> gate -> garage -> Dock 13 -> hangar bay, fighting with combat2 between legs.
 # Progress is read from host events, not step numbers. Usage: chain2.sh RUNNAME
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
-H=$(ls -d F:/d1/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
+H=$(ls -d <D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
 ev() { sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "$1"; }
 fight() { timeout $(( $1 + 60 )) python -u $S/combat2.py --seconds $1 ${2:+--squads $2} --log $S/chain2-combat.jsonl 2>&1 | grep -E "lock|bursts|stopped" | tail -1 | sed 's/^/    fight: /'; }
 go() { echo "  nav $1: $(timeout 260 python -u $S/nav.py $1 --max-s 200 2>&1 | grep -v shadPS4 | tail -1)"; }

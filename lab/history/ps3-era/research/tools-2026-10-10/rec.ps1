@@ -4,7 +4,7 @@ param([Parameter(Mandatory)][string]$Run)
 # activation message without stealing focus; if the log shows no shortcut, briefly bring the
 # game window to the foreground, post F11, and restore the previous foreground window.
 $ErrorActionPreference = 'Stop'
-Set-Location F:\d1\d1xenia
+Set-Location <D1_ROOT>\d1xenia
 . .\scripts\Final124RunHelpers.ps1
 Add-Type @'
 using System; using System.Runtime.InteropServices;
@@ -19,7 +19,7 @@ public static class RecWin {
   [DllImport("user32.dll")] public static extern uint MapVirtualKey(uint code, uint type);
 }
 '@
-$m = Read-D1ProcessManifest "F:\d1\<pc>-import\d1xenia\local\SIGNON_LOCAL\logs\FINAL124_$Run-processes.json"
+$m = Read-D1ProcessManifest "<D1_ROOT>\<pc>-import\d1xenia\local\SIGNON_LOCAL\logs\FINAL124_$Run-processes.json"
 $client = $m.processes | Where-Object tag -EQ 'rpcs3'
 if (-not (Get-D1OwnedProcess $client)) { throw 'Owned emulator is not running.' }
 $proc = Get-Process -Id $client.id

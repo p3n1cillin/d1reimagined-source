@@ -4,7 +4,7 @@ import argparse, bisect, hashlib, json, re, struct
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64
 
 ROOT=Path(__file__).parent
-IMAGE=Path(r'F:\d1\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf')
+IMAGE=Path(r'<D1_ROOT>\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf')
 SHA='672f03411c0503dfbcda804cbb9fb27cdd9a8d73a8bcb71bf0c4f688073b0833'
 B=IMAGE.read_bytes()
 assert hashlib.sha256(B).hexdigest()==SHA

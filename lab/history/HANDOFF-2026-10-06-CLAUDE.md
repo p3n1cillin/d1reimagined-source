@@ -135,7 +135,7 @@ The older active-run sections below are HISTORY and must not be reused.
 
 The user explicitly authorized Codex to continue while Claude is at usage limit.
 Read 2026-10-07-progress.md FIRST; this older handoff's later sections are history.
-Authoritative source F:\d1\d1xenia master 0f9aed2, data main e6fb51d, both pushed.
+Authoritative source <D1_ROOT>\d1xenia master 0f9aed2, data main e6fb51d, both pushed.
 Current private runtime ef67aa5cf3c015de130cef958f1abfe345bd92a74964e2c20515e35e238f7645.
 The bounded descriptor trace is diagnostic only: 20 ring +10 decoder checks,
 20 allocation/23 retirement regressions and Release build PASS. Native reset
@@ -195,8 +195,8 @@ GitHub identities/history/visibility are preserved; BOTH repositories remain pri
 - https://github.com/p3n1cillin/d1reimagined — master
 - https://github.com/p3n1cillin/d1reimagined-data — main
 
-Existing checkout folders stay F:\d1\d1xenia and F:\d1\d1xenia-data. Their origins
-are updated; the imported F:\d1\<pc>-import\d1xenia origin is updated too.
+Existing checkout folders stay <D1_ROOT>\d1xenia and <D1_ROOT>\d1xenia-data. Their origins
+are updated; the imported <D1_ROOT>\<pc>-import\d1xenia origin is updated too.
 Do not rename private runtime directories under an active observer or rewrite CA,
 certificate or wire-key identities just to match branding. Current launchers prefer
 a sibling d1reimagined-data and retain legacy fallback; explicit paths take priority.
@@ -224,7 +224,7 @@ JOIN156-native-acceptance.json, JOIN156-interaction.jsonl, JOIN156-*-state.json.
 
 ## Candidate ready, native acceptance NOT RUN
 
-Private renderer F:\d1\<pc>-import\dev\rpcs3 has a new two-site change only in
+Private renderer <D1_ROOT>\<pc>-import\dev\rpcs3 has a new two-site change only in
 rpcs3/Emu/RSX/VK/VKDraw.cpp: refresh render-pass layout key on begin; reapply depth
 feedback/general barrier immediately before emulated-depth-compare sampler binding.
 Late resource binding can change layouts after key selection; write/fall-out can
@@ -240,10 +240,10 @@ One-file scoped public patch81d44a20718a516672fe96b56b7b05fbb29aacc287414ce4116a
 git apply --check and normalized equality PASS. No unrelated private edits exported.
 
 Full Release build PASS19:03:26UTC, built candidate
-F:\d1\<pc>-import\dev\rpcs3\bin\rpcs3.exe
+<D1_ROOT>\<pc>-import\dev\rpcs3\bin\rpcs3.exe
 SHA55efc9072019124be3e880ca8c881339d057390c47d3bf77c799ccb6de920259.
 NOT deployed; NOT natively tested. Runtime executable remains5d94... at
-F:\d1\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe.
+<D1_ROOT>\<pc>-import\d1xenia\local\RPCS3_FINAL124_SMOKE001\rpcs3.exe.
 Build receipt SIGNON_LOCAL\logs\gpu-attachment-layout-build-result.json.
 No native join runs or build sessions are left pending at handoff.
 

@@ -2,11 +2,11 @@
 completes the transition. Args: tracked.json rounds"""
 import json, math, os, struct, subprocess, sys, time
 S = os.path.dirname(os.path.abspath(sys.argv[0]))
-WALK = r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py'
+WALK = r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py'
 src = open(WALK).read()
 g = {'__name__': 'lib', '__file__': WALK}
 exec(compile(src, 'd1-walk.py', 'exec'), g)
-LOG = r'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt'
+LOG = r'<D1_ROOT>\tools\shadPS4\0.19.0\user\log\shad_log.txt'
 c = g['Client']()
 tracked = json.load(open(sys.argv[1]))
 trail = []
@@ -20,7 +20,7 @@ def completed():
 
 def probe():
     out = os.path.join(S, 'gp.jsonl')
-    subprocess.run(['python', '-I', r'F:\d1\tools\d1-watchwrite.py', '--seconds', '3', '--max-hits', '1',
+    subprocess.run(['python', '-I', r'<D1_ROOT>\tools\d1-watchwrite.py', '--seconds', '3', '--max-hits', '1',
                     '--exec', '0x77fb05', '--peek', 'r15=', '--peek', 'rbx+0x378', '--out', out], capture_output=True)
     for l in open(out):
         e = json.loads(l)

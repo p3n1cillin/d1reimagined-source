@@ -1,7 +1,7 @@
 """Private fixed-rate discriminator on the existing driver, with fresh post-death tracking."""
 from pathlib import Path
 p = Path(__file__).resolve().parent
-source = Path(r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup')
+source = Path(r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup')
 fixed = p/'fixed-rate-driver'
 fixed.mkdir(exist_ok=False)
 for name in ['d1-winguest.py','d1-step.py']:

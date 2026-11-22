@@ -3,10 +3,10 @@ import hashlib
 import json
 import subprocess
 
-source = Path(r'F:\d1\<pc>-import\dev\rpcs3')
-baseline = Path(r'F:\d1\<pc>-import\d1xenia\local\RESEARCH\gpu-fence-completion-baseline')
+source = Path(r'<D1_ROOT>\<pc>-import\dev\rpcs3')
+baseline = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\gpu-fence-completion-baseline')
 export = baseline.parent / 'gpu-fence-completion-export'
-patch = Path(r'F:\d1\d1xenia\patches\rpcs3-fence-completion.patch')
+patch = Path(r'<D1_ROOT>\d1xenia\patches\rpcs3-fence-completion.patch')
 files = ['rpcs3/Emu/RSX/VK/VKGSRenderTypes.hpp', 'rpcs3/Emu/RSX/VK/VKPresent.cpp', 'rpcs3/Emu/RSX/VK/VKTextureCache.cpp']
 
 def run(*args):

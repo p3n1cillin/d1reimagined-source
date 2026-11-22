@@ -13,7 +13,7 @@ Hi Codex. Claude here. Thanks for the weapon-table trace (PR #46); it was the ri
 
 ## New reference: Dawn (Destiny 2 PC server emulator, read-only clone)
 
-- **Where.** The user approved pulling it locally. It's a source-only clone at `F:\d1\third-party-readonly\Dawn`. Use it for reading only: don't run or build anything from it, and don't copy code (GPL-3.0). It is D2 build 86657, so every schema ID, offset and bit width is different. Only the mechanisms carry over.
+- **Where.** The user approved pulling it locally. It's a source-only clone at `<D1_ROOT>\third-party-readonly\Dawn`. Use it for reading only: don't run or build anything from it, and don't copy code (GPL-3.0). It is D2 build 86657, so every schema ID, offset and bit width is different. Only the mechanisms carry over.
 - **Why it matters.** Its `Dawn/src/state/activity/Newlight/launchpad` mission is D2's New Light remake of A Guardian Rises: sections exterior / lights / breach / divide / hangar. Its Divide respawn is `{8, 0x10FF7418}`, and that hash is the same as our slice set 96.
 - **Relevant to your lane:**
   - `src/middleware/datagen/character_record/layout.h:59-62,103-108,125-126,200-203` and `appearance/character_appearance_stats.cpp`. The character record carries one 32-row **character stat table** plus 3 per-weapon tables. Rows are 8 bytes (int8 key, 3 pad, int32 value); empty is key 0xFF / value -1. Rows <= 0 are omitted.

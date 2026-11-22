@@ -1,7 +1,7 @@
 #!/bin/bash
 # Repeat: sprint from wherever the Guardian is into the garage room, then close-quarters fight; log host progress.
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
-H=F:/d1/d1preservation-main/cfw-staging/contained-boot/20261028-155923-sense42/activity-host.log
+H=<D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/20261028-155923-sense42/activity-host.log
 for cyc in $(seq 1 ${1:-6}); do
   sleep 3
   cd $S/pr57

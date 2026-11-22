@@ -1,9 +1,9 @@
 from pathlib import Path
 import importlib.util,hashlib,struct,json,subprocess,sys
 root=Path(r'lab/history\2026-10-28-character-stats')
-tools=Path(r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup')
+tools=Path(r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup')
 s=importlib.util.spec_from_file_location('g',tools/'d1-winguest.py');g=importlib.util.module_from_spec(s);s.loader.exec_module(g)
-p,base=g.open_client();b=Path(r'F:\d1\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf').read_bytes();assert hashlib.sha256(b).hexdigest()==g.ELF_SHA
+p,base=g.open_client();b=Path(r'<D1_ROOT>\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf').read_bytes();assert hashlib.sha256(b).hexdigest()==g.ELF_SHA
 phoff=struct.unpack_from('<Q',b,0x20)[0];size,n=struct.unpack_from('<HH',b,0x36)
 def code(va,length):
  for i in range(n):

@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys,struct,json
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from d1_pkg import PackageSet,Oodle,split_tag_hash,dyn_array
 rt=Path(__file__).parent.parent
 ps=PackageSet(list((rt/'RESEARCH/ps3_updates/final/packages').glob('*.pkg'))+list((rt/'01_WORKING/ps3_destiny/PS3_GAME/USRDIR/packages').glob('*.pkg')),Oodle(rt/'TOOLS/oodle/oo2core_3_win64_x86-64/oo2core_3_win64.dll'))

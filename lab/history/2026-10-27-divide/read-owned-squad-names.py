@@ -2,7 +2,7 @@
 import os, re, subprocess
 from pathlib import Path
 p = Path(__file__).resolve().parent
-root = Path(r'F:\d1\d1preservation-main')
+root = Path(r'<D1_ROOT>\d1preservation-main')
 env = dict(os.environ,D1_BUILDS=str(root/'capture-rig/builds.json'),D1_BUILD='later-56578')
 for tag in range(0x80CB8454,0x80CB8460):
     out=p/f'owned-entry-{tag:08x}.bin'

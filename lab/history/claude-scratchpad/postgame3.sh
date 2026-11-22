@@ -1,7 +1,7 @@
 #!/bin/bash
 # After the outro: push the completed profile, wait for the scoreboard draft, publish it, then @phase 7.
 # Usage: postgame2.sh RUNNAME [SCOREBOARD_LIST]
-C=F:/d1/d1preservation-main/cfw-staging; P=lab/history/2026-10-28-evening-claude
+C=<D1_ROOT>/d1preservation-main/cfw-staging; P=lab/history/2026-10-28-evening-claude
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
 SB=${2:-$C/agr-postgame-scoreboard.draft.txt}
 grab() { python -c "
@@ -24,10 +24,10 @@ grep -a "PROFILE PUSH" $D/responder.log | tail -1 | cut -c1-120; echo "$(date +%
 echo "$(date +%H:%M:%S) parked (phase 3); waiting for $SB"
 until [ -f $SB ]; do sleep 10; done
 echo "$(date +%H:%M:%S) scoreboard draft present"
-(cd F:/d1/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $C/$1/capture/postgame.mp4 --seconds 300 >/dev/null 2>&1 &)
+(cd <D1_ROOT>/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $C/$1/capture/postgame.mp4 --seconds 300 >/dev/null 2>&1 &)
 sleep 4; publish $SB; sleep 15
 t0=$(date -u +%Y-%m-%dT%H:%M:%S); r0=$(wc -l < $D/responder.log)
-publish F:/d1/d1preservation-main/cfw-staging/agr-postgame-phase7.draft.txt
+publish <D1_ROOT>/d1preservation-main/cfw-staging/agr-postgame-phase7.draft.txt
 for k in 1 2 3 4 5 6; do sleep 15; grab $1 postgame-$k; done
 echo "== host since phase 7"; sed 's/\x1b\[[0-9;]*m//g' $H | awk -v t=$t0 '$1>t' | grep -vE "heartbeat|WantsToPush|user_defined_type: 15\b|sensor_auth_update send" | head -15 | cut -c12-27,60-200
 echo "== responder since phase 7"; tail -n +$r0 $D/responder.log | grep -a -E "RECV type|INVESTMENT message id" | grep -v "0x00fa\|id 70[12]\|RECV type 0x000a" | head -12 | cut -c1-160

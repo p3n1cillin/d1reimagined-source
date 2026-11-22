@@ -1,6 +1,6 @@
 import collections, datetime, json, math, re
 from pathlib import Path
-rt = Path(r"F:\d1\<pc>-import\d1xenia\local")
+rt = Path(r"<D1_ROOT>\<pc>-import\d1xenia\local")
 logs = rt / "SIGNON_LOCAL/logs"
 rows = [json.loads(line) for line in (rt / "RESEARCH/JOIN179-session-timeline.jsonl").read_text().splitlines() if line.strip()]
 def idle(row, zone):

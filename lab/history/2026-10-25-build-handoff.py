@@ -6,8 +6,8 @@ from pathlib import Path
 import subprocess
 
 private = Path(r'lab/history')
-public = Path(r'F:\d1\public-work\d1reimagined-source')
-source = Path(r'F:\d1\d1xenia')
+public = Path(r'<D1_ROOT>\public-work\d1reimagined-source')
+source = Path(r'<D1_ROOT>\d1xenia')
 pointer = private / '2026-10-25-draft-pointer.json'
 if pointer.exists():
     raise SystemExit('Reuse the existing daily draft; do not create another package.')
@@ -23,16 +23,16 @@ legacy_head = git(source, 'rev-parse', 'HEAD')
 legacy_status = git(source, 'status', '--porcelain')
 changed = ['ps4/d1-server/crates/d1-activity-host/src/listener.rs', 'ps4/design/client-update-capture.md']
 pins = {name: hashlib.sha256((public / name).read_bytes()).hexdigest() for name in changed}
-runtime_listener = Path(r'F:\d1\d1preservation-main\d1-server\crates\d1-activity-host\src\listener.rs')
+runtime_listener = Path(r'<D1_ROOT>\d1preservation-main\d1-server\crates\d1-activity-host\src\listener.rs')
 runtime_sha = hashlib.sha256(runtime_listener.read_bytes()).hexdigest()
 assert runtime_sha == pins[changed[0]] == '3628d502ee2cef564c9568988483e145538542b1c7c9a8bf25510ec35aa38352'
-run = Path(r'F:\d1\d1preservation-main\cfw-staging\contained-boot\20261025-174422-2026-10-25-agr-cap')
+run = Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\contained-boot\20261025-174422-2026-10-25-agr-cap')
 native = json.loads((run / 'receipt.json').read_text(encoding='utf-8-sig'))
 assert native['serversStopped'] and native['endedUtc'].startswith('2026-10-25T18:00:56')
 native_summary = {k: native.get(k) for k in ['name', 'startedUtc', 'endedUtc', 'emulatorExitCode',
     'emulatorExitedByItself', 'serversStopped', 'emulatorFault', 'guestCrashReport',
     'nativeBootAccepted', 'emulatorSha256', 'clientPatch']}
-shot = Path(r'F:\d1\d1preservation-main\cfw-staging\2026-10-25-agr-cap\stuck.png')
+shot = Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\2026-10-25-agr-cap\stuck.png')
 shots = [{'file': 'screenshots/01.png', 'source_path': str(shot),
     'source_modified_at_utc': datetime.fromtimestamp(shot.stat().st_mtime, timezone.utc).isoformat(),
     'source_sha256': hashlib.sha256(shot.read_bytes()).hexdigest(), 'bytes': shot.stat().st_size,

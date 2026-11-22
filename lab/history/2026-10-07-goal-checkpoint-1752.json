@@ -49,7 +49,7 @@
     "clock_snapshots": "Two direct native reads at17:41:47.529565/17:41:49.529886UTC: tick5848 both; pending start2567. No observed state37/38; UTC duration does not prove local timeout.",
     "actually_inspected_images": [
       {
-        "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\BLES01857\\BLES01857_screenshot_2026_10_07_18_34_39.png",
+        "file": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\screenshots\\BLES01857\\BLES01857_screenshot_2026_10_07_18_34_39.png",
         "sha256": "d6f962214167341ade5adcd734dd9213209377485c35ca16498d345779273109",
         "observation": "Unobstructed outdoor cinematic after one posted Cross; no Guardian control or mission advancement proved."
       }

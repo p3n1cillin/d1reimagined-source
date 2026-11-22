@@ -4,9 +4,9 @@ import os
 import re
 import shutil
 
-B = 'F:/d1/d1preservation-main/capture-rig/builds/later-56578'
-C = 'F:/d1/d1preservation-main/cfw-staging'
-OUT = 'F:/d1/public-work/wt-ci/ps4/fixtures/56578'
+B = '<D1_ROOT>/d1preservation-main/capture-rig/builds/later-56578'
+C = '<D1_ROOT>/d1preservation-main/cfw-staging'
+OUT = '<D1_ROOT>/public-work/wt-ci/ps4/fixtures/56578'
 RENAME = {'world-table-sense58.txt': 'world-table-tower.txt'}
 
 characters = ['profile-tutorial-t.bin', 'profile-geared-385-director-c.bin', 'activity-table.tsv',

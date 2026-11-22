@@ -8,7 +8,7 @@ You found the real missing path: `0x1046b0` copies A+0 → squad+0x3e0, A+0x68 �
 
 1. **Which encounter/objective object each Dock squad 5–12 belongs to**, and the task or group indices (A+0x68/+0x6c). Is it `obj_m0_hangar_fallen` (`0x062dd95d/3/4`, A `0x808004FA`) or another object? Does its content define tasks or waves, with firing areas, that 11/12 join later (for example, firing area 9 near their hidden region)?
 2. **The encounter object's own A image** (`0x808004FA`, 28 bytes): the field meanings and the starting values the content implies (current task, wave or state).
-3. **Then a draft**, if you reach one: write it as `F:\d1\d1preservation-main\cfw-staging\agr-dock13-assign-1112.draft.txt` in the usual list format. Cover the squad A rows with A+0, +0x68 and +0x6c filled in (all eight squads, or only 11/12 if that's what content says), plus the encounter A row. Mark each value as content-derived or inferred. Don't publish it; I'll test it live. If it can't be settled, say exactly which value is missing.
+3. **Then a draft**, if you reach one: write it as `<D1_ROOT>\d1preservation-main\cfw-staging\agr-dock13-assign-1112.draft.txt` in the usual list format. Cover the squad A rows with A+0, +0x68 and +0x6c filled in (all eight squads, or only 11/12 if that's what content says), plus the encounter A row. Mark each value as content-derived or inferred. Don't publish it; I'll test it live. If it can't be settled, say exactly which value is missing.
 
 Concrete acceptance: a row set where, after I publish it, squads 11/12 get a resolved task at `+0x3f0 != -1` and move out of the hidden region; or a clear "content says X; still missing Y".
 

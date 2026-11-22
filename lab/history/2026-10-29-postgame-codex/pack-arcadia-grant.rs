@@ -7,7 +7,7 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
  let profile_path=Path::new(&args[2]);let output=Path::new(&args[3]);
  if !profile_path.to_string_lossy().ends_with(".draft.bin") || !output.to_string_lossy().ends_with(".draft.bin") {return Err("require explicitly named draft input/output files".into());}
  if output.exists(){return Err("output exists; refusing overwrite".into());}
- let item=fs::read("F:/d1/d1preservation-main/cfw-staging/arcadia-3517-inventory.draft.bin")?;
+ let item=fs::read("<D1_ROOT>/d1preservation-main/cfw-staging/arcadia-3517-inventory.draft.bin")?;
  let profile=fs::read(profile_path)?;
  let body=d1_bap::loot::item_grant_delta(0xd100000000000001,next,0xd1000000000003f1,&item,Some((0xd100000000000201,&profile)));
  fs::write(output,&body)?;

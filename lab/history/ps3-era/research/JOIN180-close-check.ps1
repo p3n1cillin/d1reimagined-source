@@ -1,6 +1,6 @@
 $ErrorActionPreference='Stop'
-. 'F:\d1\d1xenia\scripts\Final124RunHelpers.ps1'
-$runtime='F:\d1\<pc>-import\d1xenia\local'
+. '<D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1'
+$runtime='<D1_ROOT>\<pc>-import\d1xenia\local'
 $logs=Join-Path $runtime 'SIGNON_LOCAL\logs'
 $research=Join-Path $runtime 'RESEARCH'
 $rpc=Join-Path $runtime 'RPCS3_FINAL124_SMOKE001'

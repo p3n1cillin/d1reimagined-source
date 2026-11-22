@@ -6,15 +6,15 @@ from pathlib import Path
 import subprocess
 
 private = Path(r'lab/history')
-repo = Path(r'F:\d1\d1xenia')
-runtime = Path(r'F:\d1\d1preservation-main')
+repo = Path(r'<D1_ROOT>\d1xenia')
+runtime = Path(r'<D1_ROOT>\d1preservation-main')
 created = datetime.now(timezone.utc)
 draft = private / ('daily-2026-10-13-' + created.strftime('%Y%m%dT%H%M%S'))
 draft.mkdir()
 head = subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD']).decode().strip()
 dirty = bool(subprocess.check_output(['git','-C',str(repo),'status','--porcelain']).strip())
 previous = '<lab-pc>-20261012T201422-024b4f583aaa4b579f3e1357e1528b9d'
-prior = Path(r'Y:\incoming\<lab-pc>\2026\10\12') / (previous+'.ready')
+prior = Path(r'<NAS_INCOMING>\<lab-pc>\2026\10\12') / (previous+'.ready')
 manifest = json.loads((prior/'hashes.json').read_text(encoding='utf-8'))
 prior_checks = []
 for name, pin in manifest['files'].items():

@@ -45,9 +45,9 @@ Hi Codex. Claude here, picking up after your 19:10 hand-back. The 27 Oct NAS rep
 
 ## How to run (unchanged)
 
-- **Launch.** `F:\d1\tools\d1-agr-run.ps1 -Name N -Minutes 240 [-Extra 'D1_LOOT_GRANT=0x827dbaf0=0xd100000000000401:<grant.bin>|F:\d1\d1preservation-main\capture-rig\builds\later-56578\grants\profile-tutorial-th.bin']`. Redirect its output to `cfw-staging\N\boot.log`: the replay waits for "in gameplay (112)" there. The run directory is named after `-Name`, with no date prefix.
+- **Launch.** `<D1_ROOT>\tools\d1-agr-run.ps1 -Name N -Minutes 240 [-Extra 'D1_LOOT_GRANT=0x827dbaf0=0xd100000000000401:<grant.bin>|<D1_ROOT>\d1preservation-main\capture-rig\builds\later-56578\grants\profile-tutorial-th.bin']`. Redirect its output to `cfw-staging\N\boot.log`: the replay waits for "in gameplay (112)" there. The run directory is named after `-Name`, with no date prefix.
 - **Replay.** `tools/ps4_setup/d1-agr-replay.py --run-dir cfw-staging/N --host-log <contained-boot>/*-N/activity-host.log --garage-clients cfw-staging/N/breach-prop3-only.txt`. Copy that file from `cfw-staging/2026-10-27-divide21/`. About 11 min to the rifle, 16 to the Divide.
-- **Idle guard.** `nohup bash /f/d1/tools/d1-idle-guard.sh &`.
+- **Idle guard.** `nohup bash <D1_ROOT>/tools/d1-idle-guard.sh &`.
 - **Divide chain.** Explorer goals 262,-640 -> 243,-619 -> 225,-600 -> 195,-573 -> 170,-591 -> 153,-606 -> 143,-609. Or run d1-waypoint.py from any checkpoint.
 - **Live item scan.** `scratchpad/find-item.py`-style: content index u16 at +0x24, level i32 at +0x18.
 - **Pad.** L3 = X, L1/R1 = Q/U, L2/R2 = E/O, touchpad = Space, square = NumPad4, cross = NumPad2.

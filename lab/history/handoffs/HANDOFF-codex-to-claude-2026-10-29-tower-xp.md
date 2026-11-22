@@ -56,7 +56,7 @@ search passes the controls above. No new game launch was needed.
 
 ## Draft files, not a published configuration
 
-Under `F:\d1\d1preservation-main\cfw-staging`:
+Under `<D1_ROOT>\d1preservation-main\cfw-staging`:
 
 1. `tower-known-world.draft.txt`: exact KnownWorld constant for the new world.
    Include it in KNOWN_WORLDS when reviewing/applying. The current host's
@@ -66,7 +66,7 @@ Under `F:\d1\d1preservation-main\cfw-staging`:
    adds this INFERRED index0 mapping:
 
    ```text
-   0 city_tower_default1 0x4786c0e0 F:\d1\d1preservation-main\cfw-staging\tower-common-clients.draft.txt 0
+   0 city_tower_default1 0x4786c0e0 <D1_ROOT>\d1preservation-main\cfw-staging\tower-common-clients.draft.txt 0
    ```
 
 3. `tower-common-clients.draft.txt`: MINIMAL COMMON-CLIENT TEMPLATE, not a
@@ -129,9 +129,9 @@ not what the recall state proves. Tower index0 needs a Tower world choice.
 The current sense50 env already correctly pairs:
 
 ```text
-D1_ACTIVITY_FOLLOW_FILE=F:\d1\d1preservation-main\cfw-staging\sense50-launched-activity.txt
-D1_AH_ACTIVITY_FOLLOW_FILE=F:\d1\d1preservation-main\cfw-staging\sense50-launched-activity.txt
-D1_AH_ACTIVITY_TABLE=F:\d1\d1preservation-main\capture-rig\builds\later-56578\activity-table.tsv
+D1_ACTIVITY_FOLLOW_FILE=<D1_ROOT>\d1preservation-main\cfw-staging\sense50-launched-activity.txt
+D1_AH_ACTIVITY_FOLLOW_FILE=<D1_ROOT>\d1preservation-main\cfw-staging\sense50-launched-activity.txt
+D1_AH_ACTIVITY_TABLE=<D1_ROOT>\d1preservation-main\capture-rig\builds\later-56578\activity-table.tsv
 ```
 
 The responder writes the requested activity HASH on kind4 BAP42; the AH maps

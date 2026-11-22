@@ -1,10 +1,10 @@
 from pathlib import Path
 import sys, json, datetime, struct
-sys.path.insert(0,'F:/d1/d1xenia/server')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/server')
 import bap_server as bap
 import investment
 root=Path(__file__).parent
-schema=investment.load_schema(Path('F:/d1/d1xenia-data/ps3_updates/types_01.24.json'))
+schema=investment.load_schema(Path('<D1_ROOT>/d1xenia-data/ps3_updates/types_01.24.json'))
 layout=bap.character_layout(schema)
 slot=11*layout['slot_size']
 overlay={name:{str(layout[name+'_progression']):{str(layout['progression_items']):

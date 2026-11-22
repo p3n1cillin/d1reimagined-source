@@ -1,7 +1,7 @@
 #!/bin/bash
 # Repeat: sprint from the respawn to the firing spot, fight at the truck until death; log squad drops and slice arrivals.
 S=lab/history/lab-scripts-2026-10-29
-H=F:/d1/d1preservation-main/cfw-staging/contained-boot/20261028-083554-sense36/activity-host.log
+H=<D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/20261028-083554-sense36/activity-host.log
 SPOT=${SPOT:-178.5,-584.5}
 for cyc in $(seq 1 ${1:-8}); do
   sleep 3

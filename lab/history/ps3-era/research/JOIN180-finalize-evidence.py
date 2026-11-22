@@ -6,7 +6,7 @@ at=datetime.datetime.now(datetime.timezone.utc).isoformat()
 closed=read(root/'JOIN180-independent-closed.json')
 summary=read(root/'JOIN180-session-summary.json')
 media=read(root/'JOIN180-video-inspection/receipt.json')
-sys.path.insert(0,'F:/d1/d1xenia');sys.path.insert(0,'F:/d1/d1xenia/tools/content_capture')
+sys.path.insert(0,'<D1_ROOT>/d1xenia');sys.path.insert(0,'<D1_ROOT>/d1xenia/tools/content_capture')
 from tools.content_capture.capture import validate_video
 ffmpeg=runtime/'DEVLOGS/tools/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe'
 unindexed=[]

@@ -1,13 +1,13 @@
 from pathlib import Path
 import os,json,re,struct,subprocess,shutil,hashlib
 root=Path(r'lab/history\2026-10-27-weapon-stats')
-source=Path(r'F:\d1\d1preservation-main\capture-rig\builds\later-56578\grants\rosters-f0-tutorial-khv')
+source=Path(r'<D1_ROOT>\d1preservation-main\capture-rig\builds\later-56578\grants\rosters-f0-tutorial-khv')
 out=root/'roster-magazine44';out.mkdir()
 for f in source.iterdir():
  if f.is_file():shutil.copy2(f,out/f.name)
 peer=source/'f0t1-d100000000000501.bin'
-oracle=r'F:\d1\d1preservation-main\d1-server\target\release\d1-oracle.exe'
-env=dict(os.environ,D1_BUILDS=r'F:\d1\d1preservation-main\capture-rig\builds.json',D1_BUILD='later-56578')
+oracle=r'<D1_ROOT>\d1preservation-main\d1-server\target\release\d1-oracle.exe'
+env=dict(os.environ,D1_BUILDS=r'<D1_ROOT>\d1preservation-main\capture-rig\builds.json',D1_BUILD='later-56578')
 def command(args):
  r=subprocess.run([oracle,*args],env=env,capture_output=True,text=True,timeout=90)
  assert r.returncode==0,r.stderr[:1000]

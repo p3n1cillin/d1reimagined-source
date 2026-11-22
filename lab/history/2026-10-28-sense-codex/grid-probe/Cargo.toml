@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 publish = false
 [dependencies]
-d1-oracle = { path = "F:/d1/public-work/d1reimagined-stats/ps4/d1-server/crates/d1-oracle" }
+d1-oracle = { path = "<D1_ROOT>/public-work/d1reimagined-stats/ps4/d1-server/crates/d1-oracle" }
 anyhow = "1"
 serde_json = "1"
 unicorn-engine = { version = "2.1.5", default-features = false, features = ["arch_x86"] }

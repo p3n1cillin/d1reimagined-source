@@ -1,5 +1,5 @@
 {"utc": "2026-10-08T18:10:25.022188+00:00", "ev": "position", "xyz": [417.5635681152344, -786.7631225585938, 19.129501342773438]}
-{"utc": "2026-10-08T18:10:25.022275+00:00", "ev": "start", "identity": {"tag": "rpcs3", "id": 24244, "startTimeUtcTicks": "639270783175447294", "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"}, "entity": "0x602c3f00", "xyz": [417.5635681152344, -786.7631225585938, 19.129501342773438]}
+{"utc": "2026-10-08T18:10:25.022275+00:00", "ev": "start", "identity": {"tag": "rpcs3", "id": 24244, "startTimeUtcTicks": "639270783175447294", "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"}, "entity": "0x602c3f00", "xyz": [417.5635681152344, -786.7631225585938, 19.129501342773438]}
 {"utc": "2026-10-08T18:10:25.022326+00:00", "ev": "goal", "xy": [402.0, -786.0]}
 {"utc": "2026-10-08T18:10:25.033312+00:00", "ev": "hold", "keys": ["L"], "milliseconds": 300}
 {"utc": "2026-10-08T18:10:25.432655+00:00", "ev": "hold", "keys": ["L"], "milliseconds": 300}

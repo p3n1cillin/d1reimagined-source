@@ -1,6 +1,6 @@
 """Diagnostic: write manifest stats (Attack idx 11 = 5, Magazine idx 20 = 25) into the live rifle instance."""
 import importlib.util, struct
-spec = importlib.util.spec_from_file_location('g', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+spec = importlib.util.spec_from_file_location('g', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
 p, base = g.open_client()
 a = 0x37f910be8

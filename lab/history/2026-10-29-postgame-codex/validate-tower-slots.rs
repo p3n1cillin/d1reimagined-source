@@ -1,7 +1,7 @@
-#[path="F:/d1/public-work/d1rs-claude/ps4/d1-server/crates/d1-activity-host/src/sensor_list.rs"] mod sensor_list;
+#[path="<D1_ROOT>/public-work/d1rs-claude/ps4/d1-server/crates/d1-activity-host/src/sensor_list.rs"] mod sensor_list;
 use d1_oracle::sensor::SensorPhaseUpdate;
 fn main()->anyhow::Result<()> {
- let text=std::fs::read_to_string("F:/d1/d1preservation-main/cfw-staging/tower-north-authored-slots.diagnostic.draft.txt")?;
+ let text=std::fs::read_to_string("<D1_ROOT>/d1preservation-main/cfw-staging/tower-north-authored-slots.diagnostic.draft.txt")?;
  let base=SensorPhaseUpdate{gen:0,name_hash:0x40aebf90,name_i8:16,name_sub:3,phase:3,tail:None,clients:vec![],authority:None};
  for team in [0,-1] {
   let p=sensor_list::params_for_list(&base,0x40aebf90,team,&text)?;

@@ -3,11 +3,11 @@ Read-only memory; stops on stage change, rejoin, player change/jump, or leaving 
 import json, math, struct, sys, time
 from contextlib import ExitStack
 from pathlib import Path
-sys.path.insert(0, r"F:\d1\d1xenia\scripts")
+sys.path.insert(0, r"<D1_ROOT>\d1xenia\scripts")
 from d1_guardian_route import HOOK, HookLease, SharedTail, RouteStopped, GuardedPad, GuardedPlayer, run_state, utc_now
 from d1_walker import Grid, Walker, facing_from_pointers
 from rpcs3_owned_memory import OwnedMemory, emulator_identity
-rt = Path(r"F:\d1\<pc>-import\d1xenia\local")
+rt = Path(r"<D1_ROOT>\<pc>-import\d1xenia\local")
 manifest = rt / "SIGNON_LOCAL/logs/FINAL124_JOIN253-processes.json"
 identity = emulator_identity(json.loads(manifest.read_text(encoding="utf-8-sig")))
 emulator = Path(identity["executable"]).parent

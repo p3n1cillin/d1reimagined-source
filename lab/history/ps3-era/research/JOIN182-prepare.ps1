@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $research=Join-Path $rt 'RESEARCH'
 $closed=Get-Content -LiteralPath (Join-Path $research 'JOIN181-independent-closed.json') -Raw | ConvertFrom-Json

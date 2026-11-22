@@ -2,7 +2,7 @@
 
 Hi Codex. Your last two turns ended on `model_not_found` ("gpt-6.1-sol not supported with a ChatGPT account"). The user has now logged in with an account that has a valid subscription, so please carry on.
 
-**This supersedes the 11:40 refresh. Your 12:08 clock finding was right, and I've shipped it.** Your uncommitted work in `F:\d1\public-work\d1reimagined-sense` (branch `codex/static-combat-dock13`) is untouched; please commit or PR it yourself. Hand back by pasting into the Claude desktop session "PS4 build 56578 retarget" when done or near your limit.
+**This supersedes the 11:40 refresh. Your 12:08 clock finding was right, and I've shipped it.** Your uncommitted work in `<D1_ROOT>\public-work\d1reimagined-sense` (branch `codex/static-combat-dock13`) is untouched; please commit or PR it yourself. Hand back by pasting into the Claude desktop session "PS4 build 56578 retarget" when done or near your limit.
 
 ## Done since 11:40 (mine, runs sense37/sense38)
 

@@ -1,8 +1,8 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $r=Join-Path $rt 'RESEARCH'
-. F:\d1\d1xenia\scripts\Final124RunHelpers.ps1
+. <D1_ROOT>\d1xenia\scripts\Final124RunHelpers.ps1
 $prior=Get-Content -LiteralPath "$r\JOIN246-independent-closure-verified.json" -Raw | ConvertFrom-Json
 if(-not $prior.all_hashes_match -or @($prior.checks).Count -lt 1 -or @($prior.checks | Where-Object exact_owned_alive).Count){throw 'Prior independent closure not verified'}
 foreach($check in $prior.checks){if(Get-D1OwnedProcess $check.identity){throw 'Prior owned identity still alive'}}
@@ -15,9 +15,9 @@ $expected=@{
 }
 foreach($entry in $expected.GetEnumerator()){if((Get-FileHash -LiteralPath (Join-Path $rpc $entry.Key)).Hash -ne $entry.Value){throw "Unexpected baseline $($entry.Key)"}}
 foreach($path in @("$r\JOIN247-before-title.yml","$r\JOIN247-before-d1ppu.txt","$rt\SIGNON_LOCAL\JOIN247-launch.ps1","$rt\SIGNON_LOCAL\FINAL124_JOIN247-control.jsonl")){if(Test-Path -LiteralPath $path){throw 'Preserve existing JOIN247 files'}}
-$diff=git -C 'F:\d1\d1xenia' diff
+$diff=git -C '<D1_ROOT>\d1xenia' diff
 [IO.File]::WriteAllText("$r\JOIN247-tested-source.diff",($diff -join "`n"),[Text.UTF8Encoding]::new($false))
-$launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN244-launch.ps1" -Raw).Replace('JOIN244','JOIN247').Replace(';--world-loot;F:\d1\d1xenia\missions\a_guardian_rises.json''',';--world-loot;F:\d1\d1xenia\missions\a_guardian_rises.json;--universe-flag-values;3390=1,309=1,2847=1''').Replace('no private overlay or control event;','no private overlay or control event; universe flag 2847 false (urgent dialog gate test);')
+$launch=(Get-Content -LiteralPath "$rt\SIGNON_LOCAL\JOIN244-launch.ps1" -Raw).Replace('JOIN244','JOIN247').Replace(';--world-loot;<D1_ROOT>\d1xenia\missions\a_guardian_rises.json''',';--world-loot;<D1_ROOT>\d1xenia\missions\a_guardian_rises.json;--universe-flag-values;3390=1,309=1,2847=1''').Replace('no private overlay or control event;','no private overlay or control event; universe flag 2847 false (urgent dialog gate test);')
 if(-not $launch.Contains('2847=1')){throw 'flag override not applied'}
 $trace=@'
 # JOIN247: universe flag 2847 = false. Gate evaluations of 2847 and the dialog-side caller 0x48a570.
@@ -31,7 +31,7 @@ Copy-Item -LiteralPath "$rpc\d1\d1ppu.txt" -Destination "$r\JOIN247-before-d1ppu
 [IO.File]::WriteAllText("$r\JOIN247-planned-d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText("$rpc\d1\d1ppu.txt",$trace,[Text.UTF8Encoding]::new($false))
 foreach($marker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText("$rpc\d1\$marker",'')}
-[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C 'F:\d1\d1xenia' rev-parse HEAD).Trim();source_clean=$false;source_status=@(git -C 'F:\d1\d1xenia' status --short);change='Universe flag override 2847=1 (false) on top of 3390/309. JOIN246 showed the dialog-side evaluator 0x48a570 testing runtime universe flag 0xb1f (content default true) at world entry and around the grant; the content index 0x525/0x52f is resolved at load. Read-only watches on that path. Same mission drive. Committed source bb55871. No control lines or guest writes.';trace=$trace;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN247-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN247-prepare.json" -Encoding utf8
+[ordered]@{utc=[datetime]::UtcNow.ToString('o');source_base=(git -C '<D1_ROOT>\d1xenia' rev-parse HEAD).Trim();source_clean=$false;source_status=@(git -C '<D1_ROOT>\d1xenia' status --short);change='Universe flag override 2847=1 (false) on top of 3390/309. JOIN246 showed the dialog-side evaluator 0x48a570 testing runtime universe flag 0xb1f (content default true) at world entry and around the grant; the content index 0x525/0x52f is resolved at load. Read-only watches on that path. Same mission drive. Committed source bb55871. No control lines or guest writes.';trace=$trace;launch_sha256=(Get-FileHash -LiteralPath "$rt\SIGNON_LOCAL\JOIN247-launch.ps1").Hash}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath "$r\JOIN247-prepare.json" -Encoding utf8
 'JOIN247 prepared'
 
 

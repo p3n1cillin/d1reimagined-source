@@ -95,10 +95,10 @@ test_all_fatal_directions_have_no_recovery_move (test_ps4_explore.ExplorerLethal
 test_dead_end_retry_keeps_lethal_moves_and_reopens_wall_moves (test_ps4_explore.ExplorerLethalMoves.test_dead_end_retry_keeps_lethal_moves_and_reopens_wall_moves) ... ok
 test_fatal_move_stays_excluded_even_if_its_transient_entry_is_missing (test_ps4_explore.ExplorerLethalMoves.test_fatal_move_stays_excluded_even_if_its_transient_entry_is_missing) ... ok
 test_help_does_not_load_the_windows_driver (test_ps4_explore.ExplorerLethalMoves.test_help_does_not_load_the_windows_driver) ... ok
-test_main_stops_before_keepalive_or_heading_probe_in_an_all_fatal_cell (test_ps4_explore.ExplorerLethalMoves.test_main_stops_before_keepalive_or_heading_probe_in_an_all_fatal_cell) ... F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:84: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpzuoq0w4p\\tracked.json' mode='r' encoding='cp1252'>
+test_main_stops_before_keepalive_or_heading_probe_in_an_all_fatal_cell (test_ps4_explore.ExplorerLethalMoves.test_main_stops_before_keepalive_or_heading_probe_in_an_all_fatal_cell) ... <D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:84: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpzuoq0w4p\\tracked.json' mode='r' encoding='cp1252'>
   tracked = json.load(open(a.tracked))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:90: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpzuoq0w4p\\lethal.json' mode='r' encoding='cp1252'>
+<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:90: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpzuoq0w4p\\lethal.json' mode='r' encoding='cp1252'>
   lethal = {((x, y), kk) for x, y, kk in json.load(open(a.lethal))}
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
 usage: d1-explore.py [-h] --tracked TRACKED --goal GOAL --out OUT
@@ -120,7 +120,7 @@ options:
                         death
 start (100.0, -100.0, 10.0) goal [200.0, -100.0]
 no non-lethal direction from (50, -50); stopping without another move
-F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:202: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpzuoq0w4p\\out.json' mode='w' encoding='cp1252'>
+<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-explore.py:202: ResourceWarning: unclosed file <_io.TextIOWrapper name='%USERPROFILE%\\AppData\\Local\\Temp\\tmpzuoq0w4p\\out.json' mode='w' encoding='cp1252'>
   json.dump(route, open(a.out, 'w'))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
 ok

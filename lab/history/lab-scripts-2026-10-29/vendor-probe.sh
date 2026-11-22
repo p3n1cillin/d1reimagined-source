@@ -7,8 +7,8 @@
 #   552ef0  the 904 vendor_interact sender                         - the screen asked the server
 # Pauses social-keepalive.sh (codex.lock) while it drives. Usage: vendor-probe.sh RUNNAME
 S=lab/history/lab-scripts-2026-10-29
-R=F:/d1/d1preservation-main/cfw-staging/$1; K=$R/vendor; mkdir -p $K
-pad() { powershell -NoProfile -File F:/d1/tools/d1-pad.ps1 -Keys "$1" > /dev/null; }
+R=<D1_ROOT>/d1preservation-main/cfw-staging/$1; K=$R/vendor; mkdir -p $K
+pad() { powershell -NoProfile -File <D1_ROOT>/tools/d1-pad.ps1 -Keys "$1" > /dev/null; }
 shot() { (cd $S && python -c "
 import importlib.util
 s=importlib.util.spec_from_file_location('fight','fight.py');f=importlib.util.module_from_spec(s);s.loader.exec_module(f); f.grab('$K/$1.png')" 2>&1 | grep -v shadPS4); }
@@ -17,7 +17,7 @@ python $S/release.py
 echo "$(date +%H:%M:%S) steering to the vendor marker"
 timeout 420 python -u $S/bluepoint.py --steps 30 --shots $K 2>&1 | tail -3; python $S/release.py
 shot before
-(cd F:/d1/public-work/d1rs-claude/tools/ps4_setup && timeout 150 python -u d1-watchwrite.py --seconds 90 --max-hits 40 \
+(cd <D1_ROOT>/public-work/d1rs-claude/tools/ps4_setup && timeout 150 python -u d1-watchwrite.py --seconds 90 --max-hits 40 \
    --exec 5c5a00 --exec 5c5a41 --exec a96110 --exec 552ef0 --out $K/watch.jsonl > $K/watch.log 2>&1 &)
 sleep 8
 for i in 1 2; do

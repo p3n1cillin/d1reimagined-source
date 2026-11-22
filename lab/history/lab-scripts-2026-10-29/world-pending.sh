@@ -2,8 +2,8 @@
 # After CONTINUE lands in a world whose sensor list is a placeholder: read the client's own pending list,
 # publish it under its lifetime row's group, then watch (no input, so a cinematic is not skipped).
 # Usage: world-pending.sh RUNNAME [TAG]
-C=F:/d1/d1preservation-main/cfw-staging; S=lab/history/lab-scripts-2026-10-29
-W=F:/d1/public-work/d1reimagined-sense/tools/ps4_setup; R=$C/$1; K=$R/capture; T=${2:-world}
+C=<D1_ROOT>/d1preservation-main/cfw-staging; S=lab/history/lab-scripts-2026-10-29
+W=<D1_ROOT>/public-work/d1reimagined-sense/tools/ps4_setup; R=$C/$1; K=$R/capture; T=${2:-world}
 grab() { (cd $S && python -c "
 import importlib.util
 s=importlib.util.spec_from_file_location('fight','fight.py');f=importlib.util.module_from_spec(s);s.loader.exec_module(f); f.grab('$K/$1.png')" 2>&1 | grep -v shadPS4); }
@@ -12,7 +12,7 @@ D=$(ls -d $C/contained-boot/*-$1); H=$D/activity-host.log    # the boot folder e
 echo "$(date +%H:%M:%S) departure summary present"
 recorders() { powershell -NoProfile -Command "(Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | Where-Object { \$_.CommandLine -match 'd1-record' }).Count"; }
 until [ "$(recorders | tr -d '\r')" = "0" ]; do sleep 5; done     # one recorder at a time (shared audio tap)
-(cd F:/d1/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $K/$T.mp4 --seconds 200 > $K/$T-record.log 2>&1 &)
+(cd <D1_ROOT>/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $K/$T.mp4 --seconds 200 > $K/$T-record.log 2>&1 &)
 P=$R/$T-pending.txt
 (cd $W && timeout 120 python d1-winguest.py sensor-clients --types --bundle --out $P 2>&1 | tail -1 | sed 's/^/pending read: /')
 n=$(grep -vc '^#' $P)

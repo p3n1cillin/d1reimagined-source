@@ -1,7 +1,7 @@
 {
   "at": "2026-10-07T14:23:00.1871434Z",
   "build": "cc73a62d8a079fca2ca3e995647c468485bb6095c548a95596de4e73a6c90397",
-  "source": "F:\\d1\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN168-native-replay001\\pre-stop-native.log",
+  "source": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RESEARCH\\JOIN168-native-replay001\\pre-stop-native.log",
   "source_sha256": "2067f245501fcff812b7cc1903a405ebdee38cd6775a5efa98a58bc8c1c3046a",
   "validation_ids": [],
   "device_lost": 0,

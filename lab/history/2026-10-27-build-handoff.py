@@ -7,8 +7,8 @@ import subprocess
 import sys
 
 PRIVATE = Path(__file__).parent
-PUBLIC = Path(r'F:\d1\public-work\d1reimagined-source')
-LEGACY = Path(r'F:\d1\d1xenia')
+PUBLIC = Path(r'<D1_ROOT>\public-work\d1reimagined-source')
+LEGACY = Path(r'<D1_ROOT>\d1xenia')
 DATE = '2026-10-27'
 POINTER = PRIVATE / (DATE + '-draft-pointer.json')
 sys.path.insert(0, str(LEGACY / 'tools/content_capture'))

@@ -6,8 +6,8 @@ from datetime import datetime, timezone
 import json, subprocess, sys
 P=Path(__file__).parent
 DATE='2026-10-28'
-SOURCE=Path(r'F:\d1\public-work\d1reimagined-sense')
-sys.path.insert(0,r'F:\d1\d1xenia\tools\content_capture')
+SOURCE=Path(r'<D1_ROOT>\public-work\d1reimagined-sense')
+sys.path.insert(0,r'<D1_ROOT>\d1xenia\tools\content_capture')
 from capture import Capture,lock,check_text
 def git(*args):return subprocess.check_output(['git','-C',str(SOURCE),*args],text=True).strip()
 with lock(P/(DATE+'-delivery.lock'),timeout=1):

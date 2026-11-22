@@ -1,7 +1,7 @@
 import hashlib,json,os,subprocess
 from pathlib import Path
 r=Path(r'lab/history\2026-10-28-sense-codex')
-os.environ['D1_BUILD']='later-56578';os.environ['D1_BUILDS']=r'F:\d1\d1preservation-main\capture-rig\builds.json'
+os.environ['D1_BUILD']='later-56578';os.environ['D1_BUILDS']=r'<D1_ROOT>\d1preservation-main\capture-rig\builds.json'
 exe=r/'d1-oracle-sense.exe'
 line=next(x.split('\tudt6\t')[1] for x in Path(r'lab/history\2026-10-28-sense\udt6-sense31.tsv').read_text(encoding='utf-8').splitlines() if '\tudt6\t' in x)
 results=[]

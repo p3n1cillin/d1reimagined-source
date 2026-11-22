@@ -6,8 +6,8 @@ import argparse, math, os, subprocess, time
 import numpy as np
 from PIL import Image
 
-SHOT = r'F:\d1\tools\d1-shot.ps1'
-PAD = r'F:\d1\tools\d1-pad.ps1'
+SHOT = r'<D1_ROOT>\tools\d1-shot.ps1'
+PAD = r'<D1_ROOT>\tools\d1-pad.ps1'
 HERE = os.path.dirname(os.path.abspath(__file__))
 RATE = 2.26 / 1000 * 1.14          # rad per ms of right-stick hold (d1-navfollow.py)
 CX, CY, R_IN, R_OUT = 185, 189, 14, 95   # radar centre and the ring searched, full-res window capture
@@ -80,7 +80,7 @@ def main():
         engage(a, state, a.seconds)
         return
     import json
-    walk = os.path.join(r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup', 'd1-walk.py')
+    walk = os.path.join(r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup', 'd1-walk.py')
     points = json.load(open(a.route))
     t_end, i = time.time() + a.seconds, 0
     while i < len(points) and time.time() < t_end:

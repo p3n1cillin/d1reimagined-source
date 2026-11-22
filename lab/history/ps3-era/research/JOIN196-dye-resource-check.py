@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys,struct,json,re
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from d1_pkg import PackageSet,Oodle,dyn_array,split_tag_hash
 from d1_eboot import Eboot
 rt=Path(__file__).parent.parent

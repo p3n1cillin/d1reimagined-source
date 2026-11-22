@@ -4,7 +4,7 @@
     "tag": "rpcs3",
     "id": 16772,
     "startTimeUtcTicks": "639270592587013161",
-    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+    "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
   },
   "input": "Cross400ms",
   "image": "BLES01857_screenshot_2026_10_08_13_30_50.png",

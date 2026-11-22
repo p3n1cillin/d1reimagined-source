@@ -1,6 +1,6 @@
 #!/bin/bash
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
-H=$(ls -d F:/d1/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
+H=$(ls -d <D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/*-$1)/activity-host.log
 done41() { sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "player trigger 0x992bb471/0x1d/41"; }
 for i in $(seq 1 8); do
   done41 && break

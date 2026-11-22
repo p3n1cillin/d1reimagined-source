@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-source=Path('F:/d1/d1xenia/missions/a_guardian_rises.json')
+source=Path('<D1_ROOT>/d1xenia/missions/a_guardian_rises.json')
 candidate=Path(__file__).with_name('JOIN182-mission-marker-candidate.json')
 production=json.loads(source.read_text())
 tested=json.loads(candidate.read_text())

@@ -6,8 +6,8 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO = Path('F:/d1/d1xenia')
-RT = Path('F:/d1/<pc>-import/d1xenia/local')
+REPO = Path('<D1_ROOT>/d1xenia')
+RT = Path('<D1_ROOT>/<pc>-import/d1xenia/local')
 WORK = Path(__file__).parent
 sys.path.insert(0, str(REPO / 'tools/content_capture'))
 from capture import Capture

@@ -10,7 +10,7 @@ import sys
 
 PRIVATE = Path(__file__).parent
 POINTER = PRIVATE/'2026-10-28-draft-pointer.json'
-sys.path.insert(0, r'F:\d1\d1xenia\tools\content_capture')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\tools\content_capture')
 from capture import Capture, lock, check_text
 
 
@@ -60,7 +60,7 @@ with lock(PRIVATE/'2026-10-28-delivery.lock',timeout=1):
         metadata['within_requested_1930_deadline']=datetime.now(timezone.utc)<datetime(2026,10,28,19,30,tzinfo=timezone.utc)
         metadata['delivery_timing_basis']='Policy target19:00; bounded native combat allowed to reach an input-idle checkpoint. Post-cutoff outcomes excluded; text-only transfer.'
         (draft/'metadata-input.json').write_text(json.dumps(metadata,indent=2)+'\n',encoding='utf-8')
-        result=subprocess.run([sys.executable,r'F:\d1\d1xenia\tools\content_capture\capture.py',
+        result=subprocess.run([sys.executable,r'<D1_ROOT>\d1xenia\tools\content_capture\capture.py',
             '--config',str(cfg),'report',str(draft/'daily-report.md'),'--events',str(draft/'events.json'),
             '--metadata',str(draft/'metadata-input.json')],capture_output=True,text=True,check=True,timeout=30)
         (draft/'report-command.stdout').write_text(result.stdout,encoding='utf-8')

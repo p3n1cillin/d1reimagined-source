@@ -1,7 +1,7 @@
 """Private unpublished diagnostic rows, preserving the existing Dock baseline."""
 from pathlib import Path
 import json,struct
-root=Path(r'F:\d1\d1preservation-main\cfw-staging')
+root=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging')
 src=root/'agr-dock13-obj26-m52.txt'
 lines=src.read_text().splitlines();changed=[]
 for i,line in enumerate(lines):

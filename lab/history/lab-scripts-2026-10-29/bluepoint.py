@@ -11,7 +11,7 @@ HALF_FOV = math.radians(37)
 
 
 def pad(keys):
-    subprocess.run(['powershell', '-NoProfile', '-File', r'F:\d1\tools\d1-pad.ps1', '-Keys', keys], capture_output=True)
+    subprocess.run(['powershell', '-NoProfile', '-File', r'<D1_ROOT>\tools\d1-pad.ps1', '-Keys', keys], capture_output=True)
 
 
 _vm = importlib.util.spec_from_file_location('vendormark', os.path.join(HERE, 'vendormark.py'))

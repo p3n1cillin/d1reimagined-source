@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$rt='F:\d1\<pc>-import\d1xenia\local'
+$rt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $rpc=Join-Path $rt 'RPCS3_FINAL124_SMOKE001'
 $research=Join-Path $rt 'RESEARCH'
 $closed=Get-Content -LiteralPath (Join-Path $research 'JOIN183-independent-closed.json') -Raw | ConvertFrom-Json
@@ -15,7 +15,7 @@ foreach($path in $wrapper,(Join-Path $research 'JOIN184-before-title.yml'),(Join
 foreach($marker in 'd1checkpoint','d1depthfp.on','d1descriptor','d1descriptorring','d1fp.on','d1rsxcapture.on'){
     if(Test-Path -LiteralPath (Join-Path $rpc ('d1\'+$marker))){throw 'Unexpected active diagnostic marker'}
 }
-Copy-Item -LiteralPath 'F:\d1\d1xenia\missions\a_guardian_rises.json' -Destination (Join-Path $research 'JOIN184-mission-marker-candidate.json')
+Copy-Item -LiteralPath '<D1_ROOT>\d1xenia\missions\a_guardian_rises.json' -Destination (Join-Path $research 'JOIN184-mission-marker-candidate.json')
 Copy-Item -LiteralPath (Join-Path $rpc 'config\custom_configs\config_BLES01857.yml') -Destination (Join-Path $research 'JOIN184-before-title.yml')
 Copy-Item -LiteralPath (Join-Path $rpc 'd1\d1ppu.txt') -Destination (Join-Path $research 'JOIN184-before-d1ppu.txt')
 $text=(Get-Content -LiteralPath (Join-Path $rt 'SIGNON_LOCAL\JOIN183-launch.ps1') -Raw).Replace('JOIN183','JOIN184')

@@ -34,8 +34,8 @@ def set_a(lines,g,k,sub,tag,raw):
  return out
 lines=set_a(lines,0x992bb471,0x1d,40,0x80800463,struct.pack('<II',1,0))
 (P/'agr-dock-register-arm40.draft.txt').write_text('\n'.join(lines)+'\n')
-env=dict(os.environ,D1_BUILD='later-56578',D1_BUILDS=r'F:\d1\d1preservation-main\capture-rig\builds.json')
-exe=r'F:\d1\public-work\target-codex-static\release\d1-oracle.exe'
+env=dict(os.environ,D1_BUILD='later-56578',D1_BUILDS=r'<D1_ROOT>\d1preservation-main\capture-rig\builds.json')
+exe=r'<D1_ROOT>\public-work\target-codex-static\release\d1-oracle.exe'
 def objective(source,out,active,clear,marker):
  r=subprocess.run([exe,'sensor','objective','--input',str(source),'--out',str(out),'--group','0x992bb471','--active',str(active),'--clear',str(clear),'--marker',str(marker),'--machine','12'],capture_output=True,text=True,env=env,timeout=60)
  assert not r.returncode,r.stderr;print(r.stdout.strip())
@@ -49,7 +49,7 @@ cl=set_a(clear.read_text().splitlines(),G,0x1d,16,0x80800463,b'\0'*8)
 cl=set_a(cl,0x992bb471,0x1d,41,0x80800463,b'\0'*8)
 clear.write_text('\n'.join(cl)+'\n')
 # Diagnostic wave only: not an asserted retail spawn count or all-eight cohort.
-spec=importlib.util.spec_from_file_location('sq',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-squad-states.py');sq=importlib.util.module_from_spec(spec);spec.loader.exec_module(sq)
+spec=importlib.util.spec_from_file_location('sq',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-squad-states.py');sq=importlib.util.module_from_spec(spec);spec.loader.exec_module(sq)
 wave=clear.read_text().splitlines()
 for sub in (5,6):wave=set_a(wave,G,1,sub,0x8080071e,sq.squad(1,1))
 (P/'agr-dock-clear26-init-wave.draft.txt').write_text('\n'.join(wave)+'\n')

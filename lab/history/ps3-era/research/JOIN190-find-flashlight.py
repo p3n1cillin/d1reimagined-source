@@ -1,7 +1,7 @@
 """Offline, read-only: which activity-package entries reference tv_flashlight (private output)."""
 from pathlib import Path
 import json, sys, struct, hashlib
-sys.path.insert(0, 'F:/d1/d1xenia/scripts')
+sys.path.insert(0, '<D1_ROOT>/d1xenia/scripts')
 from d1_pkg import PackageSet, Oodle, tag_hash
 root = Path(__file__).parent; runtime = root.parent
 paths = list((runtime/'RESEARCH/ps3_updates/final/packages').glob('*025c*.pkg'))

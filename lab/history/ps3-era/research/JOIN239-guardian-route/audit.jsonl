@@ -1,5 +1,5 @@
 {"utc": "2026-10-09T15:48:06.083413+00:00", "ev": "position", "xyz": [383.1055908203125, -961.84912109375, 12.678566932678223]}
-{"utc": "2026-10-09T15:48:06.084669+00:00", "ev": "start", "identity": {"tag": "rpcs3", "id": 3580, "startTimeUtcTicks": "639271572831757004", "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"}, "entity": "0x602c3f00", "xyz": [383.1055908203125, -961.84912109375, 12.678566932678223], "route": "F:\\d1\\d1xenia\\missions\\routes\\enter_the_wall.json", "points": 30, "allow_breach_preload": true}
+{"utc": "2026-10-09T15:48:06.084669+00:00", "ev": "start", "identity": {"tag": "rpcs3", "id": 3580, "startTimeUtcTicks": "639271572831757004", "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"}, "entity": "0x602c3f00", "xyz": [383.1055908203125, -961.84912109375, 12.678566932678223], "route": "<D1_ROOT>\\d1xenia\\missions\\routes\\enter_the_wall.json", "points": 30, "allow_breach_preload": true}
 {"utc": "2026-10-09T15:48:06.085814+00:00", "ev": "waypoint", "route_index": 0, "xyz": [383.1052551269531, -961.8474731445312, 12.678217887878418], "radius": 1.5}
 {"utc": "2026-10-09T15:48:06.157382+00:00", "ev": "walker", "message": "reached [383.1052551269531, -961.8474731445312] at [383.1, -961.8, 12.7] in 0 s"}
 {"utc": "2026-10-09T15:48:06.168799+00:00", "ev": "waypoint", "route_index": 1, "xyz": [380.44134521484375, -959.7614135742188, 11.869773864746094], "radius": 1.5}
@@ -372,10 +372,10 @@
 {"utc": "2026-10-09T15:49:59.181518+00:00", "ev": "position", "xyz": [353.49212646484375, -796.2600708007812, 14.781347274780273]}
 {"utc": "2026-10-09T15:49:59.295433+00:00", "ev": "walker", "message": "reached [353.7513732910156, -796.29150390625] at [353.8, -796.3, 14.8] in 4 s"}
 {"utc": "2026-10-09T15:49:59.296555+00:00", "ev": "wall_endpoint_reached", "xyz": [353.83892822265625, -796.2677001953125, 14.778745651245117]}
-{"utc": "2026-10-09T15:49:59.297204+00:00", "ev": "waypoint", "route": "F:\\d1\\d1xenia\\missions\\routes\\breach.json", "route_index": 63, "xyz": [357.604248046875, -796.2574462890625, 14.105817794799805], "radius": 1.5}
+{"utc": "2026-10-09T15:49:59.297204+00:00", "ev": "waypoint", "route": "<D1_ROOT>\\d1xenia\\missions\\routes\\breach.json", "route_index": 63, "xyz": [357.604248046875, -796.2574462890625, 14.105817794799805], "radius": 1.5}
 {"utc": "2026-10-09T15:49:59.792410+00:00", "ev": "position", "xyz": [355.0521240234375, -796.2698974609375, 14.787152290344238]}
 {"utc": "2026-10-09T15:50:00.235633+00:00", "ev": "walker", "message": "reached [357.604248046875, -796.2574462890625] at [356.3, -796.3, 14.8] in 1 s"}
-{"utc": "2026-10-09T15:50:00.236853+00:00", "ev": "waypoint", "route": "F:\\d1\\d1xenia\\missions\\routes\\breach.json", "route_index": 64, "xyz": [361.14996337890625, -795.6204833984375, 14.035287857055664], "radius": 1.5}
+{"utc": "2026-10-09T15:50:00.236853+00:00", "ev": "waypoint", "route": "<D1_ROOT>\\d1xenia\\missions\\routes\\breach.json", "route_index": 64, "xyz": [361.14996337890625, -795.6204833984375, 14.035287857055664], "radius": 1.5}
 {"utc": "2026-10-09T15:50:00.238455+00:00", "ev": "hold", "keys": ["J"], "milliseconds": 86.19423001471237}
 {"utc": "2026-10-09T15:50:00.405040+00:00", "ev": "position", "xyz": [356.6615905761719, -796.3397827148438, 14.807687759399414]}
 {"utc": "2026-10-09T15:50:00.762428+00:00", "ev": "walker", "message": "stopped: client slice changed: current (112, 2166136261), target (24, 1754485874), native current (24, 1754485874), native target (112, 2166136261)"}

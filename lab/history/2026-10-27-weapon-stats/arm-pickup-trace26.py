@@ -12,8 +12,8 @@ import sys
 import time
 
 ROOT=Path(__file__).parent
-RUN=Path(r'F:\d1\d1preservation-main\cfw-staging\weapon26-base-stats')
-TOOLS=Path(r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup')
+RUN=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\weapon26-base-stats')
+TOOLS=Path(r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup')
 deadline=time.monotonic()+1500
 while not (RUN/'replay-rifle-0-0.log').exists():
     if time.monotonic()>deadline:
@@ -22,7 +22,7 @@ while not (RUN/'replay-rifle-0-0.log').exists():
 spec=importlib.util.spec_from_file_location('g',TOOLS/'d1-winguest.py')
 g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 p,base=g.open_client()
-elf=Path(r'F:\d1\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf').read_bytes()
+elf=Path(r'<D1_ROOT>\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf').read_bytes()
 assert hashlib.sha256(elf).hexdigest()==g.ELF_SHA
 phoff=struct.unpack_from('<Q',elf,0x20)[0]
 phsize,phnum=struct.unpack_from('<HH',elf,0x36)

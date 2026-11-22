@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys,json,datetime,struct,hashlib
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from rpcs3_owned_memory import OwnedMemory
 from rpcs3_final124_performance import u32,Resources
 from d1_eboot import Eboot

@@ -1,5 +1,5 @@
 from pathlib import Path
-repo=Path('F:/d1/d1xenia')
+repo=Path('<D1_ROOT>/d1xenia')
 replacements={
  'kind13':'kind 13','width0':'width 0','those96bits':'those 96 bits',
  'all175':'all 175','consume96bits':'consume 96 bits','omitting96bits':'omitting 96 bits',

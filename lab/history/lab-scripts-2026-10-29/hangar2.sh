@@ -1,7 +1,7 @@
 #!/bin/bash
 # Respawn -> NUX door -> trigger-41 room -> fight; repeat. Logs Dock 13 squad counts.
 S=lab/history/lab-scripts-2026-10-29
-H=$(ls -d F:/d1/d1preservation-main/cfw-staging/contained-boot/*-sense40)/activity-host.log
+H=$(ls -d <D1_ROOT>/d1preservation-main/cfw-staging/contained-boot/*-sense40)/activity-host.log
 mkdir -p $S/hg2
 for cyc in $(seq 1 ${1:-8}); do
   sleep 3

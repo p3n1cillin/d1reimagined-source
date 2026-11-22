@@ -1,6 +1,6 @@
 @echo off
 setlocal
-set "D1_ROOT=F:/d1"
+set "D1_ROOT=<D1_ROOT>"
 if not defined D1_TOOLS (
   if not defined D1_ROOT (
     echo no 1>&2

@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys,struct,json,datetime,hashlib
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from rpcs3_owned_memory import OwnedMemory
 from rpcs3_final124_performance import Resources,u32
 root=Path(__file__).parent

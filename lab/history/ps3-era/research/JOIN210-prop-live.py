@@ -1,7 +1,7 @@
 """Exactly owned, read-only sample of units observed in this run's creator trace."""
 import json, re, struct, sys
 from pathlib import Path
-sys.path.insert(0, 'F:/d1/d1xenia/scripts')
+sys.path.insert(0, '<D1_ROOT>/d1xenia/scripts')
 from rpcs3_owned_memory import OwnedMemory
 from rpcs3_final124_performance import Resources, u32
 from rpcs3_final124_attachment import unit_membership, UNIT_POOL

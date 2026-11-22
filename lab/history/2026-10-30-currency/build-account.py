@@ -3,8 +3,8 @@ the client's own codec (d1-oracle object --obj). Field [6] @+0x4c0 = 0x80800fe6 
 array @+0x4c8, elements 0x808016e0 of 32 B from +0x20: u16 content, u64 soid, u32 a, u32 b, u32 c}.
     build-account.py OUT SLOT:CONTENT:QTY [...]      (QTY is written to element +0x10)"""
 import json, os, subprocess, sys
-ORACLE = r'F:\d1\public-work\target-claude\release\d1-oracle.exe'
-ENV = dict(os.environ, D1_BUILDS=r'F:\d1\d1preservation-main\capture-rig\builds.json', D1_BUILD='later-56578')
+ORACLE = r'<D1_ROOT>\public-work\target-claude\release\d1-oracle.exe'
+ENV = dict(os.environ, D1_BUILDS=r'<D1_ROOT>\d1preservation-main\capture-rig\builds.json', D1_BUILD='later-56578')
 ACCT, CHR, PROF = 0xD100000000000001, 0xD100000000000101, 0xD100000000000201
 
 def bits_account():

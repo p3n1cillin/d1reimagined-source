@@ -1,7 +1,7 @@
 from pathlib import Path
 
-root = Path(r'F:\d1\d1xenia')
-data = Path(r'F:\d1\d1xenia-data')
+root = Path(r'<D1_ROOT>\d1xenia')
+data = Path(r'<D1_ROOT>\d1xenia-data')
 
 main = '''# D1 Reimagined
 

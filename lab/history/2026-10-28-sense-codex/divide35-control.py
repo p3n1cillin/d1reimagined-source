@@ -1,6 +1,6 @@
 from pathlib import Path
 import importlib.util,sys,subprocess,json,time,datetime,math
-root=Path(__file__).resolve().parent;run=Path(r'F:\d1\d1preservation-main\cfw-staging\sense35');host=Path(r'F:\d1\d1preservation-main\cfw-staging\contained-boot\20261028-065948-sense35\activity-host.log');tools=Path(r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup')
+root=Path(__file__).resolve().parent;run=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\sense35');host=Path(r'<D1_ROOT>\d1preservation-main\cfw-staging\contained-boot\20261028-065948-sense35\activity-host.log');tools=Path(r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup')
 stop_at=datetime.datetime(2026,10,28,7,40,tzinfo=datetime.timezone.utc).timestamp()
 def load(n,p):
  s=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m

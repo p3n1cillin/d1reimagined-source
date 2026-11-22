@@ -20,7 +20,7 @@ spec = importlib.util.spec_from_file_location('d1walk', os.path.join(HERE, 'd1-w
 walk = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(walk)
 
-SHOT = r'F:\d1\tools\d1-shot.ps1'
+SHOT = r'<D1_ROOT>\tools\d1-shot.ps1'
 RATE = 2.26 / 1000 * 1.14   # rad per ms of right-stick hold, as measured with d1-step.py
 HFOV = math.radians(78)     # horizontal field of view of the game camera (approximate)
 

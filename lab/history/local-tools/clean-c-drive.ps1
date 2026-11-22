@@ -10,10 +10,10 @@ function Ask($text) { (Read-Host "$text  [y/N]") -match '^(y|yes)$' }
 $start = Free
 Write-Host "C: free before: $start GB`n" -ForegroundColor Cyan
 
-# 1. Orphaned LLVM (its registration was removed; a working copy now lives at F:\d1\tools\LLVM)
+# 1. Orphaned LLVM (its registration was removed; a working copy now lives at <D1_ROOT>\tools\LLVM)
 $llvm = 'C:\Program Files\LLVM'
-if ((Test-Path $llvm) -and (Test-Path 'F:\d1\tools\LLVM\bin\libclang.dll')) {
-    if (Ask "1. Delete orphaned C:\Program Files\LLVM ($(SizeOf $llvm) GB; the build now uses F:\d1\tools\LLVM)?") { Remove-Item -LiteralPath $llvm -Recurse -Force }
+if ((Test-Path $llvm) -and (Test-Path '<D1_ROOT>\tools\LLVM\bin\libclang.dll')) {
+    if (Ask "1. Delete orphaned C:\Program Files\LLVM ($(SizeOf $llvm) GB; the build now uses <D1_ROOT>\tools\LLVM)?") { Remove-Item -LiteralPath $llvm -Recurse -Force }
 }
 
 # 2. Hibernation file

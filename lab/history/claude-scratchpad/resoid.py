@@ -1,6 +1,6 @@
 """Copy staged 4/3 elements into OUT, dropping SKIP buckets, renumbering SOIDs base+i in file order."""
 import os, re, subprocess, struct, sys
-O = r'F:\d1\d1preservation-main\d1-server\target\release\d1-oracle.exe'
+O = r'<D1_ROOT>\d1preservation-main\d1-server\target\release\d1-oracle.exe'
 src, out, skip = sys.argv[1], sys.argv[2], set(sys.argv[3].split(','))
 base = 0xD100000000000301
 os.makedirs(out, exist_ok=True)

@@ -2,7 +2,7 @@ from pathlib import Path
 import hashlib,json,os,shutil,struct,subprocess
 
 root=Path(__file__).resolve().parent
-base=Path(r'F:\d1\d1preservation-main')
+base=Path(r'<D1_ROOT>\d1preservation-main')
 build=base/'capture-rig/builds/later-56578'
 old=root.parent/'2026-10-27-weapon-stats'
 exe=base/'d1-server/target/release/d1-oracle.exe'

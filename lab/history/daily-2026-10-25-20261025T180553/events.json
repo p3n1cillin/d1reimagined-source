@@ -43,7 +43,7 @@
       "nativeBootAccepted": false,
       "emulatorSha256": "31c3ff14f3f734dc933a1c78c7e48c76e9b88ee19c058949f817b63f978c5d8c",
       "clientPatch": {
-        "path": "F:\\d1\\d1preservation-main\\patches\\CUSA00219-56578-lab-orbit.xml",
+        "path": "<D1_ROOT>\\d1preservation-main\\patches\\CUSA00219-56578-lab-orbit.xml",
         "sha256": "dd3ed7495b0601b63bbb09a18314a99a8b948ebc3b241e91c26c75c298526bb5",
         "synthetic": true
       }

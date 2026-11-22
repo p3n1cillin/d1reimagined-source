@@ -2,7 +2,7 @@
 # After the outro: step the activity lifetime phase via the host's phase file, recording what the client does.
 # Usage: phase-step.sh RUNNAME "4 5 7 8 9 10" [SECONDS]
 S=lab/history/lab-scripts-2026-10-29
-C=F:/d1/d1preservation-main/cfw-staging; D=$(ls -d $C/contained-boot/*-$1); H=$D/activity-host.log; R=$D/responder.log
+C=<D1_ROOT>/d1preservation-main/cfw-staging; D=$(ls -d $C/contained-boot/*-$1); H=$D/activity-host.log; R=$D/responder.log
 mkdir -p $C/$1/phases
 for p in $2; do
   t0=$(date -u +%Y-%m-%dT%H:%M:%S); r0=$(grep -a -c "INVESTMENT message id" $R)

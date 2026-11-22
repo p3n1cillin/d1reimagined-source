@@ -1,5 +1,5 @@
 pub use d1_oracle::error;
-#[path="F:/d1/public-work/d1reimagined-stats/ps4/d1-server/crates/d1-oracle/src/scalar_float.rs"] mod scalar_float;
+#[path="<D1_ROOT>/public-work/d1reimagined-stats/ps4/d1-server/crates/d1-oracle/src/scalar_float.rs"] mod scalar_float;
 use d1_oracle::harness::{Harness,Stub};
 fn main()->anyhow::Result<()>{
  let root=std::path::Path::new(r"lab/history\2026-10-28-character-stats");

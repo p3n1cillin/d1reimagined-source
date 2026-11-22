@@ -51,7 +51,7 @@ Those are owned names, not new live pending-list registrations. Do not inject gu
 
 New full 100-row draft, NOT SERVED:
 
-    F:\d1\d1preservation-main\cfw-staging\tower-north-authored-slots.diagnostic.draft.txt
+    <D1_ROOT>\d1preservation-main\cfw-staging\tower-north-authored-slots.diagnostic.draft.txt
 
 It is based on your actual sense57 list and keeps **40aebf90 / 0x10 / sub2**. It retains the tested hangar-derived image's absent references/default hashes, generation2 and other fields. It changes only each kind-1 A image's count-array length at **+2c** and i16 desired counts at **+30 + 2*i**, according to the table. The presence field and all unrelated rows remain as in the source. Intended as a FRESH-JOIN diagnostic; no generation hot-swap is proposed.
 

@@ -1,6 +1,6 @@
 import datetime,json,re,hashlib
 from pathlib import Path
-rt=Path(r'F:\d1\<pc>-import\d1xenia\local')
+rt=Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 rows=[json.loads(line) for line in (rt/'RESEARCH/JOIN171-session-timeline.jsonl').read_text().splitlines()]
 loaded=[r for r in rows if r['flags_88_8b'][1]==6 and r['native_target'][0]==112 and r['loaded_words'][3]&0x10000 and r['active_loading']==[-1,-1]]
 sessions=[s for r in rows for s in r['sessions'] if s['slot']==0]

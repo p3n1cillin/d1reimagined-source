@@ -1,7 +1,7 @@
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
-   Compiling d1-oracle v0.1.0 (F:\d1\public-work\d1reimagined-source\ps4\d1-server\crates\d1-oracle)
+   Compiling d1-oracle v0.1.0 (<D1_ROOT>\public-work\d1reimagined-source\ps4\d1-server\crates\d1-oracle)
    Compiling private-d1-stat-probe v0.1.0 (lab/history\2026-10-28-character-stats\native-stat-probe)
     Finished `release` profile [optimized] target(s) in 8.66s
      Running `lab/history\2026-10-28-character-stats\native-stat-probe\target\release\private-d1-stat-probe.exe lab/history\2026-10-28-character-stats`

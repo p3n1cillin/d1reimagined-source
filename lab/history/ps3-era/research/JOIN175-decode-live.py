@@ -6,13 +6,13 @@ import re
 import struct
 import sys
 
-sys.path.insert(0, r'F:\d1\d1xenia\server')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\server')
 import bap_server
 import investment
 
 snapshot = Path(sys.argv[1])
 output = Path(sys.argv[2])
-schema = investment.load_schema(Path(r'F:\d1\d1xenia-data\ps3_updates\types_01.24.json'))
+schema = investment.load_schema(Path(r'<D1_ROOT>\d1xenia-data\ps3_updates\types_01.24.json'))
 hits = []
 for line in snapshot.read_text(encoding='utf-8', errors='replace').splitlines():
     if 'PPU: D1P ' not in line:

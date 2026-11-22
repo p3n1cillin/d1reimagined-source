@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-sys.path.insert(0,'F:/d1/d1xenia/scripts')
+sys.path.insert(0,'<D1_ROOT>/d1xenia/scripts')
 from d1_eboot import Eboot
 root=Path(__file__).parent
 eb=Eboot(root/'ps3_updates/01.24/USRDIR/EBOOT.elf')

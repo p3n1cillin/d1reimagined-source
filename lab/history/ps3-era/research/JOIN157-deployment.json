@@ -5,7 +5,7 @@
   "title_sha256": "7ACF93A56E6190281FACB2A147BA5144DDB8ACFC1654ADD73CD0AD0260F5BE6D",
   "capture_tests": 81,
   "recorder_lock_checks": 11,
-  "launch": "F:\\d1\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\JOIN157-launch.ps1",
+  "launch": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\SIGNON_LOCAL\\JOIN157-launch.ps1",
   "trace_enabled": false,
   "checkpoint_enabled": true
 }

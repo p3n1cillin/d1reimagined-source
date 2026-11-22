@@ -1,8 +1,8 @@
 import sys,json,struct,datetime
 from pathlib import Path
-sys.path.insert(0,r'F:\d1\d1xenia\scripts')
+sys.path.insert(0,r'<D1_ROOT>\d1xenia\scripts')
 from rpcs3_owned_memory import OwnedMemory
-root=Path(r'F:\d1\<pc>-import\d1xenia\local')
+root=Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 def u32(read,a): return struct.unpack('>I',read(a,4))[0]
 with OwnedMemory(root/'SIGNON_LOCAL/logs/FINAL124_JOIN140-processes.json') as p:
     engine=u32(p.read,0x1abc8ac)

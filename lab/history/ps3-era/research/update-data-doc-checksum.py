@@ -2,7 +2,7 @@ from pathlib import Path
 import hashlib
 import re
 
-root = Path(r'F:\d1\d1xenia-data')
+root = Path(r'<D1_ROOT>\d1xenia-data')
 relative = 'ps3_updates/EXPORT_VALIDATION.md'
 contents = (root / relative).read_bytes()
 manifest = root / 'SHA256SUMS.txt'

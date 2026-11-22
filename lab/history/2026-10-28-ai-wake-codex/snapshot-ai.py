@@ -1,11 +1,11 @@
 """One bounded read-only native snapshot; no input, debugger or game calls."""
 from pathlib import Path
 import importlib.util,json,struct,sys,time
-sys.path.insert(0,r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup')
+sys.path.insert(0,r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup')
 sys.path.insert(0,r'lab/history\2026-10-28-static-combat-codex')
 from d1_squad_tracking import SquadReader
 import static56578 as st
-spec=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
+spec=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 p,base=g.open_client();reader=SquadReader(p,base)
 for va in (0x17add0,0x139230,0x324870,0x105330):assert p.read(base+va,32)==st.read(va,32)
 dest=Path(__file__).parent/('snapshot-%d'%time.time());dest.mkdir()

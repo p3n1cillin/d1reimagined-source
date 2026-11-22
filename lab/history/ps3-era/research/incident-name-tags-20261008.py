@@ -1,6 +1,6 @@
 import json,re,sys
 from pathlib import Path
-sys.path.insert(0,r"F:\d1\d1xenia\scripts")
+sys.path.insert(0,r"<D1_ROOT>\d1xenia\scripts")
 from d1_pkg import PackageSet,Oodle,split_tag_hash
 root=Path(__file__).parent;rt=root.parent
 out=root/'incident-name-tags-20261008';out.mkdir(exist_ok=False)

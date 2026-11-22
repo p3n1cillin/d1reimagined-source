@@ -1,5 +1,5 @@
 {"utc": "2026-10-08T21:59:09.005250+00:00", "ev": "position", "xyz": [383.10638427734375, -961.8489379882812, 12.678239822387695]}
-{"utc": "2026-10-08T21:59:09.007757+00:00", "ev": "start", "identity": {"tag": "rpcs3", "id": 23336, "startTimeUtcTicks": "639270931648454536", "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"}, "entity": "0x602c3f00", "xyz": [383.10638427734375, -961.8489379882812, 12.678239822387695], "route": "F:\\d1\\d1xenia\\missions\\routes\\enter_the_wall.json", "points": 30, "allow_breach_preload": true}
+{"utc": "2026-10-08T21:59:09.007757+00:00", "ev": "start", "identity": {"tag": "rpcs3", "id": 23336, "startTimeUtcTicks": "639270931648454536", "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"}, "entity": "0x602c3f00", "xyz": [383.10638427734375, -961.8489379882812, 12.678239822387695], "route": "<D1_ROOT>\\d1xenia\\missions\\routes\\enter_the_wall.json", "points": 30, "allow_breach_preload": true}
 {"utc": "2026-10-08T21:59:09.009294+00:00", "ev": "waypoint", "route_index": 0, "xyz": [383.1052551269531, -961.8474731445312, 12.678217887878418], "radius": 1.5}
 {"utc": "2026-10-08T21:59:09.010719+00:00", "ev": "walker", "message": "reached [383.1052551269531, -961.8474731445312] at [383.1, -961.8, 12.7] in 0 s"}
 {"utc": "2026-10-08T21:59:09.012025+00:00", "ev": "waypoint", "route_index": 1, "xyz": [380.44134521484375, -959.7614135742188, 11.869773864746094], "radius": 1.5}
@@ -427,12 +427,12 @@
 {"utc": "2026-10-08T22:01:16.578529+00:00", "ev": "position", "xyz": [352.4326171875, -796.56005859375, 14.791535377502441]}
 {"utc": "2026-10-08T22:01:16.578785+00:00", "ev": "walker", "message": "reached [353.7513732910156, -796.29150390625] at [352.4, -796.6, 14.8] in 4 s"}
 {"utc": "2026-10-08T22:01:16.581070+00:00", "ev": "wall_endpoint_reached", "xyz": [352.4326171875, -796.56005859375, 14.791535377502441]}
-{"utc": "2026-10-08T22:01:16.581747+00:00", "ev": "waypoint", "route": "F:\\d1\\d1xenia\\missions\\routes\\breach.json", "route_index": 63, "xyz": [357.604248046875, -796.2574462890625, 14.105817794799805], "radius": 1.5}
+{"utc": "2026-10-08T22:01:16.581747+00:00", "ev": "waypoint", "route": "<D1_ROOT>\\d1xenia\\missions\\routes\\breach.json", "route_index": 63, "xyz": [357.604248046875, -796.2574462890625, 14.105817794799805], "radius": 1.5}
 {"utc": "2026-10-08T22:01:17.158652+00:00", "ev": "position", "xyz": [353.623291015625, -796.2234497070312, 14.783769607543945]}
 {"utc": "2026-10-08T22:01:17.761348+00:00", "ev": "position", "xyz": [354.835693359375, -796.1766357421875, 14.78974723815918]}
 {"utc": "2026-10-08T22:01:18.326353+00:00", "ev": "position", "xyz": [355.8748779296875, -796.1412963867188, 14.800984382629395]}
 {"utc": "2026-10-08T22:01:18.559477+00:00", "ev": "walker", "message": "reached [357.604248046875, -796.2574462890625] at [356.2, -796.1, 14.8] in 2 s"}
-{"utc": "2026-10-08T22:01:18.572476+00:00", "ev": "waypoint", "route": "F:\\d1\\d1xenia\\missions\\routes\\breach.json", "route_index": 64, "xyz": [361.14996337890625, -795.6204833984375, 14.035287857055664], "radius": 1.5}
+{"utc": "2026-10-08T22:01:18.572476+00:00", "ev": "waypoint", "route": "<D1_ROOT>\\d1xenia\\missions\\routes\\breach.json", "route_index": 64, "xyz": [361.14996337890625, -795.6204833984375, 14.035287857055664], "radius": 1.5}
 {"utc": "2026-10-08T22:01:18.936805+00:00", "ev": "position", "xyz": [357.068115234375, -796.1024169921875, 14.812518119812012]}
 {"utc": "2026-10-08T22:01:19.274193+00:00", "ev": "walker", "message": "stopped: client slice changed: current (112, 2166136261), target (24, 1754485874), native current (24, 1754485874), native target (112, 2166136261)"}
 {"utc": "2026-10-08T22:01:19.274507+00:00", "ev": "result", "run": "FINAL124_JOIN217", "started_utc": "2026-10-08T21:59:06.746069+00:00", "status": "stopped", "radius": 1.5, "final_radius": 1.5, "continue_breach": true, "reason": "client slice changed: current (112, 2166136261), target (24, 1754485874), native current (24, 1754485874), native target (112, 2166136261)", "finished_utc": "2026-10-08T22:01:19.274496+00:00"}

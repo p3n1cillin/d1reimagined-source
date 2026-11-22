@@ -15,7 +15,7 @@
         "--continue-breach",
         "--allow-breach-preload",
         "--route",
-        "F:\\d1\\d1xenia\\missions\\routes\\breach.json"
+        "<D1_ROOT>\\d1xenia\\missions\\routes\\breach.json"
       ],
       "exit_code": 2,
       "rejected_before_native_access": true

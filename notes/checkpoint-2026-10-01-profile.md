@@ -161,7 +161,7 @@ The trial is **not a fix**. Its owned stack was stopped, indexed (971 package
 opens), and the baseline executable and NV3089 source restored. The trial marker
 was renamed to an inert run-specific `.off` file.
 
-The second PC **does** now have MSVC/MSBuild at `F:\VS\BuildTools`; the later
+The second PC **does** now have MSVC/MSBuild at `<VS_BUILDTOOLS>`; the later
 October 1 audit append/README supersede the original handoff's toolchain warning.
 The deployed emulator has been restored to the verified main-PC d1p3 build.
 
@@ -1309,7 +1309,7 @@ registered (record {`0x992bb471`, `0x002b0032`, `0x5d` = its 93 objects}).
 
 ## JOIN67: fixed emulator, automatic walking toward the Wall
 
-- RPCS3 rebuilt on this PC (Build Tools 2026 already at `F:\VS\BuildTools`; incremental build
+- RPCS3 rebuilt on this PC (Build Tools 2026 already at `<VS_BUILDTOOLS>`; incremental build
   `<D1_ROOT>\main-pc-import\dev\build-d1.cmd`, about 6 minutes) with `patches/rpcs3-fp-cal-ignore.patch`
   and deployed to `RPCS3_FINAL124_SMOKE001` (old binary `rpcs3.before-fpcal.exe`). The walk went
   through the area that had crashed JOIN65 (z -26 east of the spawn) without a freeze.

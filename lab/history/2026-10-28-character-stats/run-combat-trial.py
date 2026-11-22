@@ -5,7 +5,7 @@ ap=argparse.ArgumentParser()
 ap.add_argument('--run',type=Path,required=True)
 ap.add_argument('--label',required=True)
 a=ap.parse_args()
-tools=Path(r'F:\d1\public-work\d1reimagined-stats\tools\ps4_setup')
+tools=Path(r'<D1_ROOT>\public-work\d1reimagined-stats\tools\ps4_setup')
 out=a.run/a.label;out.mkdir()
 if (a.run/'replay.lock').exists():raise RuntimeError('Replay owns input; no movement sent')
 started=time.time();events=[]
@@ -21,7 +21,7 @@ def run(name,args,seconds):
  assert r.returncode==0,name
  return text
 event('trial',label=a.label,changes='See parent run plan; no memory writes; pad inputs only')
-run('activity',['powershell','-NoProfile','-File',r'F:\d1\tools\d1-pad.ps1','-Keys','Hold:A:80,Hold:D:80'],15)
+run('activity',['powershell','-NoProfile','-File',r'<D1_ROOT>\tools\d1-pad.ps1','-Keys','Hold:A:80,Hold:D:80'],15)
 for i,goal in enumerate(['262,-640','243,-619','225,-600','195,-573','170,-591','153,-606','143,-609']):
  text=run('goal'+str(i),[sys.executable,'-u','-I',str(tools/'d1-explore.py'),'--tracked',str(a.run/'tracked.json'),'--goal',goal,'--out',str(out/f'goal{i}-trail.json'),'--max-seconds','120','--reach','5','--stop-on-death'],150)
  if not text.splitlines()[-1].startswith('reached '):

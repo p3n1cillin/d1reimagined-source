@@ -1,7 +1,7 @@
 """Read-only 56578 namespace probe; current process and base are verified by d1-winguest."""
 import ctypes, importlib.util, json, struct, sys
 from pathlib import Path
-src = Path(r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+src = Path(r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 s = importlib.util.spec_from_file_location('winguest', src)
 g = importlib.util.module_from_spec(s); s.loader.exec_module(g)
 p, base = g.open_client()
@@ -36,7 +36,7 @@ for tag in (0x80cb844e,0x80cb8450,0x80cb8452):
  owned=(root.parent/'2026-10-27-divide'/f'owned-label-{tag:#x}.bin').read_bytes()
  assert owned[0x510:0x51c]==p.read(resolve(tag)+0x510,12)
  print(hex(tag),'position matched',struct.unpack_from('<3f',owned,0x510))
-elf=Path(r'F:\d1\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf').read_bytes()
+elf=Path(r'<D1_ROOT>\d1preservation-main\dumps\later-56578-CUSA00219\eboot.elf').read_bytes()
 phoff=struct.unpack_from('<Q',elf,0x20)[0]; phsize,phnum=struct.unpack_from('<HH',elf,0x36)
 def code(va,n):
  for i in range(phnum):

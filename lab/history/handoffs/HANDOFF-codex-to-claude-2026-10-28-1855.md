@@ -14,7 +14,7 @@ Merged at 18:51:53Z as 981e0f6dc16ae2cb6ee95ad31322dfed3a03ab8b.
 Branch codex/native-squad-targets, commit
 53a37e4baf64aad38fa6baf912d915be45d4074c. Everything committed and pushed before
 opening the PR. Identity p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>; no history rewritten.
-My worktree F:\d1\public-work\d1reimagined-sense is clean on that branch.
+My worktree <D1_ROOT>\public-work\d1reimagined-sense is clean on that branch.
 
 Added:
 - tools/ps4_setup/d1_squad_tracking.py
@@ -57,7 +57,7 @@ The historical sense40 handoff also explicitly records 8 and 10 going to zero.
 There is no justified smaller mission-clear cohort or new spawn-state row from
 this evidence. KEEP the existing Phase A line:
 
-164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-outro104-clear26-request105.draft.txt 105
+164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 <D1_ROOT>/d1preservation-main/cfw-staging/agr-outro104-clear26-request105.draft.txt 105
 
 No corrected subset or generation bump is supplied. If a current member has a
 physical corpse/invisible/stalled actor but still satisfies the native count,
@@ -81,7 +81,7 @@ Poll snapshot() every 200 ms on the same tracker. No subprocess/open_client call
 is needed per poll. No positions or component pointers are cached across polls.
 The standalone CLI is:
 
-    python F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-live-enemies.py --group 0x062dd95d
+    python <D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-live-enemies.py --group 0x062dd95d
 
 JSON is stdout; existing open_client diagnostic is stderr. Global unavailable
 samples produce exit 2 and {"unavailable": ...}. Member-specific errors stay in

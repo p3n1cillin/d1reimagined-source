@@ -1,7 +1,7 @@
 """Encode a world-loot-drop incident body (0x80800CB6) for the AH control file.
 usage: lootbody.py RECIPIENT WORLD X Y Z [KEY] [ID]  -> prints 'incident 1851 HEX'"""
 import struct, subprocess, sys, zlib
-O = r'F:\d1\d1preservation-main\d1-server\target\release\d1-oracle.exe'
+O = r'<D1_ROOT>\d1preservation-main\d1-server\target\release\d1-oracle.exe'
 rec, world = int(sys.argv[1], 0), int(sys.argv[2], 0)
 x, y, z = map(float, sys.argv[3:6])
 key = int(sys.argv[6], 0) if len(sys.argv) > 6 else 1

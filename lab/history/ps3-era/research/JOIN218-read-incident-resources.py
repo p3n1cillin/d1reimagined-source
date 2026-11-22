@@ -3,7 +3,7 @@ import json
 import struct
 import sys
 from pathlib import Path
-sys.path.insert(0, r"F:\d1\d1xenia\scripts")
+sys.path.insert(0, r"<D1_ROOT>\d1xenia\scripts")
 from rpcs3_owned_memory import OwnedMemory
 root = Path(__file__).parent
 runtime = root.parent

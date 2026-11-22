@@ -5,7 +5,7 @@ import json
 import re
 from pathlib import Path
 
-runtime = Path(r"F:\d1\<pc>-import\d1xenia\local")
+runtime = Path(r"<D1_ROOT>\<pc>-import\d1xenia\local")
 research = runtime / "RESEARCH"
 logs = runtime / "SIGNON_LOCAL" / "logs"
 native = logs / "JOIN217-pre-stop-native.log"

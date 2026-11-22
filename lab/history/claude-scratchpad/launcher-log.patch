@@ -38,16 +38,16 @@ index 15dbb88..67502a3 100644
 --- a/tools/ps4_setup/d1-agr-run.ps1
 +++ b/tools/ps4_setup/d1-agr-run.ps1
 @@ -31,6 +31,11 @@ Start-Sleep 3
- $B = 'F:\d1\d1preservation-main\capture-rig\builds\later-56578'
- $D = "F:\d1\d1preservation-main\cfw-staging\$Name"
+ $B = '<D1_ROOT>\d1preservation-main\capture-rig\builds\later-56578'
+ $D = "<D1_ROOT>\d1preservation-main\cfw-staging\$Name"
  New-Item -ItemType Directory -Force $D | Out-Null
 +# Milestones also go to RUN\launcher.log: d1-agr-replay.py waits there for "in gameplay (112)" even
 +# when nobody redirected this script's output (run divide22 waited forever for a boot.log).
 +$LaunchLog = "$D\launcher.log"
 +Set-Content -LiteralPath $LaunchLog -Value "launch $(Get-Date -Format o) $Name"
 +function Say($m) { $m; Add-Content -LiteralPath $LaunchLog -Value $m }
- $L = 'F:\d1\tools\shadPS4\0.19.0\user\log\shad_log.txt'
- $pad = 'F:\d1\tools\d1-pad.ps1'
+ $L = '<D1_ROOT>\tools\shadPS4\0.19.0\user\log\shad_log.txt'
+ $pad = '<D1_ROOT>\tools\d1-pad.ps1'
  # The Breach props (lights, barrier, rifle) are created by the client only while it holds their
 @@ -63,7 +68,7 @@ function WaitFor($pattern, $seconds) {
              (Select-String -Path $L -Pattern $pattern -Quiet)) { return $true }
@@ -76,8 +76,8 @@ index 15dbb88..67502a3 100644
 +if (WaitFor "Entering state 'activity:in_world'" 200) { Start-Sleep 8; Skip; Start-Sleep 10; Skip; Say 'cutscenes skipped' }
 +if (WaitFor "transitioning:teleportation' due to completed" 150) { Say 'in gameplay (112)' }
  Start-Sleep 10
- & 'F:\d1\tools\d1-shot.ps1' -Out "$D\gameplay.png" | Out-Null
+ & '<D1_ROOT>\tools\d1-shot.ps1' -Out "$D\gameplay.png" | Out-Null
  if ($w) { Wait-Process -Id $w.Id -Timeout ($WatchSeconds + 30) -ErrorAction SilentlyContinue }
- python -I F:\d1\tools\d1-winguest.py masks 2>&1 | Select-Object -Last 1
+ python -I <D1_ROOT>\tools\d1-winguest.py masks 2>&1 | Select-Object -Last 1
 -"run dir: $D"
 +Say "run dir: $D"

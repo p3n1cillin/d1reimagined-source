@@ -2,7 +2,7 @@
 import json,sys,datetime,hashlib
 from pathlib import Path
 root=Path(__file__).parent
-repo=Path('F:/d1/d1xenia')
+repo=Path('<D1_ROOT>/d1xenia')
 mission=json.loads((repo/'missions/a_guardian_rises.json').read_text())
 # Static 57b4ec compares marker+c against (active slice-set >>3)&63 when root+4 is null.
 # Native JOIN180 retains active_loading112 outside and24 inside: buckets14 and3.

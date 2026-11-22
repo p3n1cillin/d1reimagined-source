@@ -7,7 +7,7 @@ via3B6360 table1935910. Reject identity changes rather than reuse stale units.
 """
 import ctypes,importlib.util,struct,json,datetime
 import static56578 as st
-spec=importlib.util.spec_from_file_location('g',r'F:\d1\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
+spec=importlib.util.spec_from_file_location('g',r'<D1_ROOT>\public-work\d1reimagined-sense\tools\ps4_setup\d1-winguest.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 p,base=g.open_client()
 for va in (0x36c910,0x3bc480,0x3bc560,0x3b6360,0x3b67a0):assert p.read(base+va,24)==st.read(va,24)
 reg=p.u(p.u(base+g.REGISTRY,'Q'),'Q')

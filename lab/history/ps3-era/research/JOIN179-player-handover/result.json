@@ -5,7 +5,7 @@
     "tag": "rpcs3",
     "id": 11212,
     "startTimeUtcTicks": "639270131441432008",
-    "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+    "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
   },
   "samples": 685,
   "fresh_player_samples": 673,

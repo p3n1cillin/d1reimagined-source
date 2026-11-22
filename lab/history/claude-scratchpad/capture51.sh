@@ -1,13 +1,13 @@
 #!/bin/bash
 # Marketing capture: record from Dock 13 arrival through the post-game screens, tour the tabs, stop.
-C=F:/d1/d1preservation-main/cfw-staging; S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
+C=<D1_ROOT>/d1preservation-main/cfw-staging; S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
 P=lab/history/2026-10-28-evening-claude; R=$1
 until ls -d $C/contained-boot/*-$R >/dev/null 2>&1; do sleep 5; done; D=$(ls -d $C/contained-boot/*-$R); H=$D/activity-host.log
 mkdir -p $C/$R/capture; STOP=$C/$R/capture/stop.flag; rm -f $STOP
 until [ -f $H ] && sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "now in slice set 104"; do sleep 3; done
 echo "$(date +%H:%M:%S) Dock 13: recording"
-(cd F:/d1/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $C/$R/capture/ending.mp4 --seconds 2400 --stop-file $STOP > $C/$R/capture/ending-record.log 2>&1 &)
-until sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "control: sensor clients F:/d1/d1preservation-main/cfw-staging/agr-postgame-phase7.draft.txt"; do sleep 3; done
+(cd <D1_ROOT>/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $C/$R/capture/ending.mp4 --seconds 2400 --stop-file $STOP > $C/$R/capture/ending-record.log 2>&1 &)
+until sed 's/\x1b\[[0-9;]*m//g' $H | grep -q "control: sensor clients <D1_ROOT>/d1preservation-main/cfw-staging/agr-postgame-phase7.draft.txt"; do sleep 3; done
 echo "$(date +%H:%M:%S) phase 7 published"
 sleep 25
 python -c "

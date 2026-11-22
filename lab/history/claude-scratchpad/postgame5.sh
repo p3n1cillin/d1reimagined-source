@@ -3,7 +3,7 @@
 # target 2); at Dock 13 push active164/XP900 (sample recorded in stage 2); after the outro push the completed profile
 # with XP900 and the owned Arcadia plus its inventory item (PR #81 responder); then scoreboard, @phase 7, tour.
 # Usage: postgame5.sh RUNNAME [SCOREBOARD_LIST]
-C=F:/d1/d1preservation-main/cfw-staging; Q=lab/history/2026-10-29-postgame-codex
+C=<D1_ROOT>/d1preservation-main/cfw-staging; Q=lab/history/2026-10-29-postgame-codex
 S=%USERPROFILE%/AppData/Local/Temp/claude/F--d1-d1xenia/eb49bdd6-2562-42a0-a73d-ed14111dbab8/scratchpad
 SB=${2:-$C/agr-postgame-scoreboard-arcadia-ratio30.draft.txt}
 grab() { python -c "
@@ -34,10 +34,10 @@ grep -a -i "item" $D/responder.log | tail -3 | cut -c1-140
 sleep 20; collector
 echo "$(date +%H:%M:%S) parked (phase 3); waiting for $SB"
 until [ -f $SB ]; do sleep 10; done
-(cd F:/d1/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $C/$1/capture/postgame.mp4 --seconds 300 >/dev/null 2>&1 &)
+(cd <D1_ROOT>/public-work/d1rs-claude && python -I tools/ps4_setup/d1-record.py --out $C/$1/capture/postgame.mp4 --seconds 300 >/dev/null 2>&1 &)
 sleep 4; publish $SB; sleep 15
 t0=$(date -u +%Y-%m-%dT%H:%M:%S); r0=$(wc -l < $D/responder.log)
-publish F:/d1/d1preservation-main/cfw-staging/agr-postgame-phase7.draft.txt
+publish <D1_ROOT>/d1preservation-main/cfw-staging/agr-postgame-phase7.draft.txt
 for k in 1 2 3 4 5 6; do sleep 15; grab $1 postgame-$k; done
 collector
 echo "== host since phase 7"; sed 's/\x1b\[[0-9;]*m//g' $H | awk -v t=$t0 '$1>t' | grep -vE "heartbeat|WantsToPush|user_defined_type: 15\b|sensor_auth_update send" | head -15 | cut -c12-27,60-200

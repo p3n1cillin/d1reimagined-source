@@ -1,6 +1,6 @@
 import json, sys, struct, datetime
 from pathlib import Path
-sys.path.insert(0, 'F:/d1/d1xenia/scripts')
+sys.path.insert(0, '<D1_ROOT>/d1xenia/scripts')
 from rpcs3_owned_memory import OwnedMemory
 root=Path(__file__).parent
 out={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Read-only exact owned process; non-atomic samples'}

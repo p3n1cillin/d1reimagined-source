@@ -1,7 +1,7 @@
 use std::fs;
 fn main()->Result<(),Box<dyn std::error::Error>> {
  let root="lab/history/2026-10-29-postgame-codex";
- let estate=d1_pkg::Estate::load("F:/d1/d1preservation-main/dumps/later-56578-CUSA00219/CUSA00219/packages")?;
+ let estate=d1_pkg::Estate::load("<D1_ROOT>/d1preservation-main/dumps/later-56578-CUSA00219/CUSA00219/packages")?;
  let mut content=d1_oracle::oodle::Content::open_default()?;
  let mut text=String::new();
  for id in [0x244u16] {

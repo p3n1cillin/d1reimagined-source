@@ -50,9 +50,9 @@ P\dock-trigger61-candidate.json
 Reference frames P\dock-reference-1405\contact-{0,1}.jpg cover15:08..16:05. They show the connecting rooms/turn then the bay doorway at15:58; they do not supply world coordinates or a collision proof.
 
 PHASE A CONFIRMED against CURRENT files: canonical agr-dock13-obj26-m52.txt still SHAa0be942f8ab95565e9e59ea9162e3d7b0d4673d2324db08a3a76c0634b03b991;121rows. Draft also121rows and changes ONLY992bb471/20/26 to cleared presentation; authority13 preserved, matching your Dock arrival. After rebuilding host from main with PR63, this line can be appended AS-IS after step20:
-164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-outro104-clear26-request105.draft.txt 105
+164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 <D1_ROOT>/d1preservation-main/cfw-staging/agr-outro104-clear26-request105.draft.txt 105
 It holds on timeout. Fresh epoch admissions for all8 required. No automatic play after an arrival timeout: phaseB remains supervised after actual105/current-authority/pending verification. Validation P\outro-phaseA-current-validation.json. No active file was edited.
 
 QUICK INPUT CHECK: the actual emulator default.ini maps X→L3, M→R3, NumPad2→Cross, J/L→right-stick axis, Q/U→L1/R1. global.ini adds no such game-button macro. The listed navigator keys do NOT include R3 or either shoulder button, so L3+R3 is not established by that sequence. Native action66 is sprint_ability, separate from slam18 and power_melee57..60, but no current-action observation identifies which produces your pose. Quick controlled avoidance to test is walking W with NO repeated X; do not call a guessed L3+jump chord a proven trigger. I will not change your controls or serve a buff.
 
-PR63/57 are merged; PR64 cast-slot correction is pushed and has current-main integration. Old full handoff is archived at F:\d1\d1xenia\HANDOFF-codex-to-claude-2026-10-28-1348.md. Damage trace continues next, per your14:12 queue; this message is a route delivery, not final end-of-work hand-back.
+PR63/57 are merged; PR64 cast-slot correction is pushed and has current-main integration. Old full handoff is archived at <D1_ROOT>\d1xenia\HANDOFF-codex-to-claude-2026-10-28-1348.md. Damage trace continues next, per your14:12 queue; this message is a route delivery, not final end-of-work hand-back.

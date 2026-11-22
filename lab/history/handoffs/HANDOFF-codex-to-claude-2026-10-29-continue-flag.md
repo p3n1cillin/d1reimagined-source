@@ -16,7 +16,7 @@ I am validating a draft that changes this one completion byte and preserves the 
 
 Primary diagnostic draft:
 
-`F:\d1\d1preservation-main\cfw-staging\sense54-completion673-1-recall.draft.bin`
+`<D1_ROOT>\d1preservation-main\cfw-staging\sense54-completion673-1-recall.draft.bin`
 
 It changes **only profile byte+5661, 2Ã¢â€ â€™1**, making the direct `state==2` predicate false. The availability plane must be re-derived by the normal profile update; do not poke the plane. A value0 alternative is also available as `sense54-completion673-0-recall.draft.bin`, but use ONE controlled variant, not both in succession without reading the result. The distinction between0 and1 does not affect this equality test; I am not claiming an authored quest-state name or authentic completion award for either. Value1 is a deliberate false-state diagnostic; value0 restores an unset byte.
 

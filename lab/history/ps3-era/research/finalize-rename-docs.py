@@ -1,6 +1,6 @@
 from pathlib import Path
 
-root = Path(r'F:\d1\d1xenia')
+root = Path(r'<D1_ROOT>\d1xenia')
 runbook = root / 'notes/next-session-playbook.md'
 text = runbook.read_text(encoding='utf-8')
 start = text.index('> **2026-10-01, for Codex:**')
@@ -53,7 +53,7 @@ complete-preservation acceptance is implied by this handoff.
 '''
 checkpoint.write_text(text, encoding='utf-8', newline='\n')
 
-validation = Path(r'F:\d1\d1xenia-data\ps3_updates\EXPORT_VALIDATION.md')
+validation = Path(r'<D1_ROOT>\d1xenia-data\ps3_updates\EXPORT_VALIDATION.md')
 text = validation.read_text(encoding='utf-8')
 first, rest = text.split('\n', 1)
 text = first + '''

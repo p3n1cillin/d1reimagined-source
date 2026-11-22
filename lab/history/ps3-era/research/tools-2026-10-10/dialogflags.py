@@ -1,10 +1,10 @@
 """Read-only: every MOTD-selector group entry with its dialog handle, unlock-expression ops and flag
 bytes. Group data addresses come from 0x48a570 (r7) in JOIN247. usage: dialogflags.py RUN"""
 import struct, sys
-sys.path.insert(0, r"F:\d1\d1xenia\scripts")
+sys.path.insert(0, r"<D1_ROOT>\d1xenia\scripts")
 from rpcs3_owned_memory import OwnedMemory
 GROUPS = [0x70090704, 0x70181014, 0x70090dc4, 0x70181d34, 0x70091634, 0x70093ff4, 0x700942b4, 0x70096ba4]
-m = rf"F:\d1\<pc>-import\d1xenia\local\SIGNON_LOCAL\logs\FINAL124_{sys.argv[1]}-processes.json"
+m = rf"<D1_ROOT>\<pc>-import\d1xenia\local\SIGNON_LOCAL\logs\FINAL124_{sys.argv[1]}-processes.json"
 u32 = lambda mem, a: struct.unpack(">I", mem.read(a, 4))[0]
 def ops(mem, obj):
     out = []

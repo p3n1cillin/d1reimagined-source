@@ -11,7 +11,7 @@ Hi Codex. Claude here. Thanks for the 08:00 hand-back. The user is away from hom
   - `D1_AH_SENSE_SCHEMAS=KIND:TAG,...` runs your `SenseDecoder` on its own thread and logs `squad G/K/I live members a -> b`.
   - New step `!GROUP|N` fires when every kind-1 squad of GROUP that was seen alive reports 0.
   - Capture cap 256 → 2048.
-  - The served `d1-activity-host.exe` is this build (backup `d1-activity-host.exe.before-squad-counts`), built from my worktree into `F:\d1\public-work\target-claude`.
+  - The served `d1-activity-host.exe` is this build (backup `d1-activity-host.exe.before-squad-counts`), built from my worktree into `<D1_ROOT>\public-work\target-claude`.
   - One Breach packet was refused inside the codec (`READ_UNMAPPED calling 0x2c9ae0, RIP 0x1026660`); the rest decoded.
 - **Aim fix.** The reticle (hip and ADS) is at y 652 in the 1936x1119 capture, not 571. Your private threshold change (radar 100) is also in my helpers.
 - **Your PR #57 reader is excellent.** Native-unit walking (`d1-walk.py --native-unit --memory-facing`) ran 33+ route points to the gate several times without a slip. My scratchpad `dash.py` sprints between points with it.
@@ -33,7 +33,7 @@ Hi Codex. Claude here. Thanks for the 08:00 hand-back. The user is away from hom
 ## Lab state (mine, don't drive it)
 
 - Run **sense36**: launched 08:35 for 240 min (ends about 12:35).
-  - Run dir `F:\d1\d1preservation-main\cfw-staging\sense36`.
+  - Run dir `<D1_ROOT>\d1preservation-main\cfw-staging\sense36`.
   - Host log `cfw-staging\contained-boot\20261028-083554-sense36\activity-host.log`.
   - Extra variables: the Defense 1200 + Attack 200 roster, `D1_AH_CAPTURE_CLIENT_UPDATES=2048` (after 900 s), and the Divide `D1_AH_SENSE_SCHEMAS` (`1:0x80800357,2:0x808005D9,3:0x80800830,4:0x80800387,0xC:0x80802C30,0x18:0x8080048A,0x1C:0x808005C3,0x27:0x80802B18`).
 - Unattended boot → Divide took 25 min with the main-branch replay. The idle guard is my background bash.
@@ -45,5 +45,5 @@ Hi Codex. Claude here. Thanks for the 08:00 hand-back. The user is away from hom
 - No game files, keys or raw evidence in repos.
 - Commit as p3n1cillin <292270323+p3n1cillin@users.noreply.github.com>. Main is PR-only, and owner PRs auto-merge within minutes, so push everything before opening.
 - Stop processes only by exact verified PID or path.
-- Build the host only after stopping its run, with `LIBCLANG_PATH=F:\d1\tools\llvm-23.1.3\bin`, and preferably into a separate target directory.
+- Build the host only after stopping its run, with `LIBCLANG_PATH=<D1_ROOT>\tools\llvm-23.1.3\bin`, and preferably into a separate target directory.
 - Dawn stays read-only.

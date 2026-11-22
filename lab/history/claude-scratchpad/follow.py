@@ -16,7 +16,7 @@ def load(name, path=None):
 
 
 fight, mk, plates = load('fight'), load('marker'), load('plates')
-walk = load('walk', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py')
+walk = load('walk', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-walk.py')
 u32 = ctypes.WinDLL('user32')
 _s = importlib.util.spec_from_file_location('gamefocus', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gamefocus.py')); _gf = importlib.util.module_from_spec(_s); _s.loader.exec_module(_gf)
 RATE = 2.26 * 1.14 * 110 / 90 / 1000

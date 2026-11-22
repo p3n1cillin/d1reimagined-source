@@ -2,7 +2,7 @@
   "utc": "2026-10-08T13:09:33.538763+00:00",
   "clips": [
     {
-      "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_13_31_50.mp4",
+      "file": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_13_31_50.mp4",
       "sha256": "0f62ce6b1991b1cbda32a7dbd56212089ca2dcdc95fc25ea0e00a0dcb2d17106",
       "bytes": 13398053,
       "duration_seconds": 30.38,
@@ -18,7 +18,7 @@
       }
     },
     {
-      "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_13_32_51.mp4",
+      "file": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_13_32_51.mp4",
       "sha256": "bde9f12114410ee2ff3986415cc9ac1297ca7df702d004f2675e016a184df0c5",
       "bytes": 2829918,
       "duration_seconds": 30.3,
@@ -34,7 +34,7 @@
       }
     },
     {
-      "file": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_13_55_18.mp4",
+      "file": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_13_55_18.mp4",
       "sha256": "9041925a890d8c5fb98d85554e7f5f7e52d495c809d7c8a0b14f51d87aeb38a6",
       "bytes": 12612884,
       "duration_seconds": 30.26,

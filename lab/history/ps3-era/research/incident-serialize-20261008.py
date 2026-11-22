@@ -1,6 +1,6 @@
 import json,sys
 from pathlib import Path
-sys.path.insert(0,r"F:\d1\d1xenia\scripts")
+sys.path.insert(0,r"<D1_ROOT>\d1xenia\scripts")
 from d1_eboot import Eboot
 root=Path(__file__).parent
 out=root/'incident-serialize-20261008'

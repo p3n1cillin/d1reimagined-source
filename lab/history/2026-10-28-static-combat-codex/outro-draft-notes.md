@@ -11,7 +11,7 @@ Cast correction: component403140 copies state D4 bytes to+1ac. 403770/4037e7 rea
 The three cine images round-trip through the selected native object codec8080254d with identical212-byte output: register167bits, play231bits, stop167bits. Sensor-controls11/11 PASS. Generic oodle-controls is pinned to the unavailable01.29 reference and refused before executing; it is NOT a56578 control pass and none of its failed output is cited. Owned content extraction uses the selected56578 decoder and self-size/type/name checks, with cached original blocks retained privately.
 
 Phase A step (only after rebuilding PR63 into the lab owner's host):
-164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 F:/d1/d1preservation-main/cfw-staging/agr-outro104-clear26-request105.draft.txt 105
+164 !0x062dd95d:5,6,7,8,9,10,11,12|600 0x4786c0e0 <D1_ROOT>/d1preservation-main/cfw-staging/agr-outro104-clear26-request105.draft.txt 105
 
 The list clears presentation of26, not service/progression completion. Generic lifetime remains3, not4: phase04 is an authored slice, not the lifetime enum. The region column uses the existing membership slice-request handshake. Wait for actual CURRENT105, not a timer. Existing %105|N can time out, so the draft intentionally has no automatic %105→play chain. Reconcile fresh105 clients, then manually register stopped→play (or use a separate supervised schedule). Counter1 stopped,2 playing,3 stopped; optional object reference absentFNV/FF/FFFF; team filterFF; play castcount1/player identity atA0. Counter must differ from any already-applied cine29 test in the same run.
 

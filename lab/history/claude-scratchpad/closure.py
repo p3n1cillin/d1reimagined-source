@@ -6,7 +6,7 @@ import sys
 
 S = 'lab/history/lab-scripts-2026-10-29'
 VARS = {
-    '$C': 'F:/d1/d1preservation-main/cfw-staging',
+    '$C': '<D1_ROOT>/d1preservation-main/cfw-staging',
     '$S': S,
     '$Q': 'lab/history/2026-10-29-postgame-codex',
 }

@@ -38,7 +38,7 @@
       {
         "id": 15208,
         "startTimeUtcTicks": "639270146812666619",
-        "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe",
+        "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe",
         "exact_owned_alive": false
       },
       {
@@ -88,19 +88,19 @@
     "configuration": [
       {
         "name": "title",
-        "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\config\\custom_configs\\config_BLES01857.yml",
+        "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\config\\custom_configs\\config_BLES01857.yml",
         "sha256": "22C081E2680A9F81C565860262232AF1296EBEA2831849338BA79BD6E7C2350B",
         "unchanged": true
       },
       {
         "name": "global",
-        "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\config\\config.yml",
+        "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\config\\config.yml",
         "sha256": "71C7E08939860F78C12A53D095DDC1CCD1525A46D1493714DEE6F9F85D229AB9",
         "unchanged": true
       },
       {
         "name": "watch",
-        "path": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\d1\\d1ppu.txt",
+        "path": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\d1\\d1ppu.txt",
         "sha256": "442847E5847064F2D570943381CAA88DFD66E9DC212FFD299D9AC6D2F1EDD4B6",
         "unchanged": true
       }
@@ -216,14 +216,14 @@
   "unindexed_original_decode": [
     {
       "segment": "e0949ffb459e4ce79a712daf0a79e9cc",
-      "original": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_06_52.mp4",
+      "original": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_06_52.mp4",
       "original_present": true,
       "full_decode": "FAIL",
       "error": "Recording failed full decode or has no usable duration"
     },
     {
       "segment": "f282412c69e64c9aba9ae978b2c941bc",
-      "original": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_04_50.mp4",
+      "original": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\recordings\\BLES01857\\BLES01857_recording_2026_10_08_01_04_50.mp4",
       "original_present": true,
       "full_decode": "FAIL",
       "error": "Recording failed full decode or has no usable duration"
@@ -264,7 +264,7 @@
       "tag": "rpcs3",
       "id": 15208,
       "startTimeUtcTicks": "639270146812666619",
-      "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+      "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
     },
     "samples": 342,
     "fresh_player_samples": 339,
@@ -278,7 +278,7 @@
       "tag": "rpcs3",
       "id": 15208,
       "startTimeUtcTicks": "639270146812666619",
-      "executable": "F:\\d1\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
+      "executable": "<D1_ROOT>\\<pc>-import\\d1xenia\\local\\RPCS3_FINAL124_SMOKE001\\rpcs3.exe"
     },
     "samples": 229,
     "fresh_player_samples": 226,

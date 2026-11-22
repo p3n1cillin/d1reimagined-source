@@ -1,6 +1,6 @@
 """Resolve squad-member object handles through the client's registry; look for Divide positions. Read-only."""
 import importlib.util, json, struct, sys
-s = importlib.util.spec_from_file_location('g', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+s = importlib.util.spec_from_file_location('g', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 g = importlib.util.module_from_spec(s); s.loader.exec_module(g)
 p, base = g.open_client()
 reg = p.u(p.u(base + g.REGISTRY, 'Q'), 'Q')

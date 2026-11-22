@@ -21,7 +21,7 @@ for h in (0x6e0dae89,0x6eaf0959):
  row=c.execute('select json from DestinyActivityDefinition where id=?',(h,)).fetchone()
  d=json.loads(row[0]) if row else {}
  print(hex(h),{k:v for k,v in d.items() if k in ['activityName','activityDescription','activityTypeHash','activityLevel','placeHash','destinationHash','activityHash','rewards','isPlaylist','activityModeHash','activityUnlockStrings']})
-src=Path(r'F:\d1\public-work\d1reimagined-sense\ps4\d1-server\crates\d1-activity-host\src\worlds.rs').read_text(encoding='utf-8')
+src=Path(r'<D1_ROOT>\public-work\d1reimagined-sense\ps4\d1-server\crates\d1-activity-host\src\worlds.rs').read_text(encoding='utf-8')
 print('world name hashes',[(name,hex(fnv(name))) for name in re.findall(r'name: "([^"]+)"',src)])
 post=json.loads((P/'postgame-1793234336.json').read_text())
 print('activity headers')

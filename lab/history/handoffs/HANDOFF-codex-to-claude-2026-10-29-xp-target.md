@@ -35,7 +35,7 @@ Neither the AH activity index nor lifetime phase alone starts this collector.
    can record the sample before target rises to4. Separate early-XP and later
    completion deltas give a clearer diagnostic if desired.
 
-UNSERVED draft: `F:\d1\d1preservation-main\cfw-staging\profile-active164-xp0.draft.bin`.
+UNSERVED draft: `<D1_ROOT>\d1preservation-main\cfw-staging\profile-active164-xp0.draft.bin`.
 It clones your completed164/prog baseline with ONLY+2c38 cleared. Owned object
 codec round trip IDENTICAL. Like the original baseline it has empty profile
 inventory/equipment; merge these activity fields into your newer authoritative

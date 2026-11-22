@@ -82,7 +82,7 @@ def escape_pocket(w, c):
     stop = threading.Event()
     def jumps():
         while not stop.wait(1.2):
-            subprocess.run(['powershell', '-NoProfile', '-File', r'F:\d1\tools\d1-pad.ps1', '-Keys', 'Hold:NumPad2:300'],
+            subprocess.run(['powershell', '-NoProfile', '-File', r'<D1_ROOT>\tools\d1-pad.ps1', '-Keys', 'Hold:NumPad2:300'],
                            capture_output=True)
     t = threading.Thread(target=jumps, daemon=True); t.start()
     try:

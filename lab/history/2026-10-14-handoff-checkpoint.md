@@ -30,7 +30,7 @@ delivery completed during the next gap. Native testing resumed immediately
 afterwards (new emulator observed at 19:33:13 UTC); nothing was interrupted.
 
 The narrowly scoped reviewed-PNG extension remains local/uncommitted in
-`F:\d1\d1xenia\tools\content_capture\capture.py`, `test_capture.py` and `README.md`.
+`<D1_ROOT>\d1xenia\tools\content_capture\capture.py`, `test_capture.py` and `README.md`.
 All 85 capture tests passed, actual PNG decode controls passed, and diff whitespace
 checks passed. Approved images are copied unchanged and pinned; altered images,
 unreviewed additions and video remain held. Private/manual-publication-review

@@ -1,6 +1,6 @@
 """Find live item instances (level 40 at +0x18, content index at +0x24) and print their grid (+0x58). Read-only."""
 import ctypes, ctypes.wintypes as w, importlib.util, struct, sys, time
-spec = importlib.util.spec_from_file_location('g', r'F:\d1\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
+spec = importlib.util.spec_from_file_location('g', r'<D1_ROOT>\public-work\d1reimagined-source\tools\ps4_setup\d1-winguest.py')
 g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
 p, base = g.open_client()
 class MBI(ctypes.Structure):

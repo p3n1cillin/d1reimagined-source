@@ -1,7 +1,7 @@
 """Read only the activity's verified local patch chain; keep extracted payloads private."""
 from pathlib import Path
 import json, sys, struct, hashlib
-sys.path.insert(0, 'F:/d1/d1xenia/scripts')
+sys.path.insert(0, '<D1_ROOT>/d1xenia/scripts')
 from d1_pkg import PackageSet, Oodle, dyn_array
 root=Path(__file__).parent
 runtime=root.parent

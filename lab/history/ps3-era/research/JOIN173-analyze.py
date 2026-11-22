@@ -6,7 +6,7 @@ import re
 import struct
 import sys
 
-rt = Path(r'F:\d1\<pc>-import\d1xenia\local')
+rt = Path(r'<D1_ROOT>\<pc>-import\d1xenia\local')
 logs = rt / 'SIGNON_LOCAL/logs'
 rows = [json.loads(line) for line in (rt/'RESEARCH/JOIN173-session-timeline.jsonl').read_text().splitlines()]
 native = (logs/'JOIN173-pre-stop-native.log').read_text(encoding='utf-8', errors='replace')
@@ -50,7 +50,7 @@ with out.open('x', encoding='utf-8') as stream:
     json.dump(summary, stream, indent=2)
 print(json.dumps({k:v for k,v in summary.items() if k not in ('last_before_first_reset','gate_inputs','return_helpers','first_pending')}, indent=2))
 
-sys.path.insert(0, r'F:\d1\d1xenia\scripts')
+sys.path.insert(0, r'<D1_ROOT>\d1xenia\scripts')
 from d1_eboot import Eboot
 elf = Eboot(rt/'RESEARCH/ps3_updates/01.24/USRDIR/EBOOT.elf')
 for table in (0x13ed518, 0x13ea298):

@@ -17,9 +17,9 @@ It came from the new AH instance's **startup/default world**, not from a165 tabl
 
 New UNSERVED row fragment:
 
-F:\d1\d1preservation-main\cfw-staging\world-table-165-tower-bypass.row.draft.txt
+<D1_ROOT>\d1preservation-main\cfw-staging\world-table-165-tower-bypass.row.draft.txt
 
-    165 city_tower_default1 0x4786c0e0 F:\d1\d1preservation-main\cfw-staging\tower-common-clients.draft.txt 0
+    165 city_tower_default1 0x4786c0e0 <D1_ROOT>\d1preservation-main\cfw-staging\tower-common-clients.draft.txt 0
 
 Keep the current164/168/410/416 rows; the fragment is NOT a replacement full table. You may retain the existing0 Tower row too. Tower metadata: scenario80c7a005, PRIVATE24340499, PUBLICd067231d,5 bubbles chosen0..4. The common-client file is a minimal TEMPLATE; fresh Tower pending groups/NPCs/quests are not yet recovered.
 

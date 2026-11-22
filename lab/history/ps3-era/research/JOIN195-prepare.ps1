@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$taskRt='F:\d1\<pc>-import\d1xenia\local'
+$taskRt='<D1_ROOT>\<pc>-import\d1xenia\local'
 $taskRpc=Join-Path $taskRt 'RPCS3_FINAL124_SMOKE001'
 $taskResearch=Join-Path $taskRt 'RESEARCH'
 $taskCleanup=Get-Content -LiteralPath "$taskRt\SIGNON_LOCAL\logs\JOIN194-cleanup-result.json" -Raw | ConvertFrom-Json
@@ -16,7 +16,7 @@ if($LASTEXITCODE -ne 0){throw 'Private overlay verification failed'}
 Copy-Item -LiteralPath "$taskRpc\config\custom_configs\config_BLES01857.yml" -Destination "$taskResearch\JOIN195-before-title.yml"
 Copy-Item -LiteralPath "$taskRpc\d1\d1ppu.txt" -Destination "$taskResearch\JOIN195-before-d1ppu.txt"
 $taskText=(Get-Content -LiteralPath "$taskRt\SIGNON_LOCAL\JOIN194-launch.ps1" -Raw).Replace('JOIN194','JOIN195').Replace('AddSeconds(1500)','AddSeconds(900)')
-$taskText=$taskText.Replace("-BapExtra '--peer-family;--character-gear;starter:01.24:titan'","-BapExtra '--peer-family;--character-gear;starter:01.24:titan;--character-overlay;@F:\d1\<pc>-import\d1xenia\local\RESEARCH\JOIN195-ghost-appearance-overlay.json'")
+$taskText=$taskText.Replace("-BapExtra '--peer-family;--character-gear;starter:01.24:titan'","-BapExtra '--peer-family;--character-gear;starter:01.24:titan;--character-overlay;@<D1_ROOT>\<pc>-import\d1xenia\local\RESEARCH\JOIN195-ghost-appearance-overlay.json'")
 if($taskText -match 'JOIN193' -or $taskText -notmatch 'character-overlay'){throw 'Wrong wrapper candidate'}
 [IO.File]::WriteAllText("$taskRt\SIGNON_LOCAL\JOIN195-launch.ps1",$taskText,[Text.UTF8Encoding]::new($false))
 $taskTrace=@'
@@ -35,4 +35,4 @@ $taskTrace+="`n"
 [IO.File]::WriteAllText("$taskResearch\JOIN195-planned-d1ppu.txt",$taskTrace,[Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText("$taskRpc\d1\d1ppu.txt",$taskTrace,[Text.UTF8Encoding]::new($false))
 foreach($taskMarker in 'd1checkpoint','d1depthfp.on'){[IO.File]::WriteAllText("$taskRpc\d1\$taskMarker",'')}
-[ordered]@{at_utc=[DateTime]::UtcNow.ToString('o');source_base=(git -C 'F:\d1\d1xenia' rev-parse HEAD).Trim();source_clean=(-not(git -C 'F:\d1\d1xenia' status --porcelain));change='Private peer/select equipped Ghost slot +0xa=42; model arrangement=2706; no renderer change.';overlay_sha256=(Get-FileHash -LiteralPath "$taskResearch\JOIN195-ghost-appearance-overlay.json").Hash.ToLowerInvariant();trace=$taskTrace} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath "$taskResearch\JOIN195-prepare.json" -Encoding utf8
+[ordered]@{at_utc=[DateTime]::UtcNow.ToString('o');source_base=(git -C '<D1_ROOT>\d1xenia' rev-parse HEAD).Trim();source_clean=(-not(git -C '<D1_ROOT>\d1xenia' status --porcelain));change='Private peer/select equipped Ghost slot +0xa=42; model arrangement=2706; no renderer change.';overlay_sha256=(Get-FileHash -LiteralPath "$taskResearch\JOIN195-ghost-appearance-overlay.json").Hash.ToLowerInvariant();trace=$taskTrace} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath "$taskResearch\JOIN195-prepare.json" -Encoding utf8
