@@ -35,41 +35,47 @@ from pathlib import Path
 M32, M64 = 0xFFFFFFFF, (1 << 64) - 1
 HERE = Path(__file__).resolve().parent
 
-# Build 56578 addresses, eboot-relative. Each was found by reading the client's own code in Ghidra
-# (decompile of the function named) and checked against the live client on 13-14 Nov.
+# Build 56578 addresses, eboot-relative, from decompiles of the client's own code (Ghidra). Used in
+# lab runs on 13-14 Nov (build 56578); recovered from transcripts; not re-verified since.
 # Handle registry: global holding a pointer to the registry; slot records are 0x40 bytes
-# (data +0x10, stride +0x30, mask +0x34). Found by the client's handle-to-object walk; verified live
-# in the restoration lab runs (rst16-rst26) on 13-14 Nov.
+# (data +0x10, stride +0x30, mask +0x34). From the client's handle-to-object walk.
 REGISTRY = 0x1A238A0
 # Content table (nav points): d1-winguest's LT_COUNT/LT_TABLE walk, kind-0x2c row index at +0x2BD1C,
-# dx table at +0x2A51C, 0x38-byte rows at +0x510. Found from an earlier namespace dump of the kind-0x2c
-# rows; verified live in rst16 and rst19 on 13-14 Nov.
+# dx table at +0x2A51C, 0x38-byte rows at +0x510. From an earlier namespace dump of the kind-0x2c rows.
 CONTENT_KIND_INDEX, CONTENT_DX_TABLE, CONTENT_ROWS, ROW_STRIDE = 0x2BD1C, 0x2A51C, 0x510, 0x38
 NAV_KIND, NAV_POS_OFF = 0x2C, 0x20
-# Interactable component list cell. Found from the list allocator/add/head functions
-# (FUN_0064add0/0064afa0/0064afe0) and the node walk FUN_003be450; verified live in rst20 on 13-14 Nov.
-# The list node sits at component+0x240; radius f32 at node+0x50, position f32x3 at node+0x60.
+# Interactable component list cell. From the list allocator/add/head functions
+# (FUN_0064add0/0064afa0/0064afe0) and the node walk FUN_003be450. The list node sits at component+0x240;
+# radius f32 at node+0x50, position f32x3 at node+0x60. The component's row ref at +0x2EC comes from a
+# static read of the component class (a research note), not a live read.
 INTERACTABLE_LIST_CELL = 0x26BEBC0
 INTERACTABLE_NODE_IN_COMP, INTERACTABLE_REF_IN_COMP = 0x240, 0x2EC
-# Trigger volume list cell. Found from c_trigger_volume_game_system's init slot (FUN_001147C0) and the
-# component add (FUN_00114F40: node = component+0x68); verified live in the dark-within lab run dw9 on
-# 13-14 Nov. Component: own handle +0x24, geometry handle +0x50, shape index +0x58, row ref +0x5C.
-# Shape table = G + i32[G+0x1C] + i32[G + 0x54 + i32[G+0x18]*0x30] with G = resolve(geometry handle)
-# (FUN_00243EE0). World box in the shape record: half-extents f32x3 at +0x40, centre f32x3 at +0x50
-# (w = 1.0 at +0x5C). The entity-transform formula read zeros in dw9, so the shape box is the position.
+# Trigger volume list cell, node offset, shape walk and shape box: from a decompile
+# (c_trigger_volume_game_system init FUN_001147C0, component add FUN_00114F40 with node = component+0x68,
+# shape table FUN_00243EE0) plus one live read (the shape box); not re-verified. Component: own handle
+# +0x24, geometry handle +0x50, shape index +0x58, row ref +0x5C. Shape table = G + i32[G+0x1C] +
+# i32[G + 0x54 + i32[G+0x18]*0x30], G = resolve(geometry handle). World box in the shape record:
+# half-extents f32x3 at +0x40, centre f32x3 at +0x50 (w = 1.0 at +0x5C). An entity-transform formula
+# read zeros in that live read, so the shape box is the position.
 TRIGGER_LIST_CELL, TRIGGER_NODE_IN_COMP = 0x25D7160, 0x68
 SHAPE_BOX_OFF = 0x40
+BOX_HALF_MAX = 500.0     # sanity bound on a half-extent, world units; a larger value is read as junk
 # Replica entries: bundle pool index word, bundle table (bias at +0, stride at +0x10, record at +0x30
 # of the pool slot), per-bundle entries (0x14 bytes at +0x14, base row index at +0x10) and row records
 # (0x38 bytes from +0x520). Entry E: key +0, owner +0x60, pending +0x15, flag +0x16, dirty +0x66,
-# value descriptors +0x8/+0xC, value buffer from FUN_002cfcd0. Found from FUN_001071d0 and FUN_002cfcd0;
-# verified live in rst23 and rst24 on 13-14 Nov.
+# value descriptors +0x8/+0xC, value buffer from FUN_002cfcd0. From FUN_001071d0 and FUN_002cfcd0.
 BUNDLE_POOL_INDEX, BUNDLE_TABLE, BUNDLE_STRIDE, BUNDLE_BUFFERS = 0x25D6FF8, 0x1AD5000, 0x1AD5010, 0x1AD5030
 ROW_RECORDS_OFF, ENTRY_HANDLE_OFF = 0x520, 0x1A8
-# Player flag block: player id array, player table, and the entity's flag image (count +0x264, hashes
-# from +0x268). Found from the flag-set functions; verified live in rst23 and rst24 on 13-14 Nov.
+BUFFER_DUMP_BYTES = 0x60     # first 24 words of the value buffer; the probe's own choice, not a layout size
+# Player flag block: player id array (u32 handles from +8, 20 entries, as the original probe read it),
+# player table (a registry-like table: entries, stride, generation offset, mask word, flags), unit+0x2C
+# entity handle (from the unit object layout in d1_unit_tracking's research), and the entity's flag image
+# (count +0x264, hashes from +0x268; the client's flag-set functions). The slot-handle arithmetic in
+# cmd_flags mirrors the player-table lookup in the decompile.
 PLAYER_IDS_PTR, PLAYER_TABLE = 0x2689600, 0x2689580
-FLAG_COUNT_OFF, FLAG_HASHES_OFF, FLAG_HASHES_MAX = 0x264, 0x268, 8
+PLAYER_IDS_OFF, PLAYER_IDS_COUNT, UNIT_ENTITY_HANDLE = 8, 20, 0x2C
+FLAG_COUNT_OFF, FLAG_HASHES_OFF = 0x264, 0x268
+FLAG_HASHES_MAX = 64     # print up to the reported count, capped here (the original probe read 8)
 
 WALK_LIMIT = 4096
 
@@ -133,6 +139,13 @@ def decode_nav_position(rec):
     return struct.unpack('<3f', rec[:12])
 
 
+def box_sane(half, centre, limit=BOX_HALF_MAX):
+    """A decoded shape box is believed only if centre and half-extents are finite and 0 < half < limit."""
+    if half is None or centre is None or not finite(half) or not finite(centre):
+        return False
+    return all(0 < h < limit for h in half)
+
+
 def finite(v):
     return all(math.isfinite(x) for x in v)
 
@@ -154,17 +167,56 @@ def hx(v):
     return 'unreadable' if v is None else hex(v)
 
 
+NAV_KEYS = ('i', 'dx', 'src_tag', 'src_off', 'position', 'd2d')
+INTERACTABLE_KEYS = ('handle', 'node', 'radius', 'position', 'distance', 'ref')
+TRIGGER_KEYS = ('handle', 'component', 'self_ok', 'ref', 'shape', 'centre', 'half_extents', 'w', 'distance')
+ROW_KEYS = ('ref', 'record_handle', 'object', 'entry_handle', 'entry', 'key', 'fields', 'buffer', 'buffer_words')
+FLAGS_KEYS = ('slot', 'entity', 'count', 'truncated', 'hashes')
+PLAYER_KEYS = ('handle', 'address', 'position')
+
+
+def fill(d, keys):
+    """A stable key set: every key present, missing ones null."""
+    return {k: d.get(k) for k in keys}
+
+
+def clean(v):
+    """JSON-safe copy: non-finite floats become null."""
+    if isinstance(v, float):
+        return v if math.isfinite(v) else None
+    if isinstance(v, dict):
+        return {k: clean(x) for k, x in v.items()}
+    if isinstance(v, (list, tuple)):
+        return [clean(x) for x in v]
+    return v
+
+
 def rnd(v, n=2):
     return None if v is None else [round(x, n) for x in v]
 
 
 # ---- guarded memory --------------------------------------------------------------------------------
 
+class ReadOnly:
+    """The only view of the client the probe holds: u() and read(), no write, suspend or handle access.
+    open_client's handle rights come from d1-winguest and are unchanged; this wrapper just never uses them
+    for anything but reads."""
+
+    def __init__(self, proc):
+        self._read, self._u = proc.read, proc.u
+
+    def read(self, addr, n):
+        return self._read(addr, n)
+
+    def u(self, addr, fmt):
+        return self._u(addr, fmt)
+
+
 class Mem:
-    """Wraps d1-winguest's Proc: u()/read() return None instead of raising."""
+    """Guarded reads over a read-only view: u()/read() return None instead of raising."""
 
     def __init__(self, p, base):
-        self.p, self.base = p, base
+        self.p, self.base = ReadOnly(p), base
 
     def u(self, addr, fmt):
         try:
@@ -236,8 +288,8 @@ def player_position(m, ut):
 def cmd_player(m, ut, args):
     me = player_position(m, ut)
     if me is None:
-        return {'player': None}, ['player: unreadable (no unit yet, or a transition)']
-    d = {'handle': me.handle, 'address': me.address, 'position': rnd(me.position)}
+        return {'player': fill({}, PLAYER_KEYS)}, ['player: unreadable (no unit yet, or a transition)']
+    d = fill({'handle': me.handle, 'address': me.address, 'position': rnd(me.position)}, PLAYER_KEYS)
     return {'player': d}, [f'player handle={me.handle:#x} unit={me.address:#x} position={tuple(d["position"])}']
 
 
@@ -262,7 +314,7 @@ def cmd_navpoints(m, ut, args):
         dx = m.u(content + CONTENT_DX_TABLE + 2 * (start + i), 'H')
         row = m.read(content + CONTENT_ROWS + (dx or 0) * ROW_STRIDE, ROW_STRIDE) if dx is not None else None
         if row is None:
-            items.append({'i': i, 'dx': dx, 'position': None})
+            items.append(fill({'i': i, 'dx': dx}, NAV_KEYS))
             lines.append(f'{i} dx={dx} unreadable')
             continue
         tag, off = decode_nav_row(row)
@@ -272,7 +324,8 @@ def cmd_navpoints(m, ut, args):
         d = distance(pos, mp, planar=True)
         if args.near is not None and (d is None or d > args.near):
             continue
-        items.append({'i': i, 'dx': dx, 'src_tag': tag, 'src_off': off, 'position': rnd(pos), 'd2d': None if d is None else round(d, 1)})
+        items.append(fill({'i': i, 'dx': dx, 'src_tag': tag, 'src_off': off, 'position': rnd(pos),
+                           'd2d': None if d is None else round(d, 1)}, NAV_KEYS))
         lines.append(f'{i} dx={dx} src_tag={tag:#x} off={off:#x} ' +
                      (f'pos={tuple(rnd(pos))} d2d={round(d, 1)}' if pos and d is not None else
                       f'pos={tuple(rnd(pos)) if pos else "unreadable"}'))
@@ -289,7 +342,7 @@ def cmd_interactables(m, ut, args):
     items = []
     for h, node in nodes:
         if node is None:
-            items.append({'handle': h, 'node': None})
+            items.append(fill({'handle': h}, INTERACTABLE_KEYS))
             lines.append(f'h={h:#x} unreadable')
             continue
         radius, pos = m.u(node + 0x50, 'f'), m.f3(node + 0x60)
@@ -299,8 +352,8 @@ def cmd_interactables(m, ut, args):
         d = distance(pos, mp)
         if args.near is not None and (d is None or d > args.near):
             continue
-        items.append({'handle': h, 'node': node, 'radius': radius, 'position': rnd(pos),
-                      'distance': None if d is None else round(d, 1), 'ref': ref})
+        items.append(fill({'handle': h, 'node': node, 'radius': radius, 'position': rnd(pos),
+                           'distance': None if d is None else round(d, 1), 'ref': ref}, INTERACTABLE_KEYS))
         lines.append(f'h={h:#x} radius={"unreadable" if radius is None else round(radius, 2)} '
                      f'pos={tuple(rnd(pos)) if pos else "unreadable"} '
                      f'd={"?" if d is None else round(d, 1)} ref={fmt_ref(ref) if ref else "unreadable"}')
@@ -319,6 +372,7 @@ def trigger_shape(m, comp):
     o54 = m.u(G + 0x54 + c18 * 0x30, 'i')
     if o54 is None:
         return None
+    # Assumption (per the decompile): the table is an array of 8-byte pointers to shape records.
     return m.u(G + o1c + o54 + gidx * 8, 'Q')
 
 
@@ -332,7 +386,7 @@ def cmd_triggers(m, ut, args):
     items = []
     for h, node in nodes:
         if node is None:
-            items.append({'handle': h, 'component': None})
+            items.append(fill({'handle': h}, TRIGGER_KEYS))
             lines.append(f'h={h:#x} unreadable')
             continue
         comp = node - TRIGGER_NODE_IN_COMP
@@ -344,12 +398,14 @@ def cmd_triggers(m, ut, args):
         half = centre = w = None
         if raw:
             half, centre, w = decode_shape_box(raw)
+            if not box_sane(half, centre):
+                half = centre = w = None      # junk: report unreadable rather than a made-up box
         d = distance(centre, mp)
         if args.near is not None and (d is None or d > args.near):
             continue
-        items.append({'handle': h, 'component': comp, 'self_ok': m.u(comp + 0x24, 'I') == h, 'ref': ref,
-                      'shape': shape, 'centre': rnd(centre), 'half_extents': rnd(half), 'w': w,
-                      'distance': None if d is None else round(d, 1)})
+        items.append(fill({'handle': h, 'component': comp, 'self_ok': m.u(comp + 0x24, 'I') == h, 'ref': ref,
+                           'shape': shape, 'centre': rnd(centre), 'half_extents': rnd(half), 'w': w,
+                           'distance': None if d is None else round(d, 1)}, TRIGGER_KEYS))
         lines.append(f'h={h:#x} ref={fmt_ref(ref) if ref else "unreadable"}')
         lines.append('    centre=' + (str(tuple(rnd(centre, 1))) if centre else 'unreadable') +
                      '  half=' + (str(tuple(rnd(half, 1))) if half else 'unreadable') +
@@ -359,14 +415,14 @@ def cmd_triggers(m, ut, args):
 
 def cmd_row(m, ut, args):
     if not args.ref:
-        sys.exit('row needs --ref 0xHASH/0xKIND/INDEX')
+        return fill({}, ROW_KEYS), ['row needs --ref 0xHASH/0xKIND/INDEX']
     hash_, kind, index = args.ref
     base = m.base
-    out = {'ref': args.ref}
+    out = fill({'ref': args.ref}, ROW_KEYS)
     lines = [f'-- {fmt_ref(args.ref)}']
     pool_idx = m.u(base + BUNDLE_POOL_INDEX, 'H')
-    bias, stride = m.u(base + BUNDLE_TABLE, 'Q'), m.u(base + BUNDLE_STRIDE, 'Q')
-    if not pool_idx or bias is None or stride is None:
+    bias, stride = m.u(base + BUNDLE_TABLE, 'q'), m.u(base + BUNDLE_STRIDE, 'Q')
+    if pool_idx is None or bias is None or stride is None:
         return out, lines + ['    bundle table unreadable']
     rec = m.u(base + BUNDLE_TABLE + bias + pool_idx * stride + 0x30, 'Q')
     n = m.u(rec + 8, 'i') if rec else None
@@ -406,7 +462,7 @@ def cmd_row(m, ut, args):
     bidx, boff = m.u(E + 0x40, 'H'), m.u(E + 0x38, 'Q')
     b = m.u(base + BUNDLE_BUFFERS + bidx * stride + bias, 'Q') if bidx is not None and None not in (stride, bias) else None
     buf = None if b is None or boff is None else (b + boff) & M64
-    data = m.read(buf, 0x60) if buf else None
+    data = m.read(buf, BUFFER_DUMP_BYTES) if buf else None
     lines.append(f'    value buffer {hx(buf)}: {words(data, 24)}')
     out.update({'entry': E, 'key': [kh, kk, ki], 'fields': f, 'buffer': buf, 'buffer_words': words(data, 24)})
     return out, lines
@@ -416,11 +472,11 @@ def cmd_flags(m, ut, args):
     base = m.base
     me = player_position(m, ut)
     unit = me.address if me else None
-    ent = m.u(unit + 0x2C, 'I') if unit else None
+    ent = m.u(unit + UNIT_ENTITY_HANDLE, 'I') if unit else None
     lines = [f'unit {hx(unit)} entity handle (+0x2c) {hx(ent)}']
     ids_ptr = m.u(base + PLAYER_IDS_PTR, 'Q')
-    raw = m.read(ids_ptr + 8, 80) if ids_ptr else None
-    ids = list(struct.unpack('<20I', raw)) if raw else None
+    raw = m.read(ids_ptr + PLAYER_IDS_OFF, 4 * PLAYER_IDS_COUNT) if ids_ptr else None
+    ids = list(struct.unpack(f'<{PLAYER_IDS_COUNT}I', raw)) if raw else None
     slot = ids.index(ent) if ids and ent in ids else None
     T0 = base + PLAYER_TABLE
     te, ts, t1c, t20, t34 = (m.u(T0 + 8, 'Q'), m.u(T0 + 0x10, 'I'), m.u(T0 + 0x1C, 'I'),
@@ -439,13 +495,16 @@ def cmd_flags(m, ut, args):
     if sh is not None and te and ts is not None:
         X = m.resolve(m.u(te + (sh & 0x1FFF) * ts + 0x50, 'I'))
     lines.append(f'entity {hx(X)}')
-    out = {'slot': slot, 'entity': X, 'count': None, 'hashes': None}
+    out = fill({'slot': slot, 'entity': X}, FLAGS_KEYS)
     if X:
         cnt = m.u(X + FLAG_COUNT_OFF, 'i')
-        hb = m.read(X + FLAG_HASHES_OFF, 4 * FLAG_HASHES_MAX)
+        n = 0 if cnt is None else max(0, min(cnt, FLAG_HASHES_MAX))
+        hb = m.read(X + FLAG_HASHES_OFF, 4 * n) if n else b''
         out['count'] = cnt
-        out['hashes'] = list(struct.unpack(f'<{FLAG_HASHES_MAX}I', hb)) if hb else None
-        lines.append(f'flag count {cnt}  hashes {words(hb, FLAG_HASHES_MAX)}')
+        out['truncated'] = cnt is not None and cnt > FLAG_HASHES_MAX
+        out['hashes'] = list(struct.unpack(f'<{n}I', hb)) if hb is not None else None
+        note = f' (truncated to the first {FLAG_HASHES_MAX})' if out['truncated'] else ''
+        lines.append(f'flag count {cnt}  hashes {words(hb, n) if n else "none"}{note}')
     return {'flags': out}, lines
 
 
@@ -489,21 +548,32 @@ def build_parser():
     return ap
 
 
+def fail(args, msg, code=1):
+    if args.json:
+        print(json.dumps({'error': msg}))
+    else:
+        print(f'd1-world-probe: {msg}')
+    return code
+
+
 def main(argv=None):
     args = build_parser().parse_args(argv)
+    if args.command == 'row' and not args.ref:
+        return fail(args, 'row needs --ref 0xHASH/0xKIND/INDEX', 2)
     if sys.platform != 'win32':
-        print('d1-world-probe: Windows only (reads shadPS4 guest memory)')
-        return 1
+        return fail(args, 'Windows only (reads shadPS4 guest memory)')
     if not shadps4_running():
-        print('d1-world-probe: no shadPS4 process is running - nothing to probe')
-        return 1
+        return fail(args, 'no shadPS4 process is running - nothing to probe')
     g = load('winguest', 'd1-winguest.py')
     ut = load('d1_unit_tracking', 'd1_unit_tracking.py')
-    with contextlib.redirect_stdout(sys.stderr):      # keep --json output clean of the control line
-        p, base = g.open_client()
+    try:
+        with contextlib.redirect_stdout(sys.stderr):      # keep --json output clean of the control line
+            p, base = g.open_client()
+    except SystemExit as e:       # open_client exits with a message on 0 or several processes, no load line
+        return fail(args, str(e.code) if isinstance(e.code, str) else f'could not open the client (exit {e.code})')
     data, lines = COMMANDS[args.command](Mem(p, base), ut, args)
     if args.json:
-        print(json.dumps(data, default=str))
+        print(json.dumps(clean(data)))
     else:
         print('\n'.join(lines))
     return 0

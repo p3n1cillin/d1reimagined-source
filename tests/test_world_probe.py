@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 import importlib.util
+import json
 import struct
 import subprocess
 import sys
@@ -42,12 +43,12 @@ class Helpers(unittest.TestCase):
         self.assertEqual(M.fmt_ref((0xAB, 4, 7)), '0x000000ab/0x4/7')
 
     def test_handle_math(self):
-        self.assertEqual(M.handle_index(0x12345), 0x12345 & 0x1FFF)
-        self.assertEqual(M.handle_slot((5 << 13) | 0x123), 5)
-        self.assertEqual(M.handle_slot(0x123), 0)
-        h = 0x80000000 | (3 << 13)      # a high-bit handle sign-extends the shift
-        esi = (struct.unpack('<i', struct.pack('<I', h))[0] >> 13) & 0xFFFFFFFF
-        self.assertEqual(M.handle_slot(h), ((esi >> 0x12) | 0x3FF) & esi)
+        # hand-computed vectors of the client's (h >> 13) arithmetic shift, folded with 0x3FF
+        self.assertEqual(M.handle_index(0x0000A123), 0x0123)
+        self.assertEqual(M.handle_slot(0x0000A123), 5)      # esi = 5
+        self.assertEqual(M.handle_slot(0x00000123), 0)      # esi = 0
+        self.assertEqual(M.handle_slot(0x80002000), 1)      # esi = 0xFFFC0001 (sign-extended), (esi>>18)|0x3ff = 0x3fff
+        self.assertEqual(M.handle_index(0x80002000), 0)
 
     def test_object_address(self):
         self.assertEqual(M.object_address(0x1000, M.M64, 0x10), 0x1000 - 0x10)
@@ -114,6 +115,125 @@ class GuardedReads(unittest.TestCase):
         self.assertIsNone(M.walk_list(m, M.INTERACTABLE_LIST_CELL))
 
 
+BASE = 0x100000
+
+
+def trigger_guest(box=(1.0, 2.0, 3.0, 10.0, 20.0, 30.0)):
+    """A one-volume trigger list: handle 3 -> node -> component -> geometry handle 5 -> shape box."""
+    ram = bytearray(0xA000)
+
+    def put(addr, fmt, *v):
+        struct.pack_into('<' + fmt, ram, addr, *v)
+
+    put(0x5000, 'Q', 0x6000)                    # registry pointer -> registry
+    put(0x6000 + 0x10, 'Q', 0x7000)             # slot 0 data
+    put(0x6000 + 0x30, 'ii', 0x200, 0)          # stride, mask
+    put(0x8000, 'I', 3)                         # list head: handle 3, node offset 0x100
+    put(0x8008, 'Q', 0x100)
+    node, comp = 0x7600 + 0x100, 0x7600 + 0x100 - M.TRIGGER_NODE_IN_COMP
+    put(node, 'I', 0xFFFFFFFF)                  # next handle: end
+    put(comp + 0x24, 'I', 3)
+    put(comp + 0x50, 'I', 5)                    # geometry handle
+    put(comp + 0x58, 'I', 1)                    # shape index
+    put(comp + 0x5C, 'IBxh', 0xABCD, 0x21, 7)   # row ref
+    G = 0x7000 + 5 * 0x200
+    put(G + 0x1C, 'i', 0x100)
+    put(G + 0x54, 'i', 0x40)                    # table = G + 0x100 + 0x40; entry 1 at +8
+    put(G + 0x140 + 8, 'Q', 0x9000)
+    put(0x9000 + M.SHAPE_BOX_OFF, '3f', *box[:3])
+    put(0x9000 + M.SHAPE_BOX_OFF + 0x10, '3f', *box[3:])
+    put(0x9000 + M.SHAPE_BOX_OFF + 0x1C, 'f', 1.0)
+    cell = bytearray(8)
+    struct.pack_into('<Q', cell, 0, 0x8000)
+    reg = bytearray(8)
+    struct.pack_into('<Q', reg, 0, 0x5000)
+    return FakeProc({0: ram, BASE + M.TRIGGER_LIST_CELL: cell, BASE + M.REGISTRY: reg})
+
+
+class Args:
+    near = None
+    ref = None
+    json = True
+
+
+class Ut:
+    class _P:
+        position = (0.0, 0.0, 0.0)
+        handle = 1
+        address = 0x1234
+
+    def read_unit_position(self, reader, base):
+        return self._P()
+
+
+class SanityAndWalk(unittest.TestCase):
+    def test_box_sane(self):
+        self.assertTrue(M.box_sane((1, 2, 3), (0, 0, 0)))
+        self.assertFalse(M.box_sane((0, 2, 3), (0, 0, 0)))
+        self.assertFalse(M.box_sane((1, 2, 501), (0, 0, 0)))
+        self.assertFalse(M.box_sane((1, 2, float('nan')), (0, 0, 0)))
+        self.assertFalse(M.box_sane((1, 2, 3), (float('inf'), 0, 0)))
+        self.assertFalse(M.box_sane(None, (0, 0, 0)))
+
+    def test_trigger_walk(self):
+        m = M.Mem(trigger_guest(), BASE)
+        data, lines = M.cmd_triggers(m, Ut(), Args())
+        (t,) = data['triggers']
+        self.assertEqual(t['ref'], (0xABCD, 0x21, 7))
+        self.assertEqual(t['centre'], [10.0, 20.0, 30.0])
+        self.assertEqual(t['half_extents'], [1.0, 2.0, 3.0])
+        self.assertTrue(t['self_ok'])
+        self.assertEqual(t['distance'], round((10 ** 2 + 20 ** 2 + 30 ** 2) ** 0.5, 1))
+        self.assertEqual(set(t), set(M.TRIGGER_KEYS))
+
+    def test_trigger_junk_box_is_unreadable(self):
+        m = M.Mem(trigger_guest(box=(0.0, 0.0, 0.0, 1e30, 0, 0)), BASE)
+        data, lines = M.cmd_triggers(m, Ut(), Args())
+        (t,) = data['triggers']
+        self.assertIsNone(t['centre'])
+        self.assertIsNone(t['half_extents'])
+        self.assertIn('unreadable', ' '.join(lines))
+
+    def test_trigger_ref_filter(self):
+        m = M.Mem(trigger_guest(), BASE)
+        a = Args()
+        a.ref = (1, 2, 3)
+        self.assertEqual(M.cmd_triggers(m, Ut(), a)[0]['triggers'], [])
+
+    def test_readonly_view_has_no_write(self):
+        v = M.Mem(trigger_guest(), BASE).p
+        self.assertFalse(hasattr(v, 'write'))
+        self.assertFalse(hasattr(v, 'h'))
+
+
+class JsonShape(unittest.TestCase):
+    def test_clean_non_finite(self):
+        self.assertEqual(M.clean({'a': float('nan'), 'b': [float('inf'), 1.5], 'c': (1, float('-inf'))}),
+                         {'a': None, 'b': [None, 1.5], 'c': [1, None]})
+
+    def test_fill_stable_keys(self):
+        self.assertEqual(M.fill({'handle': 1}, M.TRIGGER_KEYS), {k: (1 if k == 'handle' else None) for k in M.TRIGGER_KEYS})
+
+    def test_unreadable_items_keep_keys(self):
+        m = M.Mem(FakeProc({BASE + M.TRIGGER_LIST_CELL: struct.pack('<Q', 0x8000),
+                            0x8000: struct.pack('<IxxxxQ', 3, 0x100)}), BASE)
+        data, _ = M.cmd_triggers(m, Ut(), Args())
+        (t,) = data['triggers']
+        self.assertEqual(set(t), set(M.TRIGGER_KEYS))
+        self.assertEqual(t['handle'], 3)
+        self.assertIsNone(t['centre'])
+        json.dumps(M.clean(data))
+
+    def test_player_and_flags_keys_when_unreadable(self):
+        class NoUt:
+            def read_unit_position(self, r, b):
+                return None
+        m = M.Mem(FakeProc({}), BASE)
+        self.assertEqual(set(M.cmd_player(m, NoUt(), Args())[0]['player']), set(M.PLAYER_KEYS))
+        self.assertEqual(set(M.cmd_flags(m, NoUt(), Args())[0]['flags']), set(M.FLAGS_KEYS))
+        self.assertEqual(set(M.cmd_row(m, NoUt(), Args())[0]), set(M.ROW_KEYS))
+
+
 class Cli(unittest.TestCase):
     def run_tool(self, *args):
         return subprocess.run([sys.executable, '-I', str(TOOL), *args], capture_output=True, text=True)
@@ -122,6 +242,18 @@ class Cli(unittest.TestCase):
         r = self.run_tool('--help')
         self.assertEqual(r.returncode, 0)
         self.assertIn('triggers', r.stdout)
+
+    def test_row_without_ref_json_error(self):
+        r = self.run_tool('row', '--json')
+        self.assertEqual(r.returncode, 2)
+        self.assertIn('error', json.loads(r.stdout))
+
+    def test_no_emulator_json_error(self):
+        if sys.platform != 'win32' or M.shadps4_running():
+            self.skipTest('needs Windows with no shadPS4 running')
+        r = self.run_tool('player', '--json')
+        self.assertEqual(r.returncode, 1)
+        self.assertIn('no shadPS4', json.loads(r.stdout)['error'])
 
     def test_bad_ref(self):
         self.assertEqual(self.run_tool('row', '--ref', 'nope').returncode, 2)
