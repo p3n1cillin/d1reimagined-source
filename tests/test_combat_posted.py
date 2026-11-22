@@ -235,3 +235,20 @@ class Posted(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def test_settle_follows_the_posted_env_at_call_time(monkeypatch):
+    # `combat2.py --post` sets D1_KEYS_POST in main(), after import: the settle must follow it.
+    import importlib.util, os
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'lab', 'tower-route', 'combat2.py')
+    spec = importlib.util.spec_from_file_location('combat2_settle', here)
+    try:
+        c = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(c)
+    except Exception as e:  # the module needs Windows; skip elsewhere
+        import pytest
+        pytest.skip(f'combat2 not importable here: {e}')
+    monkeypatch.delenv('D1_KEYS_POST', raising=False)
+    assert c.settle() == 0.0
+    monkeypatch.setenv('D1_KEYS_POST', '1')
+    assert c.settle() == 0.12
