@@ -4,5 +4,5 @@ Daily checkpoint completed2026-10-27T19:14:55Z.
 - Earlier3clip/3screenshot event package independently verified and referenced, not resent.
 - Native aim/capture was allowed to finish before text-only transfer; no emulator/server/input was stopped or changed by the heartbeat.
 - Reporting cutoff19:00; post-cutoff aim tests belong in next eligible edition. No readypackage edited; no instructionfile copied; no publishing/final-video edits.
-- User-authorized full engineering hand-back delivered to the exact Claude desktop Code session at19:14:55; confirmed message, clearededitor, noqueuecontrols. UpdatedF:\d1\d1xenia\HANDOFF-codex-to-claude.md.
+- User-authorized full engineering hand-back delivered to the exact Claude desktop Code session at19:14:55; confirmed message, clearededitor, noqueuecontrols. Updated<D1_ROOT>\d1xenia\HANDOFF-codex-to-claude.md.
 - Engineering ownership is with Claude; Codex will not send game input or mutatecurrentworkingbranch.

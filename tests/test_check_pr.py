@@ -42,6 +42,11 @@ class LabPaths(unittest.TestCase):
             "C:/" + "dev" + "/rpcs3": "<DEV_ROOT>/rpcs3",
             "F:" + B + "VS" + B + "BuildTools (": "<VS_BUILDTOOLS> (",
             "Y:" + B + "incoming" + B + "x": "<NAS_INCOMING>" + B + "x",
+            # After a switch, a URI scheme, or a word whose space was lost.
+            "cl a.cpp /Fe:F:" + B + d + B + "a.exe": "cl a.cpp /Fe:<D1_ROOT>" + B + "a.exe",
+            "sqlite3.connect('file:F:/" + d + "/m.db')": "sqlite3.connect('file:<D1_ROOT>/m.db')",
+            "UpdatedF:" + B + d + B + "x": "Updated<D1_ROOT>" + B + "x",
+            "/mnt/e/" + d + "-lab/runs": "<LAB_ROOT>/runs",
         }
         for text, want in cases.items():
             self.assertEqual(self.sub(text), want, text)

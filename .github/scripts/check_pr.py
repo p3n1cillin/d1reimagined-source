@@ -38,10 +38,12 @@ LAB_PLACEHOLDERS = {
     "d1": "<D1_ROOT>", "d1-lab": "<LAB_ROOT>", "d1-game": "<GAME_ROOT>", "destiny360": "<PS3_ROOT>",
     "dev": "<DEV_ROOT>", "vs/buildtools": "<VS_BUILDTOOLS>", "incoming": "<NAS_INCOMING>",
 }
+# No lookbehind on the drive letter: paths also follow a switch (/Fe:F:...), a URI scheme (file:F:...) or a
+# word whose space was lost in a log. The root must end at a separator or a non-name character.
 LAB_PATH = re.compile(
-    r"(?<![\w:])[A-Za-z]:" + _SEP + r"(?P<root>d1|d1-lab|d1-game|Destiny360|dev|VS" + _SEP + r"BuildTools|incoming)(?![\w.-])"
-    r"|(?<![\w.])/mnt/[a-z]/(?P<wsl>d1)(?![\w.-])"
-    r"|(?<![\w.:/])/[a-z]/(?P<msys>d1)(?![\w.-])",
+    r"[A-Za-z]:" + _SEP + r"(?P<root>d1|d1-lab|d1-game|Destiny360|dev|VS" + _SEP + r"BuildTools|incoming)(?![\w.-])"
+    r"|(?<![\w.])/mnt/[a-z]/(?P<wsl>d1|d1-lab|d1-game)(?![\w.-])"
+    r"|(?<![\w.:/])/[a-z]/(?P<msys>d1|d1-lab|d1-game)(?![\w.-])",
     re.I,
 )
 
@@ -89,7 +91,7 @@ def main():
                 errors.append((current, f"Personal path {personal.group(0)!r}: use a placeholder such as <home>, or an environment variable"))
             lab = LAB_PATH.search(line)
             if lab:
-                errors.append((current, f"Local lab path {lab.group(0)!r}: write {lab_placeholder(lab)}, or read the location from d1paths / an environment variable"))
+                errors.append((current, f"Local path {lab.group(0)!r}: write a placeholder (e.g. {lab_placeholder(lab)}), or read the location from d1paths / an environment variable"))
     for status, path in changed:
         if status == "D" or not path.endswith(".md"):
             continue

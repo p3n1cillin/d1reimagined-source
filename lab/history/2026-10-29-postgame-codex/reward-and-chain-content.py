@@ -5,7 +5,7 @@ def fnv(s):
  h=0x811c9dc5
  for c in s.encode():h=((h*0x1000193)&0xffffffff)^c
  return h
-c=sqlite3.connect('file:F:/d1/d1preservation-main/manifest/data/world_en.sqlite?mode=ro',uri=True)
+c=sqlite3.connect('file:<D1_ROOT>/d1preservation-main/manifest/data/world_en.sqlite?mode=ro',uri=True)
 print('ships')
 ships=[]
 for i,j in c.execute('select id,json from DestinyInventoryItemDefinition where json like ?',('%Arcadia%',)):

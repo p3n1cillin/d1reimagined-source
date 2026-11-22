@@ -10,7 +10,7 @@
 #   Tools        D1_TOOLS        Root\tools
 #   ShadPS4      D1_SHADPS4      Tools\shadPS4\0.19.0
 #   LibOrbisPkg  D1_LIBORBISPKG  Tools\liborbispkg\0.2.245
-#   ThirdParty   D1_THIRD_PARTY  Root	hird-party (other people's code and data, read-only inputs)
+#   ThirdParty   D1_THIRD_PARTY  Root\third-party (other people's code and data, read-only inputs)
 #   Workspace    D1_WORKSPACE    Root\d1preservation-main
 #   Staging      D1_STAGING      Workspace\cfw-staging
 #   PkgDir       D1_PKG_DIR      Root\01.29\d1shad
