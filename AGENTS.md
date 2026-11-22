@@ -21,7 +21,10 @@ rules. These are the ones agents break.
 - **Don't drive the emulator unasked.** Launch, input, capture and watchpoint tools act on a real
   emulator process. Run them only when the person you work for asks, and never stop processes by name.
 - **No local paths.** Use environment variables or placeholders such as `<home>`, never a real home
-  directory or drive layout.
+  directory or drive layout. In code, read locations from `tools/ps4_setup/d1paths.py` / `D1Paths.ps1` or an
+  environment variable. In notes and records, write `<D1_ROOT>` for the lab folder.
+  `.github/scripts/check_pr.py` rejects both kinds of path in a pull request, and `tests/test_no_lab_paths.py`
+  checks the whole tree.
 - **One implementation per format.** Reuse the existing codecs, readers and message definitions instead
   of writing parallel ones.
 - **Keep licence headers.** New PS4 source files carry the SPDX header their neighbours use.
