@@ -12,7 +12,8 @@
 Needs one running shadPS4 on Windows. It only reads: it never writes guest memory, suspends the
 process or sends keys. Every read is guarded and prints "unreadable" instead of crashing. With no
 shadPS4 it exits 1 with a message. All addresses belong to build 56578 (eboot-relative; the load base
-comes from d1-winguest.open_client). Positions are world units; --near keeps items within M of the
+comes from d1-winguest.open_client). The build is assumed, not checked: open_client's control read is a
+vtable-pointer check, not a build id, so run it only against the 56578 client. Positions are world units; --near keeps items within M of the
 local Guardian (navpoints compare in the ground plane, the rest in 3D).
 
   player        the local Guardian's unit handle, address and position (d1_unit_tracking).
@@ -55,8 +56,9 @@ INTERACTABLE_NODE_IN_COMP, INTERACTABLE_REF_IN_COMP = 0x240, 0x2EC
 # shape table FUN_00243EE0) plus one live read (the shape box); not re-verified. Component: own handle
 # +0x24, geometry handle +0x50, shape index +0x58, row ref +0x5C. Shape table = G + i32[G+0x1C] +
 # i32[G + 0x54 + i32[G+0x18]*0x30], G = resolve(geometry handle). World box in the shape record:
-# half-extents f32x3 at +0x40, centre f32x3 at +0x50 (w = 1.0 at +0x5C). An entity-transform formula
-# read zeros in that live read, so the shape box is the position.
+# half-extents f32x3 at +0x40, centre f32x3 at +0x50 (w = 1.0 at +0x5C). In that one live read an
+# entity-transform formula gave zeros while the shape box gave plausible world boxes, so this tool uses
+# the shape box (one observation, not re-verified).
 TRIGGER_LIST_CELL, TRIGGER_NODE_IN_COMP = 0x25D7160, 0x68
 SHAPE_BOX_OFF = 0x40
 BOX_HALF_MAX = 500.0     # sanity bound on a half-extent, world units; a larger value is read as junk
@@ -67,7 +69,8 @@ BOX_HALF_MAX = 500.0     # sanity bound on a half-extent, world units; a larger 
 BUNDLE_POOL_INDEX, BUNDLE_TABLE, BUNDLE_STRIDE, BUNDLE_BUFFERS = 0x25D6FF8, 0x1AD5000, 0x1AD5010, 0x1AD5030
 ROW_RECORDS_OFF, ENTRY_HANDLE_OFF = 0x520, 0x1A8
 BUFFER_DUMP_BYTES = 0x60     # first 24 words of the value buffer; the probe's own choice, not a layout size
-# Player flag block: player id array (u32 handles from +8, 20 entries, as the original probe read it),
+# Player flag block: player id array (u32 handles from +8; 20 entries is the count the original probe
+# read, a single-observation value, not derived from the client),
 # player table (a registry-like table: entries, stride, generation offset, mask word, flags), unit+0x2C
 # entity handle (from the unit object layout in d1_unit_tracking's research), and the entity's flag image
 # (count +0x264, hashes from +0x268; the client's flag-set functions). The slot-handle arithmetic in
