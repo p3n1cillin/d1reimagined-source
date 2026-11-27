@@ -88,6 +88,18 @@ pub const ENGINE_REGISTERED: [&str; 3] = [
     "ps4_ui_bootflow_unp3_0",
 ];
 
+/// [`ENGINE_REGISTERED`] without its platform prefix: the engine forms each name as `"%s_%s"` from
+/// the platform's prefix ([`crate::Platform::prefix`]) and one of these.
+pub const ENGINE_REGISTERED_SUFFIXES: [&str; 3] =
+    ["client_bootstrap_unp3_0", "ui_startup_unp3_0", "ui_bootflow_unp3_0"];
+
+/// Whether `stem` is one of the packages the engine registers itself, on any [`crate::Platform`]:
+/// for a `ps4_` stem exactly the membership of [`ENGINE_REGISTERED`].
+pub fn is_engine_registered(stem: &str) -> bool {
+    crate::Platform::of_stem(stem)
+        .is_some_and(|p| ENGINE_REGISTERED_SUFFIXES.contains(&&stem[p.prefix().len() + 1..]))
+}
+
 /// Locale 0: language-independent content. Always kept, whatever `--lang` says.
 pub const LOCALE_NEUTRAL: u16 = 0;
 
@@ -180,7 +192,7 @@ pub fn scan(dir: impl AsRef<Path>) -> Result<Vec<Row>> {
 /// Resolving instead of hard-coding is what makes the `_unpatchable_` spelling fall out for free:
 /// it shares its package id with the `_unp3_` file, so dropping the id drops both.
 pub fn engine_ids(rows: &[Row]) -> BTreeSet<u16> {
-    rows.iter().filter(|r| ENGINE_REGISTERED.contains(&r.stem.as_str())).map(|r| r.id).collect()
+    rows.iter().filter(|r| is_engine_registered(&r.stem)).map(|r| r.id).collect()
 }
 
 // ────────────────────────────────────── policies ────────────────────────────────────
@@ -286,7 +298,7 @@ pub fn select(rows: &[Row], sel: &Select) -> Vec<Row> {
             rows.retain(|r| !ids.contains(&r.id));
         }
         // By stem: what the prototype did, and what the golden bytes encode.
-        _ => rows.retain(|r| !ENGINE_REGISTERED.contains(&r.stem.as_str())),
+        _ => rows.retain(|r| !is_engine_registered(&r.stem)),
     }
     rows
 }
@@ -825,6 +837,68 @@ mod tests {
                 guid: 0x2B96_1B12_3456_7890
             }
         );
+    }
+
+    fn synthetic(stem: &str, id: u16) -> Row {
+        Row { path: PathBuf::new(), stem: stem.into(), id, guid: 1, timestamp: 0, gen: 0, locale: 0 }
+    }
+
+    /// The PS4 names keep exactly their old membership, and the same three packages are recognised
+    /// under the Xbox One prefix. Synthetic stems only.
+    #[test]
+    fn engine_registered_packages_follow_the_platform_prefix() {
+        for s in ENGINE_REGISTERED {
+            assert!(is_engine_registered(s), "{s}");
+        }
+        for s in ENGINE_REGISTERED_SUFFIXES {
+            assert!(is_engine_registered(&format!("xboxone_{s}")), "xboxone_{s}");
+        }
+        for s in [
+            "ps4_ui_core_000a_0",
+            "ps4_client_bootstrap_unpatchable_0",
+            "xboxone_client_bootstrap_unpatchable_0",
+            "ps5_ui_startup_unp3_0",
+            "xboxoneui_startup_unp3_0",
+            "client_bootstrap_unp3_0",
+        ] {
+            assert!(!is_engine_registered(s), "{s}");
+        }
+    }
+
+    /// An Xbox One estate drops its engine ids the same way a PS4 one does: by id under
+    /// `AllGenerations` (catching the `_unpatchable_0` twin), by stem otherwise.
+    #[test]
+    fn xbox_one_engine_packages_are_dropped_like_ps4_ones() {
+        let rows = vec![
+            synthetic("xboxone_ui_core_000a_0", 10),
+            synthetic("xboxone_client_bootstrap_unp3_0", 66),
+            synthetic("xboxone_client_bootstrap_unpatchable_0", 66),
+            synthetic("xboxone_ui_startup_unp3_0", 73),
+        ];
+        assert_eq!(engine_ids(&rows), BTreeSet::from([66, 73]));
+        let all = select(&rows, &Select { policy: Policy::AllGenerations, only: None, lang: None });
+        let stems: Vec<_> = all.iter().map(|r| r.stem.as_str()).collect();
+        assert_eq!(stems, ["xboxone_ui_core_000a_0"]);
+        let newest = select(&rows, &Select { policy: Policy::Newest, only: None, lang: None });
+        assert!(newest.iter().all(|r| !is_engine_registered(&r.stem)));
+    }
+
+    /// The header's platform field: 7 is PS4, 8 Xbox One, anything else unknown. Synthetic header.
+    #[test]
+    fn header_platform_reads_the_tiger_platform_id() {
+        use crate::Platform;
+        let mut raw = [0u8; 0x140];
+        raw[..2].copy_from_slice(&0x18u16.to_le_bytes());
+        for (id, want) in [(7u16, Some(Platform::Ps4)), (8, Some(Platform::XboxOne)), (3, None)] {
+            raw[2..4].copy_from_slice(&id.to_le_bytes());
+            assert_eq!(Header::parse(&raw).platform(), want, "id {id}");
+        }
+        assert_eq!(Platform::of_stem("xboxone_ui_core_000a_0"), Some(Platform::XboxOne));
+        assert_eq!(Platform::of_stem("ps4_ui_core_000a_0"), Some(Platform::Ps4));
+        assert_eq!(Platform::of_stem("ps4x_ui_core_000a_0"), None);
+        for p in Platform::ALL {
+            assert_eq!(Platform::from_id(p.id()), Some(p));
+        }
     }
 
     #[test]
