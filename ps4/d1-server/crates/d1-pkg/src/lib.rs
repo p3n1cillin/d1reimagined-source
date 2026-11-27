@@ -157,11 +157,62 @@ pub struct Symbol {
     pub name: String,
 }
 
+// ────────────────────────────────────── platform ────────────────────────────────────
+
+/// The platform a package was built for: the header's `u16` at `+0x02` ([`Header::version`]).
+///
+/// The numbering is Tiger's own, as `v4nguard/tiger-pkg` reads it (`PackagePlatform`): 7 is PS4 and
+/// 8 is Xbox One. Every file of the PS4 estates has 7 there, which is why this field was first taken
+/// for a container version. The `u16` at `+0x00` ([`Header::magic`], `0x18`) is the package format
+/// version, 24 for Destiny 1 from The Taken King on, on every platform.
+///
+/// The platform also names the files and the packages the engine registers by itself: `"%s_%s"`
+/// with the [`Platform::prefix`] (`ps4_ui_core_000a_0.pkg`, `xboxone_ui_core_000a_0.pkg`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize)]
+pub enum Platform {
+    Ps4,
+    XboxOne,
+}
+
+impl Platform {
+    pub const ALL: [Platform; 2] = [Platform::Ps4, Platform::XboxOne];
+
+    /// The header's platform id.
+    pub fn id(self) -> u16 {
+        match self {
+            Platform::Ps4 => 7,
+            Platform::XboxOne => 8,
+        }
+    }
+
+    /// The platform for a header's id; `None` for ids no Destiny 1 console estate here uses.
+    pub fn from_id(id: u16) -> Option<Platform> {
+        Platform::ALL.into_iter().find(|p| p.id() == id)
+    }
+
+    /// The prefix of the platform's package file names, without the underscore.
+    pub fn prefix(self) -> &'static str {
+        match self {
+            Platform::Ps4 => "ps4",
+            Platform::XboxOne => "xboxone",
+        }
+    }
+
+    /// The platform whose prefix a package file stem starts with.
+    pub fn of_stem(stem: &str) -> Option<Platform> {
+        Platform::ALL
+            .into_iter()
+            .find(|p| stem.strip_prefix(p.prefix()).is_some_and(|rest| rest.starts_with('_')))
+    }
+}
+
 // ────────────────────────────────────── package ─────────────────────────────────────
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct Header {
+    /// The package format version (`0x18`, 24); see [`Platform`].
     pub magic: u16,
+    /// The platform id; see [`Platform`] and [`Header::platform`].
     pub version: u16,
     pub id: u16,
     pub flag06: u16,
@@ -222,6 +273,11 @@ impl Header {
         let mut raw = [0u8; 0x140];
         File::open(path.as_ref())?.read_exact(&mut raw)?;
         Ok(Header::parse(&raw))
+    }
+
+    /// The platform the package was built for, if it is one of [`Platform::ALL`].
+    pub fn platform(&self) -> Option<Platform> {
+        Platform::from_id(self.version)
     }
 
     /// `gen` and `locale` as the single 32-bit word they occupy at `+0x20`.
